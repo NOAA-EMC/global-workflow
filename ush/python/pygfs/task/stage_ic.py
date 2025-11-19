@@ -6,72 +6,10 @@ Overview
 --------
 This module constructs cycle and member-specific COM directory path variables
 required for initial conditions for the Stage IC task.
-
-High-Level Responsibilities
----------------------------
-1. Create cycle variables for:
-   - GCAFS (cycled or forecast-only)
-   - GFS (deterministic and enkfgdas variant)
-   - GEFS (ensemble: real-time and offline modes)
-
-   1.1 Provide a method (calculate_general_cycle_variables) that computes
-       variables common to all supported applications (time windows, cycle
-       date strings, template substitution dictionaries, etc.).
-
-   1.2 Provide a method (calculate_member) that derives
-       application / RUN specific attributes (member indexing rules, GEFSTYPE
-       handling etc.).
-
-2. Provide separate methods for populating member-level COM path variables:
-   - calculate_member_com_paths_gfs
-   - calculate_member_com_paths_gefs_offline
-   - calculate_member_com_paths_gefs_rt
-   - calculate_member_com_paths_gcafs
-
-Key Methods
------------
-calculate_member():
-  Establishes RUN-dependent settings (member ranges, GEFSTYPE logic, replay /
-  IAU offsets, and rRUN mapping for coupled cases).
-
-calculate_general_cycle_variables():
-  Builds on case-specific variables and computes:
-    - Half-window assimilation times
-    - Current / previous cycle formatted strings (YMD, HH)
-    - Model start date logic (IAU vs replay vs standard start)
-    - Template substitution dictionaries for current and previous cycles
-
-calculate_member_com_paths_*():
-  For a given member index, formats and injects member-specific COM directory
-  paths derived from template variables defined in the master configuration.
-
-execute_stage(stage_dict):
-  Renders a YAML (Jinja2) template describing required files, then synchronizes
-  (copies/links) those files into the ROTDIR.
-
-Extensibility Notes
--------------------
-To add a new application:
-  1. Extend calculate_member() for RUN-specific member logic.
-  2. Implement a new calculate_member_com_paths_<app>() variant if COM path
-     semantics differ from existing cases.
-  3. Add dispatch logic inside calculate_stage_vars().
-
-Performance Considerations
---------------------------
-The staging loop processes each member sequentially. If significant scaling
-issues arise for very large ensembles, a future enhancement could introduce
-parallelization or batched FileHandler operations.
-
-Logging
--------
-All public operational methods are decorated with @logit(logger, ...),
-providing entry/exit logging.
-
 """
 import os
 from logging import getLogger
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 from datetime import timedelta
 from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict
 
@@ -79,164 +17,224 @@ logger = getLogger(__name__.split('.')[-1])
 
 
 class Stage(Task):
-    """Task to stage initial conditions
-    """
+    """Task to stage initial conditions"""
 
     @logit(logger, name="Stage")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Stage task
-        The constructor is responsible for collecting necessary settings based on
-        the runtime options and RUN.
 
         Parameters
         ----------
         config : Dict[str, Any]
             Incoming configuration for the task from the environment
-
-        Returns
-        -------
-        None
         """
         super().__init__(config)
 
-        # assign rRUN to RUN for gfs cases
-        self.task_config.rRUN = self.task_config.RUN
-        # case specific rRUN
-        if self.task_config.RUN in ['gfs', 'gcafs']:
-            self.task_config.rRUN = "gdas"
-        else:
-            # RUN not gfs leave rRUN unchanged and continue
-            logger.debug("No rRUN remap applied: RUN='%s' (rRUN stays '%s')", self.task_config.RUN, self.task_config.rRUN)
+    def _copy_base_config(self) -> Dict[str, Any]:
+        """Copy essential base configuration from task_config
 
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary with base configuration values
+        """
+        base_keys = [
+            'RUN', 'ROTDIR', 'assim_freq', 'MODE', 'DOIAU',
+            'current_cycle', 'previous_cycle', 'NMEM_ENS', 'STAGE_IC_YAML_TMPL'
+        ]
+        return {key: self.task_config[key] for key in base_keys if key in self.task_config}
+
+    def _calculate_config_vars(self) -> Dict[str, Any]:
+        """Calculate derived configuration variables
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary with derived configuration values (rRUN, OCNRES, START_ICE_FROM_ANA, half_window)
+        """
+        derived = {}
+
+        # Determine rRUN
+        derived['rRUN'] = "gdas" if self.task_config.RUN in ['gfs', 'gcafs'] else self.task_config.RUN
+
+        # OCNRES formatting
         if "OCNRES" in self.task_config:
-            self.task_config.OCNRES = f"{int(self.task_config.OCNRES):03d}"
+            derived['OCNRES'] = f"{int(self.task_config.OCNRES):03d}"
 
-        # START_ICE_FROM_ANA logic (only if DO_ICE is True)
+        # START_ICE_FROM_ANA logic
         if self.task_config.get("DO_ICE", False):
-            self.task_config.START_ICE_FROM_ANA = False
+            derived['START_ICE_FROM_ANA'] = False
             if self.task_config.get("DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
-                self.task_config.START_ICE_FROM_ANA = True
+                derived['START_ICE_FROM_ANA'] = True
             if self.task_config.get("DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
-                self.task_config.START_ICE_FROM_ANA = True
+                derived['START_ICE_FROM_ANA'] = True
 
-                # Calculate half window variables
-        self.task_config.half_window = self.task_config.assim_freq // 2
+        return derived
 
-        # Calculate current cycle variables
+    def _calculate_cycle_vars(self) -> Dict[str, Any]:
+        """Calculate current and previous cycle variables
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary with current and previous cycle variables including half_window
+        """
+        cycle_vars = {}
+        half_window = self.task_config.assim_freq // 2
+        cycle_vars['half_window'] = half_window
+
+        # Current cycle variables
         if self.task_config.current_cycle:
-            self.task_config.current_cycle_HH = self.task_config.current_cycle.strftime("%H")
-            self.task_config.current_cycle_YMD = self.task_config.current_cycle.strftime("%Y%m%d")
+            cycle_vars['current_cycle_HH'] = self.task_config.current_cycle.strftime("%H")
+            cycle_vars['current_cycle_YMD'] = self.task_config.current_cycle.strftime("%Y%m%d")
+
             if self.task_config.DOIAU and self.task_config.MODE == "cycled":
-                self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=-self.task_config.half_window)
+                cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=-half_window)
             else:
-                if 'REPLAY_ICS' in self.task_config and self.task_config['REPLAY_ICS']:
-                    self.task_config.model_start_date_current_cycle = self.task_config.current_cycle + timedelta(hours=self.task_config.half_window)
+                if self.task_config.get('REPLAY_ICS', False):
+                    cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=half_window)
                 else:
-                    self.task_config.model_start_date_current_cycle = self.task_config.current_cycle
+                    cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle
 
-            # Calculate YMD and HH formats
-            self.task_config.m_prefix = self.task_config.model_start_date_current_cycle.strftime("%Y%m%d.%H0000")
+            cycle_vars['m_prefix'] = cycle_vars['model_start_date_current_cycle'].strftime("%Y%m%d.%H0000")
 
-        # Calculate previous cycle variables
+        # Previous cycle variables
         if self.task_config.previous_cycle:
-            self.task_config.m_index = self.task_config.current_cycle.hour // self.task_config.assim_freq
-            self.task_config.p_prefix = self.task_config.previous_cycle.strftime("%Y%m%d.%H0000")
-            self.task_config.previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
-            self.task_config.previous_cycle_YMD = self.task_config.previous_cycle.strftime("%Y%m%d")
-            self.task_config.mid_cyc = int(self.task_config.previous_cycle_HH) + int(self.task_config.half_window)
-        # Define cycle directories to update com paths
-        self.task_config.current_cycle_dict = {
-            "${ROTDIR}": self.task_config.ROTDIR,
-            "${RUN}": self.task_config.RUN,
-            "${YMD}": self.task_config.current_cycle.strftime("%Y%m%d"),
-            "${HH}": self.task_config.current_cycle.strftime("%H"),
+            previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
+            cycle_vars['m_index'] = self.task_config.current_cycle.hour // self.task_config.assim_freq
+            cycle_vars['p_prefix'] = self.task_config.previous_cycle.strftime("%Y%m%d.%H0000")
+            cycle_vars['previous_cycle_HH'] = previous_cycle_HH
+            cycle_vars['previous_cycle_YMD'] = self.task_config.previous_cycle.strftime("%Y%m%d")
+            cycle_vars['mid_cyc'] = int(previous_cycle_HH) + int(half_window)
+
+        return cycle_vars
+
+    def _create_cycle_dicts(self, rotdir: str, run: str) -> Dict[str, Dict[str, str]]:
+        """Create cycle directories for template substitution
+
+        Parameters
+        ----------
+        rotdir : str
+            ROTDIR path
+        run : str
+            RUN type
+
+        Returns
+        -------
+        Dict[str, Dict[str, str]]
+            Dictionary containing current_cycle_dict and previous_cycle_dict
+        """
+        return {
+            'current_cycle_dict': {
+                "${ROTDIR}": rotdir,
+                "${RUN}": run,
+                "${YMD}": self.task_config.current_cycle.strftime("%Y%m%d"),
+                "${HH}": self.task_config.current_cycle.strftime("%H"),
+            },
+            'previous_cycle_dict': {
+                "${ROTDIR}": rotdir,
+                "${RUN}": run,
+                "${YMD}": self.task_config.previous_cycle.strftime("%Y%m%d"),
+                "${HH}": self.task_config.previous_cycle.strftime("%H"),
+            }
         }
-        self.task_config.previous_cycle_dict = {
-            "${ROTDIR}": self.task_config.ROTDIR,
-            "${RUN}": self.task_config.RUN,
-            "${YMD}": self.task_config.previous_cycle.strftime("%Y%m%d"),
-            "${HH}": self.task_config.previous_cycle.strftime("%H"),
-        }
+
+    def _copy_com_templates(self) -> Dict[str, str]:
+        """Copy COM templates from task_config
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary with COM template paths
+        """
+        return {key: self.task_config[key] for key in self.task_config.keys()
+                if key.startswith('COM_') and key.endswith('_TMPL')}
+
+    def create_stage_dict(self) -> AttrDict:
+        """Create staging dictionary with all necessary variables for YAML templates
+
+        Returns
+        -------
+        AttrDict
+            Dictionary containing all variables needed for staging YAML templates
+        """
+        stage_dict = AttrDict()
+
+        # Copy essential base configuration
+        stage_dict.update(self._copy_base_config())
+
+        # Calculate derived configuration
+        stage_dict.update(self._calculate_config_vars())
+
+        # Calculate current and previous cycle variables
+        stage_dict.update(self._calculate_cycle_vars())
+
+        # Create cycle directories for template substitution
+        stage_dict.update(self._create_cycle_dicts(stage_dict.ROTDIR, stage_dict.RUN))
+
+        # Copy COM templates
+        stage_dict.update(self._copy_com_templates())
+
+        return stage_dict
 
     @logit(logger)
-    def execute_stage(self, stage_dict: AttrDict, member: Optional[int] = None) -> None:
-        """Perform local staging of initial condition files.
-
-        This method calculates member-specific COM paths if member is provided,
-        then performs file staging based on the YAML template configuration.
+    def execute_stage(self, stage_dict: AttrDict) -> None:
+        """Perform local staging of initial condition files
 
         Parameters
         ----------
         stage_dict : AttrDict
-            Configuration dictionary with attribute-style access
-        member : int, optional
-            Member directory number. If provided, calculates member-specific COM paths.
-            If None, skips member COM path calculation (for deterministic runs).
-
-        Returns
-        -------
-        None
+            Configuration dictionary with all necessary staging variables
         """
-
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
 
-        # Calculate member-specific COM paths if member is provided
-        if member is not None:
-            self._get_member_com_paths(member)
-
-        # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
 
-        # Parse staging yaml to get list of files to stage
-        stage_set = parse_j2yaml(self.task_config.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
+        stage_set = parse_j2yaml(stage_dict.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
 
-        # stage files to ROTDIR
         for key in stage_set.keys():
             FileHandler(stage_set[key]).sync()
 
-    def _get_member_com_paths(self, member: int) -> None:
-        """Get member-specific COM paths based on RUN type.
-
-        Dispatches to appropriate COM path calculation method based on RUN
-        and GEFSTYPE configuration.
+    def get_member_com_paths(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
+        """Get member-specific COM paths based on RUN type
 
         Parameters
         ----------
+        stage_dict : AttrDict
+            Staging configuration dictionary
         member : int
             Member directory number
 
         Returns
         -------
-        None
-            Updates task_config with member-specific COM paths
+        Dict[str, Any]
+            Dictionary of member-specific COM paths
 
         Raises
         ------
         ValueError
             If RUN type is unknown or GEFSTYPE is invalid for GEFS runs
         """
-        self.task_config.member = member
-        run = self.task_config.get('RUN', None)
 
-        if run == 'gefs':
+        if stage_dict.RUN == 'gefs':
             gefstype = self.task_config.get('GEFSTYPE', None)
             if gefstype == 'gefs-real-time':
-                self.get_member_com_paths_gefs_rt(member)
+                return self._get_member_com_paths_gefs_rt(stage_dict, member)
             elif gefstype == 'gefs-offline':
-                self.get_member_com_paths_gefs_offline(member)
+                return self._get_member_com_paths_gefs_offline(stage_dict, member)
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
-        elif run in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
-            self.get_member_com_paths_gcafs(member)
-        elif run == 'gfs':
-            self.get_member_com_paths_gfs(member)
+        elif stage_dict.RUN in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
+            return self._get_member_com_paths_gcafs(stage_dict, member)
+        elif stage_dict.RUN == 'gfs':
+            return self._get_member_com_paths_gfs(stage_dict, member)
         else:
-            raise ValueError(f"Unknown RUN type: {run}")
+            raise ValueError(f"Unknown RUN type: {stage_dict.RUN}")
 
     @staticmethod
     def _select_first_and_final_member(run: str, nmem_ens: int) -> Tuple[int, int]:
-        """Select first and final member indices based on RUN type.
+        """Select first and final member indices based on RUN type
 
         Parameters
         ----------
@@ -254,18 +252,17 @@ class Stage(Task):
             return (1, nmem_ens)
         elif run in ['gefs']:
             return (0, nmem_ens)
-        else:  # Deterministic RUN (GFS, GCAFS, GDAS)
+        else:
             return (-1, -1)
 
-    def _map_gefs_member_to_gfs(self, member: int) -> int:
-        """Map GEFS member number to corresponding GFS member for real-time mode.
-
-        Calculates cycle ranges and maps GEFS member to the appropriate GFS
-        ensemble member based on the cycle index. For GEFS real-time mode,
-        defines four sets of 30 members each for different cycle times.
+    @staticmethod
+    def _map_gefs_member_to_gfs(m_index: int, member: int) -> int:
+        """Map GEFS member number to corresponding GFS member for real-time mode
 
         Parameters
         ----------
+        m_index : int
+            Cycle index (0-3) determining which 30-member range to use
         member : int
             GEFS member number (0-based indexing, where 0 is control)
 
@@ -274,7 +271,6 @@ class Stage(Task):
         int
             GFS member number corresponding to the GEFS member, or 0 for control
         """
-        # Define cycle ranges for GEFS real-time mode
         cyc_ranges = [
             list(range(1, 31)),
             list(range(21, 51)),
@@ -283,62 +279,54 @@ class Stage(Task):
         ]
 
         if member != 0:
-            return cyc_ranges[self.task_config.m_index][(member - 1)]
+            return cyc_ranges[m_index][(member - 1)]
         return 0
 
-    def _paths_from_templates(self, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
-        """Generate COM paths from template configurations.
+    def _paths_from_templates(self, stage_dict: AttrDict, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
+        """Generate COM paths from template configurations
 
         Parameters
         ----------
+        stage_dict : AttrDict
+            Staging configuration dictionary
         com_path_tuples : Tuple[Tuple[str, str, Dict[str, Any]], ...]
-            Tuple of tuples, each containing:
-            - COM path key (e.g., 'COMOUT_MED_RESTART_PREV_MEM')
-            - Template key from task_config (e.g., 'COM_MED_RESTART_TMPL')
-            - Variable substitution dictionary (e.g., previous_cycle_mem_dict)
+            Tuple of tuples containing path key, template key, and substitution dict
 
         Returns
         -------
         Dict[str, str]
             Dictionary mapping COM path keys to resolved file paths
-
-        Examples
-        --------
-        >>> com_paths = self._paths_from_templates((
-        ...     ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle_dict),
-        ...     ('COMIN_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle_dict),
-        ... ))
-        >>> print(com_paths['COMOUT_ATMOS_RESTART'])
         """
         path_dict = {}
         for com_key, template_key, substitution_dict in com_path_tuples:
-            template_str = self.task_config.get(template_key, '')
+            template_str = stage_dict.get(template_key, '')
             if not template_str:
-                logger.warning("Template key '%s' not found in task_config for COM key '%s'", template_key, com_key)
+                logger.warning("Template key '%s' not found for COM key '%s'", template_key, com_key)
                 path_dict[com_key] = ''
             else:
                 path_dict[com_key] = self._replace_template_vars(template_str, substitution_dict)
         return path_dict
 
     @logit(logger)
-    def get_member_com_paths_gfs(self, member) -> None:
+    def _get_member_com_paths_gfs(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
         """Get member COM paths for GFS
 
         Parameters
         ----------
+        stage_dict : AttrDict
+            Staging configuration dictionary
         member : int
             The member directory number
 
         Returns
         -------
-        None
-            Updates the task_config with member-specific COM paths for GFS.
+        Dict[str, Any]
+            Dictionary of member-specific COM paths
         """
-        member = f"mem{member:03d}" if member >= 0 else ''
-        current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
-        previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
+        member_str = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle_mem_dict = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
+        previous_cycle_mem_dict = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
-        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
@@ -354,29 +342,28 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
         )
 
-        # Generate paths and update task_config with returned dictionary
-        com_path_dict = self._paths_from_templates(com_paths)
-        self.task_config.update(com_path_dict)
+        return self._paths_from_templates(stage_dict, com_paths)
 
     @logit(logger)
-    def get_member_com_paths_gefs_offline(self, member) -> None:
+    def _get_member_com_paths_gefs_offline(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
         """Get member COM paths for GEFS offline
 
         Parameters
         ----------
+        stage_dict : AttrDict
+            Staging configuration dictionary
         member : int
             The member directory number
 
         Returns
         -------
-        None
-            Updates the task_config with member-specific COM paths for GEFS offline.
+        Dict[str, Any]
+            Dictionary of member-specific COM paths
         """
-        member = f"mem{member:03d}" if member >= 0 else ''
-        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member}
+        member_str = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
+        previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
-        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
@@ -392,30 +379,29 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        # Generate paths and update task_config with returned dictionary
-        com_path_dict = self._paths_from_templates(com_paths)
-        self.task_config.update(com_path_dict)
+        return self._paths_from_templates(stage_dict, com_paths)
 
     @logit(logger)
-    def get_member_com_paths_gefs_rt(self, member) -> None:
+    def _get_member_com_paths_gefs_rt(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
         """Get member COM paths for GEFS real-time
 
         Parameters
         ----------
+        stage_dict : AttrDict
+            Staging configuration dictionary
         member : int
             The member directory number
 
         Returns
         -------
-        None
-            Updates the task_config with member-specific COM paths for GEFS real-time.
+        Dict[str, Any]
+            Dictionary of member-specific COM paths including GFS member mapping
         """
-        self.task_config.gfs_member = self._map_gefs_member_to_gfs(member)
-        member = f"mem{member:03d}" if member >= 0 else ''
-        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member}
+        gfs_member = self._map_gefs_member_to_gfs(stage_dict.m_index, member)
+        member_str = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
+        previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
-        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
@@ -430,32 +416,32 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        # Generate paths and update task_config with returned dictionary
-        com_path_dict = self._paths_from_templates(com_paths)
-        self.task_config.update(com_path_dict)
+        com_path_dict = self._paths_from_templates(stage_dict, com_paths)
+        com_path_dict['gfs_member'] = f"{gfs_member:03d}"
+        return com_path_dict
 
     @logit(logger)
-    def get_member_com_paths_gcafs(self, member) -> None:
+    def _get_member_com_paths_gcafs(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
         """Get member COM paths for GCAFS
 
         Parameters
         ----------
+        stage_dict : AttrDict
+            Staging configuration dictionary
         member : int
             The member directory number
 
         Returns
         -------
-        None
-            Updates the task_config with member-specific COM paths for GCAFS.
+        Dict[str, Any]
+            Dictionary of member-specific COM paths
         """
-        member = f"mem{member:03d}" if member >= 0 else ''
+        member_str = f"mem{member:03d}" if member >= 0 else ''
 
-        # Three contexts for GCAFS path generation
-        current_cycle_in = {**self.task_config.current_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
-        current_cycle = {**current_cycle_in, "${RUN}": self.task_config.rRUN}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
+        current_cycle_in = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
+        current_cycle = {**current_cycle_in, "${RUN}": stage_dict.rRUN}
+        previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
-        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
@@ -470,9 +456,7 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        # Generate paths and update task_config with returned dictionary
-        com_path_dict = self._paths_from_templates(com_paths)
-        self.task_config.update(com_path_dict)
+        return self._paths_from_templates(stage_dict, com_paths)
 
     @staticmethod
     def _replace_template_vars(template: str, var_dict: Dict[str, Any]) -> str:
@@ -481,14 +465,14 @@ class Stage(Task):
         Parameters
         ----------
         template : str
-          Template string with variables to replace
+            Template string with variables to replace
         var_dict : Dict[str, Any]
-          Dictionary of variable names and values
+            Dictionary of variable names and values
 
         Returns
         -------
         str
-          String with variables replaced
+            String with variables replaced
         """
         replaced_com = template
         for var, value in var_dict.items():
