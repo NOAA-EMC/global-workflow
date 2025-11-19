@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import os
 from logging import getLogger
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 from typing import Any, Dict
 from wxflow import AttrDict, FileHandler, parse_j2yaml, logit
-from pprint import pformat
 
 logger = getLogger(__name__.split('.')[-1])
 
