@@ -25,7 +25,7 @@
 # - DO_ATM, DO_OCN, DO_ICE, etc.
 # For a full list see scripts/exglobal_stage_ic.py
 ###################################################################
-{% if gfs_member == 0 %}
+{% if gfs_member == '000' %}
 {% include "atmosphere_cold_RT.yaml.j2" %}
 {% include "ocean_control_RT.yaml.j2" %}
 {% include "ice_control_RT.yaml.j2" %}
