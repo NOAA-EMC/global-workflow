@@ -71,16 +71,22 @@ cat > "${link_model_script}" << EOF_URSA
 # --- MPI and Fabric Configuration ---
 # 1. Force Intel MPI to use Slurm's PMI2 library for job startup
 # for Ursa
-export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
 
-HOST_SLURM_PATH=/apps/slurm/default
-HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
+ export I_MPI_PMI_LIBRARY=/apps/slurm/default/lib/libpmi2.so
+ export I_MPI_FABRICS=shm:ofi
+ export I_MPI_OFI_PROVIDER=tcp
+ export FI_PROVIDER=tcp
+ export FI_TCP_IFACE=eth0
+
+#HOST_SLURM_PATH=/apps/slurm/default
+#HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
+#    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
+#    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
 
  LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  singularity exec \\
-    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
-    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
+    -B ${I_MPI_PMI_LIBRARY} \\
     ${bindings} \\
     ${container} \\
     ${run_model_script} "\$@"
