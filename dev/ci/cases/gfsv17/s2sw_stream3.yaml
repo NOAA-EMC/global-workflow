@@ -27,7 +27,7 @@ base:
 prepoceanobs:
   use_exp_obs: "YES"
   # retro
-  dmpdir_exp: /lfs/h2/emc/da/noscrub/common_obsForge
+  dmpdir_exp: /lfs/h2/emc/da/noscrub/emc.da/obsForge/COMROOT/realtime
   # realtime
   # dmpdir_exp: /lfs/h2/emc/da/noscrub/mindo.choi/MARINE_obs/COMROOT/realtime
 
