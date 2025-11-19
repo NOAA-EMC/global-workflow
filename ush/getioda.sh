@@ -53,7 +53,7 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     set +f
     shopt -s nullglob
     for source_file in "${SOURCE_DIR}/${compdir}/${prefix}"*; do
-         if [[ ! -e "${file}" ]]; then
+         if [[ ! -e "${source_file}" ]]; then
              continue
          fi
          targ_file=$(basename "${source_file}")
