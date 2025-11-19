@@ -162,14 +162,15 @@ class Stage(Task):
     def execute_stage(self, stage_dict: AttrDict, member: Optional[int] = None) -> None:
         """Perform local staging of initial condition files.
 
-        This method performs file staging based on the YAML template configuration.
+        This method calculates member-specific COM paths if member is provided,
+        then performs file staging based on the YAML template configuration.
 
         Parameters
         ----------
         stage_dict : AttrDict
             Configuration dictionary with attribute-style access
         member : int, optional
-            Member directory number for logging purposes only.
+            Member directory number. If provided, calculates member-specific COM paths.
             If None, skips member COM path calculation (for deterministic runs).
 
         Returns
@@ -179,6 +180,10 @@ class Stage(Task):
 
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
+
+        # Calculate member-specific COM paths if member is provided
+        if member is not None:
+            self._get_member_com_paths(member)
 
         # Add the os.path.exists function to the dict for yaml parsing
         stage_dict['path_exists'] = os.path.exists
@@ -190,7 +195,7 @@ class Stage(Task):
         for key in stage_set.keys():
             FileHandler(stage_set[key]).sync()
 
-    def get_member_com_paths(self, member: int) -> Dict[str, str]:
+    def _get_member_com_paths(self, member: int) -> None:
         """Get member-specific COM paths based on RUN type.
 
         Dispatches to appropriate COM path calculation method based on RUN
@@ -203,28 +208,29 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, str]
-            Dictionary of member-specific COM paths
+        None
+            Updates task_config with member-specific COM paths
 
         Raises
         ------
         ValueError
             If RUN type is unknown or GEFSTYPE is invalid for GEFS runs
         """
+        self.task_config.member = member
         run = self.task_config.get('RUN', None)
 
         if run == 'gefs':
             gefstype = self.task_config.get('GEFSTYPE', None)
             if gefstype == 'gefs-real-time':
-                return self.get_member_com_paths_gefs_rt(member)
+                self.get_member_com_paths_gefs_rt(member)
             elif gefstype == 'gefs-offline':
-                return self.get_member_com_paths_gefs_offline(member)
+                self.get_member_com_paths_gefs_offline(member)
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
         elif run in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
-            return self.get_member_com_paths_gcafs(member)
+            self.get_member_com_paths_gcafs(member)
         elif run == 'gfs':
-            return self.get_member_com_paths_gfs(member)
+            self.get_member_com_paths_gfs(member)
         else:
             raise ValueError(f"Unknown RUN type: {run}")
 
@@ -315,7 +321,7 @@ class Stage(Task):
         return path_dict
 
     @logit(logger)
-    def get_member_com_paths_gfs(self, member: int) -> Dict[str, str]:
+    def get_member_com_paths_gfs(self, member) -> None:
         """Get member COM paths for GFS
 
         Parameters
@@ -325,13 +331,14 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, str]
-            Dictionary of member-specific COM paths for GFS
+        None
+            Updates the task_config with member-specific COM paths for GFS.
         """
-        member_str = f"mem{member:03d}" if member >= 0 else ''
-        current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": member_str}
-        previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": self.task_config.rRUN}
+        member = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle_mem_dict = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
+        previous_cycle_mem_dict = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
 
+        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
@@ -347,10 +354,12 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
         )
 
-        return self._paths_from_templates(com_paths)
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @logit(logger)
-    def get_member_com_paths_gefs_offline(self, member: int) -> Dict[str, str]:
+    def get_member_com_paths_gefs_offline(self, member) -> None:
         """Get member COM paths for GEFS offline
 
         Parameters
@@ -360,13 +369,14 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, str]
-            Dictionary of member-specific COM paths for GEFS offline
+        None
+            Updates the task_config with member-specific COM paths for GEFS offline.
         """
-        member_str = f"mem{member:03d}" if member >= 0 else ''
-        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member_str}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member_str}
+        member = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member}
 
+        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
@@ -382,10 +392,12 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        return self._paths_from_templates(com_paths)
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @logit(logger)
-    def get_member_com_paths_gefs_rt(self, member: int) -> Dict[str, str]:
+    def get_member_com_paths_gefs_rt(self, member) -> None:
         """Get member COM paths for GEFS real-time
 
         Parameters
@@ -395,14 +407,15 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, str]
-            Dictionary of member-specific COM paths for GEFS real-time
+        None
+            Updates the task_config with member-specific COM paths for GEFS real-time.
         """
-        gfs_member = self._map_gefs_member_to_gfs(member)
-        member_str = f"mem{member:03d}" if member >= 0 else ''
-        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member_str}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member_str}
+        self.task_config.gfs_member = self._map_gefs_member_to_gfs(member)
+        member = f"mem{member:03d}" if member >= 0 else ''
+        current_cycle = {**self.task_config.current_cycle_dict, "${MEMDIR}": member}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member}
 
+        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
@@ -417,12 +430,12 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        paths = self._paths_from_templates(com_paths)
-        paths['gfs_member'] = str(gfs_member)
-        return paths
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @logit(logger)
-    def get_member_com_paths_gcafs(self, member: int) -> Dict[str, str]:
+    def get_member_com_paths_gcafs(self, member) -> None:
         """Get member COM paths for GCAFS
 
         Parameters
@@ -432,15 +445,17 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, str]
-            Dictionary of member-specific COM paths for GCAFS
+        None
+            Updates the task_config with member-specific COM paths for GCAFS.
         """
-        member_str = f"mem{member:03d}" if member >= 0 else ''
+        member = f"mem{member:03d}" if member >= 0 else ''
 
-        current_cycle_in = {**self.task_config.current_cycle_dict, "${MEMDIR}": member_str, "${RUN}": self.task_config.rRUN}
+        # Three contexts for GCAFS path generation
+        current_cycle_in = {**self.task_config.current_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
         current_cycle = {**current_cycle_in, "${RUN}": self.task_config.rRUN}
-        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": self.task_config.rRUN}
+        previous_cycle = {**self.task_config.previous_cycle_dict, "${MEMDIR}": member, "${RUN}": self.task_config.rRUN}
 
+        # Define all COM path mappings as tuple of tuples
         com_paths = (
             ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
             ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
@@ -455,7 +470,9 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        return self._paths_from_templates(com_paths)
+        # Generate paths and update task_config with returned dictionary
+        com_path_dict = self._paths_from_templates(com_paths)
+        self.task_config.update(com_path_dict)
 
     @staticmethod
     def _replace_template_vars(template: str, var_dict: Dict[str, Any]) -> str:
