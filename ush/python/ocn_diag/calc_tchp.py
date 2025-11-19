@@ -43,24 +43,16 @@ def calculate_TCHP(ds, temp_var_name='temp', depth_dim_name='depth'):
     rho = 1025.0  # kg/m^3 approximate for seawater.
     Cp = 4000  # J/(kg*K) - an approximation (3990 for seawater, 4200 for freshwater)
 
-
     # Mask temperatures below 26C to NaN so they are ignored in integration
     excess_temp = temp.where(temp >= TARGET_TEMP) - TARGET_TEMP
 
     # Calculate Ocean Heat Content (OHC) in J/m^2
     # The integration requires careful handling of vertical levels.
-    # xarray's weighted integration can be used if weights are calculated,
-    # but for standard z-levels, numpy trapz works on single profiles.
- 
-    # For a full xarray DataArray integration, a manual approach is needed for depth slicing:
- 
     # Integrate depth-by-depth up to D26
     # Create a mask that is True from surface down to (but not past) D26 at each point
     depth_mask = ds[depth_dim_name] <= d26_filled
 
     # Apply mask and calculate OHC (approximate integral using the depth delta)
-    # The exact integration is complex across the full data cube.
- 
     # A simplified calculation using layer thicknesses:
     # Calculate layer thicknesses (assuming uniform spacing for simplicity here, adjust as needed)
     dz = np.abs(ds[depth_dim_name].diff(dim=depth_dim_name))

@@ -71,8 +71,8 @@ def calculate_OHC(ds, depth_limit=300, temp_var_name='temp', depth_dim_name='dep
 
     return OHC
 
-# Example Usage (You will need an actual netCDF file):
 
+# Example Usage (You will need an actual netCDF file):
 ds = xr.open_dataset(input_file)
 ohc_result = calculate_OHC(ds, depth_limit=300, temp_var_name='temp', depth_dim_name='z_l')
 # Save the data
