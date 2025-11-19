@@ -21,7 +21,6 @@ export LOCALIZATION_TYPE="bump"
 
 export CASE_GSIBEC=${CASE_ANL}
 if [[ "${DOHYBVAR}" = "YES" && "${ATMINC_GRID}" = "gaussian" ]]; then
-    # shellcheck disable=SC2153
     export CASE_GSIBEC=${CASE_HIST}
     export CASE_HIST=${CASE_ANL}
 fi
