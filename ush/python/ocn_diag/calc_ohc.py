@@ -6,7 +6,8 @@ import numpy as np
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 
-def calculate_OHC(ds, depth_limit=300, temp_var_name='temp',  depth_dim_name='depth'):
+
+def calculate_OHC(ds, depth_limit=300, temp_var_name='temp', depth_dim_name='depth'):
     """
     Calculates Ocean Heat Content (OHC) in J/m^2 from surface to depth_limit.
 
@@ -20,10 +21,10 @@ def calculate_OHC(ds, depth_limit=300, temp_var_name='temp',  depth_dim_name='de
     Returns:
         xr.DataArray: OHC anomaly in J/m^2.
     """
-    
+
     temp = ds[temp_var_name]
     depths = ds[depth_dim_name]
-    
+
     # Ensure depths are positive downwards for selection
     if np.any(np.diff(depths) < 0):
         temp = temp.isel({depth_dim_name: slice(None, None, -1)})
@@ -39,24 +40,24 @@ def calculate_OHC(ds, depth_limit=300, temp_var_name='temp',  depth_dim_name='de
 
     # Mask data deeper than the integration limit
     temp_sliced = temp.where(temp[depth_dim_name] <= depth_limit_val)
-    
-    rho = 1025 #kg/m^3 approximate for seawater.
-    Cp = 4000 # Specific heat capacity of seawater (J/kg/K)
+
+    rho = 1025  # kg/m^3 approximate for seawater.
+    Cp = 4000   # Specific heat capacity of seawater (J/kg/K)
 
     # --- Integrate over depth ---
-    #T_ref = temp.mean(dim='time') # Reference temperature (e.g., long-term mean)
+    # T_ref = temp.mean(dim='time') # Reference temperature (e.g., long-term mean)
     # Or Reference temperature (e.g., simply T_ref=0)
     T_ref = 0
 
     # Calculate the heat anomaly (T - T_ref)
     T_anomaly = temp_sliced - T_ref
-    
+ 
     # Calculate layer thicknesses (delta_z)
     # xarray can approximate this if you have cell bounds, or we use manual diff
     dz = np.abs(ds[depth_dim_name].diff(dim=depth_dim_name).values)
     # Pad dz to match original dimensions for broadcasting (simple approximation)
-    dz_padded = np.insert(dz, 0, dz[0]) 
-    
+    dz_padded = np.insert(dz, 0, dz[0])
+ 
     # OHC is integral(rho * Cp * T_anomaly) dz
     # Multiply by density, specific heat capacity, and layer thickness
     ohc_areal_density = rho * Cp * T_anomaly * xr.DataArray(dz_padded, coords={depth_dim_name: depths}, dims=[depth_dim_name])
@@ -71,6 +72,7 @@ def calculate_OHC(ds, depth_limit=300, temp_var_name='temp',  depth_dim_name='de
     return OHC
 
 # Example Usage (You will need an actual netCDF file):
+
 ds = xr.open_dataset(input_file)
 ohc_result = calculate_OHC(ds, depth_limit=300, temp_var_name='temp', depth_dim_name='z_l')
 # Save the data

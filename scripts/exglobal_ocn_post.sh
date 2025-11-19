@@ -31,7 +31,7 @@ if [[ "${RUN}" == sfs ]]; then
       ncwa -a z_l "${tmp_file}" "${output_file}"
       ncks -A -v geolon,geolat "${input_file}" "${output_file}"
 
-      rm -rf "${tmp_file}"
+      rm -f "${tmp_file}"
 
       last_fhr=${fhr}
     done

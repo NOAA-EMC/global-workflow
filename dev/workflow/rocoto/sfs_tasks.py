@@ -175,7 +175,7 @@ class SFSTasks(Tasks):
 
         # return task
 
-    #For SFS only:
+    # For SFS only:
     def atmos_post(self):
         deps = []
         for member in range(0, self.nmem + 1):
@@ -702,8 +702,8 @@ class SFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
 
         return task
-    
-    # Globus transfer for HPSS archiving 
+ 
+    # Globus transfer for HPSS archiving
     def globus(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
