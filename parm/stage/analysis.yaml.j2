@@ -78,14 +78,14 @@ analysis:
         ] %}
         {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ source_ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ source_ftype }}",
-           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
+           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ dest_ftype }}"]
         {% endif %}
         {% endfor %}
 
         {% if DO_LAND_IAU %}
         {% for itile in range(1,7) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/sfc_inc.tile{{ itile }}.nc",
-           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/increment.sfc.i006.tile{{ itile }}.nc"]
+           "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/increment.sfc.tile{{ itile }}.nc"]
         {% endfor %}
         {% endif %}
         {% endif %}
