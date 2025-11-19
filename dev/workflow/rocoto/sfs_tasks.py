@@ -178,17 +178,22 @@ class SFSTasks(Tasks):
     # For SFS only:
     def atmos_post(self):
         deps = []
-        for member in range(0, self.nmem + 1):
-            task = f'{self.run}_fcst_mem{member:03d}'
-            dep_dict = {'type': 'metatask', 'name': task}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        atmos_post_envars = self.envars.copy()
+        atmos_post_envar_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#',
+                          }
+        for key, value in atmos_post_envar_dict.items():
+            atmos_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('atmos_post')
-        task_name = f'{self.run}_atmos_post'
-        task_dict = {'task_name': task_name,
+        task_name = f'{self.run}_atmos_post_mem#member#'
+        member_task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': self.envars,
+                     'envars': atmos_post_envars,
                      'cycledef': self.run,
                      'dependency': dependencies,
                      'command': f'{self.HOMEgfs}/dev/jobs/atmos_post.sh',
@@ -197,23 +202,33 @@ class SFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_atmos_post',
+                                'task_dict': member_task_dict,
+                                'var_dict': member_var_dict}
+
+        task = rocoto.create_task(member_metatask_dict)
 
         return task
 
     def ocn_post(self):
         deps = []
-        for member in range(0, self.nmem + 1):
-            task = f'{self.run}_fcst_mem{member:03d}'
-            dep_dict = {'type': 'metatask', 'name': task}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        ocn_post_envars = self.envars.copy()
+        ocn_post_envar_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#',
+                          }
+        for key, value in ocn_post_envar_dict.items():
+            ocn_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('ocn_post')
-        task_name = f'{self.run}_ocn_post'
-        task_dict = {'task_name': task_name,
+        task_name = f'{self.run}_ocn_post_mem#member#'
+        member_task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': self.envars,
+                     'envars': ocn_post_envars,
                      'cycledef': self.run,
                      'dependency': dependencies,
                      'command': f'{self.HOMEgfs}/dev/jobs/ocn_post.sh',
@@ -222,23 +237,33 @@ class SFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_ocn_post',
+                                'task_dict': member_task_dict,
+                                'var_dict': member_var_dict}
+
+        task = rocoto.create_task(member_metatask_dict)
 
         return task
 
     def ice_post(self):
         deps = []
-        for member in range(0, self.nmem + 1):
-            task = f'{self.run}_fcst_mem{member:03d}'
-            dep_dict = {'type': 'metatask', 'name': task}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        ice_post_envars = self.envars.copy()
+        ice_post_envar_dict = {'ENSMEM': '#member#',
+                          'MEMDIR': 'mem#member#',
+                          }
+        for key, value in ice_post_envar_dict.items():
+            ice_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('ice_post')
-        task_name = f'{self.run}_ice_post'
-        task_dict = {'task_name': task_name,
+        task_name = f'{self.run}_ice_post_mem#member#'
+        member_task_dict = {'task_name': task_name,
                      'resources': resources,
-                     'envars': self.envars,
+                     'envars': ice_post_envars,
                      'cycledef': self.run,
                      'dependency': dependencies,
                      'command': f'{self.HOMEgfs}/dev/jobs/ice_post.sh',
@@ -247,7 +272,12 @@ class SFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_ice_post',
+                                'task_dict': member_task_dict,
+                                'var_dict': member_var_dict}
+
+        task = rocoto.create_task(member_metatask_dict)
 
         return task
 
@@ -733,11 +763,11 @@ class SFSTasks(Tasks):
 #        deps.append(rocoto.add_dependency(dep_dict))
 #        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
 #        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_atmos_post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_ocn_post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocn_post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_ice_post'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_post'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
