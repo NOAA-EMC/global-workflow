@@ -106,7 +106,9 @@ enkf:
         # Ensemble mean analyses/increments
         # soil DA increments
         {% if DO_GSISOILDA %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i006.nc"
+            {% for fhr in IAUFHRS %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i{{ '%03d' % fhr }}.nc"
+            {% endfor %}
         {% endif %}
 
         # Atmospheric analyses/increment
@@ -121,11 +123,6 @@ enkf:
                 {% endif %}
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}csg_ensmean_jedi_analysis.atm.a{{ '%03d' % fhr }}.nc"
-            {% endif %}
-
-        # soil DA increments
-            {% if DO_GSISOILDA %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i{{ '%03d' % fhr }}.nc"
             {% endif %}
 
         {% endfor %}
