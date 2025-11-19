@@ -184,23 +184,23 @@ class SFSTasks(Tasks):
 
         atmos_post_envars = self.envars.copy()
         atmos_post_envar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
+                                 'MEMDIR': 'mem#member#',
+                                 }
         for key, value in atmos_post_envar_dict.items():
             atmos_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('atmos_post')
         task_name = f'{self.run}_atmos_post_mem#member#'
         member_task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': atmos_post_envars,
-                     'cycledef': self.run,
-                     'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/dev/jobs/atmos_post.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
+                            'resources': resources,
+                            'envars': atmos_post_envars,
+                            'cycledef': self.run,
+                            'dependency': dependencies,
+                            'command': f'{self.HOMEgfs}/dev/jobs/atmos_post.sh',
+                            'job_name': f'{self.pslot}_{task_name}_@H',
+                            'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                            'maxtries': '&MAXTRIES;'
+                            }
 
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': f'{self.run}_atmos_post',
@@ -219,23 +219,23 @@ class SFSTasks(Tasks):
 
         ocn_post_envars = self.envars.copy()
         ocn_post_envar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
+                               'MEMDIR': 'mem#member#',
+                               }
         for key, value in ocn_post_envar_dict.items():
             ocn_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('ocn_post')
         task_name = f'{self.run}_ocn_post_mem#member#'
         member_task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': ocn_post_envars,
-                     'cycledef': self.run,
-                     'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/dev/jobs/ocn_post.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
+                            'resources': resources,
+                            'envars': ocn_post_envars,
+                            'cycledef': self.run,
+                            'dependency': dependencies,
+                            'command': f'{self.HOMEgfs}/dev/jobs/ocn_post.sh',
+                            'job_name': f'{self.pslot}_{task_name}_@H',
+                            'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                            'maxtries': '&MAXTRIES;'
+                            }
 
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': f'{self.run}_ocn_post',
@@ -254,23 +254,23 @@ class SFSTasks(Tasks):
 
         ice_post_envars = self.envars.copy()
         ice_post_envar_dict = {'ENSMEM': '#member#',
-                          'MEMDIR': 'mem#member#',
-                          }
+                               'MEMDIR': 'mem#member#',
+                               }
         for key, value in ice_post_envar_dict.items():
             ice_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('ice_post')
         task_name = f'{self.run}_ice_post_mem#member#'
         member_task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'envars': ice_post_envars,
-                     'cycledef': self.run,
-                     'dependency': dependencies,
-                     'command': f'{self.HOMEgfs}/dev/jobs/ice_post.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
+                            'resources': resources,
+                            'envars': ice_post_envars,
+                            'cycledef': self.run,
+                            'dependency': dependencies,
+                            'command': f'{self.HOMEgfs}/dev/jobs/ice_post.sh',
+                            'job_name': f'{self.pslot}_{task_name}_@H',
+                            'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                            'maxtries': '&MAXTRIES;'
+                            }
 
         member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
         member_metatask_dict = {'task_name': f'{self.run}_ice_post',
