@@ -177,7 +177,7 @@ if [[ "${DOGAUSFCANL}" == "YES" ]]; then
     fi
 fi
 
-echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}done.txt"
+echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.done.txt"
 
 ################################################################################
 # Postprocessing
