@@ -59,7 +59,7 @@ function remove_files() {
         # Use a temporary array to hold files that do not match the exclude pattern
         temp_flist=()
         for file in "${flist[@]}"; do
-            # shellcheck disable=SC2254
+            # shellcheck disable=SC2053
             if [[ ! $(basename "${file}") == ${exclude_pattern} ]]; then
                 temp_flist+=("${file}")
             fi
