@@ -4,8 +4,8 @@ atmosphere_warm_RT:
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
     link_req:
     # select restart members files (80) specific to the cycle
-        {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ gfs_member ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '0000.' %}
-        {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ gfs_member ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
+        {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(member) ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '0000.' %}
+        {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(member) ~ '/analysis/atmos/enkfgfs.t' ~ current_cycle_HH ~ 'z.' %}
 
         # Include increment files
         # TODO: make these filenames the same after RE-staging inputs with EE2-compliant filenames

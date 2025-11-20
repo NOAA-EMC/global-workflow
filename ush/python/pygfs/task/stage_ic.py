@@ -9,9 +9,9 @@ required for initial conditions for the Stage IC task.
 """
 import os
 from logging import getLogger
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Optional
 from datetime import timedelta
-from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict
+from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict, to_YMD, to_fv3time
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -91,7 +91,7 @@ class Stage(Task):
         # Current cycle variables
         if self.task_config.current_cycle:
             cycle_vars['current_cycle_HH'] = self.task_config.current_cycle.strftime("%H")
-            cycle_vars['current_cycle_YMD'] = self.task_config.current_cycle.strftime("%Y%m%d")
+            cycle_vars['current_cycle_YMD'] = to_YMD(self.task_config.current_cycle)
 
             if self.task_config.DOIAU and self.task_config.MODE == "cycled":
                 cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=-half_window)
@@ -101,15 +101,15 @@ class Stage(Task):
                 else:
                     cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle
 
-            cycle_vars['m_prefix'] = cycle_vars['model_start_date_current_cycle'].strftime("%Y%m%d.%H0000")
+            cycle_vars['m_prefix'] = to_fv3time(cycle_vars['model_start_date_current_cycle'])
 
         # Previous cycle variables
         if self.task_config.previous_cycle:
             previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
             cycle_vars['m_index'] = self.task_config.current_cycle.hour // self.task_config.assim_freq
-            cycle_vars['p_prefix'] = self.task_config.previous_cycle.strftime("%Y%m%d.%H0000")
+            cycle_vars['p_prefix'] = to_fv3time(self.task_config.previous_cycle)
             cycle_vars['previous_cycle_HH'] = previous_cycle_HH
-            cycle_vars['previous_cycle_YMD'] = self.task_config.previous_cycle.strftime("%Y%m%d")
+            cycle_vars['previous_cycle_YMD'] = to_YMD(self.task_config.previous_cycle)
             cycle_vars['mid_cyc'] = int(previous_cycle_HH) + int(half_window)
 
         return cycle_vars
@@ -133,13 +133,13 @@ class Stage(Task):
             'current_cycle_dict': {
                 "${ROTDIR}": rotdir,
                 "${RUN}": run,
-                "${YMD}": self.task_config.current_cycle.strftime("%Y%m%d"),
+                "${YMD}": to_YMD(self.task_config.current_cycle),
                 "${HH}": self.task_config.current_cycle.strftime("%H"),
             },
             'previous_cycle_dict': {
                 "${ROTDIR}": rotdir,
                 "${RUN}": run,
-                "${YMD}": self.task_config.previous_cycle.strftime("%Y%m%d"),
+                "${YMD}": to_YMD(self.task_config.previous_cycle),
                 "${HH}": self.task_config.previous_cycle.strftime("%H"),
             }
         }
@@ -237,9 +237,8 @@ class Stage(Task):
         else:
             raise ValueError(f"Unknown RUN type: {stage_dict.RUN}")
 
-    @staticmethod
-    def _select_first_and_final_member(run: str, nmem_ens: int) -> Tuple[int, int]:
-        """Select first and final member indices based on RUN type
+    def get_member_list(self, run: str, nmem_ens: int, m_index: int = 0, gefstype: Optional[str] = None) -> list[int]:
+        """Get list of member indices based on RUN type
 
         Parameters
         ----------
@@ -247,21 +246,33 @@ class Stage(Task):
             RUN type (e.g., 'gfs', 'gefs', 'enkfgdas', 'gdas', 'gcafs')
         nmem_ens : int
             Total number of ensemble members
+        m_index : int, optional
+            Cycle index for GEFS real-time mapping (default: 0)
+        gefstype : Optional[str], optional
+            GEFS type ('gefs-real-time' or 'gefs-offline')
 
         Returns
         -------
-        Tuple[int, int]
-            Tuple of (first_member, last_member) indices
+        list[int]
+            List of member indices to process
         """
         if run in ['enkfgdas']:
-            return (1, nmem_ens)
+            return list(range(1, nmem_ens + 1))
         elif run in ['gefs']:
-            return (0, nmem_ens)
+            if gefstype == 'gefs-real-time':
+                # Map GEFS members to GFS member numbers using existing mapping function
+                member_list = [0]  # Start with control member
+                for gefs_member in range(1, nmem_ens + 1):
+                    gfs_member = self._map_gefs_member_to_gfs(m_index, gefs_member)
+                    member_list.append(gfs_member)
+                return member_list
+            else:
+                # GEFS offline uses sequential member numbering
+                return list(range(0, nmem_ens + 1))
         else:
-            return (-1, -1)
+            return []
 
-    @staticmethod
-    def _map_gefs_member_to_gfs(m_index: int, member: int) -> int:
+    def _map_gefs_member_to_gfs(self, m_index: int, member: int) -> int:
         """Map GEFS member number to corresponding GFS member for real-time mode
 
         Parameters
@@ -395,14 +406,13 @@ class Stage(Task):
         stage_dict : AttrDict
             Staging configuration dictionary
         member : int
-            The member directory number
+            The GFS member directory number (already mapped from GEFS)
 
         Returns
         -------
         Dict[str, Any]
-            Dictionary of member-specific COM paths including GFS member mapping
+            Dictionary of member-specific COM paths
         """
-        gfs_member = self._map_gefs_member_to_gfs(stage_dict.m_index, member)
         member_str = f"mem{member:03d}" if member >= 0 else ''
         current_cycle = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
@@ -421,9 +431,7 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        com_path_dict = self._paths_from_templates(stage_dict, com_paths)
-        com_path_dict['gfs_member'] = f"{gfs_member:03d}"
-        return com_path_dict
+        return self._paths_from_templates(stage_dict, com_paths)
 
     @logit(logger)
     def _get_member_com_paths_gcafs(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
@@ -478,6 +486,11 @@ class Stage(Task):
         -------
         str
             String with variables replaced
+        """
+        replaced_com = template
+        for var, value in var_dict.items():
+            replaced_com = replaced_com.replace(var, value)
+        return replaced_com
         """
         replaced_com = template
         for var, value in var_dict.items():

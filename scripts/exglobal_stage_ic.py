@@ -18,11 +18,16 @@ def main():
     # Create staging dictionary with all necessary variables
     stage_dict = stage.create_stage_dict()
 
-    # Determine member range
-    first_mem, last_mem = stage._select_first_and_final_member(stage_dict.RUN, stage_dict.NMEM_ENS)
+    # Get list of members to process
+    member_list = stage.get_member_list(
+        stage_dict.RUN,
+        stage_dict.NMEM_ENS,
+        m_index=stage_dict.get('m_index', 0),
+        gefstype=stage.task_config.get('GEFSTYPE', None)
+    )
 
     # Loop through members and stage ICs for each
-    for member in range(first_mem, last_mem + 1):
+    for member in member_list:
         logger.info(f"Staging initial conditions for member: {member}")
 
         # Get member-specific COM paths and merge into stage_dict

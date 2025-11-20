@@ -4,8 +4,8 @@ ocean_RT:
         - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
     link_req:
     # select restart members files (80) specific to the cycle
-        {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ gfs_member  ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '0000.' %}
-        {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ gfs_member ~ '/analysis/ocean/enkfgfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
+        {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(member)  ~ '/model/ocean/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '0000.' %}
+        {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(member) ~ '/analysis/ocean/enkfgfs.t' ~ current_cycle_HH ~ 'z.ocninc.nc' %}
 
     # Include increment files
         {% set file = increment_mem_path %}
