@@ -47,6 +47,10 @@ class Stage(Task):
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
             'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU'
         ]
+
+        if self.task_config.get('NET') == 'gfs':
+            base_keys.append('DOIAU_ENKF')
+
         return {key: self.task_config[key] for key in base_keys if key in self.task_config}
 
     def _get_config_vars(self) -> Dict[str, Any]:
