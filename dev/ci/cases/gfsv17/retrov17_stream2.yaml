@@ -1,0 +1,25 @@
+experiment:
+  net: gfs
+  mode: cycled
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SW
+  resdetatmos: 1152
+  resensatmos: 384
+  resdetocean: 0.25
+  nens: 80
+  interval: 6
+  start: warm
+  comroot: /lfs/h2/emc/gfstemp/emc.global/comroot
+  expdir: /lfs/h2/emc/gfstemp/emc.global/expdir
+  idate: 2024051506
+  edate: 2024113018
+  icsdir: /lfs/h2/emc/gfstemp/emc.global/IC/v3 
+  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_stream2.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
