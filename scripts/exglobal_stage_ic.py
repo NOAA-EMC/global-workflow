@@ -18,23 +18,19 @@ def main():
     # Create staging dictionary with all necessary variables
     stage_dict = stage.create_stage_dict()
 
-    # Get list of members to process
-    member_list = stage.get_member_list(
-        stage_dict.RUN,
-        stage_dict.NMEM_ENS,
-        m_index=stage_dict.get('m_index', 0),
-        gefstype=stage.task_config.get('GEFSTYPE', None)
-    )
-
     # Loop through members and stage ICs for each
-    for member in member_list:
+    for member in stage_dict.member_list:
         logger.info(f"Staging initial conditions for member: {member}")
 
-        # Get member-specific COM paths and merge into stage_dict
-        stage_dict.update(stage.get_member_com_paths(stage_dict, member))
+        # Get member-specific COM paths
+        member_com_paths = stage.get_member_com_paths(stage_dict, member)
+
+        # Create member-specific staging dict to avoid modifying base stage_dict
+        stage_mem_dict = stage_dict.deepcopy()
+        stage_mem_dict.update(member_com_paths)
 
         # Execute staging
-        stage.execute_stage(stage_dict)
+        stage.execute_stage(stage_mem_dict)
 
 
 if __name__ == '__main__':

@@ -184,6 +184,18 @@ class Stage(Task):
         # Copy COM templates
         stage_dict.update(self._copy_com_templates())
 
+        # Add GEFSTYPE if available (for GEFS runs)
+        if 'GEFSTYPE' in self.task_config:
+            stage_dict['GEFSTYPE'] = self.task_config.GEFSTYPE
+
+        # Calculate member list based on RUN type
+        stage_dict['member_list'] = self.get_member_list(
+            stage_dict.RUN,
+            stage_dict.NMEM_ENS,
+            m_index=stage_dict.get('m_index', 0),
+            gefstype=stage_dict.get('GEFSTYPE', None)
+        )
+
         # Add os.path.exists function for template use
         stage_dict['path_exists'] = os.path.exists
 
@@ -228,19 +240,22 @@ class Stage(Task):
         """
 
         if stage_dict.RUN == 'gefs':
-            gefstype = self.task_config.get('GEFSTYPE', None)
+            gefstype = stage_dict.get('GEFSTYPE', None)
             if gefstype == 'gefs-real-time':
-                return self._paths_from_templates(stage_dict, self._get_member_com_paths_gefs_rt(stage_dict, member))
+                com_path = self._get_member_com_paths_gefs_rt(stage_dict, member)
             elif gefstype == 'gefs-offline':
-                return self._paths_from_templates(stage_dict, self._get_member_com_paths_gefs_offline(stage_dict, member))
+                com_path = self._get_member_com_paths_gefs_offline(stage_dict, member)
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
         elif stage_dict.RUN in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
-            return self._paths_from_templates(stage_dict, self._get_member_com_paths_gcafs(stage_dict, member))
+            com_path = self._get_member_com_paths_gcafs(stage_dict, member)
         elif stage_dict.RUN == 'gfs':
-            return self._paths_from_templates(stage_dict, self._get_member_com_paths_gfs(stage_dict, member))
+            com_path = self._get_member_com_paths_gfs(stage_dict, member)
         else:
             raise ValueError(f"Unknown RUN type: {stage_dict.RUN}")
+
+        # Since we are here, we must have a com_path template to process
+        return self._paths_from_templates(stage_dict, com_path)
 
     @staticmethod
     def get_member_list(run: str, nmem_ens: int, m_index: int = 0, gefstype: Optional[str] = None) -> list[int]:
@@ -268,24 +283,22 @@ class Stage(Task):
             if gefstype == 'gefs-real-time':
                 # Map GEFS members to GFS member numbers
                 # Cycle ranges determine which 30-member range to use based on cycle index
-                cyc_ranges = [
-                    list(range(1, 31)),
-                    list(range(21, 51)),
-                    list(range(41, 71)),
-                    list(range(61, 81)) + list(range(1, 11))
-                ]
-                member_list = [0]  # Start with control member
-                for gefs_member in range(1, nmem_ens + 1):
-                    gfs_member = cyc_ranges[m_index][gefs_member - 1]
-                    member_list.append(gfs_member)
+                cyc_ranges = {'00': list(range(1, 31)),
+                              '06': list(range(21, 51)),
+                              '12': list(range(41, 71)),
+                              '18': list(range(61, 81)) + list(range(1, 11))}
+                member_list = [0] + cyc_ranges[f'{m_index:02}']
                 return member_list
             else:
                 # GEFS offline uses sequential member numbering
                 return list(range(0, nmem_ens + 1))
         else:
-            return []
+            # Deterministic runs (GFS, GDAS, GCAFS, GCDAS)
+            # Only member -1 is processed (empty string for MEMDIR)
+            return [-1]
 
-    def _paths_from_templates(self, stage_dict: AttrDict, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
+    @staticmethod
+    def _paths_from_templates(stage_dict: AttrDict, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
         """Generate COM paths from template configurations
 
         Parameters
