@@ -1,6 +1,6 @@
 ocean_ens_perturbation:
     mkdir:
-        - "{{ COMOUT_OCEAN_ANALYSIS_MEM }}"
+        - "{{ COMOUT_OCEAN_ANALYSIS }}"
     link_req:
-        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.mom6_perturbation.nc",
-           "{{ COMOUT_OCEAN_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.mom6_increment.i006.nc"]
+        - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.mom6_perturbation.nc",
+           "{{ COMOUT_OCEAN_ANALYSIS }}/{{ RUN }}.t{{ current_cycle_HH }}z.mom6_increment.i006.nc"]

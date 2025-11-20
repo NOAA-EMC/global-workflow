@@ -1,10 +1,10 @@
 ice_RT:
     mkdir:
-        - "{{ COMOUT_ICE_ANALYSIS_MEM }}"
+        - "{{ COMOUT_ICE_ANALYSIS }}"
     link_req:
     # select restart members files (80) specific to the cycle
         {% set increment_mem_path = ICSDIR ~ '/' ~ 'enkfgfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/' ~ 'mem%03d' | format(member)  ~ '/analysis/ice/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '0000.analysis.cice_model.res.nc' %}
-        {% set increment_destination_path = COMOUT_ICE_ANALYSIS_MEM %}
+        {% set increment_destination_path = COMOUT_ICE_ANALYSIS %}
 
         # Include increment files
-        - ["{{ increment_mem_file }}", "{{ COMOUT_ICE_ANALYSIS_MEM }}"]
+        - ["{{ increment_mem_file }}", "{{ COMOUT_ICE_ANALYSIS }}"]

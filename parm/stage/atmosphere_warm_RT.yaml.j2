@@ -1,7 +1,7 @@
 atmosphere_warm_RT:
     mkdir:
-        - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
-        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
+        - "{{ COMOUT_ATMOS_RESTART_PREV }}"
+        - "{{ COMOUT_ATMOS_ANALYSIS }}"
     link_req:
     # select restart members files (80) specific to the cycle
         {% set restart_mem_path = ICSDIR ~ '/' ~ 'enkfgdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/' ~ 'mem%03d' | format(member) ~ '/model/atmos/restart/' ~ previous_cycle_YMD ~ '.' ~ mid_cyc ~ '0000.' %}
@@ -15,15 +15,15 @@ atmosphere_warm_RT:
 
         {% if path_exists(ICSDIR) %}
             {% set file = restart_mem_path ~ 'coupler.res' %}
-        - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
             {% set file = restart_mem_path ~ 'fv_core.res.nc' %}
-        - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
             {% set ntiles = 6 %}
             {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data"] %}
                 # Include restart tile files (e.g., .tile1 to .tile6)
                 {% for tile in range(1, ntiles + 1) %}
                     {% set file = restart_mem_path ~ ftype ~ '.tile' ~ tile ~ '.nc' %}
-        - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
                 {% endfor %}
             {% endfor %}
         {% endif %}

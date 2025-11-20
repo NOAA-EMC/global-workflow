@@ -1,12 +1,12 @@
 wave:
     mkdir:
-        - "{{ COMOUT_WAVE_RESTART_PREV_MEM }}"
+        - "{{ COMOUT_WAVE_RESTART_PREV }}"
     link_req:
-        {% set ww3_file = ICSDIR ~ "/" ~ COMOUT_WAVE_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".restart.ww3" %}
+        {% set ww3_file = ICSDIR ~ "/" ~ COMOUT_WAVE_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".restart.ww3" %}
         {% if path_exists(ww3_file ~ ".nc") %}
-        - ["{{ ww3_file }}.nc" , "{{ COMOUT_WAVE_RESTART_PREV_MEM }}/{{ m_prefix }}.restart.ww3.nc"]
+        - ["{{ ww3_file }}.nc" , "{{ COMOUT_WAVE_RESTART_PREV }}/{{ m_prefix }}.restart.ww3.nc"]
         {% else %}
             {% if path_exists(ww3_file) %}
-        - ["{{ ww3_file }}" , "{{ COMOUT_WAVE_RESTART_PREV_MEM }}/{{ m_prefix }}.restart.ww3"]
+        - ["{{ ww3_file }}" , "{{ COMOUT_WAVE_RESTART_PREV }}/{{ m_prefix }}.restart.ww3"]
             {% endif %}
         {% endif %}

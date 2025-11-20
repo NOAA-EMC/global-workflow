@@ -1,5 +1,5 @@
 atmosphere_ens_perturbation:
     mkdir:
-        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
+        - "{{ COMOUT_ATMOS_ANALYSIS }}"
     link_req:
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.fv3_perturbation.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}/{{ RUN }}.t{{ current_cycle_HH }}z.increment.atm.i006.nc"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.fv3_perturbation.nc", "{{ COMOUT_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle_HH }}z.increment.atm.i006.nc"]

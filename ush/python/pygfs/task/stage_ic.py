@@ -348,18 +348,18 @@ class Stage(Task):
         previous_cycle_mem_dict = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
         com_paths = (
-            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
-            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
-            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle_mem_dict),
-            ('COMOUT_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL', current_cycle_mem_dict),
-            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle_mem_dict),
-            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle_mem_dict),
-            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle_mem_dict),
-            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle_mem_dict),
-            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle_mem_dict),
-            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle_mem_dict),
-            ('COMOUT_CHEM_ANALYSIS_MEM', 'COM_CHEM_ANALYSIS_TMPL', current_cycle_mem_dict),
-            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ICE_ANALYSIS', 'COM_ICE_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_ICE_RESTART_PREV', 'COM_ICE_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_OCEAN_RESTART_PREV', 'COM_OCEAN_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_OCEAN_ANALYSIS', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_MED_RESTART_PREV', 'COM_MED_RESTART_TMPL', previous_cycle_mem_dict),
+            ('COMOUT_CHEM_ANALYSIS', 'COM_CHEM_ANALYSIS_TMPL', current_cycle_mem_dict),
+            ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
         )
 
         return self._paths_from_templates(stage_dict, com_paths)
@@ -385,18 +385,18 @@ class Stage(Task):
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
         com_paths = (
-            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
-            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
-            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
-            ('COMOUT_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL', current_cycle),
-            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL', previous_cycle),
-            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle),
-            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
-            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle),
-            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
+            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
+            ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle),
+            ('COMOUT_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ATMOS_HISTORY', 'COM_ATMOS_HISTORY_TMPL', previous_cycle),
+            ('COMOUT_ICE_ANALYSIS', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_RESTART_PREV', 'COM_ICE_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_RESTART_PREV', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_ANALYSIS', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_MED_RESTART_PREV', 'COM_MED_RESTART_TMPL', previous_cycle),
+            ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
         return self._paths_from_templates(stage_dict, com_paths)
@@ -422,17 +422,17 @@ class Stage(Task):
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
         com_paths = (
-            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
-            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
-            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
-            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL', previous_cycle),
-            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle),
-            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
-            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle),
-            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
+            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
+            ('COMOUT_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ATMOS_HISTORY', 'COM_ATMOS_HISTORY_TMPL', previous_cycle),
+            ('COMOUT_ICE_ANALYSIS', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_RESTART_PREV', 'COM_ICE_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_RESTART_PREV', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_ANALYSIS', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_MED_RESTART_PREV', 'COM_MED_RESTART_TMPL', previous_cycle),
+            ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
         return self._paths_from_templates(stage_dict, com_paths)
@@ -460,17 +460,17 @@ class Stage(Task):
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
         com_paths = (
-            ('COMIN_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
-            ('COMOUT_ATMOS_INPUT_MEM', 'COM_ATMOS_INPUT_TMPL', current_cycle),
-            ('COMOUT_ATMOS_RESTART_PREV_MEM', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
-            ('COMOUT_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL', current_cycle),
-            ('COMOUT_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_ICE_RESTART_PREV_MEM', 'COM_ICE_RESTART_TMPL', previous_cycle),
-            ('COMOUT_OCEAN_RESTART_PREV_MEM', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
-            ('COMOUT_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
-            ('COMOUT_MED_RESTART_PREV_MEM', 'COM_MED_RESTART_TMPL', previous_cycle),
-            ('COMOUT_WAVE_RESTART_PREV_MEM', 'COM_WAVE_RESTART_TMPL', previous_cycle),
+            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
+            ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
+            ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
+            ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle),
+            ('COMOUT_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_ANALYSIS', 'COM_ICE_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_ICE_RESTART_PREV', 'COM_ICE_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_RESTART_PREV', 'COM_OCEAN_RESTART_TMPL', previous_cycle),
+            ('COMOUT_OCEAN_ANALYSIS', 'COM_OCEAN_ANALYSIS_TMPL', current_cycle),
+            ('COMOUT_MED_RESTART_PREV', 'COM_MED_RESTART_TMPL', previous_cycle),
+            ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
         return self._paths_from_templates(stage_dict, com_paths)

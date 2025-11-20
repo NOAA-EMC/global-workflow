@@ -1,9 +1,9 @@
 aero:
     mkdir:
-        - "{{ COMOUT_CHEM_ANALYSIS_MEM }}"
+        - "{{ COMOUT_CHEM_ANALYSIS }}"
 
     link_req:
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_CHEM_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_CHEM_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.aero_varbc_params.tar",
-           "{{ COMOUT_CHEM_ANALYSIS_MEM }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_CHEM_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.aero_varbc_params.tar",
+           "{{ COMOUT_CHEM_ANALYSIS }}"]
         {% endif %}
