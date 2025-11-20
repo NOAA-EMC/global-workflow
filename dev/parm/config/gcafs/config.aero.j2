@@ -17,10 +17,7 @@ echo "BEGIN: config.aero"
 # Base directory for aerosol input data files (e.g., initial conditions, climatologies).
 # This path is mounted or staged in the workflow and referenced by the model for reading aerosol fields.
 #---------------------------------------------------------------------------------------------------
-export AERO_INPUTS_DIR="{{ AERO_INPUTS_DIR }}"
-# Temporary comment until we sync between machines
-#export AERO_INPUTS_DIR="/lfs/h2/emc/lam/noscrub/barry.baker/Emissions/gcafs/GCAFS" # WCOSS2 path for GCAFS external data
-#export AERO_INPUTS_DIR="/gpfs/f6/bil-fire3/world-shared/Emissions/GEFS_ExtData # GAEA C6 path for GCAFS external data
+export AERO_INPUTS_DIR="${HOMEgfs}/fix/chem/Emission_data"
 
 #-------------------------------------------------
 # Diag Table and Field Table for GOCART aerosols
@@ -72,7 +69,7 @@ export dnats_aero=2
 export AERO_EMIS_FIRE="gbbepx"
 # Version of the selected fire emissions dataset (e.g., for QFEDv2.5, version 061).
 # Determines which historical or NRT files to load from input directories.
-export AERO_EMIS_FIRE_VERSION="061"
+export AERO_EMIS_FIRE_VERSION="004"
 
 # Flag to enable historical (climatological) fire emissions instead of NRT for testing/spin-up.
 # When true, uses fixed-year data; false uses real-time from FIRE_EMIS_NRT_DIR.
@@ -84,7 +81,7 @@ export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = fals
 
 #---------------------------------------------------------------------------------------------------
 export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
-export FIRE_EMIS_DIR="" # Directory containing historical fire emissions
+export FIRE_EMIS_DIR="${HOMEgfs}/fix/chem/Emission_Data/fires_data/GBBEPx/v4" # Directory containing historical fire emissions
 
 
 #===============================================================================
@@ -115,7 +112,7 @@ export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory cont
 # Specific path for GCAFS external data on this filesystem.
 # Contains emission datasets (e.g., CEDS2019/2024, HTAPv2, CAMS) processed by NEXUS.
 #---------------------------------------------------------------------------------------------------
-export NEXUS_INPUT_DIR=${AERO_INPUTS_DIR}/nexus
+export NEXUS_INPUT_DIR="${HOMEgfs}/fix/chem/Emission_data/nexus"
 
 
 
@@ -211,10 +208,10 @@ export NEXUS_DO_MEGAN=.false # TODO: Add MEGAN biogenic emissions in the furture
 
 # Enable Community Emissions Data System 2019 inventory for anthropogenic aerosols/gases (e.g., SO2, NOx, PM2.5).
 # Global, gridded data for 1750-2019; used for historical and recent baseline emissions.
-export NEXUS_DO_CEDS2019=.true. # Use CEDS2019 emissions
+export NEXUS_DO_CEDS2019=.false. # Use CEDS2019 emissions
 
 # Enable newer CEDS 2024 update (if available); mutually exclusive with 2019 for consistency.
-export NEXUS_DO_CEDS2024=.false. # Use CEDS2024 emissions
+export NEXUS_DO_CEDS2024=.true. # Use CEDS2024 emissions
 
 # Hemispheric Transport of Air Pollution version 2: Regional anthropogenic emissions for Europe/Asia/N. America.
 # Focuses on transboundary pollution; supplements CEDS for finer regional detail.
@@ -229,7 +226,7 @@ export NEXUS_DO_CAMS=.false. # Use CAMS global emissions
 
 # CAMS temporal disaggregation (e.g., hourly profiles for CAMS data).
 # Enables time-varying scaling when CAMS is active.
-export NEXUS_DO_CAMSTEMPO=.false. # Use CAMS temporal emissions
+export NEXUS_DO_CAMSTEMPO=.true. # Use CAMS temporal emissions
 
 #================================================================================
 echo "END: config.aero"
