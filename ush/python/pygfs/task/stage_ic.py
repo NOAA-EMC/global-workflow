@@ -495,8 +495,3 @@ class Stage(Task):
         for var, value in var_dict.items():
             replaced_com = replaced_com.replace(var, value)
         return replaced_com
-        """
-        replaced_com = template
-        for var, value in var_dict.items():
-            replaced_com = replaced_com.replace(var, value)
-        return replaced_com
