@@ -22,7 +22,7 @@ for fhr in ${fhrlst}; do
     export job=ecen
     export jobid="${job}.$$"
 
-    "${HOMEgfs}/jobs/JGDAS_ENKF_ECEN"
+    "${HOMEgfs}/dev/jobs/JGDAS_ENKF_ECEN"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"

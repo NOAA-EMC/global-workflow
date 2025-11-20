@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_WAVE_PREP"
+"${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_PREP"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_CLEANUP"
+"${HOMEgfs}/dev/jobs/JGLOBAL_CLEANUP"
 status=$?
 
 exit "${status}"

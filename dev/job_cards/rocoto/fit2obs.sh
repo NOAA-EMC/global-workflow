@@ -18,7 +18,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN FIT2OBS ==============="
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_FIT2OBS"
+"${HOMEgfs}/dev/jobs/JGDAS_FIT2OBS"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

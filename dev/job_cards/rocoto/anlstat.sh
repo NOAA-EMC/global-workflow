@@ -16,5 +16,5 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ANALYSIS_STATS"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ANALYSIS_STATS"
 exit $?

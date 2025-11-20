@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_WAVE_INIT"
+"${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_INIT"
 status=$?
 
 exit "${status}"

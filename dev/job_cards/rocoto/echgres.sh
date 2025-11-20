@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_ATMOS_CHGRES_FORENKF"
+"${HOMEgfs}/dev/jobs/JGDAS_ATMOS_CHGRES_FORENKF"
 status=$?
 
 exit "${status}"

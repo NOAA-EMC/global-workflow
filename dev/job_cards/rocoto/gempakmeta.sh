@@ -11,7 +11,7 @@ export job="gempakmeta"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_META"
+"${HOMEgfs}/dev/jobs/JGFS_ATMOS_GEMPAK_META"
 
 status=$?
 exit "${status}"

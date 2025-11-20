@@ -24,7 +24,7 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
     ###############################################################
     # Execute the JJOB
     ###############################################################
-    "${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS"
+    "${HOMEgfs}/dev/jobs/JGLOBAL_OCEANICE_PRODUCTS"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
 done

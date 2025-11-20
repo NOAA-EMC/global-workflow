@@ -28,6 +28,6 @@ export FORECAST_HOUR=$((10#${FHR3}))
 ###############################################################
 # Execute the JJOB
 ###############################################################
-"${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_UPP"
 
 exit $?

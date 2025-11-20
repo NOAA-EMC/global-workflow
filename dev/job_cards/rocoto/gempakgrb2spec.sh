@@ -9,7 +9,7 @@ export job="gempakpgrb2spec"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC"
+"${HOMEgfs}/dev/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC"
 
 status=$?
 exit "${status}"

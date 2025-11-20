@@ -11,7 +11,7 @@ export job="npoess_pgrb2_0p5deg"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS"
+"${HOMEgfs}/dev/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS"
 
 status=$?
 exit "${status}"

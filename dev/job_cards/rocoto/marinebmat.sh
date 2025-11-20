@@ -15,6 +15,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JGLOBAL_MARINE_BMAT
+"${HOMEgfs}"/dev/jobs/JGLOBAL_MARINE_BMAT
 status=$?
 exit "${status}"

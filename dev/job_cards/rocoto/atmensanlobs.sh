@@ -15,6 +15,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ATMENS_ANALYSIS_OBS"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ATMENS_ANALYSIS_OBS"
 status=$?
 exit "${status}"

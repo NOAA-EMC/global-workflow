@@ -18,7 +18,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
 
-"${HOMEgfs}/jobs/JGDAS_ATMOS_VERFRAD"
+"${HOMEgfs}/dev/jobs/JGDAS_ATMOS_VERFRAD"
 status=$?
 
 exit "${status}"

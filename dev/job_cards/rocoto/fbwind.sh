@@ -11,7 +11,7 @@ export job="fbwind"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGFS_ATMOS_FBWIND"
+"${HOMEgfs}/dev/jobs/JGFS_ATMOS_FBWIND"
 
 status=$?
 exit "${status}"

@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_ARCHIVE_TARS"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ARCHIVE_TARS"
 status=$?
 
 exit "${status}"

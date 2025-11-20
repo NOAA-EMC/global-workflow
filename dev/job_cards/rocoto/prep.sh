@@ -85,7 +85,7 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
 
     rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
 
-    "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
+    "${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"

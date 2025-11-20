@@ -10,6 +10,6 @@ if ((status != 0)); then exit "${status}"; fi
 export job="metp${METPCASE}"
 export jobid="${job}.$$"
 
-"${HOMEgfs}/jobs/JGFS_ATMOS_VERIFICATION"
+"${HOMEgfs}/dev/jobs/JGFS_ATMOS_VERIFICATION"
 
 exit $?

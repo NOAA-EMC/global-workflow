@@ -13,7 +13,7 @@ export job="fetch"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_FETCH"
+"${HOMEgfs}/dev/jobs/JGLOBAL_FETCH"
 status=$?
 
 exit "${status}"

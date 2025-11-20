@@ -19,7 +19,7 @@ for fhr in "${fhr_list[@]}"; do
     ###############################################################
     # Execute the JJOB # TODO
     ###############################################################
-    # "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_AWIPS"
+    # "${HOMEgfs}/dev/jobs/J${RUN^^}_ATMOS_AWIPS"
     err=$?
     if [[ ${err} -ne 0 ]]; then
         exit "${err}"

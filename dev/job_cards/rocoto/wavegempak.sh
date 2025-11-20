@@ -21,7 +21,7 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
     fhr3=$(printf '%03d' "${FORECAST_HOUR}")
     jobid="${job}_f${fhr3}.$$"
     # Execute the JJOB
-    "${HOMEgfs}/jobs/JGLOBAL_WAVE_GEMPAK"
+    "${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_GEMPAK"
     err=$?
     if [[ "${err}" -ne 0 ]]; then
         exit "${err}"

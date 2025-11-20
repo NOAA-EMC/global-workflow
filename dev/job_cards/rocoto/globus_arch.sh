@@ -13,7 +13,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGLOBAL_GLOBUS_ARCH"
+"${HOMEgfs}/dev/jobs/JGLOBAL_GLOBUS_ARCH"
 status=$?
 
 exit "${status}"

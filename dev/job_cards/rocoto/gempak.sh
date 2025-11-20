@@ -17,7 +17,7 @@ for fhr in "${fhr_list[@]}"; do
     ###############################################################
     # Execute the JJOB
     ###############################################################
-    "${HOMEgfs}/jobs/J${RUN^^}_ATMOS_GEMPAK"
+    "${HOMEgfs}/dev/jobs/J${RUN^^}_ATMOS_GEMPAK"
     err=$?
     [[ ${err} -ne 0 ]] && exit "${err}"
 done

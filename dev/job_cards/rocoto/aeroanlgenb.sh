@@ -16,6 +16,6 @@ export jobid="${job}.$$"
 ###############################################################
 
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX"
+"${HOMEgfs}/dev/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX"
 status=$?
 exit "${status}"

@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 
-"${HOMEgfs}/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
+"${HOMEgfs}/dev/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
 status=$?
 
 exit "${status}"

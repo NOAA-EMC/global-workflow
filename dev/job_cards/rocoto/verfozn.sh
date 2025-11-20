@@ -18,7 +18,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
 
-"${HOMEgfs}/jobs/JGDAS_ATMOS_VERFOZN"
+"${HOMEgfs}/dev/jobs/JGDAS_ATMOS_VERFOZN"
 status=$?
 
 exit "${status}"
