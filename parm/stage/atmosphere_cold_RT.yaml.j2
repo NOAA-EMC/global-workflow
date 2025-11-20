@@ -4,16 +4,16 @@ atmosphere_cold_RT:
         - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
         - "{{ COMOUT_ATMOS_HISTORY_MEM }}"
     link_req:
-        {% set DIAU_cold_previous_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.atma003.ensres.nc' %}
-        {% set DIAU_cold_current_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atminc.nc' %}
-        {% set DIAU_current_file= ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.atmanl.nc' %}
-        {% set atm_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/atmos/history/gdas.t' ~ previous_cycle_HH ~ 'z.atmf003.ensres.nc' %}
-        {% set surface_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/atmos/history/gdas.t' ~ previous_cycle_HH ~ 'z.sfcf003.nc' %}
+        {% set DIAU_cold_previous_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/analysis/atmos/gdas.t' ~ previous_cycle_HH ~ 'z.ensres_analysis.atm.a003.nc' %}
+        {% set DIAU_cold_current_file = ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.increment.atm.i006.nc' %}
+        {% set DIAU_current_file= ICSDIR ~ '/' ~ 'gfs.' ~ current_cycle_YMD ~ '/' ~ current_cycle_HH ~ '/analysis/atmos/gfs.t' ~ current_cycle_HH ~ 'z.analysis.atm.a006.nc' %}
+        {% set atm_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/atmos/history/gdas.t' ~ previous_cycle_HH ~ 'z.ensres.atm.f006.nc' %}
+        {% set surface_file = ICSDIR ~ '/' ~ 'gdas.' ~ previous_cycle_YMD ~ '/' ~ previous_cycle_HH ~ '/model/atmos/history/gdas.t' ~ previous_cycle_HH ~ 'z.sfc.f003.nc' %}
         {% set current_path = COMOUT_ATMOS_ANALYSIS_MEM %}
         {% set previous_path = COMOUT_ATMOS_RESTART_PREV_MEM %}
         {% set surface_atm_path = COMOUT_ATMOS_HISTORY_MEM %}
-        - ["{{ DIAU_cold_previous_file }}", "{{ previous_path}}/gdas.t{{ previous_cycle_HH }}z.ensres_analysis.atm.i003.nc"]
-        - ["{{ DIAU_cold_current_file }}", "{{ current_path }}/gfs.t{{ current_cycle_HH }}z.increment.atm.i006.nc"]
-        - ["{{ DIAU_current_file }}", "{{ current_path }}/gfs.t{{ current_cycle_HH }}z.analysis.atm.i006.nc"]
-        - ["{{ atm_file }}", "{{ surface_atm_path }}/gdas.t{{ previous_cycle_HH }}z.sfc.f003.nc"]
-        - ["{{ surface_file }}", "{{ surface_atm_path }}/gdas.t{{ previous_cycle_HH }}z.ensres.atm.f003.nc"]
+        - ["{{ DIAU_cold_previous_file }}", "{{ previous_path}}"]
+        - ["{{ DIAU_cold_current_file }}", "{{ current_path }}"]
+        - ["{{ DIAU_current_file }}", "{{ current_path }}"]
+        - ["{{ surface_file }}", "{{ surface_atm_path }}"]
+        - ["{{ atm_file }}", "{{ surface_atm_path  }}"]
