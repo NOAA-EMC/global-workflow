@@ -3,11 +3,7 @@ ice:
     mkdir:
         - "{{ COMOUT_ICE_ANALYSIS }}"
     link_req:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ICE_ANALYSIS = COMOUT_ICE_ANALYSIS_list[imem] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.analysis.cice_model.res.nc", "{{ COMOUT_ICE_ANALYSIS }}]
-        {% endfor %} # mem loop
+        - ["{{ ICSDIR }}/{{ COMOUT_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ m_prefix }}.analysis.cice_model.res.nc", "{{ COMOUT_ICE_ANALYSIS }}"]
     {% else %}
     mkdir:
         - "{{ COMOUT_ICE_RESTART_PREV }}"
