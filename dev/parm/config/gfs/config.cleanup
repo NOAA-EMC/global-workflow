@@ -9,22 +9,30 @@ source "${EXPDIR}/config.resources" cleanup
 export CLEANUP_COM="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
-export RMOLDSTD=144
-export RMOLDEND=24
+# Selectively remove files between SELECTIVE_RM_MIN and SELECTIVE_RM_MIN hours old, based on exclude_string
+# Remove all RTOFS files older than RTOFS_CLEANUP_MAX hours
+# Remove all files, except GEMPAK files, older than SELECTIVE_RM_MAX hours, based on gempak_exclude_string
+# Remove all files older than the max of all SELECTIVE_RM* variables
+# Retain all files newer than SELECTIVE_RM_MIN hours
 
-if [[ "${DO_GEMPAK}" == "YES" && "${RUN}" == "gfs" ]]; then
-    export RMOLDSTD=346
-    export RMOLDEND=222
+export SELECTIVE_CLEANUP_MAX=144
+export SELECTIVE_CLEANUP_MIN=24
+export GEMPAK_CLEANUP_MAX=240
+export RTOFS_CLEANUP_MAX=48
+if [[ ${SELECTIVE_CLEANUP_MIN} -gt ${SELECTIVE_CLEANUP_MAX} ]]; then
+    echo "FATAL ERROR: Invalid selective cleanup times: "
+    echo "             SELECTIVE_CLEANUP_MIN=${SELECTIVE_CLEANUP_MIN} > SELECTIVE_CLEANUP_MAX=${SELECTIVE_CLEANUP_MAX}"
+    exit 1
 fi
 
 # Specify the list of files to exclude from the first stage of cleanup
 # Because arrays cannot be exported, list is a single string of comma-
 # separated values. This string is split to form an array at runtime.
+export exclude_string=""
 case ${RUN} in
-	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
-	enkf*)      exclude_string="*f006.ens*" ;;
+	gdas | gfs)	exclude_string+="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
+	enkf*)      exclude_string+="*f006.ens*" ;;
 	*)			exclude_string="" ;;
 esac
-export exclude_string
 
 echo "END: config.cleanup"
