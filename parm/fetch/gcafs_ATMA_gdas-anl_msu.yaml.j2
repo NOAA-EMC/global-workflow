@@ -4,7 +4,7 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_HH = current_cycle | strftime("%H") %}
 target:
-    tarball: "/work/noaa/da/cmartin/june2025/gcafs/gcafs-tars/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_nc.tar"
+    tarball: "/work2/noaa/global/role-global/data/GCAFS_ExtData/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_nc.tar"
     on_hpss: False
     contents:
         # Atmospheric analysis
