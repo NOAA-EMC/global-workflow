@@ -732,7 +732,7 @@ class SFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
 
         return task
- 
+
     # Globus transfer for HPSS archiving
     def globus(self):
         deps = []
