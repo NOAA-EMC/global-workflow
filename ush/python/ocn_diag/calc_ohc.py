@@ -51,13 +51,11 @@ def calculate_OHC(ds, depth_limit=300, temp_var_name='temp', depth_dim_name='dep
 
     # Calculate the heat anomaly (T - T_ref)
     T_anomaly = temp_sliced - T_ref
- 
     # Calculate layer thicknesses (delta_z)
     # xarray can approximate this if you have cell bounds, or we use manual diff
     dz = np.abs(ds[depth_dim_name].diff(dim=depth_dim_name).values)
     # Pad dz to match original dimensions for broadcasting (simple approximation)
     dz_padded = np.insert(dz, 0, dz[0])
- 
     # OHC is integral(rho * Cp * T_anomaly) dz
     # Multiply by density, specific heat capacity, and layer thickness
     ohc_areal_density = rho * Cp * T_anomaly * xr.DataArray(dz_padded, coords={depth_dim_name: depths}, dims=[depth_dim_name])

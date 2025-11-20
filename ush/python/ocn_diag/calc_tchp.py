@@ -19,18 +19,14 @@ def calculate_TCHP(ds, temp_var_name='temp', depth_dim_name='depth'):
     Returns:
         xr.DataArray: TCHP in kJ/cm^2.
     """
- 
     # We ignore the impact of temp and salinity on density
     temp = ds[temp_var_name]
     depths = ds[depth_dim_name]
- 
     TARGET_TEMP = 26.0
- 
     # --- Step 1: Find the depth of the 26°C isotherm (D26) ---
     # We use masking to find the shallowest depth where temp is >= 26C.
     # A precise, interpolated method is better, but this finds the top of the 26C layer.
     depth_26C = depths.where(temp >= TARGET_TEMP).max(dim=depth_dim_name, skipna=True)
- 
     # Replace NaNs (where 26C isotherm is not present) with a deep depth for integration limit
     # (e.g., max depth of the data, or a standard deep value)
     max_depth = depths.max().item()
@@ -65,10 +61,8 @@ def calculate_TCHP(ds, temp_var_name='temp', depth_dim_name='depth'):
     # Convert to TCHP units (kJ/cm^2)
     # 1 J/m^2 = 1e-3 kJ / 1e4 cm^2 = 1e-7 kJ/cm^2
     TCHP = ohc_J_per_m2 * 1e-7
-
     # Set NaN values back where TCHP couldn't be calculated (e.g. 26C isotherm wasn't present)
     TCHP = TCHP.where(~np.isnan(depth_26C))
- 
     TCHP.attrs['units'] = 'kJ/cm^2'
     TCHP.attrs['long_name'] = 'Tropical Cyclone Heat Potential'
     TCHP.name = 'TCHP'
