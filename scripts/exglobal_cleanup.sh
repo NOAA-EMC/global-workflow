@@ -52,22 +52,17 @@ function remove_files() {
     fi
     # Find all files and links in the directory and store as an arry
     # Run find only once for efficiency
-    flist=($(find "${directory}" -type f -or -type l))
+    mapfile -t flist < <(find "${directory}" -type f -or -type l)
 
     # Now remove those files that match the exclude patterns
     for exclude_pattern in "$@"; do
         # Use a temporary array to hold files that do not match the exclude pattern
         temp_flist=()
         for file in "${flist[@]}"; do
-            case "$(basename "${file}")" in
-                ${exclude_pattern})
-                    # Match found, skip this file
-                    ;;
-                *)
-                    # No match, keep this file
-                    temp_flist+=("${file}")
-                    ;;
-            esac
+            # shellcheck disable=SC2254
+            if [[ ! $(basename "${file}") == ${exclude_pattern} ]]; then
+                temp_flist+=("${file}")
+            fi
         done
         flist=("${temp_flist[@]}")
     done
