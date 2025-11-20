@@ -16,7 +16,6 @@
 ###  OUTDIR: path to directory where 6hourly files will be saved
 
 #####################################################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base com atmos_products"
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL  \
