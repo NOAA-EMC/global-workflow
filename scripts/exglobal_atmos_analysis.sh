@@ -38,7 +38,6 @@ export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
-APRUNCFP=${APRUNCFP:-""}
 APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
 NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
@@ -56,8 +55,6 @@ IASI_CADS=${IASI_CADS:-".false."}
 CRIS_CADS=${CRIS_CADS:-".false."}
 
 # Diagnostic files options
-netcdf_diag=${netcdf_diag:-".true."}
-binary_diag=${binary_diag:-".false."}
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 
 # IAU
@@ -185,11 +182,7 @@ ABIAS=${ABIAS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt}
 ABIASPC=${ABIASPC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.txt}
 ABIASAIR=${ABIASAIR:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.txt}
 ABIASe=${ABIASe:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_int.txt}
-RADSTAT=${RADSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.tar}
 GSISTAT=${GSISTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.txt}
-PCPSTAT=${PCPSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}pcpstat}
-CNVSTAT=${CNVSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.tar}
-OZNSTAT=${OZNSTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.tar}
 
 # Increment files
 ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc}
@@ -198,21 +191,8 @@ ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc}
 RUN_SELECT=${RUN_SELECT:-"NO"}
 USE_SELECT=${USE_SELECT:-"NO"}
 USE_RADSTAT=${USE_RADSTAT:-"YES"}
-SELECT_OBS=${SELECT_OBS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}obsinput}
+SELECT_OBS=${SELECT_OBS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}obsinput.tar}
 GENDIAG=${GENDIAG:-"YES"}
-DIAG_SUFFIX=${DIAG_SUFFIX:-""}
-if [[ ${netcdf_diag} == ".true." ]] ; then
-   DIAG_SUFFIX="${DIAG_SUFFIX}.nc4"
-fi
-DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
-DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
-USE_CFP=${USE_CFP:-"NO"}
-CFP_MP=${CFP_MP:-"NO"}
-nm=""
-if [[ ${CFP_MP} == "YES" ]]; then
-    nm=0
-fi
-DIAG_DIR=${DIAG_DIR:-${COMOUT_ATMOS_ANALYSIS}/gsidiags}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -335,7 +315,6 @@ CHEM=${CHEM:-""}
 NST=${NST:-""}
 
 #uGSI Namelist parameters
-lrun_subdirs=${lrun_subdirs:-".true."}
 if [[ ${DOHYBVAR} == "YES" ]]; then
    l_hyb_ens=.true.
    export l4densvar=${l4densvar:-".false."}
@@ -630,25 +609,6 @@ if [[ ${JCAP} -ne ${JCAP_A} ]]; then
 fi
 
 ##############################################################
-# Diagnostic files
-# if requested, link GSI diagnostic file directories for use later
-if [[ ${GENDIAG} == "YES" ]] ; then
-   if [[ ${lrun_subdirs} == ".true." ]] ; then
-      if [[ -d ${DIAG_DIR} ]]; then
-         rm -rf "${DIAG_DIR}"
-      fi
-      ntasks_m1="$((ntasks-1))"
-      for pe in $(seq 0 ${ntasks_m1}); do
-        pedir="dir."$(printf %04i ${pe})
-        mkdir -p "${DIAG_DIR}/${pedir}"
-        ${NLN} "${DIAG_DIR}/${pedir}" "${pedir}"
-      done
-   else
-      err_exit "lrun_subdirs must be true. lrun_subdirs=${lrun_subdirs}"
-   fi
-fi
-
-##############################################################
 # Output files
 ${NLN} ${ATMANL} siganl
 ${NLN} ${ATMINC} siginc.nc
@@ -694,60 +654,31 @@ fi
 ##############################################################
 # If requested, copy and de-tar guess radstat file
 if [[ "${USE_RADSTAT}" == "YES" ]]; then
-   if [[ "${USE_CFP}" == "YES" ]]; then
-     if [[ -f "${DATA}/unzip.sh" ]]; then
-         rm -f "${DATA}/unzip.sh"
-     fi
-     if [[ -f "${DATA}/mp_unzip.sh" ]]; then
-         rm -f "${DATA}/mp_unzip.sh"
-     fi
-     cat > "${DATA}/unzip.sh" << EOFunzip
-#!/bin/sh
-   diag_file=\$1
-   diag_suffix=\$2
-   fname=\$(echo \$diag_file | cut -d'.' -f1)
-   fdate=\$(echo \$diag_file | cut -d'.' -f2)
-   ${UNCOMPRESS} \$diag_file
-   fnameges=\$(echo \$fname | sed 's/_ges//g')
-   ${NMV} \$fname.\$fdate\$diag_suffix \$fnameges
-EOFunzip
-     chmod 755 ${DATA}/unzip.sh
-   fi
+   rm -f "${DATA}/unzip_radstat.sh"
+   cat > "${DATA}/unzip_radstat.sh" << EOF
+#!/bin/bash
+diag_file=\$1
+diag_suffix=\$2
+fname=\$(echo \$diag_file | cut -d'.' -f1)
+fdate=\$(echo \$diag_file | cut -d'.' -f2)
+${UNCOMPRESS} \$diag_file
+fnameges=\$(echo \$fname | sed 's/_ges//g')
+${NMV} \$fname.\$fdate\$diag_suffix \$fnameges
+EOF
+   chmod 755 ${DATA}/unzip_radstat.sh
 
-   listdiag=$(tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
+   rm -f "${DATA}/cmdfile"
+   listdiag=$(tar -xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
    for type in ${listdiag}; do
       diag_file=$(echo ${type} | cut -d',' -f1)
-      if [[ ${USE_CFP} == "YES" ]] ; then
-         echo "${nm} ${DATA}/unzip.sh ${diag_file} ${DIAG_SUFFIX}" | tee -a "${DATA}/mp_unzip.sh"
-         if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
-           nm=$((nm+1))
-         fi
-      else
-         fname=$(echo "${diag_file}" | cut -d'.' -f1)
-         date=$(echo "${diag_file}" | cut -d'.' -f2)
-         ${UNCOMPRESS} "${diag_file}"
-         fnameges=$(echo "${fname}"|sed 's/_ges//g')
-         ${NMV} "${fname}.${date}${DIAG_SUFFIX}" "${fnameges}"
-      fi
+      echo "${DATA}/unzip_radstat.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
    done
 
-   if [[ "${USE_CFP}" == "YES" ]] ; then
-      chmod 755 "${DATA}/mp_unzip.sh"
-      ncmd=$(wc -l < "${DATA}/mp_unzip.sh")
-      if [[ ${ncmd} -gt 0 ]]; then
-         if [[ ${ncmd} -lt ${max_tasks_per_node} ]]; then
-            ncmd_max=${ncmd}
-         else
-            ncmd_max=${max_tasks_per_node}
-         fi
-         APRUNCFP_UNZIP=$(eval echo "${APRUNCFP}")
-         ${APRUNCFP_UNZIP} "${DATA}/mp_unzip.sh"
-         export err=$?
-         if [[ ${err} -ne 0 ]]; then
-            err_exit "Failed to unzip input data files!"
-         fi
-      fi
-   fi
+   "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+   export err=$?
+    if [[ ${err} -ne 0 ]]; then
+       err_exit "Failed to unzip radstat.gdas file!"
+    fi
 fi # if [[ $USE_RADSTAT == "YES" ]
 
 ##############################################################
@@ -785,12 +716,12 @@ cat > gsiparm.anl << EOF
   use_pbl=.false.,use_compress=.true.,nsig_ext=45,gpstop=50.,commgpstop=45.,commgpserrinf=1.0,
   use_gfs_nemsio=.false.,use_gfs_ncio=.true.,sfcnst_comb=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
-  lrun_subdirs=${lrun_subdirs},
+  lrun_subdirs=.true.,
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
   cwoption=3,imp_physics=${imp_physics},lupp=${lupp},cnvw_option=${cnvw_option},cao_check=${cao_check},
-  netcdf_diag=${netcdf_diag},binary_diag=${binary_diag},
+  netcdf_diag=.true.,binary_diag=.false.,
   lobsdiag_forenkf=${lobsdiag_forenkf},
   write_fv3_incr=${write_fv3_increment},
   nhr_anal=${IAUFHRS},
@@ -944,7 +875,7 @@ fi
 
 ################################################################################
 # Postprocessing
-cd "${pwd}" || exit 1
+cd "${DATA}" || exit 1
 
 ##############################################################
 # Add this statement to release the forecast job once the
@@ -954,6 +885,18 @@ cd "${pwd}" || exit 1
 if [[ ${SENDECF} == "YES" && "${RUN}" != "enkf" ]]; then
    ecflow_client --event release_fcst
 fi
+
+# Diagnostic files
+# if requested, GSI diagnostic file directories for use later
+if [[ "${GENDIAG}" == "YES" ]] ; then
+   tar -cvf gsidiags.tar dir.????
+   export err=$?
+   if [[ ${err} -ne 0 ]]; then
+      err_exit "Failed to tar GSI diagnostic directories!"
+   fi
+   cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
+fi
+
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.done.txt"
 
 ################################################################################
