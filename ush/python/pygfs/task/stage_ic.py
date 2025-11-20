@@ -184,6 +184,9 @@ class Stage(Task):
         # Copy COM templates
         stage_dict.update(self._copy_com_templates())
 
+        # Add os.path.exists function for template use
+        stage_dict['path_exists'] = os.path.exists
+
         return stage_dict
 
     @logit(logger)
@@ -197,8 +200,6 @@ class Stage(Task):
         """
         if not os.path.isdir(stage_dict.ROTDIR):
             raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({stage_dict.ROTDIR}) does not exist!")
-
-        stage_dict['path_exists'] = os.path.exists
 
         stage_set = parse_j2yaml(stage_dict.STAGE_IC_YAML_TMPL, stage_dict, allow_missing=False)
 
@@ -229,19 +230,20 @@ class Stage(Task):
         if stage_dict.RUN == 'gefs':
             gefstype = self.task_config.get('GEFSTYPE', None)
             if gefstype == 'gefs-real-time':
-                return self._get_member_com_paths_gefs_rt(stage_dict, member)
+                return self._paths_from_templates(stage_dict, self._get_member_com_paths_gefs_rt(stage_dict, member))
             elif gefstype == 'gefs-offline':
-                return self._get_member_com_paths_gefs_offline(stage_dict, member)
+                return self._paths_from_templates(stage_dict, self._get_member_com_paths_gefs_offline(stage_dict, member))
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
         elif stage_dict.RUN in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
-            return self._get_member_com_paths_gcafs(stage_dict, member)
+            return self._paths_from_templates(stage_dict, self._get_member_com_paths_gcafs(stage_dict, member))
         elif stage_dict.RUN == 'gfs':
-            return self._get_member_com_paths_gfs(stage_dict, member)
+            return self._paths_from_templates(stage_dict, self._get_member_com_paths_gfs(stage_dict, member))
         else:
             raise ValueError(f"Unknown RUN type: {stage_dict.RUN}")
 
-    def get_member_list(self, run: str, nmem_ens: int, m_index: int = 0, gefstype: Optional[str] = None) -> list[int]:
+    @staticmethod
+    def get_member_list(run: str, nmem_ens: int, m_index: int = 0, gefstype: Optional[str] = None) -> list[int]:
         """Get list of member indices based on RUN type
 
         Parameters
@@ -264,10 +266,17 @@ class Stage(Task):
             return list(range(1, nmem_ens + 1))
         elif run in ['gefs']:
             if gefstype == 'gefs-real-time':
-                # Map GEFS members to GFS member numbers using existing mapping function
+                # Map GEFS members to GFS member numbers
+                # Cycle ranges determine which 30-member range to use based on cycle index
+                cyc_ranges = [
+                    list(range(1, 31)),
+                    list(range(21, 51)),
+                    list(range(41, 71)),
+                    list(range(61, 81)) + list(range(1, 11))
+                ]
                 member_list = [0]  # Start with control member
                 for gefs_member in range(1, nmem_ens + 1):
-                    gfs_member = self._map_gefs_member_to_gfs(m_index, gefs_member)
+                    gfs_member = cyc_ranges[m_index][gefs_member - 1]
                     member_list.append(gfs_member)
                 return member_list
             else:
@@ -275,32 +284,6 @@ class Stage(Task):
                 return list(range(0, nmem_ens + 1))
         else:
             return []
-
-    def _map_gefs_member_to_gfs(self, m_index: int, member: int) -> int:
-        """Map GEFS member number to corresponding GFS member for real-time mode
-
-        Parameters
-        ----------
-        m_index : int
-            Cycle index (0-3) determining which 30-member range to use
-        member : int
-            GEFS member number (0-based indexing, where 0 is control)
-
-        Returns
-        -------
-        int
-            GFS member number corresponding to the GEFS member, or 0 for control
-        """
-        cyc_ranges = [
-            list(range(1, 31)),
-            list(range(21, 51)),
-            list(range(41, 71)),
-            list(range(61, 81)) + list(range(1, 11))
-        ]
-
-        if member != 0:
-            return cyc_ranges[m_index][(member - 1)]
-        return 0
 
     def _paths_from_templates(self, stage_dict: AttrDict, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
         """Generate COM paths from template configurations
@@ -317,6 +300,26 @@ class Stage(Task):
         Dict[str, str]
             Dictionary mapping COM path keys to resolved file paths
         """
+        def _replace_template_vars(template: str, var_dict: Dict[str, Any]) -> str:
+            """Replace template variables in string with actual values
+
+            Parameters
+            ----------
+            template : str
+                Template string with variables to replace
+            var_dict : Dict[str, Any]
+                Dictionary of variable names and values
+
+            Returns
+            -------
+            str
+                String with variables replaced
+            """
+            replaced_com = template
+            for var, value in var_dict.items():
+                replaced_com = replaced_com.replace(var, value)
+            return replaced_com
+
         path_dict = {}
         for com_key, template_key, substitution_dict in com_path_tuples:
             template_str = stage_dict.get(template_key, '')
@@ -324,11 +327,11 @@ class Stage(Task):
                 logger.warning("Template key '%s' not found for COM key '%s'", template_key, com_key)
                 path_dict[com_key] = ''
             else:
-                path_dict[com_key] = self._replace_template_vars(template_str, substitution_dict)
+                path_dict[com_key] = _replace_template_vars(template_str, substitution_dict)
         return path_dict
 
     @logit(logger)
-    def _get_member_com_paths_gfs(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
+    def _get_member_com_paths_gfs(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GFS
 
         Parameters
@@ -340,14 +343,14 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, Any]
-            Dictionary of member-specific COM paths
+        Tuple[Tuple[str, str, Dict[str, Any]], ...]
+            Tuple of tuples containing path key, template key, and substitution dict
         """
         member_str = f"mem{member:03d}" if member >= 0 else ''
         current_cycle_mem_dict = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
         previous_cycle_mem_dict = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
-        com_paths = (
+        return (
             ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle_mem_dict),
@@ -362,10 +365,8 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
         )
 
-        return self._paths_from_templates(stage_dict, com_paths)
-
     @logit(logger)
-    def _get_member_com_paths_gefs_offline(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
+    def _get_member_com_paths_gefs_offline(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GEFS offline
 
         Parameters
@@ -377,14 +378,14 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, Any]
-            Dictionary of member-specific COM paths
+        Tuple[Tuple[str, str, Dict[str, Any]], ...]
+            Tuple of tuples containing path key, template key, and substitution dict
         """
         member_str = f"mem{member:03d}" if member >= 0 else ''
         current_cycle = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
-        com_paths = (
+        return (
             ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
@@ -399,10 +400,8 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        return self._paths_from_templates(stage_dict, com_paths)
-
     @logit(logger)
-    def _get_member_com_paths_gefs_rt(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
+    def _get_member_com_paths_gefs_rt(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GEFS real-time
 
         Parameters
@@ -414,14 +413,14 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, Any]
-            Dictionary of member-specific COM paths
+        Tuple[Tuple[str, str, Dict[str, Any]], ...]
+            Tuple of tuples containing path key, template key, and substitution dict
         """
         member_str = f"mem{member:03d}" if member >= 0 else ''
         current_cycle = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str}
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
-        com_paths = (
+        return (
             ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
@@ -435,10 +434,8 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
-        return self._paths_from_templates(stage_dict, com_paths)
-
     @logit(logger)
-    def _get_member_com_paths_gcafs(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
+    def _get_member_com_paths_gcafs(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GCAFS
 
         Parameters
@@ -450,16 +447,15 @@ class Stage(Task):
 
         Returns
         -------
-        Dict[str, Any]
-            Dictionary of member-specific COM paths
+        Tuple[Tuple[str, str, Dict[str, Any]], ...]
+            Tuple of tuples containing path key, template key, and substitution dict
         """
         member_str = f"mem{member:03d}" if member >= 0 else ''
-
         current_cycle_in = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
         current_cycle = {**current_cycle_in, "${RUN}": stage_dict.rRUN}
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
-        com_paths = (
+        return (
             ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
@@ -472,26 +468,3 @@ class Stage(Task):
             ('COMOUT_MED_RESTART_PREV', 'COM_MED_RESTART_TMPL', previous_cycle),
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
-
-        return self._paths_from_templates(stage_dict, com_paths)
-
-    @staticmethod
-    def _replace_template_vars(template: str, var_dict: Dict[str, Any]) -> str:
-        """Replace template variables in string with actual values
-
-        Parameters
-        ----------
-        template : str
-            Template string with variables to replace
-        var_dict : Dict[str, Any]
-            Dictionary of variable names and values
-
-        Returns
-        -------
-        str
-            String with variables replaced
-        """
-        replaced_com = template
-        for var, value in var_dict.items():
-            replaced_com = replaced_com.replace(var, value)
-        return replaced_com
