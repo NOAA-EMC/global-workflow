@@ -93,28 +93,26 @@ class Stage(Task):
         cycle_vars['half_window'] = half_window
 
         # Current cycle variables
-        if self.task_config.current_cycle:
-            cycle_vars['current_cycle_HH'] = self.task_config.current_cycle.strftime("%H")
-            cycle_vars['current_cycle_YMD'] = to_YMD(self.task_config.current_cycle)
+        cycle_vars['current_cycle_HH'] = self.task_config.current_cycle.strftime("%H")
+        cycle_vars['current_cycle_YMD'] = to_YMD(self.task_config.current_cycle)
 
-            if self.task_config.DOIAU and self.task_config.MODE == "cycled":
-                cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=-half_window)
+        if self.task_config.DOIAU and self.task_config.MODE == "cycled":
+            cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=-half_window)
+        else:
+            if self.task_config.get('REPLAY_ICS', False):
+                cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=half_window)
             else:
-                if self.task_config.get('REPLAY_ICS', False):
-                    cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle + timedelta(hours=half_window)
-                else:
-                    cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle
+                cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle
 
-            cycle_vars['m_prefix'] = to_fv3time(cycle_vars['model_start_date_current_cycle'])
+        cycle_vars['m_prefix'] = to_fv3time(cycle_vars['model_start_date_current_cycle'])
 
         # Previous cycle variables
-        if self.task_config.previous_cycle:
-            previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
-            cycle_vars['m_index'] = self.task_config.current_cycle.hour // self.task_config.assim_freq
-            cycle_vars['p_prefix'] = to_fv3time(self.task_config.previous_cycle)
-            cycle_vars['previous_cycle_HH'] = previous_cycle_HH
-            cycle_vars['previous_cycle_YMD'] = to_YMD(self.task_config.previous_cycle)
-            cycle_vars['mid_cyc'] = int(previous_cycle_HH) + int(half_window)
+        previous_cycle_HH = self.task_config.previous_cycle.strftime("%H")
+        cycle_vars['m_index'] = self.task_config.current_cycle.hour // self.task_config.assim_freq
+        cycle_vars['p_prefix'] = to_fv3time(self.task_config.previous_cycle)
+        cycle_vars['previous_cycle_HH'] = previous_cycle_HH
+        cycle_vars['previous_cycle_YMD'] = to_YMD(self.task_config.previous_cycle)
+        cycle_vars['mid_cyc'] = int(previous_cycle_HH) + int(half_window)
 
         return cycle_vars
 
