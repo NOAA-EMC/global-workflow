@@ -254,7 +254,6 @@ class Stage(Task):
         else:
             raise ValueError(f"Unknown RUN type: {stage_dict.RUN}")
 
-        # Since we are here, we must have a com_path template to process
         return self._paths_from_templates(stage_dict, com_path)
 
     @staticmethod
