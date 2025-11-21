@@ -140,8 +140,6 @@ while [[ "${finished}" == "false" ]]; do
          fi
       done < rocotostat.out
 
-      # Kill the GDASApp build if it is still running
-      cleanup
    fi
 done
 
