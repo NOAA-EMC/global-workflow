@@ -91,6 +91,8 @@ Compile the Global Workflow
       singularity shell -e ${bindings} "${img}"
 
 #. Run link_workflow.sh
+   Run link_workflow.sh to link fix data, executables, and many others.
+
    .. code-block:: console
 
       cd your-source-code-dir/global-workflow-cloud/sorc

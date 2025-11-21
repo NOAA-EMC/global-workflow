@@ -43,6 +43,7 @@ Table of Contents
    run.rst
    wave.rst
    noaa_csp.rst
+   container.rst
    errors_faq.rst
    globus_arch.rst
    gcafs.rst
