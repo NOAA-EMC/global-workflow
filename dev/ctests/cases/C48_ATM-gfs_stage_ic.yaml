@@ -12,44 +12,28 @@
 {% set PDY = TEST_DATE | to_YMD %}
 {% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
-{% set SRC_ANALYSIS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/analysis/atmos' %}
-{% set DST_ANALYSIS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/analysis/atmos' %}
+{% set SRC_INPUT_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/input' %}
+{% set DST_INPUT_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/input' %}
 
 input_files:
     # Stage the IC bundle produced by JGFS_ATMOS_STAGE_IC in the baseline COMROOT.
     mkdir:
-        # Mirror the analysis/atmos branch under the test COMROOT destination.
-        - {{ DST_ANALYSIS_DIR }}
-
-    copy:
-        # Files originate from {{ SRC_ANALYSIS_DIR }} inside the staged baseline snapshot.
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges]
+        # Mirror the model/atmos/input branch under the test COMROOT destination.
+        - {{ DST_INPUT_DIR }}
 
 output_files:
     # Validate that the staged ICs match the authoritative baseline copies.
     cmpfiles:
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmanl.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfcanl.nc.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f000.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.sfc_f006.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf000.nc.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.atmf006.nc.ges]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl]
-        - [{{ SRC_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges, {{ DST_ANALYSIS_DIR }}/gfs.t{{ cyc }}z.nstanl.ges]
+        - [{{ SRC_INPUT_DIR }}/gfs_ctrl.nc, {{ DST_INPUT_DIR }}/gfs_ctrl.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile1.nc, {{ DST_INPUT_DIR }}/gfs_data.tile1.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile2.nc, {{ DST_INPUT_DIR }}/gfs_data.tile2.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile3.nc, {{ DST_INPUT_DIR }}/gfs_data.tile3.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile4.nc, {{ DST_INPUT_DIR }}/gfs_data.tile4.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile5.nc, {{ DST_INPUT_DIR }}/gfs_data.tile5.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile6.nc, {{ DST_INPUT_DIR }}/gfs_data.tile6.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile1.nc, {{ DST_INPUT_DIR }}/sfc_data.tile1.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile2.nc, {{ DST_INPUT_DIR }}/sfc_data.tile2.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile3.nc, {{ DST_INPUT_DIR }}/sfc_data.tile3.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile4.nc, {{ DST_INPUT_DIR }}/sfc_data.tile4.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile5.nc, {{ DST_INPUT_DIR }}/sfc_data.tile5.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile6.nc, {{ DST_INPUT_DIR }}/sfc_data.tile6.nc]
