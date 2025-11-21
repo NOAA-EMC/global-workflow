@@ -92,16 +92,28 @@ fi
 ################################################################################
 # Fixed files
 cpreq "${SATANGL}"    satbias_angle
-cpreq "${SATINFO}"    satinfo
 cpreq "${SCANINFO}"   scaninfo
-cpreq "${CONVINFO}"   convinfo
-cpreq "${OZINFO}"     ozinfo
 cpreq "${HYBENSINFO}" hybens_info
 cpreq "${ANAVINFO}"   anavinfo
 cpreq "${VLOCALEIG}"  vlocal_eig.dat
+if [[ "${SATINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
+else
+    cpreq "${SATINFO}" satinfo
+fi
+if [[ "${CONVINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
+else
+    cpreq "${CONVINFO}" convinfo
+fi
+if [[ "${OZINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
+else
+    cpreq "${OZINFO}" ozinfo
+fi
 
 # Bias correction coefficients based on the ensemble mean
-cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
+${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
