@@ -176,7 +176,7 @@ for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
    cat "${DATA}/${m}/bufr_snd_files.list" >> "${DATA}/all_bufr_snd_files.list"
 done
 
-tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -T "${DATA}/all_bufr_snd_files.list" -C "${COMIN_ATMOS_BUFR}"
+tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -C "${COMIN_ATMOS_BUFR}" -T "${DATA}/all_bufr_snd_files.list"
 
 cpfs "${RUN}.${cycle}.bufrsnd.tar.gz" "${COMOUT_ATMOS_BUFR}/"
 
