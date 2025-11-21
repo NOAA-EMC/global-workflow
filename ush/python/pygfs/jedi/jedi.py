@@ -80,7 +80,7 @@ class Jedi:
         self._jcb_config = self.jcb_config.deepcopy()
 
     @logit(logger)
-    def initialize(self, clean_empty_obsspaces=False) -> None:
+    def initialize(self, observations: Optional[List]=None, clean_empty_obsspaces: Optional[bool]=False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -102,7 +102,7 @@ class Jedi:
 
         # Render JEDI executable config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.exe_config_yaml}")
-        self.exe_config = self.render_jcb_template()
+        self.exe_config = self.render_jcb_template(observations=observations)
         logger.debug(f"JEDI config:\n{self.exe_config}")
 
         # Remove obs spaces from JEDI executable config dictionary with missing obs files
@@ -223,7 +223,7 @@ class Jedi:
             raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
 
     @logit(logger)
-    def render_jcb_template(self, algorithm_in: Optional[str] = None) -> AttrDict:
+    def render_jcb_template(self, algorithm_in: Optional[str] = None, observations: Optional[List] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
@@ -231,6 +231,9 @@ class Jedi:
         algorithm (optional) : str
             Name of the algorithm used to generate the JEDI configuration dictionary.
             It will override the algorithm set in the jedi_config.jcb_algo_yaml file.
+        observations (optional) : List
+            List of observations to include in the JEDI configuration dictionary.
+            If not specified, the observations in the jcb_config dictionary will be used.
 
         Returns
         ----------
@@ -247,10 +250,16 @@ class Jedi:
             algorithm = self.jcb_config.algorithm
         else:
             raise WorkflowKeyError("JCB algorithm not specified")
+        self.jcb_config['algorithm'] = algorithm
+
+        # Set observations if specified as input
+        if observations:
+            self.jcb_config['observations'] = observations
+            logger.info(f"foo: {self.jcb_config['observations']}")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
-            exe_config = render({**self.jcb_config, 'algorithm': algorithm})
+            exe_config = render(self.jcb_config)
         except Exception as e:
             raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
@@ -299,8 +308,8 @@ class Jedi:
             for block_name in expected_block_names:
                 if block_name not in jedi_dict:
                     raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_yaml}")
-            if len(jedi_dict) > len(expected_block_names):
-                raise WorkflowException(f"{jedi_config_yaml} specifies more Jedi objects than expected.")
+            #if len(jedi_dict) > len(expected_block_names):
+            #    raise WorkflowException(f"{jedi_config_yaml} specifies more Jedi objects than expected.")
 
         # Return dictionary of JEDI objects
         return jedi_dict
