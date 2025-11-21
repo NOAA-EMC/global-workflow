@@ -148,12 +148,11 @@ else
 fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 
-##############################################################
-# Tar and gzip the individual bufr files and send them to /com
-##############################################################
-cd "${COMOUT_ATMOS_BUFR}" || exit 2
-tar -cf - . | /usr/bin/gzip > "${RUN}.${cycle}.bufrsnd.tar.gz"
-cd "${DATA}" || exit 2
+###################################################
+# Tar and gzip the bufr files created placed in COM
+###################################################
+tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -C "${COMOUT_ATMOS_BUFR}" bufr.*
+cpfs "${RUN}.${cycle}.bufrsnd.tar.gz" "${COMOUT_ATMOS_BUFR}/"
 
 ########################################
 # Send the single tar file to OSO
