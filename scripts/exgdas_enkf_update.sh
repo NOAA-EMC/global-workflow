@@ -132,7 +132,7 @@ else
    ${NLN} "${CONVINFO}"     convinfo
 fi
 if [[ ${OZINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh oz "${PDY}${cyc}" "${DATA}"
+   "${USHgfs}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
 else
    ${NLN} "${OZINFO}"       ozinfo
 fi
