@@ -1,14 +1,14 @@
 suite gcafs_v1
   family primary
-    edit PACKAGEHOME '/scratch3/NCEPDEV/stmp/Cory.R.Martin/nov2025/ecflow_gcafs/global-workflow'
-    edit OUTPUTDIR '/scratch3/NCEPDEV/stmp/Cory.R.Martin/nov2025/ecflow_gcafs/output'
+    edit PACKAGEHOME '/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/git/release/gcafs.v1.0.0'
+    edit OUTPUTDIR '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/output'
     edit gcafs_ver 'v1.0.0'
     edit QUEUE 'dev'
     edit QUEUE_ARCH 'dev_transfer'
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development'
     edit ENVIR 'prod'
-    edit EXPDIR '%PACKAGEHOME%/parm/config'
+    edit EXPDIR '%PACKAGEHOME%/dev/parm/config/gcafs'
     family 00
       edit CYC '00'
       family gcafs
@@ -79,14 +79,14 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jcgdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
                   trigger ../../jgcdas_forecast == complete
               endfamily
               task jgcdas_prep_emissions
                 time 07:00
               task jgcdas_aerosol_analysis_post
-                trigger ./analysis/jgcdas_aerosol_analysis_calc
+                trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
             endfamily
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
@@ -465,14 +465,14 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_finalize
                   trigger ./jgcdas_aerosol_analysis_variational == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jcgdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
                   trigger ../../jgcdas_forecast == complete
               endfamily
               task jgcdas_aerosol_analysis_post
-                trigger ./analysis/jgcdas_aerosol_analysis_calc
+                trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
               task jgcdas_prep_emissions
                 time 13:00
             endfamily
@@ -550,14 +550,14 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_finalize
                   trigger ./jgcdas_aerosol_analysis_variational == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jcgdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
                   trigger ../../jgcdas_forecast == complete
               endfamily
               task jgcdas_aerosol_analysis_post
-                trigger ./analysis/jgcdas_aerosol_analysis_calc
+                trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
               task jgcdas_prep_emissions
                 time 19:00
             endfamily
@@ -938,18 +938,16 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_finalize
                   trigger ./jgcdas_aerosol_analysis_variational == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jcgdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
                   trigger ../../jgcdas_forecast == complete
               endfamily
               task jgcdas_aerosol_analysis_post
-                trigger ./analysis/jgcdas_aerosol_analysis_calc
+                trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
               task jgcdas_prep_emissions
                 time 01:00
-              task jgcdas_aerosol_analysis_post
-                trigger ./analysis/jgcdas_aerosol_analysis_calc
             endfamily
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
