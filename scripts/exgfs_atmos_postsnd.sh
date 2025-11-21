@@ -148,20 +148,6 @@ else
 fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 
-###################################################
-# Tar and gzip the bufr files created placed in COM
-###################################################
-tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -C "${COMOUT_ATMOS_BUFR}" bufr.*
-cpfs "${RUN}.${cycle}.bufrsnd.tar.gz" "${COMOUT_ATMOS_BUFR}/"
-
-########################################
-# Send the single tar file to OSO
-########################################
-if [[ "${SENDDBN}" == "YES" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL GFS_BUFRSND_TAR "${job}" \
-        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
-fi
-
 ########################################
 # Create Regional Collectives of BUFR
 # data and add appropriate WMO Headers
@@ -181,6 +167,27 @@ cat cmdfile
 chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
+
+###############################################################
+# Tar and gzip the bufr files in used to create the collectives
+###############################################################
+# The lists of files are located in ${DATA}/<m>/bufr_snd_files.list
+for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
+   cat "${DATA}/${m}/bufr_snd_files.list" >> "${DATA}/all_bufr_snd_files.list"
+done
+
+tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -T "${DATA}/all_bufr_snd_files.list" -C "${COMIN_ATMOS_BUFR}"
+
+cpfs "${RUN}.${cycle}.bufrsnd.tar.gz" "${COMOUT_ATMOS_BUFR}/"
+
+########################################
+# Send the single tar file to OSO
+########################################
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL GFS_BUFRSND_TAR "${job}" \
+        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
+fi
+
 
 ########################################
 # Read BUFR output and transfer into
