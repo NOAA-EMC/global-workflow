@@ -51,7 +51,8 @@ function remove_files() {
     fi
     # Find all files and links in the directory and store as an arry
     # Run find only once for efficiency
-    mapfile -t flist < <(find "${directory}" -type f -or -type l)
+    flist=()
+    mapfile -t flist < <(find "${directory}" -type f -or -type l) || true
 
     # Now remove those files that match the exclude patterns
     for exclude_pattern in "$@"; do
@@ -91,7 +92,9 @@ for (( current_date=first_selective_date; current_date <= last_date; \
     # Check if the cycle completed successfully by looking at the rocoto log
     if [[ -f "${rocotolog}" ]]; then
         # TODO: This needs to be revamped to not look at the rocoto log.
-        if [[ $(tail -n 1 "${rocotolog}") =~ "This cycle is complete: Success" ]]; then
+        tail_log=$(tail -n 1 "${rocotolog}") || true
+        # Test if the last line of rocotolog indicates success
+        if [[ ${tail_log} =~ "This cycle is complete: Success" ]]; then
             YMD="${current_PDY}" HH="${current_cyc}" declare_from_tmpl \
                 COMOUT_TOP:COM_TOP_TMPL
             if [[ -d "${COMOUT_TOP}" ]]; then
