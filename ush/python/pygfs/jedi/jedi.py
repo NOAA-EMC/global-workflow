@@ -51,7 +51,7 @@ class Jedi:
         for key in required_jedi_keys:
             if key not in config:
                 raise WorkflowKeyError(f"Required key '{key}' not found in config")
-        if not 'jcb_algo' in config and not 'jcb_algo_yaml' in config:
+        if not 'jcb_algo' in config and 'jcb_algo_yaml' not in config:
             raise WorkflowKeyError("Either jcb_algo or jcb_algo_yaml must be specified in config")
 
         # Create the configuration dictionary for JEDI object
@@ -80,7 +80,7 @@ class Jedi:
         self._jcb_config = self.jcb_config.deepcopy()
 
     @logit(logger)
-    def initialize(self, observations: Optional[List]=None, clean_empty_obsspaces: Optional[bool]=False) -> None:
+    def initialize(self, observations: Optional[List] = None, clean_empty_obsspaces: Optional[bool] = False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -308,8 +308,6 @@ class Jedi:
             for block_name in expected_block_names:
                 if block_name not in jedi_dict:
                     raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_yaml}")
-            #if len(jedi_dict) > len(expected_block_names):
-            #    raise WorkflowException(f"{jedi_config_yaml} specifies more Jedi objects than expected.")
 
         # Return dictionary of JEDI objects
         return jedi_dict
