@@ -121,10 +121,22 @@ fi
 ################################################################################
 # Fixed files
 ${NLN} "${SATANGL}"    satbias_angle
-${NLN} "${SATINFO}"    satinfo
+if [[ "${SATINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
+else
+   ${NLN} "${SATINFO}" satinfo
+fi
+if [[ "${CONVINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
+else
+   ${NLN} "${CONVINFO}" convinfo
+fi
+if [[ "${OZINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
+else
+   ${NLN} "${OZINFO}" ozinfo
+fi
 ${NLN} "${SCANINFO}"   scaninfo
-${NLN} "${CONVINFO}"   convinfo
-${NLN} "${OZINFO}"     ozinfo
 ${NLN} "${HYBENSINFO}" hybens_info
 ${NLN} "${ANAVINFO}"   anavinfo
 ${NLN} "${VLOCALEIG}"  vlocal_eig.dat
