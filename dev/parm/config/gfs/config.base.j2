@@ -182,7 +182,7 @@ export DO_AERO_ANL="NO"
 if [[ "${RUN}" == "gfs" ]] ; then
    export DOBNDPNT_WAVE="YES" # Create point outputs for downstream boundary points
 else
-   export DOBNDPNT_WAVE="NO" 
+   export DOBNDPNT_WAVE="NO"
 fi
 
 export FRAC_GRID=".true."
@@ -374,7 +374,12 @@ export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
-export DO_STARTMEM_FROM_JEDIICE="{{ DO_STARTMEM_FROM_JEDIICE }}"
+
+if [[ "${EXP_WARM_START}" = ".true." ]]; then
+  export DO_STARTMEM_FROM_JEDIICE="YES"
+else
+  export DO_STARTMEM_FROM_JEDIICE="{{ DO_STARTMEM_FROM_JEDIICE }}"
+fi
 
 # Hybrid related
 export DOHYBVAR="{{ DOHYBVAR }}"

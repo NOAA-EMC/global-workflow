@@ -162,7 +162,7 @@ class FV3AnalysisCalc(Analysis):
 
         # Write analysis log file
         formatted_date = datetime.now().strftime("%a %b %d %H:%M:%S %Z%Y")
-        log_file = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc}z.done.txt")
+        log_file = os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS, f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.analysis.done.txt")
         message = f"{self.task_config.rCDUMP} {self.task_config.PDY}{self.task_config.cyc} atmanl and sfcanl done at {formatted_date}"
         with open(log_file, "w") as file:
             file.write(f"{message}\n")
