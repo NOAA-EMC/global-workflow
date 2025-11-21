@@ -49,6 +49,18 @@ class AnalysisStats(Analysis):
             {
                 #
                 'observations': parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations'],
+                'outdir': {
+                    'atmos': self.task_config.COMOUT_ATMOS_ANLMON,
+                    'aero': self.task_config.COMOUT_AERO_ANLMON,
+                    'snow': self.task_config.COMOUT_SNOW_ANLMON,
+                    'atmos_gsi': self.task_config.COMOUT_ATMOS_ANLMON,
+                },
+                'anldir': {
+                    'atmos': self.task_config.COMOUT_ATMOS_ANALYSIS,
+                    'aero': self.task_config.COMOUT_AERO_ANALYSIS,
+                    'snow': self.task_config.COMOUT_SNOW_ANALYSIS,
+                    'atmos_gsi': self.task_config.COMOUT_ATMOS_ANALYSIS,
+                },
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
             }
         ))
@@ -86,7 +98,7 @@ class AnalysisStats(Analysis):
             FileHandler(self.task_config.data_in).sync()
 
             # Open tar file
-            diag_dir_path = os.path.join(self.task_config.DATA, 'obs', analysis)
+            diag_dir_path = os.path.join(self.task_config.DATA, analysis)
             tarfilelist = glob.glob(os.path.join(diag_dir_path, '*tar')) + glob.glob(os.path.join(diag_dir_path, '*gz')) + glob.glob(os.path.join(diag_dir_path, '*tgz'))
             for dest in tarfilelist:
                 logger.info(f"Open tarred diagnostic files in {dest}")
@@ -155,32 +167,21 @@ class AnalysisStats(Analysis):
         None
         """
 
-        if analysis == 'atmos_gsi':
-            outdir = self.task_config['COMOUT_ATMOS_ANLMON']
-            anldir = self.task_config['COMOUT_ATMOS_ANALYSIS']
-        else:
-            outdir = self.task_config['COMOUT_' + analysis.upper() + '_ANLMON']
-            anldir = self.task_config['COMOUT_' + analysis.upper() + '_ANALYSIS']
-        # Check if the directory exists; if not, create it
-        if not os.path.exists(outdir):
-            FileHandler({'mkdir': [outdir]}).sync()
-
         # path of output tar statfile
-        iodastatzipfile = os.path.join(outdir, f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
+        iodastatzipfile = os.path.join(self.task_config.outdir[analysis], f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
 
         logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
         # get list of iodastat files to put in tarball
-        iodastatfiles = glob.glob(os.path.join(outdir, '*output*nc'))
+        iodastatfiles = glob.glob(os.path.join(self.task_config.outdir[analysis], '*output*nc'))
 
         logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
-
         with tarfile.open(iodastatzipfile, "w|gz") as archive:
             for targetfile in iodastatfiles:
                 archive.add(targetfile, arcname=os.path.basename(targetfile))
 
         # concatenate text files into one summary file
-        summaryfile = os.path.join(self.task_config.DATA, f"{self.task_config.APREFIX}{analysis}_stats.txt")
+        summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
         with open(summaryfile, 'w') as outfile:
             for ob in self.task_config.observations[analysis]:
                 textfile = os.path.join(self.task_config.DATA, f"{ob}_ioda_stats.txt")
