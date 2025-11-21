@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_forecast_%CYC%
+#PBS -N %RUN%_prepare_obs_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:30:00
-#PBS -l select=27:mpiprocs=32:ompthreads=3:ncpus=96
+#PBS -l walltime=00:20:00
+#PBS -l select=1:mpiprocs=80:ompthreads=1:ncpus=80
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
 
