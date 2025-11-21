@@ -1,11 +1,11 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_forecast_%CYC%
+#PBS -N %RUN%_aerosol_analysis_initialize_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:30:00
-#PBS -l select=27:mpiprocs=32:ompthreads=3:ncpus=96
-#PBS -l place=vscatter:exclhost
+#PBS -l walltime=00:20:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=3072M
+#PBS -l place=vscatter:shared
 #PBS -l debug=true
 
 model=gcafs
