@@ -28,15 +28,13 @@ NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 # Executables
 ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 
-# Filenames.
-GPREFIX=${GPREFIX:-""}
-APREFIX=${APREFIX:-""}
+APREFIX=${APREFIX:-${RUN}.t${cyc}z.}
+GPREFIX=${GPREFIX:-${RUN}.t${GDATE:8:2}z.}
 
-GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}
-CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat_ensmean.tar}
-OZNSTAT=${OZNSTAT:-${APREFIX}oznstat_ensmean.tar}
-RADSTAT=${RADSTAT:-${APREFIX}radstat_ensmean.tar}
-ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat.txt}
+# GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}  # TODO: remove (see comment and TODO below) Also, this is not a "G"BIAS (See the name, it has APREFIX in its name)
+CNVSTAT="${APREFIX}cnvstat_ensmean.tar"
+OZNSTAT="${APREFIX}oznstat_ensmean.tar"
+RADSTAT="${APREFIX}radstat_ensmean.tar"
 
 # Namelist parameters
 if [[ "${USE_CORRELATED_OBERRS:-}" == "YES" ]]; then
@@ -113,7 +111,7 @@ else
 fi
 
 # Bias correction coefficients based on the ensemble mean
-${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"
+#${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"  # This file does not exist when test was run # TODO: remove
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
@@ -133,7 +131,7 @@ for imem in $(seq 1 ${NMEM_ENS}); do
    gmemchar="mem"$(printf "%03i" "${smem}")
    memchar="mem"$(printf "%03i" "${imem}")
 
-   MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
+   MEMDIR=${gmemchar} RUN=${GDUMP} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -x \
       COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
@@ -178,9 +176,10 @@ for FHR in ${nfhrs}; do
    if [[ "${DO_GSISOILDA}" == "YES" ]]; then
       ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
          "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
-      ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}increment.sfc.i00${FHR}.nc" \
+      ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}ensmean_increment.sfc.i00${FHR}.nc"
          "sfcincr_${PDY}${cyc}_fhr0${FHR}_ensmean"
    fi
+
 done
 
 ################################################################################
@@ -333,7 +332,7 @@ fi
 
 # Cat runtime output files.
 cat stdout stderr > enkfstat.txt
-cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${ENKFSTAT}"
+cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 
 ################################################################################
 #  Postprocessing
