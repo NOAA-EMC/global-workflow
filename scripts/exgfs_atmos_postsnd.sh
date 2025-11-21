@@ -151,7 +151,7 @@ ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 ############################################
 # Tar and gzip the bufr files created so far
 ############################################
-find "${COMIN_ATMOS_BUFR}/bufr.*" -printf '%f\n' > "${DATA}/all_bufr_files.txt"
+find "${COMIN_ATMOS_BUFR}" -maxdepth 1 -type f -name "bufr.*" -printf '%f\n' > "${DATA}/all_bufr_files.txt"
 
 tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -C "${COMIN_ATMOS_BUFR}" -T "${DATA}/all_bufr_files.txt"
 

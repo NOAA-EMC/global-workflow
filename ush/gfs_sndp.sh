@@ -32,8 +32,6 @@ cd $DATA/$m
     do
        bufr_target="bufr.${stn}.${PDY}${cyc}"
        cpreq "${COMIN_ATMOS_BUFR}/${bufr_target}" "${DATA}/${m}/bufrin"
-       # Also write the filename to a list for files to tar
-       echo "${bufr_target}" >> "${DATA}/${m}/bufr_snd_files.list"
        export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
