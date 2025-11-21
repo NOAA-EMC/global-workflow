@@ -756,8 +756,6 @@ MOM6_predet(){
   # MOM_channels is configurable based on resolution, but is treated as a fix file
   # MOM_override is a template that allows user to override default namelist settings, but is also treated as a fix file
   cpreq "${FIXgfs}/mom6/${OCNRES}/"* "${DATA}/INPUT/"  # TODO: These need to be explicit
-  # Yangxing is testing new ocean vertical levels (32L instead of 40L)
-  cpreq "/ncrc/home1/Yangxing.Zheng/WORK/python/interpolate_zgrid_32L.nc" "${DATA}/INPUT/"
 
   # Add to the MOM_override file, to have ISO timestamp
   cat >> "${DATA}/INPUT/MOM_override" << EOF
