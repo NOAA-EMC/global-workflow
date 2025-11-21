@@ -30,6 +30,7 @@ class Stage(Task):
         """
         super().__init__(config)
 
+    @logit(logger)
     def _copy_base_config(self) -> Dict[str, Any]:
         """Copy essential base configuration from task_config
 
