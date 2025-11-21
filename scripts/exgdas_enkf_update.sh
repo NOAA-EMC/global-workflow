@@ -121,20 +121,20 @@ fi
 ################################################################################
 # Fixed files
 ${NLN} "${SATANGL}"    satbias_angle
-if [[ ${SATINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh sat "${PDY}${cyc}" "${DATA}"
+if [[ "${SATINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
 else
-   ${NLN} ${SATINFO}      satinfo
+   ${NLN} "${SATINFO}" satinfo
 fi
-if [[ ${CONVINFO} == "generate" ]]; then
-   ${USHgfs}/create_gsi_info.sh conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
+if [[ "${CONVINFO}" == "generate" ]]; then
+   "${USHgfs}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
 else
-   ${NLN} "${CONVINFO}"     convinfo
+   ${NLN} "${CONVINFO}" convinfo
 fi
-if [[ ${OZINFO} == "generate" ]]; then
+if [[ "${OZINFO}" == "generate" ]]; then
    "${USHgfs}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
 else
-   ${NLN} "${OZINFO}"       ozinfo
+   ${NLN} "${OZINFO}" ozinfo
 fi
 ${NLN} "${SCANINFO}"   scaninfo
 ${NLN} "${HYBENSINFO}" hybens_info
