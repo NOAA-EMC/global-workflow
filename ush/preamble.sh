@@ -33,8 +33,9 @@ declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LIN
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
-        # Exit on error, undefined variable, or error in a pipeline (e.g. if and command in "cmd | cmd2" fails)
-        set -euo pipefail
+        # Exit on error or undefined variable
+        # TODO: Also error in a pipeline (e.g. if and command in "cmd | cmd2" fails)
+        set -eu # -o pipefail
     fi
 }
 
