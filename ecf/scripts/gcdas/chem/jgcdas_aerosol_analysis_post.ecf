@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_atmos_post_%FHR%_%CYC%
+#PBS -N %RUN%_aerosol_analysis_post_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:15:00
-#PBS -l select=1:mpiprocs=24:ompthreads=1:ncpus=24
+#PBS -l select=1:mpiprocs=120:ompthreads=1:ncpus=120
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
 
@@ -51,7 +51,7 @@ export g2tmpl_ver=v${g2tmpl_ver}
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgcafs/jobs/JGLOBAL_ATMOS_PRODUCTS
+echo "Do nothing yet, placeholder"
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
