@@ -3,3 +3,4 @@ defaults:
 base:
   DO_TEST_MODE: "NO"
   AERO_ANL_RUNS: "gcdas"
+  USE_IODADIR: "YES"

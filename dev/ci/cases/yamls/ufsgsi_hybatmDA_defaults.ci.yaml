@@ -8,6 +8,7 @@ base:
   CASE_ANL: "C48"
   CASE_HIST: "C96"
   DONST: "NO"
+  USE_IODADIR: "YES"
 atmanl:
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4

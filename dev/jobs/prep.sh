@@ -45,10 +45,12 @@ mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
 # Copy IODA files to ROTDIR
-"${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+if [[ ${USE_IODADIR:-"NO"} == "YES" ]]; then
+    "${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
+    status=$?
+    if [[ ${status} -ne 0 ]]; then
+	exit "${status}"
+    fi
 fi
 
 if [[ "${RUN_local}" == "gcdas" ]]; then
