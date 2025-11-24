@@ -262,6 +262,7 @@ class Stage(Task):
         return self._paths_from_templates(stage_dict, com_path)
 
     @staticmethod
+    @logit(logger)
     def get_member_list(run: str, nmem_ens: int, m_index: int = 0, gefstype: Optional[str] = None) -> list[int]:
         """Get list of member indices based on RUN type
 
@@ -302,6 +303,7 @@ class Stage(Task):
             return [-1]
 
     @staticmethod
+    @logit(logger)
     def _paths_from_templates(stage_dict: AttrDict, com_path_tuples: Tuple[Tuple[str, str, Dict[str, Any]], ...]) -> Dict[str, str]:
         """Generate COM paths from template configurations
 
