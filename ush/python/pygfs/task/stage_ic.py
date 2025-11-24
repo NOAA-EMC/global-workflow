@@ -54,6 +54,7 @@ class Stage(Task):
 
         return {key: self.task_config[key] for key in base_keys if key in self.task_config}
 
+    @logit(logger)
     def _get_config_vars(self) -> Dict[str, Any]:
         """Calculate derived configuration variables
 
@@ -81,6 +82,7 @@ class Stage(Task):
 
         return config_vars
 
+    @logit(logger)
     def _get_cycle_vars(self) -> Dict[str, Any]:
         """Calculate current and previous cycle variables
 
@@ -117,6 +119,7 @@ class Stage(Task):
 
         return cycle_vars
 
+    @logit(logger)
     def _create_cycle_dicts(self, rotdir: str, run: str) -> Dict[str, Dict[str, str]]:
         """Create cycle directories for template substitution
 
@@ -147,6 +150,7 @@ class Stage(Task):
             }
         }
 
+    @logit(logger)
     def _copy_com_templates(self) -> Dict[str, str]:
         """Copy COM templates from task_config
 
@@ -158,6 +162,7 @@ class Stage(Task):
         return {key: self.task_config[key] for key in self.task_config.keys()
                 if key.startswith('COM_') and key.endswith('_TMPL')}
 
+    @logit(logger)
     def create_stage_dict(self) -> AttrDict:
         """Create staging dictionary with all necessary variables for YAML templates
 
@@ -217,6 +222,7 @@ class Stage(Task):
         for key in stage_set.keys():
             FileHandler(stage_set[key]).sync()
 
+    @logit(logger)
     def get_member_com_paths(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
         """Get member-specific COM paths based on RUN type
 
