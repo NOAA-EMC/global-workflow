@@ -88,11 +88,10 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
     echo "INFO: Preparing to regrid surface increments for ${NMEM_REGRID} ensemble members."
     for imem in $(seq 1 "${NMEM_REGRID}"); do
 
-        memdir=$(printf %03i "mem${imem}")
+        memdir=$(printf "mem%03i" "${imem}")
 
         MEMDIR=${memdir} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-            COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
-        MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+            COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
             COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
         # Create MPMD command file for this member
