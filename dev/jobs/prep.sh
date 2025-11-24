@@ -49,7 +49,7 @@ if [[ ${USE_IODADIR:-"NO"} == "YES" ]]; then
     "${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
     status=$?
     if [[ ${status} -ne 0 ]]; then
-	exit "${status}"
+        exit "${status}"
     fi
 fi
 
@@ -118,18 +118,18 @@ fi
 # TODO: remove this when JEDI ATM can cycle bias correction coefficents
 if [[ ${RUN} == "gdas" && ${COPY_BIASCOR_SOURCE:-"NO"} == "YES" ]]; then
     for file in abias abias_pc abias_air; do
-	if [[ -s "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" ]]; then
+        if [[ -s "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" ]]; then
             cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
-	    cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt"
-	fi
+            cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt"
+        fi
     done
 fi
 if [[ ${RUN} == "gdas" && ${COPY_BIASCOR_STATIC:-"NO"} == "YES" ]]; then
     for file in abias abias_pc abias_air; do
-	if [[ -s "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" ]]; then
-	    mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
-	    cpreq "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" "${COMOUT_ATMOS_ANALYSIS}/${GDUMP}.t${cyc}z.${file}.txt"
-	fi
+        if [[ -s "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" ]]; then
+            mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+            cpreq "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" "${COMOUT_ATMOS_ANALYSIS}/${GDUMP}.t${cyc}z.${file}.txt"
+        fi
     done
 fi
 
@@ -212,7 +212,7 @@ if [[ ${RUN} == "gdas" && ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
     # Remove temporary working directory
     cd "${DATAROOT}" || true
     if [[ "${KEEPDATA}" == "NO" ]]; then
-	rm -rf "${DATA}"
+        rm -rf "${DATA}"
     fi    
 fi
 
