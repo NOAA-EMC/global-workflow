@@ -58,7 +58,7 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
              continue
          fi
          targ_file=$(basename "${source_file}")
-         ${NLN} "${source_file}" "${TARGET_DIR}/${compdir}/${targ_file}"
+         cpreq "${source_file}" "${TARGET_DIR}/${compdir}/${targ_file}"
     done
     shopt -u nullglob
     set -f
