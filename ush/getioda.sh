@@ -46,6 +46,7 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     fi
     # Link files from SOURCE_DIR to TARGET_DIR
     if [[ ! -d "${SOURCE_DIR}/${compdir}" ]]; then
+        echo "FATAL ERROR: '${SOURCE_DIR}/${compdir}' does not exist, ABORT!"
         exit 99
     fi
     # Use shell globbing instead of iterating over ls output. Enable nullglob so the loop
