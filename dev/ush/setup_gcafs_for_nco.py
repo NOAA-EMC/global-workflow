@@ -42,5 +42,29 @@ def setup_gcafs_for_nco():
         # need to add something here for the post job once Yaping's PR is in
     }
 
+    # Next, copy ex-scripts from dev/scripts to the global workflow directory
+    gcafs_ex_scripts = {
+        "exgcafs_forecast.sh": "exglobal_forecast.sh",
+        "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.sh",
+        "exgcafs_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
+        "exgcafs_atmos_products.sh": "exglobal_atmos_products.sh",
+    }
+    gcdas_ex_scripts = {
+        "exgcdas_forecast.sh": "exglobal_forecast.sh",
+        "exgcdas_prep_emissions.sh": "exglobal_prep_emissions.sh",
+        "exgcdas_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
+        "exgcdas_atmos_products.sh": "exglobal_atmos_products.sh",
+        "exgcdas_atmos_initialize.py": "exglobal_offline_atmos_analysis.py",
+        "exgcdas_surface_initialize.sh": "exglobal_atmos_sfcanl.sh",
+        "exgcdas_aero_analysis_initialize.py": "exglobal_aero_analysis_initialize.py",
+        "exgcdas_aero_analysis_variational.py": "exglobal_aero_analysis_variational.py",
+        "exgcdas_aero_analysis_finalize.py": "exglobal_aero_analysis_finalize.py",
+        "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_analysis_calc.sh",
+        "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
+        "exgcdas_aero_analysis_generate_bmatrix.py": "exglobal_aero_analysis_generate_bmatrix.py",
+        # exgcdas_prepare_obs is taken from ObsForge for v1, not in global-workflow, do this manually!!
+        # need to add something here for the post job once Yaping's PR is in
+    }
+
 if __name__ == "__main__":
     setup_gcafs_for_nco()
