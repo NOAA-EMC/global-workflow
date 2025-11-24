@@ -10,7 +10,7 @@ DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
 # Exit if SOURCE_DIR does not exist
 if [[ ! -s "${SOURCE_DIR}" ]]; then
-   echo "***ERROR*** DUMP SOURCE_DIR=${SOURCE_DIR} does not exist"
+   echo "FATAL ERROR: DUMP SOURCE_DIR=${SOURCE_DIR} does not exist"
    exit 99
 fi
    
