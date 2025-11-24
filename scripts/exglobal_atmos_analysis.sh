@@ -20,7 +20,6 @@
 #  Set environment.
 
 #  Directories.
-pwd=$(pwd)
 
 # Base variables
 rCDUMP=${rCDUMP:-"gdas"}
