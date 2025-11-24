@@ -160,6 +160,7 @@ ush/gaussian_sfcanl.sh @BrianCurtis-NOAA
 ush/getdump.sh @DavidHuber-NOAA @aerorahul 
 ush/getges.sh @DavidHuber-NOAA @aerorahul 
 ush/getgfsnctime @CoryMartin-NOAA
+ush/getioda.sh @CoryMartin-NOAA @RussTreadon-NOAA
 ush/getncdimlen @CoryMartin-NOAA
 ush/gfs_bfr2gpk.sh @BoCui-NOAA
 ush/gfs_bufr.sh @BoCui-NOAA
