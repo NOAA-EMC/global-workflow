@@ -254,6 +254,8 @@ class Stage(Task):
                 com_path = Stage._get_member_com_paths_gefs_offline(stage_dict, member)
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
+        if stage_dict.RUN == 'sfs':
+            com_path = Stage._get_member_com_paths_gefs_offline(stage_dict, member)
         elif stage_dict.RUN in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
             com_path = Stage._get_member_com_paths_gcafs(stage_dict, member)
         elif stage_dict.RUN == 'gfs':
@@ -286,6 +288,8 @@ class Stage(Task):
         """
         if run in ['enkfgdas']:
             return list(range(1, nmem_ens + 1))
+        if run in ['sfs']:
+            return list(range(0, nmem_ens + 1))
         elif run in ['gefs']:
             if gefstype == 'gefs-real-time':
                 # Map GEFS members to GFS member numbers
@@ -477,7 +481,7 @@ class Stage(Task):
         """
         member_str = f"mem{member:03d}" if member >= 0 else ''
         current_cycle_in = {**stage_dict.current_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
-        current_cycle = {**current_cycle_in, "${RUN}": stage_dict.rRUN}
+        current_cycle = {**current_cycle_in, "${RUN}": stage_dict.RUN}
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
         return (

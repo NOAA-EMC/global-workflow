@@ -39,7 +39,7 @@
 {% endfilter %}
 {% endif %}
 
-{% if USE_ATM_ENS_PERTURB_FILES %}
+{% if USE_ATM_ENS_PERTURB_FILES and member != 0 %}
 {% filter indent(width=4) %}
 {% include "atmosphere_ens_perturbations.yaml.j2" %}
 {% endfilter %}
@@ -60,7 +60,7 @@
 {% include "ocean_rerun.yaml.j2" %}
 {% endfilter %}
 {% endif %}
-{% if USE_OCN_ENS_PERTURB_FILES %}
+{% if USE_OCN_ENS_PERTURB_FILES and member != 0 %}
 {% filter indent(width=4) %}
 {% include "ocean_ens_perturbations.yaml.j2" %}
 {% endfilter %}

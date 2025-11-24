@@ -1,7 +1,7 @@
-{% if path_exists(ICSDIR ~ "/" ~ COMOUT_MED_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".ufs.cpld.cpl.r.nc") %}
+{% if path_exists(ICSDIR ~ "/" ~ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".ufs.cpld.cpl.r.nc") %}
 ocean_mediator:
     mkdir:
-        - "{{ COMOUT_MED_RESTART_PREV_MEM }}"
+        - "{{ COMOUT_MED_RESTART_PREV }}"
     link_req:
-        - ["{{ ICSDIR }}/{{ COMOUT_MED_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.ufs.cpld.cpl.r.nc", "{{ COMOUT_MED_RESTART_PREV_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.ufs.cpld.cpl.r.nc", "{{ COMOUT_MED_RESTART_PREV }}"]
 {% endif %} # path exists
