@@ -35,7 +35,7 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     set +f
     status_files=("${SOURCE_DIR}/${compdir}/${prefix}"*status.log)
     if [[ ! -e "${status_files[0]}" ]]; then
-        echo "***ERROR*** completion log file NOT FOUND in ${SOURCE_DIR}/${compdir}"
+        echo "FATAL ERROR: completion log file NOT FOUND in ${SOURCE_DIR}/${compdir}"
         exit 99
     fi
     echo "Processing component directory: ${compdir}"
