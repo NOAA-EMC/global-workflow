@@ -303,7 +303,6 @@ class OceanIceProducts(Task):
             ds_subset.attrs = ds.attrs
 
             # save subsetted variables to a new netcdf file and compress
-            varlist = config.oceanice_yaml[config.component].subset.variables
             if config.oceanice_yaml[config.component].subset.compress:
                 compress_with = config.oceanice_yaml[config.component].subset.compress_with
                 compress_level = config.oceanice_yaml[config.component].subset.compress_level
