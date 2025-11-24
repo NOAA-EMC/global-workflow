@@ -3,8 +3,6 @@ ocnicepost:
   namelist:
     write_grib2: {{ write_grib2 }}
     write_netcdf: {{ write_netcdf }}
-    compress: True
-    compress_level: 9
     debug: False
   fix_data:
     mkdir:
@@ -74,7 +72,11 @@ ice:
     sinvar: ""
     cosvar: ""
     angvar: "ANGLET"
-  subset: ['hi_1', 'hs_1', 'aice_1', 'Tsfc_1', 'uvel_1', 'vvel_1', 'frzmlt_1', 'albsni_1']
+  subset: 
+      variables: ['hi_1', 'hs_1', 'aice_1', 'Tsfc_1', 'uvel_1', 'vvel_1', 'frzmlt_1', 'albsni_1']
+      compress_with: 'zlib'
+      compress: True
+      compress_level: 9
   data_in:
     copy:
       - ["{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]

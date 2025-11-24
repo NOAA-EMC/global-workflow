@@ -277,7 +277,7 @@ class OceanIceProducts(Task):
         input_file = f"{config.component}.nc"
         output_file = f"{config.component}_subset.nc"
 
-        varlist = config.oceanice_yaml[config.component].subset
+        varlist = config.oceanice_yaml[config.component].subset.variables
 
         logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
 
@@ -303,8 +303,11 @@ class OceanIceProducts(Task):
             ds_subset.attrs = ds.attrs
 
             # save subsetted variables to a new netcdf file and compress
-            if config.oceanice_yaml.ocnicepost.namelist.compress:
-                default_compression = {"zlib": True, "complevel": int(config.oceanice_yaml.ocnicepost.namelist.compress_level)}
+            varlist = config.oceanice_yaml[config.component].subset.variables
+            if config.oceanice_yaml[config.component].subset.compress:
+                compress_with = config.oceanice_yaml[config.component].subset.compress_with
+                compress_level = config.oceanice_yaml[config.component].subset.compress_level
+                default_compression = {compress_with: True, "complevel": int(compress_level)}
                 compress_encoding = {var_name: default_compression for var_name in ds_subset.data_vars}
                 ds_subset.to_netcdf(output_file, encoding=compress_encoding)
             else:
