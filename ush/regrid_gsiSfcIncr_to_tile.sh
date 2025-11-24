@@ -140,7 +140,7 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
         } >> "cmdfile_out.${imem}"
 
     done  # for imem in $(seq 1 "${NMEM_REGRID}"); do
-    in_dir=$(seq -s ", " -f "'./mem%03g/'" 1 ${NMEM_REGRID})
+    in_dir=$(seq -s ", " -f "'./mem%03g/'" 1 "${NMEM_REGRID}")
 
 else  # deterministic member only (NMEM_REGRID=1)
 

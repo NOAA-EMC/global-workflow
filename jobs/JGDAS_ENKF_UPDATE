@@ -9,6 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# shellcheck disable=SC2155
 export GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export GDUMP="enkfgdas"  # EnKF ensemble always uses RUN=enkfgdas for prior members
 
