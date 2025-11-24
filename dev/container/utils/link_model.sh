@@ -57,6 +57,9 @@ source /usr/lmod/lmod/init/bash
 module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
 module load ufs_container.intel
 
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libibverbs:\$LD_LIBRARY_PATH
+
 ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_MODEL
 
@@ -78,15 +81,15 @@ cat > "${link_model_script}" << EOF_URSA
  export FI_PROVIDER=tcp
  export FI_TCP_IFACE=eth0
 
-#HOST_SLURM_PATH=/apps/slurm/default
-#HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
-#    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
-#    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
+ HOST_SLURM_PATH=/apps/slurm/default
+ HOST_MPI_PATH=/apps/spack-2024-12/linux-rocky9-x86_64/gcc-11.4.1/intel-oneapi-compilers-2024.2.1-oqhstbmawnrsdw472p4pjsopj547o6xs/compiler/2024.2/opt/compiler
 
  LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  singularity exec \\
-    -B ${I_MPI_PMI_LIBRARY} \\
+    --bind \${HOST_SLURM_PATH}:\${HOST_SLURM_PATH} \\
+    --bind \${HOST_MPI_PATH}:\${HOST_MPI_PATH} \\
+    -B /apps/slurm/default/lib/libpmi2.so \\
     ${bindings} \\
     ${container} \\
     ${run_model_script} "\$@"
