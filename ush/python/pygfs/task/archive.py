@@ -707,7 +707,7 @@ class Archive(Task):
         # Restart archiving for gdas RUN
         if run == "gdas":
             # TODO: Always archive gdas ocean restarts (for GEFSv13 when project restarts)
-            if tar_type == "gdasocean_restart" and arch_warm_ics:
+            if (tar_type == "gdasocean_restart") and arch_warm_ics:
                 return True
 
             # Archive warm atmosphere and ice increments if requested

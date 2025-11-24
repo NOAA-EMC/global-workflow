@@ -26,6 +26,10 @@ def main():
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
             'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU']
 
+    # Only pull the DOIAU_ENKF key if this is a gfs staging job
+    if stage.task_config['NET'] == 'gfs':
+        keys.append('DOIAU_ENKF')
+
     stage_dict = AttrDict()
     for key in keys:
         # Make sure OCNRES is three digits

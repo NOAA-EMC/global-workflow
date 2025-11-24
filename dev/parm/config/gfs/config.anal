@@ -160,7 +160,7 @@ if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
 
    # Use 2m observations when constructing conventional obs info file
    # can use 2m obs without enabling soil DA by setting USE_2M_OBS=YES in config.base
-   export USE_2M_OBS="${USE_2M_OBS:-DO_GSISOILDA}"
+   export USE_2M_OBS="${USE_2M_OBS:-${DO_GSISOILDA}}"
 else
    export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt"
 fi
