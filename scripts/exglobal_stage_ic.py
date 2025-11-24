@@ -28,6 +28,7 @@ def main():
         # Create member-specific staging dict to avoid modifying base stage_dict
         stage_mem_dict = stage_dict.deepcopy()
         stage_mem_dict.update(member_com_paths)
+        stage_mem_dict.update({'member': member})
 
         # Execute staging
         stage.execute_stage(stage_mem_dict)
