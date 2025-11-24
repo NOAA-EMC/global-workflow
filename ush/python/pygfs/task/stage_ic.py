@@ -222,8 +222,9 @@ class Stage(Task):
         for key in stage_set.keys():
             FileHandler(stage_set[key]).sync()
 
+    @staticmethod
     @logit(logger)
-    def get_member_com_paths(self, stage_dict: AttrDict, member: int) -> Dict[str, Any]:
+    def get_member_com_paths(stage_dict: AttrDict, member: int) -> Dict[str, Any]:
         """Get member-specific COM paths based on RUN type
 
         Parameters
@@ -247,19 +248,19 @@ class Stage(Task):
         if stage_dict.RUN == 'gefs':
             gefstype = stage_dict.get('GEFSTYPE', None)
             if gefstype == 'gefs-real-time':
-                com_path = self._get_member_com_paths_gefs_rt(stage_dict, member)
+                com_path = Stage._get_member_com_paths_gefs_rt(stage_dict, member)
             elif gefstype == 'gefs-offline':
-                com_path = self._get_member_com_paths_gefs_offline(stage_dict, member)
+                com_path = Stage._get_member_com_paths_gefs_offline(stage_dict, member)
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
         elif stage_dict.RUN in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
-            com_path = self._get_member_com_paths_gcafs(stage_dict, member)
+            com_path = Stage._get_member_com_paths_gcafs(stage_dict, member)
         elif stage_dict.RUN == 'gfs':
-            com_path = self._get_member_com_paths_gfs(stage_dict, member)
+            com_path = Stage._get_member_com_paths_gfs(stage_dict, member)
         else:
             raise ValueError(f"Unknown RUN type: {stage_dict.RUN}")
 
-        return self._paths_from_templates(stage_dict, com_path)
+        return Stage._paths_from_templates(stage_dict, com_path)
 
     @staticmethod
     @logit(logger)
@@ -349,8 +350,9 @@ class Stage(Task):
                 path_dict[com_key] = _replace_template_vars(template_str, substitution_dict)
         return path_dict
 
+    @staticmethod
     @logit(logger)
-    def _get_member_com_paths_gfs(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
+    def _get_member_com_paths_gfs(stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GFS
 
         Parameters
@@ -384,8 +386,9 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle_mem_dict),
         )
 
+    @staticmethod
     @logit(logger)
-    def _get_member_com_paths_gefs_offline(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
+    def _get_member_com_paths_gefs_offline(stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GEFS offline
 
         Parameters
@@ -419,8 +422,9 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
+    @staticmethod
     @logit(logger)
-    def _get_member_com_paths_gefs_rt(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
+    def _get_member_com_paths_gefs_rt(stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GEFS real-time
 
         Parameters
@@ -453,8 +457,9 @@ class Stage(Task):
             ('COMOUT_WAVE_RESTART_PREV', 'COM_WAVE_RESTART_TMPL', previous_cycle),
         )
 
+    @staticmethod
     @logit(logger)
-    def _get_member_com_paths_gcafs(self, stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
+    def _get_member_com_paths_gcafs(stage_dict: AttrDict, member: int) -> Tuple[Tuple[str, str, Dict[str, Any]], ...]:
         """Get member COM paths for GCAFS
 
         Parameters
