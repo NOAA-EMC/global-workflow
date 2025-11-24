@@ -99,10 +99,10 @@ class Stage(Task):
         cycle_vars['current_cycle_YMD'] = to_YMD(self.task_config.current_cycle)
 
         if self.task_config.DOIAU and self.task_config.MODE == "cycled":
-            cycle_vars['model_start_date_current_cycle'] = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"-PT{half_window}H"))
+            cycle_vars['model_start_date_current_cycle'] = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"-{half_window}H"))
         else:
             if self.task_config.get('REPLAY_ICS', False):
-                cycle_vars['model_start_date_current_cycle'] = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"PT{half_window}H"))
+                cycle_vars['model_start_date_current_cycle'] = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{half_window}H"))
             else:
                 cycle_vars['model_start_date_current_cycle'] = self.task_config.current_cycle
 
