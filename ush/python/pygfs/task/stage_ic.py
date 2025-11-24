@@ -65,7 +65,9 @@ class Stage(Task):
         config_vars = {}
 
         # Determine rRUN
-        config_vars['rRUN'] = "gdas" if self.task_config.RUN in ['gfs', 'gcafs'] else self.task_config.RUN
+        # For GFS/GCAFS/GCDAS, always use 'gdas' for initial conditions from previous cycles
+        # TODO: Update when GCDAS/GCAFS-specific ICs become available
+        config_vars['rRUN'] = "gdas" if self.task_config.RUN in ['gfs', 'gcafs', 'gcdas'] else self.task_config.RUN
 
         # OCNRES formatting
         if "OCNRES" in self.task_config:
