@@ -22,7 +22,7 @@ upp:
 
 analysis:
   config:
-    rdaod: True
+    rdaod: False
     nasa_on: True
     NET: GFS   # upp doesn't work with GCAFS,set to GFS instead
   data_in:
