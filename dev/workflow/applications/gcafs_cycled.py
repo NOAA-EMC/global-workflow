@@ -204,7 +204,7 @@ class GCAFSCycledAppConfig(AppConfig):
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlgenb']
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-                    task_names[run] += ['prepobsaero']
+                    task_names[run] += ['prep']
                     task_names[run] += ['analcalc']
                     task_names[run] += ['atmanlupp','atmanlprod']
 
