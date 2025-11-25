@@ -6,6 +6,7 @@ to set up the GCAFS workflow for NCO.
 This includes:
 - Copying relevant files from dev/jobs and dev/scripts
 - Renaming files where appropriate
+- Changing variables/paths in the copied files
 - Removing unused files where appropriate
 """
 import os
@@ -16,6 +17,53 @@ current_dir_path = os.path.dirname(os.path.abspath(__file__))
 # Get the absolute path of the global-workflow directory
 # which is assumed to be two directories up from the current file
 global_workflow_dir = os.path.abspath(os.path.join(current_dir_path, "../.."))
+
+
+def replace_gfs_with_gcafs(input_file):
+    """
+    Replace all instances of FOOgfs with FOOgcafs in the given input file.
+    This matches patterns like HOMEgfs -> HOMEgcafs, USHgfs -> USHgcafs, etc.
+    
+    Parameters
+    ----------
+    input_file : str
+        Path to the file to modify
+    
+    Returns
+    -------
+    int
+        Number of replacements made
+    """
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"File not found: {input_file}")
+    
+    # Read the file content
+    with open(input_file, 'r') as f:
+        content = f.read()
+    
+    # Count and replace all instances of FOOgfs with FOOgcafs
+    # This will match patterns like: HOMEgfs, USHgfs, PARMgfs, etc.
+    # Does NOT match standalone "gfs" or quoted "gfs"
+    import re
+    # Match word characters followed by "gfs" at word boundary, but ensure prefix has at least 2 chars
+    # This ensures we match variable names like HOMEgfs but not just "gfs" or "Xgfs"
+    pattern = r'(\w{2,})gfs\b'
+    
+    replacement_count = 0
+    def replace_func(match):
+        nonlocal replacement_count
+        replacement_count += 1
+        prefix = match.group(1)
+        return f"{prefix}gcafs"
+    
+    modified_content = re.sub(pattern, replace_func, content)
+    
+    # Write the modified content back to the file
+    with open(input_file, 'w') as f:
+        f.write(modified_content)
+    
+    return replacement_count
+
 
 def setup_gcafs_for_nco():
     # first, copy jobs from dev to the global workflow directory
