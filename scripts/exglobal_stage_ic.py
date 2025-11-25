@@ -39,6 +39,5 @@ def main():
         # Execute staging
         stage.execute_stage(stage_mem_dict)
 
-
 if __name__ == '__main__':
     main()
