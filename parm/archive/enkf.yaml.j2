@@ -7,8 +7,10 @@ enkf:
             {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
             {% endfor %}
-            {% for fhr in range(fhmin, fhmax + 1, fhout) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
+            {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
+            {% set ngrps = fhrs | length %}
+            {% for grp in range(0, ngrps) %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % grp }}.log"
             {% endfor %}
             {% if not DO_JEDIATMENS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"

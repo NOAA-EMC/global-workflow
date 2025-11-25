@@ -12,12 +12,12 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init fetch"
-    echo "prep prepatmiodaobs"
+    echo "prep"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "prep_emissions"
-    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
+    echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "offlineanl"
     echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
@@ -28,7 +28,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "marineanlinit prepoceanobs marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
+    echo "marineanlinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
     exit 1
 
 fi
@@ -145,13 +145,6 @@ case ${step} in
     tasks_per_node=14
     threads_per_task=1
     memory="${mem_node_max}"
-    ;;
-
-  "prepatmiodaobs")
-    walltime="00:30:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "aerosol_init")
@@ -370,14 +363,6 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "prepobsaero")
-    walltime="00:30:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=1
-    memory="96GB"
-    ;;
-
   "aeroanlinit")
     # below lines are for creating JEDI YAML
     case "${CASE}" in
@@ -532,14 +517,6 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
     memory="24GB"
-    ;;
-
-  "prepoceanobs")
-    walltime="00:10:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=${max_tasks_per_node}
-    memory="48GB"
     ;;
 
   "marinebmat")
