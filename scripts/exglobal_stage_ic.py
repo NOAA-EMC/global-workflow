@@ -20,7 +20,6 @@ def main():
     # Instantiate the Stage object
     stage = Stage(config)
 
-
     # Create staging dictionary with all necessary variables
     stage_dict = stage.create_stage_dict()
 
@@ -38,6 +37,7 @@ def main():
 
         # Execute staging
         stage.execute_stage(stage_mem_dict)
+
 
 if __name__ == '__main__':
     main()
