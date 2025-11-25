@@ -101,6 +101,16 @@
         {% do gdas_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pres_a.1p00.f" ~ '%03d'|format(fhr) ~ ".grib2",
                                  ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
     {% endfor %}
+        {% do gdas_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "abias.txt",
+                                 ARCDIR ~ "/abias." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+        {% do gdas_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "abias_pc.txt",
+                                 ARCDIR ~ "/abias_pc." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+        {% do gdas_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "abias_air.txt",
+                                 ARCDIR ~ "/abias_air." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+        {% do gdas_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "abias_int.txt",
+                                 ARCDIR ~ "/abias_int." ~ RUN ~ "." ~ cycle_YMDH ]) %}
+        {% do gdas_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "analysis.dtf.a006.nc",
+                                 ARCDIR ~ "/dtfanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".nc"]) %}
 
     # Now append the necessary file pairs to file_set
     # Common deterministic files
@@ -148,7 +158,7 @@ mkdir:
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
     {% endif %}
 
-copy:
+copy_opt:
    {% for source_dest_pair in file_set %}
    - {{ source_dest_pair }}
    {% endfor %}

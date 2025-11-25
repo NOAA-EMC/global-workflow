@@ -12,8 +12,14 @@ logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True
 @logit(logger)
 def main():
 
+    config = cast_strdict_as_dtypedict(os.environ)
+    # Set a default value for ATMINC_GRID if it is not in the environment
+    # This MUST be done *before* config is passed to the Stage constructor.
+    config.setdefault('ATMINC_GRID', '')
+
     # Instantiate the Stage object
-    stage = Stage(cast_strdict_as_dtypedict(os.environ))
+    stage = Stage(config)
+
 
     # Create staging dictionary with all necessary variables
     stage_dict = stage.create_stage_dict()
