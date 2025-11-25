@@ -93,10 +93,10 @@ Start date = 2021122018
                |   |-- sfc_data.tile4.nc
                |   |-- sfc_data.tile5.nc
                |   `-- sfc_data.tile6.nc
-               |-- gdas.t18z.abias
-               |-- gdas.t18z.abias_air
-               |-- gdas.t18z.abias_pc
-               `-- gdas.t18z.radstat
+               |-- gdas.t18z.abias.txt
+               |-- gdas.t18z.abias_air.txt
+               |-- gdas.t18z.abias_pc.txt
+               `-- gdas.t18z.radstat.tar
 
 .. _staged_ics_cycled_coupled:
 
@@ -136,20 +136,20 @@ Start date = 2021032312
    │       ├── mem001
    │       │   └── analysis
    │       │       └── ocean
-   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    │       ├── mem002
    │       │   └── analysis
    │       │       └── ocean
-   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    │       ├── mem003
    │       │   └── analysis
    │       │       └── ocean
-   │       │           └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    ...
    │       └── mem080
    │           └── analysis
    │               └── ocean
-   │                   └── gdas.t12z.ocninc.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.ocninc.nc
+   │                   └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    └── gdas.20210323
        ├── 06
        │   └── model
@@ -205,13 +205,13 @@ Start date = 2021032312
        └── 12
            └── analysis
                ├── atmos
-               │   ├── gdas.t12z.abias
-               │   ├── gdas.t12z.abias_air
-               │   ├── gdas.t12z.abias_int
-               │   ├── gdas.t12z.abias_pc
-               │   └── gdas.t12z.radstat
+               │   ├── gdas.t12z.abias.txt
+               │   ├── gdas.t12z.abias_air.txt
+               │   ├── gdas.t12z.abias_int.txt
+               │   ├── gdas.t12z.abias_pc.txt
+               │   └── gdas.t12z.radstat.tar
                └── ocean
-                   └── gdas.t12z.ocninc.nc
+                   └── gdas.t12z.mom6_increment.i006.nc
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
@@ -296,7 +296,11 @@ Manual Generation
 
 .. _coldstarts:
 
-The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
+----------------------------------------
+Cold-start Initial Conditions Generation
+----------------------------------------
+
+The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C1152C384L127).
 
 The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users should see the `documentation to generation initial conditions in the UFS_UTILS repository <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init>`_. The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
@@ -307,213 +311,106 @@ The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://gi
 
 See instructions in UFS_UTILS to clone, build and generate initial conditions: https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#gdas-init
 
-.. _warmstarts-prod:
+.. _warmstarts:
 
-*****************************
-Warm starts (from production)
-*****************************
+----------------------------------------
+Warm-start Initial Conditions Generation
+----------------------------------------
+Warm-start initial conditions are taken from either the GFS in production or an experiment "warmed" up (at least one cycle in). Below is a list of tarballs required for a warm-start cycled experiment.
 
-Output and warm start initial conditions from the operational GFS (FV3GFS) are saved on HPSS. Users can pull these warm start initial conditions from tape for their use in running operational resolution experiments.
+ATM:
+* Previous cycle:
+  * enkfgdas_restartb_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
+  * gdas_restartb.tar
+* Current cycle:
+  * enkfgdas_restarta_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
+  * gdas_restarta.tar
 
-See production output in the following location on HPSS:
+Ocean/Ice:
+* Previous cycle:
+  * gdasocean_restart.tar
+* Current cycle:
+  * gdasocean_analysis.tar
 
-``/NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD``
+Waves:
+* Previous cycle:
+  * gdaswave_restart.tar
 
-Example location for January 2nd 2023:
 
-``/NCEPPROD/hpssprod/runhistory/rh2023/202301/20230102``
+If you are restarting an experiment that you are currently running (e.g. you had a failure and need to rewind a few cycles), then untar these tarballs directly into your ROTDIR.
 
-Example listing for January 2nd 2023 00z (2023010200) production tarballs:
+If you are starting a new experiment that requires warm-start initial conditions, retrieve them into a separate directory and then, when running ``setup_expt.py``, point the ``--icsdir`` argument to that directory so that the experiment setup can link to the correct files.
 
-::
+Two utility scripts are available to assist with warm restart processing for retrospective and realtime tests: :ref:`get_warm_s2sw_restart_tarballs.sh<warmstart-utility-scripts>` for retrieving and extracting tarballs from HPSS, and :ref:`make_ee2_links.sh<warmstart-utility-scripts>` for converting old (pre-EE2) filenames to EE2-compliant names by creating symbolic links.
 
-  -bash-4.2$ hpsstar dir /NCEPPROD/hpssprod/runhistory/rh2023/202301/20230102 | grep gfs | grep _00. | grep -v idx
-  [connecting to hpsscore1.fairmont.rdhpcs.noaa.gov/1217]
-  -rw-r-----    1 nwprod    rstprod  34824086016 Jan  4 03:31 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas.tar
-  -rw-r--r--    1 nwprod    prod     219779890688 Jan  4 04:04 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp1.tar
-  -rw-r--r--    1 nwprod    prod     219779921408 Jan  4 04:13 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp2.tar
-  -rw-r--r--    1 nwprod    prod     219775624192 Jan  4 04:23 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp3.tar
-  -rw-r--r--    1 nwprod    prod     219779726848 Jan  4 04:33 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp4.tar
-  -rw-r--r--    1 nwprod    prod     219777990656 Jan  4 04:42 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp5.tar
-  -rw-r--r--    1 nwprod    prod     219780963328 Jan  4 04:52 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp6.tar
-  -rw-r--r--    1 nwprod    prod     219775471104 Jan  4 05:02 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp7.tar
-  -rw-r--r--    1 nwprod    prod     219779499008 Jan  4 05:11 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp8.tar
-  -rw-r-----    1 nwprod    rstprod   2287770624 Jan  4 02:07 com_gfs_v16.3_gdas.20230102_00.gdas.tar
-  -rw-r--r--    1 nwprod    prod      1026611200 Jan  4 02:07 com_gfs_v16.3_gdas.20230102_00.gdas_flux.tar
-  -rw-r--r--    1 nwprod    prod     91233038336 Jan  4 02:16 com_gfs_v16.3_gdas.20230102_00.gdas_nc.tar
-  -rw-r--r--    1 nwprod    prod     10865070592 Jan  4 02:08 com_gfs_v16.3_gdas.20230102_00.gdas_pgrb2.tar
-  -rw-r-----    1 nwprod    rstprod  69913956352 Jan  4 02:11 com_gfs_v16.3_gdas.20230102_00.gdas_restart.tar
-  -rw-r--r--    1 nwprod    prod     18200814080 Jan  4 02:17 com_gfs_v16.3_gdas.20230102_00.gdaswave_keep.tar
-  -rw-r--r--    1 nwprod    prod      5493360128 Jan  4 02:18 com_gfs_v16.3_gfs.20230102_00.gfs.tar
-  -rw-r--r--    1 nwprod    prod     62501531648 Jan  4 02:21 com_gfs_v16.3_gfs.20230102_00.gfs_flux.tar
-  -rw-r--r--    1 nwprod    prod     121786191360 Jan  4 02:41 com_gfs_v16.3_gfs.20230102_00.gfs_nca.tar
-  -rw-r--r--    1 nwprod    prod     130729495040 Jan  4 02:48 com_gfs_v16.3_gfs.20230102_00.gfs_ncb.tar
-  -rw-r--r--    1 nwprod    prod     138344908800 Jan  4 02:29 com_gfs_v16.3_gfs.20230102_00.gfs_pgrb2.tar
-  -rw-r--r--    1 nwprod    prod     59804635136 Jan  4 02:32 com_gfs_v16.3_gfs.20230102_00.gfs_pgrb2b.tar
-  -rw-r--r--    1 nwprod    prod     25095460864 Jan  4 02:34 com_gfs_v16.3_gfs.20230102_00.gfs_restart.tar
-  -rw-r--r--    1 nwprod    prod     21573020160 Jan  4 02:49 com_gfs_v16.3_gfs.20230102_00.gfswave_output.tar
-  -rw-r--r--    1 nwprod    prod     32850422784 Jan  4 02:51 com_gfs_v16.3_gfs.20230102_00.gfswave_raw.tar
-  -rw-r-----    1 nwprod    rstprod   7419548160 Jan  4 05:15 com_obsproc_v1.1_gfs.20230102_00.obsproc_gfs.tar
+.. _warmstart-utility-scripts:
 
-The warm starts and other output from production are at C768 deterministic and C384 EnKF. The warm start files must be converted to your desired resolution(s) using ``chgres_cube`` if you wish to run a different resolution. If you are running a C768C384L127 experiment you can use them as is.
+-------------------------------------------
+Utility Scripts for Warm Restart Processing
+-------------------------------------------
 
-------------------------------------------------------------------------------------------
-What files should you pull for starting a new experiment with warm starts from production?
-------------------------------------------------------------------------------------------
+Two utility scripts are available to assist with warm restart processing for retrospective and realtime tests:
 
-That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``ROTDIR`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$RUN.$PDY/$CYC/$ATMOS`` folder format expected by the system.
+**get_warm_s2sw_restart_tarballs.sh**
 
-For forecast-only there are two tarballs to pull
+This script automates the retrieval and extraction of warm restart tarballs from HPSS for fully-coupled (S2S/S2SW) experiments.
 
-1. File #1 (for starting cycle SDATE):
+* **Location:** ``dev/ush/get_warm_s2sw_restart_tarballs.sh``
+* **Platform Support:** Currently only supported on Gaea C6
+* **Experiment Types:** Fully-coupled experiments only (atmosphere-ocean-ice)
+* **Usage:**
 
-::
+  ::
 
-  /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_vGFSVER_gfs.YYYYMMDD_CC.gfs_restart.tar
+    get_warm_s2sw_restart_tarballs.sh YYYYMMDDHH HPSS_ROOT_DIR UNTAR_DIR HPC_ACCOUNT
 
-...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
+  Where:
 
-2. File #2 (for prior cycle SDATE-06):
+  - ``YYYYMMDDHH``: Starting cycle in YYYYMMDDHH format
+  - ``HPSS_ROOT_DIR``: Root directory on HPSS where tarballs are stored
+  - ``UNTAR_DIR``: Local directory where tarballs will be extracted
+  - ``HPC_ACCOUNT``: HPC account for sbatch jobs
 
-::
+* **Description:** The script submits SLURM jobs to retrieve and extract restart tarballs from HPSS for both the starting cycle and the previous cycle (6 hours earlier). It handles ensemble groups and various restart components (atmosphere, ocean, wave).
 
-  /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_vGFSVER_gdas.YYYYMMDD_CC.gdas_restart.tar
+* **Limitations:**
 
-...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
+  - Currently only works on Gaea C6 with HPSS access
+  - Only supports fully-coupled experiments
+  - Assumes 80 ensemble members at C384 resolution
+  - Additional work needed to support atmosphere-only or other partially coupled configurations
 
-For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for prior cycle (SDATE-06)):
+**make_ee2_links.sh**
 
-::
+This script converts filenames from the older (pre-EE2) naming convention to EE2-compliant names by creating symbolic links.
 
-    HPSS path: /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/
+* **Location:** ``dev/ush/make_ee2_links.sh``
+* **When to Use:** Only use this script for retrospective and realtime tests that use old (pre-EE2) filenames. Do NOT use for tests already using EE2-compliant filenames.
+* **Usage:**
 
-Tarballs per cycle:
+  ::
 
-::
+    make_ee2_links.sh <target_directory>
 
-   com_gfs_vGFSVER_gdas.YYYYMMDD_CC.gdas_restart.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp1.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp2.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp3.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp4.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp5.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp6.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp7.tar
-   com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp8.tar
+  Where ``<target_directory>`` is the directory containing your warm restart files (typically your ROTDIR).
 
-Go to the top of your ``ROTDIR`` and pull the contents of all tarballs there. The tarballs already contain the needed directory structure.  Note that the directory structure has changed, so this may not be correct.
+* **Description:** The script scans the target directory for RUN.YYYYMMDD directories, and creates symbolic links to convert old filename formats to EE2-compliant names. This includes:
 
-.. _warmstarts-preprod-parallels:
+  - Analysis files (atmanl, sfcanl, ocninc, etc.)
+  - Increment files (atminc, sfcinc, etc.)
+  - Statistics files (radstat, cnvstat, gsistat, etc.)
+  - Bias files (abias, abias_air, abias_pc, etc.)
 
-*******************************************
-Warm starts (from pre-production parallels)
-*******************************************
+* **Important Notes:**
 
-Recent pre-implementation parallel series was for GFS v16 (implemented March 2021). For the prior v15 (Q2FY19) see an additional table below.
+  - The script only creates links needed to restart an existing experiment
+  - Does not create all possible EE2-compatible links
+  - Will not overwrite existing data files
+  - Includes error checking to prevent data loss
 
-* **What resolution are warm-starts available for?** Warm-start ICs are saved at the resolution the model was run at (C768/C384) and can only be used to run at the same resolution combination. If you need to run a different resolution you will need to make your own cold-start ICs. See cold start section above.
-* **What dates have warm-start files saved?** Unfortunately the frequency changed enough during the runs that it’s not easy to provide a definitive list easily.
-* **What files?** All warm-starts are saved in separate tarballs which include “restart” in the name. You need to pull the entirety of each tarball, all files included in the restart tarballs are needed.
-* **Where are these tarballs?** See below for the location on HPSS for each v16 pre-implementation parallel.
-* **What tarballs do I need to grab for my experiment?** Tarballs from two cycles are required. The tarballs are listed below, where $PDY$cyc is your starting cycle and $gPDY$gcyc is one cycle prior.
+* **Example Workflow:**
 
-  - Forecast-only
-    + ../$PDY$cyc/gfs_restarta.tar
-    + ../$gPDY$gcyc/gdas_restartb.tar
-  - Cycled w/EnKF
-    + ../$PDY$cyc/gdas_restarta.tar
-    + ../$PDY$cyc/enkfgdas_restarta_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
-    + ../$gPDY$gcyc/gdas_restartb.tar
-    + ../$gPDY$gcyc/enkfgdas_restartb_grp##.tar (where ## is 01 through 08) (note, older tarballs may include a period between enkf and gdas: "enkf.gdas")
+  After extracting warm restart tarballs using ``get_warm_s2sw_restart_tarballs.sh`` (or manually from HPSS), run the link script if your restart files use the old naming convention::
 
-* **Where do I put the warm-start initial conditions?** Extraction should occur right inside your ROTDIR. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
-
-Due to a recent change in the dycore, you may also need an additional offline step to fix the checksum of the NetCDF files for warm start. See the :ref:`Fix netcdf checksum section <gfsv17-checksum>`.
-The current model has undergone several updates and the files generated may not be completely usable by the model.
-
-.. _retrospective:
-
---------------------------------------------------------------
-GFSv16 (March 2021) Pre-Implementation Parallel HPSS Locations
---------------------------------------------------------------
-
-+-----------------------------+---------------+--------------------------------------------------+
-| Time Period                 | Parallel Name | Archive Location on HPSS                         |
-|                             |               | PREFIX=/NCEPDEV/emc-global/5year/emc.glopara     |
-+-----------------------------+---------------+--------------------------------------------------+
-| 2019050106 ~ 2019060100     | v16retro0e    | $PREFIX/WCOSS_D/gfsv16/v16retro0e/``yyyymmddhh`` |
-+-----------------------------+---------------+--------------------------------------------------+
-| 2019060106 ~ 2019083118     | v16retro1e    | $PREFIX/WCOSS_D/gfsv16/v16retro1e/``yyyymmddhh`` |
-+-----------------------------+---------------+--------------------------------------------------+
-| 2019090100 ~ 2019110918     | v16retro2e    | $PREFIX/WCOSS_D/gfsv16/v16retro2e/``yyyymmddhh`` |
-+-----------------------------+---------------+--------------------------------------------------+
-| 2019111000 ~ 2020122200     | v16rt2        | $PREFIX/WCOSS_D/gfsv16/v16rt2/``yyyymmddhh``     |
-+-----------------------------+---------------+--------------------------------------------------+
-| 2020122206 ~ implementation | v16rt2n       | $PREFIX/WCOSS_D/gfsv16/v16rt2n/``yyyymmddhh``    |
-+-----------------------------+---------------+--------------------------------------------------+
-
-----------------------------------------------------------
-GFSv15 (Q2FY19) Pre-Implementation Parallel HPSS Locations
-----------------------------------------------------------
-
-+---------------------+-----------------+-----------------------------------------------------------+
-| Time Period         | Parallel Name   | Archive Location on HPSS                                  |
-|                     |                 | PREFIX=/NCEPDEV/emc-global/5year                          |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20180525 - 20190612 | prfv3rt1        | $PREFIX/emc.glopara/WCOSS_C/Q2FY19/prfv3rt1               |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20171125 - 20170831 | fv3q2fy19retro1 | $PREFIX/Fanglin.Yang/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro1 |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20170525 - 20170625 | fv3q2fy19retro2 | $PREFIX/emc.glopara/WCOSS_C/Q2FY19/fv3q2fy19retro2        |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20170802 - 20171130 | fv3q2fy19retro2 | $PREFIX/Fanglin.Yang/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro2 |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20161125 - 20170531 | fv3q2fy19retro3 | $PREFIX/Fanglin.Yang/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro3 |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20160817 - 20161130 | fv3q2fy19retro4 | $PREFIX/emc.glopara/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro4  |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20160522 - 20160825 | fv3q2fy19retro4 | $PREFIX/emc.glopara/WCOSS_C/Q2FY19/fv3q2fy19retro4        |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20151125 - 20160531 | fv3q2fy19retro5 | $PREFIX/emc.glopara/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro5  |
-+---------------------+-----------------+-----------------------------------------------------------+
-| 20150503 - 20151130 | fv3q2fy19retro6 | $PREFIX/emc.glopara/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro6  |
-+---------------------+-----------------+-----------------------------------------------------------+
-
-.. _gfsv17-warmstarts:
-
-***************************************
-Using pre-GFSv17 warm starts for GFSv17
-***************************************
-
-If a user wishes to run a high-res (C768C384L127) GFSv17 experiment with warm starts from the operational GFSv16 (or older) warm starts, they must process the initial condition files before using. See details below in the :ref:`Fix netcdf checksum section <gfsv17-checksum>`.
-
-.. _gfsv17-checksum:
-
--------------------------
-Fix NetCDF checksum issue
--------------------------
-
-Due to a recent change in UFS, the setting to bypass the data verification no longer works, so you may also need an additional offline step to delete the checksum of the NetCDF files for warm start:
-
-On RDHPCS:
-
-::
-
-   module load nco/4.9.3
-
-On WCOSS2:
-
-::
-
-   module load intel/19.1.3.304
-   module load netcdf/4.7.4
-   module load udunits/2.2.28
-   module load gsl/2.7
-   module load nco/4.7.9
-
-And then on all platforms:
-
-::
-
-   cd $ROTDIR
-   for f in $(find ./ -name *tile*.nc); do echo $f; ncatted -a checksum,,d,, $f; done
+    cd $ROTDIR
+    /path/to/global-workflow/dev/ush/make_ee2_links.sh .

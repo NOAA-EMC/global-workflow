@@ -84,7 +84,7 @@ export ABIASAIR="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.txt"
 export ABIASe="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_int.txt"
 
 # Diagnostics related to ensemble mean
-export GSISTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.ensmean.tar"
+export GSISTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.ensmean.txt"
 export CNVSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat.ensmean.tar"
 export OZNSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat.ensmean.tar"
 export RADSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat.ensmean.tar"
