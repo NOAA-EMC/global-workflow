@@ -42,7 +42,7 @@ class Stage(Task):
             'RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'assim_freq', 'current_cycle', 'previous_cycle',
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
-            'OCNRES', 'waveGRD', 'ntiles', 'DOIAU',
+            'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'ATMINC_GRID',
             'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
             'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU'
