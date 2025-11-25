@@ -528,8 +528,9 @@ class SFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.nmem > 0:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -572,8 +573,9 @@ class SFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.nmem > 0:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -640,8 +642,9 @@ class SFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.nmem > 0:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
