@@ -135,7 +135,7 @@ class GCAFSCycledAppConfig(AppConfig):
 
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
-            configs += ['prepobsaero']
+            configs += ['prep']
             configs += ['analcalc']
 
         if options['do_anlstat']:
