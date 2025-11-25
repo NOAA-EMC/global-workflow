@@ -20,8 +20,13 @@ analysis:
     copy:
       - ["{{ PARMgfs }}/post/gfs/postxconfig-NT-gfs-anl.txt", "{{ DATA }}/postxconfig-NT.txt"]
 {% if DO_JEDIATMVAR %}
+      {% if ATMINC_GRID == 'gaussian' %}
+      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.atm.a006.nc", "{{ DATA }}/{{ atmos_filename }}"]
+      - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.sfc.a006.nc", "{{ DATA }}/{{ flux_filename }}"]
+      {% else %}
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.jedi_analysis.atm.a006.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.jedi_analysis.sfc.a006.nc", "{{ DATA }}/{{ flux_filename }}"]
+      {% endif %}
 {% else %}
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.atm.a006.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.sfc.a006.nc", "{{ DATA }}/{{ flux_filename }}"]
