@@ -1,4 +1,4 @@
-# Set variables/lists needed to parse the gefs templates
+# Set variables/lists needed to parse the sfs templates
 {% set cycle_HH = current_cycle | strftime("%H") %}
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
@@ -15,6 +15,7 @@ datasets:
 {% include "atmos_master_grib_mem.yaml.j2" %}
 {% endfilter %}
 
+{% if DO_OCN %}
 {% filter indent(width=4) %}
 {% include "ocean_history_mem_monthly.yaml.j2" %}
 {% endfilter %}
@@ -23,7 +24,9 @@ datasets:
 {% filter indent(width=4) %}
 {% include "ocean_history_mem_daily.yaml.j2" %}
 {% endfilter %}
+{% endif %}
 
+{% if DO_ICE %}
 {% filter indent(width=4) %}
 {% include "ice_history_mem_monthly.yaml.j2" %}
 {% endfilter %}
@@ -32,6 +35,7 @@ datasets:
 {% filter indent(width=4) %}
 {% include "ice_history_mem_daily.yaml.j2" %}
 {% endfilter %}
+{% endif %}
 
 {% filter indent(width=4) %}
 {% include "namelists.yaml.j2" %}
