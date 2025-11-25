@@ -1,5 +1,6 @@
 # Paths
 DMPDIR: '/home/${USER}'
+IODADIR: '/home/${USER}'
 BASE_GIT: ''
 PACKAGEROOT: ''
 HOMEDIR: '/home/${USER}'
