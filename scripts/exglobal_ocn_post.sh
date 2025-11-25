@@ -46,9 +46,9 @@ if [[ "${RUN}" == sfs ]]; then
        for f in ${file_list_mon}; do
          f_name=$( basename "${f}" )
          cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_merge.nc"
-         cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_merge.nc" "${COMOUT_OCEAN_HISTORY}/${RUN}.ocn.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
+         cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_merge.nc" "${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
 
-         in_file="${COMOUT_OCEAN_HISTORY}/${RUN}.ocn.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
+         in_file="${COMOUT_OCEAN_HISTORY}/${RUN}.ocean.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
          out_file_d20="${COMOUT_OCEAN_HISTORY}/${RUN}.ocn.d20.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
          out_file_tchp="${COMOUT_OCEAN_HISTORY}/${RUN}.ocn.tchp.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
          out_file_ohc="${COMOUT_OCEAN_HISTORY}/${RUN}.ocn.ohc.t${current_cycle}.monthly_avg.${f_name:4:4}-${f_name:9:2}.nc"
