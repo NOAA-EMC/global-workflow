@@ -265,9 +265,11 @@ EOFdiag
       fi
 
       # Restrict RADSTAT
-      chmod 750 "${RADSTAT}"
-      if [[ "${CHGRP_RSTPROD}" == "YES" ]]; then
-         ${CHGRP_CMD} "${RADSTAT}"
+      if [[ -s "${RADSTAT}" ]]; then
+         chmod 750 "${RADSTAT}"
+         if [[ "${CHGRP_RSTPROD}" == "YES" ]]; then
+            ${CHGRP_CMD} "${RADSTAT}"
+         fi
       fi
 
       echo "$(date) END tar diagnostic files" >&2
