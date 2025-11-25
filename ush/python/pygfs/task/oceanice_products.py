@@ -285,9 +285,8 @@ class OceanIceProducts(Task):
             # open the netcdf file
             ds = xr.open_dataset(input_file)
             if config.component == 'ice':
-                varlist.extend(['tarea', 'tmask'])
-                ds_subset = ds[varlist]
                 # subset the variables
+                ds_subset = ds[varlist]
                 # remove coords that were carried from original file but not used
                 ds_subset = ds_subset.drop_vars('ELON', errors='ignore')
                 ds_subset = ds_subset.drop_vars('ELAT', errors='ignore')
