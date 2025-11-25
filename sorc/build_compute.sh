@@ -87,33 +87,6 @@ echo "Generating build.xml for building global-workflow programs on compute node
 # Catch errors manually from here out
 set +e
 
-# Temporarily build the GDASApp on the head node
-# Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
-build_ids=()
-function cleanup() {
-  echo "Exiting build script. Terminating subprocesses..."
-  for pid in "${build_ids[@]}"; do
-    if kill -0 "${pid}" 2>/dev/null; then # Check if process still exists
-       kill "${pid}"
-    fi
-  done
-  exit 1
-}
-
-trap cleanup TERM
-trap cleanup INT
-trap cleanup ERR
-
-# TODO remove this when all builds move to the head nodes and/or the GDASApp is able to build on all compute nodes again
-#      See GW issue 3933
-if [[ ${systems} == "all" || ${systems} =~ "gdas" ]]; then
-  echo "Building the GDASApp locally (on this node)"
-  gdas_build_log="${HOMEgfs}/sorc/logs/build_gdas.log"
-  "${HOMEgfs}/sorc/build_gdas.sh" -j 12 >& "${gdas_build_log}" &
-  build_gdas_id=$!
-  build_ids+=("${build_gdas_id}")
-fi
-
 "${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
@@ -167,8 +140,6 @@ while [[ "${finished}" == "false" ]]; do
          fi
       done < rocotostat.out
 
-      # Kill the GDASApp build if it is still running
-      cleanup
    fi
 done
 

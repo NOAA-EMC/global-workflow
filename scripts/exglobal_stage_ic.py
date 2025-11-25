@@ -14,13 +14,17 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
+    # Set a default value for ATMINC_GRID if it is not in the environment
+    # This MUST be done *before* config is passed to the Stage constructor.
+    config.setdefault('ATMINC_GRID', '')
+
     # Instantiate the Stage object
     stage = Stage(config)
 
     # Pull out all the configuration keys needed to run stage job
     keys = ['RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
             'assim_freq', 'current_cycle', 'previous_cycle',
-            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
+            'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR', 'ATMINC_GRID',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU',
             'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL',
