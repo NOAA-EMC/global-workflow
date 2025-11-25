@@ -691,15 +691,21 @@ class SFSTasks(Tasks):
 
     def arch_tars(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
-        deps.append(rocoto.add_dependency(dep_dict))
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+#        deps.append(rocoto.add_dependency(dep_dict))
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+#        deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_post'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ocean']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocn_post'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
