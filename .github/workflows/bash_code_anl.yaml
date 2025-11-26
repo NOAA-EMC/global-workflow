@@ -45,7 +45,7 @@ jobs:
         uses: reactive-firewall/shellcheck-scan@v1.2
         with:  # optional arguments
           # match: '**/*.{sh,bash}'
-          match: 'jobs/* dev/jobs/*.sh scripts/*.sh'
+          match: 'jobs/* dev/jobs/*.sh dev/ush/*.sh scripts/*.sh ush/*.sh'
           shell-format: 'bash'
           severity: 'warning'
           publish-artifacts: false
