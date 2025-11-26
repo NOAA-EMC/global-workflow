@@ -30,25 +30,11 @@
 
 export WAV_MOD_TAG="${RUN}.t${cyc}z"
 
-echo "HAS BEGUN on $(hostname)"
-echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for ${WAV_MOD_TAG}"
-
-cat << EOF
-
-                   *************************************
-                   *** WAVE PNT POSTPROCESSOR SCRIPT ***
-                   *************************************
-
-Starting at : $(date)
--------------
-
-EOF
-
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
 if [[ -z "${NTASKS}" ]]; then
-  export err=1
-  err_exit "Requires NTASKS to be set"
+    export err=1
+    err_exit "Requires NTASKS to be set"
 fi
 
 # 0.c Defining model grids
@@ -77,69 +63,71 @@ printf "\nPreparing input files :\n-------------------------\n"
 # Copy model definition files
 iloop=0
 for grdID in ${waveuoutpGRD}; do
-  if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
-    echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-    cpreq -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
-    iloop=$((iloop + 1))
-  fi
+    if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
+        echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
+        cpreq -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
+        iloop=$((iloop + 1))
+    fi
 done
 
 for grdID in ${waveuoutpGRD}; do
-  if [[ -f "mod_def.${grdID}" ]]; then
-    echo "File mod_def.${grdID} found. Syncing to all nodes ..."
-  else
-    export err=2
-    err_exit "NO MOD_DEF FILE mod_def.${grdID}"
-  fi
+    if [[ -f "mod_def.${grdID}" ]]; then
+        echo "File mod_def.${grdID} found. Syncing to all nodes ..."
+    else
+        export err=2
+        err_exit "NO MOD_DEF FILE mod_def.${grdID}"
+    fi
 done
 
 # 1.b Output locations file
 
 rm -f buoy.loc
 if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
-  cpreq -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
-  if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
-    #only do boundary points
-    sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
-        echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
-        echo "         Ending job without doing anything."
-        exit 0
-      }
-  else
-    #exclude boundary points
-    sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
-  fi
+    cpreq -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
+    if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
+        #only do boundary points
+        # shellcheck disable=SC2312
+        sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
+            echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
+            echo "         Ending job without doing anything."
+            exit 0
+        }
+    else
+        #exclude boundary points
+        # shellcheck disable=SC2312
+        sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
+    fi
 fi
 
 if [[ -s buoy.loc ]]; then
-  echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
+    echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
 else
-  export err=3
-  err_exit 'NO BUOY LOCATION FILE'
+    export err=3
+    err_exit 'NO BUOY LOCATION FILE'
 fi
 
 # 1.c Input template files
 
 if [[ -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ]]; then
-  cpreq -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
+    cpreq -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
 fi
 
 if [[ -f ww3_outp_spec.inp.tmpl ]]; then
-  echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
+    echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
 else
-  export err=3
-  err_exit "NO TEMPLATE FOR SPEC INPUT FILE"
+    export err=3
+    err_exit "NO TEMPLATE FOR SPEC INPUT FILE"
 fi
 
 if [[ -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ]]; then
-  cpreq "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ww3_outp_bull.inp.tmpl
+    cpreq "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ww3_outp_bull.inp.tmpl
 fi
 
 if [[ -f ww3_outp_bull.inp.tmpl ]]; then
-  echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
+    echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
 else
-  export err=4
-  err_exit "NO TEMPLATE FOR BULLETIN INPUT FILE"
+    export err=4
+    err_exit "NO TEMPLATE FOR BULLETIN INPUT FILE"
 fi
 
 # 1.d Linking the output files
@@ -147,18 +135,18 @@ fi
 # Loop through forecast hours to link output file
 fhr=${FHMIN_WAV}
 while [[ ${fhr} -le ${FHMAX_WAV_PNT} ]]; do
-  ymdhms=$(date --utc +%Y%m%d.%H0000 -d "${PDY} ${cyc} + ${fhr} hours")
-  FH3=$(printf %03i ${fhr})
-  pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
-  if [[ -f "${pfile}" ]]; then
-    ${NLN} "${pfile}" "./${ymdhms}.out_pnt.ww3.nc"
-  else
-    export err=7
-    err_exit "NO RAW POINT OUTPUT FILE ${ymdhms}.out_pnt.ww3.nc"
-  fi
+    ymdhms=$(date --utc +%Y%m%d.%H0000 -d "${PDY} ${cyc} + ${fhr} hours")
+    FH3=$(printf %03i "${fhr}")
+    pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
+    if [[ -f "${pfile}" ]]; then
+        ${NLN} "${pfile}" "./${ymdhms}.out_pnt.ww3.nc"
+    else
+        export err=7
+        err_exit "NO RAW POINT OUTPUT FILE ${ymdhms}.out_pnt.ww3.nc"
+    fi
 
-  FHINCP=$(( DTPNT_WAV / 3600 ))
-  fhr=$(( fhr + FHINCP ))  # no gridded output, loop with out_pnt stride
+    FHINCP=$((DTPNT_WAV / 3600))
+    fhr=$((fhr + FHINCP)) # no gridded output, loop with out_pnt stride
 done
 
 # 1.e Getting buoy information for points
@@ -166,21 +154,21 @@ done
 ymdh=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${WAVHINDH} hours")
 tstart="${ymdh:0:8} ${ymdh:8:2}0000"
 truntime="${PDY} ${cyc}0000"
-N=$(( (FHMAX_WAV_PNT - FHMIN_WAV) * 3600 / DTPNT_WAV + 1 ))
+N=$(((FHMAX_WAV_PNT - FHMIN_WAV) * 3600 / DTPNT_WAV + 1))
 
 if [[ "${DOSPC_WAV}" == "YES" || "${DOBLL_WAV}" == "YES" ]]; then
-  sed -e "s/TIME/${tstart}/g" \
-      -e "s/DT/${DTPNT_WAV}/g" \
-      -e "s/999/${N}/g" \
-      -e "s/PREFIX/${RUN}/g" \
-      -e "s/^.*POINT.*/\$ &/g" \
-      -e "s/ITYPE/0/g" \
-      -e "s/FORMAT/F/g" \
-    ww3_outp_spec.inp.tmpl > ww3_outp.inp
+    sed -e "s/TIME/${tstart}/g" \
+        -e "s/DT/${DTPNT_WAV}/g" \
+        -e "s/999/${N}/g" \
+        -e "s/PREFIX/${RUN}/g" \
+        -e "s/^.*POINT.*/\$ &/g" \
+        -e "s/ITYPE/0/g" \
+        -e "s/FORMAT/F/g" \
+        ww3_outp_spec.inp.tmpl > ww3_outp.inp
 fi
 
 rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
-${NLN} ./mod_def.${waveuoutpGRD} ./mod_def.ww3
+${NLN} "./mod_def.${waveuoutpGRD}" ./mod_def.ww3
 
 export pgm="${NET,,}_ww3_outp.x"
 source prep_step
@@ -188,28 +176,30 @@ source prep_step
 "${EXECgfs}/${pgm}" > buoy_lst.loc 2>&1
 export err=$?
 if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
-  cat buoy_tmp.loc || true
-  export err=5
-  err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
+    cat buoy_tmp.loc || true
+    export err=5
+    err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
 fi
 
 # Create new buoy_log.ww3
+# shellcheck disable=SC2312
 awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags
 grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
 rm -f buoy_log.dat
 mv buoy_log.tmp buoy_log.dat
 
-Nb=$(wc buoy_log.dat | awk '{ print $1 }')
+Nb=$(wc -l < buoy_log.dat)
 
 if [[ -s buoy_log.dat ]]; then
-  echo 'Buoy log file created. Syncing to all nodes ...'
+    echo 'Buoy log file created. Syncing to all nodes ...'
 else
-  export err=6
-  err_exit "NO BUOY LOG FILE CREATED"
+    export err=6
+    err_exit "NO BUOY LOG FILE CREATED"
 fi
 
 # 1.f Data summary
 
+# shellcheck disable=SC2312
 cat << EOF
 
 Input files read and processed at : $(date)
@@ -229,36 +219,39 @@ EOF
 
 echo '   Making command file for wave post points '
 
+# shellcheck disable=SC2312
 grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
+# shellcheck disable=SC2312
 grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
+# shellcheck disable=SC2312
 points=$(awk '{print $0 "\\n"}' points | tr -d '\n')
 rm -f buoys
 
 # Generate the ww3_outp.inp file from the template
 if [[ "${DOSPC_WAV}" == "YES" ]]; then
-  sed -e "s/TIME/${tstart}/g" \
-      -e "s/DT/${DTPNT_WAV}/g" \
-      -e "s/999/${N}/g" \
-      -e "s/PREFIX/${RUN}/g" \
-      -e "s|POINT|${points}|g" \
-      -e "s/ITYPE/1/g" \
-      -e "s/FORMAT/F/g" \
-    ww3_outp_spec.inp.tmpl > ww3_outp.inp
+    sed -e "s/TIME/${tstart}/g" \
+        -e "s/DT/${DTPNT_WAV}/g" \
+        -e "s/999/${N}/g" \
+        -e "s/PREFIX/${RUN}/g" \
+        -e "s|POINT|${points}|g" \
+        -e "s/ITYPE/1/g" \
+        -e "s/FORMAT/F/g" \
+        ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
-  export pgm="${NET,,}_ww3_outp.x"
-  "${EXECgfs}/${pgm}"
+    export pgm="${NET,,}_ww3_outp.x"
+    "${EXECgfs}/${pgm}"
 fi
 
 if [[ "${DOBLL_WAV}" == "YES" ]]; then
-  sed -e "s/TIME/${tstart}/g" \
-      -e "s/DT/${DTPNT_WAV}/g" \
-      -e "s/999/${N}/g" \
-      -e "s/PREFIX/${RUN}/g" \
-      -e "s|POINT|${points}|g" \
-      -e "s/REFT/${truntime}/g" \
-    ww3_outp_bull.inp.tmpl > ww3_outp.inp
-  export pgm="${NET,,}_ww3_outp.x"
-  "${EXECgfs}/${pgm}"
+    sed -e "s/TIME/${tstart}/g" \
+        -e "s/DT/${DTPNT_WAV}/g" \
+        -e "s/999/${N}/g" \
+        -e "s/PREFIX/${RUN}/g" \
+        -e "s|POINT|${points}|g" \
+        -e "s/REFT/${truntime}/g" \
+        ww3_outp_bull.inp.tmpl > ww3_outp.inp
+    export pgm="${NET,,}_ww3_outp.x"
+    "${EXECgfs}/${pgm}"
 fi
 
 # --------------------------------------------------------------------------- #
@@ -275,37 +268,37 @@ printf "\n   Making command file for taring all point output files."
 # 3.b Execute the taring
 
 if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
-  if [[ "${DOSPC_WAV}" == "YES" ]]; then
-    echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibp ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibp_tar.out" >> cmdtarfile
-  fi
-  if [[ "${DOBLL_WAV}" == "YES" ]]; then
-    echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpbull_tar.out" >> cmdtarfile
-    echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpcbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpcbull_tar.out" >> cmdtarfile
-  fi
+    if [[ "${DOSPC_WAV}" == "YES" ]]; then
+        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibp ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibp_tar.out" >> cmdtarfile
+    fi
+    if [[ "${DOBLL_WAV}" == "YES" ]]; then
+        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpbull_tar.out" >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpcbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpcbull_tar.out" >> cmdtarfile
+    fi
 else
-  if [[ "${DOSPC_WAV}" == "YES" ]]; then
-    echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} spec ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_spec_tar.out" >> cmdtarfile
-  fi
-  if [[ "${DOBLL_WAV}" == "YES" ]]; then
-    echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} bull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_bull_tar.out" >> cmdtarfile
-    echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} cbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_cbull_tar.out" >> cmdtarfile
-  fi
+    if [[ "${DOSPC_WAV}" == "YES" ]]; then
+        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} spec ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_spec_tar.out" >> cmdtarfile
+    fi
+    if [[ "${DOBLL_WAV}" == "YES" ]]; then
+        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} bull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_bull_tar.out" >> cmdtarfile
+        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} cbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_cbull_tar.out" >> cmdtarfile
+    fi
 fi
 
 # Ensure there are enough processors for MPMD else use serial
 ncmds=$(wc -l < cmdtarfile)
 if [[ ${NTASKS} -lt ${ncmds} ]]; then
-  if [[ "${USE_CFP:-}" == "YES" ]]; then
-    echo "WARNING: Not enough processors for MPMD, '${NTASKS} < ${ncmd}', running in serial mode"
-    export USE_CFP="NO"
-  fi
+    if [[ "${USE_CFP:-}" == "YES" ]]; then
+        echo "WARNING: Not enough processors for MPMD, '${NTASKS} < ${ncmd}', running in serial mode"
+        export USE_CFP="NO"
+    fi
 fi
 
 "${USHgfs}/run_mpmd.sh" "${DATA}/cmdtarfile" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   export pgm="run_mpmd.sh"
-   err_exit "run_mpmd failed while tarring point outputs."
+    export pgm="run_mpmd.sh"
+    err_exit "run_mpmd failed while tarring point outputs."
 fi
 
 # End of WW3 point postprocessor script ---------------------------------------- #

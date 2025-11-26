@@ -6,67 +6,40 @@
 #  This script monitors the progress of the gfs_fcst job
 #
 
-hour=00
+hour=0
 TEND=384
-TCP=385
 
-if [ -e pgrb2_hours ]; then
-   rm -f pgrb2_hours
+if [[ -e pgrb2_hours ]]; then
+    rm -f pgrb2_hours
 fi
 
-while [ $hour -lt $TCP ]; 
-do
-  hour=$(printf "%02d" $hour)
-  echo $hour >>pgrb2_hours
-  if [ 10#$hour -lt 240 ]
-  then
-     if [ 10#$hour -lt 120 ]
-     then
-       let "hour=hour+1"
-     else
-       let "hour=hour+3"
-     fi
-  else
-     let "hour=hour+12"
-  fi
-done
-pgrb2_jobs=$(cat pgrb2_hours)
-
-#
-# Wait for all fcst hours to finish 
-#
-icnt=1
-while [ $icnt -lt 1000 ]
-do
-  for fhr in ${pgrb2_jobs}
-  do    
-    if [ -s ${COMIN}/gfs.${cycle}.master.grb2if${fhr} ]
-    then
-#      if [ $fhr -eq 0 ]
-#      then 
-#        ecflow_client --event release_pgrb2_anl
-#      fi    
-      ecflow_client --event release_pgrb2_${fhr}
-      # Remove current fhr from list
-      pgrb2_jobs=$(echo ${pgrb2_jobs} | sed "s/${fhr}//")
+declare -a pgrb2_hours
+while [[ "${hour}" -le "${TEND}" ]]; do
+    pgrb2_hours+=("${hour}")
+    if [[ ${hour} -lt 240 ]]; then
+        if [[ ${hour} -lt 120 ]]; then
+            hour=$((hour + 1))
+        else
+            hour=$((hour + 3))
+        fi
+    else
+        hour=$((hour + 12))
     fi
-  done
-  
-  result_check=$(echo ${pgrb2_jobs} | wc -w)
-  if [ $result_check -eq 0 ]
-  then
-     break
-  fi
-
-  sleep 10
-  icnt=$((icnt + 1))
-  if [ $icnt -ge 720 ]
-  then
-    msg="ABORTING after 2 hours of waiting for GFS POST hours ${pgrb2_jobs}."
-    err_exit $msg
-  fi
-
 done
 
+#
+# Wait for all fcst hours to finish
+#
+sleep_interval=10
+max_tries=1000
+for fhr in "${pgrb2_hours[@]}"; do
+    fhr3=$(sprintf "%03d" "${fhr}")
+    master_file="${COMIN_ATMOS_MASTER}/gfs.${cycle}.master.grb2f${fhr3}"
+    if ! wait_for_file "${master_file}" "${sleep_interval}" "${max_tries}"; then
+        export err=1
+        err_exit "After 2 hours of waiting for GFS POST hour ${fhr3}."
+    fi
+    ecflow_client --event "release_pgrb2_${fhr3}"
+done
 
 exit
