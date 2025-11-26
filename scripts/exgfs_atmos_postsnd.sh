@@ -153,16 +153,16 @@ ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 ############################################
 find "${COMIN_ATMOS_BUFR}" -maxdepth 1 -type f -name "bufr.*" -printf '%f\n' > "${DATA}/all_bufr_files.txt"
 
-tar -czf "${RUN}.${cycle}.bufrsnd.tar.gz" -C "${COMIN_ATMOS_BUFR}" -T "${DATA}/all_bufr_files.txt"
+tar -czf "${RUN}.${cycle}.soundings.tar.gz" -C "${COMIN_ATMOS_BUFR}" -T "${DATA}/all_bufr_files.txt"
 
-cpfs "${RUN}.${cycle}.bufrsnd.tar.gz" "${COMOUT_ATMOS_BUFR}/"
+cpfs "${RUN}.${cycle}.soundings.tar.gz" "${COMOUT_ATMOS_BUFR}/"
 
 ########################################
 # Send the single tar file to OSO
 ########################################
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BUFRSND_TAR "${job}" \
-        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
+        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.soundings.tar.gz"
 fi
 
 ########################################
@@ -184,7 +184,6 @@ cat cmdfile
 chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
-
 
 ########################################
 # Read BUFR output and transfer into
