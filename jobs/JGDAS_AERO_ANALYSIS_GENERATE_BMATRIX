@@ -16,7 +16,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL \
     COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
     COMOUT_CONF:COM_CONF_TMPL
 
-
 mkdir -p "${COMOUT_CHEM_BMAT}"
 mkdir -p "${COMOUT_CONF}"
 
