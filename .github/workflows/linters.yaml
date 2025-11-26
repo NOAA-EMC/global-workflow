@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull_requests: read  # to get PR metadata
       security-events: write
 
     steps:
@@ -23,8 +25,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Enforce bash style standards
+        uses: mfinelli/setup-shfmt@v4
+        run: shfmt -d script.bash
+
+      - name: Shellcheck Scan
+        uses: reactive-firewall/shellcheck-scan@v1
+        with:  # optional arguments
+          # match: '**/*.{sh,bash}'
+          match: 'jobs/* dev/jobs/*.sh script/*.sh'
+          shell-format: 'bash'
+          publish-artifacts: true
+        if: ${{ success() }}
+
+      # Keep old diff shellcheck for now until whole workflow is compliant
       - id: ShellCheck
-        name: Lint shell scripts
+        name: Shellcheck changes
         uses: redhat-plumbers-in-action/differential-shellcheck@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,30 +51,3 @@ jobs:
         with:
           name: Differential ShellCheck SARIF
           path: ${{ steps.ShellCheck.outputs.sarif }}
-
-  # lint-python:
-  #   runs-on: ubuntu-latest
-
-  #   permissions:
-  #     security-events: write
-
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-
-  #     - id: VCS_Diff_Lint
-  #       name: Lint python scripts
-  #       uses: fedora-copr/vcs-diff-lint-action@v1
-
-  #     - if: ${{ always() }}
-  #       name: Upload artifact with detected defects in SARIF format
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: VCS Diff Lint SARIF
-  #         path: ${{ steps.VCS_Diff_Lint.outputs.sarif }}
-
-  #     - if: ${{ failure() }}
-  #       name: Upload SARIF to GitHub using github/codeql-action/upload-sarif
-  #       uses: github/codeql-action/upload-sarif@v2
-  #       with:
-  #         sarif_file: ${{ steps.VCS_Diff_Lint.outputs.sarif }}
