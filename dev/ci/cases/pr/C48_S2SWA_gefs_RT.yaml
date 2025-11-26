@@ -27,6 +27,7 @@ skip_ci_on_hosts:
   - ursa
   - orion
   - awsepicglobalworkflow
+  - wcoss2
 
 workflow:
   engine: rocoto
