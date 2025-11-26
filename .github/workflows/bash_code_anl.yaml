@@ -1,13 +1,18 @@
 #
 name: bash_code_anl
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - develop
+  pull_request
+  workflow_dispatch
 
 permissions:
   contents: read
 
-defaults:
-  run:
-    shell: bash -o pipefail {0}
+# defaults:
+#   run:
+#     shell: bash -o pipefail {0}
 
 jobs:
 
@@ -25,7 +30,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: shfmt scan
-        uses: reviewdog/action-shfmt@v1.0.4
+        uses: reviewdog/action-shfmt@v1
 
   shellcheck:
     runs-on: ubuntu-22.04
@@ -42,7 +47,7 @@ jobs:
           submodules: false
       
       - name: Shellcheck Scan
-        uses: reactive-firewall/shellcheck-scan@v1.2
+        uses: reactive-firewall/shellcheck-scan@v1
         with:  # optional arguments
           # match: '**/*.{sh,bash}'
           match: 'jobs/* dev/jobs/*.sh dev/ush/*.sh scripts/*.sh ush/*.sh'
