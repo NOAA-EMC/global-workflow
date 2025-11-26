@@ -20,18 +20,27 @@ jobs:
       security-events: write
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: reviewdog/action-shfmt@v1.0.4
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: shfmt scan
+        uses: reviewdog/action-shfmt@v1.0.4
 
   shellcheck:
     runs-on: ubuntu-22.04
-    
+
     permissions:
       contents: read  # for actions/checkout to fetch code
       pull-requests: read  # to get PR metadata
       security-events: write
 
     steps:    
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
       - name: Shellcheck Scan
         uses: reactive-firewall/shellcheck-scan@v1
         with:  # optional arguments
