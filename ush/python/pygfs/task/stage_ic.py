@@ -377,7 +377,6 @@ class Stage(Task):
         previous_cycle_mem_dict = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
         return (
-            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_mem_dict),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle_mem_dict),
             ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle_mem_dict),
@@ -413,7 +412,6 @@ class Stage(Task):
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
         return (
-            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
             ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle),
@@ -449,7 +447,6 @@ class Stage(Task):
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str}
 
         return (
-            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
             ('COMOUT_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', current_cycle),
@@ -485,7 +482,6 @@ class Stage(Task):
         previous_cycle = {**stage_dict.previous_cycle_dict, "${MEMDIR}": member_str, "${RUN}": stage_dict.rRUN}
 
         return (
-            ('COMIN_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle_in),
             ('COMOUT_ATMOS_INPUT', 'COM_ATMOS_INPUT_TMPL', current_cycle),
             ('COMOUT_ATMOS_RESTART_PREV', 'COM_ATMOS_RESTART_TMPL', previous_cycle),
             ('COMOUT_ATMOS_RESTART', 'COM_ATMOS_RESTART_TMPL', current_cycle),
