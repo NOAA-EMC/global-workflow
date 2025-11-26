@@ -22,14 +22,14 @@
 # Derived base variables
 
 # Dependent Scripts and Executables
-CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
+CYCLESH=${CYCLESH:-"${USHgfs}/global_cycle.sh"}
 REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
-export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
+export CYCLEXEC=${CYCLEXEC:-"${EXECgfs}/global_cycle"}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 
 # Surface cycle related parameters
-export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
+export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:--2.}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
@@ -39,54 +39,53 @@ export COUPLED=${COUPLED:-".false."}
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GPREFIX="gdas.t${GDATE:8:2}z."
-OPREFIX="${RUN/enkf}.t${cyc}z."
-APREFIX="${RUN/enkf}.t${cyc}z."
+OPREFIX="${RUN/enkf/}.t${cyc}z."
+APREFIX="${RUN/enkf/}.t${cyc}z."
 
 ntiles=6
 
-
 ##############################################################
 # Get dimension information based on CASE
-res="${CASE:1}"
-JCAP_CASE=$((res*2-2))
-LATB_CASE=$((res*2))
-LONB_CASE=$((res*4))
+res=${CASE:1}
+JCAP_CASE=$((res * 2 - 2))
+LATB_CASE=$((res * 2))
+LONB_CASE=$((res * 4))
 
 # Global cycle requires these files
-export FNTSFA=${FNTSFA:-${COMIN_OBS}/${OPREFIX}rtgssthr.grb}
-export FNACNA=${FNACNA:-${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb}
-export FNSNOA=${FNSNOA:-${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+export FNTSFA=${FNTSFA:-"${COMIN_OBS}/${OPREFIX}rtgssthr.grb"}
+export FNACNA=${FNACNA:-"${COMIN_OBS}/${OPREFIX}seaice.5min.blend.grb"}
+export FNSNOA=${FNSNOA:-"${COMIN_OBS}/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}"}
 # Check if resolution specific FNSNOA exists, if not use t1534 version
-if [[ ! -f ${FNSNOA} ]]; then
-  export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
+if [[ ! -f "${FNSNOA}" ]]; then
+    export FNSNOA="${COMIN_OBS}/${OPREFIX}snogrb_t1534.3072.1536"
 fi
-if [[ ! -f ${FNSNOA} ]]; then
-  echo "WARNING: Current cycle snow file ${FNSNOA} is missing.  Snow coverage will not be updated."
+if [[ ! -f "${FNSNOA}" ]]; then
+    echo "WARNING: Current cycle snow file ${FNSNOA} is missing.  Snow coverage will not be updated."
 else
-  echo "INFO: Current cycle snow file is ${FNSNOA}"
+    echo "INFO: Current cycle snow file is ${FNSNOA}"
 fi
-export FNSNOG=${FNSNOG:-${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+export FNSNOG=${FNSNOG:-"${COMIN_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}"}
 # Check if resolution specific FNSNOG exists, if not use t1534 version
-if [[ ! -f ${FNSNOG} ]]; then
-  export FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
+if [[ ! -f "${FNSNOG}" ]]; then
+    export FNSNOG="${COMIN_OBS_PREV}/${GPREFIX}snogrb_t1534.3072.1536"
 fi
-if [[ ! -f ${FNSNOG} ]]; then
-  echo "WARNING: Previous cycle snow file ${FNSNOG} is missing.  Snow coverage will not be updated."
+if [[ ! -f "${FNSNOG}" ]]; then
+    echo "WARNING: Previous cycle snow file ${FNSNOG} is missing. Snow coverage will not be updated."
 else
-  echo "INFO: Previous cycle snow file is ${FNSNOG}"
+    echo "INFO: Previous cycle snow file is ${FNSNOG}"
 fi
 
 # If any snow files are missing, don't apply snow in the global_cycle step.
-if [[ ! -f ${FNSNOA} ]] || [[ ! -f ${FNSNOG} ]]; then
-  export FNSNOA=" "
-  export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+# shellcheck disable=SC2312
+if [[ ! -f "${FNSNOA}" ]] || [[ ! -f "${FNSNOG}" ]]; then
+    export FNSNOA=" "
+    export CYCLVARS=FSNOL=99999.,FSNOS=99999.,
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-elif [[ $(${WGRIB} -4yr "${FNSNOA}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
-  $(${WGRIB} -4yr "${FNSNOG}" 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ]] ; then
-  export FNSNOA=" "
-  export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+elif [[ "$(${WGRIB} -4yr "${FNSNOA}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" -le "$(${WGRIB} -4yr "${FNSNOG}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')" ]]; then
+    export FNSNOA=" "
+    export CYCLVARS=FSNOL=99999.,FSNOS=99999.,
 else
-  export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},${CYCLVARS}"
+    export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},${CYCLVARS}"
 fi
 
 # determine where the input snow restart files come from
@@ -99,45 +98,45 @@ else
 fi
 
 # global_cycle executable specific variables
-export APRUNCY=${APRUN_CYCLE}
-export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
-export MAX_TASKS_CY=${ntiles}
+export APRUNCY="${APRUN_CYCLE}"
+export OMP_NUM_THREADS_CY="${NTHREADS_CYCLE}"
+export MAX_TASKS_CY="${ntiles}"
 
 # Copy fix files required by global_cycle to DATA just once
-for (( nn=1; nn <= ntiles; nn++ )); do
-  cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${nn}.nc"                 "${DATA}/fngrid.00${nn}"
-  cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
+for ((nn = 1; nn <= ntiles; nn++)); do
+    cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
+    cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
 done
 
 # Copy the NSST analysis file for global_cycle
 # There is only a single NSST analysis at the middle of the window
 # For now use/assume it is the same at the beginning of the window if doing IAU
 if [[ "${DONST}" == "YES" ]]; then
-  export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc}
-  if [[ -s "${NST_FILE}" ]]; then
-      cpreq "${NST_FILE}" "${DATA}/dtfanl"
-      export NST_FILE="dtfanl"
-  else
-      export NST_FILE="NULL"
-  fi
+    export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc}
+    if [[ -s "${NST_FILE}" ]]; then
+        cpreq "${NST_FILE}" "${DATA}/dtfanl"
+        export NST_FILE="dtfanl"
+    else
+        export NST_FILE="NULL"
+    fi
 else
-  export NST_FILE="NULL"
+    export NST_FILE="NULL"
 fi
 
 # Collect the dates in the window to update surface restarts
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
 soilinc_fhrs=("${assim_freq}") # increment file at middle of window
-LFHR=${assim_freq}
-if [[ "${DOIAU:-}" == "YES" ]]; then  # Update surface restarts at beginning of window
-  half_window=$(( assim_freq / 2 ))
-  soilinc_fhrs+=("${half_window}")
-  LFHR=-1
-  BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
-  gcycle_dates+=("${BDATE}")
+LFHR="${assim_freq}"
+if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of window
+    half_window=$((assim_freq / 2))
+    soilinc_fhrs+=("${half_window}")
+    LFHR=-1
+    BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
+    gcycle_dates+=("${BDATE}")
 fi
 
 # if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
-if [[ "${DO_GSISOILDA}" = "YES" ]]; then
+if [[ "${DO_GSISOILDA}" == "YES" ]]; then
 
     export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
     export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
@@ -149,7 +148,7 @@ if [[ "${DO_GSISOILDA}" = "YES" ]]; then
     "${REGRIDSH}"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-       err_exit "Soil increment file was not regridded correctly!"
+        err_exit "Soil increment file was not regridded correctly!"
     fi
 
 fi
@@ -157,38 +156,37 @@ fi
 # Loop over the dates in the window to update the surface restarts
 for hr in "${!gcycle_dates[@]}"; do
 
-  gcycle_date=${gcycle_dates[hr]}
-  FHR=${soilinc_fhrs[hr]}
-  echo "Updating surface restarts for ${gcycle_date} ..."
+    gcycle_date="${gcycle_dates[hr]}"
+    FHR="${soilinc_fhrs[hr]}"
+    echo "Updating surface restarts for ${gcycle_date} ..."
 
-  datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
+    datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
-  if [[ "${DO_GSISOILDA}" == "YES" && "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
-        for (( nn=1; nn <= ntiles; nn++ )); do
-           cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
-           "${DATA}/soil_xainc.00${nn}"
+    if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
+        for ((nn = 1; nn <= ntiles; nn++)); do
+            cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
+                "${DATA}/soil_xainc.00${nn}"
         done
-  fi
+    fi
 
-  # Copy inputs from COMIN to DATA
-  for (( nn=1; nn <= ntiles; nn++ )); do
-    cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-    cpreq "${DATA}/fnbgsi.00${nn}"                       "${DATA}/fnbgso.00${nn}"
-  done
+    # Copy inputs from COMIN to DATA
+    for ((nn = 1; nn <= ntiles; nn++)); do
+        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
+        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/fnbgso.00${nn}"
+    done
 
-  "${CYCLESH}" && true
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-     err_exit "Unable to update surface data from guess and analysis!"
-  fi
+    "${CYCLESH}" && true
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "Unable to update surface data from guess and analysis!"
+    fi
 
-  # Copy outputs from DATA to COMOUT
-  for (( nn=1; nn <= ntiles; nn++ )); do
-    cpfs "${DATA}/fnbgso.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
-  done
+    # Copy outputs from DATA to COMOUT
+    for ((nn = 1; nn <= ntiles; nn++)); do
+        cpfs "${DATA}/fnbgso.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+    done
 
 done
-
 
 ################################################################################
 
