@@ -2,9 +2,9 @@ atmosphere_cold:
     mkdir:
         - "{{ COMOUT_ATMOS_INPUT }}"
     link_req:
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_ctrl.nc", "{{ COMOUT_ATMOS_INPUT }}"]
+        - ["{{ ICSDIR }}/{{ COMIN_ATMOS_INPUT | relpath(ROTDIR) }}/gfs_ctrl.nc", "{{ COMOUT_ATMOS_INPUT }}"]
         {% for ftype in ["gfs_data", "sfc_data"] %}
         {% for ntile in range(1, ntiles + 1) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_INPUT | relpath(ROTDIR) }}/{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_INPUT }}"]
+        - ["{{ ICSDIR }}/{{ COMIN_ATMOS_INPUT | relpath(ROTDIR) }}/{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_INPUT }}"]
         {% endfor %} # ntile
         {% endfor %} # ftype
