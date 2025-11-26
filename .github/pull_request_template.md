@@ -41,6 +41,11 @@
 
 # Change characteristics
 <!-- Choose YES or NO from each of the following and delete the other -->
+- Is this change expected to change baselines? YES/NO (If YES, please indicate to which system(s))
+  - [ ] GFS
+  - [ ] GEFS
+  - [ ] SFS
+  - [ ] GCAFS
 - Is this a breaking change (a change in existing functionality)? YES/NO
 - Does this change require a documentation update? YES/NO
 - Does this change require an update to any of the following submodules? YES/NO (If YES, please add a link to any PRs that are pending.)
@@ -74,3 +79,4 @@ Example:
 - [ ] This change is covered by an existing CI test or a new one has been added
 - [ ] Any new scripts have been added to the .github/CODEOWNERS file with owners
 - [ ] I have made corresponding changes to the system documentation if necessary
+- [ ] If my change is not expected to change baselines, I have verified that there are no differences
