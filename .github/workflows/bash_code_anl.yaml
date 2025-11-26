@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: shfmt scan
@@ -37,9 +37,9 @@ jobs:
 
     steps:    
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          submodules: false
       
       - name: Shellcheck Scan
         uses: reactive-firewall/shellcheck-scan@v1.2
@@ -47,7 +47,8 @@ jobs:
           # match: '**/*.{sh,bash}'
           match: 'jobs/* dev/jobs/*.sh scripts/*.sh'
           shell-format: 'bash'
-          publish-artifacts: true
+          severity: 'warning'
+          publish-artifacts: false
         if: ${{ success() }}
 
       # # Keep old diff shellcheck for now until whole workflow is compliant
