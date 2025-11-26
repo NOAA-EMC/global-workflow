@@ -254,7 +254,7 @@ class Stage(Task):
                 com_path = Stage._get_member_com_paths_gefs_offline(stage_dict, member)
             else:
                 raise ValueError(f"Invalid GEFSTYPE '{gefstype}' for RUN 'gefs'.")
-        if stage_dict.RUN == 'sfs':
+        elif stage_dict.RUN == 'sfs':
             com_path = Stage._get_member_com_paths_gefs_offline(stage_dict, member)
         elif stage_dict.RUN in ('gcafs', 'enkfgdas', 'gcdas', 'gdas'):
             com_path = Stage._get_member_com_paths_gcafs(stage_dict, member)
