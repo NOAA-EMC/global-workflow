@@ -10,6 +10,7 @@ defaults:
     shell: bash -o pipefail {0}
 
 jobs:
+
   shfmt:
     runs-on: ubuntu-22.04
 
@@ -19,28 +20,18 @@ jobs:
       security-events: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - uses: mfinelli/setup-shfmt@v4
-      - run: shfmt -d script.bash
+      - uses: actions/checkout@v3
+      - uses: reviewdog/action-shfmt@v1.0.4
 
   shellcheck:
     runs-on: ubuntu-22.04
-
+    
     permissions:
       contents: read  # for actions/checkout to fetch code
       pull-requests: read  # to get PR metadata
       security-events: write
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
+    steps:    
       - name: Shellcheck Scan
         uses: reactive-firewall/shellcheck-scan@v1
         with:  # optional arguments
@@ -50,16 +41,16 @@ jobs:
           publish-artifacts: true
         if: ${{ success() }}
 
-      # Keep old diff shellcheck for now until whole workflow is compliant
-      - id: ShellCheck
-        name: Shellcheck changes
-        uses: redhat-plumbers-in-action/differential-shellcheck@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # # Keep old diff shellcheck for now until whole workflow is compliant
+      # - id: ShellCheck
+      #   name: Shellcheck changes
+      #   uses: redhat-plumbers-in-action/differential-shellcheck@v4
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
 
-      - if: ${{ always() }}
-        name: Upload artifact with ShellCheck defects in SARIF format
-        uses: actions/upload-artifact@v4
-        with:
-          name: Differential ShellCheck SARIF
-          path: ${{ steps.ShellCheck.outputs.sarif }}
+      # - if: ${{ always() }}
+      #   name: Upload artifact with ShellCheck defects in SARIF format
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: Differential ShellCheck SARIF
+      #     path: ${{ steps.ShellCheck.outputs.sarif }}
