@@ -42,10 +42,10 @@ jobs:
           fetch-depth: 0
       
       - name: Shellcheck Scan
-        uses: reactive-firewall/shellcheck-scan@v1
+        uses: reactive-firewall/shellcheck-scan@v1.2
         with:  # optional arguments
           # match: '**/*.{sh,bash}'
-          match: 'jobs/* dev/jobs/*.sh script/*.sh'
+          match: 'jobs/* dev/jobs/*.sh scripts/*.sh'
           shell-format: 'bash'
           publish-artifacts: true
         if: ${{ success() }}
