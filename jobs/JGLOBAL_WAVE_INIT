@@ -1,5 +1,14 @@
 #! /usr/bin/env bash
 
+source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
+
+export job="waveinit"
+export jobid="${job}.$$"
+
 source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 
 export MP_PULSE=0
