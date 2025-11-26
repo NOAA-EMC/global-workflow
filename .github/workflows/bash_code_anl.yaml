@@ -10,12 +10,12 @@ defaults:
     shell: bash -o pipefail {0}
 
 jobs:
-  lint-shell:
+  shfmt:
     runs-on: ubuntu-22.04
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull_requests: read  # to get PR metadata
+      pull-requests: read  # to get PR metadata
       security-events: write
 
     steps:
@@ -24,9 +24,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Enforce bash style standards
-        uses: mfinelli/setup-shfmt@v4
-        run: shfmt -d script.bash
+      - uses: mfinelli/setup-shfmt@v4
+      - run: shfmt -d script.bash
+
+  shellcheck:
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # to get PR metadata
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Shellcheck Scan
         uses: reactive-firewall/shellcheck-scan@v1
