@@ -33,6 +33,7 @@ jobs:
 
       - name: shfmt scan
         uses: reviewdog/action-shfmt@v1
+        fail_on_error: true
 
   shellcheck:
     runs-on: ubuntu-22.04
