@@ -59,11 +59,11 @@ jobs:
           filter_mode: nofilter
           level: warning
           pattern: |
-            dev/jobs/*.sh
-            dev/ush/*.sh
-            jobs/*
-            scripts/*.sh
-            ush/*.sh
+            ./dev/jobs/*.sh
+            ./dev/ush/*.sh
+            ./jobs/*
+            ./scripts/*.sh
+            ./ush/*.sh
 
       # # Keep old diff shellcheck for now until whole workflow is compliant
       # - id: ShellCheck
