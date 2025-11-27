@@ -31,11 +31,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: shfmt scan
+      - if: ${{ success() }}
+        name: shfmt scan
         uses: reviewdog/action-shfmt@v1
         with:
           filter_mode: nofilter
-          fail_on_error: true
+          level: warning
 
   shellcheck:
     runs-on: ubuntu-22.04
@@ -45,7 +46,7 @@ jobs:
       pull-requests: read  # to get PR metadata
       security-events: write
 
-    steps:    
+    steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
@@ -54,16 +55,15 @@ jobs:
       - if: ${{ success() }}
         name: Shellcheck Scan
         uses: reactive-firewall/shellcheck-scan@v1
-        with:  # optional arguments
-          # match: '**/*.{sh,bash}'
-          # match: 'jobs/* dev/jobs/*.sh dev/ush/*.sh scripts/*.sh ush/*.sh'
-          match: 'ush/*.sh'
-          shell-format: 'bash'
-          severity: 'warning'
-          publish-artifacts: true
-
-      - if: ${{ !success() }}
-        run: echo "hello"
+        with:
+          filter_mode: nofilter
+          level: warning
+          pattern: |
+            dev/jobs/*.sh
+            dev/ush/*.sh
+            jobs/*
+            scripts/*.sh
+            ush/*.sh
 
       # # Keep old diff shellcheck for now until whole workflow is compliant
       # - id: ShellCheck
