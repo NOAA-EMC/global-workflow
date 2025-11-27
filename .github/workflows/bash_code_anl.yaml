@@ -32,16 +32,20 @@ jobs:
         with:
           filter_mode: nofilter
           level: warning
-          path: |
+          shfmt_flags: |
             dev/jobs
             jobs
             scripts
-          pattern: |
-            config*
-            J*
-            *.env
-            *.sh
-            *.bash
+          # path: |
+          #   dev/jobs
+          #   jobs
+          #   scripts
+          # pattern: |
+          #   config*
+          #   J*
+          #   *.env
+          #   *.sh
+          #   *.bash
 
   shellcheck:
     runs-on: ubuntu-22.04
