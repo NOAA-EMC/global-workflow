@@ -11,9 +11,9 @@ on:
 permissions:
   contents: read
 
-# defaults:
-#   run:
-#     shell: bash -o pipefail {0}
+defaults:
+  run:
+    shell: bash -o pipefail {0}
 
 jobs:
 
@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
       - name: shfmt scan
         uses: reviewdog/action-shfmt@v1
 
@@ -47,7 +48,8 @@ jobs:
         with:
           submodules: false
       
-      - name: Shellcheck Scan
+      - if: ${{ success() }}
+        name: Shellcheck Scan
         uses: reactive-firewall/shellcheck-scan@v1
         with:  # optional arguments
           # match: '**/*.{sh,bash}'

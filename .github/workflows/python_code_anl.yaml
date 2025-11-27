@@ -1,5 +1,11 @@
 name: python_code_anl
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+
+  workflow_dispatch:
 
 jobs:
   check_norms:
