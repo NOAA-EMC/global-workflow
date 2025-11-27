@@ -59,7 +59,11 @@ jobs:
           filter_mode: nofilter
           level: warning
           path: |
+            dev/jobs
+            dev/ush
             jobs
+            scripts
+            ush
           pattern: |
             J*
             *.sh
