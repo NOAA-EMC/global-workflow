@@ -57,7 +57,7 @@ jobs:
           match: 'ush/*.sh'
           shell-format: 'bash'
           severity: 'warning'
-          publish-artifacts: false
+          publish-artifacts: true
 
       # # Keep old diff shellcheck for now until whole workflow is compliant
       # - id: ShellCheck
