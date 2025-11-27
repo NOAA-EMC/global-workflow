@@ -59,7 +59,7 @@ jobs:
           filter_mode: nofilter
           level: warning
           path: |
-            jobs/*
+            ./jobs/*
 
           
           # ./dev/jobs/*.sh
