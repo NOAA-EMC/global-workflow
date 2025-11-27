@@ -11,10 +11,6 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    shell: bash -o pipefail {0}
-
 jobs:
 
   shfmt:
@@ -31,12 +27,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - if: ${{ success() }}
-        name: shfmt scan
+      - name: shfmt scan
         uses: reviewdog/action-shfmt@v1
         with:
           filter_mode: nofilter
           level: warning
+          path: |
+            dev/jobs
+            jobs
+            scripts
+          pattern: |
+            config*
+            J*
+            *.env
+            *.sh
+            *.bash
 
   shellcheck:
     runs-on: ubuntu-22.04
@@ -52,40 +57,18 @@ jobs:
         with:
           submodules: false
       
-      - if: ${{ success() }}
-        name: Shellcheck Scan
+      - name: Shellcheck Scan
         uses: reviewdog/action-shellcheck@v1
         with:
           filter_mode: nofilter
           level: warning
           path: |
             dev/jobs
-            dev/ush
             jobs
             scripts
-            ush
           pattern: |
+            config*
             J*
+            *.env
             *.sh
             *.bash
-
-          
-          # ./dev/jobs/*.sh
-          # ./dev/ush/*.sh
-          # ./jobs/*
-          # ./scripts/*.sh
-          # ./ush/*.sh
-
-      # # Keep old diff shellcheck for now until whole workflow is compliant
-      # - id: ShellCheck
-      #   name: Shellcheck changes
-      #   uses: redhat-plumbers-in-action/differential-shellcheck@v4
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-
-      # - if: ${{ always() }}
-      #   name: Upload artifact with ShellCheck defects in SARIF format
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: Differential ShellCheck SARIF
-      #     path: ${{ steps.ShellCheck.outputs.sarif }}
