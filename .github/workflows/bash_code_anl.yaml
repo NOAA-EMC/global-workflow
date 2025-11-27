@@ -58,7 +58,7 @@ jobs:
         with:
           filter_mode: nofilter
           level: warning
-          pattern: |
+          path: |
             jobs/*
 
           
