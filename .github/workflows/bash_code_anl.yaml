@@ -57,7 +57,6 @@ jobs:
           shell-format: 'bash'
           severity: 'warning'
           publish-artifacts: false
-        if: ${{ success() }}
 
       # # Keep old diff shellcheck for now until whole workflow is compliant
       # - id: ShellCheck
