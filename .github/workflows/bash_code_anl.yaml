@@ -59,6 +59,9 @@ jobs:
           severity: 'warning'
           publish-artifacts: true
 
+      - if: ${{ !success() }}
+        run: echo "hello"
+
       # # Keep old diff shellcheck for now until whole workflow is compliant
       # - id: ShellCheck
       #   name: Shellcheck changes
