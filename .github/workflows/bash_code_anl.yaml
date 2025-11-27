@@ -59,9 +59,11 @@ jobs:
           filter_mode: nofilter
           level: warning
           path: |
-            ./jobs/*
+            jobs
           pattern: |
-            *
+            J*
+            *.sh
+            *.bash
 
           
           # ./dev/jobs/*.sh
