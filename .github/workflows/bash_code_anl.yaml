@@ -60,6 +60,8 @@ jobs:
           level: warning
           path: |
             ./jobs/*
+          pattern: |
+            *
 
           
           # ./dev/jobs/*.sh
