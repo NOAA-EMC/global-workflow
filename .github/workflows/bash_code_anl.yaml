@@ -33,6 +33,7 @@ jobs:
           filter_mode: nofilter
           level: warning
           shfmt_flags: |
+            -d
             dev/jobs
             jobs
             scripts
