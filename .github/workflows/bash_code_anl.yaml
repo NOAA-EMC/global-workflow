@@ -54,7 +54,7 @@ jobs:
       
       - if: ${{ success() }}
         name: Shellcheck Scan
-        uses: reactive-firewall/shellcheck-scan@v1
+        uses: reviewdog/action-shellcheck@v1
         with:
           filter_mode: nofilter
           level: warning
