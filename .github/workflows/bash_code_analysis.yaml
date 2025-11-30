@@ -1,5 +1,5 @@
 #
-name: bash_code_anl
+name: bash_code_analysis
 on:
   push:
     branches:

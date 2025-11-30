@@ -1,4 +1,4 @@
-name: python_code_anl
+name: python_code_analysis
 on:
   push:
     branches:
