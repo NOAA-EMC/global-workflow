@@ -35,10 +35,8 @@ jobs:
       #     level: warning
 
       - name: shfmt scan
-        uses: reviewdog/action-shfmt@v1
-        with:
-          filter_mode: added
-          level: warning
+        uses: mfinelli/setup-shfmt@v4
+        run: shfmt -d dev/jobs jobs scripts ush
 
   shellcheck:
     runs-on: ubuntu-22.04
