@@ -27,26 +27,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Switch to this action once whole repo is shfmt compliant
+      # - name: shfmt scan
+      #   uses: reviewdog/action-shfmt@v1
+      #   with:
+      #     filter_mode: nofilter
+      #     level: warning
+
       - name: shfmt scan
         uses: reviewdog/action-shfmt@v1
         with:
-          filter_mode: nofilter
+          filter_mode: added
           level: warning
-          shfmt_flags: |
-            -d
-            dev/jobs
-            jobs
-            scripts
-          # path: |
-          #   dev/jobs
-          #   jobs
-          #   scripts
-          # pattern: |
-          #   config*
-          #   J*
-          #   *.env
-          #   *.sh
-          #   *.bash
 
   shellcheck:
     runs-on: ubuntu-22.04
