@@ -34,8 +34,9 @@ jobs:
       #     filter_mode: nofilter
       #     level: warning
 
-      - name: shfmt scan
+      - name: Install shfmt
         uses: mfinelli/setup-shfmt@v4
+      - name: shfmt scan
         run: shfmt -d dev/jobs jobs scripts ush
 
   shellcheck:
