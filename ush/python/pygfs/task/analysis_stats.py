@@ -87,8 +87,6 @@ class AnalysisStats(Analysis):
         None
         """
 
-        logger.info(f"Copying files to {self.task_config.DATA}/stats")
-
         for analysis in self.task_config.STAT_ANALYSES:
             # Loop through a copy of ob space list
             logger.info(f"Working on analysis type: {analysis}")
@@ -98,7 +96,7 @@ class AnalysisStats(Analysis):
             FileHandler(self.task_config.data_in).sync()
 
             # Open tar file
-            diag_dir_path = os.path.join(self.task_config.DATA, analysis, 'obs')
+            diag_dir_path = os.path.join(self.task_config.DATA, analysis, 'diag')
             tarfilelist = glob.glob(os.path.join(diag_dir_path, '*tar')) + glob.glob(os.path.join(diag_dir_path, '*gz')) + glob.glob(os.path.join(diag_dir_path, '*tgz'))
             for dest in tarfilelist:
                 logger.info(f"Open tarred diagnostic files in {dest}")
@@ -174,7 +172,7 @@ class AnalysisStats(Analysis):
             logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
             # get list of iodastat files to put in tarball
-            iodastatfiles = glob.glob(os.path.join(self.task_config.DATA, analysis, '*nc'))
+            iodastatfiles = glob.glob(os.path.join(self.task_config.DATA, analysis, 'stat', '*nc'))
 
             logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
             with tarfile.open(iodastatzipfile, "w|gz") as archive:
@@ -185,7 +183,7 @@ class AnalysisStats(Analysis):
             summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
                 for ob in self.task_config.observations[analysis]:
-                    textfile = os.path.join(self.task_config.DATA, analysis, f"{ob}_ioda_stats.txt")
+                    textfile = os.path.join(self.task_config.DATA, analysis, 'stat', f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
                         with open(textfile, 'r') as infile:
