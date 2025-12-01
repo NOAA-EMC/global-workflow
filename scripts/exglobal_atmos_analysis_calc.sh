@@ -78,6 +78,7 @@ ATMANL=${ATMANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"}
 
 # Increment files
 ATMINC=${ATMINC:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"}
+AEROINC=${AEROINC:-"${COMIN_CHEM_ANALYSIS}/${APREFIX}aeroinc.nc"}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -117,7 +118,13 @@ rm -rf dir.*
 if [[ "${DO_CALC_ANALYSIS}" == "YES" ]]; then
     # link analysis and increment files
     ${NLN} "${ATMANL}" siganl
-    ${NLN} "${ATMINC}" siginc.nc
+
+    if [[ "${RUN}" == "gcdas" ]]; then
+        ${NLN} "${AEROINC}" siginc.nc
+    else
+        ${NLN} "${ATMINC}" siginc.nc
+    fi
+
     if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
         ${NLN} "${ATMA03}" siga03
         ${NLN} "${ATMI03}" sigi03.nc
