@@ -13,7 +13,7 @@ fi
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 ###############################################################
 
-if [[ "${CLEANUP_COM:-YES}" == NO ]] ; then
+if [[ "${CLEANUP_COM:-YES}" == NO ]]; then
     exit 0
 fi
 
@@ -92,8 +92,8 @@ function remove_files() {
 }
 
 # Now start removing old COM files/directories
-for (( current_date=first_date; current_date <= last_date; \
-  current_date=$(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours") )); do
+for ((current_date=first_date; current_date <= last_date; \
+current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours"))); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
     rocotolog="${EXPDIR}/logs/${current_date}.log"
@@ -124,7 +124,8 @@ for (( current_date=first_date; current_date <= last_date; \
             fi
             # Remove all rtofs directories in each RUN older than last_rtofs_date
             rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
-            if [[ -d "${rtofs_dir}" ]] && (( current_date < last_rtofs_date )); then rm -rf "${rtofs_dir}" ; fi
+            if [[ -d "${rtofs_dir}" ]] && ((current_date < last_rtofs_date)); then rm -rf "${rtofs_dir}" ; fi
+            if [[ -d "${rtofs_dir}" ]] && ((current_date < last_rtofs)); then rm -rf "${rtofs_dir}"; fi
         fi
     fi
 done
@@ -143,7 +144,7 @@ if [[ "${RUN}" == "gfs" ]]; then
     fi
 
     touch_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_FITS} hours")
-    while (( touch_date < "${PDY}${cyc}" )); do
+    while ((touch_date < "${PDY}${cyc}")); do
         touch_PDY="${touch_date:0:8}"
         touch_cyc="${touch_date:8:2}"
         touch_dir="${ROTDIR}/vrfyarch/${RUN}.${touch_PDY}/${touch_cyc}"
@@ -157,7 +158,7 @@ fi
 # Remove $RUN.$rPDY for the older of GDATE or RDATE
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_max} hours")
 RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
-if (( GDATE < RDATE )); then
+if ((GDATE < RDATE)); then
     RDATE=${GDATE}
 fi
 

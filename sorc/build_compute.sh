@@ -143,18 +143,6 @@ while [[ "${finished}" == "false" ]]; do
    fi
 done
 
-# Wait for the GDASApp to finish building
-if [[ -n "${build_gdas_id+0}" ]]; then
-  echo "Compute builds have completed successfully, but the GDASApp is still building locally.  Waiting for it to complete."
-  wait "${build_gdas_id}"
-  gdas_stat=$?
-  if [[ ${gdas_stat} -ne 0 ]]; then
-    echo "FATAL ERROR The GDASApp failed to build!  Check log in ${gdas_build_log}"
-    # Capture the error log in logs/error.logs
-    echo "${gdas_build_log}" >> "${err_file}"
-    exit 3
-  fi
-fi
 echo "All builds completed successfully!"
 
 exit 0
