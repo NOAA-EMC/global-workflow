@@ -83,13 +83,6 @@ marineanlletkf:
   SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml.j2"
 
-prepoceanobs:
-  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml"  # TODO: This is also repeated in ocnanal
-  OBSPREP_YAML: "${PARMgfs}/gdas/marine/obsprep/obsprep_config.yaml"
-  use_exp_obs: "YES"
-  dmpdir_exp: "${BASE_DATA}/experimental_obs"
-
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
 
