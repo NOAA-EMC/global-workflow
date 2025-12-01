@@ -35,8 +35,6 @@ class AtmEnsAnalysis(Analysis):
 
         _res = int(self.task_config.CASE_ENS[1:])
 
-        self.task_config.letkf_app = "true"
-
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -45,6 +43,8 @@ class AtmEnsAnalysis(Analysis):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
+                'letkf_app': "true",
+                'atm_enkfonly': self.task_config.DOENKFONLY_ATM,
             })
         )
 

@@ -63,7 +63,7 @@ err=$?
         # TODO: Temporary solution and need to process abias_air for JEDI when ready 
 	tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
 	rm -rf "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
-        tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar" "./*.txt ./*.nc"
+        tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar" *
         err=$?
     fi
 
