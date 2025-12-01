@@ -9,12 +9,13 @@ experiment:
   nens: 30
   interval: 24
   start: cold
-  gefstype: near-real-time
+  gefstype: gefs-real-time
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2024112500
   edate: 2024112500
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
+  icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS
 
 # TODO run on supported platforms once the gefs forecast and subsequent tasks can succeed with RETRO ICs
 # Add this to run the stage ic job 'icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS'
