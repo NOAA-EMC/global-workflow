@@ -177,6 +177,7 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 source "${HOMEgfs}/ush/bash_utils.sh"
 
 # Turn on our settings
+shopt -s nullglob # Allow null globs instead of treating * as literal
 export SHELLOPTS
 declare -xf set_strict
 declare -xf set_trace

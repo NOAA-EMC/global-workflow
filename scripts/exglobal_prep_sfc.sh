@@ -106,13 +106,13 @@ export err=$?
 #-----------------------------------------------------------------------
 
 if [[ ${err} -ne 0 ]]; then
-  if [[ -s "${BLENDED_ICE_FILE_PREV}" ]]; then
-    echo "Copy old ice blend file to current directory"
-    cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
-    export err=0
-  else
-    err_exit "FATAL ERROR: CURRENT ICE FILE AND 6-HR OLD ICE FILE MISSING"
-  fi
+    if [[ -s "${BLENDED_ICE_FILE_PREV}" ]]; then
+        echo "Copy old ice blend file to current directory"
+        cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
+        export err=0
+    else
+        err_exit "FATAL ERROR: CURRENT ICE FILE AND 6-HR OLD ICE FILE MISSING"
+    fi
 fi
 
 #-----------------------------------------------------------------------
@@ -122,8 +122,8 @@ fi
 
 export SNOW2MDLEXEC="${EXECgfs}/emcsfc_snow2mdl"
 
-LONB_CASE=$((4*${CASE:1}))
-LATB_CASE=$((2*${CASE:1}))
+LONB_CASE=$((4 * ${CASE:1}))
+LATB_CASE=$((2 * ${CASE:1}))
 
 export MODEL_SLMASK_FILE=${SLMASK:-${FIXgfs}/am/global_slmask.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
 export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXgfs}/am/global_latitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
@@ -148,14 +148,14 @@ export err=$?
 #-----------------------------------------------------------------------
 
 if [[ ${err} -ne 0 ]]; then
-  if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
-    echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
-    cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
-    export err=0
-  else
-    err_exit "CURRENT AND 6-HR OLD ${CASE} SNOW MISSING, ABORT!"
-  fi  # check of missing 6-hr snow file
-fi  # return code check
+    if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
+        echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
+        cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
+        export err=0
+    else
+        err_exit "CURRENT AND 6-HR OLD ${CASE} SNOW MISSING, ABORT!"
+    fi # check of missing 6-hr snow file
+fi     # return code check
 
 #-----------------------------------------------------------------------
 # Create enkf snow file if EUPD_CYC is RUN or BOTH
@@ -163,34 +163,34 @@ fi  # return code check
 
 if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
 
-  LONB_CASE_ENS=$((4*${CASE_ENS:1}))
-  LATB_CASE_ENS=$((2*${CASE_ENS:1}))
+    LONB_CASE_ENS=$((4 * ${CASE_ENS:1}))
+    LATB_CASE_ENS=$((2 * ${CASE_ENS:1}))
 
-  export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXgfs}/am/global_slmask.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-  export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXgfs}/am/global_latitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-  export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXgfs}/am/global_longitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-  export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXgfs}/am/global_lonsperlat.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
-  export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
-  export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
+    export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXgfs}/am/global_slmask.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXgfs}/am/global_latitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXgfs}/am/global_longitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXgfs}/am/global_lonsperlat.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
+    export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
+    export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
 
-  echo "Create enkf snow data."
-  "${USHgfs}/prep_sfc_snow.sh"
-  export err=$?
+    echo "Create enkf snow data."
+    "${USHgfs}/prep_sfc_snow.sh"
+    export err=$?
 
-  #-----------------------------------------------------------------------
-  # Check for errors creating enkf snow.  Use 6-hour old data
-  # as backup.  If old data not available, abort.
-  #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    # Check for errors creating enkf snow.  Use 6-hour old data
+    # as backup.  If old data not available, abort.
+    #-----------------------------------------------------------------------
 
-  if [[ ${err} -ne 0 ]]; then
-    if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
-      echo "COPY OLD ENKF SNOW FILE TO CURRENT DIRECTORY"
-      cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
-      export err=0
-    else
-      err_exit "CURRENT AND 6-HR OLD ENKF SNOW MISSING"
-    fi  # check of missing 6-hr snow file
-  fi  # return code check
+    if [[ ${err} -ne 0 ]]; then
+        if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
+            echo "COPY OLD ENKF SNOW FILE TO CURRENT DIRECTORY"
+            cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
+            export err=0
+        else
+            err_exit "CURRENT AND 6-HR OLD ENKF SNOW MISSING"
+        fi # check of missing 6-hr snow file
+    fi     # return code check
 
 fi # If ENKF runs for RUN
 
