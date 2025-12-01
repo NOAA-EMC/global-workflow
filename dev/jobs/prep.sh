@@ -32,15 +32,32 @@ RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL \
     COMOUT_OBS:COM_OBS_TMPL \
     COMINobsproc:COM_OBSPROC_TMPL \
-    COMIN_TCVITAL:COM_TCVITAL_TMPL
+    COMINobsforge:COM_OBSFORGE_TMPL \
+    COMIN_TCVITAL:COM_TCVITAL_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMOUT_OBS_PREV:COM_OBS_TMPL \
-    COMINobsproc_PREV:COM_OBSPROC_TMPL
+    COMINobsproc_PREV:COM_OBSPROC_TMPL \
+    COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
 
 mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
+# Copy IODA files to ROTDIR
+if [[ ${USE_IODADIR:-"NO"} == "YES" ]]; then
+    "${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
+    status=$?
+    if [[ ${status} -ne 0 ]]; then
+        exit "${status}"
+    fi
+fi
+
+if [[ "${RUN_local}" == "gcdas" ]]; then
+    echo "GCDAS only needs IODA files; exiting prep.sh"
+    exit 0
+fi
+
 # Copy dump files to ROTDIR
 "${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
 status=$?
@@ -94,6 +111,28 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
 else
     cpfs "${COMINobsproc}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
 fi
+
+
+###############################################################
+# If requested, copy bias correction files from source or stait to analysis directories
+# TODO: remove this when JEDI ATM can cycle bias correction coefficents
+if [[ ${RUN} == "gdas" && ${COPY_BIASCOR_SOURCE:-"NO"} == "YES" ]]; then
+    for file in abias abias_pc abias_air; do
+        if [[ -s "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" ]]; then
+            cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}"
+            cpreq "${SOURCE_BIASCOR}/${file}.${GDUMP}.${gPDY}${gcyc}" "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt"
+        fi
+    done
+fi
+if [[ ${RUN} == "gdas" && ${COPY_BIASCOR_STATIC:-"NO"} == "YES" ]]; then
+    for file in abias abias_pc abias_air; do
+        if [[ -s "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" ]]; then
+            mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+            cpreq "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.${file}.txt" "${COMOUT_ATMOS_ANALYSIS}/${GDUMP}.t${cyc}z.${file}.txt"
+        fi
+    done
+fi
+
 
 ###############################################################
 # Generate prepbufr files from dumps and prior gdas guess
@@ -158,6 +197,23 @@ done
 export err
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to obtain/create ${files}, ABORT!"
+fi
+
+################################################################################ 
+# If requested, create radiance bias correction files for JEDI
+if [[ ${RUN} == "gdas" && ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
+    cd "${DATAROOT}" || true
+    "${HOMEgfs}/ush/gsi_satbias2ioda_all.sh"
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "gsi_satbias2ioda failed, ABORT!"
+    fi
+    
+    # Remove temporary working directory
+    cd "${DATAROOT}" || true
+    if [[ "${KEEPDATA}" == "NO" ]]; then
+        rm -rf "${DATA}"
+    fi    
 fi
 
 ################################################################################
