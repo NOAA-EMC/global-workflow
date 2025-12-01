@@ -28,19 +28,39 @@ GEMPAK_CLEANUP_MAX=${GEMPAK_CLEANUP_MAX:-240}
 # for successful cycles (defaults from 24h to 120h).
 # Retain files needed by Fit2Obs
 first_selective_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${SELECTIVE_CLEANUP_MAX} hours")
+last_selective_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${SELECTIVE_CLEANUP_MIN} hours")
 last_rtofs_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RTOFS_CLEANUP_MAX} hours")
-last_gempak_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP_MAX} hours")
-exclude_string="${exclude_string:-}"
+first_gempak_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP_MAX} hours")
+# Selective exclude list
+selective_exclude_string="${selective_exclude_string:-}"
+# Gempak exclude list
+gempak_exclude_string+=", *gfs_1p00_*"
 
-# Find the last date among all cleanup targets
+# Find the first and last date among all cleanup targets
 max_cleanup_max="${SELECTIVE_CLEANUP_MAX:-120}"
-for cleanup_max in "${RTOFS_CLEANUP_MAX}" "${GEMPAK_CLEANUP_MAX}"; do
+max_list="${RTOFS_CLEANUP_MAX}"
+if [[ "${RUN}" == "gfs" && "${DO_GEMPAK}" == "YES" ]]; then
+    max_list+=" ${GEMPAK_CLEANUP_MAX}}"
+fi
+
+for cleanup_max in ${max_list}; do
     if [[ ${cleanup_max} -gt ${max_cleanup_max} ]]; then
         max_cleanup_max=${cleanup_max}
     fi
 done
 
-last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_max} hours")
+max_cleanup_min=${max_cleanup_max}
+for cleanup_max in ${max_list}; do
+    if [[ ${cleanup_max} -lt ${max_cleanup_min} ]]; then
+        max_cleanup_min=${cleanup_max}
+    fi
+done
+
+# Start 4 cycles before the earliest exclusion target so we actually remove older files
+max_cleanup_max=$(( max_cleanup_max + 4 * assim_freq ))
+first_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_max} hours")
+
+last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_min} hours")
 
 function remove_files() {
     local directory=$1
@@ -49,44 +69,45 @@ function remove_files() {
         echo "No directory ${directory} to remove files from, skiping"
         return
     fi
-    # Find all files and links in the directory and store as an arry
-    # Run find only once for efficiency
-    flist=()
-    mapfile -t flist < <(find "${directory}" -type f -or -type l) || true
-
-    # Now remove those files that match the exclude patterns
-    for exclude_pattern in "$@"; do
-        # Use a temporary array to hold files that do not match the exclude pattern
-        temp_flist=()
-        for file in "${flist[@]}"; do
-            # shellcheck disable=SC2053
-            if [[ ! $(basename "${file}") == ${exclude_pattern} ]]; then
-                temp_flist+=("${file}")
-            fi
-        done
-        flist=("${temp_flist[@]}")
+    local find_exclude_string=""
+    for exclude in "$@"; do
+        if [[ -n "${exclude}" ]]; then
+            find_exclude_string+=" -name ${exclude} -or"
+        fi
     done
-
-    # Delete all files in flist.
-    for file in "${flist[@]}"; do
-        rm -f "${file}"
-    done
+    # Chop off any trailing or
+    find_exclude_string="${find_exclude_string[*]/%-or}"
+    # Remove all regular files and symlinks that do not match
+    # shellcheck disable=SC2086
+    if [[ -n "${find_exclude_string}" ]]; then
+        # String is non-empty → use exclusion
+        find "${directory}" \( -type f -o -type l \) -not \( ${find_exclude_string} \) -ignore_readdir_race -delete
+    else
+        # String is empty → no exclusion
+        find "${directory}" \( -type f -o -type l \) -ignore_readdir_race -delete
+    fi
 
     # Remove any empty directories
     find "${directory}" -type d -empty -delete
 }
 
 # Now start removing old COM files/directories
-for (( current_date=first_selective_date; current_date <= last_date; \
+for (( current_date=first_date; current_date <= last_date; \
   current_date=$(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours") )); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
     rocotolog="${EXPDIR}/logs/${current_date}.log"
 
+    # Build the exclude list based on the 'current_date'
+    exclude_string=""
+    if [[ ${current_date} -ge ${first_selective_date} && ${current_date} -le ${last_selective_date} ]]; then
+        exclude_string+="${selective_exclude_string}"
+    fi
+
     # Extend the exclude list for gempak files if needed
-    if [[ "${RUN}" == "gfs" && ${current_date} -lt ${last_gempak_date} && "${DO_GEMPAK}" == "YES" ]]; then
+    if [[ "${RUN}" == "gfs" && ${current_date} -ge ${first_gempak_date} && "${DO_GEMPAK}" == "YES" ]]; then
         # Provide the gempak exclude pattern(s)
-        exclude_string+=", *gfs_1p00_*"
+        exclude_string+="${gempak_exclude_string}"
     fi
 
     # Check if the cycle completed successfully by looking at the rocoto log
