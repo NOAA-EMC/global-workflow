@@ -1,5 +1,6 @@
 # Paths
 DMPDIR: '/lfs/h2/emc/dump/noscrub/dump'
+IODADIR: '/lfs/h2/emc/dump/noscrub/dump_ioda'
 BASE_GIT: '/lfs/h2/emc/global/save/emc.global/git'
 BASE_DATA: '/lfs/h2/emc/global/noscrub/emc.global/data'
 BASE_IC: '/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR'

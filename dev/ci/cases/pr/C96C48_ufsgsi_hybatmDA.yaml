@@ -1,23 +1,26 @@
 experiment:
-  net: gcafs
+  net: gfs
   mode: cycled
   pslot: {{ 'pslot' | getenv }}
-  app: ATMA
+  app: ATM
   resdetatmos: 96
+  resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
-  idate: 2021122012
-  edate: 2021122100
-  nens: 0
-  interval: 12
-  start: cold
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gcafs_cycled_defaults_ci.yaml
+  idate: 2024022318
+  edate: 2024022406
+  nens: 2
+  interval: 24
+  start: warm
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufsgsi_hybatmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
   - gaeac5
+  - gaeac6
+  - orion
+  - hercules
   - awsepicglobalworkflow
-  - ursa
 
 workflow:
   engine: rocoto

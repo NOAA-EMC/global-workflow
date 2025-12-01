@@ -9,42 +9,35 @@
 ################################################################################
 export err=0
 
-data_available=0
+if [[ -s "${oznstat}" ]]; then
+    #------------------------------------------------------------------
+    #  Copy data files file to local data directory.
+    #  Untar oznstat file.
+    #------------------------------------------------------------------
 
-if [[ -s ${oznstat} ]]; then
-   data_available=1
+    cpreq "${oznstat}" "./oznstat.${PDY}${cyc}"
 
-   #------------------------------------------------------------------
-   #  Copy data files file to local data directory.
-   #  Untar oznstat file.
-   #------------------------------------------------------------------
+    tar -xvf "oznstat.${PDY}${cyc}"
+    rm -f "oznstat.${PDY}${cyc}"
 
-   cpreq "${oznstat}" "./oznstat.${PDY}${cyc}"
+    netcdf=0
+    for filenc4 in diag*nc4.gz; do
+        netcdf=1
+        file=$(echo "${filenc4}" | cut -d'.' -f1-2).gz
+        mv "${filenc4}" "${file}"
+    done
 
-   tar -xvf "oznstat.${PDY}${cyc}"
-   rm -f "oznstat.${PDY}${cyc}"
+    export OZNMON_NETCDF=${netcdf}
 
-   netcdf=0
-   count=$(ls diag* | grep ".nc4" | wc -l)
-   if [ "${count}" -gt 0 ] ; then
-      netcdf=1
-      for filenc4 in $(ls diag*nc4.gz); do
-         file=$(echo "${filenc4}" | cut -d'.' -f1-2).gz
-         mv "${filenc4}" "${file}"
-      done
-   fi
-
-   export OZNMON_NETCDF=${netcdf}
-
-   "${USHgfs}/ozn_xtrct.sh" && true
-   export err=$?
-   if [[ ${err} -ne 0 ]]; then
-     err_exit "ozn_xtrct.sh failed!"
-   fi
+    "${USHgfs}/ozn_xtrct.sh" && true
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "ozn_xtrct.sh failed!"
+    fi
 
 else
-   # oznstat file not found
-   export err=1
-   err_exit "${oznstat} does not exist!"
+    # oznstat file not found
+    export err=1
+    err_exit "${oznstat} does not exist!"
 fi
 exit 0

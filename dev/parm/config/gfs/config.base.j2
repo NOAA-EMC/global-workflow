@@ -51,6 +51,8 @@ export PACKAGEROOT="{{ PACKAGEROOT }}"    # TODO: set via prod_envir in Ops
 export COMROOT="{{ COMROOT }}"    # TODO: set via prod_envir in Ops
 export COMINsyn="{{ COMINsyn }}"
 export DMPDIR="{{ DMPDIR }}"
+export IODADIR="{{ IODADIR }}"
+export USE_IODADIR="{{ USE_IODADIR }}"
 
 # Gempak from external models
 # Default locations are to dummy locations for testing
@@ -205,6 +207,7 @@ export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it
 export LEVS=128
 export CASE="{{ CASE_CTL }}"
 export CASE_ENS="{{ CASE_ENS }}"
+export CASE_ANL="{{ CASE_ANL | default('${CASE}') }}"
 export CASE_HIST="{{ CASE_HIST | default('${CASE}') }}"
 export OCNRES="{{ OCNRES }}"
 export ICERES="${OCNRES}"
@@ -525,5 +528,14 @@ export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
+
+# Set JEDI atmospheric DA increment type
+if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
+    if [[ "${DO_JEDIATMENS}" == "YES" ]]; then
+	    export ATMINC_GRID="cubed_sphere_grid"
+    else
+	    export ATMINC_GRID="gaussian"
+    fi
+fi
 
 echo "END: config.base"
