@@ -28,11 +28,11 @@ fi
 # Specify the list of files to exclude from the first stage of cleanup
 # Because arrays cannot be exported, list is a single string of comma-
 # separated values. This string is split to form an array at runtime.
-export exclude_string=""
+export selective_exclude_string=""
 case ${RUN} in
-	gdas | gfs)	exclude_string+="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
-	enkf*)      exclude_string+="*f006.ens*" ;;
-	*)			exclude_string="" ;;
+    gdas | gfs)	selective_exclude_string+="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
+    enkf*)      selective_exclude_string+="*f006.ens*" ;;
+    *)          selective_exclude_string="" ;;
 esac
 
 echo "END: config.cleanup"
