@@ -1,6 +1,7 @@
 
 # Paths
 DMPDIR: '' # TODO: This does not yet exist.
+IODADIR: '' #TODO: This does not yet exist.
 BASE_GIT: '' #TODO: This does not yet exist.
 BASE_DATA: '/bucket/global-workflow-shared-data'
 BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
