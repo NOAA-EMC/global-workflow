@@ -13,16 +13,16 @@ cpreq "${SFC_FILE}" "${DATA}/sfc_input.nc"
 ###############################################################################
 # copy orography,surface, and ancillary files to DATA from the source directory
 for i in {1..6}; do
-  cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
-  cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tile${i}.nc" "${DATA}/"
+    cpreq "${FIXgfs}/orog/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tile${i}.nc" "${DATA}/"
 done
 ################################################################################
 # add the namelist and run chgres
@@ -80,13 +80,13 @@ EOF
 ${APRUN_CHGRES} "${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit "chgres_cube failed to create cold start ICs, ABORT!"
+    err_exit "chgres_cube failed to create cold start ICs, ABORT!"
 fi
 ################################################################################
 # copy output files to com
 for i in {1..6}; do
-  cpreq "out.atm.tile${i}.nc" "${COMOUT_ATMOS_INPUT_MEM}/gfs_data.tile${i}.nc"
-  cpreq "out.sfc.tile${i}.nc" "${COMOUT_ATMOS_INPUT_MEM}/sfc_data.tile${i}.nc"
+    cpreq "out.atm.tile${i}.nc" "${COMOUT_ATMOS_INPUT_MEM}/gfs_data.tile${i}.nc"
+    cpreq "out.sfc.tile${i}.nc" "${COMOUT_ATMOS_INPUT_MEM}/sfc_data.tile${i}.nc"
 done
 cpreq "gfs_ctrl.nc" "${COMOUT_ATMOS_INPUT_MEM}/"
 ################################################################################

@@ -23,7 +23,7 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-runscript=${USHgfs}/gfs_bufr.sh
+runscript="${USHgfs}/gfs_bufr.sh"
 
 cd "${DATA}" || exit 2
 
@@ -53,13 +53,13 @@ declare -x LEVS
 hour_list=()
 
 # Generate hours from 0 to NEND1 with interval NINT1
-for (( hour=0; hour<=NEND1 && hour<=ENDHOUR; hour+=NINT1 )); do
-  hour_list+=("$(printf "%03d" "$hour")")
+for ((hour = 0; hour <= NEND1 && hour <= ENDHOUR; hour += NINT1)); do
+    hour_list+=("$(printf "%03d" "${hour}")")
 done
 
 # Generate hours from NEND1 + NINT3 to ENDHOUR with interval NINT3
-for (( hour=NEND1+NINT3; hour<=ENDHOUR; hour+=NINT3 )); do
-  hour_list+=("$(printf "%03d" "$hour")")
+for ((hour = NEND1 + NINT3; hour <= ENDHOUR; hour += NINT3)); do
+    hour_list+=("$(printf "%03d" "${hour}")")
 done
 
 # Print the hour list
@@ -69,55 +69,55 @@ echo "Hour List:" "${hour_list[@]}"
 export ntasks="${#hour_list[@]}"
 
 # Print the total number of hours
-echo "Total number of hours: $ntasks"
+echo "Total number of hours: ${ntasks}"
 
 # allocate 21 processes per node
 # don't allocate more processes, or it might have memory issue
 #export tasks_per_node=21
 #export APRUN="mpiexec -np ${ntasks} -ppn ${tasks_per_node} --cpu-bind core cfp "
 
-rm -f ${DATA}/poescript_bufr
+rm -f "${DATA}/poescript_bufr"
 
 for fhr in "${hour_list[@]}"; do
 
-  if [ ! -s "${DATA}/${fhr}" ]; then mkdir -p ${DATA}/${fhr}; fi
-  export FINT=${NINT1}
-  ## 1-hourly output before $NEND1, 3-hourly output after
-  if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
-    export FINT=${NINT3}
-  fi
-  if [[ $((10#${fhr})) -eq 0 ]]; then
-     export F00FLAG="YES"
-  else
-     export F00FLAG="NO"
-  fi
+    if [[ ! -s "${DATA}/${fhr}" ]]; then mkdir -p "${DATA}/${fhr}"; fi
+    export FINT=${NINT1}
+    ## 1-hourly output before $NEND1, 3-hourly output after
+    if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
+        export FINT=${NINT3}
+    fi
+    if [[ $((10#${fhr})) -eq 0 ]]; then
+        export F00FLAG="YES"
+    else
+        export F00FLAG="NO"
+    fi
 
-  # Convert fhr to integer
-  fhr_int=$((10#$fhr))
+    # Convert fhr to integer
+    fhr_int=$((10#${fhr}))
 
-  # Get previous hour
-  if (( fhr_int == STARTHOUR )); then
-    fhr_p=${fhr_int}
-  else
-    fhr_p=$(( fhr_int - FINT ))
-  fi
+    # Get previous hour
+    if ((fhr_int == STARTHOUR)); then
+        fhr_p=${fhr_int}
+    else
+        fhr_p=$((fhr_int - FINT))
+    fi
 
-  # Format fhr_p with leading zeros
-  fhr_p="$(printf "%03d" "$fhr_p")"
+    # Format fhr_p with leading zeros
+    fhr_p="$(printf "%03d" "${fhr_p}")"
 
-  filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
-  if [[ -z ${filename} ]]; then
-    err_exit "File ${filename} not found."
-  else
-    echo "${runscript} ${fhr} ${fhr_p} ${FINT} ${F00FLAG} ${DATA}/${fhr}" >> "${DATA}/poescript_bufr"
-  fi
+    filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr}.${logfm}"
+    if [[ -z ${filename} ]]; then
+        err_exit "FATAL ERROR: File ${filename} not found."
+    else
+        echo "${runscript} ${fhr} ${fhr_p} ${FINT} ${F00FLAG} ${DATA}/${fhr}" >> "${DATA}/poescript_bufr"
+    fi
 done
 
 # Run with MPMD
 "${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   err_exit "One or more BUFR MPMD tasks failed!"
+    err_exit "One or more BUFR MPMD tasks failed!"
 fi
 
 cd "${DATA}" || exit 2
@@ -135,16 +135,17 @@ done
 # start to generate bufr products at fhr=${ENDHOUR}
 
 export MAKEBUFR=YES
-export fhr="$(printf "%03d" "$ENDHOUR")"
+fhr="$(printf "%03d" "${ENDHOUR}")"
+export fhr
 export FINT=${NINT1}
 ## 1-hourly output before $NEND1, 3-hourly output after
 if [[ $((10#${fhr})) -gt $((10#${NEND1})) ]]; then
-  export FINT=${NINT3}
+    export FINT=${NINT3}
 fi
 if [[ $((10#${fhr})) -eq 0 ]]; then
-  export F00FLAG="YES"
+    export F00FLAG="YES"
 else
-  export F00FLAG="NO"
+    export F00FLAG="NO"
 fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 
@@ -152,6 +153,7 @@ ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 # Tar and gzip the individual bufr files and send them to /com
 ##############################################################
 cd "${COMOUT_ATMOS_BUFR}" || exit 2
+# shellcheck disable=SC2312
 tar -cf - . | /usr/bin/gzip > "${RUN}.${cycle}.bufrsnd.tar.gz"
 cd "${DATA}" || exit 2
 
@@ -168,7 +170,7 @@ fi
 # data and add appropriate WMO Headers
 ########################################
 rm -rf poe_col
-for (( m = 1; m <= NUM_SND_COLLECTIVES; m++ )); do
+for ((m = 1; m <= NUM_SND_COLLECTIVES; m++)); do
     echo "${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
 done
 
@@ -188,8 +190,7 @@ ${APRUN_POSTSNDCFP} cmdfile
 # GEMPAK surface and sounding data files
 ########################################
 if [[ "${DO_GEMPAK:-"NO"}" == "YES" ]]; then
-  sh "${USHgfs}/gfs_bfr2gpk.sh"
+    sh "${USHgfs}/gfs_bfr2gpk.sh"
 fi
-
 
 ############## END OF SCRIPT #######################

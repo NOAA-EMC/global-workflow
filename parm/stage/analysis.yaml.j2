@@ -1,77 +1,99 @@
-{% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM_list[0] | relpath(ROTDIR)) %}
+{# ============================================================================ #}
+{# Analysis Staging Configuration                                             #}
+{# ============================================================================ #}
+{% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR)) %}
 analysis:
     mkdir:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
-        - "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"
-        {% endfor %}
-    link_req:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ATMOS_ANALYSIS_MEM = COMOUT_ATMOS_ANALYSIS_MEM_list[imem] %}
+        - "{{ COMOUT_ATMOS_ANALYSIS }}"
 
+    link_req:
+        {# -------------------------------------------------------------------- #}
+        {# JEDI Atmospheric Variational Data Assimilation                       #}
+        {# -------------------------------------------------------------------- #}
         {% if DO_JEDIATMVAR %}
 
-        {% if ATMINC_GRID == "cubed_sphere_grid" %}
-        {% for itile in range(6) %}
-        {% if mem == -1 %}
-          {% if DOIAU %}
-            {% set ftypes = ["jedi_increment.atm.i003", "jedi_increment.atm.i006", "jedi_increment.atm.i009" ] %}
-          {% else %}
-            {% set ftypes = ["jedi_increment.atm.i006" ] %}
-          {% endif %}
+            {# Cubed Sphere Grid Configuration #}
+            {% if ATMINC_GRID == "cubed_sphere_grid" %}
+
+                {% for itile in range(ntiles) %}
+
+                    {# Deterministic Member (member == -1) #}
+                    {% if member == -1 %}
+                        {% if DOIAU %}
+                            {% set ftypes = ["jedi_increment.atm.i003", "jedi_increment.atm.i006", "jedi_increment.atm.i009" ] %}
+                        {% else %}
+                            {% set ftypes = ["jedi_increment.atm.i006" ] %}
+                        {% endif %}
+
+                    {# Ensemble Members (member != -1) #}
+                    {% else %}
+                        {% if DOIAU_ENKF %}
+                            {% set ftypes = ["recentered_jedi_increment.atm.i003", "recentered_jedi_increment.atm.i006", "recentered_jedi_increment.atm.i009" ] %}
+                        {% else %}
+                            {% set ftypes = ["recentered_jedi_increment.atm.i006" ] %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% for ftype in ftypes %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                    {% endfor %}
+
+                {% endfor %}
+
+            {# Non-Cubed Sphere Grid Configuration #}
+            {% else %}
+
+                {# Atmospheric Increments #}
+                {% for ftype in ["increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc",
+                                 "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc"] %}
+                    {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+
+                {# Bias Correction Files #}
+                {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "rad_varbc_params.tar"] %}
+                    {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                    {% endif %}
+                {% endfor %}
+        {# -------------------------------------------------------------------- #}
+        {# GSI Data Assimilation (Non-JEDI)                                     #}
+        {# -------------------------------------------------------------------- #}
         {% else %}
-          {% if DOIAU_ENKF %}
-            {% set ftypes = ["recentered_jedi_increment.atm.i003", "recentered_jedi_increment.atm.i006", "recentered_jedi_increment.atm.i009" ] %}
-          {% else %}
-            {% set ftypes = ["recentered_jedi_increment.atm.i006" ] %}
-          {% endif %}
-        {% endif %}
-        {% for ftype in ftypes %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endfor %}
-        {% endfor %}
-        {% else %}
-        {% for ftype in ["increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc",
-                         "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endif %}
-        {% endfor %}
-        {% endif %}
 
-        {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "rad_varbc_params.tar"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endif %}
-        {% endfor %}
-
-        {% else %}
-        {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt",
-                         "increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc", "radstat.tar",
-                         "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc", "rad_varbc_params.tar"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endif %}
-        {% endfor %}
+            {# All GSI Analysis Files #}
+            {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt",
+                             "increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc", "radstat.tar",
+                             "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc", "rad_varbc_params.tar"] %}
+                {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endif %}
+            {% endfor %}
 
         {% endif %}
 
+        {# -------------------------------------------------------------------- #}
+        {# GSI Soil Analysis (Land DA)                                          #}
+        {# -------------------------------------------------------------------- #}
         {% if DO_GSISOILDA %}
 
-        {% for ftype in ["increment.sfc.i003.nc", "increment.sfc.i006.nc", "increment.sfc.i009.nc"] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endif %}
-        {% endfor %}
+            {# Surface Increments #}
+            {% for ftype in ["increment.sfc.i003.nc", "increment.sfc.i006.nc", "increment.sfc.i009.nc"] %}
+                {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endif %}
+            {% endfor %}
 
-        {% if DO_LAND_IAU %}
-        {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS_MEM | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS_MEM }}"]
-        {% endfor %}
-        {% endif %}
+            {# Land IAU Increments (Tiled) #}
+            {% if DO_LAND_IAU %}
+                {% for itile in range(1,7) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endfor %}
+            {% endif %}
+
         {% endif %}
 
-        {% endfor %} # mem loop
 {% endif %}
