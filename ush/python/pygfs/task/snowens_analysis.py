@@ -108,13 +108,13 @@ class SnowEnsAnalysis(Analysis):
         None
         """
 
-        # Stage files from COM
-        logger.info(f"Staging files from COM and creating output directories")
-        FileHandler(self.task_config.data_in).sync()
-
         # Stage observation files
         logger.info(f"Staging observations")
         self.jedi_dict['snowanlvar'].stage_observations()
+
+        # Stage files from COM
+        logger.info(f"Staging files from COM and creating output directories")
+        FileHandler(self.task_config.data_in).sync()
 
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")

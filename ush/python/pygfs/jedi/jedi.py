@@ -208,6 +208,7 @@ class Jedi:
         """
 
         chdir(self.jedi_config.rundir)
+        logger.info(f"foo {self.jedi_config.rundir}")
 
         exec_cmd = Executable(self.jedi_config.mpi_cmd)
         exec_cmd.add_default_arg(self.jedi_config.exe_src)
@@ -255,7 +256,6 @@ class Jedi:
         # Set observations if specified as input
         if observations:
             self.jcb_config['observations'] = observations
-            logger.info(f"foo: {self.jcb_config['observations']}")
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
@@ -339,7 +339,7 @@ class Jedi:
                 if os.path.isfile(fname):
                     cleaned_observers.append(obs_space)
                 else:
-                    logger.warning(f"WARNING: {fname} does not exist, removing obs space")
+                    logger.warning(f"{fname} does not exist, removing obs space")
 
             # Clear observers list in dictionary and replace with new list
             observers.clear()

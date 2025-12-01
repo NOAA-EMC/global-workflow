@@ -26,6 +26,15 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL \
     COMOUT_AERO_ANLMON:COM_CHEM_ANLMON_TMPL \
     COMOUT_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL
 
+mkdir -m 755 -p "${COMOUT_ATMOS_ANALYSIS}"
+mkdir -m 755 -p "${COMOUT_OCEAN_ANALYSIS}"
+mkdir -m 755 -p "${COMOUT_AERO_ANALYSIS}"
+mkdir -m 755 -p "${COMOUT_SNOW_ANALYSIS}"
+mkdir -m 755 -p "${COMOUT_ATMOS_ANLMON}"
+mkdir -m 755 -p "${COMOUT_OCEAN_ANLMON}"
+mkdir -m 755 -p "${COMOUT_AERO_ANLMON}"
+mkdir -m 755 -p "${COMOUT_SNOW_ANLMON}"
+
 ###############################################################
 # Run relevant script
 

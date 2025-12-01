@@ -30,12 +30,13 @@ if __name__ == '__main__':
         config.STAT_ANALYSES.append('atmos')  
     else:
         config.STAT_ANALYSES.append('atmos_gsi')
-        AnlStats.convert_gsi_diags()
 
     # Instantiate the analysis stats task
     AnlStats = AnalysisStats(config)
 
     # Initialize JEDI variational analysis
+    if not config.DO_JEDIATMVAR:
+        AnlStats.convert_gsi_diags()    
     AnlStats.initialize()
     for anl in config.STAT_ANALYSES:
         AnlStats.execute(anl)

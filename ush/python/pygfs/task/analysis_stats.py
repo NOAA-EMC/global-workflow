@@ -98,7 +98,7 @@ class AnalysisStats(Analysis):
             FileHandler(self.task_config.data_in).sync()
 
             # Open tar file
-            diag_dir_path = os.path.join(self.task_config.DATA, analysis)
+            diag_dir_path = os.path.join(self.task_config.DATA, analysis, 'obs')
             tarfilelist = glob.glob(os.path.join(diag_dir_path, '*tar')) + glob.glob(os.path.join(diag_dir_path, '*gz')) + glob.glob(os.path.join(diag_dir_path, '*tgz'))
             for dest in tarfilelist:
                 logger.info(f"Open tarred diagnostic files in {dest}")
@@ -167,31 +167,32 @@ class AnalysisStats(Analysis):
         None
         """
 
-        # path of output tar statfile
-        iodastatzipfile = os.path.join(self.task_config.outdir[analysis], f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
+        for analysis in self.task_config.STAT_ANALYSES:
+            # path of output tar statfile
+            iodastatzipfile = os.path.join(self.task_config.outdir[analysis], f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
 
-        logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
+            logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
-        # get list of iodastat files to put in tarball
-        iodastatfiles = glob.glob(os.path.join(self.task_config.outdir[analysis], '*output*nc'))
+            # get list of iodastat files to put in tarball
+            iodastatfiles = glob.glob(os.path.join(self.task_config.DATA, analysis, '*nc'))
 
-        logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
-        with tarfile.open(iodastatzipfile, "w|gz") as archive:
-            for targetfile in iodastatfiles:
-                archive.add(targetfile, arcname=os.path.basename(targetfile))
+            logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
+            with tarfile.open(iodastatzipfile, "w|gz") as archive:
+                for targetfile in iodastatfiles:
+                    archive.add(targetfile, arcname=os.path.basename(targetfile))
 
-        # concatenate text files into one summary file
-        summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
-        with open(summaryfile, 'w') as outfile:
-            for ob in self.task_config.observations[analysis]:
-                textfile = os.path.join(self.task_config.DATA, f"{ob}_ioda_stats.txt")
-                if os.path.exists(textfile):
-                    logger.info(f"Concatenating {textfile} to {summaryfile}")
-                    with open(textfile, 'r') as infile:
-                        outfile.write(infile.read())
-                else:
-                    logger.warning(f"{textfile} does not exist to concatenate.")
-                    logger.warning("Skipping this file ...")
+            # concatenate text files into one summary file
+            summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
+            with open(summaryfile, 'w') as outfile:
+                for ob in self.task_config.observations[analysis]:
+                    textfile = os.path.join(self.task_config.DATA, analysis, f"{ob}_ioda_stats.txt")
+                    if os.path.exists(textfile):
+                        logger.info(f"Concatenating {textfile} to {summaryfile}")
+                        with open(textfile, 'r') as infile:
+                            outfile.write(infile.read())
+                    else:
+                        logger.warning(f"{textfile} does not exist to concatenate.")
+                        logger.warning("Skipping this file ...")
 
         # Save files from COM
         logger.info(f"Saving files to COM")
@@ -218,13 +219,13 @@ class AnalysisStats(Analysis):
         logger.info("Converting GSI diag files to IODA files for analysis stats")
         # copy GSI diag files to DATA path
         diag_tars = ['cnvstat', 'radstat', 'oznstat']
-        diag_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ges')
-        diag_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi_anl')
-        diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi_diags')
+        diag_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ges')
+        diag_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_anl')
+        diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_diags')
         FileHandler({'mkdir': [diag_dir_path, diag_dir_ges_path, diag_dir_anl_path]}).sync()
-        diag_ioda_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda_ges')
-        diag_ioda_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda_anl')
-        output_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda')
+        diag_ioda_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda_ges')
+        diag_ioda_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda_anl')
+        output_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda')
         FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
@@ -281,7 +282,7 @@ class AnalysisStats(Analysis):
                 logger.warning("Skipping this file ...")
 
         # Tar up the ioda files
-        iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi_ioda',
+        iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda',
                                        f"{self.task_config.APREFIX}atmos_gsi_ioda_diags.tar.gz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
