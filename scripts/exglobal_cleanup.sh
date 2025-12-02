@@ -29,16 +29,18 @@ GEMPAK_CLEANUP=${GEMPAK_CLEANUP:-240}
 # Retain files needed by Fit2Obs
 first_selective_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${SELECTIVE_CLEANUP_MAX} hours")
 last_selective_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${SELECTIVE_CLEANUP_MIN} hours")
-last_rtofs_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RTOFS_CLEANUP} hours")
-first_gempak_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP} hours")
+gempak_cutoff_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP} hours")
 # Selective exclude list
 selective_exclude_string="${selective_exclude_string:-}"
 # Gempak exclude list
 gempak_exclude_string+=", *gfs_1p00_*"
 
+# RTOFS is cleaned separately (for all RUNs)
+rtofs_cutoff_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RTOFS_CLEANUP} hours")
+
 # Find the first and last date among all cleanup targets
 max_cleanup_max="${SELECTIVE_CLEANUP_MAX:-120}"
-max_list="${RTOFS_CLEANUP}"
+max_list="${SELECTIVE_CLEANUP_MAX}"
 if [[ "${RUN}" == "gfs" && "${DO_GEMPAK}" == "YES" ]]; then
     max_list+=" ${GEMPAK_CLEANUP}"
 fi
@@ -105,7 +107,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
     fi
 
     # Extend the exclude list for gempak files if needed
-    if [[ "${RUN}" == "gfs" && ${current_date} -ge ${first_gempak_date} && "${DO_GEMPAK}" == "YES" ]]; then
+    if [[ "${RUN}" == "gfs" && ${current_date} -ge ${gempak_cutoff_date} && "${DO_GEMPAK}" == "YES" ]]; then
         # Provide the gempak exclude pattern(s)
         exclude_string+="${gempak_exclude_string}"
     fi
@@ -124,10 +126,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
             fi
             # Remove all rtofs directories in each RUN older than last_rtofs_date
             rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
-            if [[ -d "${rtofs_dir}" && ${current_date} -lt ${last_rtofs_date} ]]; then
-                rm -rf "${rtofs_dir}"
-            fi
-            if [[ -d "${rtofs_dir}" && ${current_date} -lt ${last_rtofs} ]]; then
+            if [[ -d "${rtofs_dir}" && ${current_date} -lt ${rtofs_cutoff_date} ]]; then
                 rm -rf "${rtofs_dir}"
             fi
         fi
