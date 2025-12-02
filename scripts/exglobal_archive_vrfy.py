@@ -3,6 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
+from pygfs.task.archive_vars import ArchiveVrfy
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit, chdir
 
 # initialize root logger
@@ -14,8 +15,11 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the Archive object
+    # Instantiate the Archive object for execute_store_products
     archive = Archive(config)
+
+    # Instantiate the ArchiveVrfy object for variable and file set calculation
+    archive_vars = ArchiveVrfy(config)
 
     # update these keys to be 3 digits if they are part of archive.task_config.keys
     for key in ['OCNRES', 'ICERES']:
@@ -24,28 +28,35 @@ def main():
         except KeyError as ee:
             logger.info(f"key ({key}) not found in archive.task_config!")
 
-    # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs',
-            'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR', 'FHMIN_GFS',
-            'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET', 'MODE', 'FHOUT_GFS',
-            'FHMAX_HF_GFS', 'FHOUT_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT', 'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
-
-    archive_dict = AttrDict()
-    for key in keys:
-        try:
-            archive_dict[key] = archive.task_config[key]
-        except KeyError as ee:
-            logger.warning(f"WARNING: key ({key}) not found in archive.task_config!")
-
-    # Also import all COMIN* and COMOUT* directory and template variables
-    for key in archive.task_config.keys():
-        if key.startswith(("COM_", "COMIN_", "COMOUT_")):
-            archive_dict[key] = archive.task_config.get(key)
+    # Get the RUN type and NET to determine which arcdir method to call
+    RUN = archive.task_config.RUN
+    NET = archive.task_config.get('NET', 'gfs')
 
     with chdir(config.ROTDIR):
 
-        # Determine which archives to create
-        arcdir_set = archive.configure_vrfy(archive_dict)
+        # Determine which system we're archiving for and call the appropriate method
+        if NET == 'gefs':
+            logger.info(f"Archiving GEFS data for cycle {archive.task_config.current_cycle}")
+            arcdir_result = archive_vars.gefs_arcdir()
+        elif NET == 'gcafs':
+            logger.info(f"Archiving GCAFS data for cycle {archive.task_config.current_cycle}")
+            arcdir_result = archive_vars.gcafs_arcdir()
+        else:  # gfs, gdas (default)
+            logger.info(f"Archiving GFS/GDAS data for RUN={RUN}, cycle {archive.task_config.current_cycle}")
+            arcdir_result = archive_vars.gfs_arcdir()
+
+        # Extract the file_set and mkdir_list from the result
+        file_set = arcdir_result['file_set']
+        mkdir_list = arcdir_result['mkdir_list']
+
+        # Construct the arcdir_set in the format expected by execute_store_products
+        arcdir_set = {
+            'mkdir': mkdir_list,
+            'copy': file_set
+        }
+
+        logger.info(f"Archiving {len(file_set)} files to {len(mkdir_list)} directories")
+        logger.debug(f"arcdir_set: {arcdir_set}")
 
         # Populate the product archive (ARCDIR)
         archive.execute_store_products(arcdir_set)

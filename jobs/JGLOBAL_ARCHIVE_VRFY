@@ -2,26 +2,9 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
 
-##############################################
-# Set variables used in the script
-##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
-    COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL
-
-for grid in "0p25" "0p50" "1p00"; do
-    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
-done
-
 ###############################################################
 # Run archive script
+# Note: COM paths are calculated within the Python script
 ###############################################################
 
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
@@ -29,10 +12,6 @@ err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"
 fi
-
-##############################################
-# End JOB SPECIFIC work
-##############################################
 
 ##############################################
 # Final processing

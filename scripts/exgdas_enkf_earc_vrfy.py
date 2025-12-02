@@ -3,6 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
+from pygfs.task.archive_vars import ArchiveVrfy
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, chdir, logit
 
 # initialize root logger
@@ -14,37 +15,43 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the Archive object
+    # Instantiate the Archive object for execute_store_products
     archive = Archive(config)
 
-    # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs',
-            'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR',
-            'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET', 'MODE', 'FHOUT_GFS',
-            'FHMAX_HF_GFS', 'FHOUT_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT', 'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
+    # Instantiate the ArchiveVrfy object for variable and file set calculation
+    archive_vars = ArchiveVrfy(config)
 
-    archive_dict = AttrDict()
-    for key in keys:
-        archive_dict[key] = archive.task_config.get(key)
-        if archive_dict[key] is None:
-            print(f"Warning: key ({key}) not found in task_config!")
+    # Get the NET and RUN type to determine which arcdir method to call
+    NET = archive.task_config.get('NET', 'gfs')
+    RUN = archive.task_config.RUN
 
-    # Also import all COMIN* directory and template variables
-    for key in archive.task_config.keys():
-        if key.startswith("COMIN"):
-            archive_dict[key] = archive.task_config[key]
+    with chdir(config.ROTDIR):
 
-    cwd = os.getcwd()
+        # Determine which system we're archiving for and call the appropriate method
+        # EnKF runs use the GFS archiving logic with ensemble-specific handling
+        logger.info(f"Archiving EnKF data for RUN={RUN}, cycle {archive.task_config.current_cycle}")
 
-    os.chdir(config.ROTDIR)
+        if NET == 'gefs':
+            arcdir_result = archive_vars.gefs_arcdir()
+        elif NET == 'gcafs':
+            arcdir_result = archive_vars.gcafs_arcdir()
+        else:  # gfs, gdas, enkfgdas, enkfgfs
+            arcdir_result = archive_vars.gfs_arcdir()
 
-    # Determine which archives to create
-    arcdir_set = archive.configure_vrfy(archive_dict)
+        # Extract the file_set and mkdir_list from the result
+        file_set = arcdir_result['file_set']
+        mkdir_list = arcdir_result['mkdir_list']
 
-    # Populate the product archive (ARCDIR)
-    archive.execute_store_products(arcdir_set)
+        # Construct the arcdir_set in the format expected by execute_store_products
+        arcdir_set = {
+            'mkdir': mkdir_list,
+            'copy': file_set
+        }
 
-    os.chdir(cwd)
+        logger.info(f"Archiving {len(file_set)} files to {len(mkdir_list)} directories")
+
+        # Populate the product archive (ARCDIR)
+        archive.execute_store_products(arcdir_set)
 
 
 if __name__ == '__main__':
