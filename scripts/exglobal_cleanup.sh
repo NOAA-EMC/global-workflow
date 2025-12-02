@@ -33,7 +33,7 @@ gempak_cutoff_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP} h
 # Selective exclude list
 selective_exclude_string="${selective_exclude_string:-}"
 # Gempak exclude list
-gempak_exclude_string+=", *gfs_1p00_*"
+gempak_exclude_string+=", gfs_1p00_*"
 
 # RTOFS is cleaned separately (for all RUNs)
 rtofs_cutoff_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RTOFS_CLEANUP} hours")
@@ -51,19 +51,14 @@ for cleanup_max in ${max_list}; do
     fi
 done
 
-max_cleanup_min=${max_cleanup_max}
-for cleanup_max in ${max_list}; do
-    if [[ ${cleanup_max} -lt ${max_cleanup_min} ]]; then
-        max_cleanup_min=${cleanup_max}
-    fi
-done
-
 # Start 4 cycles before the earliest exclusion target so we actually remove older files
 max_cleanup_max=$((max_cleanup_max + 4 * assim_freq))
 first_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_max} hours")
 
-last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_min} hours")
+# Cleanup starts on SELECTIVE_CLEANUP_MIN
+last_date=${last_selective_date}
 
+# Declare remove_files(), which will be called in a loop to selectively remove files
 function remove_files() {
     local directory=$1
     shift
@@ -158,7 +153,7 @@ if [[ "${RUN}" == "gfs" ]]; then
     done
 fi
 
-# Remove $RUN.$rPDY for the older of GDATE or RDATE
+# Remove $RUN.$rPDY for the older of GDATE or RDATE if it is empty
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_max} hours")
 RDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${FHMAX_GFS} hours")
 if ((GDATE < RDATE)); then
@@ -167,7 +162,7 @@ fi
 
 deletion_target="${ROTDIR}/${RUN}.${RDATE:0:8}"
 if [[ -d "${deletion_target}" ]]; then
-    rm -rf "${deletion_target}"
+    find "${deletion_target}" -maxdepth 0 -type d -empty -delete
 fi
 
 # sync and wait to avoid filesystem synchronization issues
