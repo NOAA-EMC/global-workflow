@@ -57,7 +57,7 @@ for cleanup_max in ${max_list}; do
 done
 
 # Start 4 cycles before the earliest exclusion target so we actually remove older files
-max_cleanup_max=$(( max_cleanup_max + 4 * assim_freq ))
+max_cleanup_max=$((max_cleanup_max + 4 * assim_freq))
 first_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_max} hours")
 
 last_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${max_cleanup_min} hours")
@@ -92,7 +92,7 @@ function remove_files() {
 }
 
 # Now start removing old COM files/directories
-for ((current_date = first_date; current_date <= last_date; \
+for ((current_date = first_date; current_date <= last_date;  \
 current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours"))); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
