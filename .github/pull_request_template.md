@@ -41,7 +41,7 @@
 
 # Change characteristics
 <!-- Choose YES or NO from each of the following and delete the other -->
-- Is this change expected to change baselines? YES/NO (If YES, please indicate to which system(s))
+- Is this change expected to change outputs (e.g. value changes to existing outputs, new files stored in COM, files removed from COM, filename changes, additions/subtractions to archives)? YES/NO (If YES, please indicate to which system(s))
   - [ ] GFS
   - [ ] GEFS
   - [ ] SFS
