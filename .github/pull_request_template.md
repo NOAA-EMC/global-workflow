@@ -79,4 +79,3 @@ Example:
 - [ ] This change is covered by an existing CI test or a new one has been added
 - [ ] Any new scripts have been added to the .github/CODEOWNERS file with owners
 - [ ] I have made corresponding changes to the system documentation if necessary
-- [ ] If my change is not expected to change baselines, I have verified that there are no differences
