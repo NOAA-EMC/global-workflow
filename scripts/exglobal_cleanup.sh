@@ -6,8 +6,8 @@ echo "Begin Cleanup ${DATAROOT}!"
 # Remove DATAoutput from the forecast model run
 # TODO: Handle this better
 DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
-if [[ -d "${DATAfcst}" ]];
-    then rm -rf "${DATAfcst}";
+if [[ -d "${DATAfcst}" ]]; then
+    rm -rf "${DATAfcst}"
 fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
@@ -19,8 +19,8 @@ fi
 
 SELECTIVE_CLEANUP_MIN=${SELECTIVE_CLEANUP_MIN:-24}
 SELECTIVE_CLEANUP_MAX=${SELECTIVE_CLEANUP_MAX:-120}
-RTOFS_CLEANUP_MAX=${RTOFS_CLEANUP_MAX:-48}
-GEMPAK_CLEANUP_MAX=${GEMPAK_CLEANUP_MAX:-240}
+RTOFS_CLEANUP=${RTOFS_CLEANUP:-24}
+GEMPAK_CLEANUP=${GEMPAK_CLEANUP:-240}
 ###############################################################
 # Clean up previous cycles; various depths
 
@@ -29,8 +29,8 @@ GEMPAK_CLEANUP_MAX=${GEMPAK_CLEANUP_MAX:-240}
 # Retain files needed by Fit2Obs
 first_selective_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${SELECTIVE_CLEANUP_MAX} hours")
 last_selective_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${SELECTIVE_CLEANUP_MIN} hours")
-last_rtofs_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RTOFS_CLEANUP_MAX} hours")
-first_gempak_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP_MAX} hours")
+last_rtofs_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${RTOFS_CLEANUP} hours")
+first_gempak_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} -${GEMPAK_CLEANUP} hours")
 # Selective exclude list
 selective_exclude_string="${selective_exclude_string:-}"
 # Gempak exclude list
@@ -38,9 +38,9 @@ gempak_exclude_string+=", *gfs_1p00_*"
 
 # Find the first and last date among all cleanup targets
 max_cleanup_max="${SELECTIVE_CLEANUP_MAX:-120}"
-max_list="${RTOFS_CLEANUP_MAX}"
+max_list="${RTOFS_CLEANUP}"
 if [[ "${RUN}" == "gfs" && "${DO_GEMPAK}" == "YES" ]]; then
-    max_list+=" ${GEMPAK_CLEANUP_MAX}"
+    max_list+=" ${GEMPAK_CLEANUP}"
 fi
 
 for cleanup_max in ${max_list}; do
@@ -76,7 +76,7 @@ function remove_files() {
         fi
     done
     # Chop off any trailing or
-    find_exclude_string="${find_exclude_string[*]/%-or}"
+    find_exclude_string="${find_exclude_string[*]/%-or/}"
     # Remove all regular files and symlinks that do not match
     # shellcheck disable=SC2086
     if [[ -n "${find_exclude_string}" ]]; then
@@ -92,7 +92,7 @@ function remove_files() {
 }
 
 # Now start removing old COM files/directories
-for ((current_date=first_date; current_date <= last_date; \
+for ((current_date = first_date; current_date <= last_date; \
 current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours"))); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
@@ -124,8 +124,12 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
             fi
             # Remove all rtofs directories in each RUN older than last_rtofs_date
             rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
-            if [[ -d "${rtofs_dir}" ]] && ((current_date < last_rtofs_date)); then rm -rf "${rtofs_dir}" ; fi
-            if [[ -d "${rtofs_dir}" ]] && ((current_date < last_rtofs)); then rm -rf "${rtofs_dir}"; fi
+            if [[ -d "${rtofs_dir}" && ${current_date} -lt ${last_rtofs_date} ]]; then
+                rm -rf "${rtofs_dir}"
+            fi
+            if [[ -d "${rtofs_dir}" && ${current_date} -lt ${last_rtofs} ]]; then
+                rm -rf "${rtofs_dir}"
+            fi
         fi
     fi
 done
