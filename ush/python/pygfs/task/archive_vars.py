@@ -304,6 +304,178 @@ class ArchiveVrfy(Task):
 
         return com_paths
 
+    def _build_gfs_list(self, cycle_vars: Dict[str, Any], com_paths: Dict[str, str],
+                        arcdir: str) -> Dict[str, list]:
+        """Build mkdir list and file set for GFS archiving.
+
+        This method contains nested helper functions to build the directory list
+        and file set for GFS archiving.
+
+        Parameters
+        ----------
+        cycle_vars : Dict[str, Any]
+            Cycle-specific variables
+        com_paths : Dict[str, str]
+            COM directory paths
+        arcdir : str
+            Archive directory path
+
+        Returns
+        -------
+        Dict[str, list]
+            Dictionary containing 'mkdir_list' and 'file_set'
+        """
+
+        def build_mkdir_list() -> list:
+            """Build list of directories to create for GFS archiving."""
+            mkdir_list = [arcdir]
+
+            # Add fit2obs directory if enabled
+            RUN = self.task_config.RUN
+            if RUN == "gfs" and self.task_config.get("DO_FIT2OBS", False):
+                vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
+                cycle_YMD = cycle_vars['cycle_YMD']
+                cycle_HH = cycle_vars['cycle_HH']
+                fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
+                mkdir_list.append(fit2obs_dir)
+
+            return mkdir_list
+
+        def build_file_set() -> list:
+            """Build list of files to archive for GFS."""
+            file_set = []
+
+            head = cycle_vars['head']
+            cycle_YMDH = cycle_vars['cycle_YMDH']
+            cycle_YMD = cycle_vars['cycle_YMD']
+            cycle_HH = cycle_vars['cycle_HH']
+
+            RUN = self.task_config.RUN
+            MODE = self.task_config.get('MODE', 'cycled')
+            CDUMP = self.task_config.get('CDUMP', RUN)
+
+            # Deterministic files (not enkf)
+            if "enkf" not in RUN:
+                # Common deterministic files
+                det_files = [
+                    # Log files
+                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf000.txt", f"{arcdir}/{head}logf000.txt"],
+                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf001.txt", f"{arcdir}/{head}logf001.txt"],
+
+                    # Restart files
+                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.coupler.res",
+                     f"{arcdir}/{cycle_YMDH}.coupler.res"],
+                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.fv_core.res.nc",
+                     f"{arcdir}/{cycle_YMDH}.fv_core.res.nc"],
+                ]
+                file_set.extend(det_files)
+
+                # Analysis files (cycled mode)
+                if MODE == "cycled":
+                    det_anl_files = [
+                        # Analysis files
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atmanl.nc",
+                         f"{arcdir}/{head}atmanl.nc"],
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}sfcanl.nc",
+                         f"{arcdir}/{head}sfcanl.nc"],
+
+                        # Radiance diagnostic files
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias",
+                         f"{arcdir}/{head}abias"],
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_pc",
+                         f"{arcdir}/{head}abias_pc"],
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_air",
+                         f"{arcdir}/{head}abias_air"],
+                    ]
+                    file_set.extend(det_anl_files)
+
+                # GFS-specific files
+                if RUN == "gfs":
+                    # GRIB2 files for multiple grids
+                    for grid in ["0p25", "0p50", "1p00"]:
+                        com_key = f"COMIN_ATMOS_GRIB_{grid}"
+                        if com_key in com_paths:
+                            FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
+                            FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
+
+                            for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS):
+                                fhr_str = str(fhr).zfill(3)
+                                file_set.append([
+                                    f"{com_paths[com_key]}/{head}pgrb2.{grid}.f{fhr_str}",
+                                    f"{arcdir}/{head}pgrb2.{grid}.f{fhr_str}"
+                                ])
+
+                    # Genesis tracker files
+                    if self.task_config.get('DO_GENESIS', False):
+                        file_set.extend([
+                            [f"{com_paths['COMIN_ATMOS_GENESIS']}/genesis.{cycle_YMDH}.dat",
+                             f"{arcdir}/genesis.{cycle_YMDH}.dat"],
+                        ])
+
+                    # TC tracker files
+                    if self.task_config.get('DO_TRACKER', False):
+                        file_set.extend([
+                            [f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunix.{cycle_YMDH}",
+                             f"{arcdir}/atcfunix.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_TRACK']}/storms.{cycle_YMDH}",
+                             f"{arcdir}/storms.{cycle_YMDH}"],
+                        ])
+
+                    # Fit2Obs files
+                    if self.task_config.get("DO_FIT2OBS", False):
+                        vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
+                        fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
+
+                        file_set.extend([
+                            [f"{com_paths['COMIN_OBS']}/prepbufr.{cycle_YMDH}",
+                             f"{fit2obs_dir}/prepbufr.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_OBS']}/prepbufr_acft.{cycle_YMDH}",
+                             f"{fit2obs_dir}/prepbufr_acft.{cycle_YMDH}"],
+                        ])
+
+                # GDAS-specific files
+                elif RUN == "gdas":
+                    gdas_files = [
+                        # Analysis increment files
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atminc.nc",
+                         f"{arcdir}/{head}atminc.nc"],
+
+                        # Observation files
+                        [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr",
+                         f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr"],
+                        [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles",
+                         f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles"],
+                    ]
+                    file_set.extend(gdas_files)
+
+            else:  # Ensemble files (enkfgdas, enkfgfs)
+                # EnKF ensemble mean and spread files
+                enkf_files = [
+                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}ensmean.nc",
+                     f"{arcdir}/{head}ensmean.nc"],
+                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}enssprd.nc",
+                     f"{arcdir}/{head}enssprd.nc"],
+                ]
+
+                # Loop over ensemble members
+                NMEM_ENS = self.task_config.get('NMEM_ENS', 80)
+                for mem in range(1, NMEM_ENS + 1):
+                    mem_str = str(mem).zfill(3)
+                    enkf_files.append([
+                        f"{com_paths['COMIN_ATMOS_ANALYSIS']}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc",
+                        f"{arcdir}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc"
+                    ])
+
+                file_set.extend(enkf_files)
+
+            return file_set
+
+        # Call nested helper functions
+        return {
+            'mkdir_list': build_mkdir_list(),
+            'file_set': build_file_set()
+        }
+
     @logit(logger)
     def gfs_arcdir(self) -> Dict[str, Any]:
         """Build complete file set for GFS archiving (gfs_arcdir.yaml.j2).
@@ -325,140 +497,70 @@ class ArchiveVrfy(Task):
         com_paths = self._calculate_com_paths(base_dict)
 
         arcdir = self.task_config.ARCDIR
-        vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
 
-        file_set = []
-        mkdir_list = [arcdir]
-
-        head = cycle_vars['head']
-        cycle_YMDH = cycle_vars['cycle_YMDH']
-        cycle_YMD = cycle_vars['cycle_YMD']
-        cycle_HH = cycle_vars['cycle_HH']
-
-        RUN = self.task_config.RUN
-        MODE = self.task_config.get('MODE', 'cycled')
-        CDUMP = self.task_config.get('CDUMP', RUN)
-
-        # Deterministic files (not enkf)
-        if "enkf" not in RUN:
-            # Common deterministic files
-            det_files = [
-                # Log files
-                [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf000.txt", f"{arcdir}/{head}logf000.txt"],
-                [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf001.txt", f"{arcdir}/{head}logf001.txt"],
-
-                # Restart files
-                [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.coupler.res",
-                 f"{arcdir}/{cycle_YMDH}.coupler.res"],
-                [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.fv_core.res.nc",
-                 f"{arcdir}/{cycle_YMDH}.fv_core.res.nc"],
-            ]
-            file_set.extend(det_files)
-
-            # Analysis files (cycled mode)
-            if MODE == "cycled":
-                det_anl_files = [
-                    # Analysis files
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atmanl.nc",
-                     f"{arcdir}/{head}atmanl.nc"],
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}sfcanl.nc",
-                     f"{arcdir}/{head}sfcanl.nc"],
-
-                    # Radiance diagnostic files
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias",
-                     f"{arcdir}/{head}abias"],
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_pc",
-                     f"{arcdir}/{head}abias_pc"],
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_air",
-                     f"{arcdir}/{head}abias_air"],
-                ]
-                file_set.extend(det_anl_files)
-
-            # GFS-specific files
-            if RUN == "gfs":
-                # GRIB2 files for multiple grids
-                for grid in ["0p25", "0p50", "1p00"]:
-                    com_key = f"COMIN_ATMOS_GRIB_{grid}"
-                    if com_key in com_paths:
-                        # Loop over forecast hours (example: 0 to FHMAX_GFS by FHOUT_GFS)
-                        FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
-                        FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
-
-                        for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS):
-                            fhr_str = str(fhr).zfill(3)
-                            file_set.append([
-                                f"{com_paths[com_key]}/{head}pgrb2.{grid}.f{fhr_str}",
-                                f"{arcdir}/{head}pgrb2.{grid}.f{fhr_str}"
-                            ])
-
-                # Genesis tracker files
-                if self.task_config.get('DO_GENESIS', False):
-                    file_set.extend([
-                        [f"{com_paths['COMIN_ATMOS_GENESIS']}/genesis.{cycle_YMDH}.dat",
-                         f"{arcdir}/genesis.{cycle_YMDH}.dat"],
-                    ])
-
-                # TC tracker files
-                if self.task_config.get('DO_TRACKER', False):
-                    file_set.extend([
-                        [f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunix.{cycle_YMDH}",
-                         f"{arcdir}/atcfunix.{cycle_YMDH}"],
-                        [f"{com_paths['COMIN_ATMOS_TRACK']}/storms.{cycle_YMDH}",
-                         f"{arcdir}/storms.{cycle_YMDH}"],
-                    ])
-
-                # Fit2Obs files
-                if self.task_config.get("DO_FIT2OBS", False):
-                    fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
-                    mkdir_list.append(fit2obs_dir)
-
-                    file_set.extend([
-                        [f"{com_paths['COMIN_OBS']}/prepbufr.{cycle_YMDH}",
-                         f"{fit2obs_dir}/prepbufr.{cycle_YMDH}"],
-                        [f"{com_paths['COMIN_OBS']}/prepbufr_acft.{cycle_YMDH}",
-                         f"{fit2obs_dir}/prepbufr_acft.{cycle_YMDH}"],
-                    ])
-
-            # GDAS-specific files
-            elif RUN == "gdas":
-                gdas_files = [
-                    # Analysis increment files
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atminc.nc",
-                     f"{arcdir}/{head}atminc.nc"],
-
-                    # Observation files
-                    [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr",
-                     f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr"],
-                    [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles",
-                     f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles"],
-                ]
-                file_set.extend(gdas_files)
-
-        else:  # Ensemble files (enkfgdas, enkfgfs)
-            # EnKF ensemble mean and spread files
-            enkf_files = [
-                [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}ensmean.nc",
-                 f"{arcdir}/{head}ensmean.nc"],
-                [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}enssprd.nc",
-                 f"{arcdir}/{head}enssprd.nc"],
-            ]
-
-            # Loop over ensemble members
-            NMEM_ENS = self.task_config.get('NMEM_ENS', 80)
-            for mem in range(1, NMEM_ENS + 1):
-                mem_str = str(mem).zfill(3)
-                enkf_files.append([
-                    f"{com_paths['COMIN_ATMOS_ANALYSIS']}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc",
-                    f"{arcdir}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc"
-                ])
-
-            file_set.extend(enkf_files)
+        # Build mkdir list and file set using helper method with nested functions
+        lists = self._build_gfs_list(cycle_vars, com_paths, arcdir)
 
         return {
             'cycle_vars': cycle_vars,
             'com_paths': com_paths,
-            'file_set': file_set,
-            'mkdir_list': mkdir_list
+            'file_set': lists['file_set'],
+            'mkdir_list': lists['mkdir_list']
+        }
+
+    def _build_gefs_list(self, cycle_vars: Dict[str, Any], com_paths: Dict[str, str]) -> Dict[str, list]:
+        """Build mkdir list and file set for GEFS archiving.
+
+        This method contains nested helper functions to build the directory list
+        and file set for GEFS archiving.
+
+        Parameters
+        ----------
+        cycle_vars : Dict[str, Any]
+            Cycle-specific variables
+        com_paths : Dict[str, str]
+            COM directory paths
+
+        Returns
+        -------
+        Dict[str, list]
+            Dictionary containing 'mkdir_list' and 'file_set'
+        """
+        gefs_arch = os.path.join(self.task_config.ROTDIR, "gefsarch")
+
+        def build_mkdir_list() -> list:
+            """Build list of directories to create for GEFS archiving."""
+            return [gefs_arch]
+
+        def build_file_set() -> list:
+            """Build list of files to archive for GEFS."""
+            file_set = []
+            head = cycle_vars['head']
+
+            # GEFS ensemble statistics files
+            ensstat_path = com_paths.get('COMIN_ATMOS_ENSSTAT_1p00', '')
+
+            if ensstat_path and os.path.exists(ensstat_path):
+                FHMIN_GFS = self.task_config.get('FHMIN_GFS', 0)
+                FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
+                FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
+
+                for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS):
+                    fhr_str = str(fhr).zfill(3)
+                    source_file = f"{ensstat_path}/{head}mean.pres_.1p00.f{fhr_str}.grib2"
+                    file_set.append([source_file, gefs_arch])
+            else:
+                if not ensstat_path:
+                    logger.warning("COMIN_ATMOS_ENSSTAT_1p00 not found in com_paths")
+                else:
+                    logger.warning(f"COMIN_ATMOS_ENSSTAT_1p00 path does not exist: {ensstat_path}")
+
+            return file_set
+
+        # Call nested helper functions
+        return {
+            'mkdir_list': build_mkdir_list(),
+            'file_set': build_file_set()
         }
 
     @logit(logger)
@@ -481,42 +583,14 @@ class ArchiveVrfy(Task):
         base_dict = self._get_template_dict()
         com_paths = self._calculate_com_paths(base_dict)
 
-        # GEFS_ARCH is where GEFS ensemble statistics will be archived
-        # Corresponds to YAML: {% set GEFS_ARCH = ROTDIR ~ "/gefsarch" %}
-        gefs_arch = os.path.join(self.task_config.ROTDIR, "gefsarch")
-
-        file_set = []
-        mkdir_list = [gefs_arch]
-
-        head = cycle_vars['head']
-
-        # GEFS ensemble statistics files
-        # Use COMIN_ATMOS_ENSSTAT_1p00 which includes MEMDIR='ensstat'
-        ensstat_path = com_paths.get('COMIN_ATMOS_ENSSTAT_1p00', '')
-
-        if ensstat_path and os.path.exists(ensstat_path):
-            # Select ensemble statistics files to archive
-            # Corresponds to YAML: ensstat_files loop
-            FHMIN_GFS = self.task_config.get('FHMIN_GFS', 0)
-            FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
-            FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
-
-            for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS):
-                fhr_str = str(fhr).zfill(3)
-                # Corresponds to YAML: head ~ "mean.pres_." ~ "1p00" ~ ".f" ~ fhr ~ ".grib2"
-                source_file = f"{ensstat_path}/{head}mean.pres_.1p00.f{fhr_str}.grib2"
-                file_set.append([source_file, gefs_arch])
-        else:
-            if not ensstat_path:
-                logger.warning("COMIN_ATMOS_ENSSTAT_1p00 not found in com_paths")
-            else:
-                logger.warning(f"COMIN_ATMOS_ENSSTAT_1p00 path does not exist: {ensstat_path}")
+        # Build mkdir list and file set using helper method with nested functions
+        lists = self._build_gefs_list(cycle_vars, com_paths)
 
         return {
             'cycle_vars': cycle_vars,
             'com_paths': com_paths,
-            'file_set': file_set,
-            'mkdir_list': mkdir_list
+            'file_set': lists['file_set'],
+            'mkdir_list': lists['mkdir_list']
         }
 
     @logit(logger)
