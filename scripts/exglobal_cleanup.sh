@@ -40,7 +40,7 @@ gempak_exclude_string+=", *gfs_1p00_*"
 max_cleanup_max="${SELECTIVE_CLEANUP_MAX:-120}"
 max_list="${RTOFS_CLEANUP_MAX}"
 if [[ "${RUN}" == "gfs" && "${DO_GEMPAK}" == "YES" ]]; then
-    max_list+=" ${GEMPAK_CLEANUP_MAX}}"
+    max_list+=" ${GEMPAK_CLEANUP_MAX}"
 fi
 
 for cleanup_max in ${max_list}; do
