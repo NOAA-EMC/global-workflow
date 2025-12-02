@@ -141,7 +141,7 @@ for dir in "${gdas_list[@]}" "${gfs_list[@]}" "${gcdas_list[@]}" "${gcafs_list[@
           fi
           if [[ -f "sfc_inc.tile1.nc" ]]; then
               for tile in {1..6}; do
-                  link_file "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
+                  link_file "sfc_inc.tile${tile}.nc" "increment.sfc.tile${tile}.nc"
               done
           fi
           if [[ -f "${system_prefix}.t${cyc}z.cubed_sphere_grid_atminc.tile1.nc" ]]; then
@@ -254,7 +254,7 @@ for dir in "${enkfgdas_list[@]}" "${enkfgfs_list[@]}"; do
                 # sfc_inc tile links
                 if [[ -f "sfc_inc.tile1.nc" ]]; then
                     for tile in {1..6}; do
-                        link_file "sfc_inc.tile${tile}.nc" "increment.sfc.i006.tile${tile}.nc"
+                        link_file "sfc_inc.tile${tile}.nc" "increment.sfc.tile${tile}.nc"
                     done
                 fi
             fi

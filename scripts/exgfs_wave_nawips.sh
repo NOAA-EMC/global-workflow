@@ -43,90 +43,90 @@ EOF
 
 # Loop over the grids
 for grid in ${grids}; do
-  case ${grid} in
-    aoc_9km)
-      grdIDout='gfswavearc'
-    ;;
-    at_10m)
-      grdIDout='gfswaveat10m'
-    ;;
-    ep_10m)
-      grdIDout='gfswaveep10m'
-    ;;
-    wc_10m)
-      grdIDout='gfswavewc10m'
-    ;;
-    glo_30m)
-      grdIDout='gfswavegl30m'
-    ;;
-    gnh_10m)
-      grdIDout='gfswavenh'
-    ;;
-    gsh_15m)
-      grdIDout='gfswavesh'
-    ;;
-    glo_200)
-      grdIDout='gfswaves200k'
-    ;;
-    *)
-      echo "FATAL ERROR: Unspecified grid '${grid}'"
-      exit 9
-    ;;
-  esac
-  process_grdID "${grid}"
+    case ${grid} in
+        aoc_9km)
+            grdIDout='gfswavearc'
+            ;;
+        at_10m)
+            grdIDout='gfswaveat10m'
+            ;;
+        ep_10m)
+            grdIDout='gfswaveep10m'
+            ;;
+        wc_10m)
+            grdIDout='gfswavewc10m'
+            ;;
+        glo_30m)
+            grdIDout='gfswavegl30m'
+            ;;
+        gnh_10m)
+            grdIDout='gfswavenh'
+            ;;
+        gsh_15m)
+            grdIDout='gfswavesh'
+            ;;
+        glo_200)
+            grdIDout='gfswaves200k'
+            ;;
+        *)
+            echo "FATAL ERROR: Unspecified grid '${grid}'"
+            exit 9
+            ;;
+    esac
+    process_grdID "${grid}"
 
-  com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
-  com_dir=${!com_varname}
-  GRIBIN="${RUN}.${cycle}.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
-  cpreq "${com_dir}/${GRIBIN}" "./${GRIBIN}"
+    com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
+    com_dir=${!com_varname}
+    GRIBIN="${RUN}.${cycle}.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
+    cpreq "${com_dir}/${GRIBIN}" "./${GRIBIN}"
 
-  nagrib_file="${GRIBIN}"
-  if [[ "${GRDREGION}.${GRDRES}" = "global.0p25" ]]; then
-    nagrib_file="${RUN}.${cycle}.global.${gridIDout}.${fhr3}.grib2"
-    ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 "${nagrib_file}" grib "${GRIBIN}"
+    nagrib_file="${GRIBIN}"
+    if [[ "${GRDREGION}.${GRDRES}" = "global.0p25" ]]; then
+        nagrib_file="${RUN}.${cycle}.global.${gridIDout}.${fhr3}.grib2"
+        ${WGRIB2} -lola 0:720:0.5 -90:361:0.5 "${nagrib_file}" grib "${GRIBIN}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            export pgm="${WGRIB2}"
+            err_exit "wgrib2 failed to interpolate"
+        fi
+    fi
+
+    GEMGRD="${grdIDout}_${PDY}${cyc}f${fhr3}"
+    GBFILE="grib_${grid}"
+
+    cpreq "${nagrib_file}" "${GBFILE}"
+
+    rm -f "gempak.parm.${grid}"
+    atparse < "${DATA}/gempak.parm.tmpl" >> "${DATA}/gempak.parm.${grid}"
+    cat "${DATA}/gempak.parm.${grid}"
+
+    startmsg
+    export pgm="${NAGRIB}"
+    ${pgm} < "${DATA}/gempak.parm.${grid}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-      export pgm="${WGRIB2}"
-      err_exit "wgrib2 failed to interpolate"
+        err_exit "${pgm} failed during the generation of ${GEMGRD}"
     fi
-  fi
+    #####################################################
+    # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
+    # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
+    # FOR THIS CASE HERE.
+    #####################################################
+    if [[ -f "${GEMGRD}" ]]; then
+        ls -l "${GEMGRD}"
+    else
+        export err=1
+        export pgm="GEMPAK CHECK FILE"
+        err_exit "Gempak failed to generate the desired grid ${GEMGRD}"
+    fi
 
-  GEMGRD="${grdIDout}_${PDY}${cyc}f${fhr3}"
-  GBFILE="grib_${grid}"
+    if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi
 
-  cpreq "${nagrib_file}" "${GBFILE}"
+    # Copy output to COMOUT
+    cpfs "${GEMGRD}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
 
-  rm -f "gempak.parm.${grid}"
-  atparse < "${DATA}/gempak.parm.tmpl" >> "${DATA}/gempak.parm.${grid}"
-  cat "${DATA}/gempak.parm.${grid}"
-
-  startmsg
-  export pgm="${NAGRIB}"
-  ${pgm} < "${DATA}/gempak.parm.${grid}" && true
-  export err=$?
-  if [[ ${err} -ne 0 ]]; then
-     err_exit "${pgm} failed during the generation of ${GEMGRD}"
-  fi
-  #####################################################
-  # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
-  # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
-  # FOR THIS CASE HERE.
-  #####################################################
-  if [[ -f "${GEMGRD}" ]]; then
-     ls -l "${GEMGRD}"
-  else
-     export err=1
-     export pgm="GEMPAK CHECK FILE"
-     err_exit "Gempak failed to generate the desired grid ${GEMGRD}"
-  fi
-
-  if [[ "${NAGRIB}" == "nagrib2" ]]; then gpend; fi
-
-  # Copy output to COMOUT
-  cpfs "${GEMGRD}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
-
-  if [[ "${SENDDBN}" == "YES" ]] ; then
-    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
-  fi
+    if [[ "${SENDDBN}" == "YES" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" "${COMOUT_WAVE_GEMPAK}/${GEMGRD}"
+    fi
 
 done

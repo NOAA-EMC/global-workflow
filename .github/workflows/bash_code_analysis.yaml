@@ -1,0 +1,100 @@
+name: bash_code_analysis
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  shfmt:
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # to get PR metadata
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # Switch to this action once whole repo is shfmt compliant
+      # - name: shfmt scan
+      #   uses: reviewdog/action-shfmt@v1
+      #   with:
+      #     filter_mode: nofilter
+      #     level: warning
+
+      - name: Install shfmt
+        uses: mfinelli/setup-shfmt@v4
+      - name: shfmt scan
+        run: shfmt -d dev/jobs jobs scripts
+
+  shellcheck:
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # to get PR metadata
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+      
+      - name: Shellcheck Scan
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          filter_mode: nofilter
+          level: warning
+          path: |
+            dev/jobs
+            jobs
+            scripts
+          pattern: |
+            config.*
+            J*
+            *.env
+            *.sh
+            *.bash
+
+  differential_shellcheck:
+    # Run again on just changes until whole repo is compliant
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # to get PR metadata
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+      
+      - name: Shellcheck Scan
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          filter_mode: added
+          level: warning
+          check_all_files_with_shebangs: true
+          pattern: |
+            config.*
+            J*
+            *.env
+            *.sh
+            *.bash
+
+
+
