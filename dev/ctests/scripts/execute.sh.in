@@ -17,7 +17,9 @@ rm -f ./jobcard
 # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
 # TODO: Remove this when upstream Rocoto PR is merged
 # Load platform-specific configuration first
-source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
+
+source "${GW_HOMEgfs}/ush/detect_machine.sh"
+source "${GW_HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
 if [[ -n "${ROCOTO_TEST_PATH:-}" && -d "${ROCOTO_TEST_PATH}" ]]; then
   export PATH="${ROCOTO_TEST_PATH}:$PATH"
   echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
