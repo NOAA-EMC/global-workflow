@@ -254,6 +254,11 @@ class ArchiveVrfy(Task):
         """
         com_paths = {}
 
+        # Helper function to get template variables with empty string default
+        def get_with_default(key):
+            """Return value from base_dict, or empty string if key not found."""
+            return base_dict.get(key, '')
+
         # Common paths (always needed)
         common_templates = [
             ('COMIN_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL'),
@@ -270,7 +275,7 @@ class ArchiveVrfy(Task):
             template = self.task_config.get(template_key, '')
             if template:
                 com_paths[com_key] = Template.substitute_string(
-                    template, TemplateConstants.DOLLAR_CURLY_BRACE, base_dict.get)
+                    template, TemplateConstants.DOLLAR_CURLY_BRACE, get_with_default)
             else:
                 logger.warning(f"Template {template_key} not found for {com_key}")
                 com_paths[com_key] = ''
@@ -280,11 +285,16 @@ class ArchiveVrfy(Task):
             grid_dict = base_dict.copy()
             grid_dict['GRID'] = grid
 
+            # Helper function for grid_dict with empty string default
+            def get_grid_with_default(key):
+                """Return value from grid_dict, or empty string if key not found."""
+                return grid_dict.get(key, '')
+
             template = self.task_config.get('COM_ATMOS_GRIB_GRID_TMPL', '')
             if template:
                 com_key = f"COMIN_ATMOS_GRIB_{grid}"
                 com_paths[com_key] = Template.substitute_string(
-                    template, TemplateConstants.DOLLAR_CURLY_BRACE, grid_dict.get)
+                    template, TemplateConstants.DOLLAR_CURLY_BRACE, get_grid_with_default)
             else:
                 logger.warning(f"COM_ATMOS_GRIB_GRID_TMPL not found for grid {grid}")
 
@@ -295,10 +305,15 @@ class ArchiveVrfy(Task):
             ensstat_dict['GRID'] = '1p00'
             # MEMDIR is already in base_dict for GEFS (added by _get_template_dict)
 
+            # Helper function for ensstat_dict with empty string default
+            def get_ensstat_with_default(key):
+                """Return value from ensstat_dict, or empty string if key not found."""
+                return ensstat_dict.get(key, '')
+
             template = self.task_config.get('COM_ATMOS_GRIB_GRID_TMPL', '')
             if template:
                 com_paths['COMIN_ATMOS_ENSSTAT_1p00'] = Template.substitute_string(
-                    template, TemplateConstants.DOLLAR_CURLY_BRACE, ensstat_dict.get)
+                    template, TemplateConstants.DOLLAR_CURLY_BRACE, get_ensstat_with_default)
             else:
                 logger.warning("COM_ATMOS_GRIB_GRID_TMPL not found for COMIN_ATMOS_ENSSTAT_1p00")
 
@@ -357,37 +372,43 @@ class ArchiveVrfy(Task):
             # Deterministic files (not enkf)
             if "enkf" not in RUN:
                 # Common deterministic files
-                det_files = [
-                    # Log files
-                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf000.txt", f"{arcdir}/{head}logf000.txt"],
-                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf001.txt", f"{arcdir}/{head}logf001.txt"],
+                if com_paths.get('COMIN_ATMOS_HISTORY'):
+                    det_files = [
+                        # Log files
+                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf000.txt", f"{arcdir}/{head}logf000.txt"],
+                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf001.txt", f"{arcdir}/{head}logf001.txt"],
 
-                    # Restart files
-                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.coupler.res",
-                     f"{arcdir}/{cycle_YMDH}.coupler.res"],
-                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.fv_core.res.nc",
-                     f"{arcdir}/{cycle_YMDH}.fv_core.res.nc"],
-                ]
-                file_set.extend(det_files)
+                        # Restart files
+                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.coupler.res",
+                         f"{arcdir}/{cycle_YMDH}.coupler.res"],
+                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.fv_core.res.nc",
+                         f"{arcdir}/{cycle_YMDH}.fv_core.res.nc"],
+                    ]
+                    file_set.extend(det_files)
+                else:
+                    logger.warning("COMIN_ATMOS_HISTORY path not available, skipping history/restart files")
 
                 # Analysis files (cycled mode)
                 if MODE == "cycled":
-                    det_anl_files = [
-                        # Analysis files
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atmanl.nc",
-                         f"{arcdir}/{head}atmanl.nc"],
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}sfcanl.nc",
-                         f"{arcdir}/{head}sfcanl.nc"],
+                    if com_paths.get('COMIN_ATMOS_ANALYSIS'):
+                        det_anl_files = [
+                            # Analysis files
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atmanl.nc",
+                             f"{arcdir}/{head}atmanl.nc"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}sfcanl.nc",
+                             f"{arcdir}/{head}sfcanl.nc"],
 
-                        # Radiance diagnostic files
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias",
-                         f"{arcdir}/{head}abias"],
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_pc",
-                         f"{arcdir}/{head}abias_pc"],
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_air",
-                         f"{arcdir}/{head}abias_air"],
-                    ]
-                    file_set.extend(det_anl_files)
+                            # Radiance diagnostic files
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias",
+                             f"{arcdir}/{head}abias"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_pc",
+                             f"{arcdir}/{head}abias_pc"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_air",
+                             f"{arcdir}/{head}abias_air"],
+                        ]
+                        file_set.extend(det_anl_files)
+                    else:
+                        logger.warning("COMIN_ATMOS_ANALYSIS path not available for cycled mode, skipping analysis files")
 
                 # GFS-specific files
                 if RUN == "gfs":
@@ -407,66 +428,87 @@ class ArchiveVrfy(Task):
 
                     # Genesis tracker files
                     if self.task_config.get('DO_GENESIS', False):
-                        file_set.extend([
-                            [f"{com_paths['COMIN_ATMOS_GENESIS']}/genesis.{cycle_YMDH}.dat",
-                             f"{arcdir}/genesis.{cycle_YMDH}.dat"],
-                        ])
+                        if com_paths.get('COMIN_ATMOS_GENESIS'):
+                            file_set.extend([
+                                [f"{com_paths['COMIN_ATMOS_GENESIS']}/genesis.{cycle_YMDH}.dat",
+                                 f"{arcdir}/genesis.{cycle_YMDH}.dat"],
+                            ])
+                        else:
+                            logger.warning("DO_GENESIS enabled but COMIN_ATMOS_GENESIS path not available")
 
                     # TC tracker files
                     if self.task_config.get('DO_TRACKER', False):
-                        file_set.extend([
-                            [f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunix.{cycle_YMDH}",
-                             f"{arcdir}/atcfunix.{cycle_YMDH}"],
-                            [f"{com_paths['COMIN_ATMOS_TRACK']}/storms.{cycle_YMDH}",
-                             f"{arcdir}/storms.{cycle_YMDH}"],
-                        ])
+                        if com_paths.get('COMIN_ATMOS_TRACK'):
+                            file_set.extend([
+                                [f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunix.{cycle_YMDH}",
+                                 f"{arcdir}/atcfunix.{cycle_YMDH}"],
+                                [f"{com_paths['COMIN_ATMOS_TRACK']}/storms.{cycle_YMDH}",
+                                 f"{arcdir}/storms.{cycle_YMDH}"],
+                            ])
+                        else:
+                            logger.warning("DO_TRACKER enabled but COMIN_ATMOS_TRACK path not available")
 
                     # Fit2Obs files
                     if self.task_config.get("DO_FIT2OBS", False):
-                        vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
-                        fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
+                        if com_paths.get('COMIN_OBS'):
+                            vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
+                            fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
 
-                        file_set.extend([
-                            [f"{com_paths['COMIN_OBS']}/prepbufr.{cycle_YMDH}",
-                             f"{fit2obs_dir}/prepbufr.{cycle_YMDH}"],
-                            [f"{com_paths['COMIN_OBS']}/prepbufr_acft.{cycle_YMDH}",
-                             f"{fit2obs_dir}/prepbufr_acft.{cycle_YMDH}"],
-                        ])
+                            file_set.extend([
+                                [f"{com_paths['COMIN_OBS']}/prepbufr.{cycle_YMDH}",
+                                 f"{fit2obs_dir}/prepbufr.{cycle_YMDH}"],
+                                [f"{com_paths['COMIN_OBS']}/prepbufr_acft.{cycle_YMDH}",
+                                 f"{fit2obs_dir}/prepbufr_acft.{cycle_YMDH}"],
+                            ])
+                        else:
+                            logger.warning("DO_FIT2OBS enabled but COMIN_OBS path not available, skipping fit2obs files")
 
                 # GDAS-specific files
                 elif RUN == "gdas":
-                    gdas_files = [
-                        # Analysis increment files
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atminc.nc",
-                         f"{arcdir}/{head}atminc.nc"],
+                    gdas_files = []
 
-                        # Observation files
-                        [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr",
-                         f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr"],
-                        [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles",
-                         f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles"],
-                    ]
+                    # Analysis increment files
+                    if com_paths.get('COMIN_ATMOS_ANALYSIS'):
+                        gdas_files.append([
+                            f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atminc.nc",
+                            f"{arcdir}/{head}atminc.nc"
+                        ])
+
+                    # Observation files
+                    if com_paths.get('COMIN_OBS'):
+                        gdas_files.extend([
+                            [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr",
+                             f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr"],
+                            [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles",
+                             f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles"],
+                        ])
+                    else:
+                        logger.warning("COMIN_OBS path not available for GDAS, skipping observation files")
+
                     file_set.extend(gdas_files)
 
             else:  # Ensemble files (enkfgdas, enkfgfs)
-                # EnKF ensemble mean and spread files
-                enkf_files = [
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}ensmean.nc",
-                     f"{arcdir}/{head}ensmean.nc"],
-                    [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}enssprd.nc",
-                     f"{arcdir}/{head}enssprd.nc"],
-                ]
+                if com_paths.get('COMIN_ATMOS_ANALYSIS'):
+                    # EnKF ensemble mean and spread files
+                    enkf_files = [
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}ensmean.nc",
+                         f"{arcdir}/{head}ensmean.nc"],
+                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}enssprd.nc",
+                         f"{arcdir}/{head}enssprd.nc"],
+                    ]
 
-                # Loop over ensemble members
-                NMEM_ENS = self.task_config.get('NMEM_ENS', 80)
-                for mem in range(1, NMEM_ENS + 1):
-                    mem_str = str(mem).zfill(3)
-                    enkf_files.append([
-                        f"{com_paths['COMIN_ATMOS_ANALYSIS']}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc",
-                        f"{arcdir}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc"
-                    ])
+                    # Loop over ensemble members
+                    NMEM_ENS = self.task_config.get('NMEM_ENS', 80)
+                    for mem in range(1, NMEM_ENS + 1):
+                        mem_str = str(mem).zfill(3)
+                        enkf_files.append([
+                            f"{com_paths['COMIN_ATMOS_ANALYSIS']}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc",
+                            f"{arcdir}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc"
+                        ])
 
-                file_set.extend(enkf_files)
+                    file_set.extend(enkf_files)
+                else:
+                    logger.warning("COMIN_ATMOS_ANALYSIS path not available for EnKF, skipping ensemble files")
 
             return file_set
 
