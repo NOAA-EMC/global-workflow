@@ -166,11 +166,11 @@ class SFSAppConfig(AppConfig):
         if options['do_extractvars']:
             tasks += ['extractvars']
 
-        #TODO add archiving for SFS
-        #if options['do_archcom']:
-        #    tasks += ['arch_tars']
-        #    if options['do_globusarch']:
-        #        tasks += ['globus']
+        # TODO add archiving for SFS
+        # if options['do_archcom']:
+        #     tasks += ['arch_tars']
+        #     if options['do_globusarch']:
+        #         tasks += ['globus']
 
         tasks += ['cleanup']
 
