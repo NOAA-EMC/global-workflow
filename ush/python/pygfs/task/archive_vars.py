@@ -317,6 +317,24 @@ class ArchiveVrfy(Task):
             else:
                 logger.warning("COM_ATMOS_GRIB_GRID_TMPL not found for COMIN_ATMOS_ENSSTAT_1p00")
 
+        # EnKF-specific: Analysis ensemble statistics path
+        # Uses COM_ATMOS_ANALYSIS_TMPL with MEMDIR='ensstat' for enkfgdas/enkfgfs
+        if 'enkf' in self.task_config.RUN.lower():
+            ensstat_anl_dict = base_dict.copy()
+            ensstat_anl_dict['MEMDIR'] = 'ensstat'
+
+            # Helper function for ensstat_anl_dict with empty string default
+            def get_ensstat_anl_with_default(key):
+                """Return value from ensstat_anl_dict, or empty string if key not found."""
+                return ensstat_anl_dict.get(key, '')
+
+            template = self.task_config.get('COM_ATMOS_ANALYSIS_TMPL', '')
+            if template:
+                com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT'] = Template.substitute_string(
+                    template, TemplateConstants.DOLLAR_CURLY_BRACE, get_ensstat_anl_with_default)
+            else:
+                logger.warning("COM_ATMOS_ANALYSIS_TMPL not found for COMIN_ATMOS_ANALYSIS_ENSSTAT")
+
         return com_paths
 
     def _build_gfs_list(self, cycle_vars: Dict[str, Any], com_paths: Dict[str, str],
@@ -371,144 +389,188 @@ class ArchiveVrfy(Task):
 
             # Deterministic files (not enkf)
             if "enkf" not in RUN:
-                # Common deterministic files
-                if com_paths.get('COMIN_ATMOS_HISTORY'):
-                    det_files = [
-                        # Log files
-                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf000.txt", f"{arcdir}/{head}logf000.txt"],
-                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{head}logf001.txt", f"{arcdir}/{head}logf001.txt"],
+                # Common deterministic files - Cyclone tracking
+                det_files = []
+                if com_paths.get('COMIN_ATMOS_TRACK'):
+                    # TC tracker files (only if they exist)
+                    atcfunix_file = f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunix.{RUN}.{cycle_YMDH}"
+                    if os.path.exists(atcfunix_file):
+                        det_files.extend([
+                            [atcfunix_file, f"{arcdir}/atcfunix.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunixp.{RUN}.{cycle_YMDH}",
+                             f"{arcdir}/atcfunixp.{RUN}.{cycle_YMDH}"],
+                        ])
 
-                        # Restart files
-                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.coupler.res",
-                         f"{arcdir}/{cycle_YMDH}.coupler.res"],
-                        [f"{com_paths['COMIN_ATMOS_HISTORY']}/{cycle_YMDH}.fv_core.res.nc",
-                         f"{arcdir}/{cycle_YMDH}.fv_core.res.nc"],
-                    ]
-                    file_set.extend(det_files)
-                else:
-                    logger.warning("COMIN_ATMOS_HISTORY path not available, skipping history/restart files")
+                    # Basin tracking data
+                    for basin in ["epac", "natl"]:
+                        basin_dir = os.path.join(com_paths['COMIN_ATMOS_TRACK'], basin)
+                        if os.path.exists(basin_dir):
+                            det_files.append([basin_dir, f"{arcdir}/{basin}"])
+
+                file_set.extend(det_files)
 
                 # Analysis files (cycled mode)
                 if MODE == "cycled":
-                    if com_paths.get('COMIN_ATMOS_ANALYSIS'):
-                        det_anl_files = [
-                            # Analysis files
-                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atmanl.nc",
-                             f"{arcdir}/{head}atmanl.nc"],
-                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}sfcanl.nc",
-                             f"{arcdir}/{head}sfcanl.nc"],
+                    det_anl_files = []
 
-                            # Radiance diagnostic files
-                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias",
-                             f"{arcdir}/{head}abias"],
-                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_pc",
-                             f"{arcdir}/{head}abias_pc"],
-                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_air",
-                             f"{arcdir}/{head}abias_air"],
-                        ]
-                        file_set.extend(det_anl_files)
-                    else:
-                        logger.warning("COMIN_ATMOS_ANALYSIS path not available for cycled mode, skipping analysis files")
+                    # Analysis grib file
+                    if com_paths.get('COMIN_ATMOS_GRIB_1p00'):
+                        det_anl_files.append([
+                            f"{com_paths['COMIN_ATMOS_GRIB_1p00']}/{head}pres_a.1p00.analysis.grib2",
+                            f"{arcdir}/pgbanl.{RUN}.{cycle_YMDH}.grib2"
+                        ])
+
+                    if com_paths.get('COMIN_ATMOS_ANALYSIS'):
+                        # GSI or JEDI atmospheric statistics
+                        if self.task_config.get('DO_JEDIATMVAR', False):
+                            det_anl_files.append([
+                                f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}stat.atm.tar",
+                                f"{arcdir}/atmstat.{RUN}.{cycle_YMDH}"
+                            ])
+                        else:
+                            det_anl_files.append([
+                                f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}gsistat.txt",
+                                f"{arcdir}/gsistat.{RUN}.{cycle_YMDH}"
+                            ])
+
+                    # Snow DA statistics
+                    if self.task_config.get('DO_JEDISNOWDA', False) and com_paths.get('COMIN_SNOW_ANALYSIS'):
+                        det_anl_files.append([
+                            f"{com_paths['COMIN_SNOW_ANALYSIS']}/{head}snow_analysis.ioda_hofx.tar",
+                            f"{arcdir}/snowstat.{RUN}.{cycle_YMDH}.tar"
+                        ])
+
+                    # Aerosol DA statistics
+                    if self.task_config.get('DO_AERO_ANL', False) and com_paths.get('COMIN_CHEM_ANALYSIS'):
+                        det_anl_files.append([
+                            f"{com_paths['COMIN_CHEM_ANALYSIS']}/{head}aerostat.tgz",
+                            f"{arcdir}/aerostat.{RUN}.{cycle_YMDH}.tgz"
+                        ])
+
+                    # Aerosol observation files
+                    if self.task_config.get('DO_PREP_OBS_AERO', False) and com_paths.get('COMIN_OBS'):
+                        det_anl_files.extend([
+                            [f"{com_paths['COMIN_OBS']}/{head}aeroobs",
+                             f"{arcdir}/aeroobs.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_OBS']}/{head}aeroawobs",
+                             f"{arcdir}/aeroawobs.{RUN}.{cycle_YMDH}"],
+                        ])
+
+                    file_set.extend(det_anl_files)
 
                 # GFS-specific files
                 if RUN == "gfs":
-                    # GRIB2 files for multiple grids
-                    for grid in ["0p25", "0p50", "1p00"]:
-                        com_key = f"COMIN_ATMOS_GRIB_{grid}"
-                        if com_key in com_paths:
-                            FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
-                            FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
+                    gfs_files = []
 
-                            for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS):
-                                fhr_str = str(fhr).zfill(3)
-                                file_set.append([
-                                    f"{com_paths[com_key]}/{head}pgrb2.{grid}.f{fhr_str}",
-                                    f"{arcdir}/{head}pgrb2.{grid}.f{fhr_str}"
-                                ])
+                    # GRIB2 forecast files (only 1p00 grid for archive)
+                    if com_paths.get('COMIN_ATMOS_GRIB_1p00'):
+                        FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
+                        FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
 
-                    # Genesis tracker files
-                    if self.task_config.get('DO_GENESIS', False):
-                        if com_paths.get('COMIN_ATMOS_GENESIS'):
-                            file_set.extend([
-                                [f"{com_paths['COMIN_ATMOS_GENESIS']}/genesis.{cycle_YMDH}.dat",
-                                 f"{arcdir}/genesis.{cycle_YMDH}.dat"],
+                        for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS):
+                            fhr_str = str(fhr).zfill(3)
+                            fhr_archive = str(fhr).zfill(2)  # Archive uses 2-digit format
+                            gfs_files.append([
+                                f"{com_paths['COMIN_ATMOS_GRIB_1p00']}/{head}pres_a.1p00.f{fhr_str}.grib2",
+                                f"{arcdir}/pgbf{fhr_archive}.{RUN}.{cycle_YMDH}.grib2"
                             ])
-                        else:
-                            logger.warning("DO_GENESIS enabled but COMIN_ATMOS_GENESIS path not available")
 
-                    # TC tracker files
-                    if self.task_config.get('DO_TRACKER', False):
-                        if com_paths.get('COMIN_ATMOS_TRACK'):
-                            file_set.extend([
-                                [f"{com_paths['COMIN_ATMOS_TRACK']}/atcfunix.{cycle_YMDH}",
-                                 f"{arcdir}/atcfunix.{cycle_YMDH}"],
-                                [f"{com_paths['COMIN_ATMOS_TRACK']}/storms.{cycle_YMDH}",
-                                 f"{arcdir}/storms.{cycle_YMDH}"],
+                    # Cyclone genesis data (only if files exist)
+                    if com_paths.get('COMIN_ATMOS_GENESIS'):
+                        genesis_file = f"{com_paths['COMIN_ATMOS_GENESIS']}/storms.gfso.atcf_gen.{cycle_YMDH}"
+                        if os.path.exists(genesis_file):
+                            gfs_files.extend([
+                                [genesis_file, f"{arcdir}/storms.gfso.atcf_gen.{cycle_YMDH}"],
+                                [f"{com_paths['COMIN_ATMOS_GENESIS']}/storms.gfso.atcf_gen.altg.{cycle_YMDH}",
+                                 f"{arcdir}/storms.gfso.atcf_gen.altg.{cycle_YMDH}"],
                             ])
-                        else:
-                            logger.warning("DO_TRACKER enabled but COMIN_ATMOS_TRACK path not available")
 
-                    # Fit2Obs files
+                        trak_file = f"{com_paths['COMIN_ATMOS_GENESIS']}/trak.gfso.atcfunix.{cycle_YMDH}"
+                        if os.path.exists(trak_file):
+                            gfs_files.extend([
+                                [trak_file, f"{arcdir}/trak.gfso.atcfunix.{cycle_YMDH}"],
+                                [f"{com_paths['COMIN_ATMOS_GENESIS']}/trak.gfso.atcfunix.altg.{cycle_YMDH}",
+                                 f"{arcdir}/trak.gfso.atcfunix.altg.{cycle_YMDH}"],
+                            ])
+
+                    # Fit2Obs files (atm and sfc forecast history files)
                     if self.task_config.get("DO_FIT2OBS", False):
-                        if com_paths.get('COMIN_OBS'):
+                        if com_paths.get('COMIN_ATMOS_HISTORY'):
                             vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
                             fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
 
-                            file_set.extend([
-                                [f"{com_paths['COMIN_OBS']}/prepbufr.{cycle_YMDH}",
-                                 f"{fit2obs_dir}/prepbufr.{cycle_YMDH}"],
-                                [f"{com_paths['COMIN_OBS']}/prepbufr_acft.{cycle_YMDH}",
-                                 f"{fit2obs_dir}/prepbufr_acft.{cycle_YMDH}"],
-                            ])
+                            FHMAX_FITS = self.task_config.get('FHMAX_FITS', 180)
+                            for fhr in range(0, FHMAX_FITS + 1, 6):
+                                fhr_str = str(fhr).zfill(3)
+                                sfcfile = f"{head}sfc.f{fhr_str}.nc"
+                                sigfile = f"{head}atm.f{fhr_str}.nc"
+                                gfs_files.extend([
+                                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{sfcfile}",
+                                     f"{fit2obs_dir}/{sfcfile}"],
+                                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{sigfile}",
+                                     f"{fit2obs_dir}/{sigfile}"],
+                                ])
                         else:
-                            logger.warning("DO_FIT2OBS enabled but COMIN_OBS path not available, skipping fit2obs files")
+                            logger.warning("DO_FIT2OBS enabled but COMIN_ATMOS_HISTORY path not available")
+
+                    file_set.extend(gfs_files)
 
                 # GDAS-specific files
                 elif RUN == "gdas":
                     gdas_files = []
 
-                    # Analysis increment files
-                    if com_paths.get('COMIN_ATMOS_ANALYSIS'):
-                        gdas_files.append([
-                            f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}atminc.nc",
-                            f"{arcdir}/{head}atminc.nc"
-                        ])
+                    # GRIB2 forecast files
+                    if com_paths.get('COMIN_ATMOS_GRIB_1p00'):
+                        FHMAX = self.task_config.get('FHMAX', 9)
+                        FHOUT = self.task_config.get('FHOUT', 3)
 
-                    # Observation files
-                    if com_paths.get('COMIN_OBS'):
+                        for fhr in range(0, FHMAX + 1, FHOUT):
+                            fhr_str = str(fhr).zfill(3)
+                            fhr_archive = str(fhr).zfill(2)  # Archive uses 2-digit format
+                            gdas_files.append([
+                                f"{com_paths['COMIN_ATMOS_GRIB_1p00']}/{head}pres_a.1p00.f{fhr_str}.grib2",
+                                f"{arcdir}/pgbf{fhr_archive}.{RUN}.{cycle_YMDH}.grib2"
+                            ])
+
+                    # Radiance bias correction files
+                    if com_paths.get('COMIN_ATMOS_ANALYSIS'):
                         gdas_files.extend([
-                            [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr",
-                             f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr"],
-                            [f"{com_paths['COMIN_OBS']}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles",
-                             f"{arcdir}/{CDUMP}.t{cycle_HH}z.prepbufr.acft_profiles"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias.txt",
+                             f"{arcdir}/abias.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_pc.txt",
+                             f"{arcdir}/abias_pc.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_air.txt",
+                             f"{arcdir}/abias_air.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}abias_int.txt",
+                             f"{arcdir}/abias_int.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}analysis.dtf.a006.nc",
+                             f"{arcdir}/dtfanl.{RUN}.{cycle_YMDH}.nc"],
                         ])
-                    else:
-                        logger.warning("COMIN_OBS path not available for GDAS, skipping observation files")
 
                     file_set.extend(gdas_files)
 
-            else:  # Ensemble files (enkfgdas, enkfgfs)
-                if com_paths.get('COMIN_ATMOS_ANALYSIS'):
-                    # EnKF ensemble mean and spread files
-                    enkf_files = [
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}ensmean.nc",
-                         f"{arcdir}/{head}ensmean.nc"],
-                        [f"{com_paths['COMIN_ATMOS_ANALYSIS']}/{head}enssprd.nc",
-                         f"{arcdir}/{head}enssprd.nc"],
-                    ]
+            else:  # Ensemble files (enkfgdas, enkfgfs) - only statistics archived
+                enkf_files = []
 
-                    # Loop over ensemble members
-                    NMEM_ENS = self.task_config.get('NMEM_ENS', 80)
-                    for mem in range(1, NMEM_ENS + 1):
-                        mem_str = str(mem).zfill(3)
+                # EnKF ensemble statistics (from ensstat directory)
+                if com_paths.get('COMIN_ATMOS_ANALYSIS_ENSSTAT'):
+                    if self.task_config.get('DO_JEDIATMENS', False):
+                        # JEDI ensemble statistics
                         enkf_files.append([
-                            f"{com_paths['COMIN_ATMOS_ANALYSIS']}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc",
-                            f"{arcdir}/mem{mem_str}/{head}atmanl.mem{mem_str}.nc"
+                            f"{com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT']}/{head}stat.atm.tar",
+                            f"{arcdir}/atmensstat.{RUN}.{cycle_YMDH}"
                         ])
-
+                    else:
+                        # GSI EnKF statistics
+                        enkf_files.extend([
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT']}/{head}enkfstat.txt",
+                             f"{arcdir}/enkfstat.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT']}/{head}gsistat.ensmean.txt",
+                             f"{arcdir}/gsistat.{RUN}.{cycle_YMDH}.ensmean"],
+                        ])
                     file_set.extend(enkf_files)
                 else:
-                    logger.warning("COMIN_ATMOS_ANALYSIS path not available for EnKF, skipping ensemble files")
+                    logger.warning("COMIN_ATMOS_ANALYSIS_ENSSTAT path not available for EnKF, skipping ensemble statistics")
 
             return file_set
 
@@ -635,12 +697,175 @@ class ArchiveVrfy(Task):
             'mkdir_list': lists['mkdir_list']
         }
 
+    def _build_gcafs_list(self, cycle_vars: Dict[str, Any], com_paths: Dict[str, str],
+                          arcdir: str) -> Dict[str, list]:
+        """Build mkdir list and file set for GCAFS archiving.
+
+        This method contains nested helper functions to build the directory list
+        and file set for GCAFS archiving. GCAFS is simpler than GFS - mainly
+        forecast files and optional aerosol files.
+
+        Parameters
+        ----------
+        cycle_vars : Dict[str, Any]
+            Cycle-specific variables
+        com_paths : Dict[str, str]
+            COM directory paths
+        arcdir : str
+            Archive directory path
+
+        Returns
+        -------
+        Dict[str, list]
+            Dictionary containing 'mkdir_list' and 'file_set'
+        """
+
+        def build_mkdir_list() -> list:
+            """Build list of directories to create for GCAFS archiving."""
+            mkdir_list = [arcdir]
+
+            # Add fit2obs directory if enabled
+            RUN = self.task_config.RUN
+            if self.task_config.get("DO_FIT2OBS", False):
+                vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
+                cycle_YMD = cycle_vars['cycle_YMD']
+                cycle_HH = cycle_vars['cycle_HH']
+                fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
+                mkdir_list.append(fit2obs_dir)
+
+            return mkdir_list
+
+        def build_file_set() -> list:
+            """Build list of files to archive for GCAFS."""
+            file_set = []
+
+            head = cycle_vars['head']
+            cycle_YMDH = cycle_vars['cycle_YMDH']
+            cycle_YMD = cycle_vars['cycle_YMD']
+            cycle_HH = cycle_vars['cycle_HH']
+
+            RUN = self.task_config.RUN
+            MODE = self.task_config.get('MODE', 'cycled')
+
+            # Deterministic files (not enkf)
+            if "enkf" not in RUN:
+                # Analysis files (cycled mode) - only aerosol for GCAFS
+                if MODE == "cycled":
+                    det_anl_files = []
+
+                    # Aerosol DA statistics
+                    if self.task_config.get('DO_AERO_ANL', False) and com_paths.get('COMIN_CHEM_ANALYSIS'):
+                        det_anl_files.append([
+                            f"{com_paths['COMIN_CHEM_ANALYSIS']}/{head}aerostat.tgz",
+                            f"{arcdir}/aerostat.{RUN}.{cycle_YMDH}.tgz"
+                        ])
+
+                    # Aerosol observation files
+                    if self.task_config.get('DO_PREP_OBS_AERO', False) and com_paths.get('COMIN_OBS'):
+                        det_anl_files.extend([
+                            [f"{com_paths['COMIN_OBS']}/{head}aeroobs",
+                             f"{arcdir}/aeroobs.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_OBS']}/{head}aeroawobs",
+                             f"{arcdir}/aeroawobs.{RUN}.{cycle_YMDH}"],
+                        ])
+
+                    file_set.extend(det_anl_files)
+
+                # GCAFS-specific forecast files
+                if RUN == "gcafs":
+                    gcafs_files = []
+
+                    # GRIB2 forecast files (only 1p00 grid for archive)
+                    if com_paths.get('COMIN_ATMOS_GRIB_1p00'):
+                        FHMAX_GFS = self.task_config.get('FHMAX_GFS', 384)
+                        FHOUT_GFS = self.task_config.get('FHOUT_GFS', 3)
+
+                        for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS):
+                            fhr_str = str(fhr).zfill(3)
+                            fhr_archive = str(fhr).zfill(2)  # Archive uses 2-digit format
+                            gcafs_files.append([
+                                f"{com_paths['COMIN_ATMOS_GRIB_1p00']}/{head}pres_a.1p00.f{fhr_str}.grib2",
+                                f"{arcdir}/pgbf{fhr_archive}.{RUN}.{cycle_YMDH}.grib2"
+                            ])
+
+                    # Fit2Obs files (atm and sfc forecast history files)
+                    if self.task_config.get("DO_FIT2OBS", False):
+                        if com_paths.get('COMIN_ATMOS_HISTORY'):
+                            vfyarc = os.path.join(self.task_config.ROTDIR, "vrfyarch")
+                            fit2obs_dir = os.path.join(vfyarc, f"{RUN}.{cycle_YMD}", cycle_HH)
+
+                            FHMAX_FITS = self.task_config.get('FHMAX_FITS', 180)
+                            for fhr in range(0, FHMAX_FITS + 1, 6):
+                                fhr_str = str(fhr).zfill(3)
+                                sfcfile = f"{head}sfc.f{fhr_str}.nc"
+                                sigfile = f"{head}atm.f{fhr_str}.nc"
+                                gcafs_files.extend([
+                                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{sfcfile}",
+                                     f"{fit2obs_dir}/{sfcfile}"],
+                                    [f"{com_paths['COMIN_ATMOS_HISTORY']}/{sigfile}",
+                                     f"{fit2obs_dir}/{sigfile}"],
+                                ])
+                        else:
+                            logger.warning("DO_FIT2OBS enabled but COMIN_ATMOS_HISTORY path not available")
+
+                    file_set.extend(gcafs_files)
+
+                # GCDAS-specific forecast files
+                elif RUN == "gcdas":
+                    gcdas_files = []
+
+                    # GRIB2 forecast files
+                    if com_paths.get('COMIN_ATMOS_GRIB_1p00'):
+                        FHMAX = self.task_config.get('FHMAX', 9)
+                        FHOUT = self.task_config.get('FHOUT', 3)
+
+                        for fhr in range(0, FHMAX + 1, FHOUT):
+                            fhr_str = str(fhr).zfill(3)
+                            fhr_archive = str(fhr).zfill(2)  # Archive uses 2-digit format
+                            gcdas_files.append([
+                                f"{com_paths['COMIN_ATMOS_GRIB_1p00']}/{head}pres_a.1p00.f{fhr_str}.grib2",
+                                f"{arcdir}/pgbf{fhr_archive}.{RUN}.{cycle_YMDH}.grib2"
+                            ])
+
+                    file_set.extend(gcdas_files)
+
+            else:  # Ensemble files (enkfgcafs, enkfgcdas) - only statistics archived
+                enkf_files = []
+
+                # EnKF ensemble statistics (from ensstat directory)
+                if com_paths.get('COMIN_ATMOS_ANALYSIS_ENSSTAT'):
+                    if self.task_config.get('DO_JEDIATMENS', False):
+                        # JEDI ensemble statistics - NOTE: GCAFS uses different filename
+                        enkf_files.append([
+                            f"{com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT']}/{head}atmensstat",
+                            f"{arcdir}/atmensstat.{RUN}.{cycle_YMDH}"
+                        ])
+                    else:
+                        # GSI EnKF statistics
+                        enkf_files.extend([
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT']}/{head}enkfstat.txt",
+                             f"{arcdir}/enkfstat.{RUN}.{cycle_YMDH}"],
+                            [f"{com_paths['COMIN_ATMOS_ANALYSIS_ENSSTAT']}/{head}gsistat.ensmean.txt",
+                             f"{arcdir}/gsistat.{RUN}.{cycle_YMDH}.ensmean"],
+                        ])
+                    file_set.extend(enkf_files)
+                else:
+                    logger.warning("COMIN_ATMOS_ANALYSIS_ENSSTAT path not available for EnKF, skipping ensemble statistics")
+
+            return file_set
+
+        # Call nested helper functions
+        return {
+            'mkdir_list': build_mkdir_list(),
+            'file_set': build_file_set()
+        }
+
     @logit(logger)
     def gcafs_arcdir(self) -> Dict[str, Any]:
         """Build complete file set for GCAFS archiving (gcafs_arcdir.yaml.j2).
 
-        This method corresponds to gcafs_arcdir.yaml.j2. Currently delegates
-        to GFS archiving logic as GCAFS uses similar file structure.
+        This method corresponds to gcafs_arcdir.yaml.j2. GCAFS is simpler than GFS,
+        archiving mainly forecast files and optional aerosol files.
 
         Returns
         -------
@@ -651,7 +876,18 @@ class ArchiveVrfy(Task):
             - file_set: List of [source, destination] file pairs
             - mkdir_list: List of directories to create
         """
-        # GCAFS uses same archiving structure as GFS
-        # If GCAFS-specific logic is needed, implement here
-        logger.info("GCAFS archiving using GFS archiving logic")
-        return self.gfs_arcdir()
+        cycle_vars = self._get_cycle_vars()
+        base_dict = self._get_template_dict()
+        com_paths = self._calculate_com_paths(base_dict)
+
+        arcdir = self.task_config.ARCDIR
+
+        # Build mkdir list and file set using helper method with nested functions
+        lists = self._build_gcafs_list(cycle_vars, com_paths, arcdir)
+
+        return {
+            'cycle_vars': cycle_vars,
+            'com_paths': com_paths,
+            'file_set': lists['file_set'],
+            'mkdir_list': lists['mkdir_list']
+        }
