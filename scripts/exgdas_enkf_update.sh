@@ -65,7 +65,7 @@ hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.atm.f006.nc"
 LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_xt)} # get LONB_ENKF
 LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_yt)} # get LATB_ENFK
-LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" pfull)} # get LEVS_ENFK
+LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" pfull)}   # get LEVS_ENFK
 WRITE_INCR_ZERO="incvars_to_zero= ${INCREMENTS_TO_ZERO},"
 if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
     write_fv3_incr=".false."
@@ -89,11 +89,11 @@ fi
 
 ################################################################################
 # Fixed files
-cpreq "${SATANGL}"    satbias_angle
-cpreq "${SCANINFO}"   scaninfo
+cpreq "${SATANGL}" satbias_angle
+cpreq "${SCANINFO}" scaninfo
 cpreq "${HYBENSINFO}" hybens_info
-cpreq "${ANAVINFO}"   anavinfo
-cpreq "${VLOCALEIG}"  vlocal_eig.dat
+cpreq "${ANAVINFO}" anavinfo
+cpreq "${VLOCALEIG}" vlocal_eig.dat
 if [[ "${SATINFO}" == "generate" ]]; then
     "${USHgfs}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
 else
@@ -124,15 +124,15 @@ done
 
 nfhrs="${IAUFHRS_ENKF//,/ }"
 for imem in $(seq 1 "${NMEM_ENS}"); do
-   smem=$((imem + mem_offset))
-   if [[ ${smem} -gt ${NMEM_ENS_MAX} ]]; then
-      smem=$((smem - NMEM_ENS_MAX))
-   fi
-   gmemchar="mem"$(printf "%03i" "${smem}")
-   memchar="mem"$(printf "%03i" "${imem}")
+    smem=$((imem + mem_offset))
+    if [[ ${smem} -gt ${NMEM_ENS_MAX} ]]; then
+        smem=$((smem - NMEM_ENS_MAX))
+    fi
+    gmemchar="mem"$(printf "%03i" "${smem}")
+    memchar="mem"$(printf "%03i" "${imem}")
 
-   MEMDIR=${gmemchar} RUN=${GDUMP} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -x \
-      COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
+    MEMDIR=${gmemchar} RUN=${GDUMP} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -x \
+        COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
     MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
         COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL

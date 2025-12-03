@@ -896,7 +896,7 @@ fi
 
 # Diagnostic files
 # if requested, GSI diagnostic file directories for use later
-if [[ "${GENDIAG}" == "YES" ]] ; then
+if [[ "${GENDIAG}" == "YES" ]]; then
     tar -cvf gsidiags.tar dir.????
     export err=$?
     if [[ ${err} -ne 0 ]]; then

@@ -50,7 +50,7 @@ DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 # Set script / GSI control parameters
 
 ################################################################################
-if [[ "${GENDIAG}" != "YES" ]] ; then
+if [[ "${GENDIAG}" != "YES" ]]; then
     echo "INFO: GENDIAG set to NO.  Skipping diagnostic file generation."
     exit 0
 fi
@@ -76,7 +76,6 @@ else
     diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura ompsnp_npp ompstc8_npp  ompstc8_n20 ompsnp_n20 ompstc8_n21 ompsnp_n21 ompslp_npp gome_metop-c"
     diagtype[3]="msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 seviri_m11 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 amsua_metop-b mhs_metop-b iasi_metop-b avhrr_metop-b avhrr_n18 avhrr_n19 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8 abi_g16 abi_g17 amsua_metop-c mhs_metop-c iasi_metop-c avhrr_metop-c viirs-m_npp viirs-m_j1 abi_g18 ahi_himawari9 viirs-m_j2 cris-fsr_n21 atms_n21 abi_g19"
 fi
-
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
@@ -142,23 +141,23 @@ touch cmdfile
 loops="01 03"
 for loop in ${loops}; do
     case ${loop} in
-        01) string=ges;;
-        03) string=anl;;
-         *) string=${loop};;
+        01) string=ges ;;
+        03) string=anl ;;
+        *) string=${loop} ;;
     esac
     echo "START loop ${string}"
     n=-1
-    while [[ ${n} -lt ${ntype} ]] ;do
-        n=$(( n + 1 ))
+    while [[ ${n} -lt ${ntype} ]]; do
+        n=$((n + 1))
         for type in ${diagtype[n]}; do
             #shellcheck disable=SC2012,SC2312
-            count=$(ls dir.*/"${type}_${loop}"* 2>/dev/null | wc -l)
+            count=$(ls dir.*/"${type}_${loop}"* 2> /dev/null | wc -l)
             if [[ ${count} -eq 0 ]]; then
                 continue
             fi
             echo "${DATA}/diag.sh ${type} ${loop} ${string} ${count} ${DIAG_SUFFIX:-}.nc4" >> cmdfile
             echo "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX:-}.nc4${COMPRESS_SUFFIX:-}" >> "${diaglist[n]}"
-            numfile[n]=$(( numfile[n] + 1 ))
+            numfile[n]=$((numfile[n] + 1))
         done
     done
     echo "END loop ${string}"
@@ -199,8 +198,8 @@ fi
 if [[ "${DIAG_TARBALL}" == "YES" ]]; then
     echo "START tar diagnostic files"
     n=-1
-    while [[ ${n} -lt ${ntype} ]] ;do
-        n=$((n+1))
+    while [[ ${n} -lt ${ntype} ]]; do
+        n=$((n + 1))
         TAROPTS="-uvf"
         if [[ ! -s "${diagfile[n]}" ]]; then
             TAROPTS="-cvf"

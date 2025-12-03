@@ -11,7 +11,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 ##############################################
 # shellcheck disable=SC2155
 export GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-export GDUMP="enkfgdas"  # EnKF ensemble always uses RUN=enkfgdas for prior members
+export GDUMP="enkfgdas" # EnKF ensemble always uses RUN=enkfgdas for prior members
 
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${GDATE:8:2}z."
