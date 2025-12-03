@@ -793,7 +793,7 @@ case ${step} in
     ;;
 
   "prep_emissions")
-    export walltime="00:20:00"
+    export walltime="00:35:00"
     export ntasks=1
     export threads_per_task=$(( max_tasks_per_node / 2 ))
     export tasks_per_node=1
