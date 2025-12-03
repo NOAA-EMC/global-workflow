@@ -17,7 +17,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-  ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 mdl=gfs
@@ -33,47 +33,47 @@ fcsthr="f00"
 # seq won't give us any splitting problems, ignore warnings
 # shellcheck disable=SC2207,SC2312
 case ${cyc} in
-00 | 12) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 96 12 120)) ;;
-06 | 18) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 90 12 126)) ;;
-*)
-  echo "FATAL ERROR: Invalid cycle ${cyc} passed to ${BASH_SOURCE[0]}"
-  exit 100
-  ;;
+    00 | 12) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 96 12 120)) ;;
+    06 | 18) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 90 12 126)) ;;
+    *)
+        echo "FATAL ERROR: Invalid cycle ${cyc} passed to ${BASH_SOURCE[0]}"
+        exit 100
+        ;;
 esac
 
 #GENERATING THE METAFILES.
 MDL2="GFSHPC"
 for lookback in "${lookbacks[@]}"; do
-  init_time="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${lookback} hours")"
-  init_PDY=${init_time:0:8}
-  init_cyc=${init_time:8:2}
+    init_time="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${lookback} hours")"
+    init_PDY=${init_time:0:8}
+    init_cyc=${init_time:8:2}
 
-  if ((init_time <= ${SDATE:-0})); then
-    echo "Skipping ver for ${init_time} because it is before the experiment began"
-    if ((lookback == "${lookbacks[0]}")); then
-      echo "First forecast time, no metafile produced"
-      exit 0
-    else
-      break
+    if ((init_time <= ${SDATE:-0})); then
+        echo "Skipping ver for ${init_time} because it is before the experiment began"
+        if ((lookback == "${lookbacks[0]}")); then
+            echo "First forecast time, no metafile produced"
+            exit 0
+        else
+            break
+        fi
     fi
-  fi
 
-  dgdattim="f$(printf "%03g" "${lookback}")"
+    dgdattim="f$(printf "%03g" "${lookback}")"
 
-  # Create symlink in DATA to sidestep gempak path limits
-  HPCGFS="${RUN}.${init_time}"
-  if [[ ! -L "${HPCGFS}" ]]; then
-    YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-    ${NLN} "${source_dir}" "${HPCGFS}"
-  fi
+    # Create symlink in DATA to sidestep gempak path limits
+    HPCGFS="${RUN}.${init_time}"
+    if [[ ! -L "${HPCGFS}" ]]; then
+        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+        ${NLN} "${source_dir}" "${HPCGFS}"
+    fi
 
-  grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
+    grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 
-  # 500 MB HEIGHT METAFILE
-  export pgm=gdplot2_nc
-  . prep_step
+    # 500 MB HEIGHT METAFILE
+    export pgm=gdplot2_nc
+    . prep_step
 
-  "${GEMEXE}/gdplot2_nc" <<EOFplt
+    "${GEMEXE}/gdplot2_nc" << EOFplt
 PROJ     = MER
 GAREA    = 5.0;120.0;70.0;-105.0
 map      = 1//2
@@ -146,12 +146,12 @@ r
 
 ex
 EOFplt
-  export err=$?
-  err_chk
-  if ((err != 0)); then
-    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-    exit $((err + 100))
-  fi
+    export err=$?
+    err_chk
+    if ((err != 0)); then
+        echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+        exit $((err + 100))
+    fi
 done
 
 #####################################################
@@ -159,15 +159,15 @@ done
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if [[ ! -s "${metaname}" ]] &>/dev/null; then
-  echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-  exit 100
+if [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit 100
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
 if [[ "${SENDDBN}" == "YES" ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-    "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
 fi
 
 exit
