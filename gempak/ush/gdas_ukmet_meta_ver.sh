@@ -151,14 +151,14 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s ukmetver_12.meta ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s ukmetver_12.meta ]]; then
     echo "FATAL ERROR: Failed to create ukmet meta file"
     exit "${err}"
 fi
 
 mv ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 export err=$?
-if ((err != 0)); then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
     exit "${err}"
 fi

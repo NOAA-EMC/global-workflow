@@ -457,7 +457,7 @@ fi
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
     exit $((err + 100))
 fi

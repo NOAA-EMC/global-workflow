@@ -148,7 +148,7 @@ ex
 EOFplt
     export err=$?
     err_chk
-    if ((err != 0)); then
+    if [[ "${err}" -ne 0 ]]; then
         echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
         exit $((err + 100))
     fi

@@ -110,7 +110,7 @@ err_chk
 # FOR THIS CASE HERE.
 #####################################################
 for metaname in Nmeta_nh Nmeta_sh; do
-    if ((err != 0)) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
         echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
         exit $((err + 100))
     fi

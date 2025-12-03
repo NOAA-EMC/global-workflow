@@ -215,14 +215,14 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s gfs.meta.ak ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s gfs.meta.ak ]]; then
     echo "FATAL ERROR: Failed to create alaska meta file"
     exit "${err}"
 fi
 
 mv gfs.meta.ak "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
 export err=$?
-if ((err != 0)); then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
     exit $((err + 100))
 fi

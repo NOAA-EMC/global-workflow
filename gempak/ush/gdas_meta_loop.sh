@@ -224,14 +224,14 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s gdasloop.meta ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s gdasloop.meta ]]; then
     echo "FATAL ERROR: Failed to create gdasloop meta file"
     exit "${err}"
 fi
 
 mv gdasloop.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 export err=$?
-if ((err != 0)); then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
     exit "${err}"
 fi

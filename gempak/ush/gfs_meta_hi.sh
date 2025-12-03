@@ -177,7 +177,7 @@ err_chk
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s mrfhi.meta ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s mrfhi.meta ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file mrfhi.meta"
     exit $((err + 100))
 fi

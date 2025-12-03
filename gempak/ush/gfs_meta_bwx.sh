@@ -343,7 +343,7 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s "${metaname}" ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]]; then
     echo "FATAL ERROR: Failed to create bwx meta file"
     exit $((err + 100))
 fi

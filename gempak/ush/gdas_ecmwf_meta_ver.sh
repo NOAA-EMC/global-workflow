@@ -143,14 +143,14 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if ((err != 0)) || [[ ! -s ecmwfver.meta ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s ecmwfver.meta ]]; then
     echo "FATAL ERROR: Failed to create ecmwf meta file"
     exit "${err}"
 fi
 
 mv ecmwfver.meta "${COMOUT_ATMOS_GEMPAK_META}/ecmwfver_${PDY}_${cyc2}"
 export err=$?
-if ((err != 0)); then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ecmwfver_${PDY}_${cyc2}"
     exit "${err}"
 fi
