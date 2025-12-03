@@ -6,7 +6,7 @@ from logging import getLogger
 import os
 import tarfile
 from typing import Any, Dict
-from wxflow import (AttrDict, Task, WorkflowException,
+from wxflow import (AttrDict, FileHandler, Task, WorkflowException,
                     add_to_datetime, to_timedelta, to_isotime,
                     parse_j2yaml,
                     logit)
@@ -138,23 +138,24 @@ class Analysis(Task):
         """
 
         # Set paths of output tar files
-        diagtar = os.path.join(comout, tarball_name)
+        tarball = f"{tarball_name}.tar"
 
         # Get lists of files to put in tarballs
         diaglist = glob.glob(os.path.join(self.task_config.DATA, 'diags', 'diag*nc'))
 
-        # Compress diag files
-        logger.info(f"Compressing {len(diaglist)} diag files")
-        for diagfile in diaglist:
-            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
-                f_out.writelines(f_in)
-
-        # Create tarball of compressed diag files in COM
-        logger.debug(f"Creating tarball {diagtar} with {len(diaglist)} compressed diag files")
-        with tarfile.open(diagtar, "w") as archive:
+        # Create tarball of diag files in COM
+        logger.debug(f"Creating tarball {tarball} with {len(diaglist)} diag files")
+        with tarfile.open(tarball, "w") as archive:
             for diagfile in diaglist:
-                diaggzip = f"{diagfile}.gz"
-                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
+                archive.add(diagfile, arcname=os.path.basename(diagfile))
+
+        # Compress the tar file
+        logger.info(f"Compressing {tarball}")
+        with open(tarball, 'rb') as f_in, gzip.open(f"{tarball}.gz", 'wb') as f_out:
+            f_out.writelines(f_in)
+
+        # Copy files to COM
+        FileHandler({'copy_opt': [[f"{tarball}.gz", comout]]}).sync()
 
     @logit(logger)
     def tar_radiative_bias_corrections(self, comout: str, tarball_name: str) -> None:

@@ -208,7 +208,6 @@ class Jedi:
         """
 
         chdir(self.jedi_config.rundir)
-        logger.info(f"foo {self.jedi_config.rundir}")
 
         exec_cmd = Executable(self.jedi_config.mpi_cmd)
         exec_cmd.add_default_arg(self.jedi_config.exe_src)

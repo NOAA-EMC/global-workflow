@@ -142,7 +142,7 @@ class AerosolAnalysis(Analysis):
 
         # Compress and tar diag files in COM directory
         self.tar_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
-                            f"{self.task_config['APREFIX']}aerostat.tgz")
+                            f"{self.task_config['APREFIX']}aero_analysis.ioda_hofx")
 
         # Tar radiative bias correction files into COM directory
         self.tar_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,

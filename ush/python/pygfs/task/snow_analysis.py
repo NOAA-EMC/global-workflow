@@ -152,7 +152,7 @@ class SnowAnalysis(Analysis):
 
         # Compress and tar diag files into COM directory
         self.tar_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
-                            f"{self.task_config.APREFIX}snow_analysis.ioda_hofx.tar")
+                            f"{self.task_config.APREFIX}snow_analysis.ioda_hofx")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
