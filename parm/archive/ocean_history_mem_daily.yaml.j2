@@ -1,0 +1,17 @@
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN ~ ".t" ~ cycle_HH ~ "z.24hr_avg.f???" %}
+{% for mem in range(0, NMEM_ENS + 1) %}
+{% set mem_char = 'mem%03d' | format(mem) %}
+{% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
+ocean_history_daily_{{ mem_char }}:
+    name: "OCEAN_HISTORY_DAILY_{{ mem_char }}"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_history_daily_{{ mem_char }}.tar"
+    required:
+        {% set COMIN_OCEAN_HISTORY = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}.nc"
+{% endfor %}
+       
