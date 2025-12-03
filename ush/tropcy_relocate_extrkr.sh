@@ -199,8 +199,6 @@ shh=${symdh:8:2}
 dishh=${shh}
 symd=${symdh:0:8}
 
-dishh="${shh}"
-
 #---------------------------------------------------#
 # Convert the input model to lowercase letters and
 # check to see if it's a valid model, and assign a

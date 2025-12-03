@@ -61,7 +61,7 @@ cat input.nml
 "${EXECgfs}/ensstat.x" < input.nml
 
 export err=$?
-if ((err != 0)); then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: ensstat returned error code ${err}"
     exit "${err}"
 fi
@@ -78,7 +78,7 @@ for outfile in ${mean_out} ${spr_out}; do
 
     ${WGRIB2} -s "${outfile}" > "${outfile}.idx"
     err=$?
-    if ((err != 0)); then
+    if [[ "${err}" -ne 0 ]]; then
         echo "FATAL ERROR: Failed to create inventory file, wgrib2 returned ${err}"
         exit "${err}"
     fi

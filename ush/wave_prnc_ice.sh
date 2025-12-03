@@ -91,7 +91,7 @@ ${WGRIB2} ice.grib -netcdf icean_5m.nc wgrib.out 2>&1
 
 err=$?
 
-if [[ "${err}" != '0' ]]; then
+if [[ "${err}" -ne 0 ]]; then
     cat wgrib.out
     echo 'ERROR: FAILURE WHILE UNPACKING GRIB ICE FILE *** '
     exit 3
