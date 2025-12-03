@@ -39,32 +39,38 @@ def calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
 
         # iovars and incvars for aerosol in gsi-utils do not match correctly,
         # hard-coded here.
-        iovars = ['so4', 'bc1', 'bc2', 'oc1', 'oc2',
-                  'dust1', 'dust2', 'dust3', 'dust4', 'dust5',
-                  'seas2', 'seas3', 'seas4', 'seas5']
-
-        incvars = ['mass_fraction_of_sulfate_in_air',
-                   'mass_fraction_of_hydrophobic_black_carbon_in_air',
-                   'mass_fraction_of_hydrophilic_black_carbon_in_air',
-                   'mass_fraction_of_hydrophobic_organic_carbon_in_air',
-                   'mass_fraction_of_hydrophilic_organic_carbon_in_air',
-                   'mass_fraction_of_dust001_in_air', 'mass_fraction_of_dust002_in_air',
-                   'mass_fraction_of_dust003_in_air', 'mass_fraction_of_dust004_in_air',
-                   'mass_fraction_of_dust005_in_air', 'mass_fraction_of_sea_salt001_in_air',
-                   'mass_fraction_of_sea_salt002_in_air', 'mass_fraction_of_sea_salt003_in_air',
-                   'mass_fraction_of_sea_salt004_in_air']
+        aerovars = [['so4', 'mass_fraction_of_sulfate_in_air'],
+                    ['bc1', 'mass_fraction_of_hydrophobic_black_carbon_in_air'],
+                    ['bc2', 'mass_fraction_of_hydrophilic_black_carbon_in_air'],
+                    ['oc1', 'mass_fraction_of_hydrophobic_organic_carbon_in_air'],
+                    ['oc2', 'mass_fraction_of_hydrophilic_organic_carbon_in_air'],
+                    ['dust1', 'mass_fraction_of_dust001_in_air'],
+                    ['dust2', 'mass_fraction_of_dust002_in_air'],
+                    ['dust3', 'mass_fraction_of_dust003_in_air'],
+                    ['dust4', 'mass_fraction_of_dust004_in_air'],
+                    ['dust5', 'mass_fraction_of_dust005_in_air'],
+                    ['seas1', ''],                                   # no seas1 increment
+                    ['seas2', 'mass_fraction_of_sea_salt001_in_air'],
+                    ['seas3', 'mass_fraction_of_sea_salt002_in_air'],
+                    ['seas4', 'mass_fraction_of_sea_salt003_in_air'],
+                    ['seas5', 'mass_fraction_of_sea_salt004_in_air']
+                    ]
 
         inc_file = os.path.join(CalcAnlDir, 'siginc.nc.06')
         anl_file = os.path.join(CalcAnlDir, 'anl.06')
         ges_file = os.path.join(CalcAnlDir, 'ges.06')
         with Dataset(inc_file, mode='r') as incfile, Dataset(ges_file, mode='r') as gesfile, Dataset(anl_file, mode='a') as anlfile:
-            for incname, ioname in zip(incvars, iovars):
-                increment = incfile.variables[incname][:]
-                # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
-                increment_reshape = np.transpose(increment, (2, 0, 1))
-
+            for ioname, incname in aerovars:
                 bkg = gesfile.variables[ioname][:]
-                anl = bkg + increment_reshape[np.newaxis, :, :, :]
+                # no seas1 increment
+                if ioname == 'seas1':
+                    anl = bkg
+                else:
+                    increment = incfile.variables[incname][:]
+                    # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
+                    increment_reshape = np.transpose(increment, (2, 0, 1))
+                    anl = bkg + increment_reshape[np.newaxis, :, :, :]
+
                 anlfile.variables[ioname][:] = anl[:]
             # update time (from 6 to 0) and time units in anlfile so UPP can create anl variables
             time = gesfile.variables['time']
