@@ -1,5 +1,6 @@
 # Paths
 DMPDIR: '/work/noaa/rstprod/dump'
+IODADIR: '/work/noaa/rstprod/dump_ioda'
 BASE_GIT: '/work2/noaa/global/role-global/git'
 BASE_DATA: '/work2/noaa/global/role-global/data'
 BASE_IC: '/work2/noaa/global/role-global/data/ICSDIR'

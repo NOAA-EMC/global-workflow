@@ -8,7 +8,6 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_prep.log"
             {% if DO_JEDIATMVAR %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_prepatmiodaobs.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlfinal.log"
@@ -57,8 +56,13 @@ gdas:
 
         # Analysis netCDF (raw) data
             {% if DO_JEDIATMVAR %}
+               {% if ATMINC_GRID == 'gaussian' %}
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+               {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.atm.a006.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.sfc.a006.nc"
+               {% endif %}
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
@@ -82,11 +86,10 @@ gdas:
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.atm.yaml"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.fv3.atm.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}stat.atm.tar"
+        - "{{ COMIN_ATMOS_ANLMON | relpath(ROTDIR) }}/{{ head }}atmos_analysis.ioda_hofx_stats.tar.gz"
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat.tar"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat.tar"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias.txt"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air.txt"
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc.txt"
@@ -178,6 +181,9 @@ gdas:
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f006.grib2"
     optional:
         {% if MODE == "cycled" %}
+            # Ozone and Radiance diagnostic files may not always be created
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
             # Radiance verification (only created if there are problems)
             {% if DO_VERFRAD %}
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"

@@ -55,9 +55,9 @@ printf "\nPreparing input files\n-----------------------"
 ASWELL=(SWELL1 SWELL2) # Indices of HS from partitions
 ASWPER=(SWPER1 SWPER2) # Indices of PERIODS from partitions
 ASWDIR=(SWDIR1 SWDIR2) # Indices of DIRECTIONS from partitions
-                               #  (should be same as ASWELL)
+#  (should be same as ASWELL)
 #declare -a arrpar=(WIND UGRD VGRD HTSGW PERPW DIRPW WVHGT WVPER WVDIR WDIR ${ASWELL[@]} ${ASWDIR[@]} ${ASWPER[@]})
-declare -a arrpar=(WIND WDIR UGRD VGRD HTSGW PERPW DIRPW WVHGT "${ASWELL[@]}" WVPER "${ASWPER[@]}" WVDIR "${ASWDIR[@]}" )
+declare -a arrpar=(WIND WDIR UGRD VGRD HTSGW PERPW DIRPW WVHGT "${ASWELL[@]}" WVPER "${ASWPER[@]}" WVDIR "${ASWDIR[@]}")
 nparam=$(echo "${arrpar[@]}" | wc -w)
 
 # 1.a Grib file (AWIPS and FAX charts)
@@ -68,119 +68,119 @@ max_tries=1000
 
 fhcnt="${fstart}"
 while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
-  fhr=$(printf "%03d" "${fhcnt}")
-  for grdOut in ${grids}; do
-    process_grdID "${grdOut}"
+    fhr=$(printf "%03d" "${fhcnt}")
+    for grdOut in ${grids}; do
+        process_grdID "${grdOut}"
 
-    com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
-    com_dir=${!com_varname}
+        com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"
+        com_dir=${!com_varname}
 
-    GRIBIN="${com_dir}/${RUN}.${cycle}.${GRDREGION}.${GRDRES}.f${fhr}.grib2"
-    GRIBIN_chk="${GRIBIN}.idx"
-    if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
-      export err=1
-      err_exit "${GRIBIN_chk} not found after waiting $((sleep_interval * ( max_tries - 1))) secs"
-    fi
-    GRIBOUT="${RUN}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
+        GRIBIN="${com_dir}/${RUN}.${cycle}.${GRDREGION}.${GRDRES}.f${fhr}.grib2"
+        GRIBIN_chk="${GRIBIN}.idx"
+        if ! wait_for_file "${GRIBIN_chk}" "${sleep_interval}" "${max_tries}"; then
+            export err=1
+            err_exit "${GRIBIN_chk} not found after waiting $((sleep_interval * (max_tries - 1))) secs"
+        fi
+        GRIBOUT="${RUN}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
-    iparam=1
-    while [[ ${iparam} -le ${nparam} ]]; do
-      nip=${arrpar[${iparam}-1]}
-      prepar=${nip::-1} # Part prefix (assumes 1 digit index)
-      paridx="${nip:0-1}"
-      npart=0
-      case ${prepar} in
-        SWELL) npart=1 ;;
-        SWDIR) npart=1 ;;
-        SWPER) npart=1 ;;
-        *)     npart=0 ;;
-      esac
-      echo "${nip} ${prepar} ${paridx} ${npart}"
-      rm -f temp.grib2
-      if [[ ${npart} -eq 0 ]]; then
-        #shellcheck disable=SC2312
-        ${WGRIB2} "${GRIBIN}" -s | grep ":${nip}" | "${WGRIB2}" -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1
-        #shellcheck disable=SC2312
-        ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
-      else
-        #shellcheck disable=SC2312
-        ${WGRIB2} "${GRIBIN}" -s | grep ":${prepar}" |  grep "${paridx} in sequence" | \
-                ${WGRIB2} -i "${GRIBIN}" -grib temp.grib2  > wgrib.out 2>&1
-        ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
-      fi
-      iparam=$(( iparam + 1 ))
-    done #end wave param loop
-#======================================================================
-    GRIBIN="${RUN}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
+        iparam=1
+        while [[ ${iparam} -le ${nparam} ]]; do
+            nip=${arrpar[${iparam} - 1]}
+            prepar=${nip::-1} # Part prefix (assumes 1 digit index)
+            paridx="${nip:0-1}"
+            npart=0
+            case ${prepar} in
+                SWELL) npart=1 ;;
+                SWDIR) npart=1 ;;
+                SWPER) npart=1 ;;
+                *) npart=0 ;;
+            esac
+            echo "${nip} ${prepar} ${paridx} ${npart}"
+            rm -f temp.grib2
+            if [[ ${npart} -eq 0 ]]; then
+                #shellcheck disable=SC2312
+                ${WGRIB2} "${GRIBIN}" -s | grep ":${nip}" | "${WGRIB2}" -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1
+                #shellcheck disable=SC2312
+                ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
+            else
+                #shellcheck disable=SC2312
+                ${WGRIB2} "${GRIBIN}" -s | grep ":${prepar}" | grep "${paridx} in sequence" |
+                    ${WGRIB2} -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1
+                ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
+            fi
+            iparam=$((iparam + 1))
+        done #end wave param loop
+        #======================================================================
+        GRIBIN="${RUN}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
-    ${NLN} "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
+        ${NLN} "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
 
-# 1.d Input template files
-    parmfile="${PARMgfs}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
-    if [[ -f "${parmfile}" ]]; then
-      ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
+        # 1.d Input template files
+        parmfile="${PARMgfs}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
+        if [[ -f "${parmfile}" ]]; then
+            ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
+        else
+            export err=3
+            err_exit "NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
+        fi
+
+        # 2.  AWIPS product generation
+        # 2.a AWIPS GRIB file with headers
+        echo ' '
+        echo 'AWIPS headers to GRIB file ...'
+        echo '------------------------------'
+
+        # 2.a.1 Set up for tocgrib2
+        echo "   Do set up for tocgrib2."
+        # 2.a.2 Make GRIB index
+        echo "   Make GRIB index for tocgrib2."
+        export pgm="${GRB2INDEX}"
+        ${GRB2INDEX} "gribfile.${grdID}.f${fhr}" "gribindex.${grdID}.f${fhr}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "ERROR IN grb2index MWW3 for grid ${grdID}"
+        fi
+
+        # 2.a.3 Run AWIPS GRIB packing program tocgrib2
+
+        echo "   Run tocgrib2"
+        export pgm="${TOCGRIB2}"
+        export pgmout=tocgrib2.out
+        source prep_step
+
+        AWIPSGRB="awipsgrib"
+        export FORT11="gribfile.${grdID}.f${fhr}"
+        export FORT31="gribindex.${grdID}.f${fhr}"
+        export FORT51="${AWIPSGRB}.${grdID}.f${fhr}"
+
+        ${TOCGRIB2} < "awipsgrb.${grdID}.f${fhr}" > "${pgmout}" 2>&1
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            cat "${pgmout}"
+            err_exit "ERROR IN tocgrib2"
+        else
+            echo '*** tocgrib2 ran succesfully *** '
+        fi
+
+        # 2.a.7 Get the AWIPS grib bulletin out ...
+        echo "   Get awips GRIB bulletins out ..."
+        echo "      Saving ${AWIPSGRB}.${grdOut}.f${fhr} as grib2.${cycle}.awipsww3_${grdID}.f${fhr}"
+        echo "          in ${COMOUT_WAVE_WMO}"
+        cpfs "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
+
+        if [[ "${SENDDBN}" == "YES" ]]; then
+            echo "      Sending ${AWIPSGRB}.${grdID}.f${fhr} to DBRUN."
+            "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
+        fi
+        rm -f "${AWIPSGRB}.${grdID}.f${fhr}" "${pgmout}"
+    done # For grids
+
+    if [[ ${fhcnt} -ge ${FHMAX_HF_WAV} ]]; then
+        inc="${FHOUT_WAV}"
     else
-      export err=3
-      err_exit "NO template  grib2_${RUN}wave.${grdID}.f${fhr}"
+        inc="${FHOUT_HF_WAV}"
     fi
-
-# 2.  AWIPS product generation
-# 2.a AWIPS GRIB file with headers
-    echo ' '
-    echo 'AWIPS headers to GRIB file ...'
-    echo '------------------------------'
-
-# 2.a.1 Set up for tocgrib2
-    echo "   Do set up for tocgrib2."
-# 2.a.2 Make GRIB index
-    echo "   Make GRIB index for tocgrib2."
-    export pgm="${GRB2INDEX}"
-    ${GRB2INDEX} "gribfile.${grdID}.f${fhr}" "gribindex.${grdID}.f${fhr}"
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-      err_exit "ERROR IN grb2index MWW3 for grid ${grdID}"
-    fi
-
-# 2.a.3 Run AWIPS GRIB packing program tocgrib2
-
-    echo "   Run tocgrib2"
-    export pgm="${TOCGRIB2}"
-    export pgmout=tocgrib2.out
-    source prep_step
-
-    AWIPSGRB="awipsgrib"
-    export FORT11="gribfile.${grdID}.f${fhr}"
-    export FORT31="gribindex.${grdID}.f${fhr}"
-    export FORT51="${AWIPSGRB}.${grdID}.f${fhr}"
-
-    ${TOCGRIB2} < "awipsgrb.${grdID}.f${fhr}" > "${pgmout}" 2>&1
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-      cat "${pgmout}"
-      err_exit "ERROR IN tocgrib2"
-    else
-      echo '*** tocgrib2 ran succesfully *** '
-    fi
-
-# 2.a.7 Get the AWIPS grib bulletin out ...
-    echo "   Get awips GRIB bulletins out ..."
-    echo "      Saving ${AWIPSGRB}.${grdOut}.f${fhr} as grib2.${cycle}.awipsww3_${grdID}.f${fhr}"
-    echo "          in ${COMOUT_WAVE_WMO}"
-    cpfs "${AWIPSGRB}.${grdID}.f${fhr}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
-
-    if [[ "${SENDDBN}" == "YES" ]]; then
-      echo "      Sending ${AWIPSGRB}.${grdID}.f${fhr} to DBRUN."
-      "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
-    fi
-    rm -f "${AWIPSGRB}.${grdID}.f${fhr}" "${pgmout}"
-  done # For grids
-
-  if [[ ${fhcnt} -ge ${FHMAX_HF_WAV} ]]; then
-    inc="${FHOUT_WAV}"
-  else
-    inc="${FHOUT_HF_WAV}"
-  fi
-  ((fhcnt = fhcnt+inc))
+    ((fhcnt = fhcnt + inc))
 done #For fcst time
 
 # --------------------------------------------------------------------------- #
