@@ -20,7 +20,7 @@
 #  Set environment.
 
 #  Directories.
-
+cd "${DATA}" || exit 1
 # Base variables
 rCDUMP=${rCDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
