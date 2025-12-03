@@ -35,7 +35,7 @@ ocean:
     ocean_levels: [2.5, 7.5, 12.5, 17.5, 116]
     {% endif %}
   subset: 
-    variables: ['SSH', 'MLD_003', 'temp', 'tob', 'so', 'uo', 'vo']
+    variables: ['SSH', 'MLD_003', 'SST', 'SSS', 'temp', 'tob', 'so', 'uo', 'vo']
     compress_with: 'zlib'
     compress: True
     compress_level: 9
