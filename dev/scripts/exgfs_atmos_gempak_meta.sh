@@ -50,7 +50,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
     if [[ ${do_all} -eq 1 ]]; then
         do_all=0
         # shellcheck disable=SC2312
-        awk '{print $1}' "${HOMEgfs}/gempak/fix/gfs_meta" | envsubst > "poescript"
+        awk '{print $1}' "${HOMEgfs}/gempak/ush/gfs_meta.sh" | envsubst > "poescript"
     else
         #
         #    Do not try to grep out 12, it will grab the 12 from 126.
@@ -58,7 +58,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
         #
         if [[ ${fhr} -ne 12 ]]; then
             # shellcheck disable=SC2312
-            grep "${fhr}" "${HOMEgfs}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
+            grep "${fhr}" "${HOMEgfs}/gempak/ush/gfs_meta.sh" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
         fi
     fi
 
