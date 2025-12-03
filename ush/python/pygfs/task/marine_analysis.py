@@ -179,7 +179,7 @@ class MarineAnalysis(Analysis):
         # Save obs diag statistics to COM (success is optional)
         logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
         try:
-            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb_template(algorithm_in='soca_diags_finalize')
         except Exception as e:
             logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
         FileHandler(diags_list).sync()

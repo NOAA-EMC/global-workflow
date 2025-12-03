@@ -207,6 +207,7 @@ class Jedi:
         None
         """
 
+        # TODO: not sure if this chdir does anthything
         chdir(self.jedi_config.rundir)
 
         exec_cmd = Executable(self.jedi_config.mpi_cmd)
