@@ -59,7 +59,8 @@ copy_req:
     {% elif RUN == "gdas" %}
     # GDAS forecast files - REQUIRED
         {% for fhr in range(0, FHMAX + 1, FHOUT) %}
-    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2", "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
+    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+       "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
         {% endfor %}
 
     # GDAS bias correction files - REQUIRED
