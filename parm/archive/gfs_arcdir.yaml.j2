@@ -3,18 +3,14 @@
 # - VFYARC, GEFS_ARCH
 # - All COMIN_* paths
 
-# Create directories first
+# Deterministic GFS/GDAS archiving template
+# Used for: gfs, gdas
+
 mkdir:
     - "{{ ARCDIR }}"
     {% if DO_FIT2OBS == True %}
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
     {% endif %}
-
-# Define all source-destination pairs for archiving
-# Use copy_req for files that MUST exist (raise error if missing)
-# Use copy_opt for files that MAY exist (warning if missing, no error)
-
-{% if "enkf" not in RUN %}
 copy_req:
     {% if MODE == "cycled" %}
     # Deterministic analysis files (cycled mode only) - REQUIRED
@@ -88,14 +84,3 @@ copy_opt:
     - ["{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
     - ["{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}", "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
     {% endif %}
-
-{% else %}
-copy_req:
-    # Ensemble (EnKF) analysis files - REQUIRED
-    {% if DO_JEDIATMENS == True %}
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}stat.atm.tar", "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
-    {% else %}
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}enkfstat.txt", "{{ ARCDIR }}/enkfstat.{{ RUN }}.{{ cycle_YMDH }}"]
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}gsistat.ensmean.txt", "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}.ensmean"]
-    {% endif %}
-{% endif %}

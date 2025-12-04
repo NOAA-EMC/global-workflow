@@ -3,14 +3,14 @@
 # - VFYARC
 # - All COMIN_* paths
 
+# Deterministic GCAFS/GCDAS archiving template
+# Used for: gcafs, gcdas
+
 mkdir:
     - "{{ ARCDIR }}"
     {% if DO_FIT2OBS == True %}
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
     {% endif %}
-
-{% if "enkf" not in RUN %}
-# Deterministic runs (gcafs, gcdas)
 
 copy_req:
     # GCAFS forecast files - REQUIRED
@@ -53,20 +53,3 @@ copy_req:
        "{{ ARCDIR }}/aeroawobs.{{ RUN }}.{{ cycle_YMDH }}"]
     {% endif %}
     {% endif %}
-
-{% else %}
-# Ensemble runs (enkfgcafs, enkfgcdas)
-
-copy_req:
-    # Ensemble analysis statistics - REQUIRED
-    {% if DO_JEDIATMENS == True %}
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}atmensstat",
-       "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
-    {% else %}
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}enkfstat.txt",
-       "{{ ARCDIR }}/enkfstat.{{ RUN }}.{{ cycle_YMDH }}"]
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}gsistat.ensmean.txt",
-       "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}.ensmean"]
-    {% endif %}
-
-{% endif %}
