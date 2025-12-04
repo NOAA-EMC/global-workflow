@@ -2016,13 +2016,33 @@ class GFSTasks(Tasks):
                 deps2 = []
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps3 = []
-                for lookback in range(0, n_lookback):
+                for lookback in range(n_lookback):
                     offset = timedelta_to_HMS(-to_timedelta(f'{assim_freq * (lookback+1)}H'))
                     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
                     deps3.append(rocoto.add_dependency(dep_dict))
 
                 deps2.append(rocoto.create_dependency(dep=deps3, dep_condition='or'))
                 deps.append(rocoto.create_dependency(dep=deps2, dep_condition='and'))
+
+        # Lastly, check that the last arch_vrfy job is done
+        # This only happens if the metp cycle is not aligned with the last_gfs cycle
+        sdate_gfs = self._base.get('SDATE_GFS')
+        edate = self._base.get('EDATE')
+        edate_metp = self._base.get('EDATE').replace(hour=(24 - assim_freq))
+        n_intervals = int((edate - sdate_gfs) // interval_gfs)
+        edate_gfs = sdate_gfs + n_intervals * interval_gfs
+        metp_gfs_offset = edate_metp - edate_gfs
+        if metp_gfs_offset > to_timedelta("0H"):
+            deps2 = []
+            dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': timedelta_to_HMS(-metp_gfs_offset)}
+            deps2.append(rocoto.add_dependency(dep_dict))
+            for i in range(1, int((metp_gfs_offset.seconds/3600) // assim_freq)):
+                dep_dict = {'type': 'cycleexist', 'offset': timedelta_to_HMS(-to_timedelta(f'{assim_freq * i}H')), 'condition': 'not'}
+                deps2.append(rocoto.add_dependency(dep_dict))
+
+            deps.append(rocoto.create_dependency(dep=deps2, dep_condition='and'))
 
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -2035,7 +2055,7 @@ class GFSTasks(Tasks):
 
         varname1 = 'metpcase'
         varval1 = 'g2g1 g2o1 pcp1'
-        var_dict = {varname1: varval1}
+        var_dict = {varname1 : varval1}
 
         resources = self.get_resource('metp')
 
