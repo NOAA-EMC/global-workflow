@@ -38,7 +38,7 @@ check_diag_files() {
     printf "\n\n--> check_diag_files\n"
 
     for type in ${found_satype}; do
-        if grep -q "${type}" <<< "${avail_satype}"; then
+        if ! grep -q "${type}" <<< "${avail_satype}"; then
             echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found" >> "./${out_file}"
         fi
     done
