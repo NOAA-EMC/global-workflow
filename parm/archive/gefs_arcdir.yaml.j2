@@ -3,22 +3,15 @@
 # - VFYARC (archive directory)
 # - COMIN_ATMOS_ENSSTAT_1p00 (calculated in Python with MEMDIR='ensstat')
 
-{% set file_set = [] %}
-
-# Select ensstat files to copy to the arcdir
-{% set ensstat_files = [] %}
-{% if path_exists(COMIN_ATMOS_ENSSTAT_1p00) %}
-    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        {% do ensstat_files.append([COMIN_ATMOS_ENSSTAT_1p00 ~ "/" ~ head ~ "mean.pres_." ~
-                                    "1p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
-                                    VFYARC]) %}
-    {% endfor %}
-{% endif %}
-{% set file_set = ensstat_files %}
-# Actually write the yaml
+# Create directories first
 mkdir:
     - "{{ VFYARC }}"
-copy:
-   {% for source_dest_pair in file_set %}
-   - {{ source_dest_pair }}
-   {% endfor %}
+
+# Define all source-destination pairs for archiving
+# Use copy_req for files that MUST exist (raise error if missing)
+copy_req:
+    # GEFS ensemble mean forecast files - REQUIRED
+    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+    - ["{{ COMIN_ATMOS_ENSSTAT_1p00 }}/{{ head }}mean.pres_.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+       "{{ VFYARC }}/{{ head }}mean.pres_.1p00.f{{ '%03d'|format(fhr) }}.grib2"]
+    {% endfor %}
