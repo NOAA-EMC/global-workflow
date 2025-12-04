@@ -147,6 +147,18 @@ include:
 
       echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
+
+      # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
+      # TODO: Remove this when upstream Rocoto PR is merged
+      # Load platform-specific configuration first
+      source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
+      if [[ -n "${ROCOTO_TEST_PATH:-}" && -d "${ROCOTO_TEST_PATH}" ]]; then
+        export PATH="${ROCOTO_TEST_PATH}:$PATH"
+        echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+      else
+        echo "ROCOTO_TEST_PATH not set or directory not found, using system Rocoto"
+      fi
+
       git submodule status
       # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
       # It should be set when configuring the scheculed nightly pipeline

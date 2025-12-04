@@ -50,3 +50,16 @@ export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
+
+#########################################################################
+# System-specific settings
+# Platform-specific paths and utilities for CI/CD operations
+#########################################################################
+
+# Utilities path for custom builds and role account tools
+# TODO: Populate with actual role account path for this machine
+export UTIL_PATH="/path/to/role/account/utils"
+
+# Custom Rocoto build path for testing (temporary)
+# TODO: Remove when upstream Rocoto PR is merged
+export ROCOTO_TEST_PATH="${UTIL_PATH}/Rocoto/bin"
