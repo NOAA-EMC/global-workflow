@@ -25,16 +25,14 @@ input_files:
 
     copy:
         # Files originate from {{ SRC_HISTORY_DIR }} within the staged baseline COMROOT.
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf012.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf012.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f012.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f012.nc]
 
 output_files:
-    # Compare genesis probability artifacts against the authoritative baseline.
+    # Genesis vitals outputs - compare vitals and atcf files
     cmpfiles:
-        - [{{ SRC_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.all.bs, {{ DST_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.all.bs]
-        - [{{ SRC_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.east.bs, {{ DST_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.east.bs]
-        - [{{ SRC_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.west.bs, {{ DST_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.west.bs]
-        - [{{ SRC_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.all.grb2, {{ DST_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.all.grb2]
-        - [{{ SRC_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.east.grb2, {{ DST_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.east.grb2]
-        - [{{ SRC_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.west.grb2, {{ DST_GENESIS_DIR }}/gfs.t{{ cyc }}z.genesis.west.grb2]
+        - [{{ SRC_GENESIS_DIR }}/all.vitals.gfs.gfso.2021, {{ DST_GENESIS_DIR }}/all.vitals.gfs.gfso.2021]
+        - [{{ SRC_GENESIS_DIR }}/genesis.vitals.gfs.gfso.2021, {{ DST_GENESIS_DIR }}/genesis.vitals.gfs.gfso.2021]
+        - [{{ SRC_GENESIS_DIR }}/storms.gfso.atcf_gen.altg.{{ TEST_DATE }}, {{ DST_GENESIS_DIR }}/storms.gfso.atcf_gen.altg.{{ TEST_DATE }}]
+        - [{{ SRC_GENESIS_DIR }}/trak.gfso.atcfunix.altg.{{ TEST_DATE }}, {{ DST_GENESIS_DIR }}/trak.gfso.atcfunix.altg.{{ TEST_DATE }}]

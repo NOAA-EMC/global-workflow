@@ -26,18 +26,18 @@ input_files:
 
     copy:
         # Files originate from {{ SRC_HISTORY_DIR }} inside the staged COMROOT.
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf000.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf001.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf001.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf002.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf002.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf003.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf003.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf004.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf004.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf005.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf005.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atmf006.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f001.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f001.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f002.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f002.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f003.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f003.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f004.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f004.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f005.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f005.nc]
+        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc]
 
 output_files:
-    # Tracker outputs should match the authoritative COMROOT products.
+    # Tracker outputs - compare atcf format files
     cmpfiles:
-        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck]
-        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck]
-        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck.invest, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.adeck.invest]
-        - [{{ SRC_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck.invest, {{ DST_TRACKS_DIR }}/gfs.t{{ cyc }}z.bdeck.invest]
+        - [{{ SRC_TRACKS_DIR }}/atcfunix.gfs.{{ TEST_DATE }}, {{ DST_TRACKS_DIR }}/atcfunix.gfs.{{ TEST_DATE }}]
+        - [{{ SRC_TRACKS_DIR }}/atcfunixp.gfs.{{ TEST_DATE }}, {{ DST_TRACKS_DIR }}/atcfunixp.gfs.{{ TEST_DATE }}]
+        - [{{ SRC_TRACKS_DIR }}/avno.t{{ cyc }}z.cyclone.trackatcfunix, {{ DST_TRACKS_DIR }}/avno.t{{ cyc }}z.cyclone.trackatcfunix]
+        - [{{ SRC_TRACKS_DIR }}/avnop.t{{ cyc }}z.cyclone.trackatcfunix, {{ DST_TRACKS_DIR }}/avnop.t{{ cyc }}z.cyclone.trackatcfunix]
