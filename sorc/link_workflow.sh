@@ -260,19 +260,13 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda" .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py"    .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"         .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/gsincdiag_to_ioda" .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/pyiodaconv"        .
   cd "${HOMEgfs}/ush" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"    .
+  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh"            .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py"         .
   ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
-  declare -a gdasapp_ocn_insitu_profile_platforms=("argo" "bathy" "glider" "marinemammal" "tesac" "xbtctd")
-  for platform in "${gdasapp_ocn_insitu_profile_platforms[@]}"; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/marine/bufr2ioda_insitu_profile_${platform}.py" .
-  done
-  declare -a gdasapp_ocn_insitu_sfc_platforms=("altkob" "trkob")
-  for platform in "${gdasapp_ocn_insitu_sfc_platforms[@]}"; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/marine/bufr2ioda_insitu_surface_${platform}.py" .
-  done
 fi
 
 #------------------------------
@@ -420,7 +414,6 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas*           ./
-  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/bufr2ioda.x"     ./gdas_bufr2ioda.x
   cp -f  "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe"   ./gdas_calcfIMS.x
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe"  ./gdas_apply_incr.x
 fi

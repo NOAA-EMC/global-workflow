@@ -12,11 +12,9 @@ while getopts ":j:dv" option; do
     v) BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-      usage
       ;;
     *)
       echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
       ;;
   esac
 done
@@ -31,4 +29,3 @@ BUILD_VERBOSE=${BUILD_VERBOSE:-} \
 "${HOMEgfs_}/sorc/ufs_utils.fd/build_all.sh"
 
 exit
-

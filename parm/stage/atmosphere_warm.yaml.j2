@@ -1,34 +1,24 @@
 atmosphere_warm:
     mkdir:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
-        - "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"
-        {% set COMOUT_ATMOS_RESTART_MEM = COMOUT_ATMOS_RESTART_MEM_list[imem] %}
-        - "{{ COMOUT_ATMOS_RESTART_MEM }}"
-        {% endfor %} # mem loop
+        - "{{ COMOUT_ATMOS_RESTART_PREV }}"
+        - "{{ COMOUT_ATMOS_RESTART }}"
     link_req:
-        {% for mem in range(first_mem, last_mem + 1) %}
-        {% set imem = mem - first_mem %}
-        {% set COMOUT_ATMOS_RESTART_PREV_MEM = COMOUT_ATMOS_RESTART_PREV_MEM_list[imem] %}
-        {% set COMOUT_ATMOS_RESTART_MEM = COMOUT_ATMOS_RESTART_MEM_list[imem] %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".atm_stoch.res.nc") %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.atm_stoch.res.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".atm_stoch.res.nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.atm_stoch.res.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% endif %} # path_exists
         {% for ftype in ["coupler.res", "fv_core.res.nc"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% endfor %}
         {% for ntile in range(1, ntiles + 1) %}
         {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.{{ ftype }}.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% endfor %} # ftype
         {% if DO_CA %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.ca_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV_MEM }}"]
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.ca_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% endif %}
         {% endfor %} # ntile
         {% for ntile in range(1, ntiles + 1) %}
-        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART_MEM | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".sfcanl_data.tile" ~ ntile ~ ".nc") %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ m_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART_MEM }}"]
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_RESTART | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".sfcanl_data.tile" ~ ntile ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ m_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART }}"]
         {% endif %} # path_exists
         {% endfor %} # ntile
-        {% endfor %} # mem loop
