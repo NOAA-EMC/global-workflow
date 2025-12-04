@@ -2002,9 +2002,9 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
         interval_gfs = self._base.get('interval_gfs')
+        assim_freq=self._base['assim_freq']
 
         if interval_gfs < to_timedelta("24H"):
-            assim_freq=self._base['assim_freq']
             n_lookback = int(interval_gfs // to_timedelta(f"{assim_freq}H")) - 1
             # Check if the previous up to `n_lookback` arch_vrfy tasks have completed
             # For interval=6, there are no lookbacks
@@ -2032,7 +2032,7 @@ class GFSTasks(Tasks):
         n_intervals = int((edate - sdate_gfs) // interval_gfs)
         edate_gfs = sdate_gfs + n_intervals * interval_gfs
         metp_gfs_offset = edate_metp - edate_gfs
-        if metp_gfs_offset > to_timedelta("0H"):
+        if metp_gfs_offset > to_timedelta("0H") and metp_gfs_offset < to_timedelta("24H"):
             deps2 = []
             dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
             deps2.append(rocoto.add_dependency(dep_dict))
