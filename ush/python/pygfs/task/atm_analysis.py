@@ -139,12 +139,14 @@ class AtmAnalysis(Analysis):
         """
 
         # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['atmanlvar'].save_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS,
                                                     f"{self.task_config.APREFIX}atm_analysis.ioda_hofx")
 
         # Tar radiative bias correction files into COM directory
+        logger.info(f"Saving radiative bias correction files to COM")
         self.tar_radiative_bias_corrections(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                                            f"{self.task_config.APREFIX}rad_varbc_params.tar")
+                                            f"{self.task_config.APREFIX}atm_varbc_params.tar")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

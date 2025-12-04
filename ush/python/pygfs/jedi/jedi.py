@@ -269,7 +269,7 @@ class Jedi:
                 radbcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"], self.jcb_config[f"{self.model}_obsbiasout_prefix"]))
+                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"], self.jcb_config[f"{self.model}_obsbiasout_prefix"])))
 
     @logit(logger)
     def execute(self) -> None:

@@ -140,10 +140,12 @@ class AerosolAnalysis(Analysis):
         self._add_fms_cube_sphere_increments()
 
         # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['aeroanlvar'].save_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
                                                      f"{self.task_config['APREFIX']}aero_analysis.ioda_hofx")
 
         # Tar radiative bias correction files into COM directory
+        logger.info(f"Saving radiative bias correction files to COM")
         self.tar_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
                                             f"{self.task_config.APREFIX}aero_varbc_params.tar")
 

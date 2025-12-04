@@ -109,7 +109,7 @@ class MarineAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observations")
-        self.jedi_dict['var'].stage_observations()
+        self.jedi_dict['var'].stage_observations(self.task_config.COMIN_OBS)
 
         # prepare the deterministic MOM6 input.nml
         logger.info(f"Preparing deterministic MOM6 input namelist")
@@ -176,7 +176,12 @@ class MarineAnalysis(Analysis):
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
 
-        # Save obs diag statistics to COM (success is optional)
+        # Archive, compress, and save diag files in COM directory
+        #logger.info(f"Saving observation diag files to COM")
+        #self.jedi_dict['atmanlvar'].save_diag_files(self.task_config.COMOUT_OCEAN_ANALYSIS,
+        #                                            f"{self.task_config.APREFIX}marine_analysis.ioda_hofx")
+
+        # Save obs diag statistics to COM (this is for legacy obs monitoring)
         logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
         try:
             diags_list = self.jedi_dict['soca_diag_stats'].render_jcb_template(algorithm_in='soca_diags_finalize')

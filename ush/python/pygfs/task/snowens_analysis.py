@@ -155,6 +155,7 @@ class SnowEnsAnalysis(Analysis):
         """
 
         # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['snowanlvar'].save_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
                                                      f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
 
