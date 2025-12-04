@@ -178,11 +178,11 @@ class MarineAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         #logger.info(f"Saving observation diag files to COM")
-        #self.jedi_dict['atmanlvar'].save_diag_files(self.task_config.COMOUT_OCEAN_ANALYSIS,
+        #self.jedi_dict['var'].save_diag_files(self.task_config.COMOUT_OCEAN_ANALYSIS,
         #                                            f"{self.task_config.APREFIX}marine_analysis.ioda_hofx")
 
         # Save obs diag statistics to COM (this is for legacy obs monitoring)
-        logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        logger.info(f"Copy (legacy) observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
         try:
             diags_list = self.jedi_dict['soca_diag_stats'].render_jcb_template(algorithm_in='soca_diags_finalize')
         except Exception as e:
