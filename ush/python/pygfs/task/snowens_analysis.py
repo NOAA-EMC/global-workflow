@@ -109,8 +109,8 @@ class SnowEnsAnalysis(Analysis):
         """
 
         # Stage observation files
-        logger.info(f"Staging observations")
-        self.jedi_dict['snowanlvar'].stage_observations()
+        logger.info(f"Staging observation files")
+        self.jedi_dict['snowanlvar'].stage_observations(self.task_config.COMIN_OBS)
 
         # Stage files from COM
         logger.info(f"Staging files from COM and creating output directories")
@@ -154,9 +154,9 @@ class SnowEnsAnalysis(Analysis):
             Instance of the SnowEnsAnalysis object
         """
 
-        # Compress and tar diag files into COM directory
-        self.tar_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
-                            f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
+        # Archive, compress, and save diag files in COM directory
+        self.jedi_dict['snowanlvar'].save_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
+                                                     f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
 
         # Save files to COM
         logger.info(f"Saving files to COM")

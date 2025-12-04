@@ -77,13 +77,12 @@ class AtmEnsAnalysis(Analysis):
         FileHandler(self.task_config.data_in).sync()
 
         # Stage observation files
-        logger.info(f"Staging observation and bias correction files")
-        self.jedi_dict['atmensanlobs'].stage_observations(stage_bias_corrections=True, 
-                                                          bias_file_dict=self.task_config.bias_files)
+        logger.info(f"Staging observation files")
+        self.jedi_dict['atmensanlobs'].stage_observations(f"{self.task_config.COMIN_OBS}/atmos"))
 
-        # Extract bias corrections from tar files
-        logger.info(f"Extracting bias corrections from tar files")
-        self.untar_bias_corrections()
+        # Stage bias correction files
+        logger.info(f"Staging bias correction files")
+        self.jedi_dict['atmensanlobs'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV, self.task_config.bias_files)
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
@@ -143,9 +142,9 @@ class AtmEnsAnalysis(Analysis):
         None
         """
 
-        # Compress and tar diag files in COM directory
-        self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
-                            f"{self.task_config.APREFIX_ENS}atm_analysis.ens_mean.ioda_hofx")
+        # Archive, compress, and save diag files in COM directory
+        self.jedi_dict['atmensanlobs'].save_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
+                                                       f"{self.task_config.APREFIX_ENS}atm_analysis.ens_mean.ioda_hofx")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

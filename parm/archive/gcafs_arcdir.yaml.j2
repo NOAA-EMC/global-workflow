@@ -19,7 +19,7 @@
     {% set det_anl_files = [] %}
 
     {% if DO_AERO_ANL %}
-        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat.tgz",
+        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aero_analysis.ioda_hofx.tar.gz",
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
 

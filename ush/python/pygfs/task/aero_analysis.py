@@ -95,13 +95,12 @@ class AerosolAnalysis(Analysis):
         FileHandler(self.task_config.data_in).sync()
 
         # Stage observation files
-        logger.info(f"Staging observation and bias correction files")
-        self.jedi_dict['aeroanlvar'].stage_observations(stage_bias_corrections=True, 
-                                                        bias_file_dict=self.task_config.bias_files)
+        logger.info(f"Staging observation files")
+        self.jedi_dict['aeroanlvar'].stage_observations(f"{self.task_config.COMIN_OBS}/chem")
 
-        # Extract bias corrections from tar files
-        logger.info(f"Extracting bias corrections from tar files")
-        self.untar_bias_corrections()
+        # Stage bias correction files
+        logger.info(f"Staging bias correction files")
+        self.jedi_dict['aeroanlvar'].stage_bias_corrections(self.task_config.COMIN_CHEM_ANALYSIS_PREV, self.task_config.bias_files)
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
@@ -140,9 +139,9 @@ class AerosolAnalysis(Analysis):
         logger.info('Adding increments to RESTART files')
         self._add_fms_cube_sphere_increments()
 
-        # Compress and tar diag files in COM directory
-        self.tar_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
-                            f"{self.task_config['APREFIX']}aero_analysis.ioda_hofx")
+        # Archive, compress, and save diag files in COM directory
+        self.jedi_dict['aeroanlvar'].save_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                     f"{self.task_config['APREFIX']}aero_analysis.ioda_hofx")
 
         # Tar radiative bias correction files into COM directory
         self.tar_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
