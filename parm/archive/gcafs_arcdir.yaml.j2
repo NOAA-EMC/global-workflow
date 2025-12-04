@@ -8,39 +8,39 @@
 
 mkdir:
     - "{{ ARCDIR }}"
-    {% if DO_FIT2OBS == True %}
+{% if DO_FIT2OBS == True %}
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
-    {% endif %}
+{% endif %}
 
 copy_req:
+{% if RUN == "gcafs" %}
     # GCAFS forecast files - REQUIRED
-    {% if RUN == "gcafs" %}
     {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
     - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
     {% endfor %}
 
-    # GCAFS Fit2Obs data - REQUIRED if DO_FIT2OBS is enabled
     {% if DO_FIT2OBS == True %}
-    {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
+    # GCAFS Fit2Obs data - REQUIRED if DO_FIT2OBS is enabled
+        {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
     - ["{{ COMIN_ATMOS_HISTORY }}/{{ head }}sfc.f{{ '%03d'|format(fhr) }}.nc",
        "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ head }}sfc.f{{ '%03d'|format(fhr) }}.nc"]
     - ["{{ COMIN_ATMOS_HISTORY }}/{{ head }}atm.f{{ '%03d'|format(fhr) }}.nc",
        "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ head }}atm.f{{ '%03d'|format(fhr) }}.nc"]
-    {% endfor %}
+        {% endfor %}
     {% endif %}
-    {% endif %}
+{% endif %}
 
+{% if RUN == "gcdas" %}
     # GCDAS forecast files - REQUIRED
-    {% if RUN == "gcdas" %}
     {% for fhr in range(0, FHMAX + 1, FHOUT) %}
     - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
     {% endfor %}
-    {% endif %}
+{% endif %}
 
+{% if MODE == "cycled" %}
     # Deterministic analysis files (cycled mode only) - REQUIRED
-    {% if MODE == "cycled" %}
     {% if DO_AERO_ANL %}
     - ["{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aerostat.tgz",
        "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]
@@ -52,4 +52,4 @@ copy_req:
     - ["{{ COMIN_OBS }}/{{ head }}aeroawobs",
        "{{ ARCDIR }}/aeroawobs.{{ RUN }}.{{ cycle_YMDH }}"]
     {% endif %}
-    {% endif %}
+{% endif %}
