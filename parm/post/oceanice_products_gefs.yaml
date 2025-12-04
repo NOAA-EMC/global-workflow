@@ -1,16 +1,17 @@
 ocnicepost:
   executable: "ocnicepost.x"
   namelist:
-    write_grib2: True
-    write_netcdf: False
+    write_grib2: {{ write_grib2 }}
+    write_netcdf: {{ write_netcdf }}
     debug: False
   fix_data:
     mkdir:
       - "{{ DATA }}"
     copy:
-      - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
       - ["{{ PARMgfs }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
-      - ["{{ PARMgfs }}/post/{{ component }}_gefs.csv", "{{ DATA }}/{{ component }}.csv"]
+      {% if write_grib2 or write_netcdf %}
+      - ["{{ PARMgfs }}/post/{{ component }}_{{ RUN }}.csv", "{{ DATA }}/{{ component }}.csv"]
+      - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
@@ -19,6 +20,7 @@ ocnicepost:
       - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
       - ["{{ FIXgfs }}/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
       {% endfor %}
+      {% endif %}
 
 ocean:
   namelist:
@@ -28,11 +30,15 @@ ocean:
     cosvar: "cos_rot"
     angvar: ""
     {% if model_grid == 'mx025' or model_grid == 'mx050' or model_grid == 'mx100' %}
-    ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 226, 241, 267, 309, 374, 467, 594, 757, 960, 1204, 1490, 1817, 2184, 2587, 3024, 3489, 3977, 4481]
+    ocean_levels: [1, 3, 5, 10, 20, 30, 50, 100, 200, 500, 1000]
     {% elif model_grid == 'mx500' %}
-    ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 226, 241, 267]
+    ocean_levels: [2.5, 7.5, 12.5, 17.5, 116]
     {% endif %}
-  subset: ['SSH', 'SST', 'SSS', 'speed', 'MLD_003', 'latent', 'sensible', 'SW', 'LW', 'LwLatSens', 'Heat_PmE', 'SSU', 'SSV', 'taux', 'tauy', 'temp', 'tob', 'so', 'uo', 'vo']
+  subset:
+      variables: ['SSH', 'SST', 'SSS', 'speed', 'MLD_003', 'latent', 'sensible', 'SW', 'LW', 'LwLatSens', 'Heat_PmE', 'SSU', 'SSV', 'taux', 'tauy', 'temp', 'tob', 'so', 'uo', 'vo']
+      compress_with: 'zlib'
+      compress: True
+      compress_level: 9
   data_in:
     copy:
       - ["{{ COMIN_OCEAN_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
@@ -40,14 +46,23 @@ ocean:
     mkdir:
       - "{{ COMOUT_OCEAN_NETCDF }}/native"
       {% for grid in product_grids %}
+      {% if write_netcdf %}
       - "{{ COMOUT_OCEAN_NETCDF }}/{{ grid }}"
+      {% endif %}
+      {% if write_grib2 %}
       - "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}"
+      {% endif %}
       {% endfor %}
     copy:
-      - ["{{ DATA }}/ocean_subset.nc", "{{ COMOUT_OCEAN_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.tripolar.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ocean_subset.nc", "{{ COMOUT_OCEAN_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
+      {% if write_netcdf %}
+      - ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COMOUT_OCEAN_NETCDF }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      {% endif %}
+      {% if write_grib2 %}
       - ["{{ DATA }}/ocean.{{ grid }}.grib2", "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
       - ["{{ DATA }}/ocean.{{ grid }}.grib2.idx", "{{ COMOUT_OCEAN_GRIB }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endif %}
       {% endfor %}
 
 ice:
@@ -57,7 +72,11 @@ ice:
     sinvar: ""
     cosvar: ""
     angvar: "ANGLET"
-  subset: ['hi_1', 'hs_1', 'aice_1', 'Tsfc_1', 'uvel_1', 'vvel_1', 'frzmlt_1', 'albsni_1']
+  subset: 
+      variables: ['hi_1', 'hs_1', 'aice_1', 'Tsfc_1', 'uvel_1', 'vvel_1', 'frzmlt_1', 'albsni_1', 'tmask', 'tarea']
+      compress_with: 'zlib'
+      compress: True
+      compress_level: 9
   data_in:
     copy:
       - ["{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
@@ -65,12 +84,21 @@ ice:
     mkdir:
       - "{{ COMOUT_ICE_NETCDF }}/native"
       {% for grid in product_grids %}
+      {% if write_netcdf %}
       - "{{ COMOUT_ICE_NETCDF }}/{{ grid }}"
+      {% endif %}
+      {% if write_grib2 %}
       - "{{ COMOUT_ICE_GRIB }}/{{ grid }}"
+      {% endif %}
       {% endfor %}
     copy:
-      - ["{{ DATA }}/ice_subset.nc", "{{ COMOUT_ICE_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.tripolar.f{{ '%03d' % forecast_hour }}.nc"]
+      - ["{{ DATA }}/ice_subset.nc", "{{ COMOUT_ICE_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
       {% for grid in product_grids %}
+      {% if write_netcdf %}
+      - ["{{ DATA }}/ice.{{ grid }}.nc", "{{ COMOUT_ICE_NETCDF }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
+      {% endif %}
+      {% if write_grib2 %}
       - ["{{ DATA }}/ice.{{ grid }}.grib2", "{{ COMOUT_ICE_GRIB }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2"]
       - ["{{ DATA }}/ice.{{ grid }}.grib2.idx", "{{ COMOUT_ICE_GRIB }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.grib2.idx"]
+      {% endif %}
       {% endfor %}
