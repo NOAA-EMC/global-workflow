@@ -2032,24 +2032,28 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self._base["interval_gfs"] < to_timedelta("24H"):
-            n_lookback = self._base["interval_gfs"] // to_timedelta("6H")
-            for lookback in range(1, n_lookback + 1):
-                deps2 = []
-                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
-                deps2.append(rocoto.add_dependency(dep_dict))
-                for lookback2 in range(1, lookback):
-                    offset = timedelta_to_HMS(-to_timedelta(f'{6 * lookback2}H'))
-                    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
-                    deps2.append(rocoto.add_dependency(dep_dict))
+        interval_gfs = self._base.get('interval_gfs')
 
-                edate_gfs = self._base['EDATE']
-                edate_metp = edate_gfs.replace(hour=18)
-                edate_metp_diff = edate_metp - edate_gfs
-                offset = timedelta_to_HMS(-to_timedelta(f'{edate_metp_diff}H'))
-                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
+        if interval_gfs < to_timedelta("24H"):
+            assim_freq=self._base['assim_freq']
+            n_lookback = int(interval_gfs // to_timedelta(f"{assim_freq}H")) - 1
+            # Check if the previous up to `n_lookback` arch_vrfy tasks have completed
+            # For interval=6, there are no lookbacks
+            # For interval=12, check lookback=1
+            # For interval=18, check lookback=1,2
+            # Only lookback if arch_vrfy is not valid for this cycle
+            if n_lookback > 0:
+                dep_dict = {'type': 'taskvalid', 'name': f'{self.run}_arch_vrfy', 'condition': 'not'}
+                deps2 = []
                 deps2.append(rocoto.add_dependency(dep_dict))
-                deps.append(rocoto.create_dependency(dep_condition='and', dep=deps2))
+                deps3 = []
+                for lookback in range(0, n_lookback):
+                    offset = timedelta_to_HMS(-to_timedelta(f'{assim_freq * (lookback+1)}H'))
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
+                    deps3.append(rocoto.add_dependency(dep_dict))
+
+                deps2.append(rocoto.create_dependency(dep=deps3, dep_condition='or'))
+                deps.append(rocoto.create_dependency(dep=deps2, dep_condition='and'))
 
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -2071,7 +2075,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': metpenvars,
-                     'cycledef': 'metp,last_gfs',
+                     'cycledef': 'metp',
                      'command': f'{self.HOMEgfs}/dev/jobs/metp.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
