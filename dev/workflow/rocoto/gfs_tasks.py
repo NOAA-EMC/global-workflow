@@ -2002,7 +2002,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
         interval_gfs = self._base.get('interval_gfs')
-        assim_freq=self._base['assim_freq']
+        assim_freq = self._base['assim_freq']
 
         if interval_gfs < to_timedelta("24H"):
             n_lookback = int(interval_gfs // to_timedelta(f"{assim_freq}H")) - 1
@@ -2038,7 +2038,7 @@ class GFSTasks(Tasks):
             deps2.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': timedelta_to_HMS(-metp_gfs_offset)}
             deps2.append(rocoto.add_dependency(dep_dict))
-            for i in range(1, int((metp_gfs_offset.seconds/3600) // assim_freq)):
+            for i in range(1, int((metp_gfs_offset.seconds / 3600) // assim_freq)):
                 dep_dict = {'type': 'cycleexist', 'offset': timedelta_to_HMS(-to_timedelta(f'{assim_freq * i}H')), 'condition': 'not'}
                 deps2.append(rocoto.add_dependency(dep_dict))
 
@@ -2055,7 +2055,7 @@ class GFSTasks(Tasks):
 
         varname1 = 'metpcase'
         varval1 = 'g2g1 g2o1 pcp1'
-        var_dict = {varname1 : varval1}
+        var_dict = {varname1: varval1}
 
         resources = self.get_resource('metp')
 
