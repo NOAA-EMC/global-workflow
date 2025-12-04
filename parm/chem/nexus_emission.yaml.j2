@@ -1,9 +1,11 @@
 nexus_emission:
   data_in:
-    link:
-      - ["{{ NEXUS_INPUT_DIR }}", "{{ LOCAL_INPUT_DIR }}"]
     copy:
       - ["{{ NEXUS_EXECUTABLE }}", "{{ DATA }}/"]
+      {% for filein in NEXUS_INPUT_FILES %}
+      - ["{{ filein }}", "{{ NEXUS_COPY_TO_FILES[loop.index0] }}"]
+      {% endfor %}
+
   data_out:
     mkdir:
       - "{{ COMOUT_CHEM_INPUT }}"
