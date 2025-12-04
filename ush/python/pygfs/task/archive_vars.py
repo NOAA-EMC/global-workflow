@@ -290,10 +290,7 @@ class ArchiveVrfy(Task):
             ]
         else:
             # All other systems (GFS, GEFS, GCAFS) get common + grid-specific paths
-            template_specs = []
-
-            # Common paths (no extra variables needed)
-            common_templates = [
+            template_specs = [
                 ('COMIN_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', {}),
                 ('COMIN_ATMOS_GENESIS', 'COM_ATMOS_GENESIS_TMPL', {}),
                 ('COMIN_ATMOS_HISTORY', 'COM_ATMOS_HISTORY_TMPL', {}),
@@ -303,8 +300,6 @@ class ArchiveVrfy(Task):
                 ('COMIN_OBS', 'COM_OBS_TMPL', {}),
                 ('COMOUT_ATMOS_TRACK', 'COM_ATMOS_TRACK_TMPL', {}),
             ]
-            template_specs.extend(common_templates)
-
             # Grid-specific paths
             for grid in ["0p25", "0p50", "1p00"]:
                 com_key = f"COMIN_ATMOS_GRIB_{grid}"
