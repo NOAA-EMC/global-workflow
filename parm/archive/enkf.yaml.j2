@@ -7,8 +7,10 @@ enkf:
             {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
             {% endfor %}
-            {% for fhr in range(fhmin, fhmax + 1, fhout) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
+            {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
+            {% set ngrps = fhrs | length %}
+            {% for grp in range(0, ngrps) %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % grp }}.log"
             {% endfor %}
             {% if not DO_JEDIATMENS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"
@@ -67,10 +69,10 @@ enkf:
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
             {% set da_stat_files = ["enkfstat.txt",
-                                    "gsistat.ensmean.tar",
-                                    "cnvstat.ensmean.tar",
-                                    "oznstat.ensmean.tar",
-                                    "radstat.ensmean.tar"] %}
+                                    "gsistat_ensmean.txt",
+                                    "cnvstat_ensmean.tar",
+                                    "oznstat_ensmean.tar",
+                                    "radstat_ensmean.tar"] %}
             {% set da_conf_files = [] %}
         {% else %}
             {% if lobsdiag_forenkf %}
@@ -107,7 +109,7 @@ enkf:
         # soil DA increments
         {% if DO_GSISOILDA %}
             {% for fhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_increment.sfc.i{{ '%03d' % fhr }}.nc"
             {% endfor %}
         {% endif %}
 

@@ -28,6 +28,7 @@ RUN=${rCDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
     COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \

@@ -1,4 +1,5 @@
 # Paths
+IODADIR: '/lustre/dump_ur'
 DMPDIR: '/lustre/dump_ur'
 BASE_GIT: '/contrib/git'
 BASE_DATA: '/lustre/data'
