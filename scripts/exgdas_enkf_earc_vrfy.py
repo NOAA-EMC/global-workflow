@@ -18,7 +18,7 @@ def main():
     # Instantiate the Archive object for execute_store_products
     archive = Archive(config)
 
-    # Instantiate the ArchiveVrfy object for variable and file set calculation
+    # Instantiate the ArchiveVrfy object to collect variables to render YAML
     archive_vars = ArchiveVrfy(config)
 
     with chdir(config.ROTDIR):

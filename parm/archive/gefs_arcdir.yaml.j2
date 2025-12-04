@@ -1,19 +1,24 @@
-# NOTE: Complex logic (cycle vars, COM paths, file set building) has been moved to
-# ush/python/pygfs/task/archive_vars.py (ArchiveVrfy.gefs_arcdir() method)
-# This YAML now receives pre-calculated file_set and mkdir_list from Python
+# Variables provided by archive_vars.py:
+# - cycle_HH, cycle_YMDH, cycle_YMD, head
+# - VFYARC (archive directory)
+# - COMIN_ATMOS_ENSSTAT_1p00 (calculated in Python with MEMDIR='ensstat')
 
-# The Python code calculates and returns:
-# - file_set: List of [source, destination] pairs for GEFS ensstat files
-# - mkdir_list: List of directories to create (GEFS_ARCH = ROTDIR/gefsarch)
+{% set file_set = [] %}
 
-# Directory creation
+# Select ensstat files to copy to the arcdir
+{% set ensstat_files = [] %}
+{% if path_exists(COMIN_ATMOS_ENSSTAT_1p00) %}
+    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+        {% do ensstat_files.append([COMIN_ATMOS_ENSSTAT_1p00 ~ "/" ~ head ~ "mean.pres_." ~
+                                    "1p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
+                                    VFYARC]) %}
+    {% endfor %}
+{% endif %}
+{% set file_set = ensstat_files %}
+# Actually write the yaml
 mkdir:
-{% for dir_path in mkdir_list %}
-    - "{{ dir_path }}"
-{% endfor %}
-
-# File copying operations
+    - "{{ VFYARC }}"
 copy:
-{% for source_dest_pair in file_set %}
-    - {{ source_dest_pair }}
-{% endfor %}
+   {% for source_dest_pair in file_set %}
+   - {{ source_dest_pair }}
+   {% endfor %}
