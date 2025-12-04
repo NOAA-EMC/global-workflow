@@ -281,33 +281,38 @@ class ArchiveVrfy(Task):
             - extra_vars: Dict of additional template variables (e.g., {'GRID': '0p25'})
                          Empty dict {} if no additional variables needed
         """
-        template_specs = []
+        # EnKF-specific: Only these 3 ENSSTAT paths with MEMDIR='ensstat'
+        if 'enkf' in self.task_config.RUN:
+            template_specs = [
+                ('COMIN_ATMOS_ANALYSIS_ENSSTAT', 'COM_ATMOS_ANALYSIS_TMPL', {'MEMDIR': 'ensstat'}),
+                ('COMIN_ATMOS_HISTORY_ENSSTAT', 'COM_ATMOS_HISTORY_TMPL', {'MEMDIR': 'ensstat'}),
+                ('COMIN_SNOW_ANALYSIS_ENSSTAT', 'COM_SNOW_ANALYSIS_TMPL', {'MEMDIR': 'ensstat'})
+            ]
+        else:
+            # All other systems (GFS, GEFS, GCAFS) get common + grid-specific paths
+            template_specs = []
 
-        # Common paths (no extra variables needed)
-        common_templates = [
-            ('COMIN_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', {}),
-            ('COMIN_ATMOS_GENESIS', 'COM_ATMOS_GENESIS_TMPL', {}),
-            ('COMIN_ATMOS_HISTORY', 'COM_ATMOS_HISTORY_TMPL', {}),
-            ('COMIN_ATMOS_TRACK', 'COM_ATMOS_TRACK_TMPL', {}),
-            ('COMIN_CHEM_ANALYSIS', 'COM_CHEM_ANALYSIS_TMPL', {}),
-            ('COMIN_SNOW_ANALYSIS', 'COM_SNOW_ANALYSIS_TMPL', {}),
-            ('COMIN_OBS', 'COM_OBS_TMPL', {}),
-            ('COMOUT_ATMOS_TRACK', 'COM_ATMOS_TRACK_TMPL', {}),
-        ]
-        template_specs.extend(common_templates)
+            # Common paths (no extra variables needed)
+            common_templates = [
+                ('COMIN_ATMOS_ANALYSIS', 'COM_ATMOS_ANALYSIS_TMPL', {}),
+                ('COMIN_ATMOS_GENESIS', 'COM_ATMOS_GENESIS_TMPL', {}),
+                ('COMIN_ATMOS_HISTORY', 'COM_ATMOS_HISTORY_TMPL', {}),
+                ('COMIN_ATMOS_TRACK', 'COM_ATMOS_TRACK_TMPL', {}),
+                ('COMIN_CHEM_ANALYSIS', 'COM_CHEM_ANALYSIS_TMPL', {}),
+                ('COMIN_SNOW_ANALYSIS', 'COM_SNOW_ANALYSIS_TMPL', {}),
+                ('COMIN_OBS', 'COM_OBS_TMPL', {}),
+                ('COMOUT_ATMOS_TRACK', 'COM_ATMOS_TRACK_TMPL', {}),
+            ]
+            template_specs.extend(common_templates)
 
-        # Grid-specific paths
-        for grid in ["0p25", "0p50", "1p00"]:
-            com_key = f"COMIN_ATMOS_GRIB_{grid}"
-            template_specs.append((com_key, 'COM_ATMOS_GRIB_GRID_TMPL', {'GRID': grid}))
+            # Grid-specific paths
+            for grid in ["0p25", "0p50", "1p00"]:
+                com_key = f"COMIN_ATMOS_GRIB_{grid}"
+                template_specs.append((com_key, 'COM_ATMOS_GRIB_GRID_TMPL', {'GRID': grid}))
 
-        # GEFS-specific: Ensemble statistics path
-        if 'gefs' in self.task_config.RUN.lower():
-            template_specs.append(('COMIN_ATMOS_ENSSTAT_1p00', 'COM_ATMOS_GRIB_GRID_TMPL', {'GRID': '1p00'}))
-
-        # EnKF-specific: Analysis ensemble statistics path
-        if 'enkf' in self.task_config.RUN.lower():
-            template_specs.append(('COMIN_ATMOS_ANALYSIS_ENSSTAT', 'COM_ATMOS_ANALYSIS_TMPL', {'MEMDIR': 'ensstat'}))
+            # GEFS-specific: Ensemble statistics path
+            if 'gefs' in self.task_config.RUN:
+                template_specs.append(('COMIN_ATMOS_ENSSTAT_1p00', 'COM_ATMOS_GRIB_GRID_TMPL', {'GRID': '1p00'}))
 
         return template_specs
 
