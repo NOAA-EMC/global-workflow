@@ -16,11 +16,9 @@ while getopts ":j:a:dvw" option; do
   w) PDLIB="OFF" ;;
   :)
     echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-    usage
     ;;
   *)
     echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-    usage
     ;;
   esac
 done
