@@ -192,7 +192,7 @@ EOF
 
 for fhr in $(seq -s ' ' 6 24 126); do
     gfsfhr="F$(printf "%03g" "${fhr}")"
-    if ((fhr < 100)); then
+    if [[ fhr -lt 100 ]]; then
         offset=6
     else
         offset=18

@@ -27,7 +27,7 @@ else
 fi
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-GFS | ${PDY:2}/${cyc}00

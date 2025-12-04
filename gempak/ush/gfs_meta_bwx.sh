@@ -27,7 +27,7 @@ fi
 fend=F180
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 "${GEMEXE}/gdplot2_nc" << EOFplt
 gdfile   = F-${RUN} | ${PDY:2}/${cyc}00
 gdattim  = F00-${fend}-6

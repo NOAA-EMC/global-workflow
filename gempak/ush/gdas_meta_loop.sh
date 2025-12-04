@@ -23,13 +23,13 @@ else
 fi
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 
 for ((fhr = 24; fhr <= 144; fhr += 24)); do
     day=$(date --utc +%Y%m%d -d "${PDY} ${cyc} - ${fhr} hours")
-    if ((${day}${cyc} < SDATE)); then
+    if [[ "${day}${cyc}" -lt "${SDATE}" ]]; then
         # Stop looking because these cycles weren't run
-        if ((fhr == 24)); then
+        if [[ "${fhr}" -eq 24 ]]; then
             exit
         else
             break

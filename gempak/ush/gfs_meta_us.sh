@@ -31,7 +31,7 @@ else
 fi
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-GFS | ${PDY:2}/${cyc}00
@@ -170,7 +170,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
     fi
-    if ((fhr == 216)); then
+    if [[ "${fhr}" -eq 216 ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_METAFILE_LAST "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
     fi

@@ -7,7 +7,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 
 cyc2=12
 device="nc | ecmwfver.meta"

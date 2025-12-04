@@ -88,9 +88,9 @@ for gareas in US NP; do
         init_PDY=${init_time:0:8}
         init_cyc=${init_time:8:2}
 
-        if ((init_time <= SDATE)); then
+        if [[ "${init_time}" -le "${SDATE}" ]]; then
             echo "Skipping generation for ${init_time} because it is before the experiment began"
-            if ((offset == "${offsets[0]}")); then
+            if [[ "${offset}" -eq "${offsets[0]}" ]]; then
                 echo "First forecast time, no metafile produced"
                 exit 0
             fi
@@ -128,7 +128,7 @@ for gareas in US NP; do
             hilo2="5/H#;L#/1018-1060;900-1012/5/10;10/y!6/H#;L#/1018-1060;900-1012/5/10;10/y"
             title1="5/-2/~ ? ^ ${MDL} @ HGT (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${init_cyc}Z 500 HGT!6/-3/~ ? ${MDL} @ HGT (${init_cyc}Z ${desc} CYAN)"
             title2="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${init_cyc}Z PMSL!6/-3/~ ? ${MDL} PMSL (${init_cyc}Z ${desc} CYAN)"
-            if ((fhr > testgfsfhr)); then
+            if [[ "${fhr}" -gt "${testgfsfhr}" ]]; then
                 grid="F-${MDL} | ${PDY:2}/${cyc}00"
                 grid2=" "
                 gfsoldfhr=" "
@@ -142,7 +142,7 @@ for gareas in US NP; do
             fi
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -242,7 +242,7 @@ EOF
             ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -328,7 +328,7 @@ EOF
             ecmwffhr=F$(printf "%02g" $((fhr + 24)))
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -409,7 +409,7 @@ EOF
             namfhr=F$(printf "%02g" "${fhr}")
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -504,7 +504,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
     fi
-    if ((fhr == 126)); then
+    if [[ "${fhr}" -eq 126 ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_METAFILE_LAST "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
     fi

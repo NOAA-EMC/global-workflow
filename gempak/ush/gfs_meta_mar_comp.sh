@@ -65,9 +65,9 @@ for garea in NAtl NPac; do
         init_PDY=${init_time:0:8}
         init_cyc=${init_time:8:2}
 
-        if ((init_time <= SDATE)); then
+        if [[ "${init_time}" -le "${SDATE}" ]]; then
             echo "Skipping generation for ${init_time} because it is before the experiment began"
-            if ((offset == "${offsets[0]}")); then
+            if [[ "${offset}" -eq "${offsets[0]}" ]]; then
                 echo "First forecast time, no metafile produced"
                 exit 0
             fi
@@ -122,7 +122,7 @@ for garea in NAtl NPac; do
             hilo2="5/H#;L#/1018-1060;900-1012/5/10;10/y!6/H#;L#/1018-1060;900-1012/5/10;10/y"
             title1="5/-2/~ ? ^ ${MDL} @ HGT (${cyc}Z YELLOW)|^${garea} ${cyc}Z vs ${init_cyc}Z 500 HGT!6/-3/~ ? ${MDL} @ HGT (${init_cyc}Z CYAN)"
             title2="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${garea} ${cyc}Z vs ${init_cyc}Z PMSL!6/-3/~ ? ${MDL} PMSL (${init_cyc}Z CYAN)"
-            if ((fhr > testgfsfhr)); then
+            if [[ "${fhr}" -gt "${testgfsfhr}" ]]; then
                 grid2=" "
                 gfsoldfhr=" "
                 gdpfun1="sm5s(hght)"
@@ -135,7 +135,7 @@ for garea in NAtl NPac; do
             fi
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
@@ -235,7 +235,7 @@ EOF
             ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
@@ -324,7 +324,7 @@ EOF
             ecmwffhr=F$(printf "%02g" $((fhr + 24)))
 
             export pgm=gdplot2_nc
-            . prep_step
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes

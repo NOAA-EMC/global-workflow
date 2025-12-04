@@ -32,7 +32,7 @@ PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
 fend=F126
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-${MDL} | ${PDY:2}/${cyc}00
 GDATTIM	= F00-${fend}-06
@@ -272,7 +272,7 @@ if [[ ${cyc} == 00 ]]; then
         ecmwffhr=F$(printf "%02g" $((fhr + 12)))
 
         export pgm=gdplot2_nc
-        . prep_step
+        source prep_step
         "${GEMEXE}/gdplot2_nc" << EOF10
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
@@ -338,7 +338,7 @@ EOF10
         ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
         export pgm=gdplot2_nc
-        . prep_step
+        source prep_step
         "${GEMEXE}/gdplot2_nc" << EOF25
 DEVICE  = ${device}
 PANEL   = 0

@@ -94,7 +94,7 @@ case ${cyc} in
 esac
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 "${GEMEXE}/gdplot2_nc" << EOFplt
 gdfile   = F-${MDL} | ${PDY:2}/${cyc}00
 garea    = us

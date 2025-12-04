@@ -16,7 +16,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 
 device="nc | ukmetver_12.meta"
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl

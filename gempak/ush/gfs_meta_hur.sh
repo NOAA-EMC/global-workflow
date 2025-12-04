@@ -49,7 +49,7 @@ case ${cyc} in
 esac
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 "${GEMEXE}/gdplot2_nc" << EOF
 gdfile  = F-${MDL} | ${PDY:2}/${cyc}00
 gdattim = ${gdat}
@@ -325,7 +325,7 @@ if [[ ${cyc} -eq 00 ]]; then
         ecmwffhr=F$(printf "%02g" $((fhr + 12)))
 
         export pgm=gdplot2_nc
-        . prep_step
+        source prep_step
         "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
@@ -392,7 +392,7 @@ EOF
         ukmetfhr=F$(printf "%02g" $((fhr)))
 
         export pgm=gdplot2_nc
-        . prep_step
+        source prep_step
         "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 PANEL   = 0

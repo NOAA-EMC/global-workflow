@@ -47,7 +47,7 @@ for domain in ATL PAC WPAC; do
     esac
 
     export pgm=gdplot2_nc
-    . prep_step
+    source prep_step
     "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-${MDL} | ${PDY:2}/${cyc}00
 GDATTIM = F00-F180-12

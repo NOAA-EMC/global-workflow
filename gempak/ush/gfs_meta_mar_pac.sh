@@ -27,7 +27,7 @@ metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 
 export pgm=gdplot2_nc
-. prep_step
+source prep_step
 
 "${GEMEXE}/gdplot2_nc" << EOFplt
 \$MAPFIL=mepowo.gsf+mehsuo.ncp+mereuo.ncp+himouo.nws

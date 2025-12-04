@@ -28,7 +28,7 @@ device="nc | ${metaname}"
 
 for fhr in $(seq -f "%03g" -s ' ' 0 6 72); do
     export pgm=gdprof
-    . prep_step
+    source prep_step
 
     "${GEMEXE}/gdprof" << EOFplt
 GDATTIM  = F${fhr}

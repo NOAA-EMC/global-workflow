@@ -48,9 +48,9 @@ for lookback in "${lookbacks[@]}"; do
     init_PDY=${init_time:0:8}
     init_cyc=${init_time:8:2}
 
-    if ((init_time <= ${SDATE:-0})); then
+    if [[ "${init_time}" -le "${SDATE:-0}" ]]; then
         echo "Skipping ver for ${init_time} because it is before the experiment began"
-        if ((lookback == "${lookbacks[0]}")); then
+        if [[ "${lookback}" -eq "${lookbacks[0]}" ]]; then
             echo "First forecast time, no metafile produced"
             exit 0
         else
@@ -71,7 +71,7 @@ for lookback in "${lookbacks[@]}"; do
 
     # 500 MB HEIGHT METAFILE
     export pgm=gdplot2_nc
-    . prep_step
+    source prep_step
 
     "${GEMEXE}/gdplot2_nc" << EOFplt
 PROJ     = MER
