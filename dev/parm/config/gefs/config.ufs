@@ -311,7 +311,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS="ufs.topo_edits_011818.nc"
       case ${RUN} in
         gfs|gefs|sfs)
-          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;
         gdas|enkfgdas|enkfgfs)
@@ -339,7 +339,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       eps_imesh="1.0e-1"
       case ${RUN} in
         gfs|gefs|sfs)
-          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;
         gdas|enkfgdas|enkfgfs)
@@ -368,7 +368,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       eps_imesh="1.0e-1"
       case ${RUN} in
         gfs|gefs|sfs)
-          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_40L.nc"
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;
         gdas|enkfgdas|enkfgfs)
