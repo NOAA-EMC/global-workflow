@@ -262,6 +262,6 @@ class OfflineAnalysis(Task):
         transfer_files.append([
             os.path.join(self.task_config.DATA, "dtfanl.nc"),
             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                         f"{self.task_config.APREFIX}analysis.dtf.a006.nc")
+                         f"{self.task_config.APREFIX}increment.dtf.i006.nc")
         ])
         FileHandler({'copy': transfer_files}).sync()

@@ -73,11 +73,11 @@ ATMG09=${ATMG09:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f009.nc"}
 # Analysis files
 export APREFIX=${APREFIX:-""}
 SFCANL=${SFCANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"}
-DTFANL=${DTFANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc"}
 ATMANL=${ATMANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"}
 
 # Increment files
 ATMINC=${ATMINC:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"}
+DTFANL=${DTFANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
