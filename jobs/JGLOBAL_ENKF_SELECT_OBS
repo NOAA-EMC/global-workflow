@@ -109,7 +109,7 @@ done
 ###############################################################
 # Run relevant script
 
-${INVOBSSH:-${SCRgfs}/exgdas_enkf_select_obs.sh} && true
+${INVOBSSH:-${SCRgfs}/exglobal_enkf_select_obs.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
