@@ -15,7 +15,8 @@ export gempak_ver=7.15.1
 export nco_ver=5.0.6
 export grib_util_ver=1.2.3
 export bufr_dump_ver=1.0.0
-export wgrib2_ver=2.0.8
+#export wgrib2_ver=2.0.8
+export wgrib2_ver=3.8.0
 
 export envvar_ver=1.0
 export prod_envir_ver=${prod_envir_ver:-2.0.4} # Allow override from ops ecflow
