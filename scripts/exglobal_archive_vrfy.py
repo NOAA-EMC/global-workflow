@@ -15,17 +15,14 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the Archive object for execute_store_products
+    # Instantiate the Archive task object
     archive = Archive(config)
-
-    # Instantiate the ArchiveVrfy object for variable and file set calculation
-    archive_vars = ArchiveVrfy(config)
 
     with chdir(config.ROTDIR):
 
         # Collect all archive variables in complete arch_dict for YAML templates
-        # This method handles everything: general vars, NET dispatch, cycle_vars, com_paths, file_set, mkdir_list
-        arch_dict = archive_vars.get_all_yaml_vars()
+        # Use static utility methods from ArchiveVrfy (not a Task instance)
+        arch_dict = ArchiveVrfy.get_all_yaml_vars(archive.task_config)
 
         # Pass arch_dict to configure_vrfy which will render the Jinja2 YAML
         arcdir_set = archive.configure_vrfy(AttrDict(arch_dict))
