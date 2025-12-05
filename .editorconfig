@@ -29,13 +29,6 @@ shell_variant = bash
 switch_case_indent = true
 space_redirects = true
 
-[dev/job_cards/rocoto/*]
-indent_style = space
-indent_size = 4
-shell_variant = bash
-switch_case_indent = true
-space_redirects = true
-
 [*.{sh,bash}]
 indent_style = space
 indent_size = 4
