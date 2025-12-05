@@ -156,8 +156,8 @@ class ArchiveVrfy(Task):
                        'FHOUT_GFS', 'FHMAX_HF_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT',
                        'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
 
-        # Add FHMIN_GFS only if NET does not contain 'enkf'
-        if 'enkf' not in self.task_config.get('NET', ''):
+        # Add FHMIN_GFS only if RUN does not contain 'enkf'
+        if 'enkf' not in self.task_config.get('RUN', ''):
             config_keys.append('FHMIN_GFS')
 
         # Extract keys if they exist in task_config
