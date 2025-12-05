@@ -20,7 +20,9 @@
 #  Set environment.
 
 #  Directories.
+# shellcheck disable=SC2153
 cd "${DATA}" || exit 1
+
 # Base variables
 rCDUMP=${rCDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
