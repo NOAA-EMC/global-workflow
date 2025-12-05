@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_ATMOS_ANALYSIS_DIAG"
+"${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS_DIAG"
 status=$?
 
 exit "${status}"
