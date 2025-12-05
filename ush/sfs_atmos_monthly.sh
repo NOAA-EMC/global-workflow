@@ -19,7 +19,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL  \
     COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
-OUTDIR="${COMOUT_ATMOS_GRIB}/temporal_mean"
+OUTDIR="${COMOUT_ATMOS_GRIB}"
 mkdir -m 755 -p "${OUTDIR}"
 
 # Lists of variables

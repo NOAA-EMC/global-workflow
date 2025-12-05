@@ -21,7 +21,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL  \
     COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
-OUTDIR="${COMOUT_ATMOS_GRIB}/temporal_mean"
+OUTDIR="${COMOUT_ATMOS_GRIB}"
 mkdir -m 755 -p "${OUTDIR}"
 
 declare -a vars=( "DLWRF:surface" "DSWRF:surface" "ULWRF:surface" "USWRF:surface" "ULWRF:top of atmosphere" "LHTFL" "SHTFL" "PRMSL" "PRATE" ":TMP:2 m above" "TMAX:2 m above" "TMIN:2 m above" "DPT:2 m above" "HGT:200 mb" "HGT:500 mb" "HGT:700 mb" "HGT:850 mb" "SPFH:500 mb" "SPFH:700 mb" "SPFH:850 mb" 
