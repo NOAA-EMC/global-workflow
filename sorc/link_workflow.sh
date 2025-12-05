@@ -542,6 +542,7 @@ for prog in enkf_chgres_recenter_nc.fd \
   syndat_qctropcy.fd \
   tave.fd \
   tocsbufr.fd \
+  tref_calc.fd \
   vint.fd \
   webtitle.fd \
   ocnicepost.fd; do
