@@ -32,7 +32,7 @@ local WRITE_GROUP=${WRITE_GROUP:-1}
 local WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP:-24}
 local ITASKS=1
 local OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
-if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
   local HISTORY_FILE_ON_NATIVE_GRID=".true."
 else
   local HISTORY_FILE_ON_NATIVE_GRID=".false."
@@ -55,6 +55,7 @@ local IMO=${LONB_IMO}
 local JMO=${LATB_JMO}
 local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
 local IAU_OFFSET=${IAU_OFFSET:-0}
+local USE_FV3_ROUTEHANDLES=.false.
 
 #set FV3 output directory:
 local FV3ATM_OUTPUT_DIR="./FV3ATM_OUTPUT"

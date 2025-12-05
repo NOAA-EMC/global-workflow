@@ -12,11 +12,11 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init fetch"
-    echo "prep prep_sfc prepatmiodaobs"
+    echo "prep prep_sfc"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
-    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
+    echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -114,13 +114,6 @@ case ${step} in
     tasks_per_node=14
     threads_per_task=1
     memory="${mem_node_max}"
-    ;;
-
-  "prepatmiodaobs")
-    walltime="00:30:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "aerosol_init")
@@ -231,7 +224,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
     if [[ "${RUN}" = *gfs ]]; then
-      memory="1GB"
+      memory="2GB"
     fi
     ;;
 
@@ -340,14 +333,6 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
-  "prepobsaero")
-    walltime="00:30:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=1
-    memory="96GB"
-    ;;
-
   "aeroanlinit")
     # below lines are for creating JEDI YAML
     case "${CASE}" in
@@ -382,7 +367,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="3072M"
+    memory="4GB"
     ;;
 
   "aeroanlvar")
@@ -513,7 +498,7 @@ case ${step} in
     ;;
 
   "marinebmatinit")
-    walltime="00:10:00"
+    walltime="00:20:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=${max_tasks_per_node}
@@ -773,12 +758,19 @@ case ${step} in
     fi
     ;;
 
-  "analdiag")
+  "analdiag" | "ediag")
     walltime="00:15:00"
     ntasks=96             # Should be at least twice ediag's tasks
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="48GB"
+    #if [[ "${step}" == "ediag" ]]; then
+    #  ntasks=48
+    #fi
+    threads_per_task=1
+    if [[ ${ntasks} -gt ${max_tasks_per_node} ]]; then
+      ntasks=${max_tasks_per_node}
+      export is_exclusive=True
+    fi
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "anlstat")
@@ -868,8 +860,8 @@ case ${step} in
     MEDTHREADS=${nthreads_mediator:-1}
     MEDPETS=${MEDPETS:-${FV3PETS}}
     (( MEDPETS = FV3PETS ))
-    (( MEDTHREADS = FV3THREADS )) 
-    (( "${MEDPETS}" > 24000 )) && MEDPETS=1200
+    (( MEDTHREADS = FV3THREADS ))
+    (( "${MEDPETS}" > 4800 )) && MEDPETS=4800
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
@@ -994,7 +986,7 @@ case ${step} in
     ;;
 
   "upp")
-    #ntasks cannot be greater than $CASE_HIST      
+    #ntasks cannot be greater than $CASE_HIST
     #define resources based on $CASE_HIST for upp
     case "${CASE_HIST}" in
       "C48" | "C96")
@@ -1065,7 +1057,7 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
-    memory="4G"
+    memory="6G"
     ;;
 
   "genesis")
@@ -1270,14 +1262,6 @@ case ${step} in
     fi
     ;;
 
-  "ediag")
-    walltime="00:15:00"
-    ntasks=48
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="30GB"
-    ;;
-
   "eupd")
     walltime="00:45:00"
     case "${CASE}" in
@@ -1317,9 +1301,15 @@ case ${step} in
 
   "esfc")
     walltime="01:15:00"
-    ntasks=80
+    ntasks=$(( NMEM_ENS * 6)) # The regrid program requires tasks to be tiles times members
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+
+    # Use node_numerator/node_denominator of the tasks in a node
+    # to leave enough memory for regridding
+    node_numerator=1
+    node_denominator=2
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+
     threads_per_task_cycle=${threads_per_task}
     tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     ;;
@@ -1327,7 +1317,7 @@ case ${step} in
   "epos")
     walltime="00:15:00"
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
-        walltime="00:25:00"
+        walltime="00:35:00"
     fi
     ntasks=80
     threads_per_task=1
@@ -1367,7 +1357,7 @@ case ${step} in
     ntasks=1
     tasks_per_node=1
     threads_per_task=1
-    memory="3GB"
+    memory="4GB"
     ;;
 
   "npoess")
@@ -1389,7 +1379,7 @@ case ${step} in
     elif [[ "${RUN}" = *gfs ]]; then
       ntasks=28
       tasks_per_node=28
-      memory="2GB"
+      memory="4GB"
     fi
     ;;
 
@@ -1397,7 +1387,7 @@ case ${step} in
     walltime="00:05:00"
     ntasks=1
     threads_per_task=1
-    memory="4GB"
+    memory="6GB"
     tasks_per_node=1
     ;;
 

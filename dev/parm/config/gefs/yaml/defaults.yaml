@@ -13,7 +13,6 @@ base:
   FHMAX_HF_GFS: 0
   FHOUT_HF_GFS: 1
   FCST_BREAKPOINTS: "48"
-  REPLAY_ICS: "NO"
   FHOUT_GFS: 6
   FHOUT_OCN_GFS: 24
   FHOUT_ICE_GFS: 24
@@ -30,6 +29,8 @@ fcst:
   MONO: "non-mono"
 ocn:
   MOM6_INTERP_ICS: "NO"
+nsst:
+  NST_SPINUP: 0
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}

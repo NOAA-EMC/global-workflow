@@ -31,7 +31,7 @@
 ## 		1. restart file except sfc_data, $gmemdir/RESTART/$PDY.$cyc.*.nc
 ##		2. sfcanl_data, $memdir/RESTART/$PDY.$cyc.*.nc
 ##		3. coupler_res, $gmemdir/RESTART/$PDY.$cyc.coupler.res
-##		4. increment file, $memdir/${RUN}.t${cyc}z.atminc.nc
+##		4. increment file, $memdir/${RUN}.t${cyc}z.increment.atm.nc
 ##			OR $DATA/INPUT/fv3_increment.nc
 ##	Cold start files:
 ##		1. initial condition, $memdir/INPUT/*.nc
@@ -54,9 +54,9 @@
 ##
 ## Data output (location, name)
 ##	If quilting=true and output grid is gaussian grid:
-##	   1. atmf data, $memdir/${RUN}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
-##	   2. sfcf data, $memdir/${RUN}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
-##	   3. logf data, $memdir/${RUN}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+##	   1. atmf data, $memdir/${RUN}.t${cyc}z.atm.f${FH3}.$OUTPUT_FILE
+##	   2. sfcf data, $memdir/${RUN}.t${cyc}z.sfc.f${FH3}.$OUTPUT_FILE
+##	   3. logf data, $memdir/${RUN}.t${cyc}z.log.f${FH3}.$OUTPUT_FILE
 ##	If quilting=false and output grid is not gaussian grid:
 ##           1. NGGPS2D, $memdir/nggps2d.tile${n}.nc
 ##	   2. NGGPS3D, $memdir/nggps3d.tile${n}.nc
@@ -78,12 +78,12 @@
 #######################
 
 # include all subroutines. Executions later.
-source "${USHgfs}/forecast_predet.sh" 	# include functions for variable definition
-source "${USHgfs}/forecast_det.sh"  # include functions for run type determination
-source "${USHgfs}/forecast_postdet.sh"	# include functions for variables after run type determination
-source "${USHgfs}/parsing_ufs_configure.sh"	 # include functions for ufs_configure processing
+source "${USHgfs}/forecast_predet.sh"       # include functions for variable definition
+source "${USHgfs}/forecast_det.sh"          # include functions for run type determination
+source "${USHgfs}/forecast_postdet.sh"      # include functions for variables after run type determination
+source "${USHgfs}/parsing_ufs_configure.sh" # include functions for ufs_configure processing
 
-source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
+source "${USHgfs}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
@@ -165,21 +165,21 @@ echo "MAIN: Name lists and model configuration written"
 # run the executable
 
 if [[ "${esmf_profile:-}" == ".true." ]]; then
-  export ESMF_RUNTIME_PROFILE=ON
-  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
+    export ESMF_RUNTIME_PROFILE=ON
+    export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
 
 if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
-  unset OMP_NUM_THREADS
+    unset OMP_NUM_THREADS
 else
-  export OMP_NUM_THREADS=${UFS_THREADS:-1}
+    export OMP_NUM_THREADS=${UFS_THREADS:-1}
 fi
 
 cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   err_exit "The forecast failed to run to completion!"
+    err_exit "The forecast failed to run to completion!"
 fi
 
 FV3_out

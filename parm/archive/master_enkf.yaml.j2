@@ -3,8 +3,6 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = RUN + ".t" + cycle_HH + "z." %}
-{% set head_ocean = RUN ~ ".ocean.t" ~ cycle_HH ~ "z." %}
-{% set head_ice = RUN ~ ".ice.t" ~ cycle_HH ~ "z." %}
 
 # Determine which data to archive
 datasets:
@@ -87,13 +85,6 @@ datasets:
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
     {% endfilter %}
-
-    # Archive marine member data
-    {% if DOHYBVAR_OCN %}
-        {% filter indent(width=4) %}
-{% include "enkf_marine_grp.yaml.j2" %}
-        {% endfilter %}
-    {% endif %}
 
     # Determine if restarts should be saved
     {% set save_warm_start_forecast, save_warm_start_cycled = ( False, False ) %}

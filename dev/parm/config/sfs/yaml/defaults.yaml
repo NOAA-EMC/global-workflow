@@ -10,7 +10,6 @@ base:
   KEEPDATA: "NO"
   DO_EXTRACTVARS: "NO"
   FCST_BREAKPOINTS: "48"
-  REPLAY_ICS: "NO"
   FHMAX_HF_GFS: 0
   FHOUT_HF_GFS: 6
   FHMAX_GFS: 120
@@ -32,7 +31,6 @@ ocn:
   MOM6_INTERP_ICS: "NO"
 nsst:
   NST_SPINUP: 0
-
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}

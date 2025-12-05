@@ -28,6 +28,8 @@ load(pathJoin("hsi", (os.getenv("hsi_ver") or "None")))
 setenv("WGRIB2", "/autofs/ncrc-svm1_proj/epic/c6/spack-stack/spack-stack-1.9.1/envs/gw-intel-2023.2.0/install/intel/2023.2.0/wgrib2-3.6.0-fjguk3g/bin/wgrib2")
 prepend_path("PATH", "/autofs/ncrc-svm1_proj/epic/c6/spack-stack/spack-stack-1.9.1/envs/gw-intel-2023.2.0/install/intel/2023.2.0/wgrib2-3.6.0-fjguk3g/bin")
 
+setenv("CRTM_FIX","/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix/crtm/v2.4.0.2")
+
 unload("cray-libsci")
 
 whatis("Description: GFS run setup environment")

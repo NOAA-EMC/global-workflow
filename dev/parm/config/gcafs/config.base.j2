@@ -51,6 +51,8 @@ export PACKAGEROOT="{{ PACKAGEROOT }}"    # TODO: set via prod_envir in Ops
 export COMROOT="{{ COMROOT }}"    # TODO: set via prod_envir in Ops
 export COMINsyn="{{ COMINsyn }}"
 export DMPDIR="{{ DMPDIR }}"
+export IODADIR="{{ IODADIR }}"
+export USE_IODADIR="{{ USE_IODADIR }}"
 
 # Gempak from external models
 # Default locations are to dummy locations for testing
@@ -370,7 +372,7 @@ export DO_JEDIAEROVAR="{{ DO_JEDIAEROVAR }}"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
-export DO_STARTMEM_FROM_JEDIICE="{{ DO_STARTMEM_FROM_JEDIICE }}"
+export DO_STARTMEM_FROM_JEDIICE="NO"
 
 # Hybrid related
 export DOHYBVAR="{{ DOHYBVAR }}"
@@ -413,8 +415,13 @@ fi
 export ENKF_SPREAD="YES"
 
 #Soil DA and whether it is (land) IAU
-export DO_GSISOILDA="{{ DO_GSISOILDA }}"
-export DO_LAND_IAU="{{ DO_LAND_IAU }}"
+if [[ "${RUN}" == "gdas" || "${RUN}" == "enkfgdas" ]]; then
+    export DO_GSISOILDA="{{ DO_GSISOILDA }}"
+    export DO_LAND_IAU="{{ DO_LAND_IAU }}"
+else
+    export DO_GSISOILDA="NO"
+    export DO_LAND_IAU=".false."
+fi
 export LSOIL_INCR=2
 
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
@@ -502,7 +509,6 @@ else
 fi
 
 # If starting ICs that are not at cycle hour
-export REPLAY_ICS="NO"
 export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for

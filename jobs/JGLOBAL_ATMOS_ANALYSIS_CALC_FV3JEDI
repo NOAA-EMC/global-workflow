@@ -27,6 +27,10 @@ YMD=${PDY} HH=${cyc} RUN=${RUN} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_CONF:COM_CONF_TMPL
+
+mkdir -m 775 -p "${COMOUT_CONF}"
 
 ##############################################
 # Run relevant script
@@ -40,7 +44,7 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 # Write analysis log file
-echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.loganl.txt"
+echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.done.txt"
 
 ##############################################
 # End JOB SPECIFIC work

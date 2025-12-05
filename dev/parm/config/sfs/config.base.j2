@@ -218,18 +218,9 @@ export FHOUT_AERO=3
 export INTERVAL_GFS="{{ INTERVAL_GFS }}"  # Frequency of GFS forecast
 export SDATE_GFS="{{ SDATE_GFS }}"
 
-# set variables needed for use with REPLAY ICs
-export REPLAY_ICS="{{ REPLAY_ICS }}"
-if [[ "${REPLAY_ICS:-NO}" == "YES" ]]; then
-    export OFFSET_START_HOUR=$(( assim_freq / 2 ))
-    echo "WARNING: Replay ICs require perturbation files, ignoring any previous settings"
-    export USE_OCN_ENS_PERTURB_FILES="YES"
-    export USE_ATM_ENS_PERTURB_FILES="YES"
-else
-    export OFFSET_START_HOUR=0
-    export USE_OCN_ENS_PERTURB_FILES="{{ USE_OCN_ENS_PERTURB_FILES }}"
-    export USE_ATM_ENS_PERTURB_FILES="{{ USE_ATM_ENS_PERTURB_FILES }}"
-fi
+export OFFSET_START_HOUR=0
+export USE_OCN_ENS_PERTURB_FILES="{{ USE_OCN_ENS_PERTURB_FILES }}"
+export USE_ATM_ENS_PERTURB_FILES="{{ USE_ATM_ENS_PERTURB_FILES }}"
 
 # GFS output and frequency
 export FHMIN_GFS=0
@@ -327,24 +318,8 @@ export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
-export HPSSARCH="{{ HPSSARCH }}"        # save data to HPSS archive
-export LOCALARCH="{{ LOCALARCH }}"      # save data to local archive
-export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # where to save data
-if [[ ${HPSSARCH} = "YES" ]] && [[ ${LOCALARCH} = "YES" ]]; then
-   echo "Both HPSS and local archiving selected.  Please choose one or the other."
-   exit 3
-elif [[ ${HPSSARCH} = "YES" ]] || [[ ${LOCALARCH} = "YES" ]]; then
-   export DO_ARCHCOM="YES"
-else
-   export DO_ARCHCOM="NO"
-fi
-export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
-export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
-export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
-export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
-export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
-export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
-export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
+export DO_ARCHCOM="{{ DO_ARCHCOM}}"    # Tar and archive the COM directories
+export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, and local
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
