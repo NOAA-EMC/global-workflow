@@ -136,6 +136,8 @@ class OfflineAnalysis(Task):
         logger.info("Generating namelist for 'tref_calc'")
         namelist = {
             "tref_calc_setup": {
+                "i_output": self.task_config.nlon_interp,
+                "j_output": self.task_config.nlat_interp,
                 "sfcanl_file": "sfcanl.input.nc",
                 "sfcf006_file": "sfcges_mem001",
                 "output_file": "dtfanl.nc",
