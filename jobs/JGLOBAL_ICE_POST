@@ -18,7 +18,8 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
+    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL \
+    COMOUT_ICE_NETCDF:COM_ICE_NETCDF_TMPL
 
 # Define current cycle
 export current_cycle="${PDY}${cyc}"

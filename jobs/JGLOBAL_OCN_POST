@@ -14,7 +14,8 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
+    COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL \
+    COMOUT_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL
 
 # Define current cycle
 export current_cycle="${PDY}${cyc}"

@@ -14,7 +14,8 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL \
+    COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
 # Define current cycle
 export current_cycle="${PDY}${cyc}"
