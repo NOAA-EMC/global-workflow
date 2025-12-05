@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-exit 0 #for empty task
+exit 0
 
 set -x
 
