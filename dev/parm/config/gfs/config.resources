@@ -758,12 +758,19 @@ case ${step} in
     fi
     ;;
 
-  "analdiag")
+  "analdiag" | "ediag")
     walltime="00:15:00"
     ntasks=96             # Should be at least twice ediag's tasks
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="48GB"
+    #if [[ "${step}" == "ediag" ]]; then
+    #  ntasks=48
+    #fi
+    threads_per_task=1
+    if [[ ${ntasks} -gt ${max_tasks_per_node} ]]; then
+      ntasks=${max_tasks_per_node}
+      export is_exclusive=True
+    fi
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "anlstat")
@@ -853,7 +860,7 @@ case ${step} in
     MEDTHREADS=${nthreads_mediator:-1}
     MEDPETS=${MEDPETS:-${FV3PETS}}
     (( MEDPETS = FV3PETS ))
-    (( MEDTHREADS = FV3THREADS )) 
+    (( MEDTHREADS = FV3THREADS ))
     (( "${MEDPETS}" > 4800 )) && MEDPETS=4800
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
@@ -979,7 +986,7 @@ case ${step} in
     ;;
 
   "upp")
-    #ntasks cannot be greater than $CASE_HIST      
+    #ntasks cannot be greater than $CASE_HIST
     #define resources based on $CASE_HIST for upp
     case "${CASE_HIST}" in
       "C48" | "C96")
@@ -1253,14 +1260,6 @@ case ${step} in
     if [[ $(( max_tasks_per_node % tasks_per_node )) != 0 ]]; then
       unset max_tasks_per_node
     fi
-    ;;
-
-  "ediag")
-    walltime="00:15:00"
-    ntasks=48
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="30GB"
     ;;
 
   "eupd")

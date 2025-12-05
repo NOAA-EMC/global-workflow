@@ -17,7 +17,7 @@ source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/dev/ush/load_modules.sh" upp
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit "${status}";
+    exit "${status}"
 fi
 
 export job="upp"

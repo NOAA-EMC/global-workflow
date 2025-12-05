@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_ENS_ARCHIVE_VRFY"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ENKF_ARCHIVE_VRFY"
 status=$?
 
 exit "${status}"

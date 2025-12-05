@@ -41,6 +41,11 @@
 
 # Change characteristics
 <!-- Choose YES or NO from each of the following and delete the other -->
+- Is this change expected to change outputs (e.g. value changes to existing outputs, new files stored in COM, files removed from COM, filename changes, additions/subtractions to archives)? YES/NO (If YES, please indicate to which system(s))
+  - [ ] GFS
+  - [ ] GEFS
+  - [ ] SFS
+  - [ ] GCAFS
 - Is this a breaking change (a change in existing functionality)? YES/NO
 - Does this change require a documentation update? YES/NO
 - Does this change require an update to any of the following submodules? YES/NO (If YES, please add a link to any PRs that are pending.)

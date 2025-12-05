@@ -2228,12 +2228,12 @@ class GFSTasks(Tasks):
                 tarball_types.append('chem')
 
             if self.options['do_ocean']:
-                tarball_types.extend(['ocean_6hravg', 'ocean_grib2', 'gfs_flux_1p00'])
+                tarball_types.extend(['ocean_6hravg', 'ocean_native', 'gfs_flux_1p00'])
                 if self.options.get('do_jediocnvar', False) and self.app_config.mode == 'cycled':
                     tarball_types.append('gfsocean_analysis')
 
             if self.options['do_ice']:
-                tarball_types.extend(['ice_6hravg', 'ice_grib2'])
+                tarball_types.extend(['ice_6hravg', 'ice_native'])
 
             if self.options['do_bufrsnd']:
                 tarball_types.append('gfs_downstream')
