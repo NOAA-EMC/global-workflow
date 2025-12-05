@@ -65,7 +65,7 @@ def calculate_OHC(ds, depth_limit=300, temp_var_name='temp', depth_dim_name='dep
 
     OHC.attrs['units'] = 'J/m^2'
     OHC.attrs['long_name'] = f'Ocean Heat Content (0 to {depth_limit_val}m)'
-    OHC.name = 'OHC'
+    OHC.name = 'ocnheat'
 
     return OHC
 
