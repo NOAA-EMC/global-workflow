@@ -12,7 +12,7 @@ mkdir:
 copy_req:
     # Ensemble analysis statistics - REQUIRED
     {% if DO_JEDIATMENS == True %}
-    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}atmensstat",
+    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}stat.atm.tar",
        "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
     {% else %}
     - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}enkfstat.txt",
