@@ -22,6 +22,7 @@
 "ocean_model", "wet_v",       "wet_v",       "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr", "all", .false., "none", 2
 "ocean_model", "sin_rot",     "sin_rot",     "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr", "all", .false., "none", 2
 "ocean_model", "cos_rot",     "cos_rot",     "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr", "all", .false., "none", 2
+"ocean_model", "area_t",      "area_t",      "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr", "all", .false., "none", 2
 
 # ocean output TSUV and others
 "ocean_model", "SSH",        "SSH",       "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
@@ -35,12 +36,16 @@
 "ocean_model", "MLD_003",    "MLD_003",   "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model", "MLD_0125",   "MLD_0125",  "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model", "tob",        "tob",       "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
+"ocean_model", "deta_dt",    "deta_dt",   "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 
 # Z-Space Fields Provided for CMIP6 (CMOR Names):
 "ocean_model_z", "uo",       "uo",        "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model_z", "vo",       "vo",        "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model_z", "so",       "so",        "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 "ocean_model_z", "temp",     "temp",      "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
+"ocean_model_z", "uh",       "uh",        "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
+"ocean_model_z", "vh",       "vh",        "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
+"ocean_model_z", "h",        "h",         "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr",  "all",  .true.,  "none",  2
 
 # save 6 hourly potential temperature:
 "ocean_model", "geolon",      "geolon",      "@[MOM6_OUTPUT_DIR]/temp%4yr%2mo%2dy%2hr", "all", .false., "none", 2
