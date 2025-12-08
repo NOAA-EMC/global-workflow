@@ -2366,7 +2366,7 @@ class GFSTasks(Tasks):
         # This will only be used for GDAS/ENKFGDAS cycles with 6-hourly GFS intervals
         #     to prevent clobbering files needed by the GFS forecast prematurely.
         assim_freq = self._base.get('assim_freq', 6)
-        interval_gfs = int(self._base.get('INTERVAL_GFS',0))
+        interval_gfs = int(self._base.get('INTERVAL_GFS', 0))
         if interval_gfs >= assim_freq:
             deps = []
             dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
@@ -2390,7 +2390,6 @@ class GFSTasks(Tasks):
                     deps.append(rocoto.add_dependency(dep_dict))
 
             dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
-
 
         # Now start building RUN-specific dependencies
         deps = []
