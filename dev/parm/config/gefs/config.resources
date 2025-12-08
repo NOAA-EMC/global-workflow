@@ -83,8 +83,8 @@ case ${step} in
     export walltime="00:40:00"
     export ntasks=1
     export threads_per_task=1
-    export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export memory="1GB"
+    export tasks_per_node=1 #$(( max_tasks_per_node / threads_per_task ))
+    export memory="48GB"
     ;;
 
   "fcst" | "efcs")

@@ -210,7 +210,7 @@ class NEXUSEmissions(Task):
             "COMOUT_CHEM_RESTART": self.task_config.COMOUT_CHEM_RESTART,
             "RestartFile": f"HEMCO_restart.{self.end_date.strftime('%Y%m%d%H')}00.nc",
             "processed_nexus_files": processed_nexus_files,
-
+            "nmem_ens": self.task_config.NMEM_ENS,
         }
 
         # Render NEXUS Grid File

@@ -211,6 +211,7 @@ class ChemFireEmissions(Task):
             "rawfiles": files_found,
             "startdate": self.start_date.strftime('%Y%m%d'),
             "processed_files": processed_files,
+            "nmem_ens": self.task_config.NMEM_ENS,
         }
 
         # Parse template and update task configuration
