@@ -60,7 +60,8 @@ class AtmEnsAnalysis(Analysis):
         This method will initialize a global atmens analysis.
         This includes:
         - stage input files from COM and create output directories
-        - extract bias corrections from tar files
+        - stage observation files
+        - stage bias correction files
         - initialize JEDI applications
 
         Parameters
@@ -130,7 +131,7 @@ class AtmEnsAnalysis(Analysis):
 
         This method will finalize a global atmens analysis using JEDI.
         This includes:
-        - compress and tar output diag files and place in COM
+        - archive, compress, and save diag files in COM directory
         - save output files and YAMLs to COM
 
         Parameters

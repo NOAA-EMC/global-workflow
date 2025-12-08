@@ -86,7 +86,8 @@ class AerosolAnalysis(Analysis):
         This method will initialize a global aerosol analysis using JEDI.
         This includes:
         - stage input files from COM and create output directories
-        - extract bias corrections from tar files
+        - stage observation files
+        - stage bias correction files
         - initialize JEDI application
         """
 
@@ -129,10 +130,9 @@ class AerosolAnalysis(Analysis):
         This method will finalize a global aerosol analysis using JEDI.
         This includes:
         - apply increments to the original RESTART files
-        - compress and tar output diag files in COM
-        - tar radiative bias correction files in COM
+        - archive, compress, and save diag files to COM
+        - archive and save radiative bias correction files to COM
         - save output files and YAMLs to COM
-
         """
 
         # ---- add increments to RESTART files
@@ -142,12 +142,12 @@ class AerosolAnalysis(Analysis):
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['aeroanlvar'].save_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                                     f"{self.task_config['APREFIX']}aero_analysis.ioda_hofx")
+                                                     f"{self.task_config.APREFIX}aero_analysis.ioda_hofx")
 
-        # Tar radiative bias correction files into COM directory
+        # Archive and save radiative bias correction files into COM directory
         logger.info(f"Saving radiative bias correction files to COM")
-        self.tar_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                            f"{self.task_config.APREFIX}aero_varbc_params.tar")
+        self.jedi_dict['aeroanlvar'].save_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                                    f"{self.task_config.APREFIX}aero_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

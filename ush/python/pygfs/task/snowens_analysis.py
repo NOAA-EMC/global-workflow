@@ -96,6 +96,7 @@ class SnowEnsAnalysis(Analysis):
 
         This method will initialize a global snow ensemble analysis.
         This includes:
+        - stage observation files
         - stage input files from COM and create output directories
         - initialize JEDI applications
 
@@ -145,7 +146,7 @@ class SnowEnsAnalysis(Analysis):
     def finalize(self) -> None:
         """Performs closing actions of the Snow analysis task
         This method:
-        - compress and tar output diag files in COM
+        - archive, compress, and save diag files in COM directory
         - save output files and YAMLs to COM
 
         Parameters

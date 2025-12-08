@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
-import glob
-import gzip
 from logging import getLogger
-import os
-import tarfile
 from typing import Any, Dict
-from wxflow import (AttrDict, FileHandler, Task, WorkflowException,
+from wxflow import (AttrDict, Task,
                     add_to_datetime, to_timedelta, to_isotime,
                     parse_j2yaml,
                     logit)
