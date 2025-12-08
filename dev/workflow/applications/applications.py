@@ -166,9 +166,7 @@ class AppConfig(ABC, metaclass=AppConfigInit):
         """
         run_options = {run: {} for run in dict.fromkeys(self.runs)}
         globus_checked = False
-        print(self.runs)
         for run in self.runs:
-            print("here", run)
             # Read config.base with RUN specified
             run_base = conf.parse_config('config.base', RUN=run)
 
