@@ -2381,9 +2381,9 @@ class GFSTasks(Tasks):
             if sdate_gfs:
                 n_cycles = int((sdate_gfs - sdate).total_seconds() // 3600 // assim_freq)
                 # Start at the first full cycle (1 cycle after SDATE)
-                # End one cycle before SDATE_gfs
-                #     This is the first that needs to depend on the next forecast segment.
-                for cycle in range(1, n_cycles):
+                # End two cycles before SDATE_gfs
+                #     One cycle before SDATE_gfs must depend on the next forecast segment.
+                for cycle in range(1, n_cycles - 1):
                     offset = timedelta_to_HMS(to_timedelta(f'{cycle * assim_freq}H'))
                     skip_date = (sdate + to_timedelta(f'{cycle * assim_freq}H')).strftime("%Y%m%d%H")
                     dep_dict = {'type': 'streq', 'left': '@Y@m@d@H', 'right': skip_date}
