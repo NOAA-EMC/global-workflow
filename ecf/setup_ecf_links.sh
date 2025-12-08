@@ -6,16 +6,16 @@ ECF_DIR=$(pwd)
 
 # Function that loops over forecast hours and
 # creates link between the master and target
-function link_master_to_fhr(){
-  tmpl=$1  # Name of the master template
-  fhrs=$2  # Array of forecast hours
-  for fhr in ${fhrs[@]}; do
-    fhrchar=$(printf %03d "${fhr}")
-    master=${tmpl}_master.ecf
-    target=${tmpl}_f${fhrchar}.ecf
-    rm -f "${target}"
-    ln -sf "${master}" "${target}"
-  done
+function link_master_to_fhr() {
+    tmpl=$1 # Name of the master template
+    fhrs=$2 # Array of forecast hours
+    for fhr in ${fhrs[@]}; do
+        fhrchar=$(printf %03d "${fhr}")
+        master=${tmpl}_master.ecf
+        target=${tmpl}_f${fhrchar}.ecf
+        rm -f "${target}"
+        ln -sf "${master}" "${target}"
+    done
 }
 
 # EnKF GDAS post files
@@ -51,4 +51,3 @@ cd "${ECF_DIR}/scripts/gfs/atmos/post_processing/awips_g2"
 echo "Linking gfs/atmos/post_processing/awips_g2 ..."
 fhrs=($(seq 0 3 84) $(seq 90 6 240))
 link_master_to_fhr "jgfs_atmos_awips_g2" "${fhrs}"
-
