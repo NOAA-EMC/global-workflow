@@ -74,7 +74,8 @@ class AtmAnalysis(Analysis):
         This method will initialize a global atm analysis.
         This includes:
         - stage input files from COM and create output directories
-        - extract bias corrections from tar files
+        - stage observation files
+        - stage bias correction files
         - initialize JEDI applications
 
         Parameters
@@ -125,8 +126,8 @@ class AtmAnalysis(Analysis):
 
         This method will finalize a global atm analysis using JEDI.
         This includes:
-        - compress and tar output diag files in COM
-        - tar radiative bias correction files and place in COM
+        - archive, compress, and save diag files to COM directory
+        - tar radiative bias correction files to COM directory
         - save output files and YAMLs to COM
 
         Parameters
@@ -138,15 +139,15 @@ class AtmAnalysis(Analysis):
         None
         """
 
-        # Archive, compress, and save diag files in COM directory
+        # Archive, compress, and save diag files to COM directory
         logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['atmanlvar'].save_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS,
                                                     f"{self.task_config.APREFIX}atm_analysis.ioda_hofx")
 
-        # Tar radiative bias correction files into COM directory
+        # Tar radiative bias correction files to COM directory
         logger.info(f"Saving radiative bias correction files to COM")
-        self.tar_radiative_bias_corrections(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                                            f"{self.task_config.APREFIX}atm_varbc_params.tar")
+        self.jedi_dict['atmanlvar'].save_radiative_bias_corrections(self.task_config.COMOUT_ATMOS_ANALYSIS,
+                                                                    f"{self.task_config.APREFIX}rad_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")
