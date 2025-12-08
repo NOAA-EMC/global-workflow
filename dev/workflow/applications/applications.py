@@ -215,6 +215,14 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             if not AppConfig.is_monotonic(run_options[run]['fcst_segments']):
                 raise ValueError(f'Forecast segments do not increase monotonically: {",".join(self.fcst_segments)}')
 
+            # Test if valid gfs options were specified
+            if run == "gfs":
+                interval = run_base.get('INTERVAL_GFS')
+                assim_freq = run_base.get('assim_freq')
+                if interval <= 0 or interval % assim_freq != 0:
+                    raise ValueError(f'Invalid cycle interval specified for GFS forecasts: {interval}\n'
+                                     f'INTERVAL_GFS must be greater than 0 and a multiple of {assim_freq}')
+
             if run_options[run]['do_globusarch'] and not globus_checked:
                 self._check_globus(conf)
                 globus_checked = True
