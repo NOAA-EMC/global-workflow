@@ -2386,9 +2386,7 @@ class GFSTasks(Tasks):
                 for cycle in range(1, n_cycles):
                     offset = timedelta_to_HMS(to_timedelta(f'{cycle * assim_freq}H'))
                     skip_date = (sdate + to_timedelta(f'{cycle * assim_freq}H')).strftime("%Y%m%d%H")
-                    dep_dict = {'type': 'streq', 'left': '&CDATE;', 'right': skip_date}
-                    print(cycle, skip_date)
-                    print(dep_dict)
+                    dep_dict = {'type': 'streq', 'left': '@Y@m@d@H', 'right': skip_date}
                     deps.append(rocoto.add_dependency(dep_dict))
 
             dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
