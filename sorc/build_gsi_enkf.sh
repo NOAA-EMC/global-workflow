@@ -9,11 +9,9 @@ while getopts ":j:dv" option; do
     v) BUILD_VERBOSE="YES";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-      usage
       ;;
     *)
       echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
       ;;
   esac
 done
@@ -33,4 +31,3 @@ REGRESSION_TESTS=NO \
 "${HOMEgfs_}/sorc/gsi_enkf.fd/ush/build.sh"
 
 exit
-

@@ -69,10 +69,10 @@ enkf:
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
             {% set da_stat_files = ["enkfstat.txt",
-                                    "gsistat.ensmean.txt",
-                                    "cnvstat.ensmean.tar",
-                                    "oznstat.ensmean.tar",
-                                    "radstat.ensmean.tar"] %}
+                                    "gsistat_ensmean.txt",
+                                    "cnvstat_ensmean.tar",
+                                    "oznstat_ensmean.tar",
+                                    "radstat_ensmean.tar"] %}
             {% set da_conf_files = [] %}
         {% else %}
             {% if lobsdiag_forenkf %}
@@ -109,7 +109,7 @@ enkf:
         # soil DA increments
         {% if DO_GSISOILDA %}
             {% for fhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_increment.sfc.i{{ '%03d' % fhr }}.nc"
             {% endfor %}
         {% endif %}
 
