@@ -211,9 +211,6 @@ class ArchiveVrfy:
         cycle_YMDH = to_YMDH(current_cycle)
         cycle_YMD = to_YMD(current_cycle)
 
-        # Build head string (e.g., 'gfs.t00z.')
-        head = f"{config_dict.RUN}.t{cycle_HH}z."
-
         # Archive directory (used by all systems)
         VFYARC = os.path.join(config_dict.ROTDIR, "vrfyarch")
 
@@ -221,6 +218,5 @@ class ArchiveVrfy:
             'cycle_HH': cycle_HH,
             'cycle_YMDH': cycle_YMDH,
             'cycle_YMD': cycle_YMD,
-            'head': head,
             'VFYARC': VFYARC
         }

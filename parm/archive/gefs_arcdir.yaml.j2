@@ -3,6 +3,9 @@
 # - VFYARC (archive directory)
 # - COMIN_ATMOS_ENSSTAT_1p00 (calculated in Python with MEMDIR='ensstat')
 
+# Build head string (e.g., 'gfs.t00z.')
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
 # Create directories first
 mkdir:
     - "{{ VFYARC }}"

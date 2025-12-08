@@ -6,6 +6,9 @@
 # Deterministic GCAFS/GCDAS archiving template
 # Used for: gcafs, gcdas
 
+# Build head string (e.g., 'gfs.t00z.')
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
 mkdir:
     - "{{ ARCDIR }}"
 {% if DO_FIT2OBS == True %}

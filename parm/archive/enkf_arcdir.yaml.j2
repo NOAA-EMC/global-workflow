@@ -6,6 +6,9 @@
 # Ensemble (EnKF) archiving template
 # Used for: enkfgdas, enkfgfs, enkfgcafs, enkfgcdas
 
+# Build head string (e.g., 'gfs.t00z.')
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
 mkdir:
     - "{{ ARCDIR }}"
 
