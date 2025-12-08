@@ -61,7 +61,6 @@ class AnalysisStats(Analysis):
                     'snow': self.task_config.COMOUT_SNOW_ANALYSIS,
                     'atmos_gsi': self.task_config.COMOUT_ATMOS_ANALYSIS,
                 },
-                'snow_bkg_path': os.path.join('.', 'bkg/'),
             }
         ))
 
@@ -96,8 +95,8 @@ class AnalysisStats(Analysis):
             FileHandler(self.task_config.data_in).sync()
 
             # Open tar file
-            diag_dir_path = os.path.join(self.task_config.DATA, analysis, 'diag')
-            tarfilelist = glob.glob(os.path.join(diag_dir_path, '*tar')) + glob.glob(os.path.join(diag_dir_path, '*gz')) + glob.glob(os.path.join(diag_dir_path, '*tgz'))
+            diag_dir_path = self.jedi_dict[analysis].jcb_config.stat_obsdatain_path
+            tarfilelist = glob.glob(os.path.join(diag_dir_path, '*tar.gz'))
             for dest in tarfilelist:
                 logger.info(f"Open tarred diagnostic files in {dest}")
                 with tarfile.open(dest, "r") as tar:
@@ -172,7 +171,7 @@ class AnalysisStats(Analysis):
             logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
             # get list of iodastat files to put in tarball
-            iodastatfiles = glob.glob(os.path.join(self.task_config.DATA, analysis, 'stat', '*nc'))
+            iodastatfiles = glob.glob(os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, '*nc'))
 
             logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
             with tarfile.open(iodastatzipfile, "w|gz") as archive:
@@ -183,7 +182,7 @@ class AnalysisStats(Analysis):
             summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
                 for ob in self.task_config.observations[analysis]:
-                    textfile = os.path.join(self.task_config.DATA, analysis, 'stat', f"{ob}_ioda_stats.txt")
+                    textfile = os.path.join(os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
                         with open(textfile, 'r') as infile:

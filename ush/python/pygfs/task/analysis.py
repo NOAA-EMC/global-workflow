@@ -78,6 +78,7 @@ class Analysis(Task):
                 'iau_times_iso': _iau_times_iso,
                 'observations': _observations,
                 'bias_files': _bias_files,
+                'snow_bkg_path': os.path.join('.', 'bkg/'), # TODO: remove this line
             }
         ))
 
