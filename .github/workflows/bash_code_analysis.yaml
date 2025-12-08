@@ -37,7 +37,7 @@ jobs:
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@v4
       - name: shfmt scan
-        run: shfmt -d dev/jobs dev/ush jobs scripts ush
+        run: shfmt -d dev/jobs dev/job_cards dev/scripts dev/ush ush
 
   shellcheck:
     runs-on: ubuntu-22.04
@@ -61,9 +61,9 @@ jobs:
           reporter: github-pr-review
           path: |
             dev/jobs
+            dev/job_cards
+            dev/scripts
             dev/ush
-            jobs
-            scripts
             ush
           pattern: |
             config.*
