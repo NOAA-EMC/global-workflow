@@ -2361,14 +2361,40 @@ class GFSTasks(Tasks):
 
     # Cleanup
     def cleanup(self):
-        deps = []
-        dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
-                    f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'cycleexist', 'condition': 'not',
-                    'offset': f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+        # Build a dependency on the next GFS forecast.
+        # This will only be used for GDAS/ENKFGDAS cycles with 6-hourly GFS intervals
+        #     to prevent clobbering files needed by the GFS forecast prematurely.
+        assim_freq = self._base.get('assim_freq', 6)
+        interval_gfs = int(self._base.get('INTERVAL_GFS',0))
+        if interval_gfs >= assim_freq:
+            deps = []
+            dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
+                        f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not',
+                        'offset': f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+            # Only start checking this if we are at/past the first GFS cycle
+            sdate_gfs = self._base.get('SDATE_GFS')
+            sdate = self._base.get('SDATE')
+            if sdate_gfs:
+                n_cycles = int((sdate_gfs - sdate).total_seconds() // 3600 // assim_freq)
+                # Start at the first full cycle (1 cycle after SDATE)
+                # End one cycle before SDATE_gfs
+                #     This is the first that needs to depend on the next forecast segment.
+                for cycle in range(1, n_cycles):
+                    offset = timedelta_to_HMS(to_timedelta(f'{cycle * assim_freq}H'))
+                    skip_date = (sdate + to_timedelta(f'{cycle * assim_freq}H')).strftime("%Y%m%d%H")
+                    dep_dict = {'type': 'streq', 'left': '&CDATE;', 'right': skip_date}
+                    print(cycle, skip_date)
+                    print(dep_dict)
+                    deps.append(rocoto.add_dependency(dep_dict))
+
+            dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+
+        # Now start building RUN-specific dependencies
         deps = []
         if 'enkf' in self.run:
             dep_dict = {'type': 'task', 'name': f'{self.run}_earc_vrfy'}
@@ -2379,7 +2405,7 @@ class GFSTasks(Tasks):
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self.run in ['enkfgdas'] and self._base["INTERVAL_GFS"] == 6:
+            if self.run in ['enkfgdas'] and interval_gfs == assim_freq:
                 deps.append(dep_next_fcst_seg)
 
         else:
@@ -2391,7 +2417,7 @@ class GFSTasks(Tasks):
                         dep_dict = {'type': 'task', 'name': f'{self.run}_vminmon'}
                         deps.append(rocoto.add_dependency(dep_dict))
                 elif self.run in ['gdas']:
-                    if self._base["INTERVAL_GFS"] == 6:
+                    if interval_gfs == assim_freq:
                         deps.append(dep_next_fcst_seg)
                     dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                     deps.append(rocoto.add_dependency(dep_dict))
