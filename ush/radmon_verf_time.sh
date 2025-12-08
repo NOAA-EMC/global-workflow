@@ -356,7 +356,7 @@ EOF
     # avoid doing the bad_chan report for REGIONAL_RR sources -- because
     # they run hourly they often have 0 count channels for off-hour runs.
     #
-    if [[ -s "${bad_chan}" && -s "${prev_bad_chan}" && REGIONAL_RR -eq 0 ]]; then
+    if [[ -s "${bad_chan}" && -s "${prev_bad_chan}" && "${REGIONAL_RR}" -eq 0 ]]; then
         do_chan=1
     fi
 
@@ -473,7 +473,7 @@ EOF
             fi
 
             {
-                echo >> "${report}"
+                echo
                 cat "${disclaimer}"
                 echo
             } >> "${report}"

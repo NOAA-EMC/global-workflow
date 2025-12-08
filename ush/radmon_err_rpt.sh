@@ -129,7 +129,7 @@ echo "have_diag_rpt = ${have_diag_rpt}"
         fi
         match_len=${#match}
 
-        if [[ match_len -gt 0 ]]; then
+        if [[ "${match_len}" -gt 0 ]]; then
 
             value2=$(echo "${match}" | gawk '{print $7}')
             bound2=$(echo "${match}" | gawk '{print $9}')

@@ -75,7 +75,7 @@ else
     echo "String not found: no JTWC bulletins available for this run"
 fi
 
-if [[ ${cyc} -eq "00" ]]; then
+if [[ "${cyc}" == "00" ]]; then
     # shellcheck disable=SC2312
     grep "${ymd} ${cyc}" "${jtwcdirm1}/tropcyc" | grep JTWC >> jtwcbul
     if [[ -s jtwcbul ]]; then

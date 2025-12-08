@@ -190,7 +190,7 @@ rm -f nhc fnoc lthistry
 
 if [[ -s "${HOMENHC}/tcvitals" ]]; then
     echo "tcvitals found"
-    cp "${HOMENHC}/tcvitals" nhc
+    cpreq "${HOMENHC}/tcvitals" nhc
 else
     echo "WARNING: tcvitals not found, create empty tcvitals"
 fi

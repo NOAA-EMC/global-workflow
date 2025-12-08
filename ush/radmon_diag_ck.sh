@@ -83,7 +83,7 @@ readarray -t satype_contents < "${satype_file}"
 for sat in "${satype_contents[@]}"; do
     content_count=$(echo "${radstat_contents}" | grep -c "${sat}")
 
-    if [[ content_count -le 0 ]]; then
+    if [[ "${content_count}" -le 0 ]]; then
         missing_diag="${missing_diag} ${sat}"
     fi
 
