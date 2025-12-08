@@ -36,7 +36,7 @@ mkdir -m 755 -p "${COMOUT_CONF}"
 # Run relevant script
 ##############################################
 
-EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exgdas_enkf_ecen_fv3jedi.py}
+EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exglobal_enkf_ecen_fv3jedi.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

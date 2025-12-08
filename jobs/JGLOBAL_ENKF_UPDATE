@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 ##############################################
 # Set variables used in the script
@@ -9,37 +9,36 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-# shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-export gPDY=${GDATE:0:8}
-export gcyc=${GDATE:8:2}
-export GDUMP="gdas"
-export GDUMP_ENS="enkf${GDUMP}"
+# shellcheck disable=SC2155
+export GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export GDUMP="enkfgdas" # EnKF ensemble always uses RUN=enkfgdas for prior members
 
-export CASE=${CASE_ENS}
+export APREFIX="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${GDATE:8:2}z."
 
-export OPREFIX="${RUN/enkf/}.t${cyc}z."
-export APREFIX="${RUN/enkf/}.t${cyc}z."
-export APREFIX_ENS="${RUN}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
-
-RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
-MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+MEMDIR="ensstat" RUN="enkfgdas" YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
     COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 ###############################################################
 # Run relevant script
 
-${ENKFRECENSH:-${SCRgfs}/exgdas_enkf_ecen.sh} && true
+${ENKFUPDSH:-${SCRgfs}/exglobal_enkf_update.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
+fi
+
+##############################################
+# Send Alerts
+##############################################
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 fi
 
 ##############################################

@@ -612,6 +612,30 @@ class SFSTasks(Tasks):
 
         return task
 
+    # Globus transfer for HPSS archiving
+    def globus(self):
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('globus')
+        task_name = f'{self.run}_globus_arch'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEgfs}/dev/jobs/globus_arch.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def cleanup(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
@@ -637,6 +661,13 @@ class SFSTasks(Tasks):
         if self.options['do_extractvars']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_extractvars'}
             deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_archcom']:
+            if self.options['do_globusarch']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_globus_arch'}
+            else:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_arch_tars'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
         resources = self.get_resource('cleanup')
         task_name = f'{self.run}_cleanup'
