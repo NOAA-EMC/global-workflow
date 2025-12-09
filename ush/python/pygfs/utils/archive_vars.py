@@ -36,11 +36,6 @@ add_config_vars(config_dict):
 _get_cycle_vars(config_dict):
   Computes cycle-specific variables (cycle_HH, cycle_YMDH, cycle_YMD, head)
 
-Design Note
------------
-This is NOT a Task class - it's a utility module with functions that operate on
-config_dict dictionaries. This avoids duplicate Task instantiation in archive workflows.
-
 Logging
 -------
 All public operational functions are decorated with @logit(logger).
@@ -53,7 +48,7 @@ from wxflow import AttrDict, logit, to_YMD, to_YMDH
 logger = getLogger(__name__.split('.')[-1])
 
 
-class ArchiveVrfy:
+class ArchiveVrfyVars:
     """
     Utility class for collecting archive verification variables.
 
@@ -100,10 +95,10 @@ class ArchiveVrfy:
         arch_dict = {}
 
         # Add config variables (config keys, COM* variables from job scripts)
-        arch_dict.update(ArchiveVrfy.add_config_vars(config_dict))
+        arch_dict.update(ArchiveVrfyVars.add_config_vars(config_dict))
 
         # Add cycle-specific variables
-        arch_dict.update(ArchiveVrfy._get_cycle_vars(config_dict))
+        arch_dict.update(ArchiveVrfyVars._get_cycle_vars(config_dict))
 
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
@@ -176,7 +171,6 @@ class ArchiveVrfy:
 
         # Import COM* directory and template variables created by job scripts
         # Job scripts use declare_from_tmpl -rx which exports variables to environment
-        # Python reads os.environ, so these COM variables are in config_dict
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
                 general_dict[key] = config_dict.get(key)
