@@ -292,7 +292,7 @@ class Jedi:
 
         # Get lists of files to put in tarballs
         satlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiasin_suffix"]))
-        satcovlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"], '*' + self.jcb_config[f"{self.model}_obsbiascovin_suffix"]))
+        satcovlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiascovin_suffix"]))
         tlaplist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"], '*' + self.jcb_config[f"{self.model}_obstlapsein_suffix"]))
 
         # Create tarball of radiance bias correction files

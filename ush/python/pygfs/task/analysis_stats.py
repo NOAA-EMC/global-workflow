@@ -166,7 +166,7 @@ class AnalysisStats(Analysis):
 
         for analysis in self.task_config.STAT_ANALYSES:
             # path of output tar statfile
-            iodastatzipfile = os.path.join(self.task_config.outdir[analysis], f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
+            iodastatzipfile = os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
 
             logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 
@@ -182,7 +182,7 @@ class AnalysisStats(Analysis):
             summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
                 for ob in self.task_config.observations[analysis]:
-                    textfile = os.path.join(os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, f"{ob}_ioda_stats.txt")
+                    textfile = os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
                         with open(textfile, 'r') as infile:

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     if config.DO_JEDISNOWDA:
         config.STAT_ANALYSES.append('snow')
     if config.DO_JEDIATMVAR:
-        config.STAT_ANALYSES.append('atmos')  
+        config.STAT_ANALYSES.append('atmos')
     else:
         config.STAT_ANALYSES.append('atmos_gsi')
 
