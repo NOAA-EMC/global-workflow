@@ -100,7 +100,6 @@ class GFSCycledRocotoXML(RocotoXML):
                     interval_metp_str = interval_gfs_str
 
                 strings.append(f'\t<cycledef group="metp">{sdate_metp_str} {edate_metp_str} {interval_metp_str}</cycledef>')
-                strings.append(f'\t<cycledef group="last_gfs">{edate_gfs_str} {edate_gfs_str} 24:00:00</cycledef>')
 
         strings.append('')
         strings.append('')
