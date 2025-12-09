@@ -31,7 +31,7 @@ cd $DATA/$m
     for stn in $(cat $file_list)
     do
        bufr_target="bufr.${stn}.${PDY}${cyc}"
-       cpreq "${COMIN_ATMOS_BUFR}/${bufr_target}" "${DATA}/${m}/bufrin"
+       cpreq "${COMIN_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
        export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
