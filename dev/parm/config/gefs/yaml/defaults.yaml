@@ -29,6 +29,8 @@ fcst:
   MONO: "non-mono"
 ocn:
   MOM6_INTERP_ICS: "NO"
+nsst:
+  NST_SPINUP: 0
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}
