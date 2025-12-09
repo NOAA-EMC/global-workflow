@@ -251,7 +251,7 @@ source $HOMEgfs/dev/ci/platforms/config.$MACHINE_ID
 - **Complete Documentation**: `docs/source/testing.rst`
 - **Test Case Examples**: `cases/*.yaml`
 - **CI/CD Pipeline**: `../ci/gitlab-ci-hosts.yml`
-- **Job Scripts**: `../../jobs/JGLOBAL_*`
+- **Job Scripts**: `../jobs/JGLOBAL_*`
 - **Platform Configuration**: `../ci/platforms/config.*`
 
 ---

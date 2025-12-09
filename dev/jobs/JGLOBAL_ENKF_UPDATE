@@ -1,0 +1,63 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# shellcheck disable=SC2155
+export GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export GDUMP="enkfgdas" # EnKF ensemble always uses RUN=enkfgdas for prior members
+
+export APREFIX="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${GDATE:8:2}z."
+
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+MEMDIR="ensstat" RUN="enkfgdas" YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
+    COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+
+###############################################################
+# Run relevant script
+
+${ENKFUPDSH:-${SCRgfs}/exglobal_enkf_update.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# Send Alerts
+##############################################
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
