@@ -23,7 +23,7 @@ def main():
     arch_dict = ArchiveVrfyVars.get_all_yaml_vars(archive.task_config)
 
     # Pass arch_dict to configure_vrfy which will render the Jinja2 YAML
-    arcdir_set = archive.configure_vrfy(AttrDict(arch_dict))
+    arcdir_set = archive.configure_vrfy(arch_dict)
 
     with chdir(config.ROTDIR):
 
