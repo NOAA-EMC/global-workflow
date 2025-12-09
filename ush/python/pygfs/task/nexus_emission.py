@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import re
+from pathlib import Path
 from collections import defaultdict
 import xarray as xr
 from logging import getLogger
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Union, List
 from dateutil.rrule import DAILY, HOURLY, rrule
 from collections import defaultdict
@@ -18,6 +20,18 @@ from wxflow import (AttrDict,
                     to_timedelta,
                     WorkflowException,
                     Executable)
+
+# Try to import toml, fail gracefully if not installed
+try:
+    import toml
+except ImportError:
+    try:
+        import tomllib as toml  # Python 3.11+
+    except ImportError:
+        class DummyTOML:
+            def load(self, f):
+                return {}
+        toml = DummyTOML()
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -263,7 +277,7 @@ class NEXUSEmissions(Task):
         j2_renderer.save(outfile)
         logger.info(f"NEXUS spec file rendered successfully: written to {outfile}")
 
-        # find needed inputs 
+        # find needed inputs
         found_files, missing_files, root_path = gather_emissions_files_from_time_file(
             hemco_config_path=os.path.join(self.task_config.DATA, self.task_config.NEXUS_CONFIG_NAME),
             hemco_time_path=os.path.join(self.task_config.DATA, self.task_config.NEXUS_TIME_NAME),
@@ -272,7 +286,7 @@ class NEXUSEmissions(Task):
             for mf in missing_files:
                 logger.error(f"Missing NEXUS emission input file: {mf}")
             raise WorkflowException(f"Missing {len(missing_files)} NEXUS emission input files, cannot proceed")
-        
+
         tmpl_dict["NEXUS_INPUT_FILES"] = found_files
         tmpl_dict["NEXUS_COPY_TO_FILES"] = [os.path.join(self.task_config.DATA, 'INPUT', os.path.relpath(f, root_path)) for f in found_files]
         tmpl_dict["NEXUS_INPUT_DIR"] = os.path.join(self.task_config.DATA, 'INPUT')
@@ -288,8 +302,6 @@ class NEXUSEmissions(Task):
         else:
             logger.debug(f'Parsing YAML template: {yaml_template}')
             yaml_config = parse_j2yaml(yaml_template, tmpl_dict)
-        
-
         # Add yaml configuration to task_config
         self.task_config = AttrDict(**self.task_config, **yaml_config)
 
@@ -371,13 +383,6 @@ class NEXUSEmissions(Task):
         for f, dates in zip(files, self.forecast_dates):
             logger.info(f" - {f}, {dates}")
 
-        # find the day indexes for each unique day
-        # this returns a dictionary
-        # example:
-        # {
-        #     datetime.date(2024, 1, 5): [0, 1, 3],
-        #     datetime.date(2024, 1, 6): [2]
-        # }
         day_indexes = _get_day_indices(self.forecast_dates[:-1])  # hemco doesn't write out the last timestep
         # now loop over each days
         for date, indexes in day_indexes.items():
@@ -489,73 +494,53 @@ def _get_day_indices(datetimes: List[datetime]) -> Dict[datetime, List[int]]:
 
     return dict(grouped)
 
-"""
-NEXUS Emissions File Gatherer
 
-A Python module for parsing HEMCO configuration files and gathering emission data files
-for specified date ranges. Supports copying files to local directories with organized
-dataset structure.
+def daterange(start_date: datetime, end_date: datetime):
+    """
+    Generate dates from start_date to end_date inclusive.
 
-Example usage:
-    from nexus_gather_inputs import gather_emissions_files
-    
-    files, root_path = gather_emissions_files(
-        hemco_config_path="NEXUS_Config.rc",
-        start_date=datetime(2023, 10, 31),
-        end_date=datetime(2023, 10, 31),
-        toml_rules_path="nexus_sectors.toml"
-    )
-"""
+    Parameters
+    ----------
+    start_date : datetime
+        Start date (inclusive).
+    end_date : datetime
+        End date (inclusive).
 
-import os
-import re
-import shutil
-from datetime import datetime, timedelta
-from pathlib import Path
-
-# Try to import toml, fail gracefully if not installed
-try:
-    import toml
-except ImportError:
-    try:
-        import tomllib as toml # Python 3.11+
-    except ImportError:
-        class DummyTOML:
-            def load(self, f): return {}
-        toml = DummyTOML()
-
-# ==============================================================================
-# HELPER: Date Range Iterator
-# ==============================================================================
-def daterange(start_date, end_date):
+    Yields
+    ------
+    datetime
+        Each date in the range.
+    """
     for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timedelta(n)
 
-# ==============================================================================
-# HELPER: Parse HEMCO Time Bounds
-# ==============================================================================
-def parse_year_bounds(hemco_time_str):
+
+def parse_year_bounds(hemco_time_str: str) -> tuple[None | int, None | int]:
     """
-    Parses '2000-2022/1-12/1/0' into (2000, 2022).
-    Returns (None, None) if wildcard '*' or invalid.
+    Parses a HEMCO time string for year bounds.
+
+    Parameters
+    ----------
+    hemco_time_str : str
+        HEMCO time string, e.g. '2000-2022/1-12/1/0'.
+
+    Returns
+    -------
+    tuple of (int or None, int or None)
+        (start_year, end_year) or (None, None) if wildcard or invalid.
     """
     if not hemco_time_str or hemco_time_str.strip() == "*":
         return None, None
-        
-    # Get the date part before the first slash
+
     date_part = hemco_time_str.split('/')[0].strip()
-    
-    # Check for range "Start-End"
     if "-" in date_part:
         try:
             parts = date_part.split('-')
-            # Handle cases like negative years? unlikely in GEOS-Chem but safer to take first/last
             start_y = int(parts[0])
             end_y = int(parts[-1])
             return start_y, end_y
         except ValueError:
             return None, None
-    # Check for single year "2000"
     else:
         try:
             val = int(date_part)
@@ -563,78 +548,93 @@ def parse_year_bounds(hemco_time_str):
         except ValueError:
             return None, None
 
-# ==============================================================================
-# LOGIC: Path Resolution
-# ==============================================================================
-def resolve_variables(path, var_definitions):
-    # Handle double dollar signs first - convert $$ROOT to $ROOT
+
+def resolve_variables(path: str, var_definitions: dict[str, str]) -> str:
+    """
+    Replace variables in a path string using a dictionary.
+
+    Parameters
+    ----------
+    path : str
+        Path string with variables (e.g., $ROOT).
+    var_definitions : dict of str
+        Dictionary of variable names to values.
+
+    Returns
+    -------
+    str
+        Path with variables replaced.
+    """
     resolved_path = path.replace("$$", "$")
-    # Then resolve all variables
     for key in sorted(var_definitions.keys(), key=len, reverse=True):
         if key in resolved_path:
             resolved_path = resolved_path.replace(key, var_definitions[key])
     return resolved_path
 
-# ==============================================================================
-# LOGIC: File Expansion
-# ==============================================================================
-def expand_filenames(file_template, hemco_time_str, sector_conf, start_date, end_date):
+
+def expand_filenames(
+    file_template: str,
+    hemco_time_str: str,
+    sector_conf: dict[str, Any],
+    start_date: datetime,
+    end_date: datetime
+) -> set[str]:
+    """
+    Expand file templates into actual filenames for a date range and frequency.
+
+    Parameters
+    ----------
+    file_template : str
+        Template for file names (e.g., "$YYYY$MM$DD.nc").
+    hemco_time_str : str
+        HEMCO time string for year bounds.
+    sector_conf : dict
+        Sector configuration, must contain 'frequency' and optionally 'patterns'.
+    start_date : datetime
+        Start date for expansion.
+    end_date : datetime
+        End date for expansion.
+
+    Returns
+    -------
+    set of str
+        Set of expanded file names.
+    """
     generated_files = set()
     freq = sector_conf.get("frequency", "monthly")
     patterns = sector_conf.get("patterns", [])
 
-    # 1. Determine Valid Year Range for this file
     min_year, max_year = parse_year_bounds(hemco_time_str)
 
-    # Helper to clamp the year
-    def get_effective_year(target_year):
+    def get_effective_year(target_year: int) -> str:
         if max_year is not None and target_year > max_year:
             return str(max_year)
         if min_year is not None and target_year < min_year:
             return str(min_year)
         return str(target_year)
 
-    # 2. Iterate based on Frequency
-    
-    # --- DAILY FILES ---
     if freq == "daily":
         for single_date in daterange(start_date, end_date):
-            # Clamp Year
             eff_year = get_effective_year(single_date.year)
-            
             mm = f"{single_date.month:02d}"
             dd = f"{single_date.day:02d}"
-            
             fname = file_template.replace("$YYYY", eff_year).replace("$MM", mm).replace("$DD", dd)
             generated_files.add(fname)
-
-    # --- MONTHLY FILES ---
     elif freq == "monthly":
         unique_months = set((d.year, d.month) for d in daterange(start_date, end_date))
-        
         for (year, month) in unique_months:
-            # Clamp Year
             eff_year = get_effective_year(year)
             mm = f"{month:02d}"
-            
             fname = file_template.replace("$YYYY", eff_year).replace("$MM", mm)
-            
-            # Remove $YYYY if it didn't exist in template (climatology)
             if "$YYYY" not in file_template:
                 fname = fname.replace("$YYYY", "")
-                
             generated_files.add(fname)
-
-    # --- REPRESENTATIVE FILES (NEI) ---
     elif freq == "representative":
         unique_months = set((d.year, d.month) for d in daterange(start_date, end_date))
-        
         for (year, month) in unique_months:
             eff_year = get_effective_year(year)
             mm = f"{month:02d}"
-            
             base_name = file_template.replace("$YYYY", eff_year).replace("$MM", mm)
-            
             for pat in patterns:
                 if "$DAY" in base_name:
                     fname = base_name.replace("$DAY", pat)
@@ -643,10 +643,7 @@ def expand_filenames(file_template, hemco_time_str, sector_conf, start_date, end
                 else:
                     fname = base_name
                 generated_files.add(fname)
-                
-    # --- STATIC / YEARLY ---
     else:
-        # Just check the years requested
         unique_years = set(d.year for d in daterange(start_date, end_date))
         for year in unique_years:
             if "$YYYY" not in file_template:
@@ -655,76 +652,110 @@ def expand_filenames(file_template, hemco_time_str, sector_conf, start_date, end
                 eff_year = get_effective_year(year)
                 fname = file_template.replace("$YYYY", eff_year)
                 generated_files.add(fname)
-
     return generated_files
 
-# ==============================================================================
-# HELPER: Extract dataset name from path
-# ==============================================================================
-def extract_dataset_name(file_path, root_path):
-    """Extract dataset name from file path by finding the directory after ROOT."""
+
+def extract_dataset_name(file_path: str, root_path: str) -> str:
+    """
+    Extract dataset name from file path by finding the directory after ROOT.
+
+    Parameters
+    ----------
+    file_path : str
+        Full file path.
+    root_path : str
+        Root directory path.
+
+    Returns
+    -------
+    str
+        Dataset name or "unknown" if not found.
+    """
     try:
-        # Remove ROOT from path
         rel_path = os.path.relpath(file_path, root_path)
-        # Get first directory component
         parts = rel_path.split(os.sep)
         if len(parts) > 0:
             return parts[0]
     except ValueError:
-        # If file is not under root_path, try to extract from absolute path
         parts = file_path.split(os.sep)
-        # Look for common emission dataset patterns
         for i, part in enumerate(parts):
             if part in ['nexus', 'emissions', 'data'] and i < len(parts) - 1:
                 return parts[i + 1]
-    
     return "unknown"
 
-# ==============================================================================
-# HELPER: Copy files with directory structure
-# ==============================================================================
-def copy_files_with_structure(file_list, root_path, copy_dir):
-    """Copy files to local directory maintaining dataset structure."""
+
+def copy_files_with_structure(
+    file_list: list[str],
+    root_path: str,
+    copy_dir: str
+) -> tuple[int, int]:
+    """
+    Copy files to local directory maintaining dataset structure.
+
+    Parameters
+    ----------
+    file_list : list of str
+        List of file paths to copy.
+    root_path : str
+        Root directory path to strip from file paths.
+    copy_dir : str
+        Directory to copy files to.
+
+    Returns
+    -------
+    tuple of (int, int)
+        (copied_count, failed_count)
+    """
     copied_count = 0
     failed_count = 0
-    
-    # Create copy directory if it doesn't exist
     os.makedirs(copy_dir, exist_ok=True)
-    
     for file_path in file_list:
         try:
-            # Extract dataset name
             dataset_name = extract_dataset_name(file_path, root_path)
-            
-            # Create relative path from ROOT
             try:
                 rel_path = os.path.relpath(file_path, root_path)
             except ValueError:
-                # If file is not under root_path, use full path structure
                 rel_path = file_path.lstrip('/')
-            
-            # Create destination path
             dest_path = os.path.join(copy_dir, rel_path)
-            
-            # Create destination directory
             dest_dir = os.path.dirname(dest_path)
             os.makedirs(dest_dir, exist_ok=True)
-            
-            # Copy file
             shutil.copy2(file_path, dest_path)
             copied_count += 1
-                
         except Exception as e:
             failed_count += 1
-    
     return copied_count, failed_count
 
-# ==============================================================================
-# LOGIC: Main Parser
-# ==============================================================================
-def parse_hemco(rc_path, toml_path, start_date, end_date):
-    """Parse HEMCO config and return (file_list, root_path)."""
-    
+
+def parse_hemco(
+    rc_path: str,
+    toml_path: str,
+    start_date: datetime,
+    end_date: datetime
+) -> tuple[list[str], str | None]:
+    """
+    Parse HEMCO config and return (file_list, root_path).
+
+    Parameters
+    ----------
+    rc_path : str
+        Path to HEMCO config file.
+    toml_path : str
+        Path to TOML rules file.
+    start_date : datetime
+        Start date for file search.
+    end_date : datetime
+        End date for file search.
+
+    Returns
+    -------
+    tuple
+        (file_list, root_path)
+        file_list : list of str
+            List of emission file paths.
+        root_path : str or None
+            Root directory path from config.
+    """
+
     # Load sector rules with better defaults
     try:
         with open(toml_path, 'r') as tf:
@@ -743,7 +774,7 @@ def parse_hemco(rc_path, toml_path, start_date, end_date):
     enabled_extensions = set()
     enabled_collections = set()
     root_path = None
-    
+
     var_pattern = re.compile(r'^\s*([A-Za-z0-9_]+)\s*:\s*(.*)')
     data_sections = ["BASE EMISSIONS", "SCALE FACTORS", "MASKS"]
     current_section = None
@@ -751,32 +782,32 @@ def parse_hemco(rc_path, toml_path, start_date, end_date):
 
     with open(rc_path, 'r') as f:
         lines = f.readlines()
-    
+
     for line in lines:
         raw = line.strip()
-        
+
         # Handle comments, but allow section headers that start with ###
-        if not raw: 
+        if not raw:
             continue
-        if (raw.startswith("!") or 
-            (raw.startswith("#") and "BEGIN SECTION" not in raw and "END SECTION" not in raw)): 
+        if (raw.startswith("!") or
+                (raw.startswith("#") and "BEGIN SECTION" not in raw and "END SECTION" not in raw)):
             continue
 
         # Section Detection
         if "BEGIN SECTION" in raw:
-            if "SETTINGS" in raw: 
+            if "SETTINGS" in raw:
                 current_section = "SETTINGS"
             elif "EXTENSION SWITCHES" in raw:
                 current_section = "EXTENSION SWITCHES"
             else:
                 for s in data_sections:
-                    if s in raw: 
+                    if s in raw:
                         current_section = s
             continue
         if "END SECTION" in raw:
             current_section = None
             continue
-            
+
         # Handle conditional sections like (((CEDS and )))CEDS
         if raw.startswith("((("):
             collection_name = raw[3:]
@@ -815,9 +846,9 @@ def parse_hemco(rc_path, toml_path, start_date, end_date):
             # Skip if we're in a conditional section that's not enabled
             if in_conditional_section and in_conditional_section not in enabled_collections:
                 continue
-                
+
             parts = raw.split()
-            
+
             # Handle different section formats
             if len(parts) >= 5:
                 if current_section == "BASE EMISSIONS":
@@ -831,7 +862,7 @@ def parse_hemco(rc_path, toml_path, start_date, end_date):
                     # Skip disabled extensions (only process extension 0 and *)
                     if ext_nr != "0" and ext_nr != "*":
                         continue
-                        
+
                 elif current_section == "SCALE FACTORS":
                     # Format: ScalID Name sourceFile sourceVar sourceTime ...
                     scale_id = parts[0]
@@ -839,7 +870,7 @@ def parse_hemco(rc_path, toml_path, start_date, end_date):
                     raw_file = parts[2]
                     source_var = parts[3]
                     raw_time = parts[4]
-                    
+
                 else:
                     # Other sections - try to parse similar format
                     ext_nr = parts[0]
@@ -854,135 +885,182 @@ def parse_hemco(rc_path, toml_path, start_date, end_date):
                     continue
                 if not any(c.isalpha() or c == '$' or c == '/' for c in raw_file):
                     continue
-                
+
                 # 1. Resolve Variables
                 resolved_path = resolve_variables(raw_file, defined_vars)
-                
+
                 # 2. Get Rules - try exact name match first, then collection, then default
-                rules = sector_rules.get(name, 
-                        sector_rules.get(in_conditional_section if in_conditional_section else "default", 
-                        sector_rules.get("default", {})))
-                
+                rules = sector_rules.get(
+                    name,
+                    sector_rules.get(
+                        in_conditional_section if in_conditional_section else "default",
+                        sector_rules.get("default", {})
+                    )
+                )
+
                 # 3. Expand with Year Clamping
                 files = expand_filenames(resolved_path, raw_time, rules, start_date, end_date)
                 all_files.update(files)
 
     return sorted(list(all_files)), root_path
 
-# ==============================================================================
-# HELPER: Parse HEMCO Time File
-# ==============================================================================
-def parse_hemco_time_file(time_file_path):
-    """Parse HEMCO_sa_Time.rc to extract start and end dates."""
+
+def parse_hemco_time_file(time_file_path: str) -> tuple[datetime | None, datetime | None]:
+    """
+    Parse HEMCO_sa_Time.rc to extract start and end dates.
+
+    Parameters
+    ----------
+    time_file_path : str
+        Path to HEMCO time file.
+
+    Returns
+    -------
+    tuple
+        (start_date, end_date) as datetime or None if not found.
+    """
     start_date = None
     end_date = None
-    
     if os.path.exists(time_file_path):
         with open(time_file_path, 'r') as f:
             for line in f:
                 line = line.strip()
                 if line.startswith('START:'):
-                    # Extract date from 'START: 2023-10-31 00:00:00'
                     date_str = line.split(':')[1].strip().split()[0]
                     start_date = datetime.strptime(date_str, '%Y-%m-%d')
                 elif line.startswith('END:'):
-                    # Extract date from 'END: 2023-10-31 12:00:00'
                     date_str = line.split(':')[1].strip().split()[0]
                     end_date = datetime.strptime(date_str, '%Y-%m-%d')
-    
     return start_date, end_date
 
-# ==============================================================================
-# MAIN API FUNCTIONS
-# ==============================================================================
 
-def gather_emissions_files(hemco_config_path, start_date, end_date, toml_rules_path="nexus_sectors.toml", 
-                          verbose=False):
+def gather_emissions_files(
+    hemco_config_path: str,
+    start_date: datetime,
+    end_date: datetime,
+    toml_rules_path: str = "nexus_sectors.toml",
+    verbose: bool = False
+) -> tuple[list[str], list[str], str | None]:
     """
     Main API function to gather emissions files for a date range.
-    
-    Args:
-        hemco_config_path (str): Path to HEMCO config file (e.g., NEXUS_Config.rc)
-        start_date (datetime): Start date for file search
-        end_date (datetime): End date for file search
-        toml_rules_path (str): Path to TOML rules file (optional)
-        verbose (bool): Print detailed progress information
-        
-    Returns:
-        tuple: (found_files, missing_files, root_path)
-            found_files (list): List of existing file paths
-            missing_files (list): List of missing file paths
-            root_path (str): ROOT directory path from config
+
+    Parameters
+    ----------
+    hemco_config_path : str
+        Path to HEMCO config file (e.g., NEXUS_Config.rc)
+    start_date : datetime
+        Start date for file search
+    end_date : datetime
+        End date for file search
+    toml_rules_path : str, optional
+        Path to TOML rules file
+    verbose : bool, optional
+        Print detailed progress information
+
+    Returns
+    -------
+    tuple
+        (found_files, missing_files, root_path)
+        found_files : list of str
+            List of existing file paths
+        missing_files : list of str
+            List of missing file paths
+        root_path : str or None
+            ROOT directory path from config
     """
     if not os.path.exists(hemco_config_path):
         raise FileNotFoundError(f"HEMCO config file not found: {hemco_config_path}")
-    
-    # Parse HEMCO config
     potential_files, root_path = parse_hemco(hemco_config_path, toml_rules_path, start_date, end_date)
-    
     found = []
     missing = []
-
     for fpath in potential_files:
         clean = os.path.expanduser(fpath)
         if os.path.exists(clean) and os.path.isfile(clean):
             found.append(clean)
         else:
             missing.append(clean)
-
     return found, missing, root_path
 
 
-def gather_emissions_files_from_time_file(hemco_config_path, hemco_time_path, 
-                                         toml_rules_path="nexus_sectors.toml", verbose=False):
+def gather_emissions_files_from_time_file(
+    hemco_config_path: str,
+    hemco_time_path: str,
+    toml_rules_path: str = "nexus_sectors.toml",
+    verbose: bool = False
+) -> tuple[list[str], list[str], str | None]:
     """
     Gather emissions files using dates from HEMCO time file.
-    
-    Args:
-        hemco_config_path (str): Path to HEMCO config file
-        hemco_time_path (str): Path to HEMCO time file (e.g., HEMCO_sa_Time.rc)
-        toml_rules_path (str): Path to TOML rules file (optional)
-        verbose (bool): Print detailed progress information
-        
-    Returns:
-        tuple: (found_files, missing_files, root_path)
+
+    Parameters
+    ----------
+    hemco_config_path : str
+        Path to HEMCO config file
+    hemco_time_path : str
+        Path to HEMCO time file (e.g., HEMCO_sa_Time.rc)
+    toml_rules_path : str, optional
+        Path to TOML rules file
+    verbose : bool, optional
+        Print detailed progress information
+
+    Returns
+    -------
+    tuple
+        (found_files, missing_files, root_path)
+        found_files : list of str
+            List of existing file paths
+        missing_files : list of str
+            List of missing file paths
+        root_path : str or None
+            ROOT directory path from config
     """
     start_date, end_date = parse_hemco_time_file(hemco_time_path)
     if not start_date or not end_date:
         raise ValueError(f"Could not parse dates from time file: {hemco_time_path}")
-    
     return gather_emissions_files(hemco_config_path, start_date, end_date, toml_rules_path, verbose)
 
 
-def copy_emissions_files(file_list, root_path, destination_dir, verbose=False):
+def copy_emissions_files(
+    file_list: list[str],
+    root_path: str,
+    destination_dir: str,
+    verbose: bool = False
+) -> tuple[int, int]:
     """
     Copy emission files to local directory with organized structure.
-    
-    Args:
-        file_list (list): List of file paths to copy
-        root_path (str): ROOT directory path to strip from file paths
-        destination_dir (str): Directory to copy files to
-        verbose (bool): Print detailed progress information
-        
-    Returns:
-        tuple: (copied_count, failed_count)
+
+    Parameters
+    ----------
+    file_list : list of str
+        List of file paths to copy
+    root_path : str
+        ROOT directory path to strip from file paths
+    destination_dir : str
+        Directory to copy files to
+    verbose : bool, optional
+        Print detailed progress information
+
+    Returns
+    -------
+    tuple
+        (copied_count, failed_count)
     """
     if not file_list:
         return 0, 0
-    
     if not root_path:
         root_path = "/"
-    
     return copy_files_with_structure(file_list, root_path, destination_dir)
 
 
-def save_file_list(file_list, output_path):
+def save_file_list(file_list: list[str], output_path: str) -> None:
     """
     Save file list to text file.
-    
-    Args:
-        file_list (list): List of file paths
-        output_path (str): Output file path
+
+    Parameters
+    ----------
+    file_list : list of str
+        List of file paths
+    output_path : str
+        Output file path
     """
     with open(output_path, "w") as f:
         for fpath in file_list:
