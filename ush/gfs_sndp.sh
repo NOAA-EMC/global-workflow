@@ -30,7 +30,6 @@ cd $DATA/$m
 
     for stn in $(cat $file_list)
     do
-       bufr_target="bufr.${stn}.${PDY}${cyc}"
        cpreq "${COMIN_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
        export pgm=tocsbufr.x
        #. prep_step
