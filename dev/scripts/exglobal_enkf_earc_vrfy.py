@@ -19,7 +19,7 @@ def main():
     archive = Archive(config)
 
     # Collect all archive variables in complete arch_dict for YAML templates
-    # Use static utility methods from ArchiveVrfyVars (not a Task instance)
+    # Use static utility methods from ArchiveVrfyVars
     arch_dict = ArchiveVrfyVars.get_all_yaml_vars(archive.task_config)
 
     # Pass arch_dict to configure_vrfy which will render the Jinja2 YAML

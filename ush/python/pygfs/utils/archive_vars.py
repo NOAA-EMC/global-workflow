@@ -17,7 +17,6 @@ Python Code Responsibilities:
   - Compute cycle-specific variables (cycle_HH, cycle_YMDH, cycle_YMD, head)
   - Calculate COM directory paths with grid loops (0p25, 0p50, 1p00)
   - Extract configuration keys (RUN, DO_* flags, FHMAX*, etc.)
-  - Provide complete arch_dict to YAML templates
 
 YAML Template Responsibilities (parm/archive/*_arcdir.yaml.j2):
   - Build file sets with source → destination mappings
@@ -68,8 +67,7 @@ class ArchiveVrfyVars:
         """Collect all variables needed for YAML templates.
 
         This method provides only the VARIABLES needed by the YAML templates
-        (cycle vars, COM paths, config keys). The YAML templates handle all
-        file set generation logic (loops, conditionals, path construction).
+        (cycle vars, COM paths, config keys).
 
         Parameters
         ----------
@@ -83,13 +81,6 @@ class ArchiveVrfyVars:
             - cycle_HH, cycle_YMDH, cycle_YMD, head: Cycle-specific variables
             - COMIN_*, COMOUT_*, COM_*: All COM directory paths (from job scripts)
             - Config keys: RUN, PSLOT, ROTDIR, DO_* flags, FHMAX*, etc.
-
-        Notes
-        -----
-        File set generation (mkdir lists, copy operations) is handled entirely
-        by the YAML templates. This method only provides the variables they need.
-        COM paths are created in the job scripts (JGLOBAL_ARCHIVE_VRFY and
-        JGLOBAL_ENKF_ARCHIVE_VRFY) and passed through config_dict.
         """
         # Build arch_dict with variables for Jinja2 templates
         arch_dict = {}
@@ -108,41 +99,20 @@ class ArchiveVrfyVars:
     @staticmethod
     @logit(logger)
     def add_config_vars(config_dict: AttrDict) -> Dict[str, Any]:
-        """Collect and format general variables for archive operations.
+        """Collect configuration keys and COM* variables for archive operations.
 
-        This method:
-        1. Updates resolution variables to be 3-digit formatted strings (if present)
-        2. Extracts all required configuration keys for archiving
-        3. Collects all COM* directory and template variables
-        4. Returns complete dictionary ready for arch_dict
+        Formats resolution variables (OCNRES, ICERES) to 3 digits and extracts
+        all configuration keys and COM* directory paths needed for archiving.
 
         Parameters
         ----------
         config_dict : AttrDict
             Configuration dictionary from Archive.task_config
 
-        Variables updated (if present in config_dict):
-        - OCNRES: Ocean resolution (formatted to 3 digits)
-        - ICERES: Ice resolution (formatted to 3 digits)
-
-        Configuration keys extracted (if present):
-        - current_cycle, RUN, PSLOT, ROTDIR, PARMgfs, ARCDIR, MODE
-        - DO_JEDIATMENS, DO_FIT2OBS, DO_JEDIATMVAR, DO_JEDISNOWDA
-        - DO_AERO_ANL, DO_PREP_OBS_AERO, DO_GSISOILDA, DO_LAND_IAU
-        - NET, FHOUT_GFS, FHMAX_HF_GFS, FHMAX_FITS, FHMAX, FHOUT, FHMAX_GFS
-        - FHMIN_GFS (if present in config_dict)
-
-        COM variable prefixes collected:
-        - COM_, COMIN_, COMOUT_
-
         Returns
         -------
         Dict[str, Any]
-            Dictionary containing all general archive variables
-
-        Notes
-        -----
-        Missing keys will be silently skipped (not added to general_dict).
+            Dictionary with config keys and all COM_*, COMIN_*, COMOUT_* variables
         """
         general_dict = {}
 
@@ -183,7 +153,7 @@ class ArchiveVrfyVars:
     @staticmethod
     @logit(logger)
     def _get_cycle_vars(config_dict: AttrDict) -> Dict[str, Any]:
-        """Calculate cycle-specific variables using wxflow timetools.
+        """Calculate cycle-specific variables.
 
         Parameters
         ----------
