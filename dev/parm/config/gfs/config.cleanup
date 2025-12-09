@@ -29,7 +29,7 @@ if [[ ${SELECTIVE_CLEANUP_MIN} -gt ${SELECTIVE_CLEANUP_MAX} ]]; then
 fi
 
 # GEMPAK_CLEANUP must not be less than SELECTIVE_CLEANUP_MIN, which acts as the starting point for cleanup
-if [[ "${DO_GEMPAK}" == "YES" && ${GEMPAK_CLEANUP} -lt ${GEMPAK_CLEANUP} ]]; then
+if [[ "${DO_GEMPAK}" == "YES" && ${GEMPAK_CLEANUP} -lt ${SELECTIVE_CLEANUP_MIN} ]]; then
     echo "FATAL ERROR: Invalid GEMPAK cleanup time: "
     echo "             GEMPAK_CLEANUP=${GEMPAK_CLEANUP} < SELECTIVE_CLEANUP_MIN=${SELECTIVE_CLEANUP_MIN}"
     exit 2
