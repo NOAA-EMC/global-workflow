@@ -364,7 +364,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
       CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
       MOM6_RIVER_RUNOFF='True'
-      MOM6_RESTART_SETTING="r"
+      MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'r'}
       eps_imesh="1.0e-1"
       case ${RUN} in
         gfs|gefs|sfs)
