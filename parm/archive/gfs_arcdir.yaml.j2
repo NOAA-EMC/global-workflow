@@ -15,7 +15,19 @@ mkdir:
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
 {% endif %}
 
-copy_req:
+copy_opt:
+# Cyclone tracking files (optional - only exist when storms are tracked)
+    - ["{{ COMIN_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}",
+       "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
+    - ["{{ COMIN_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}",
+       "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
+
+# Cyclone tracking data by basin
+{% for basin in ["epac", "natl"] %}
+    - ["{{ COMIN_ATMOS_TRACK }}/{{ basin }}",
+       "{{ ARCDIR }}/{{ basin }}"]
+{% endfor %}
+
 {% if MODE == "cycled" %}
     # Deterministic analysis files (cycled mode only) - REQUIRED
     - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2",
@@ -54,6 +66,15 @@ copy_req:
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
     {% endfor %}
 
+    - ["{{ COMIN_ATMOS_GENESIS }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}",
+       "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"]
+    - ["{{ COMIN_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}",
+       "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"]
+    - ["{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}",
+       "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
+    - ["{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}",
+       "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
+
     {% if DO_FIT2OBS == True %}
     # GFS Fit2Obs data - REQUIRED
         {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
@@ -84,29 +105,4 @@ copy_req:
        "{{ ARCDIR }}/abias_int.{{ RUN }}.{{ cycle_YMDH }}"]
     - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.dtf.a006.nc",
        "{{ ARCDIR }}/dtfanl.{{ RUN }}.{{ cycle_YMDH }}.nc"]
-{% endif %}
-
-copy_opt:
-    # Cyclone tracking files (optional - only exist when storms are tracked)
-    - ["{{ COMIN_ATMOS_TRACK }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}",
-       "{{ ARCDIR }}/atcfunix.{{ RUN }}.{{ cycle_YMDH }}"]
-    - ["{{ COMIN_ATMOS_TRACK }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}",
-       "{{ ARCDIR }}/atcfunixp.{{ RUN }}.{{ cycle_YMDH }}"]
-
-    # Cyclone tracking data by basin (optional directories)
-{% for basin in ["epac", "natl"] %}
-    - ["{{ COMIN_ATMOS_TRACK }}/{{ basin }}",
-       "{{ ARCDIR }}/{{ basin }}"]
-{% endfor %}
-
-{% if RUN == "gfs" %}
-    # GFS cyclone genesis data (optional - only exist when storms are tracked)
-    - ["{{ COMIN_ATMOS_GENESIS }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}",
-       "{{ ARCDIR }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"]
-    - ["{{ COMIN_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}",
-       "{{ ARCDIR }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"]
-    - ["{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}",
-       "{{ ARCDIR }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"]
-    - ["{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}",
-       "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
 {% endif %}
