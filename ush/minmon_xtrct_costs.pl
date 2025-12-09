@@ -36,7 +36,7 @@ my $use_costterms = 0;
 my $no_data       = 0.00;
 
 my $scr = "minmon_xtrct_costs.pl";
-print "$scr has started, bufix/min-4171 \n";
+print "$scr has started\n";
 
 
 my $rc    = 0;

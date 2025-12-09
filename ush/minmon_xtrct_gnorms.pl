@@ -420,19 +420,19 @@ if( $rc == 0 ) {
       }
 
       if( -e $filename2 ) {
-	 system("cpfs ${filename2} ${tankdir}/.") == 0
+         system("cpfs ${filename2} ${tankdir}/.") == 0
             or die "cpfs failed to copy ${filename2} to ${tankdir} with exit code  $?";
       }
 
       my $gdfile  = "gnorm_data.txt";
       if( -e $gdfile ) {
-	 system("cpfs ${gdfile} ${tankdir}/.") == 0
+         system("cpfs ${gdfile} ${tankdir}/.") == 0
             or die "cpfs failed to copy ${gdfile} to ${tankdir} with exit code  $?";
       }
 
       my $errmsg = "${cdate}.errmsg.txt";
       if( -e $errmsg ) {
-	 system("cpfs ${errmsg} ${tankdir}/.") == 0
+         system("cpfs ${errmsg} ${tankdir}/.") == 0
             or die "cpfs failed to copy ${errmsg} to ${tankdir} with exit code  $?";
       }
 
