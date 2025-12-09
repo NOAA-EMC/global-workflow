@@ -29,7 +29,7 @@ copy_opt:
 {% endfor %}
 
 {% if MODE == "cycled" %}
-    # Deterministic analysis files (cycled mode only) - REQUIRED
+    # Deterministic analysis files (cycled mode only)
     - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2",
        "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
 
@@ -60,7 +60,7 @@ copy_opt:
 {% endif %}
 
 {% if RUN == "gfs" %}
-    # GFS forecast files - REQUIRED
+    # GFS forecast files
     {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
     - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
@@ -76,7 +76,7 @@ copy_opt:
        "{{ ARCDIR }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"]
 
     {% if DO_FIT2OBS == True %}
-    # GFS Fit2Obs data - REQUIRED
+    # GFS Fit2Obs data
         {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
             {% set sfcfile = "/" + head + "sfc.f" + '%03d'|format(fhr) + ".nc" %}
             {% set sigfile = "/" + head + "atm.f" + '%03d'|format(fhr) + ".nc" %}
@@ -88,13 +88,13 @@ copy_opt:
     {% endif %}
 
 {% elif RUN == "gdas" %}
-    # GDAS forecast files - REQUIRED
+    # GDAS forecast files
     {% for fhr in range(0, FHMAX + 1, FHOUT) %}
     - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
     {% endfor %}
 
-    # GDAS bias correction files - REQUIRED
+    # GDAS bias correction files
     - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias.txt",
        "{{ ARCDIR }}/abias.{{ RUN }}.{{ cycle_YMDH }}"]
     - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_pc.txt",
