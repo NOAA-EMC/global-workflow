@@ -795,9 +795,10 @@ case ${step} in
   "prep_emissions")
     export walltime="00:35:00"
     export ntasks=1
-    export threads_per_task=$(( max_tasks_per_node / 2 ))
+    export threads_per_task=${max_tasks_per_node}
     export tasks_per_node=1
     export OMP_NUM_THREADS="${threads_per_task}"
+    export is_exclusive=True
     ;;
 
   "fcst" | "efcs")
