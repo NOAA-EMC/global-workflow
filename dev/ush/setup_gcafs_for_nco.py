@@ -146,6 +146,13 @@ def setup_gcafs_for_nco():
     # Execute the file operations for scripts
     FileHandler(ex_script_file_handler).sync()
 
-
+    # Go through the copied job and ex-script files and replace FOOgfs with FOOgcafs
+    all_copied_files = [dest for _, dest in job_file_copy_list + ex_script_file_copy_list]
+    for file_path in all_copied_files:
+        num_replacements = replace_gfs_with_gcafs(file_path)
+        print(f"Modified {file_path}: {num_replacements} replacements made.")
+    
+    
+    
 if __name__ == "__main__":
     setup_gcafs_for_nco()
