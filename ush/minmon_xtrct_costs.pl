@@ -36,7 +36,7 @@ my $use_costterms = 0;
 my $no_data       = 0.00;
 
 my $scr = "minmon_xtrct_costs.pl";
-print "$scr has started\n";
+print "$scr has started, bufix/min-4171 \n";
 
 
 my $rc    = 0;
@@ -214,11 +214,13 @@ if( (-e $infile) ) {
 
       if( -e $filename2 ) {
          my $newfile2 = "${tankdir}/${filename2}";
-         system("cpfs $filename2 $newfile2");
+	 system("cpfs $filename2 ${newfile2}") == 0
+            or die "cpfs failed to copy ${filename2} to ${newfile2} with exit code  $?";
       }
       if( -e $filename3 ) {
          my $newfile3 = "${tankdir}/${filename3}";
-         system("cpfs $filename3 $newfile3");
+	 system("cpfs ${filename3} ${newfile3}") == 0
+            or die "cpfs failed to copy ${filename3} to ${newfile3} with exit code  $?";
       }
 
    }				# $rc still == 0 after reading gmon_cost.txt
