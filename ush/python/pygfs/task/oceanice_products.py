@@ -296,7 +296,8 @@ class OceanIceProducts(Task):
             if config.component == 'ocean':
                 # subset ocean variables for z_levels in products
                 levels = config.oceanice_yaml.ocean.namelist.ocean_levels
-                ds_subset = ds[varlist].sel(z_l=levels)
+                #ds_subset = ds[varlist].sel(z_l=levels)
+                ds_subset = ds[varlist]
 
             # save global attributes from the old netcdf file into new netcdf file
             ds_subset.attrs = ds.attrs

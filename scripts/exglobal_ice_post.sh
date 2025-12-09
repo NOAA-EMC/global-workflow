@@ -18,7 +18,7 @@ if [[ "${RUN}" == sfs ]]; then
        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
        vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
        new_file="iceh_24h_${vdate_mid_str}.nc"
-       ori_file="${RUN}.ice.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+       ori_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
        ${NLN} "${COMOUT_ICE_HISTORY}/${ori_file}" "${DATAoutput}/CICE_OUTPUT/${new_file}"
        last_fhr=${fhr}
      done
@@ -26,7 +26,7 @@ fi
 
 #GENERATE MONTHLY MEAN FILES FROM SFS DAILY ICE HISTORY FILES.
 if [[ "${RUN}" == sfs ]]; then
-    last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.ice.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
+    last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
     if [[ -f ${last_fh_output} ]]; then
        file_list="${DATAoutput}/CICE_OUTPUT/iceh_24h_????_??_28_12.nc"
        file_list_mon="$( ls ${file_list} )"
