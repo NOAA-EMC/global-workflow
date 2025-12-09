@@ -83,7 +83,7 @@ class ArchiveVrfyVars:
             - Config keys: RUN, PSLOT, ROTDIR, DO_* flags, FHMAX*, etc.
         """
         # Build arch_dict with variables for Jinja2 templates
-        arch_dict = {}
+        arch_dict = AttrDict()
 
         # Add config variables (config keys, COM* variables from job scripts)
         arch_dict.update(ArchiveVrfyVars.add_config_vars(config_dict))
