@@ -22,7 +22,7 @@ fire_emission:
   data_out:
     mkdir:
       {% if nmem_ens > 0 %}
-      {% for imem in range(1, nmem_ens + 1) %}
+      {% for imem in range(0, nmem_ens + 1) %}
       - "{{ COMOUT_CHEM_INPUT.replace('mem000', 'mem%03d' % imem) }}"
       {% endfor %}
       {% else %}
@@ -30,7 +30,7 @@ fire_emission:
       {% endif %}
     copy:
       {% if nmem_ens > 0 %}
-      {% for imem in range(1, nmem_ens + 1) %}
+      {% for imem in range(0, nmem_ens + 1) %}
       {% for fileout in processed_files %}
       - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT.replace('mem000', 'mem%03d' % imem) }}/"]
       {% endfor %}
