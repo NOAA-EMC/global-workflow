@@ -93,6 +93,8 @@ class SFSAppConfig(AppConfig):
 
         if options['do_archcom']:
             configs += ['arch_tars']
+            if options['do_globusarch']:
+                configs += ['globus']
 
         configs += ['arch_vrfy', 'cleanup']
 
@@ -164,7 +166,12 @@ class SFSAppConfig(AppConfig):
         if options['do_extractvars']:
             tasks += ['extractvars']
 
-        # TODO: Add archive
+        # TODO add archiving for SFS
+        # if options['do_archcom']:
+        #     tasks += ['arch_tars']
+        #     if options['do_globusarch']:
+        #         tasks += ['globus']
+
         tasks += ['cleanup']
 
         return {f"{self.run}": tasks}

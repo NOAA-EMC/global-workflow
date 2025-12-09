@@ -36,7 +36,7 @@ jobs:
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@v4
       - name: shfmt scan
-        run: shfmt -d dev/jobs jobs scripts
+        run: shfmt -d dev/jobs dev/job_cards dev/scripts
 
   shellcheck:
     runs-on: ubuntu-22.04
