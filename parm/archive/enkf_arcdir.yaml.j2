@@ -13,7 +13,7 @@ mkdir:
     - "{{ ARCDIR }}"
 
 copy_opt:
-    # Ensemble analysis statistics - REQUIRED
+    # Ensemble analysis statistics
     {% if DO_JEDIATMENS == True %}
     - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}stat.atm.tar",
        "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
