@@ -44,7 +44,7 @@ class AnalysisStats(Analysis):
         """
         super().__init__(config)
 
-         # Create a local dictionary that is repeatedly used across this class
+        # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
                 #
@@ -166,7 +166,8 @@ class AnalysisStats(Analysis):
 
         for analysis in self.task_config.STAT_ANALYSES:
             # path of output tar statfile
-            iodastatzipfile = os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
+            iodastatzipfile = os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path,
+                                           f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
 
             logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
 

@@ -52,7 +52,7 @@ class Jedi:
         for key in required_jedi_keys:
             if key not in config:
                 raise WorkflowKeyError(f"Required key '{key}' not found in config")
-        if not 'jcb_algo' in config and 'jcb_algo_yaml' not in config:
+        if 'jcb_algo' not in config and 'jcb_algo_yaml' not in config:
             raise WorkflowKeyError("Either jcb_algo or jcb_algo_yaml must be specified in config")
 
         # Create the configuration dictionary for JEDI object
@@ -157,7 +157,8 @@ class Jedi:
         ob_dest = self.jcb_config[f'{self.model}_obsdatain_path']
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
-            ob_src = os.path.join(comin, self.jcb_config[f'{self.model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.model}_obsdatain_suffix'])
+            ob_src = os.path.join(comin, 
+                                  self.jcb_config[f'{self.model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.model}_obsdatain_suffix'])
 
             fh_dict['copy_opt'].append([ob_src, ob_dest])
 
@@ -195,7 +196,7 @@ class Jedi:
 
         # Make directories
         fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasin_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasout_path'])   
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasout_path'])
 
         # Copy files
         files_already_copied = []
@@ -217,7 +218,8 @@ class Jedi:
         for ob in self.jcb_config['observations']:
             if ob in bias_file_dict and not bias_file_dict[ob] in bias_file_list:
                 bias_file_list.append(bias_file_dict[ob])
-                bias_file_path = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"], self.jcb_config[f"{self.model}_obsbiasin_prefix"] + bias_file_dict[ob])
+                bias_file_path = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
+                                              self.jcb_config[f"{self.model}_obsbiasin_prefix"] + bias_file_dict[ob])
                 if os.path.exists(bias_file_path):
                     extract_tar(bias_file_path)
                 else:
@@ -282,7 +284,9 @@ class Jedi:
         """
 
         # Check that other required keys are present in jcb_config
-        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix', 'obsbiasout_prefix', 'obsbiasin_suffix', 'obsbiascovin_suffix', 'obstlapsein_suffix']:
+        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
+                     'obsbiasout_prefix', 'obsbiasin_suffix', 'obsbiascovin_suffix',
+                     'obstlapsein_suffix']:
             key = f'{self.model}_{stem}'
             if key not in self.jcb_config:
                 raise WorkflowKeyError(f"Required key {key} not found in JCB config")
