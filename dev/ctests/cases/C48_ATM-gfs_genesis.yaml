@@ -5,29 +5,30 @@
 # runs successfully and produces the expected output files containing
 # genesis probability information.
 #
-# Source pedigree: leverages the same gfs_fcst_seg0 forecast history staged
-# under STAGED_CTESTS and verifies genesis_vital outputs against baseline COMROOT.
+# Source pedigree: consumes GRIB2 products from gfs_atmos_prod in
+# `products/atmos/grib2/0p25` under STAGED_CTESTS and verifies genesis_vital
+# outputs against baseline COMROOT.
 
 {% set cyc = TEST_DATE | strftime('%H') %}
 {% set PDY = TEST_DATE | to_YMD %}
 {% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
-{% set SRC_HISTORY_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/history' %}
-{% set DST_HISTORY_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/history' %}
+{% set SRC_GRIB_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
+{% set DST_GRIB_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
 {% set SRC_GENESIS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/genesis_vital' %}
 {% set DST_GENESIS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/genesis_vital' %}
 
 input_files:
-    # Provide the history subset that drives the genesis detector pipeline.
+    # Provide the GRIB2 products that drive the genesis detector pipeline.
     mkdir:
-        - {{ DST_HISTORY_DIR }}
+        - {{ DST_GRIB_DIR }}
         - {{ DST_GENESIS_DIR }}
 
     copy:
-        # Files originate from {{ SRC_HISTORY_DIR }} within the staged baseline COMROOT.
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f012.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f012.nc]
+        # Files originate from {{ SRC_GRIB_DIR }} within the staged baseline COMROOT.
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f000, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f000]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f006, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f006]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f012, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f012]
 
 output_files:
     # Genesis vitals outputs - compare vitals and atcf files
