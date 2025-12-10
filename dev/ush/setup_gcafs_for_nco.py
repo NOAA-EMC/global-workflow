@@ -90,16 +90,30 @@ def setup_gcafs_for_nco():
         # need to add something here for the post job once Yaping's PR is in
     }
 
+    job_file_copy_list = []
+    for dest_job, src_job in {**gcafs_jobs, **gcdas_jobs}.items():
+        src_job_path = os.path.join(global_workflow_dir, 'dev', 'jobs', src_job)
+        dest_job_path = os.path.join(global_workflow_dir, 'jobs', dest_job)
+        job_file_copy_list.append((src_job_path, dest_job_path))
+
+    # Create a FileHandler dictionary
+    job_file_handler = {
+        'mkdir': [os.path.join(global_workflow_dir, 'jobs')],
+        'copy': job_file_copy_list,
+    }
+    # Execute the file operations
+    FileHandler(job_file_handler).sync()
+
     # Next, copy ex-scripts from dev/scripts to the global workflow directory
     gcafs_ex_scripts = {
         "exgcafs_forecast.sh": "exglobal_forecast.sh",
-        "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.sh",
+        "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.py",
         "exgcafs_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
         "exgcafs_atmos_products.sh": "exglobal_atmos_products.sh",
     }
     gcdas_ex_scripts = {
         "exgcdas_forecast.sh": "exglobal_forecast.sh",
-        "exgcdas_prep_emissions.sh": "exglobal_prep_emissions.sh",
+        "exgcdas_prep_emissions.sh": "exglobal_prep_emissions.py",
         "exgcdas_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
         "exgcdas_atmos_products.sh": "exglobal_atmos_products.sh",
         "exgcdas_atmos_initialize.py": "exglobal_offline_atmos_analysis.py",
@@ -109,10 +123,36 @@ def setup_gcafs_for_nco():
         "exgcdas_aero_analysis_finalize.py": "exglobal_aero_analysis_finalize.py",
         "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_analysis_calc.sh",
         "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
-        "exgcdas_aero_analysis_generate_bmatrix.py": "exglobal_aero_analysis_generate_bmatrix.py",
+        "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
         # exgcdas_prepare_obs is taken from ObsForge for v1, not in global-workflow, do this manually!!
         # need to add something here for the post job once Yaping's PR is in
     }
 
+    # if the scripts directory exists as a symlink, remove it first
+    scripts_dir = os.path.join(global_workflow_dir, 'scripts')
+    if os.path.islink(scripts_dir):
+        os.unlink(scripts_dir)
+    ex_script_file_copy_list = []
+    for dest_script, src_script in {**gcafs_ex_scripts, **gcdas_ex_scripts}.items():
+        src_script_path = os.path.join(global_workflow_dir, 'dev', 'scripts', src_script)
+        dest_script_path = os.path.join(global_workflow_dir, 'scripts', dest_script)
+        ex_script_file_copy_list.append((src_script_path, dest_script_path))
+
+    # Create a FileHandler dictionary for scripts
+    ex_script_file_handler = {
+        'mkdir': [os.path.join(global_workflow_dir, 'scripts')],
+        'copy': ex_script_file_copy_list,
+    }
+    # Execute the file operations for scripts
+    FileHandler(ex_script_file_handler).sync()
+
+    # Go through the copied job and ex-script files and replace FOOgfs with FOOgcafs
+    all_copied_files = [dest for _, dest in job_file_copy_list + ex_script_file_copy_list]
+    for file_path in all_copied_files:
+        num_replacements = replace_gfs_with_gcafs(file_path)
+        print(f"Modified {file_path}: {num_replacements} replacements made.")
+    
+    
+    
 if __name__ == "__main__":
     setup_gcafs_for_nco()

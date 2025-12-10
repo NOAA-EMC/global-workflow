@@ -1,0 +1,30 @@
+name: python_code_analysis
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  check_norms:
+    runs-on: ubuntu-22.04
+    name: Check Python coding norms with pycodestyle
+
+    steps:
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install pycodestyle
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        path: global-workflow
+
+    - name: Run pycodestyle
+      run: |
+        cd $GITHUB_WORKSPACE/global-workflow
+        pycodestyle -v --config ./.pycodestyle ./

@@ -23,7 +23,16 @@ gfsocean_analysis:
         - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
 
         # runtime configs
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/*.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_setcorscales.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_chgres.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_diagb.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}gridgen.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_vtscales.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}bmat_fields_metadata.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/var.yaml'
+        # soca_parameters_diffusion_vt, and soca_parameters_diffusion_hz when present
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_parameters_diffusion_??.yaml'
+        - '{{ COMIN_CONF | relpath(ROTDIR) }}/soca_incpostproc.yaml'
     optional:
         # obs space diags
         - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/{{ head }}ocn.*.stats.csv'
