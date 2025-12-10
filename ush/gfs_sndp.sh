@@ -10,7 +10,7 @@
   #  Create "collectives" consisting of groupings of the soundings
   #  into files designated by geographical region.   Each input
   #  file gfs_collective*.list (1-9) contains the list of stations to
-  #  put in a particular collective output file. 
+  #  put in a particular collective output file.
 export m=$1
 mkdir $DATA/$m
 cd $DATA/$m
@@ -19,18 +19,18 @@ cd $DATA/$m
     file_list=gfs_collective${m}.list
 
     if [ $m -le 2 ]
-    then 
+    then
       WMOHEAD=JUSA4$m
     elif [ $m -le 6 ]
-    then 
+    then
       WMOHEAD=JUSB4$m
-    else 
+    else
       WMOHEAD=JUSX4$m
     fi
 
     for stn in $(cat $file_list)
     do
-       cpreq "${COMOUT_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
+       cpreq "${COMIN_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
        export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
@@ -59,4 +59,3 @@ EOF
 				   "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
     fi
     cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_BUFR}/."
-
