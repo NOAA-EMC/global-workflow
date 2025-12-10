@@ -69,8 +69,7 @@ case ${machine} in
     export PARTITION_BATCH="compute"
     npe_node_max=48
     max_tasks_per_node=48
-    # TODO Supply a max mem/node value for AWS
-    mem_node_max=""
+    mem_node_max="192GB"
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
@@ -1379,7 +1378,7 @@ case ${step} in
     elif [[ "${RUN}" = *gfs ]]; then
       ntasks=28
       tasks_per_node=28
-      memory="4GB"
+      memory="6GB"
     fi
     ;;
 
