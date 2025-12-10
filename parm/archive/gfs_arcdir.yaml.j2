@@ -81,9 +81,9 @@ copy_opt:
             {% set sfcfile = head + "sfc.f" + '%03d'|format(fhr) + ".nc" %}
             {% set sigfile = head + "atm.f" + '%03d'|format(fhr) + ".nc" %}
     - ["{{ COMIN_ATMOS_HISTORY }}/{{ sfcfile }}",
-       "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}{{ sfcfile }}"]
+       "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sfcfile }}"]
     - ["{{ COMIN_ATMOS_HISTORY }}/{{ sigfile }}",
-       "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}{{ sigfile }}"]
+       "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ sigfile }}"]
         {% endfor %}
     {% endif %}
 
