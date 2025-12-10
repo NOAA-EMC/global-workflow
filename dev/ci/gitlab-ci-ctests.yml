@@ -35,11 +35,11 @@
     # TODO: Remove this when upstream Rocoto PR is merged
     # Load platform-specific configuration first
     source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
-    if [[ -n "${ROCOTO_TEST_PATH:-}" && -d "${ROCOTO_TEST_PATH}" ]]; then
-      export PATH="${ROCOTO_TEST_PATH}:$PATH"
+    if [[ -n "${ROCOTO_PATH:-}" && -d "${ROCOTO_PATH}" ]]; then
+      export PATH="${ROCOTO_PATH}:$PATH"
       echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
     else
-      echo "ROCOTO_TEST_PATH not set or directory not found, using system Rocoto"
+      echo "ROCOTO_PATH not set or directory not found, using system Rocoto"
     fi
     
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
@@ -69,11 +69,11 @@
     # Platform config loaded by gw_setup.sh, now check for custom Rocoto
     # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
     # TODO: Remove this when upstream Rocoto PR is merged
-    if [[ -n "${ROCOTO_TEST_PATH:-}" && -d "${ROCOTO_TEST_PATH}" ]]; then
-      export PATH="${ROCOTO_TEST_PATH}:$PATH"
+    if [[ -n "${ROCOTO_PATH:-}" && -d "${ROCOTO_PATH}" ]]; then
+      export PATH="${ROCOTO_PATH}:$PATH"
       echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
     else
-      echo "ROCOTO_TEST_PATH not set or directory not found, using system Rocoto"
+      echo "ROCOTO_PATH not set or directory not found, using system Rocoto"
     fi
     cd "${GW_HOMEgfs}/dev/ctests/build" || exit 1
     echo "Running CTests with label: ${CTEST_NAME} in ${PWD}"

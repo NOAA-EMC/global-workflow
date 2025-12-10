@@ -62,4 +62,4 @@ export UTIL_PATH="/path/to/role/account/utils"
 
 # Custom Rocoto build path for testing (temporary)
 # TODO: Remove when upstream Rocoto PR is merged
-export ROCOTO_TEST_PATH="${UTIL_PATH}/Rocoto/bin"
+export ROCOTO_PATH="${UTIL_PATH}/Rocoto/bin"

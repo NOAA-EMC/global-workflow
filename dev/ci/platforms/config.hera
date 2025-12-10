@@ -79,4 +79,4 @@ export UTIL_PATH="/scratch3/NCEPDEV/global/Terry.McGuinness"
 
 # Custom Rocoto build path for testing (temporary)
 # TODO: Remove when upstream Rocoto PR is merged
-export ROCOTO_TEST_PATH="${UTIL_PATH}/rocoto_forked/bin"
+export ROCOTO_PATH="${UTIL_PATH}/rocoto_forked/bin"
