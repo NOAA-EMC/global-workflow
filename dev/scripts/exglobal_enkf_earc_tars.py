@@ -18,9 +18,9 @@ def main():
     # Instantiate the Archive object
     archive = Archive(config)
 
-    # Collect all configuration keys and COM variables
+    # Collect all variables for YAML templates (config keys, COM paths, cycle vars, member paths)
     # Uses centralized method from ArchiveTarVars utility class
-    archive_dict = ArchiveTarVars.add_config_vars(archive.task_config)
+    archive_dict = ArchiveTarVars.get_all_yaml_vars(archive.task_config)
 
     with chdir(config.ROTDIR):
 

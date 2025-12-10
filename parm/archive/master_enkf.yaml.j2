@@ -11,73 +11,9 @@ datasets:
 {% else %}
 
     # Archive individual member data
-    # First, construct individual member directories from templates
-    #    COMIN_ATMOS_ANALYSIS_MEM, COMIN_ATMOS_HISTORY_MEM, and COMIN_ATMOS_RESTART_MEM
+    # Member COM path lists (COMIN_*_MEM_list) and COMIN_CONF are provided by Python
+    # via ArchiveTarVars.get_member_com_paths() method
 
-    # Declare to-be-filled lists of member COM directories
-    {% set COMIN_ATMOS_ANALYSIS_MEM_list = [] %}
-    {% set COMIN_ATMOS_RESTART_MEM_list = [] %}
-    {% set COMIN_ATMOS_HISTORY_MEM_list = [] %}
-    {% set COMIN_OCEAN_ANALYSIS_MEM_list = [] %}
-    {% set COMIN_OCEAN_LETKF_MEM_list = [] %}
-    {% set COMIN_OCEAN_RESTART_MEM_list = [] %}
-    {% set COMIN_OCEAN_HISTORY_MEM_list = [] %}
-    {% set COMIN_ICE_ANALYSIS_MEM_list = [] %}
-    {% set COMIN_ICE_LETKF_MEM_list = [] %}
-    {% set COMIN_ICE_RESTART_MEM_list = [] %}
-    {% set COMIN_ICE_HISTORY_MEM_list = [] %}
-    {% set COMIN_MED_RESTART_MEM_list = [] %}
-
-    # Determine which ensemble members belong to this group
-    {% set first_group_mem = (ENSGRP - 1) * NMEM_EARCGRP + 1 %}
-    {% set last_group_mem = [ ENSGRP * NMEM_EARCGRP, nmem_ens ] | min %}
-
-    # Construct member COM directories for the group
-    {% for mem in range(first_group_mem, last_group_mem + 1) %}
-
-        # Declare a dict of search and replace terms to run on each template
-        {% set mem_char = 'mem%03d' | format(mem) %}
-        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                              '${RUN}':RUN,
-                              '${YMD}':cycle_YMD,
-                              '${HH}':cycle_HH,
-                              '${MEMDIR}': mem_char }) %}
-
-        {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_LETKF_MEM = COM_OCEAN_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_HISTORY_MEM = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_RESTART_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_LETKF_MEM = COM_ICE_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_HISTORY_MEM = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_RESTART_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_MED_RESTART_MEM = COM_MED_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-
-        # Append the member COM directories
-        {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
-        {% do COMIN_ATMOS_HISTORY_MEM_list.append(COMIN_ATMOS_HISTORY_MEM)%}
-        {% do COMIN_ATMOS_RESTART_MEM_list.append(COMIN_ATMOS_RESTART_MEM)%}
-        {% do COMIN_OCEAN_ANALYSIS_MEM_list.append(COMIN_OCEAN_ANALYSIS_MEM)%}
-        {% do COMIN_OCEAN_LETKF_MEM_list.append(COMIN_OCEAN_LETKF_MEM)%}
-        {% do COMIN_OCEAN_HISTORY_MEM_list.append(COMIN_OCEAN_HISTORY_MEM)%}
-        {% do COMIN_OCEAN_RESTART_MEM_list.append(COMIN_OCEAN_RESTART_MEM)%}
-        {% do COMIN_ICE_ANALYSIS_MEM_list.append(COMIN_ICE_ANALYSIS_MEM)%}
-        {% do COMIN_ICE_LETKF_MEM_list.append(COMIN_ICE_LETKF_MEM)%}
-        {% do COMIN_ICE_HISTORY_MEM_list.append(COMIN_ICE_HISTORY_MEM)%}
-        {% do COMIN_ICE_RESTART_MEM_list.append(COMIN_ICE_RESTART_MEM)%}
-        {% do COMIN_MED_RESTART_MEM_list.append(COMIN_MED_RESTART_MEM)%}
-
-    {% endfor %}
-
-    {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                          '${RUN}':RUN,
-                          '${YMD}':cycle_YMD,
-                          '${HH}':cycle_HH,
-                          '${MEMDIR}': "ensstat"}) %}
-    {% set COMIN_CONF = COM_CONF_TMPL | replace_tmpl(tmpl_dict) %}
     # Archive member data
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}

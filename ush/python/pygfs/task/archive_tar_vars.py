@@ -334,3 +334,130 @@ class ArchiveTarVars:
 
         logger.debug(f"Generated COM paths for member {member}")
         return member_com_paths
+
+    @staticmethod
+    @logit(logger)
+    def get_group_member_com_lists(config_dict: AttrDict) -> Dict[str, Any]:
+        """Get COM path lists for all members in the current ENSGRP group.
+
+        This method replaces the Jinja2 logic from master_enkf.yaml.j2 that constructs
+        member COM directory lists for ensemble groups (ENSGRP != 0).
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary from Archive.task_config, must contain:
+            - ENSGRP: Ensemble group number (1, 2, 3, ...)
+            - NMEM_EARCGRP: Number of members per archive group
+            - NMEM_ENS: Total number of ensemble members
+            - COM_*_TMPL: Template strings for COM paths
+            - ROTDIR, RUN, current_cycle: For template substitution
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing:
+            - COMIN_ATMOS_ANALYSIS_MEM_list: List of atmos analysis paths for group members
+            - COMIN_ATMOS_RESTART_MEM_list: List of atmos restart paths for group members
+            - COMIN_ATMOS_HISTORY_MEM_list: List of atmos history paths for group members
+            - COMIN_OCEAN_ANALYSIS_MEM_list: List of ocean analysis paths for group members
+            - COMIN_OCEAN_LETKF_MEM_list: List of ocean LETKF paths for group members
+            - COMIN_OCEAN_RESTART_MEM_list: List of ocean restart paths for group members
+            - COMIN_OCEAN_HISTORY_MEM_list: List of ocean history paths for group members
+            - COMIN_ICE_ANALYSIS_MEM_list: List of ice analysis paths for group members
+            - COMIN_ICE_LETKF_MEM_list: List of ice LETKF paths for group members
+            - COMIN_ICE_RESTART_MEM_list: List of ice restart paths for group members
+            - COMIN_ICE_HISTORY_MEM_list: List of ice history paths for group members
+            - COMIN_MED_RESTART_MEM_list: List of mediator restart paths for group members
+            - COMIN_CONF: ensstat COM path for configuration
+
+        Notes
+        -----
+        This method directly replaces the Jinja2 logic in master_enkf.yaml.j2 lines 17-80.
+        It calculates which members belong to the current group, then constructs COM paths
+        for each member using template substitution.
+
+        Example:
+            If ENSGRP=2, NMEM_EARCGRP=10, NMEM_ENS=80:
+            - first_group_mem = (2-1)*10 + 1 = 11
+            - last_group_mem = min(2*10, 80) = 20
+            - Generates paths for members 11-20
+        """
+        ensgrp = config_dict.get('ENSGRP', 0)
+
+        if ensgrp == 0:
+            logger.info("ENSGRP=0: Skipping member COM path generation (ensemble means/spreads)")
+            return {}
+
+        # Get ensemble configuration
+        nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
+        nmem_ens = config_dict.get('NMEM_ENS')
+
+        if not nmem_earcgrp or not nmem_ens:
+            raise ValueError("NMEM_EARCGRP and NMEM_ENS must be defined for ensemble member archiving")
+
+        # Determine which ensemble members belong to this group
+        first_group_mem = (ensgrp - 1) * nmem_earcgrp + 1
+        last_group_mem = min(ensgrp * nmem_earcgrp, nmem_ens)
+
+        logger.info(f"ENSGRP={ensgrp}: Processing members {first_group_mem} to {last_group_mem}")
+
+        # Initialize lists for member COM directories
+        member_lists = {
+            'COMIN_ATMOS_ANALYSIS_MEM_list': [],
+            'COMIN_ATMOS_RESTART_MEM_list': [],
+            'COMIN_ATMOS_HISTORY_MEM_list': [],
+            'COMIN_OCEAN_ANALYSIS_MEM_list': [],
+            'COMIN_OCEAN_LETKF_MEM_list': [],
+            'COMIN_OCEAN_RESTART_MEM_list': [],
+            'COMIN_OCEAN_HISTORY_MEM_list': [],
+            'COMIN_ICE_ANALYSIS_MEM_list': [],
+            'COMIN_ICE_LETKF_MEM_list': [],
+            'COMIN_ICE_RESTART_MEM_list': [],
+            'COMIN_ICE_HISTORY_MEM_list': [],
+            'COMIN_MED_RESTART_MEM_list': [],
+        }
+
+        # Construct member COM directories for the group
+        for mem in range(first_group_mem, last_group_mem + 1):
+            # Get cycle dictionary for this member
+            cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
+            mem_char = f"mem{mem:03d}"
+            cycle_dict['${MEMDIR}'] = mem_char
+
+            # Define template mappings
+            template_mappings = {
+                'COMIN_ATMOS_ANALYSIS_MEM_list': 'COM_ATMOS_ANALYSIS_TMPL',
+                'COMIN_ATMOS_HISTORY_MEM_list': 'COM_ATMOS_HISTORY_TMPL',
+                'COMIN_ATMOS_RESTART_MEM_list': 'COM_ATMOS_RESTART_TMPL',
+                'COMIN_OCEAN_ANALYSIS_MEM_list': 'COM_OCEAN_ANALYSIS_TMPL',
+                'COMIN_OCEAN_LETKF_MEM_list': 'COM_OCEAN_LETKF_TMPL',
+                'COMIN_OCEAN_HISTORY_MEM_list': 'COM_OCEAN_HISTORY_TMPL',
+                'COMIN_OCEAN_RESTART_MEM_list': 'COM_OCEAN_RESTART_TMPL',
+                'COMIN_ICE_ANALYSIS_MEM_list': 'COM_ICE_ANALYSIS_TMPL',
+                'COMIN_ICE_LETKF_MEM_list': 'COM_ICE_LETKF_TMPL',
+                'COMIN_ICE_HISTORY_MEM_list': 'COM_ICE_HISTORY_TMPL',
+                'COMIN_ICE_RESTART_MEM_list': 'COM_ICE_RESTART_TMPL',
+                'COMIN_MED_RESTART_MEM_list': 'COM_MED_RESTART_TMPL',
+            }
+
+            # Generate COM paths and append to lists
+            for list_key, template_key in template_mappings.items():
+                if config_dict.get(template_key):
+                    com_path = ArchiveTarVars._replace_template_vars(
+                        config_dict[template_key], cycle_dict
+                    )
+                    member_lists[list_key].append(com_path)
+                    logger.debug(f"Member {mem}: {list_key} = {com_path}")
+
+        # Add ensstat COM path (COMIN_CONF)
+        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
+        cycle_dict['${MEMDIR}'] = 'ensstat'
+        if config_dict.get('COM_CONF_TMPL'):
+            member_lists['COMIN_CONF'] = ArchiveTarVars._replace_template_vars(
+                config_dict['COM_CONF_TMPL'], cycle_dict
+            )
+            logger.debug(f"COMIN_CONF = {member_lists['COMIN_CONF']}")
+
+        logger.info(f"Generated COM path lists for {last_group_mem - first_group_mem + 1} members in group {ensgrp}")
+        return member_lists

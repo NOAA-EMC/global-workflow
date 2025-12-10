@@ -46,6 +46,7 @@ Logging
 All public operational functions are decorated with @logit(logger).
 """
 import os
+from copy import deepcopy
 from logging import getLogger
 from typing import Any, Dict, Tuple
 from wxflow import AttrDict, logit, to_YMD, to_YMDH
@@ -104,6 +105,10 @@ class ArchiveTarVars:
 
         # Add cycle-specific variables
         arch_dict.update(ArchiveTarVars._get_cycle_vars(config_dict))
+
+        # Add member COM paths for ensemble groups (ENSGRP != 0)
+        # Returns empty dict if ENSGRP == 0 (ensemble mean archiving)
+        arch_dict.update(ArchiveTarVars.get_member_com_paths(config_dict))
 
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
@@ -274,63 +279,97 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def get_member_com_paths(config_dict: AttrDict, member: int) -> Dict[str, str]:
-        """Get member-specific COM paths for a single ensemble member.
+    def get_member_com_paths(config_dict: AttrDict) -> Dict[str, Any]:
+        """Get member-specific COM paths for ensemble group members.
 
-        This method generates COM paths for ONE ensemble member at a time.
-        The driver script should loop over members and call this method for each.
+        This method generates COM paths for ensemble members in a group (ENSGRP != 0).
+        It calculates the member range for the specified group and returns lists of
+        COM paths for all members in that group, plus the ensstat path.
 
         Parameters
         ----------
         config_dict : AttrDict
             Configuration dictionary from Archive.task_config
-        member : int
-            Member number (e.g., 1, 2, 3, ..., NMEM_ENS)
+            Required keys: ENSGRP, NMEM_EARCGRP, NMEM_ENS, COM_*_TMPL variables
 
         Returns
         -------
-        Dict[str, str]
-            Dictionary of member-specific COM paths for this single member
+        Dict[str, Any]
+            Dictionary with:
+            - COMIN_*_MEM_list: Lists of COM paths for all members in group
+            - COMIN_CONF: Ensstat COM path (single string)
+
+        Raises
+        ------
+        ValueError
+            If ENSGRP is 0 (no member paths needed for ensemble mean archiving)
+            If NMEM_EARCGRP or NMEM_ENS are missing
 
         Notes
         -----
-        This follows the stage_ic.py pattern where the loop is external to the
-        utility module. The driver script loops over members and calls this
-        method for each member individually.
+        This method is only called when ENSGRP != 0 (archiving individual member data).
+        When ENSGRP == 0 (archiving ensemble means/spreads), member COM paths are not
+        needed and this method should not be called.
         """
-        # Create cycle dictionary and add member string
-        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
-        cycle_dict['${MEMDIR}'] = f"mem{member:03d}"
+        ensgrp = config_dict.get('ENSGRP', 0)
 
-        # Define template mappings for member COM paths
-        template_mappings = [
-            ('COMIN_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL'),
-            ('COMIN_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL'),
-            ('COMIN_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL'),
-            ('COMIN_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL'),
-            ('COMIN_OCEAN_LETKF_MEM', 'COM_OCEAN_LETKF_TMPL'),
-            ('COMIN_OCEAN_HISTORY_MEM', 'COM_OCEAN_HISTORY_TMPL'),
-            ('COMIN_OCEAN_RESTART_MEM', 'COM_OCEAN_RESTART_TMPL'),
-            ('COMIN_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL'),
-            ('COMIN_ICE_LETKF_MEM', 'COM_ICE_LETKF_TMPL'),
-            ('COMIN_ICE_HISTORY_MEM', 'COM_ICE_HISTORY_TMPL'),
-            ('COMIN_ICE_RESTART_MEM', 'COM_ICE_RESTART_TMPL'),
-            ('COMIN_MED_RESTART_MEM', 'COM_MED_RESTART_TMPL'),
-        ]
+        # Only create member COM paths when ENSGRP != 0 (archiving individual members)
+        if ensgrp == 0:
+            return {}
+        else:
+            # Create lists of member paths for the group
+            nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
+            nmem_ens = config_dict.get('NMEM_ENS')
 
-        # Generate COM paths using template substitution
-        member_com_paths = {
-            com_key: ArchiveTarVars._replace_template_vars(config_dict.get(template_key, ""), cycle_dict)
-            for com_key, template_key in template_mappings
-            if config_dict.get(template_key)
-        }
+            if nmem_earcgrp is None or nmem_ens is None:
+                raise ValueError("NMEM_EARCGRP and NMEM_ENS required when ENSGRP != 0")
 
-        # Add ensstat path (COMIN_CONF)
-        cycle_dict['${MEMDIR}'] = 'ensstat'
-        if config_dict.get('COM_CONF_TMPL'):
-            member_com_paths['COMIN_CONF'] = ArchiveTarVars._replace_template_vars(
-                config_dict['COM_CONF_TMPL'], cycle_dict
-            )
+            # Determine which members belong to this group
+            first_group_mem = (ensgrp - 1) * nmem_earcgrp + 1
+            last_group_mem = min(ensgrp * nmem_earcgrp, nmem_ens)
 
-        logger.debug(f"Generated COM paths for member {member}")
-        return member_com_paths
+            logger.info(f"Processing ensemble group {ensgrp}: members {first_group_mem} to {last_group_mem}")
+
+            # Define template mappings (list key -> template key) and initialize empty lists
+            template_mappings = [
+                ('COMIN_ATMOS_ANALYSIS_MEM_list', 'COM_ATMOS_ANALYSIS_TMPL'),
+                ('COMIN_ATMOS_HISTORY_MEM_list', 'COM_ATMOS_HISTORY_TMPL'),
+                ('COMIN_ATMOS_RESTART_MEM_list', 'COM_ATMOS_RESTART_TMPL'),
+                ('COMIN_OCEAN_ANALYSIS_MEM_list', 'COM_OCEAN_ANALYSIS_TMPL'),
+                ('COMIN_OCEAN_LETKF_MEM_list', 'COM_OCEAN_LETKF_TMPL'),
+                ('COMIN_OCEAN_HISTORY_MEM_list', 'COM_OCEAN_HISTORY_TMPL'),
+                ('COMIN_OCEAN_RESTART_MEM_list', 'COM_OCEAN_RESTART_TMPL'),
+                ('COMIN_ICE_ANALYSIS_MEM_list', 'COM_ICE_ANALYSIS_TMPL'),
+                ('COMIN_ICE_LETKF_MEM_list', 'COM_ICE_LETKF_TMPL'),
+                ('COMIN_ICE_HISTORY_MEM_list', 'COM_ICE_HISTORY_TMPL'),
+                ('COMIN_ICE_RESTART_MEM_list', 'COM_ICE_RESTART_TMPL'),
+                ('COMIN_MED_RESTART_MEM_list', 'COM_MED_RESTART_TMPL'),
+            ]
+
+            # Initialize member lists from template mappings
+            member_lists = {list_key: [] for list_key, _ in template_mappings}
+
+            for mem in range(first_group_mem, last_group_mem + 1):
+                # Create member-specific cycle dictionary
+                cycle_dict = deepcopy(ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict'])
+                cycle_dict['${MEMDIR}'] = f"mem{mem:03d}"
+
+                # Generate COM paths for this member and append to lists
+                for list_key, template_key in template_mappings:
+                    if config_dict.get(template_key):
+                        com_path = ArchiveTarVars._replace_template_vars(
+                            config_dict[template_key], cycle_dict
+                        )
+                        member_lists[list_key].append(com_path)
+
+            # Add ensstat path (COMIN_CONF)
+            # Note: COMIN_CONF is a single path string, not a list like the other entries
+            cycle_dict = deepcopy(ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict'])
+            cycle_dict['${MEMDIR}'] = 'ensstat'
+            if config_dict.get('COM_CONF_TMPL'):
+                member_lists['COMIN_CONF'] = ArchiveTarVars._replace_template_vars(  # type: ignore[assignment]
+                    config_dict['COM_CONF_TMPL'], cycle_dict
+                )
+
+            logger.debug(f"Generated COM path lists for group {ensgrp} ({last_group_mem - first_group_mem + 1} members)")
+            return member_lists
