@@ -39,7 +39,12 @@ fi
 
 #GENERATE MONTHLY MEAN FILES FROM SFS DAILY HISTORY FILES AND ADD MONTHLY D20/OHC/TCHP
 if [[ "${RUN}" == sfs ]]; then
+    if [[ ${FHMAX_GFS} -lt 744 ]]; then
+       echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
+       err_exit
+    else
     last_fh_output="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc"
+    fi
     if [[ -f ${last_fh_output} ]]; then
        file_list="${DATAoutput}/MOM6_OUTPUT/ocn_????_??_28_12.nc"
        file_list_mon="$( ls ${file_list} )"
