@@ -25,6 +25,8 @@ if __name__ == '__main__':
     fireemis.execute()
     fireemis.finalize()
 
+    config = cast_strdict_as_dtypedict(os.environ)
+
     nxsemis = NEXUSEmissions(config)
     nxsemis.initialize()
     nxsemis.configure()

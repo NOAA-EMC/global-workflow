@@ -2017,7 +2017,7 @@ class GFSTasks(Tasks):
                 deps2.append(rocoto.add_dependency(dep_dict))
                 deps3 = []
                 for lookback in range(n_lookback):
-                    offset = timedelta_to_HMS(-to_timedelta(f'{assim_freq * (lookback+1)}H'))
+                    offset = timedelta_to_HMS(-to_timedelta(f'{assim_freq * (lookback + 1)}H'))
                     dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy', 'offset': offset}
                     deps3.append(rocoto.add_dependency(dep_dict))
 
