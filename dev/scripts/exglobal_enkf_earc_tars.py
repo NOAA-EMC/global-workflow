@@ -3,7 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
-from pygfs.task.archive_tar_vars import ArchiveTar
+from pygfs.utils.archive_tar_vars import ArchiveTarVars
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, chdir, logit
 
 # initialize root logger
@@ -19,8 +19,8 @@ def main():
     archive = Archive(config)
 
     # Collect all configuration keys and COM variables
-    # Uses centralized method from ArchiveTar utility class
-    archive_dict = ArchiveTar.add_config_vars(archive.task_config)
+    # Uses centralized method from ArchiveTarVars utility class
+    archive_dict = ArchiveTarVars.add_config_vars(archive.task_config)
 
     with chdir(config.ROTDIR):
 
