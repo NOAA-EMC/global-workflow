@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     # Initialize JEDI variational analysis
     if not config.DO_JEDIATMVAR:
-        AnlStats.convert_gsi_diags()    
+        AnlStats.convert_gsi_diags()
     AnlStats.initialize()
     for anl in config.STAT_ANALYSES:
         AnlStats.execute(anl)
