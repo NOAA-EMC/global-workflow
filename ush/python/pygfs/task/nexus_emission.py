@@ -56,9 +56,6 @@ class NEXUSEmissions(Task):
         super().__init__(config)
 
         self.task_config = AttrDict(config)
-        from pprint import pprint
-        pprint(self.task_config)
-
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
 
