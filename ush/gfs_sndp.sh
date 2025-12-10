@@ -8,7 +8,7 @@
 ################################################################
 
 #  Create "collectives" consisting of groupings of the soundings
-#  into files designated by geographical region.   Each input
+#  into files designated by geographical region. Each input
 #  file gfs_collective*.list (1-9) contains the list of stations to
 #  put in a particular collective output file.
 export m=$1
@@ -27,7 +27,7 @@ else
 fi
 
 while IFS= read -r stn; do
-    cpreq "${COMOUT_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
+    cpreq "${COMIN_ATMOS_BUFR}/bufr.${stn}.${PDY}${cyc}" "${DATA}/${m}/bufrin"
     export pgm=tocsbufr.x
     #. prep_step
     export FORT11="${DATA}/${m}/bufrin"
@@ -50,7 +50,7 @@ EOF
     rm -f "${DATA}/${m}/bufrin" "${DATA}/${m}/bufrout"
 done < "${file_list}"
 
-if [[ ${SENDDBN} == 'YES' ]]; then
+if [[ "${SENDDBN}" == 'YES' ]]; then
     cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
     "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
         "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
