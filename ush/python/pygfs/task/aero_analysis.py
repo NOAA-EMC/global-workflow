@@ -147,7 +147,7 @@ class AerosolAnalysis(Analysis):
         # Archive and save radiative bias correction files into COM directory
         logger.info(f"Saving radiative bias correction files to COM")
         self.jedi_dict['aeroanlvar'].save_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                                                    f"{self.task_config.APREFIX}aero_varbc_params")
+                                                                     f"{self.task_config.APREFIX}aero_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

@@ -157,7 +157,7 @@ class Jedi:
         ob_dest = self.jcb_config[f'{self.model}_obsdatain_path']
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
-            ob_src = os.path.join(comin, 
+            ob_src = os.path.join(comin,
                                   self.jcb_config[f'{self.model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.model}_obsdatain_suffix'])
 
             fh_dict['copy_opt'].append([ob_src, ob_dest])
@@ -208,7 +208,7 @@ class Jedi:
                 fh_dict['copy_opt'].append([bias_src, bias_dest])
 
                 # Don't copy same file multiple times
-                files_already_copied.append(observation_from_jcb)     
+                files_already_copied.append(observation_from_jcb)
 
         # Execute FileHandler sync
         FileHandler(fh_dict).sync()
@@ -223,7 +223,7 @@ class Jedi:
                 if os.path.exists(bias_file_path):
                     extract_tar(bias_file_path)
                 else:
-                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")               
+                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
 
     @logit(logger)
     def save_diag_files(self, comout: str, archive_name: str) -> None:
@@ -303,11 +303,12 @@ class Jedi:
         logger.info(f"Creating radiance bias correction tarball {tarball}")
         with tarfile.open(tarball, 'w') as radbcor:
             logger.info(f"Adding {radbcor.getnames()}")
-            for satfile in satlist+satcovlist:
+            for satfile in satlist + satcovlist:
                 radbcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"], self.jcb_config[f"{self.model}_obsbiasout_prefix"])))
+                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
+                                                                                self.jcb_config[f"{self.model}_obsbiasout_prefix"])))
 
         # Copy files to COM
         FileHandler({'copy_opt': [[tarball, comout]]}).sync()
@@ -538,6 +539,7 @@ def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
 
     logger.info(f"Key '{target_key}' not found in the nested dictionary")
     return None
+
 
 @logit(logger)
 def extract_tar(tar_file: str) -> None:
