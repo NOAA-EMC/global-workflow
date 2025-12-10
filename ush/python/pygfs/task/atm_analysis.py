@@ -97,7 +97,7 @@ class AtmAnalysis(Analysis):
 
         # Stage bias correction files
         logger.info(f"Staging bias correction files")
-        self.jedi_dict['atmanlvar'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV, self.task_config.bias_files)
+        self.jedi_dict['atmanlvar'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
 
         # Initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")

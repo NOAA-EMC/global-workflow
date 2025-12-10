@@ -46,7 +46,7 @@ gfsa:
         {% endif %}
         {% if DO_JEDIOCNVAR %}
         - "{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
-        {% end if}
+        {% endif %}
         {% if DO_PREP_OBS_AERO %}
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"

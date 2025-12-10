@@ -101,9 +101,9 @@ class AerosolAnalysis(Analysis):
 
         # Stage bias correction files
         logger.info(f"Staging bias correction files")
-        self.jedi_dict['aeroanlvar'].stage_bias_corrections(self.task_config.COMIN_CHEM_ANALYSIS_PREV, self.task_config.bias_files)
+        self.jedi_dict['aeroanlvar'].stage_bias_corrections(self.task_config.COMIN_CHEM_ANALYSIS_PREV)
 
-        # initialize JEDI variational application
+        # Initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
         self.jedi_dict['aeroanlvar'].initialize(clean_empty_obsspaces=True)
 

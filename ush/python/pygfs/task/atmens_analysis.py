@@ -83,7 +83,7 @@ class AtmEnsAnalysis(Analysis):
 
         # Stage bias correction files
         logger.info(f"Staging bias correction files")
-        self.jedi_dict['atmensanlobs'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV, self.task_config.bias_files)
+        self.jedi_dict['atmensanlobs'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")

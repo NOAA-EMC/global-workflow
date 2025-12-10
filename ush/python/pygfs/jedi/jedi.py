@@ -16,7 +16,7 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
 logger = getLogger(__name__.split('.')[-1])
 
 required_jedi_keys = ['rundir', 'exe_src', 'mpi_cmd', 'jcb_base_yaml']
-optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml']
+optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml', 'obs_list_yaml', 'bias_files_yaml']
 
 
 class Jedi:
@@ -72,13 +72,17 @@ class Jedi:
         self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         if self.jedi_config.jcb_algo_yaml is not None:
             self.jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
+        if self.jedi_config.jcb_algo is not None:
+            self.jcb_config.algorithm = self.jedi_config.jcb_algo
+        if self.jedi_config.obs_list_yaml is not None:
+            self.jcb_config['observations'] = parse_j2yaml(self.jedi_config.obs_list_yaml, task_config)['observations']
+        if self.jedi_config.bias_files_yaml is not None:
+            self.jcb_config['bias_files_dict'] = parse_j2yaml(self.jedi_config.bias_files_yaml, task_config)['bias_files']
 
-        # Check that "app_path_model" is present in jcb_config
+        # Set model attribute, checking that "app_path_model" is present in jcb_config
         key = 'app_path_model'
         if key not in self.jcb_config:
             raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-        # Set model attribute
         self.model = self.jcb_config['app_path_model'].split('/')[-1]
 
         # Initialize other attributes
@@ -89,7 +93,7 @@ class Jedi:
         self._jcb_config = self.jcb_config.deepcopy()
 
     @logit(logger)
-    def initialize(self, observations: Optional[List] = None, clean_empty_obsspaces: Optional[bool] = False) -> None:
+    def initialize(self, clean_empty_obsspaces: Optional[bool] = False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -111,7 +115,7 @@ class Jedi:
 
         # Render JEDI executable config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.exe_config_yaml}")
-        self.exe_config = self.render_jcb_template(observations=observations)
+        self.exe_config = self.render_jcb_template()
         logger.debug(f"JEDI config:\n{self.exe_config}")
 
         # Remove obs spaces from JEDI executable config dictionary with missing obs files
@@ -122,196 +126,6 @@ class Jedi:
         # Save JEDI exectuable config dictionary to YAML in run directory
         logger.debug(f"Writing JEDI YAML config to: {self.jedi_config.exe_config_yaml}")
         save_as_yaml(self.exe_config, self.jedi_config.exe_config_yaml)
-
-    @logit(logger)
-    def stage_observations(self, comin) -> None:
-        """Stage observation data files specified in JCB configuration dictionary
-
-        This method will stage observation data files specified in the JCB configuration
-        dictionary
-
-        Parameters
-        ----------
-        comin: str
-            path to COM input directory
-
-        Returns
-        ----------
-        None
-        """
-
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsdatain_path', 'obsdataout_path', 'obsdatain_prefix', 'obsdatain_suffix']:
-            key = f'{self.model}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-        # Initialize FileHandler input dictionary
-        fh_dict = {'mkdir': [], 'copy_opt': []}
-
-        # Make directories
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsdatain_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsdataout_path'])
-
-        # Copy files
-        ob_dest = self.jcb_config[f'{self.model}_obsdatain_path']
-        for observation_from_jcb in self.jcb_config['observations']:
-            # Observations
-            ob_src = os.path.join(comin,
-                                  self.jcb_config[f'{self.model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.model}_obsdatain_suffix'])
-
-            fh_dict['copy_opt'].append([ob_src, ob_dest])
-
-        # Execute FileHandler sync
-        FileHandler(fh_dict).sync()
-
-    @logit(logger)
-    def stage_bias_corrections(self, comin, bias_file_dict: Dict[str, str]) -> None:
-        """Stage bias correction files specified in JEDI input configuration dictionary
-
-        This method will stage bias correction files specified in the JEDI input
-        configuration dictionary using a FileHandler object, and then extract the
-        bias correction files from the tar files.
-
-        Parameters
-        ----------
-        comin: str
-            path to COMIN directory
-        bias_file_dict: Dict[str, str]
-            dictionary mapping observation names to bias correction tar file names
-
-        Returns
-        ----------
-        None
-        """
-
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix']:
-            key = f'{self.model}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-        # Initialize FileHandler input dictionary
-        fh_dict = {'mkdir': [], 'copy_opt': []}
-
-        # Make directories
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasin_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasout_path'])
-
-        # Copy files
-        files_already_copied = []
-        bias_dest = self.jcb_config[f'{self.model}_obsbiasin_path']
-        for observation_from_jcb in self.jcb_config['observations']:
-            if observation_from_jcb in bias_file_dict and observation_from_jcb not in files_already_copied:
-                bias_src = os.path.join(comin, self.jcb_config[f'{self.model}_obsbiasin_prefix'] + bias_file_dict[observation_from_jcb])
-
-                fh_dict['copy_opt'].append([bias_src, bias_dest])
-
-                # Don't copy same file multiple times
-                files_already_copied.append(observation_from_jcb)
-
-        # Execute FileHandler sync
-        FileHandler(fh_dict).sync()
-
-        # Untar bias corrections
-        bias_file_list = []
-        for ob in self.jcb_config['observations']:
-            if ob in bias_file_dict and not bias_file_dict[ob] in bias_file_list:
-                bias_file_list.append(bias_file_dict[ob])
-                bias_file_path = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
-                                              self.jcb_config[f"{self.model}_obsbiasin_prefix"] + bias_file_dict[ob])
-                if os.path.exists(bias_file_path):
-                    extract_tar(bias_file_path)
-                else:
-                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
-
-    @logit(logger)
-    def save_diag_files(self, comout: str, archive_name: str) -> None:
-        """Archive diag files and compress archive into COM directory
-
-        Parameters
-        ----------
-        comout: str
-            path to COM output directory
-        archive_name: str
-            name of output tar file
-
-        Returns
-        ----------
-        None
-        """
-
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsdataout_path', 'obsdataout_prefix']:
-            key = f'{self.model}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-        # Set paths of output tar files
-        tarball = f"{archive_name}.tar"
-
-        # Get lists of files to put in tarballs
-        diaglist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"], self.jcb_config[f"{self.model}_obsdataout_prefix"] + '*nc'))
-
-        # Create tarball of diag files in COM
-        logger.debug(f"Creating tarball {tarball} with {len(diaglist)} diag files")
-        with tarfile.open(tarball, "w") as archive:
-            for diagfile in diaglist:
-                archive.add(diagfile, arcname=os.path.basename(diagfile))
-
-        # Compress the tar file
-        logger.info(f"Compressing {tarball}")
-        with open(tarball, 'rb') as f_in, gzip.open(f"{tarball}.gz", 'wb') as f_out:
-            f_out.writelines(f_in)
-
-        # Copy files to COM
-        FileHandler({'copy_opt': [[f"{tarball}.gz", comout]]}).sync()
-
-    @logit(logger)
-    def save_radiative_bias_corrections(self, comout: str, archive_name: str) -> None:
-        """Tar radiative bias correction files and into COM directory
-
-        Parameters
-        ----------
-        comout: str
-            path to COM output directory
-        archive_name: str
-            name of output tar file
-
-        Returns
-        ----------
-        None
-        """
-
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
-                     'obsbiasout_prefix', 'obsbiasin_suffix', 'obsbiascovin_suffix',
-                     'obstlapsein_suffix']:
-            key = f'{self.model}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
-        # Set paths of output tar files
-        tarball = f"{archive_name}.tar"
-
-        # Get lists of files to put in tarballs
-        satlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiasin_suffix"]))
-        satcovlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiascovin_suffix"]))
-        tlaplist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"], '*' + self.jcb_config[f"{self.model}_obstlapsein_suffix"]))
-
-        # Create tarball of radiance bias correction files
-        logger.info(f"Creating radiance bias correction tarball {tarball}")
-        with tarfile.open(tarball, 'w') as radbcor:
-            logger.info(f"Adding {radbcor.getnames()}")
-            for satfile in satlist + satcovlist:
-                radbcor.add(satfile, arcname=os.path.basename(satfile))
-            for tlapfile in tlaplist:
-                # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
-                                                                                self.jcb_config[f"{self.model}_obsbiasout_prefix"])))
-
-        # Copy files to COM
-        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
 
     @logit(logger)
     def execute(self) -> None:
@@ -343,7 +157,7 @@ class Jedi:
             raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
 
     @logit(logger)
-    def render_jcb_template(self, algorithm_in: Optional[str] = None, observations: Optional[List] = None) -> AttrDict:
+    def render_jcb_template(self, algorithm_in: Optional[str] = None) -> AttrDict:
         """Compile a JEDI configuration dictionary from a template file and save to a YAML file
 
         Parameters
@@ -351,9 +165,6 @@ class Jedi:
         algorithm (optional) : str
             Name of the algorithm used to generate the JEDI configuration dictionary.
             It will override the algorithm set in the jedi_config.jcb_algo_yaml file.
-        observations (optional) : List
-            List of observations to include in the JEDI configuration dictionary.
-            If not specified, the observations in the jcb_config dictionary will be used.
 
         Returns
         ----------
@@ -371,10 +182,6 @@ class Jedi:
         else:
             raise WorkflowKeyError("JCB algorithm not specified")
         self.jcb_config['algorithm'] = algorithm
-
-        # Set observations if specified as input
-        if observations:
-            self.jcb_config['observations'] = observations
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
@@ -467,6 +274,194 @@ class Jedi:
             # Warn if no observers left in list
             if observers == []:
                 logger.warning(f"No observers found in JEDI input config")
+
+    @logit(logger)
+    def stage_observations(self, comin) -> None:
+        """Stage observation data files specified in JCB configuration dictionary
+
+        This method will stage observation data files specified in the JCB configuration
+        dictionary
+
+        Parameters
+        ----------
+        comin: str
+            path to COM input directory
+
+        Returns
+        ----------
+        None
+        """
+
+        # Check that other required keys are present in jcb_config
+        for stem in ['obsdatain_path', 'obsdataout_path', 'obsdatain_prefix', 'obsdatain_suffix']:
+            key = f'{self.model}_{stem}'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+        # Initialize FileHandler input dictionary
+        fh_dict = {'mkdir': [], 'copy_opt': []}
+
+        # Make directories
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsdatain_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsdataout_path'])
+
+        # Copy files
+        ob_dest = self.jcb_config[f'{self.model}_obsdatain_path']
+        for observation_from_jcb in self.jcb_config['observations']:
+            # Observations
+            ob_src = os.path.join(comin,
+                                  self.jcb_config[f'{self.model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.model}_obsdatain_suffix'])
+
+            fh_dict['copy_opt'].append([ob_src, ob_dest])
+
+        # Execute FileHandler sync
+        FileHandler(fh_dict).sync()
+
+    @logit(logger)
+    def stage_bias_corrections(self, comin) -> None:
+        """Stage bias correction files specified in JEDI input configuration dictionary
+
+        This method will stage bias correction files specified in the JEDI input
+        configuration dictionary using a FileHandler object, and then extract the
+        bias correction files from the tar files.
+
+        Parameters
+        ----------
+        comin: str
+            path to COMIN directory
+
+        Returns
+        ----------
+        None
+        """
+
+        # Check that other required keys are present in jcb_config
+        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix']:
+            key = f'{self.model}_{stem}'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+        # Initialize FileHandler input dictionary
+        fh_dict = {'mkdir': [], 'copy_opt': []}
+
+        # Make directories
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasin_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasout_path'])
+
+        # Copy files
+        files_already_copied = []
+        bias_dest = self.jcb_config[f'{self.model}_obsbiasin_path']
+        for observation_from_jcb in self.jcb_config['observations']:
+            if observation_from_jcb in self.jcb_config.bias_file_dict and observation_from_jcb not in files_already_copied:
+                bias_src = os.path.join(comin, self.jcb_config[f'{self.model}_obsbiasin_prefix'] + self.jcb_config.bias_file_dict[observation_from_jcb])
+
+                fh_dict['copy_opt'].append([bias_src, bias_dest])
+
+                # Don't copy same file multiple times
+                files_already_copied.append(observation_from_jcb)
+
+        # Execute FileHandler sync
+        FileHandler(fh_dict).sync()
+
+        # Untar bias corrections
+        bias_file_list = []
+        for ob in self.jcb_config['observations']:
+            if ob in self.jcb_config.bias_file_dict and not self.jcb_config.bias_file_dict[ob] in bias_file_list:
+                bias_file_list.append(self.jcb_config.bias_file_dict[ob])
+                bias_file_path = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
+                                              self.jcb_config[f"{self.model}_obsbiasin_prefix"] + self.jcb_config.bias_file_dict[ob])
+                if os.path.exists(bias_file_path):
+                    extract_tar(bias_file_path)
+                else:
+                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
+
+    @logit(logger)
+    def save_diag_files(self, comout: str, archive_name: str) -> None:
+        """Archive diag files and compress archive into COM directory
+
+        Parameters
+        ----------
+        comout: str
+            path to COM output directory
+        archive_name: str
+            name of output tar file
+
+        Returns
+        ----------
+        None
+        """
+
+        # Check that other required keys are present in jcb_config
+        for stem in ['obsdataout_path', 'obsdataout_prefix']:
+            key = f'{self.model}_{stem}'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+        # Set paths of output tar files
+        tarball = f"{archive_name}.tar"
+
+        # Get lists of files to put in tarballs
+        diaglist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"], self.jcb_config[f"{self.model}_obsdataout_prefix"] + '*nc'))
+
+        # Create tarball of diag files in COM
+        logger.debug(f"Creating tarball {tarball} with {len(diaglist)} diag files")
+        with tarfile.open(tarball, "w") as archive:
+            for diagfile in diaglist:
+                archive.add(diagfile, arcname=os.path.basename(diagfile))
+
+        # Compress the tar file
+        logger.info(f"Compressing {tarball}")
+        with open(tarball, 'rb') as f_in, gzip.open(f"{tarball}.gz", 'wb') as f_out:
+            f_out.writelines(f_in)
+
+        # Copy files to COM
+        FileHandler({'copy_opt': [[f"{tarball}.gz", comout]]}).sync()
+
+    @logit(logger)
+    def save_radiative_bias_corrections(self, comout: str, archive_name: str) -> None:
+        """Tar radiative bias correction files and into COM directory
+
+        Parameters
+        ----------
+        comout: str
+            path to COM output directory
+        archive_name: str
+            name of output tar file
+
+        Returns
+        ----------
+        None
+        """
+
+        # Check that other required keys are present in jcb_config
+        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
+                     'obsbiasout_prefix', 'obsbiasin_suffix', 'obsbiascovin_suffix',
+                     'obstlapsein_suffix']:
+            key = f'{self.model}_{stem}'
+            if key not in self.jcb_config:
+                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+
+        # Set paths of output tar files
+        tarball = f"{archive_name}.tar"
+
+        # Get lists of files to put in tarballs
+        satlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiasin_suffix"]))
+        satcovlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiascovin_suffix"]))
+        tlaplist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"], '*' + self.jcb_config[f"{self.model}_obstlapsein_suffix"]))
+
+        # Create tarball of radiance bias correction files
+        logger.info(f"Creating radiance bias correction tarball {tarball}")
+        with tarfile.open(tarball, 'w') as radbcor:
+            logger.info(f"Adding {radbcor.getnames()}")
+            for satfile in satlist + satcovlist:
+                radbcor.add(satfile, arcname=os.path.basename(satfile))
+            for tlapfile in tlaplist:
+                # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
+                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
+                                                                                self.jcb_config[f"{self.model}_obsbiasout_prefix"])))
+
+        # Copy files to COM
+        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
 
 
 @logit(logger)

@@ -44,18 +44,6 @@ class Analysis(Task):
         for hour in self.task_config.IAUFHRS:
             _iau_times_iso.append(to_isotime(_window_begin + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2))
 
-        # Get observations list from obs list yaml
-        if 'OBS_LIST_YAML' in self.task_config:
-            _observations = parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations']
-        else:
-            _observations = []
-
-        # Get bias correction dict from bias files yaml
-        if 'BIAS_FILES_YAML' in self.task_config:
-            _bias_files = parse_j2yaml(self.task_config.BIAS_FILES_YAML, self.task_config)['bias_files']
-        else:
-            _bias_files = AttrDict
-
         # Set prefix needed for GPREFIX, depedning on the model
         if self.task_config.NET == 'gcafs':
             _da_prefix = 'gcdas'
@@ -77,8 +65,6 @@ class Analysis(Task):
                 'GPREFIX_ENS': f"enkf{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
                 'OCNRES': f"{self.task_config.OCNRES:03d}",
                 'iau_times_iso': _iau_times_iso,
-                'observations': _observations,
-                'bias_files': _bias_files,
                 'snow_bkg_path': os.path.join('.', 'bkg/'),  # TODO: remove this line
             }
         ))
