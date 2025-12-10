@@ -52,8 +52,9 @@ mapfile -t fhrs <<< "$(seq 0 3 84) $(seq 90 6 240)"
 link_master_to_fhr "jgfs_atmos_awips" "${fhrs[*]}"
 
 # GFS awips g2 files
-cd "${ECF_DIR}/scripts/gfs/atmos/post_processing/awips_g2"
-echo "Linking gfs/atmos/post_processing/awips_g2 ..."
-# shellcheck disable=SC2312
-mapfile -t fhrs <<< "$(seq 0 3 84) $(seq 90 6 240)"
-link_master_to_fhr "jgfs_atmos_awips_g2" "${fhrs[*]}"
+# TODO: Copy g2 ecf directory from v16 to develop
+# cd "${ECF_DIR}/scripts/gfs/atmos/post_processing/awips_g2"
+# echo "Linking gfs/atmos/post_processing/awips_g2 ..."
+# # shellcheck disable=SC2312
+# mapfile -t fhrs <<< "$(seq 0 3 84) $(seq 90 6 240)"
+# link_master_to_fhr "jgfs_atmos_awips_g2" "${fhrs[*]}"
