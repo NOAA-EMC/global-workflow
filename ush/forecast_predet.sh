@@ -753,54 +753,7 @@ GOCART_predet(){
   # FHMAX gets modified when IAU is on, so keep origianl value for GOCART output
   GOCART_MAX=${FHMAX}
 
-  #TODO: fix to copying data so that its required
+  #TODO: fix to copying data so that its required for EE2 compliance.  Will submit 
+  # a subsequent PR to fix this properly.
   ${NLN} "${COMIN_CHEM_INPUT}" "${DATA}/ChemInput"
-  # Create the ChemInput directory in the local run directory
-
-  # if [[ ! -d "${DATA}/ChemInput" ]]; then mkdir -p "${DATA}/ChemInput"; fi
-
-  # # Copy Fire Emission Files ChemInput directory
-  # local current
-  # local YYYYMMDDHH
-  # current="${current_cycle_begin}"
-  # cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +24 hour" +%Y%m%d%H)
-  # while [[ "${current}" -le "${cycleend}" ]]; do
-  #   # Validate current is a valid date string
-  #   if ! YYYYMMDD=$(date -d "${current:0:8} ${current:8:2}:00:00" +%Y%m%d 2>/dev/null); then
-  #     echo "FATAL ERROR: Invalid date string '${current}' in GOCART_predet, ABORT!"
-  #     exit 1
-  #   fi
-  #   local FireEmisFile="${COMIN_CHEM_INPUT}/FIRE_EMIS_${YYYYMMDD}.nc"
-  #   if [[ -f "${FireEmisFile}" ]]; then
-  #     cpreq "${FireEmisFile}" "${DATA}/ChemInput/"
-  #   else
-  #     echo "FATAL ERROR: GOCART input file '${FireEmisFile}' does not exist, ABORT!"
-  #     exit 1
-  #   fi
-
-  #   # Increment by 1 day
-  #   current=$(date -d "${current:0:8} ${current:8:2} +1 day" +%Y%m%d%H)
-  # done
-
-  # # Copy NXS Emission Files ChemInput directory
-  # # NXS files are hourly, so we need to loop through each hour in the cycle
-  # current=$(date -d "${current_cycle_begin:0:8} ${current_cycle_begin:8:2}" +%Y%m%d%H)
-  # cycleend=$(date -d "${current_cycle_end:0:8} ${current_cycle_end:8:2} +1 hour" +%Y%m%d%H)
-  # while [[ "${current}" -le "${cycleend}" ]]; do
-  #   if ! YYYYMMDD=$(date -d "${current:0:8} ${current:8:2}:00:00" +%Y%m%d 2>/dev/null); then
-  #     echo "FATAL ERROR: Invalid date string '${current}' in GOCART_predet, ABORT!"
-  #     exit 1
-  #   fi
-  #   local NXSFile="${COMIN_CHEM_INPUT}/${NEXUS_DIAG_PREFIX}.${YYYYMMDD}.nc"
-  #   if [[ -f "${NXSFile}" ]]; then
-  #     cpreq "${NXSFile}" "${DATA}/ChemInput/"
-  #   else
-  #     echo "FATAL ERROR: GOCART input file '${NXSFile}' does not exist, ABORT!"
-  #     exit 1
-  #   fi
-  #   # Increment by 1 hour
-  #   current=$(date -d "${current:0:8} ${current:8:2} +1 hour" +%Y%m%d%H)
-  # done
-
-  # GOCART output times can't be computed here because they may depend on FHROT
 }

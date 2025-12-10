@@ -66,7 +66,6 @@ case ${step} in
     export ntasks=1
     export threads_per_task=${max_tasks_per_node}
     export tasks_per_node=1
-    export OMP_NUM_THREADS="${threads_per_task}"
     export is_exclusive=True
     ;;
 

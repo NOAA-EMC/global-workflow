@@ -67,9 +67,9 @@ class NEXUSEmissions(Task):
             nforecast_hours = self.task_config["FHMAX_GFS"]
 
         # Create start date based on SDATE
-        self.start_date = self.task_config["CDATE"]
+        self.start_date = self.task_config["current_cycle"]
         self.total_hrs = nforecast_hours + 3
-        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{self.total_hrs}H')
+        self.end_date = self.task_config["current_cycle"] + to_timedelta(f'{self.total_hrs}H')
 
         logger.info(f'SDATE_GFS: {self.start_date}')
         logger.info(f'nforecast_hours: {nforecast_hours}')
