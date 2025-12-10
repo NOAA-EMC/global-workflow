@@ -15,7 +15,7 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
 
 logger = getLogger(__name__.split('.')[-1])
 
-required_jedi_keys = ['rundir', 'exe_src', 'mpi_cmd', 'jcb_base_yaml']
+required_jedi_keys = ['jedi_app_name', 'rundir', 'exe_src', 'mpi_cmd', 'jcb_base_yaml']
 optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml', 'obs_list_yaml', 'bias_files_yaml']
 
 
@@ -47,13 +47,14 @@ class Jedi:
         """
 
         # Make sure input dictionary for Jedi class constructor has the required keys
-        if 'jedi_app_name' not in config:
-            raise WorkflowKeyError(f"Required key 'jedi_app_name' not found in config")
         for key in required_jedi_keys:
             if key not in config:
                 raise WorkflowKeyError(f"Required key '{key}' not found in config")
-        if 'jcb_algo' not in config and 'jcb_algo_yaml' not in config:
-            raise WorkflowKeyError("Either jcb_algo or jcb_algo_yaml must be specified in config")
+
+        # Set optional keys in jedi_config to None if not already present
+        for key in optional_jedi_keys:
+            if key not in self.jedi_config:
+                self.jedi_config[key] = None
 
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
@@ -63,11 +64,6 @@ class Jedi:
         )
         self.jedi_config = AttrDict(**config, **local_dict)
 
-        # Set optional keys in jedi_config to None if not already present
-        for key in optional_jedi_keys:
-            if key not in self.jedi_config:
-                self.jedi_config[key] = None
-
         # Initialize JCB config dictionary, adding JCB algorithm YAML if it exists
         self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
         if self.jedi_config.jcb_algo_yaml is not None:
@@ -76,8 +72,6 @@ class Jedi:
             self.jcb_config.algorithm = self.jedi_config.jcb_algo
         if self.jedi_config.obs_list_yaml is not None:
             self.jcb_config['observations'] = parse_j2yaml(self.jedi_config.obs_list_yaml, task_config)['observations']
-        if self.jedi_config.bias_files_yaml is not None:
-            self.jcb_config['bias_files_dict'] = parse_j2yaml(self.jedi_config.bias_files_yaml, task_config)['bias_files']
 
         # Set model attribute, checking that "app_path_model" is present in jcb_config
         key = 'app_path_model'
@@ -140,7 +134,7 @@ class Jedi:
         None
         """
 
-        # TODO: not sure if this chdir does anthything
+        # TODO: not sure if this chdir does anyththing
         chdir(self.jedi_config.rundir)
 
         exec_cmd = Executable(self.jedi_config.mpi_cmd)
@@ -175,17 +169,14 @@ class Jedi:
         # Set algorithm (method input algorithm takes precedence)
         if algorithm_in is not None:
             algorithm = algorithm_in
-        elif self.jedi_config.jcb_algo is not None:
-            algorithm = self.jedi_config.jcb_algo
         elif 'algorithm' in self.jcb_config:
-            algorithm = self.jcb_config.algorithm
+            algorithm = self.jcb_config['algorithm']
         else:
             raise WorkflowKeyError("JCB algorithm not specified")
-        self.jcb_config['algorithm'] = algorithm
 
         # Generate JEDI YAML config by rendering JCB config dictionary
         try:
-            exe_config = render(self.jcb_config)
+            exe_config = render({**self.jcb_config, **{'algorithm': algorithm}})
         except Exception as e:
             raise WorkflowException(f"An error occurred while rendering JCB template for algorithm {algorithm}:\n{e}") from e
 
@@ -215,16 +206,6 @@ class Jedi:
         for block_name in jedi_config_dict:
             # jedi_app_name key is set to name for this block
             jedi_config_dict[block_name]['jedi_app_name'] = block_name
-
-            # Make sure all required keys present
-            for key in required_jedi_keys:
-                if key not in jedi_config_dict[block_name]:
-                    raise WorkflowKeyError(f"Required key {key} not found in {jedi_config_yaml} for block {block_name}.")
-
-            # Set optional keys to None
-            for key in optional_jedi_keys:
-                if key not in jedi_config_dict[block_name]:
-                    jedi_config_dict[block_name][key] = None
 
             # Construct JEDI object
             jedi_dict[block_name] = Jedi(jedi_config_dict[block_name], task_config)
