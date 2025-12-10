@@ -69,7 +69,7 @@ class NEXUSEmissions(Task):
             nforecast_hours = self.task_config["FHMAX_GFS"]
 
         # Create start date based on SDATE
-        #TODO: Find reason for current_cycle dropping from task_config after chem_fire_emission.py
+        # TODO: Find reason for current_cycle dropping from task_config after chem_fire_emission.py
         # SDATE is added to self.task_config as a copy of self.task_config["current_cycle"]
         self.task_config['current_cycle'] = self.task_config["SDATE"]
         self.start_date = self.task_config["current_cycle"]
