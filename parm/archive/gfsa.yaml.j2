@@ -37,13 +37,16 @@ gfsa:
         {% if DO_JEDIATMVAR %}
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.atm.yaml"
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.fv3.atm.yaml"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atm_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
         {% endif %}
         {% if DO_AERO_ANL %}
         - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
         {% endif %}
+        {% if DO_JEDIOCNVAR %}
+        - "{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
+        {% end if}
         {% if DO_PREP_OBS_AERO %}
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"

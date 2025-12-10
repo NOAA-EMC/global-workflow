@@ -38,7 +38,7 @@
                                     ARCDIR ~ "/pgbanl." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
 
     {% if DO_JEDIATMVAR == True %}
-        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "atm_analysis.ioda_hofx.tar.gz",
+        {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "atmos_analysis.ioda_hofx.tar.gz",
                                     ARCDIR ~ "/atmstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
         {% do det_anl_files.append([COMIN_ATMOS_ANALYSIS ~ "/" ~ head ~ "gsistat.txt",
@@ -53,6 +53,11 @@
     {% if DO_AERO_ANL %}
         {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aero_analysis.ioda_hofx.tar.gz",
                                     ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
+    {% endif %}
+
+    {% if DO_JEDIOCNVAR %}
+        {% do det_anl_files.append([COMIN_OCEAN_ANALYSIS ~ "/" ~ head ~ "marine_analysis.ioda_hofx.tar.gz",
+                                    ARCDIR ~ "/marinestat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
     {% endif %}
 
     {% if DO_PREP_OBS_AERO == True %}
@@ -135,7 +140,7 @@
     # Ensemble analysis files
     {% set enkf_files = [] %}
     {% if DO_JEDIATMENS == True %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atm_analysis.ioda_hofx.ens_mean.tar.gz",
+        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmos_analysis.ioda_hofx.ens_mean.tar.gz",
                                  ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
     {% else %}
         {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat.txt",
