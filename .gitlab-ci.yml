@@ -148,9 +148,8 @@ include:
       echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
 
-      # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
-      # TODO: Remove this when upstream Rocoto PR is merged
-      # Load platform-specific configuration first
+      # Load custom Rocoto path if specified for user controle of Rocoto version
+      # This allows testing with different Rocoto builds without changing system Rocoto
       source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
       if [[ -n "${ROCOTO_PATH:-}" && -d "${ROCOTO_PATH}" ]]; then
         export PATH="${ROCOTO_PATH}:$PATH"
