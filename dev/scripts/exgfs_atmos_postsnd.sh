@@ -149,20 +149,21 @@ else
 fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
 
-##############################################################
-# Tar and gzip the individual bufr files and send them to /com
-##############################################################
-cd "${COMOUT_ATMOS_BUFR}" || exit 2
-# shellcheck disable=SC2312
-tar -cf - . | /usr/bin/gzip > "${RUN}.${cycle}.bufrsnd.tar.gz"
-cd "${DATA}" || exit 2
+############################################
+# Tar and gzip the bufr files created so far
+############################################
+find "${COMIN_ATMOS_BUFR}" -maxdepth 1 -type f -name "bufr.*" -printf '%f\n' > "${DATA}/all_bufr_files.txt"
+
+tar -czf "${RUN}.${cycle}.soundings.tar.gz" -C "${COMIN_ATMOS_BUFR}" -T "${DATA}/all_bufr_files.txt"
+
+cpfs "${RUN}.${cycle}.soundings.tar.gz" "${COMOUT_ATMOS_BUFR}/"
 
 ########################################
 # Send the single tar file to OSO
 ########################################
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL GFS_BUFRSND_TAR "${job}" \
-        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.bufrsnd.tar.gz"
+        "${COMOUT_ATMOS_BUFR}/${RUN}.${cycle}.soundings.tar.gz"
 fi
 
 ########################################
