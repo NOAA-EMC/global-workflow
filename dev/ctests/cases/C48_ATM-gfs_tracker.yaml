@@ -1,38 +1,38 @@
 # CTest Case: C48_ATM-gfs_tracker
 #
 # Purpose: Validate the execution of the tropical cyclone tracking algorithm
-# on a series of atmospheric forecast history files. This test ensures that
+# on a series of atmospheric forecast GRIB2 files. This test ensures that
 # the JGFS_ATMOS_CYCLONE_TRACKER job correctly identifies vortices and
 # produces valid tracker output files (a-deck and b-deck).
 #
-# Source pedigree: consumes the baseline gfs_fcst_seg0 history in
-# `model/atmos/history` under STAGED_CTESTS and compares tracker products
-# dropped in `products/atmos/cyclone/tracks`.
+# Source pedigree: consumes the baseline gfs_atmos_prod_f000-f002 (and subsequent)
+# GRIB2 products in `products/atmos/grib2/0p25` under STAGED_CTESTS and compares
+# tracker products dropped in `products/atmos/cyclone/tracks`.
 
 {% set cyc = TEST_DATE | strftime('%H') %}
 {% set PDY = TEST_DATE | to_YMD %}
 {% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
-{% set SRC_HISTORY_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/history' %}
-{% set DST_HISTORY_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/history' %}
+{% set SRC_GRIB_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
+{% set DST_GRIB_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
 {% set SRC_TRACKS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/tracks' %}
 {% set DST_TRACKS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/tracks' %}
 
 input_files:
     # Stage the same forecast history that fed the ops tracker run.
     mkdir:
-        - {{ DST_HISTORY_DIR }}
+        - {{ DST_GRIB_DIR }}
         - {{ DST_TRACKS_DIR }}
 
     copy:
-        # Files originate from {{ SRC_HISTORY_DIR }} inside the staged COMROOT.
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f000.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f001.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f001.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f002.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f002.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f003.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f003.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f004.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f004.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f005.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f005.nc]
-        - [{{ SRC_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc, {{ DST_HISTORY_DIR }}/gfs.t{{ cyc }}z.atm.f006.nc]
+        # Files originate from {{ SRC_GRIB_DIR }} inside the staged COMROOT.
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f000, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f000]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f001, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f001]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f002, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f002]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f003, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f003]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f004, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f004]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f005, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f005]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f006, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pgrb2.0p25.f006]
 
 output_files:
     # Tracker outputs - compare atcf format files
