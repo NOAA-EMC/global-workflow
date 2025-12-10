@@ -28,7 +28,7 @@ fi
 if [[ "${RUN}" == sfs ]]; then
     if [[ ${FHMAX_GFS} -lt 744 ]]; then
     echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
-    err_exit
+    exit 0
     else
     last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
     fi
