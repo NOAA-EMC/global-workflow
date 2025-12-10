@@ -74,6 +74,6 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
 #########################################################################
 
 # Utilities path for custom builds and role account tools
-# TODO: Populate with actual role account path for this machine
-export UTIL_PATH="/scratch3/NCEPDEV/global/Terry.McGuinness/utils"
-export ROCOTO_PATH="${UTIL_PATH}/src/rocoto_dryrun_update/bin"
+#export UTIL_PATH="/scratch3/NCEPDEV/global/Terry.McGuinness/utils"
+#export ROCOTO_PATH="${UTIL_PATH}/src/rocoto_dryrun_update/bin"
+unset ROCOTO_PATH

@@ -60,6 +60,7 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-epic-ps}
 # TODO: Populate with actual role account path for this machine
 export UTIL_PATH="/path/to/role/account/utils"
 
-# Custom Rocoto build path for testing (temporary)
-# TODO: Remove when upstream Rocoto PR is merged
-export ROCOTO_PATH="${UTIL_PATH}/Rocoto/bin"
+# Custom Rocoto build path for testing
+# used for CI jobs requiring Rocoto with dry_run support
+# export ROCOTO_PATH="${UTIL_PATH}/Rocoto/bin"
+unset ROCOTO_PATH

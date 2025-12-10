@@ -76,5 +76,7 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
 # Utilities path for custom builds and role account tools
 export UTIL_PATH="/scratch3/NCEPDEV/global/Terry.McGuinness"
 
-# Custom Rocoto build path for testing (temporary)
-export ROCOTO_PATH="${UTIL_PATH}/rocoto_forked/bin"
+# Custom Rocoto build path for testing
+# used for CI jobs requiring Rocoto with dry_run support
+# export ROCOTO_PATH="${UTIL_PATH}/rocoto_forked/bin"
+unset ROCOTO_PATH
