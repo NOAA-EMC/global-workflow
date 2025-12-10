@@ -15,8 +15,7 @@ from wxflow import (AttrDict,
                     logit,
                     Task,
                     to_timedelta,
-                    WorkflowException,
-                    Executable, which)
+                    WorkflowException)
 logger = getLogger(__name__.split('.')[-1])
 
 
