@@ -12,6 +12,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
+    COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
     COMOUT_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
     COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL \
     COMOUT_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL
