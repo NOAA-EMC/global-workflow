@@ -67,8 +67,6 @@
     
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     # Platform config loaded by gw_setup.sh, now check for custom Rocoto
-    # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
-    # TODO: Remove this when upstream Rocoto PR is merged
     if [[ -n "${ROCOTO_PATH:-}" && -d "${ROCOTO_PATH}" ]]; then
       export PATH="${ROCOTO_PATH}:$PATH"
       echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
