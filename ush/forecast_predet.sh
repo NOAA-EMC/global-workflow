@@ -570,7 +570,7 @@ FV3_predet() {
                 cpreq "${PARMgfs}/post/optics_luts_SOOT_nasa.dat" "${DATA}/."
                 cpreq "${PARMgfs}/post/optics_luts_SUSO_nasa.dat" "${DATA}/."
                 cpreq "${PARMgfs}/post/optics_luts_WASO_nasa.dat" "${DATA}/."
-              ;;
+                ;;
             gefs)
                 cpreq "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt" "${DATA}/postxconfig-NT.txt"
                 cpreq "${PARMgfs}/post/gefs/postxconfig-NT-gefs-f00.txt" "${DATA}/postxconfig-NT_FH00.txt"
