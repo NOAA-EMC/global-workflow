@@ -350,23 +350,20 @@ class Jedi:
 
         # Set paths of output tar files
         tarball = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"], f"{archive_name}.tar.gz")
-    
+
         # Create compressed tarball of obs output files in COM
         logger.info(f"Archiving observation output files to {tarball}")
         with tarfile.open(tarball, "w:gz") as archive:
             for observation_from_jcb in self.jcb_config['observations']:
                 obsdataout_file = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"],
-                                        self.jcb_config[f"{self.model}_obsdataout_prefix"] + observation_from_jcb + self.jcb_config[f"{self.model}_obsdataout_suffix"])
+                                               self.jcb_config[f"{self.model}_obsdataout_prefix"] + 
+                                               observation_from_jcb + 
+                                               self.jcb_config[f"{self.model}_obsdataout_suffix"])
                 if os.path.exists(obsdataout_file):
                     logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")
                     archive.add(obsdataout_file, arcname=os.path.basename(obsdataout_file))
                 else:
                     logger.warning(f"Observation output file {obsdataout_file} does not exist and will be skipped")
-
-        # Compress the tar file
-        #logger.info(f"Compressing {tarball}")
-        #with open(tarball, 'rb') as f_in, gzip.open(f"{tarball}.gz", 'wb') as f_out:
-        #    f_out.writelines(f_in)
 
         # Copy files to COM
         FileHandler({'copy_opt': [[tarball, comout]]}).sync()
