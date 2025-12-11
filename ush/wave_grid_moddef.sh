@@ -21,44 +21,43 @@
 # 0.  Preparations
 
 # 0.a Basic modes of operation
-  grdID=${1?Must provide grdID}
+grdID=${1?Must provide grdID}
 
-  echo "INFO: Generating mod_def file for ${grdID}"
+echo "INFO: Generating mod_def file for ${grdID}"
 
-  mkdir -p "moddef_${grdID}"
-  cd "moddef_${grdID}" || exit 2
+mkdir -p "moddef_${grdID}"
+cd "moddef_${grdID}" || exit 2
 
 # --------------------------------------------------------------------------- #
 # 2.  Create mod_def file
 
+rm -f "ww3_grid.inp"
+${NLN} "../ww3_grid.inp.${grdID}" "ww3_grid.inp"
 
-  rm -f "ww3_grid.inp"
-  ${NLN} "../ww3_grid.inp.${grdID}" "ww3_grid.inp"
+if [[ -f "../${grdID}.msh" ]]; then
+    rm -f "${grdID}.msh"
+    ${NLN} "../${grdID}.msh" "${grdID}.msh"
+fi
 
-  if [[ -f "../${grdID}.msh" ]]; then
-     rm -f "${grdID}.msh"
-     ${NLN} "../${grdID}.msh" "${grdID}.msh"
-  fi
+export pgm="${NET,,}_ww3_grid.x"
 
-  export pgm="${NET,,}_ww3_grid.x"
+echo "INFO: Executing ${EXECgfs}/${NET,,}_ww3_grid.x"
 
-  echo "INFO: Executing ${EXECgfs}/${NET,,}_ww3_grid.x"
+"${EXECgfs}/${pgm}"
+export err=$?
 
-  "${EXECgfs}/${pgm}"
-  export err=$?
-
-  if [[ "${err}" != '0' ]]; then
+if [[ "${err}" != '0' ]]; then
     echo "FATAL ERROR: Error in ${pgm}"
     exit "${err}"
-  fi
+fi
 
-  if [[ -f mod_def.ww3 ]];then
+if [[ -f mod_def.ww3 ]]; then
     cpfs "mod_def.ww3" "${COMOUT_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
     mv "mod_def.ww3" "../mod_def.${grdID}"
-  else
+else
     echo "FATAL ERROR: Mod def file not created for ${grdID}"
     exit 4
-  fi
+fi
 
 # --------------------------------------------------------------------------- #
 # 3.  Clean up

@@ -72,7 +72,11 @@ class Archive(Task):
         archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
 
         # Collect the dataset to archive locally
-        arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.NET}_arcdir.yaml.j2")
+        # Select template based on RUN type: ensemble (enkf) or deterministic (NET)
+        if "enkf" in arch_dict.RUN:
+            arcdir_j2yaml = os.path.join(archive_parm, "enkf_arcdir.yaml.j2")
+        else:
+            arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.NET}_arcdir.yaml.j2")
 
         # Add the glob.glob function for capturing log filenames
         arch_dict['glob'] = glob.glob

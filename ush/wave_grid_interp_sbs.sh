@@ -41,18 +41,18 @@ ${NLN} "${DATA}/out_grd.${waveGRD}" "./out_grd.${waveGRD}"
 
 # Link mod_def files from DATA into interp_DATA
 for ID in ${waveGRD} ${grdID}; do
-  ${NLN} "${DATA}/mod_def.${ID}" "./mod_def.${ID}"
+    ${NLN} "${DATA}/mod_def.${ID}" "./mod_def.${ID}"
 done
 
 # Check if there is an interpolation weights file available, and copy it if so
 if [[ -f "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" ]]; then
-  echo "INFO: Interpolation weights found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
-  cpreq "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" "./WHTGRIDINT.bin"
-  weights_found=1
+    echo "INFO: Interpolation weights found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
+    cpreq "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" "./WHTGRIDINT.bin"
+    weights_found=1
 else
-  echo "WARNING: No weights file found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
-  echo "INFO: Interpolation will create a new weights file"
-  weights_found=0
+    echo "WARNING: No weights file found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
+    echo "INFO: Interpolation will create a new weights file"
+    weights_found=0
 fi
 
 # Create the input file for the interpolation code
@@ -69,26 +69,26 @@ cat ww3_gint.inp
 export pgm="${NET,,}_ww3_gint.x"
 source prep_step
 echo "INFO: Executing '${pgm}'"
-"${EXECgfs}/${pgm}" > grid_interp.${grdID}.out 2>&1
+"${EXECgfs}/${pgm}" > "grid_interp.${grdID}.out" 2>&1
 cat "grid_interp.${grdID}.out"
 if [[ ${err} -ne 0 ]]; then
-  echo "FATAL ERROR: '${pgm}' failed!"
-  exit 3
+    echo "FATAL ERROR: '${pgm}' failed!"
+    exit 3
 fi
 
 if [[ ${weights_found} -eq 0 ]]; then
-  echo "INFO: Interpolation created a new weights file at: '${interp_DATA}/WHTGRIDINT.bin'"
+    echo "INFO: Interpolation created a new weights file at: '${interp_DATA}/WHTGRIDINT.bin'"
 fi
 
 # Link output file (interpolated output) within DATA (this program generates this file)
 if [[ -f "./out_grd.${grdID}" ]]; then
-  if [[ -f "${DATA}/out_grd.${grdID}" ]]; then
-    echo "FATAL ERROR: '${DATA}/out_grd.${grdID}' already exists, ABORT!"
-    exit 4
-  else
-    ${NLN} "${interp_DATA}/out_grd.${grdID}" "${DATA}/out_grd.${grdID}"
-  fi
+    if [[ -f "${DATA}/out_grd.${grdID}" ]]; then
+        echo "FATAL ERROR: '${DATA}/out_grd.${grdID}' already exists, ABORT!"
+        exit 4
+    else
+        ${NLN} "${interp_DATA}/out_grd.${grdID}" "${DATA}/out_grd.${grdID}"
+    fi
 else
-  echo "FATAL ERROR: '${pgm}' failed to generate output file at: '${interp_DATA}/out_grd.${grdID}'"
-  exit 4
+    echo "FATAL ERROR: '${pgm}' failed to generate output file at: '${interp_DATA}/out_grd.${grdID}'"
+    exit 4
 fi

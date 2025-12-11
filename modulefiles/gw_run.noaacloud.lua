@@ -24,6 +24,6 @@ load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
 
-setenv("CRTM_FIX", "/contrib/global-workflow-shared-data/fix/crtm/v2.4.0.2")
+setenv("CRTM_FIX", "/lustre/fix/crtm/v2.4.0.2")
 
 whatis("Description: GFS run environment")
