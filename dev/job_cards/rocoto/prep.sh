@@ -74,11 +74,9 @@ if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" 
     fi
 fi
 # exception handling to ensure no dead link
-# shellcheck disable=SC2312
 if [[ $(find "${COMOUT_OBS}" -xtype l | wc -l) -ge 1 ]]; then
     exit 9
 fi
-# shellcheck disable=SC2312
 if [[ $(find "${COMINobsproc_PREV}" -xtype l | wc -l) -ge 1 ]]; then
     exit 9
 fi
