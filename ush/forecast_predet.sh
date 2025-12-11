@@ -200,23 +200,17 @@ FV3_predet(){
   JCAP_CASE_HIST=$((2*resh-2))
   LONB_CASE_HIST=$((4*resh))
   LATB_CASE_HIST=$((2*resh))
-
+  # Likely needs to be changes for SFS Runs
   JCAP=${JCAP:-${JCAP_CASE}}
   LONB=${LONB:-${LONB_CASE}}
   LATB=${LATB:-${LATB_CASE}}
 
-  #LONB_IMO=${LONB_IMO:-${LONB_CASE_HIST}}
-  #LATB_JMO=${LATB_JMO:-${LATB_CASE_HIST}}
-  # for SFS runs
-  if [ $res -eq 96 ];then
-     LONB_IMO=360
-     LATB_JMO=181
-  elif [ $res -eq 192 ];then
-     LONB_IMO=360
-     LATB_JMO=181
+  if [[ "${OUTPUT_GRID}" == "global_latlon" ]]; then
+    LONB_IMO=360
+    LATB_JMO=181
   else
-     LONB_IMO=${LONB_IMO:-${LONB_CASE}}
-     LATB_JMO=${LATB_JMO:-${LATB_CASE}}
+    LONB_IMO=${LONB_IMO:-${LONB_CASE_HIST}}
+    LATB_JMO=${LATB_JMO:-${LATB_CASE_HIST}}
   fi
 
   # NSST Options
