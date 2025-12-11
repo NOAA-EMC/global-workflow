@@ -66,7 +66,6 @@ find="${ymd} ${cyc}"
 echo "looking for string ${find} in ${jtwcdir}/tropcyc"
 
 rm -f jtwcbul
-# shellcheck disable=SC2312
 grep "${ymd} ${cyc}" "${jtwcdir}/tropcyc" | grep JTWC > jtwcbul
 if [[ -s jtwcbul ]]; then
     echo "String found: contents of JTWC bulletin are:"
@@ -76,7 +75,6 @@ else
 fi
 
 if [[ "${cyc}" == "00" ]]; then
-    # shellcheck disable=SC2312
     grep "${ymd} ${cyc}" "${jtwcdirm1}/tropcyc" | grep JTWC >> jtwcbul
     if [[ -s jtwcbul ]]; then
         echo "String found: contents of JTWC bulletin are:"
@@ -109,7 +107,6 @@ if [[ -s prep_step ]]; then
     set -u
 else
     [[ -f errfile ]] && rm errfile
-    # shellcheck disable=SC2046,SC2312
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 
@@ -117,7 +114,6 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-# shellcheck disable=SC2312
 time -p "${EXECgfs}/${pgm}" 2> errfile
 errget=$?
 cat errfile

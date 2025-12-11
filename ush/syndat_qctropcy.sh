@@ -234,7 +234,7 @@ if [[ -s prep_step ]]; then
     set -u
 else
     [[ -f errfile ]] && rm errfile
-    # shellcheck disable=SC2046,SC2312
+    # shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 

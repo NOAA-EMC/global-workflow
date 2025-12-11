@@ -68,7 +68,6 @@ zero_len_diag=""
 #---------------------------------------------
 #  get list of diag files in the radstat file
 #
-# shellcheck disable=SC2312
 radstat_contents=$(tar -tf "${radstat_file}" | grep -Po '(?<=diag_).*(?=_ges.*)')
 
 #---------------------------------------------
@@ -112,7 +111,6 @@ declare -A file_sizes
 # Parse the filename and filesize from tar's verbose output and store in an associative array
 # Field $6 of verbose tar output is the filename, field $3 is the size
 # Caution: this method is not robust if the filename contains spaces
-# shellcheck disable=SC2312
 while IFS='|' read -r name size; do
     file_sizes[${name}]=${size}
 done < <(tar -vtf "${radstat_file}" --wildcards '*_ges*' | awk '$3 ~ /^[0-9]+$/ { print $6 "|" $3 }')
