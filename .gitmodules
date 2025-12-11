@@ -27,3 +27,7 @@
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
+[submodule]
+	NPB = SFS_monthly_products
+[submodule "ufs_model.fd"]
+	branch = NPB/SFS_monthly_products
