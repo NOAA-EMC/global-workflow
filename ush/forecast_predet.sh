@@ -559,7 +559,7 @@ FV3_predet() {
             gfs)
                 cpreq "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt" "${DATA}/postxconfig-NT.txt"
                 cpreq "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
-              ;;
+                ;;
             gcafs)
                 cpreq "${PARMgfs}/post/gcafs/postxconfig-NT-gcafs.txt" "${DATA}/postxconfig-NT.txt"
                 cpreq "${PARMgfs}/post/gcafs/postxconfig-NT-gcafs.txt" "${DATA}/postxconfig-NT_FH00.txt"
