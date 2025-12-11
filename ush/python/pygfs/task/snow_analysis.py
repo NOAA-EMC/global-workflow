@@ -86,7 +86,6 @@ class SnowAnalysis(Analysis):
             (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
         )
 
-
     @logit(logger)
     def initialize(self) -> None:
         """Initialize a global snow analysis

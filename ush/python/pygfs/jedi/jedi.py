@@ -356,8 +356,8 @@ class Jedi:
         with tarfile.open(tarball, "w:gz") as archive:
             for observation_from_jcb in self.jcb_config['observations']:
                 obsdataout_file = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"],
-                                               self.jcb_config[f"{self.model}_obsdataout_prefix"] + 
-                                               observation_from_jcb + 
+                                               self.jcb_config[f"{self.model}_obsdataout_prefix"] +
+                                               observation_from_jcb +
                                                self.jcb_config[f"{self.model}_obsdataout_suffix"])
                 if os.path.exists(obsdataout_file):
                     logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")

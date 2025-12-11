@@ -271,28 +271,3 @@ class AnalysisStats(Analysis):
         logger.info(f"Copying {iodastatzipfile} to {dest}")
         FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
         logger.info("Finished copying GSI IODA tar file to COMOUT")
-
-@logit(logger)
-def extract_tar(tar_file: str) -> None:
-    """Extract files from a tarball
-
-    This method extract files from a tarball
-
-    Parameters
-    ----------
-    tar_file
-        path/name of tarball
-
-    Returns
-    ----------
-    None
-    """
-
-    # extract files from tar file
-    tar_path = os.path.dirname(tar_file)
-    try:
-        with tarfile.open(tar_file, "r") as tarball:
-            tarball.extractall(path=tar_path)
-            logger.info(f"Extract {tarball.getnames()}")
-    except Exception as e:
-        raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e
