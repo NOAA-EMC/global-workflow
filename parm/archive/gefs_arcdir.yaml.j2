@@ -1,36 +1,20 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set cycle_YMD = current_cycle | to_YMD %}
+# Variables provided by archive_vars.py:
+# - cycle_HH, cycle_YMDH, cycle_YMD, head
+# - VFYARC (archive directory)
+# - COMIN_ATMOS_ENSSTAT_1p00 (calculated in Python with MEMDIR='ensstat')
+
+# Build head string (e.g., 'gfs.t00z.')
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 
-# Declare the GEFS_ARCH where atmos data will be sent
-{% set GEFS_ARCH = ROTDIR ~ "/gefsarch" %}
-
-{% set file_set = [] %}
-
-{% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                      '${RUN}':RUN,
-                      '${YMD}':cycle_YMD,
-                      '${HH}':cycle_HH,
-                      '${GRID}': '1p00',
-                      '${MEMDIR}': 'ensstat' }) %}
-
-{% set COMIN_ATMOS_ENSSTAT_1p00 = COM_ATMOS_GRIB_GRID_TMPL | replace_tmpl(tmpl_dict) %}
-
-# Select ensstat files to copy to the arcdir
-{% set ensstat_files = [] %}
-{% if path_exists(COMIN_ATMOS_ENSSTAT_1p00) %}
-    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        {% do ensstat_files.append([COMIN_ATMOS_ENSSTAT_1p00 ~ "/" ~ head ~ "mean.pres_." ~
-                                    "1p00" ~ ".f" ~ '%03d'|format(fhr) ~ ".grib2",
-                                    GEFS_ARCH]) %}
-    {% endfor %}
-{% endif %}
-{% set file_set = ensstat_files %}
-# Actually write the yaml
+# Create directories first
 mkdir:
-    - "{{ GEFS_ARCH }}"
-copy:
-   {% for source_dest_pair in file_set %}
-   - {{ source_dest_pair }}
-   {% endfor %}
+    - "{{ VFYARC }}"
+
+# Define all source-destination pairs for archiving
+# Use copy_req for files that MUST exist (raise error if missing)
+copy_req:
+    # GEFS ensemble mean forecast files - REQUIRED
+    {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
+    - ["{{ COMIN_ATMOS_ENSSTAT_1p00 }}/{{ head }}mean.pres_.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+       "{{ VFYARC }}/{{ head }}mean.pres_.1p00.f{{ '%03d'|format(fhr) }}.grib2"]
+    {% endfor %}
