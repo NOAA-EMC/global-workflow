@@ -5,105 +5,104 @@
 # Disable variable not used warnings and 'masking return value' warnings
 # shellcheck disable=SC2034
 # shellcheck disable=SC2312
-FV3_namelists_nest(){
+FV3_namelists_nest() {
 
-# First argument tells us which namelist we're writing:
-#   global = writing input.nml for running global with a nest
-#   nest   = writing input_nest02.nml for running the nest
-namelist_mode="${1:-global}"
+    # First argument tells us which namelist we're writing:
+    #   global = writing input.nml for running global with a nest
+    #   nest   = writing input_nest02.nml for running the nest
+    namelist_mode="${1:-global}"
 
-if [[ "${namelist_mode}" == "nest" ]] ; then
-  nml_file=input_nest02.nml
-  only_input_nml="YES"
-else
-  nml_file=input.nml
-  only_input_nml="NO"
-fi
+    if [[ "${namelist_mode}" == "nest" ]]; then
+        nml_file=input_nest02.nml
+        only_input_nml="YES"
+    else
+        nml_file=input.nml
+        only_input_nml="NO"
+    fi
 
-# setup the tables
-DIAG_TABLE=${DIAG_TABLE:-${PARMgfs}/ufs/fv3/diag_table}
-DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMgfs}/ufs/fv3/diag_table_aod}
-DATA_TABLE=${DATA_TABLE:-${PARMgfs}/ufs/MOM6_data_table.IN}
-FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
+    # setup the tables
+    DIAG_TABLE=${DIAG_TABLE:-${PARMgfs}/ufs/fv3/diag_table}
+    DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMgfs}/ufs/fv3/diag_table_aod}
+    DATA_TABLE=${DATA_TABLE:-${PARMgfs}/ufs/MOM6_data_table.IN}
+    FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
 
-# set cdmbgwd
-if (( gwd_opt == 2 )) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
-  cdmbgwd=${cdmbgwd_gsl}
-fi
+    # set cdmbgwd
+    if ((gwd_opt == 2)) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then
+        cdmbgwd=${cdmbgwd_gsl}
+    fi
 
-# ensure non-prognostic tracers are set
-dnats=${dnats:-0}
+    # ensure non-prognostic tracers are set
+    dnats=${dnats:-0}
 
-if [[ "${only_input_nml:-NO}" == "NO" ]] ; then
-# build the diag_table
-{
-echo "UFS_Weather_Model_Forecast"
-if [[ "${DOIAU}" = "YES" ]]; then
-  echo "${previous_cycle:0:4} ${previous_cycle:4:2} ${previous_cycle:6:2} ${previous_cycle:8:2} 0 0"
-else
-  echo "${current_cycle:0:4} ${current_cycle:4:2} ${current_cycle:6:2} ${current_cycle:8:2} 0 0"
-fi
-cat "${DIAG_TABLE}"
-if [[ -n "${AERO_DIAG_TABLE:-}" ]]; then
-  cat "${AERO_DIAG_TABLE}"
-fi
-cat "${DIAG_TABLE_APPEND}"
-} >> diag_table_template
+    if [[ "${only_input_nml:-NO}" == "NO" ]]; then
+        # build the diag_table
+        {
+            echo "UFS_Weather_Model_Forecast"
+            if [[ "${DOIAU}" = "YES" ]]; then
+                echo "${previous_cycle:0:4} ${previous_cycle:4:2} ${previous_cycle:6:2} ${previous_cycle:8:2} 0 0"
+            else
+                echo "${current_cycle:0:4} ${current_cycle:4:2} ${current_cycle:6:2} ${current_cycle:8:2} 0 0"
+            fi
+            cat "${DIAG_TABLE}"
+            if [[ -n "${AERO_DIAG_TABLE:-}" ]]; then
+                cat "${AERO_DIAG_TABLE}"
+            fi
+            cat "${DIAG_TABLE_APPEND}"
+        } >> diag_table_template
 
-local template=diag_table_template
-local SYEAR=${current_cycle:0:4}
-local SMONTH=${current_cycle:4:2}
-local SDAY=${current_cycle:6:2}
-local CHOUR=${current_cycle:8:2}
-local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
+        local template=diag_table_template
+        local SYEAR=${current_cycle:0:4}
+        local SMONTH=${current_cycle:4:2}
+        local SDAY=${current_cycle:6:2}
+        local CHOUR=${current_cycle:8:2}
+        local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
-atparse < "${template}" >> "diag_table"
+        atparse < "${template}" >> "diag_table"
 
+        # copy data table
+        cpreq "${DATA_TABLE}" data_table
 
-# copy data table
-cpreq "${DATA_TABLE}" data_table
+        # build field_table
+        if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
+            nrec=$(wc -l < "${FIELD_TABLE}")
+            prec=${nrec}
+            if ((dnats > 0)); then
+                prec=$(grep -F -n TRACER "${FIELD_TABLE}" 2> /dev/null | tail -n "${dnats}" | head -1 | cut -d: -f1)
+                prec=${prec:-0}
+                prec=$((prec > 0 ? prec - 1 : prec))
+            fi
+            {
+                head -n "${prec}" "${FIELD_TABLE}"
+                cat "${AERO_FIELD_TABLE}"
+                tail -n $((nrec - prec)) "${FIELD_TABLE}"
+            } > field_table
+            # add non-prognostic tracers from additional table
+            dnats=$((dnats + dnats_aero))
+        else
+            cpreq "${FIELD_TABLE}" field_table
+        fi
+    fi # only_input_nml
 
-# build field_table
-if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
-  nrec=$(wc -l < "${FIELD_TABLE}")
-  prec=${nrec}
-  if (( dnats > 0 )); then
-    prec=$( grep -F -n TRACER "${FIELD_TABLE}" 2> /dev/null | tail -n "${dnats}" | head -1 | cut -d: -f1 )
-    prec=${prec:-0}
-    prec=$(( prec > 0 ? prec - 1 : prec ))
-  fi
-  { \
-    head -n "${prec}" "${FIELD_TABLE}" ; \
-    cat "${AERO_FIELD_TABLE}" ; \
-    tail -n $(( nrec - prec )) "${FIELD_TABLE}" ; \
-  } > field_table
-  # add non-prognostic tracers from additional table
-  dnats=$(( dnats + dnats_aero ))
-else
-  cpreq "${FIELD_TABLE}" field_table
-fi
-fi # only_input_nml
+    if [[ "${namelist_mode}" == "global" ]]; then
+        layout_x_here=${layout_x}
+        layout_y_here=${layout_y}
+        ntiles_here=6
+        npx_here=${npx}
+        npy_here=${npy}
+        k_split_here=${k_split}
+    else
+        layout_x_here=${layout_x_nest}
+        layout_y_here=${layout_y_nest}
+        ntiles_here=1
+        nested_here=.true.
+        twowaynest_here=${twowaynest:-.true.}
+        nestupdate_here=${nestupdate:-7}
+        npx_here=${npx_nest}
+        npy_here=${npy_nest}
+        k_split_here=${k_split_nest}
+    fi
 
-if [[ "${namelist_mode}" == "global" ]] ; then
-    layout_x_here=${layout_x}
-    layout_y_here=${layout_y}
-    ntiles_here=6
-    npx_here=${npx}
-    npy_here=${npy}
-    k_split_here=${k_split}
-else
-    layout_x_here=${layout_x_nest}
-    layout_y_here=${layout_y_nest}
-    ntiles_here=1
-    nested_here=.true.
-    twowaynest_here=${twowaynest:-.true.}
-    nestupdate_here=${nestupdate:-7}
-    npx_here=${npx_nest}
-    npy_here=${npy_nest}
-    k_split_here=${k_split_nest}
-fi
-
-cat > "${nml_file}" <<EOF
+    cat > "${nml_file}" << EOF
 &atmos_model_nml
   blocksize = ${blocksize}
   chksum_debug = ${chksum_debug}
@@ -209,24 +208,24 @@ cat > "${nml_file}" <<EOF
   ${fv_core_nml-}
 EOF
 
-if [[ "${DO_NEST:-NO}" == "YES" && "${namelist_mode}" == "global" ]] ; then
-  cat >> "${nml_file}" <<EOF
+    if [[ "${DO_NEST:-NO}" == "YES" && "${namelist_mode}" == "global" ]]; then
+        cat >> "${nml_file}" << EOF
   do_schmidt = .true.
   target_lat = ${TARGET_LAT}
   target_lon = ${TARGET_LON}
   stretch_fac = ${stretch_fac}
 EOF
-fi
+    fi
 
-if [[ "${DO_NEST:-NO}" == "YES" && "${namelist_mode}" == "nest" ]] ; then
-  cat >> "${nml_file}" <<EOF
+    if [[ "${DO_NEST:-NO}" == "YES" && "${namelist_mode}" == "nest" ]]; then
+        cat >> "${nml_file}" << EOF
   nested = .true.
   twowaynest = ${twowaynest:-.true.} ! .true.
   nestupdate = 7
 EOF
-fi
+    fi
 
-cat >> "${nml_file}" <<EOF
+    cat >> "${nml_file}" << EOF
 /
 
 &external_ic_nml
@@ -250,15 +249,15 @@ cat >> "${nml_file}" <<EOF
   imp_physics  = ${imp_physics:-"99"}
 EOF
 
-case "${CCPP_SUITE:-}" in
-  "FV3_GFS_v15p2_coupled")
-  cat >> "${nml_file}" << EOF
+    case "${CCPP_SUITE:-}" in
+        "FV3_GFS_v15p2_coupled")
+            cat >> "${nml_file}" << EOF
   oz_phys      = .false.
   oz_phys_2015 = .true.
 EOF
-  ;;
-  "FV3_GSD_v0")
-  cat >> "${nml_file}" << EOF
+            ;;
+        "FV3_GSD_v0")
+            cat >> "${nml_file}" << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
   lradar       = ${lradar:-".false."}
@@ -276,9 +275,9 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
   use_cice_alb = ${use_cice_alb:-".false."}
 EOF
-  ;;
-  FV3_GFS_v16_coupled*)
-  cat >> "${nml_file}" << EOF
+            ;;
+        FV3_GFS_v16_coupled*)
+            cat >> "${nml_file}" << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
   lradar       = ${lradar:-".false."}
@@ -294,9 +293,9 @@ EOF
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-  ;;
-  FV3_GFS_v16*)
-  cat >> "${nml_file}" << EOF
+            ;;
+        FV3_GFS_v16*)
+            cat >> "${nml_file}" << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
   lradar       = ${lradar:-".false."}
@@ -313,10 +312,10 @@ EOF
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-  ;;
-  FV3_GFS_v17*)
-  local default_dt_inner=$(( DELTIM/2 ))
-  cat >> "${nml_file}" << EOF
+            ;;
+        FV3_GFS_v17*)
+            local default_dt_inner=$((DELTIM / 2))
+            cat >> "${nml_file}" << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
   lradar       = ${lradar:-".true."}
@@ -349,10 +348,10 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
   use_cice_alb = ${use_cice_alb:-".false."}
 EOF
-  ;;
-  FV3_global_nest*)
-  local default_dt_inner=$(( DELTIM/2 ))
-  cat >> "${nml_file}" << EOF
+            ;;
+        FV3_global_nest*)
+            local default_dt_inner=$((DELTIM / 2))
+            cat >> "${nml_file}" << EOF
   iovr         = ${iovr:-"3"}
   lcnorm       = ${lcnorm:-".false."}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -385,15 +384,15 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
   use_cice_alb = ${use_cice_alb:-".false."}
 EOF
-  ;;
-  *)
-  cat >> "${nml_file}" << EOF
+            ;;
+        *)
+            cat >> "${nml_file}" << EOF
   iovr         = ${iovr:-"3"}
 EOF
-  ;;
-esac
+            ;;
+    esac
 
-cat >> "${nml_file}" <<EOF
+    cat >> "${nml_file}" << EOF
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
@@ -471,13 +470,13 @@ cat >> "${nml_file}" <<EOF
   doGP_lwscat        = ${doGP_lwscat:-".false."}
 EOF
 
-if [[ ${cplchm} = ".true." ]]; then
-  cat >> "${nml_file}" << EOF
+    if [[ ${cplchm} = ".true." ]]; then
+        cat >> "${nml_file}" << EOF
   fscav_aero = ${fscav_aero:-'*:0.0'}
 EOF
-fi
+    fi
 
-cat >> "${nml_file}" <<EOF
+    cat >> "${nml_file}" << EOF
   do_sppt      = ${do_sppt:-".false."}
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
@@ -489,27 +488,27 @@ cat >> "${nml_file}" <<EOF
   cplwav2atm   = ${cplwav2atm:-".false."}
 EOF
 
-if [[ ${DO_SPPT} = "YES" ]]; then
-cat >> "${nml_file}" <<EOF
+    if [[ ${DO_SPPT} = "YES" ]]; then
+        cat >> "${nml_file}" << EOF
   pert_mp = .false.
   pert_radtend = .false.
   pert_clds = .true.
 EOF
-fi
+    fi
 
-# Add namelist for IAU
-if [[ ${DOIAU} = "YES" ]]; then
-  cat >> "${nml_file}" << EOF
+    # Add namelist for IAU
+    if [[ ${DOIAU} = "YES" ]]; then
+        cat >> "${nml_file}" << EOF
   iaufhrs      = ${IAUFHRS}
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
   iau_drymassfixer = .false.
   iau_filter_increments = ${IAU_FILTER_INCREMENTS:-".false."}
 EOF
-fi
+    fi
 
-if [[ ${DO_CA:-"NO"} = "YES" ]]; then
-  cat >> "${nml_file}" << EOF
+    if [[ ${DO_CA:-"NO"} = "YES" ]]; then
+        cat >> "${nml_file}" << EOF
   do_ca      = .true.
   ca_global  = ${ca_global:-".false."}
   ca_sgs     = ${ca_sgs:-".true."}
@@ -523,24 +522,24 @@ if [[ ${DO_CA:-"NO"} = "YES" ]]; then
   nspinup    = ${nspinup:-"1"}
   iseed_ca   = ${ISEED_CA:-"12345"}
 EOF
-fi
+    fi
 
-if [[ "${DO_LAND_PERT:-NO}" == "YES" ]]; then
-  cat >> "${nml_file}" << EOF
+    if [[ "${DO_LAND_PERT:-NO}" == "YES" ]]; then
+        cat >> "${nml_file}" << EOF
   lndp_type = ${lndp_type:-2}
   n_var_lndp = ${n_var_lndp:-0}
 EOF
-fi
+    fi
 
-# Close &gfs_physics_nml section
-cat >> "${nml_file}" << EOF
+    # Close &gfs_physics_nml section
+    cat >> "${nml_file}" << EOF
 /
 EOF
 
-if [[ "${namelist_mode}" == "global" ]] ; then
-  cat >> "${nml_file}" << EOF
+    if [[ "${namelist_mode}" == "global" ]]; then
+        cat >> "${nml_file}" << EOF
 &fv_nest_nml
-  grid_pes = $(( layout_x * layout_y * 6 )),$(( layout_x_nest * layout_y_nest ))
+  grid_pes = $((layout_x * layout_y * 6)),$((layout_x_nest * layout_y_nest))
   tile_coarse = 0,6
   num_tile_top = 6
   p_split = 1
@@ -549,10 +548,10 @@ if [[ "${namelist_mode}" == "global" ]] ; then
   nest_joffsets = 0,${nest_joffset}
 /
 EOF
-fi
+    fi
 
-if [[ ${knob_ugwp_version} -eq 0 ]]; then
-  cat >> "${nml_file}" << EOF
+    if [[ ${knob_ugwp_version} -eq 0 ]]; then
+        cat >> "${nml_file}" << EOF
 &cires_ugwp_nml
   knob_ugwp_solver  = ${knob_ugwp_solver:-2}
   knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
@@ -568,10 +567,10 @@ if [[ ${knob_ugwp_version} -eq 0 ]]; then
   launch_level      = ${launch_level:-54}
 /
 EOF
-fi
+    fi
 
-if [[ ${knob_ugwp_version} -eq 1 ]]; then
-  cat >> "${nml_file}" << EOF
+    if [[ ${knob_ugwp_version} -eq 1 ]]; then
+        cat >> "${nml_file}" << EOF
 &cires_ugwp_nml
   knob_ugwp_solver  = ${knob_ugwp_solver:-2}
   knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
@@ -595,11 +594,11 @@ if [[ ${knob_ugwp_version} -eq 1 ]]; then
   knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}
 /
 EOF
-fi
+    fi
 
-echo "" >> "${nml_file}"
+    echo "" >> "${nml_file}"
 
-cat >> "${nml_file}" <<EOF
+    cat >> "${nml_file}" << EOF
 &gfdl_cloud_microphysics_nml
   sedi_transport = .true.
   do_sedi_heat = .false.
@@ -704,28 +703,28 @@ cat >> "${nml_file}" <<EOF
 
 &fv_grid_nml
 EOF
-if [[ "${DO_NEST:-NO}" == "NO" ]] ; then
-    cat >> "${nml_file}" <<EOF
+    if [[ "${DO_NEST:-NO}" == "NO" ]]; then
+        cat >> "${nml_file}" << EOF
   grid_file = 'INPUT/grid_spec.nc'
 EOF
-fi
+    fi
 
-cat >> "${nml_file}" <<EOF
+    cat >> "${nml_file}" << EOF
   ${fv_grid_nml:-}
 /
 EOF
 
-# Add namelist for stochastic physics options
-echo "" >> "${nml_file}"
-#if [ $MEMBER -gt 0 ]; then
-if [[ "${DO_SPPT}" = "YES" || "${DO_SHUM}" = "YES" || "${DO_SKEB}" = "YES" || "${DO_LAND_PERT}" = "YES" ]]; then
+    # Add namelist for stochastic physics options
+    echo "" >> "${nml_file}"
+    #if [[ $MEMBER -gt 0 ]]; then
+    if [[ "${DO_SPPT}" = "YES" || "${DO_SHUM}" = "YES" || "${DO_SKEB}" = "YES" || "${DO_LAND_PERT}" = "YES" ]]; then
 
-    cat >> "${nml_file}" << EOF
+        cat >> "${nml_file}" << EOF
 &nam_stochy
 EOF
 
-  if [[ ${DO_SKEB} = "YES" ]]; then
-    cat >> "${nml_file}" << EOF
+        if [[ ${DO_SKEB} = "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   skeb = ${SKEB}
   iseed_skeb = ${ISEED_SKEB:-${ISEED}}
   skeb_tau = ${SKEB_TAU:-"-999."}
@@ -734,19 +733,19 @@ EOF
   skeb_npass = ${SKEB_NPASS:-"30"}
   skeb_vdof = ${SKEB_VDOF:-"5"}
 EOF
-  fi
+        fi
 
-  if [[ ${DO_SHUM} = "YES" ]]; then
-    cat >> "${nml_file}" << EOF
+        if [[ ${DO_SHUM} = "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   shum = ${SHUM}
   iseed_shum = ${ISEED_SHUM:-${ISEED}}
   shum_tau = ${SHUM_TAU:-"-999."}
   shum_lscale = ${SHUM_LSCALE:-"-999."}
 EOF
-  fi
+        fi
 
-  if [[ ${DO_SPPT} = "YES" ]]; then
-    cat >> "${nml_file}" << EOF
+        if [[ ${DO_SPPT} = "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   sppt = ${SPPT}
   iseed_sppt = ${ISEED_SPPT:-${ISEED}}
   sppt_tau = ${SPPT_TAU:-"-999."}
@@ -756,50 +755,50 @@ EOF
   use_zmtnblck = ${use_zmtnblck:-".true."}
   pbl_taper = ${pbl_taper:-"0,0,0,0.125,0.25,0.5,0.75"}
 EOF
-  fi
+        fi
 
-  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
-    cat >> "${nml_file}" <<EOF
+        if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   OCNSPPT=${OCNSPPT}
   OCNSPPT_LSCALE=${OCNSPPT_LSCALE}
   OCNSPPT_TAU=${OCNSPPT_TAU}
   ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
 EOF
-  fi
+        fi
 
-  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
-    cat >> "${nml_file}" <<EOF
+        if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   EPBL=${EPBL}
   EPBL_LSCALE=${EPBL_LSCALE}
   EPBL_TAU=${EPBL_TAU}
   ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
-  fi
+        fi
 
-  if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
-    cat >> "${nml_file}" <<EOF
+        if [[ "${DO_OCN_SPPT:-NO}" == "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   OCNSPPT=${OCNSPPT}
   OCNSPPT_LSCALE=${OCNSPPT_LSCALE}
   OCNSPPT_TAU=${OCNSPPT_TAU}
   ISEED_OCNSPPT=${ISEED_OCNSPPT:-${ISEED}}
 EOF
-  fi
+        fi
 
-  if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
-    cat >> "${nml_file}" <<EOF
+        if [[ "${DO_OCN_PERT_EPBL:-NO}" == "YES" ]]; then
+            cat >> "${nml_file}" << EOF
   EPBL=${EPBL}
   EPBL_LSCALE=${EPBL_LSCALE}
   EPBL_TAU=${EPBL_TAU}
   ISEED_EPBL=${ISEED_EPBL:-${ISEED}}
 EOF
-  fi
+        fi
 
-  cat >> "${nml_file}" << EOF
+        cat >> "${nml_file}" << EOF
 /
 EOF
 
-  if [[ ${DO_LAND_PERT} = "YES" ]]; then
-    cat >> "${nml_file}" << EOF
+        if [[ ${DO_LAND_PERT} = "YES" ]]; then
+            cat >> "${nml_file}" << EOF
 &nam_sfcperts
   lndp_type = ${lndp_type}
   LNDP_TAU = ${LNDP_TAU}
@@ -809,27 +808,27 @@ EOF
   lndp_prt_list = ${lndp_prt_list}
 /
 EOF
-  else
-    cat >> "${nml_file}" << EOF
+        else
+            cat >> "${nml_file}" << EOF
 &nam_sfcperts
 /
 EOF
-  fi
+        fi
 
-else
+    else
 
-  cat >> "${nml_file}" << EOF
+        cat >> "${nml_file}" << EOF
 &nam_stochy
 /
 &nam_sfcperts
 /
 EOF
 
-fi
+    fi
 
-# Echo out formatted ""${nml_file}""
-echo "===================================="
-echo "FV3_namelists_nest(): '${nml_file}'"
-cat "${nml_file}"
-echo "===================================="
+    # Echo out formatted ""${nml_file}""
+    echo "===================================="
+    echo "FV3_namelists_nest(): '${nml_file}'"
+    cat "${nml_file}"
+    echo "===================================="
 }

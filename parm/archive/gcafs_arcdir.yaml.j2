@@ -1,107 +1,58 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set cycle_YMD = current_cycle | to_YMD %}
+# Variables provided by archive_vars.py:
+# - cycle_HH, cycle_YMDH, cycle_YMD, head
+# - VFYARC
+# - All COMIN_* paths
+
+# Deterministic GCAFS/GCDAS archiving template
+# Used for: gcafs, gcdas
+
+# Build head string (e.g., 'gfs.t00z.')
 {% set head = RUN + ".t" + cycle_HH + "z." %}
 
-# Select data to store in the ARCDIR and VFYARC from deterministic runs
-# This file set will contain all source-destination pairs to send to the FileHandler for copying
-{% set file_set = [] %}
+mkdir:
+    - "{{ ARCDIR }}"
+{% if DO_FIT2OBS == True %}
+    - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
+{% endif %}
 
-# Declare the VFYARC where Fit2Obs data will be sent
-{% set VFYARC = ROTDIR ~ "/vrfyarch" %}
+copy_req:
+{% if RUN == "gcafs" %}
+    # GCAFS forecast files - REQUIRED
+    {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
+    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+       "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
+    {% endfor %}
 
-# Deterministic files
-{% if "enkf" not in RUN %}
-    # Common files to be added to both the gcafs and gcdas keys below
-    {% set det_files = [] %}
+    {% if DO_FIT2OBS == True %}
+    # GCAFS Fit2Obs data - REQUIRED if DO_FIT2OBS is enabled
+        {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
+    - ["{{ COMIN_ATMOS_HISTORY }}/{{ head }}sfc.f{{ '%03d'|format(fhr) }}.nc",
+       "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ head }}sfc.f{{ '%03d'|format(fhr) }}.nc"]
+    - ["{{ COMIN_ATMOS_HISTORY }}/{{ head }}atm.f{{ '%03d'|format(fhr) }}.nc",
+       "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}/{{ head }}atm.f{{ '%03d'|format(fhr) }}.nc"]
+        {% endfor %}
+    {% endif %}
+{% endif %}
 
-    # Deterministic analysis files (generated for cycled experiments)
-    {% set det_anl_files = [] %}
+{% if RUN == "gcdas" %}
+    # GCDAS forecast files - REQUIRED
+    {% for fhr in range(0, FHMAX + 1, FHOUT) %}
+    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+       "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
+    {% endfor %}
+{% endif %}
 
+{% if MODE == "cycled" %}
+    # Deterministic analysis files (cycled mode only) - REQUIRED
     {% if DO_AERO_ANL %}
-        {% do det_anl_files.append([COMIN_CHEM_ANALYSIS ~ "/" ~ head ~ "aerostat.tgz",
-                                    ARCDIR ~ "/aerostat." ~ RUN ~ "." ~ cycle_YMDH ~ ".tgz"]) %}
+    - ["{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aerostat.tgz",
+       "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]
     {% endif %}
 
     {% if DO_PREP_OBS_AERO == True %}
-        {% do det_anl_files.append([COMIN_OBS ~ "/" ~ head ~ "aeroobs",
-                                    ARCDIR ~ "/aeroobs." ~ RUN ~ "." ~ cycle_YMDH]) %}
-        {% do det_anl_files.append([COMIN_OBS ~ "/" ~ head ~ "aeroawobs",
-                                    ARCDIR ~ "/aeroawobs." ~ RUN ~ "." ~ cycle_YMDH]) %}
+    - ["{{ COMIN_OBS }}/{{ head }}aeroobs",
+       "{{ ARCDIR }}/aeroobs.{{ RUN }}.{{ cycle_YMDH }}"]
+    - ["{{ COMIN_OBS }}/{{ head }}aeroawobs",
+       "{{ ARCDIR }}/aeroawobs.{{ RUN }}.{{ cycle_YMDH }}"]
     {% endif %}
-
-    # GCAFS-specific files
-    {% set gfs_files = [] %}
-    {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
-        {% do gfs_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pres_a.1p00.f" ~ '%03d'|format(fhr) ~ ".grib2",
-                                ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
-    {% endfor %}
-
-    # GCAFS Fit2Obs data
-    {% set fit2obs_files = [] %}
-    {% for fhr in range(0, FHMAX_FITS + 1, 6) %}
-        {% set sfcfile = "/" + head + "sfc.f" + '%03d'|format(fhr) + ".nc" %}
-        {% set sigfile = "/" + head + "atm.f" + '%03d'|format(fhr) + ".nc" %}
-        {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sfcfile,
-                                    VFYARC ~ "/" ~ RUN ~ "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/" ~ sfcfile ]) %}
-        {% do fit2obs_files.append([COMIN_ATMOS_HISTORY ~ "/" ~ sigfile,
-                                    VFYARC ~ "/" ~ RUN ~ "." ~ cycle_YMD ~ "/" ~ cycle_HH ~ "/" ~ sigfile ]) %}
-    {% endfor %}
-
-    # GCDAS-specific files
-    {% set gdas_files = [] %}
-    {% for fhr in range(0, FHMAX + 1, FHOUT) %}
-        {% do gdas_files.append([COMIN_ATMOS_GRIB_1p00 ~ "/" ~ head ~ "pres_a.1p00.f" ~ '%03d'|format(fhr) ~ ".grib2",
-                                 ARCDIR ~ "/pgbf" ~ '%02d'|format(fhr) ~ "." ~ RUN ~ "." ~ cycle_YMDH ~ ".grib2"]) %}
-    {% endfor %}
-
-    # Now append the necessary file pairs to file_set
-    # Common deterministic files
-    {% set file_set = file_set + det_files %}
-    {% if MODE == "cycled" %}
-        {% set file_set = file_set + det_anl_files %}
-    {% endif %}
-
-    # Run-specific deterministic files
-    {% if RUN == "gcafs" %}
-        {% set file_set = file_set + gfs_files %}
-        # Fit2Obs files
-        {% if DO_FIT2OBS == True %}
-            {% set file_set = file_set + fit2obs_files %}
-        {% endif %}
-    {% elif RUN == "gcdas" %}
-        {% set file_set = file_set + gdas_files %}
-    {% endif %}
-
-{% else %}  # End of deterministic files
-
-    # Ensemble analysis files
-    {% set enkf_files = [] %}
-    {% if DO_JEDIATMENS == True %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "atmensstat",
-                                 ARCDIR ~ "/atmensstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-    {% else %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "enkfstat.txt",
-                                 ARCDIR ~ "/enkfstat." ~ RUN ~ "." ~ cycle_YMDH ]) %}
-        {% do enkf_files.append([COMIN_ATMOS_ANALYSIS_ENSSTAT ~ "/" ~ head ~ "gsistat_ensmean.txt",
-                                 ARCDIR ~ "/gsistat." ~ RUN ~ "." ~ cycle_YMDH ~ ".ensmean"]) %}
-    {% endif %}
-
-    # Construct the final file set
-    {% set file_set = file_set + enkf_files %}
-
 {% endif %}
-
-
-# Actually write the yaml
-mkdir:
-    - "{{ ARCDIR }}"
-
-    {% if DO_FIT2OBS == True %}
-    - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
-    {% endif %}
-
-copy:
-   {% for source_dest_pair in file_set %}
-   - {{ source_dest_pair }}
-   {% endfor %}
