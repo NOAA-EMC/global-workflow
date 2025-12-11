@@ -60,14 +60,6 @@ class SnowEnsAnalysis(Analysis):
         else:
             _DO_IMS_SCF = False
 
-        # Check if SNOCVR or SNOMAD file exists, do SNOCVR_SNOMAD preprocessing
-        _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
-        _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
-        _DO_SNOCVR_SNOMAD = (
-            "snocvr_snomad" in self.task_config.observations and
-            (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
-        )
-
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -79,7 +71,6 @@ class SnowEnsAnalysis(Analysis):
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
                 'ims_file': _ims_file,
                 'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
-                'DO_SNOCVR_SNOMAD': _DO_SNOCVR_SNOMAD,  # Boolean to decide if SNOCVR_SNOMAD processing is done
             }
         ))
 
@@ -89,6 +80,14 @@ class SnowEnsAnalysis(Analysis):
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar', 'esnowanlensmean']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
+
+        # Boolean to decide if SNOCVR_SNOMAD processing is done
+        _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
+        _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
+        self.task_config.DO_SNOCVR_SNOMAD = (
+            "snocvr_snomad" in self.jedi_dict.snowanlvar.jcb_config.observations and
+            (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
+        )
 
     @logit(logger)
     def initialize(self) -> None:
@@ -111,7 +110,7 @@ class SnowEnsAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['snowanlvar'].stage_observations(self.task_config.COMIN_OBS)
+        self.jedi_dict['snowanlvar'].stage_obsdatain(self.task_config.COMIN_OBS)
 
         # Stage files from COM
         logger.info(f"Staging files from COM and creating output directories")
@@ -157,7 +156,7 @@ class SnowEnsAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['snowanlvar'].save_diag_files(self.task_config.COMOUT_SNOW_ANALYSIS,
+        self.jedi_dict['snowanlvar'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS,
                                                      f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
 
         # Save files to COM

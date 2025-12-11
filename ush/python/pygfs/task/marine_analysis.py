@@ -110,7 +110,7 @@ class MarineAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observations")
-        self.jedi_dict['var'].stage_observations(self.task_config.COMIN_OBS)
+        self.jedi_dict['var'].stage_obsdatain(self.task_config.COMIN_OBS)
 
         # prepare the deterministic MOM6 input.nml
         logger.info(f"Preparing deterministic MOM6 input namelist")
@@ -180,7 +180,7 @@ class MarineAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['var'].save_diag_files(self.task_config.COMOUT_OCEAN_ANALYSIS,
+        self.jedi_dict['var'].save_obsdataout(self.task_config.COMOUT_OCEAN_ANALYSIS,
                                               f"{self.task_config.APREFIX}marine_analysis.ioda_hofx")
 
         # Save obs diag statistics to COM (this is for legacy obs monitoring)

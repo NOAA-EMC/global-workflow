@@ -94,38 +94,14 @@ class AnalysisStats(Analysis):
             logger.info(f"Staging files from COM and creating output directories")
             FileHandler(self.task_config.data_in).sync()
 
-            # Open tar file
-            diag_dir_path = self.jedi_dict[analysis].jcb_config.stat_obsdatain_path
-            tarfilelist = glob.glob(os.path.join(diag_dir_path, '*tar.gz'))
-            for dest in tarfilelist:
-                logger.info(f"Open tarred diagnostic files in {dest}")
-                with tarfile.open(dest, "r") as tar:
-                    # Check if tar file is empty
-                    if not tar.getnames():
-                        logger.warning(f"The tar file {dest} is empty. No files to extract.")
-                        logger.warning("Moving to next analysis ...")
+            # Extract diag tar file
+            jcb_config = self.jedi_dict[analysis].jcb_config
+            model = self.jedi_dict[analysis].model
+            diag_archive = os.path.join(jcb_config[f"{model}_obsdatain_path"],
+                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats
+            Jedi.extract_tar(diag_archive)
 
-                    # Extract all files to the current directory
-                    tar.extractall(path=diag_dir_path)
-
-            for ob in self.task_config.observations[analysis]:
-                input_file = os.path.join(diag_dir_path, f"diag_{ob}_{to_YMDH(self.task_config.current_cycle)}.nc")
-
-                # Check if the file exists
-                gz_file = f"{input_file}.gz"
-                if os.path.exists(gz_file):
-                    logger.info(f"Now processing {gz_file}")
-
-                    # Open the .gz file
-                    with gzip.open(gz_file, 'rb') as f_in:
-                        with open(input_file, 'wb') as f_out:
-                            f_out.write(f_in.read())
-                else:
-                    logger.warning(f"{gz_file} does not exist to extract.")
-                    logger.warning("Moving to next obs space ...")
-                    continue  # Skip current obs space and move to next
-
-            # initialize JEDI application
+            # Initialize JEDI application
             logger.info(f"Initializing JEDI ioda-stats extraction application")
             self.jedi_dict[analysis].initialize(observations=self.task_config.observations[analysis], clean_empty_obsspaces=True)
 
@@ -165,25 +141,14 @@ class AnalysisStats(Analysis):
         """
 
         for analysis in self.task_config.STAT_ANALYSES:
-            # path of output tar statfile
-            iodastatzipfile = os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path,
-                                           f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
-
-            logger.info(f"Compressing ioda-stats generated files to {iodastatzipfile}")
-
-            # get list of iodastat files to put in tarball
-            iodastatfiles = glob.glob(os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, '*nc'))
-
-            logger.info(f"Gathering {len(iodastatfiles)} ioda-stat files to {iodastatzipfile}")
-            with tarfile.open(iodastatzipfile, "w|gz") as archive:
-                for targetfile in iodastatfiles:
-                    archive.add(targetfile, arcname=os.path.basename(targetfile))
+            self.jedi_dict[analysis].save_obsdataout(self.task_config.outdir[analysis],
+                                                     f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
 
             # concatenate text files into one summary file
             summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
                 for ob in self.task_config.observations[analysis]:
-                    textfile = os.path.join(self.jedi_dict[analysis].jcb_config.stat_obsdataout_path, f"{ob}_ioda_stats.txt")
+                    textfile = os.path.join(self.jedi_dict[analysis].jcb_config[f"{self.jedi_dict[analysis].model}_obsdataout_path"], f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
                         with open(textfile, 'r') as infile:
@@ -304,3 +269,28 @@ class AnalysisStats(Analysis):
         logger.info(f"Copying {iodastatzipfile} to {dest}")
         FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
         logger.info("Finished copying GSI IODA tar file to COMOUT")
+
+@logit(logger)
+def extract_tar(tar_file: str) -> None:
+    """Extract files from a tarball
+
+    This method extract files from a tarball
+
+    Parameters
+    ----------
+    tar_file
+        path/name of tarball
+
+    Returns
+    ----------
+    None
+    """
+
+    # extract files from tar file
+    tar_path = os.path.dirname(tar_file)
+    try:
+        with tarfile.open(tar_file, "r") as tarball:
+            tarball.extractall(path=tar_path)
+            logger.info(f"Extract {tarball.getnames()}")
+    except Exception as e:
+        raise WorkflowException(f"An error occurred while extracting {tar_file}:\n{e}") from e

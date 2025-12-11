@@ -79,11 +79,11 @@ class AtmEnsAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['atmensanlobs'].stage_observations(f"{self.task_config.COMIN_OBS}/atmos")
+        self.jedi_dict['atmensanlobs'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/atmos")
 
         # Stage bias correction files
         logger.info(f"Staging bias correction files")
-        self.jedi_dict['atmensanlobs'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
+        self.jedi_dict['atmensanlobs'].stage_obsbiasin(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
@@ -145,7 +145,7 @@ class AtmEnsAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['atmensanlobs'].save_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
+        self.jedi_dict['atmensanlobs'].save_obsdataout(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
                                                        f"{self.task_config.APREFIX_ENS}atmos_analysis.ens_mean.ioda_hofx")
 
         # Save files from COM

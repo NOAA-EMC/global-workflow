@@ -97,11 +97,11 @@ class AerosolAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['aeroanlvar'].stage_observations(f"{self.task_config.COMIN_OBS}/chem")
+        self.jedi_dict['aeroanlvar'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/chem")
 
         # Stage bias correction files
         logger.info(f"Staging bias correction files")
-        self.jedi_dict['aeroanlvar'].stage_bias_corrections(self.task_config.COMIN_CHEM_ANALYSIS_PREV)
+        self.jedi_dict['aeroanlvar'].stage_obsbiasin(self.task_config.COMIN_CHEM_ANALYSIS_PREV)
 
         # Initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
@@ -141,13 +141,13 @@ class AerosolAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['aeroanlvar'].save_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
+        self.jedi_dict['aeroanlvar'].save_obsdataout(self.task_config.COMOUT_CHEM_ANALYSIS,
                                                      f"{self.task_config.APREFIX}aero_analysis.ioda_hofx")
 
         # Archive and save radiative bias correction files into COM directory
         logger.info(f"Saving radiative bias correction files to COM")
-        self.jedi_dict['aeroanlvar'].save_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                                                     f"{self.task_config.APREFIX}aero_varbc_params")
+        self.jedi_dict['aeroanlvar'].save_obsbiasout(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                     f"{self.task_config.APREFIX}aero_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

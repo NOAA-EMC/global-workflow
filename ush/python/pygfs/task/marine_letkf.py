@@ -87,7 +87,7 @@ class MarineLETKF(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observations")
-        self.jedi_dict['letkf'].stage_observations(self.task_config.COMIN_OBS)
+        self.jedi_dict['letkf'].stage_obsdatain(self.task_config.COMIN_OBS)
 
         # prepare the ensemble MOM6 input.nml
         logger.info(f"Preparing ensemble MOM6 input namelist")
@@ -137,5 +137,5 @@ class MarineLETKF(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['letkf'].save_diag_files(self.task_config.COMOUT_OCEAN_LETKF,
+        self.jedi_dict['letkf'].save_obsdataout(self.task_config.COMOUT_OCEAN_LETKF,
                                                 f"{self.task_config.APREFIX}marine_analysis.ioda_hofx.ens_mean")

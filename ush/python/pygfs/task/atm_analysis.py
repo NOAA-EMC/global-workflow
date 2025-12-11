@@ -93,11 +93,11 @@ class AtmAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['atmanlvar'].stage_observations(f"{self.task_config.COMIN_OBS}/atmos")
+        self.jedi_dict['atmanlvar'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/atmos")
 
         # Stage bias correction files
         logger.info(f"Staging bias correction files")
-        self.jedi_dict['atmanlvar'].stage_bias_corrections(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
+        self.jedi_dict['atmanlvar'].stage_obsbiasin(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
 
         # Initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
@@ -141,13 +141,13 @@ class AtmAnalysis(Analysis):
 
         # Archive, compress, and save diag files to COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['atmanlvar'].save_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS,
+        self.jedi_dict['atmanlvar'].save_obsdataout(self.task_config.COMOUT_ATMOS_ANALYSIS,
                                                     f"{self.task_config.APREFIX}atmos_analysis.ioda_hofx")
 
         # Tar radiative bias correction files to COM directory
         logger.info(f"Saving radiative bias correction files to COM")
-        self.jedi_dict['atmanlvar'].save_radiative_bias_corrections(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                                                                    f"{self.task_config.APREFIX}rad_varbc_params")
+        self.jedi_dict['atmanlvar'].save_obsbiasout(self.task_config.COMOUT_ATMOS_ANALYSIS,
+                                                    f"{self.task_config.APREFIX}rad_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")
