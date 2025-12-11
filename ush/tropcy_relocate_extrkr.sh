@@ -3,18 +3,13 @@
 # This script is executed by the script tropcy_relocate.sh
 # --------------------------------------------------------
 
-export machine=${machine:-ZEUS}
-export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
-#if [ $machine = ZEUS ] ; then
-# module load intel
-# module load mpt
-#fi
+export machine=${machine^^}
+export err pgm
 
 # Variable "gribver" defines if input GRIB data is in
 # GRIB1 (gribver=1) or GRIB2 (gribver=2) format.
 export gribver=${gribver:-1}
 
-user=$LOGNAME
 #	PDYcyc - 10 digit date
 #	RUN    - network run (gfs, gdas, etc)
 #	DATA   - working directory
@@ -24,14 +19,14 @@ user=$LOGNAME
 export APRNGETTX=${APRNGETTX:-""}
 
 TIMEIT=""
-[ -s $DATA/timex ] && TIMEIT=$DATA/timex
-
-vdir=${vdir:-$DATA/trakout}
-if [ ! -d ${vdir} ]; then
-  mkdir -p ${vdir}
+if [[ -s "${DATA}/timex" ]]; then
+    TIMEIT="${DATA}/timex"
 fi
 
-cd $vdir
+vdir=${vdir:-${DATA}/trakout}
+mkdir -p "${vdir}"
+
+cd "${vdir}" || exit 1
 
 # This script kicks off the hurricane tracker system.  You have the option of
 # running the tracker on several operational models (the system will
@@ -39,7 +34,6 @@ cd $vdir
 # data), or on your own model data.  In either case, the current system
 # will ONLY be able to read GRIB data.  To run the tracker, fill in the
 # required fields below on the "export" lines, then llsubmit this script.
-
 
 #     -------------------
 #     1. ENTER MODEL TYPE
@@ -55,8 +49,7 @@ cd $vdir
 #
 #     Example:  export CMODEL=gfs
 
-export CMODEL=${CMODEL:-$RUN}
-
+export CMODEL=${CMODEL:-${RUN}}
 
 #     -------------------
 #     2. ENTER FILE NAME
@@ -81,7 +74,6 @@ export CMODEL=${CMODEL:-$RUN}
 
 export INPFILE=${INPFILE:-}
 
-
 #     -------------------------------
 #     3. ENTER FORECAST HOUR INTERVAL
 #     -------------------------------
@@ -105,8 +97,7 @@ export FHINT=${FHINT:-03}
 #
 #     Enter the starting date, in yyyymmddhh format, of the forecast:
 
-export YYYYMMDDHH=$GDATE10
-
+export YYYYMMDDHH=${GDATE10}
 
 #     -------------------------
 #     5. ENTER STORM IDENTIFIER
@@ -117,7 +108,6 @@ export YYYYMMDDHH=$GDATE10
 #     forecast time, then just leave it blank, as "export INPSTORM=".
 
 export INPSTORM=
-
 
 #     -----------------------------------------
 #     6. ENTER NAME OF AUXILIARY TC VITALS FILE
@@ -142,7 +132,6 @@ export INPSTORM=
 #     Example: export AUXTCVIT=/ptmp/wx20tm/ecoast.wint97
 
 export AUXTCVIT=
-
 
 #     -----------------------------------------------------
 #     ENTER THRESHOLDS FOR USE IN VERIFYING STORM STRUCTURE
@@ -175,7 +164,6 @@ export V850THRESH=3.000
 # Set the default for background files to be 3 hourly
 export BKGFREQ=${BKGFREQ:-1}
 
-
 # This script is the second in a set of 2 that starts the tracker for either
 # operational or user-defined model output.  This script makes sure that the
 # data files exist, it also pulls all of the needed data records out of the
@@ -184,29 +172,24 @@ export BKGFREQ=${BKGFREQ:-1}
 # updates the TC Vitals (if necessary).  It then executes the gettrk
 # executable, which actually does the tracking.
 
-
-inpstorm=${INPSTORM}
 inpfile=${INPFILE}
 fhint=${FHINT}
 cmodel=${CMODEL}
 symdh=${YYYYMMDDHH}
-auxtcvit=${AUXTCVIT}
 
-user=$LOGNAME
-#export TMPDIR=/nfstmp/${user}/trak/${RANDOM}
-export TMPDIR=$DATA/trak/${RANDOM}
-if [ ! -d $TMPDIR ]; then mkdir -p $TMPDIR; fi
-if [ -s ${TMPDIR}/tmpsynvit ]; then rm ${TMPDIR}/tmpsynvit; fi
-if [ -s ${TMPDIR}/tmprawvit ]; then rm ${TMPDIR}/tmprawvit; fi
+export TMPDIR=${DATA}/trak/${RANDOM}
+mkdir -p "${TMPDIR}"
+rm -f "${TMPDIR}/tmpsynvit"
+rm -f "${TMPDIR}/tmprawvit"
 
 export flag_pgb=${flag_pgb:-q}
 
-wgrib_parmlist=" HGT:850 HGT:700 UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 PRMSL:MSL MSLET"
+wgrib_parmlist="HGT:850 HGT:700 UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 PRMSL:MSL MSLET"
 
-export maxtime=22    # Max number of forecast time levels
+export maxtime=22 # Max number of forecast time levels
 
-if [ ! -d ${vdir} ];   then mkdir -p ${vdir};   fi
-if [ ! -d ${TMPDIR} ]; then mkdir -p ${TMPDIR}; fi
+mkdir -p "${vdir}"
+mkdir -p "${TMPDIR}"
 
 scc=${symdh:0:2}
 syy=${symdh:2:2}
@@ -216,100 +199,124 @@ shh=${symdh:8:2}
 dishh=${shh}
 symd=${symdh:0:8}
 
-case ${shh} in
- 0|00) dishh="00";;
- 3|03) dishh="03";;
- 6|06) dishh="06";;
-   12) dishh="12";;
-   15) dishh="15";;
-   18) dishh="18";;
-esac
-
 #---------------------------------------------------#
 # Convert the input model to lowercase letters and
 # check to see if it's a valid model, and assign a
 # model ID number to it.
 #---------------------------------------------------#
 
-cmodel=$(echo ${cmodel} | tr "[A-Z]" "[a-z]")
+cmodel=${cmodel,,}
 
 case ${cmodel} in
 
-  gdas) set +x; echo " "; echo " ++ operational GDAS chosen"; set_trace;
-       fcstlen=9                                       ;
-       fcsthrs=""
-       for fhr in $( seq 0 $BKGFREQ 9); do
-          fhrchar=$(printf %02d $fhr)
-          fcsthrs="$fcsthrs $fhrchar"
-       done
-       atcfnum=72                                       ;
-       atcfname="gdas"                                  ;
-       atcfout="gdas"                                   ;
-       if [ $BKGFREQ -eq 1 ]; then
-          atcffreq=100
-       elif [ $BKGFREQ -eq 3 ]; then
-          atcffreq=300
-       fi
-       mslpthresh=0.0015
-       v850thresh=1.5000
-       modtyp='global'
-       file_sequence="onebig"
-       lead_time_units='hours'
-       export PHASEFLAG=n
-       export WCORE_DEPTH=1.0
-       #export PHASE_SCHEME=vtt
-       #export PHASE_SCHEME=cps
-       export PHASE_SCHEME=both
-       export STRUCTFLAG=n
-       export IKEFLAG=n
-       export trkrtype='tracker'
-       # g2_jpdtn sets the variable that will be used as "JPDTN" for
-       # the call to getgb2, if gribver=2.  jpdtn=1 for ens data,
-       # jpdtn=0 for deterministic data.
-       g2_jpdtn=0
-       model=8;;
-  gfs) set +x; echo " "; echo " ++ operational GFS chosen"; set_trace;
-		fcsthrsgfs=' 00 06 12 18 24 30 36 42 48 54 60 66 72 78';
-		gfsdir=$COMIN;
-		gfsgfile=gfs.t${dishh}z.pgrbf;
-        model=1;;
-  mrf) set +x; echo " "; echo " ++ operational MRF chosen"; set_trace;
-		fcsthrsmrf=' 00 12 24 36 48 60 72';
-		mrfdir=$COMIN;
-		mrfgfile=drfmr.t${dishh}z.pgrbf;
-        model=2;;
-  ukmet) set +x; echo " "; echo " ++ operational UKMET chosen"; set_trace;
-		fcsthrsukmet=' 00 12 24 36 48 60 72';
-		ukmetdir=$COMIN;
-		ukmetgfile=ukmet.t${dishh}z.ukmet;
-        model=3;;
-  ecmwf) set +x; echo " "; echo " ++ operational ECMWF chosen"; set_trace;
-		fcsthrsecmwf=' 00 24 48 72';
-		ecmwfdir=$COMIN;
-		ecmwfgfile=ecmgrb25.t12z;
-        model=4;;
-  ngm) set +x; echo " "; echo " ++ operational NGM chosen"; set_trace;
-		fcsthrsngm=' 00 06 12 18 24 30 36 42 48';
-		ngmdir=$COMIN;
-		ngmgfile=ngm.t${dishh}z.pgrb.f;
-        model=5;;
-  nam) set +x; echo " "; echo " ++ operational Early NAM chosen"; set_trace;
-		fcsthrsnam=' 00 06 12 18 24 30 36 42 48';
-		namdir=$COMIN;
-		namgfile=nam.t${dishh}z.awip32;
-        model=6;;
-  ngps) set +x; echo " "; echo " ++ operational NAVGEM chosen"; set_trace;
-		fcsthrsngps=' 00 12 24 36 48 60 72';
-		#ngpsdir=/com/hourly/prod/hourly.${symd};
-		ngpsdir=$OMIN;
-		ngpsgfile=fnoc.t${dishh}z;
-        model=7;;
-  other) set +x; echo " "; echo " Model selected by user is ${cmodel}, which is a ";
-         echo "user-defined model, NOT operational...."; echo " "; set_trace;
-         model=9;;
-  *) set +x; echo " "; echo " !!! Model selected is not recognized.";
-     echo " Model= ---> ${cmodel} <--- ..... Please submit the script again....";
-     echo " ";  set_trace; exit 8;;
+    gdas)
+        echo " "
+        echo " ++ operational GDAS chosen"
+        fcsthrs=""
+        for fhr in $(seq 0 "${BKGFREQ}" 9); do
+            fhrchar=$(printf %02d "${fhr}")
+            fcsthrs="${fcsthrs} ${fhrchar}"
+        done
+        atcfnum=72
+        atcfname="gdas"
+        if [[ "${BKGFREQ}" -eq 1 ]]; then
+            atcffreq=100
+        elif [[ "${BKGFREQ}" -eq 3 ]]; then
+            atcffreq=300
+        fi
+        modtyp='global'
+        file_sequence="onebig"
+        lead_time_units='hours'
+        export PHASEFLAG=n
+        export WCORE_DEPTH=1.0
+        export PHASE_SCHEME=both
+        export STRUCTFLAG=n
+        export IKEFLAG=n
+        export trkrtype='tracker'
+        # g2_jpdtn sets the variable that will be used as "JPDTN" for
+        # the call to getgb2, if gribver=2.  jpdtn=1 for ens data,
+        # jpdtn=0 for deterministic data.
+        g2_jpdtn=0
+        model=8
+        ;;
+    gfs)
+        echo " "
+        echo " ++ operational GFS chosen"
+        fcsthrsgfs='00 06 12 18 24 30 36 42 48 54 60 66 72 78'
+        gfsdir="${COMIN}"
+        gfsgfile=gfs.t${dishh}z.pgrbf
+        model=1
+        ;;
+    mrf)
+        echo " "
+        echo " ++ operational MRF chosen"
+        fcsthrsmrf='00 12 24 36 48 60 72'
+        mrfdir="${COMIN}"
+        mrfgfile=drfmr.t${dishh}z.pgrbf
+        model=2
+        ;;
+    ukmet)
+        echo " "
+        echo " ++ operational UKMET chosen"
+        fcsthrsukmet='00 12 24 36 48 60 72'
+        ukmetdir="${COMIN}"
+        ukmetgfile=ukmet.t${dishh}z.ukmet
+        model=3
+        ;;
+    ecmwf)
+        echo " "
+        echo " ++ operational ECMWF chosen"
+        ecmwfdir="${COMIN}"
+        ecmwfgfile=ecmgrb25.t12z
+        model=4
+        ;;
+    ngm)
+        set +x
+        echo " "
+        echo " ++ operational NGM chosen"
+        set_trace
+        fcsthrsngm='00 06 12 18 24 30 36 42 48'
+        ngmdir="${COMIN}"
+        ngmgfile=ngm.t${dishh}z.pgrb.f
+        model=5
+        ;;
+    nam)
+        echo " "
+        echo " ++ operational Early NAM chosen"
+        fcsthrsnam='00 06 12 18 24 30 36 42 48'
+        namdir="${COMIN}"
+        namgfile=nam.t${dishh}z.awip32
+        model=6
+        ;;
+    ngps)
+        echo " "
+        echo " ++ operational NAVGEM chosen"
+        fcsthrsngps='00 12 24 36 48 60 72'
+        #ngpsdir=/com/hourly/prod/hourly.${symd};
+        ngpsdir="${COMIN}"
+        ngpsgfile=fnoc.t${dishh}z
+        model=7
+        ;;
+    other)
+        cat << EOF
+Model selected by user is ${cmodel}, which is a 
+user-defined model, NOT operational....
+ 
+EOF
+        model=9
+        ;;
+    *)
+        msg=$(
+            cat << EOF
+
+FATAL ERROR: Model selected is not recognized.
+Model= ---> ${cmodel} <--- ..... Please submit the script again....
+
+EOF
+        )
+        err=8
+        err_exit "${msg}"
+        ;;
 
 esac
 
@@ -323,13 +330,10 @@ esac
 # if the model is user-defined.
 #-------------------------------------------------
 
-fct=1
-while [ ${fct} -le 14 ];
-do
-  fh[${fct}]=99
-  let fct=fct+1
+export fh
+for ((fct = 1; fct <= 14; fct++)); do
+    fh[fct]=99
 done
-
 
 #------------------------------------------------------#
 # Set the directories for the operational files.  For
@@ -338,142 +342,125 @@ done
 # data directory, etc.....
 #------------------------------------------------------#
 
-if [ ${cmodel} = 'other' ]; then
+if [[ "${cmodel}" == 'other' ]]; then
 
-# This next bit of code tears apart the input file name to get the
-# data directory and data file names.  pos1, pos2, pos3 and pos4
-# refer to character string positions in the filename string.  The
-# idea of this next bit of code is to pull the file name apart to
-# get a shell for the file name, so that if a user has a file
-# name such as pgbf00.97090100, the script knows where in the
-# string to substitute the forecast hours.  IMPORTANT NOTE: The
-# file name that the user enters must have the characters "XX" in
-# in place of the forecast hour characters "00" in order for this
-# to work.
-#
-# pos1= character position immediately before "00" starts
-# pos2= character position at which "00" starts
-# pos3= character position immediately after "00"
-# pos4= character position of last character in name
+    # This next bit of code tears apart the input file name to get the
+    # data directory and data file names.  pos1, pos2, pos3 and pos4
+    # refer to character string positions in the filename string.  The
+    # idea of this next bit of code is to pull the file name apart to
+    # get a shell for the file name, so that if a user has a file
+    # name such as pgbf00.97090100, the script knows where in the
+    # string to substitute the forecast hours.  IMPORTANT NOTE: The
+    # file name that the user enters must have the characters "XX" in
+    # in place of the forecast hour characters "00" in order for this
+    # to work.
+    #
+    # pos1= character position immediately before "00" starts
+    # pos2= character position at which "00" starts
+    # pos3= character position immediately after "00"
+    # pos4= character position of last character in name
 
-  otherdir=$(dirname ${inpfile})
-  fname=$(basename ${inpfile})
+    otherdir=$(dirname "${inpfile}")
+    fname=$(basename "${inpfile}")
 
-  pos2=$(echo ${fname} | awk '{ match($0,/XX/); print RSTART }')
-  pos4=$(echo ${fname} | awk '{ match($0,/$/); print RSTART }')
-  let pos4=pos4-1
-  let pos1=pos2-1
-  let pos3=pos2+2
+    fnamebeg=$(grep -Po '.*(?=XX)' <<< "${fname}")
+    fnameend=$(grep -Po '(?<=XX).*($)' <<< "${fname}")
 
-  if [ ${pos2} -eq 0 ]; then
-    set +x
-    echo " "
-    echo " !!! ERROR! Something wrong with name of input file name for the"
-    echo " analysis file.  Either the input file is missing, or you did not"
-    echo " replace the forecast hour characters 00 with XX.  Please check the"
-    echo " name in the kickoff script and qsub it again.  Exiting....."
-    echo " "
-    set_trace
-    exit 8
-  fi
-
-  fnamebeg=$(echo ${fname} | cut -c1-${pos1})
-  if [ ${pos4} -ge ${pos3} ]; then
-    fnameend=$(echo ${fname} | cut -c${pos3}-${pos4})
-  else
-    fnameend=""
-  fi
-
-  fflag='y'
-  fhour=0
-  fcsthrsother=''
-  fhrct=0
-  while [ ${fflag} = 'y' ];
-  do
-
-    if [ ${fhrct} -eq 14 ]; then
-      set +x
-      echo " "
-      echo " !!! Exiting loop, only processing 14 forecast files ...."
-      echo " "
-      set_trace
-      break
+    if [[ -z "${fnamebeg}" ]]; then
+        read -r -d '' msg << EOF
+FATAL ERROR: Something wrong with name of input file name for the
+analysis file.  Either the input file is missing, or you did not
+replace the forecast hour characters 00 with XX.  Please check the
+name in the kickoff script and qsub it again.
+EOF
+        err=8
+        err_exit "${msg}"
     fi
 
-    if [ ${fhour} -lt 10 ]; then
-      fhour=0${fhour}
+    fflag='y'
+    fhour=0
+    fcsthrsother=''
+    fhrct=0
+    while [[ ${fflag} == 'y' ]]; do
+
+        if [[ "${fhrct}" -eq 14 ]]; then
+            cat << EOF
+
+!!! Exiting loop, only processing 14 forecast files ....
+
+EOF
+            break
+        fi
+
+        fhour=$(printf '%02d' "${fhour}")
+
+        if [[ -s "${otherdir}/${fnamebeg}${fhour}${fnameend}" ]]; then
+            maxhour=${fhour}
+            fcsthrsother="${fcsthrsother} ${fhour}"
+            cat << EOF
+
++++ Found file ${fnamebeg}${fhour}${fnameend}
+
+EOF
+            fhrct=$((fhrct + 1))
+        else
+            fflag='n'
+        fi
+
+        fhour=$((fhour + fhint))
+
+    done
+
+    if [[ ! -s "${otherdir}/${fnamebeg}00${fnameend}" ]]; then
+        msg=$(
+            cat << EOF
+
+!!! FATAL ERROR in $(basename "$0"):
+!!! Input analysis file cannot be found.
+!!! The tracker is looking for this file in:  
+!!! ---->  ${otherdir}/${fnamebeg}00${fnameend}
+!!! Please check the directory to make sure the file
+!!! is there and then submit this job again.
+
+EOF
+        )
+        err=8
+        err_exit "${msg}"
     fi
 
-    if [ -s ${otherdir}/${fnamebeg}${fhour}${fnameend} ]; then
-      maxhour=${fhour}
-      fcsthrsother=${fcsthrsother}" ${fhour}"
-      set +x
-      echo " "
-      echo " +++ Found file ${fnamebeg}${fhour}${fnameend}"
-      echo " "
-      set_trace
-      let fhrct=fhrct+1
-    else
-      fflag='n'
-    fi
+    cat << EOF
 
-    let fhour=fhour+fhint
+Max forecast hour is ${maxhour}
+List of forecast hours: ${fcsthrsother}
 
-  done
+EOF
 
-  if [ ! -s ${otherdir}/${fnamebeg}00${fnameend} ]; then
-    set +x
-    echo " "
-    echo " !!! ERROR in $(basename $0)"
-    echo " !!! Input analysis file cannot be found."
-    echo " !!! The tracker is looking for this file in:  "
-    echo " !!! ---->  ${otherdir}/${fnamebeg}00${fnameend}"
-    echo " !!! Please check the directory to make sure the file"
-    echo " !!! is there and then submit this job again."
-    echo " "
-    set_trace
-    exit 8
-  fi
+    # --------------------------------------------------
+    # In order for the fortran program to know how many
+    # forecast times there are and what those forecast
+    # hours are, we need to include this information in
+    # the namelist file.  So first, put this information
+    # into an array, then at the end of this script,
+    # we'll put it into the namelist file.
 
-  set +x
-  echo " "
-  echo " Max forecast hour is $maxhour"
-  echo " List of forecast hours: $fcsthrsother"
-  echo " "
-  set_trace
-
-# --------------------------------------------------
-# In order for the fortran program to know how many
-# forecast times there are and what those forecast
-# hours are, we need to include this information in
-# the namelist file.  So first, put this information
-# into an array, then at the end of this script,
-# we'll put it into the namelist file.
-
-  fhour=0
-  fct=1
-  while [ ${fct} -le 14 ];
-  do
-
-    if [ ${fhour} -le ${maxhour} ]; then
-      fh[${fct}]=${fhour}
-    else
-      fh[${fct}]=99
-    fi
-
-    let fct=fct+1
-    let fhour=fhour+fhint
-
-  done
-
+    fhour=0
+    for ((fcnt = 1; fcnt <= 14; fcnt++)); do
+        if [[ "${fhour}" -le "${maxhour}" ]]; then
+            fh[fct]=${fhour}
+        else
+            fh[fct]=99
+        fi
+        fhour=$((fhour + fhint))
+    done
 fi
 
-cpfs $DATA/tcvitals ${vdir}/vitals.${symd}${dishh}
+cpfs "${DATA}/tcvitals" "${vdir}/vitals.${symd}${dishh}"
 
-grep -v TEST ${vdir}/vitals.${symd}${dishh} | \
-     awk 'substr($0,6,1) !~ /[8-9]/ {print $0}' >${vdir}/tempvit.nonameless
+# shellcheck disable=SC2312
+grep -v TEST "${vdir}/vitals.${symd}${dishh}" |
+    awk 'substr($0,6,1) !~ /[8-9]/ {print $0}' > "${vdir}/tempvit.nonameless"
 
-mv ${vdir}/tempvit.nonameless ${vdir}/vitals.${symd}${dishh}
+mv "${vdir}/tempvit.nonameless" "${vdir}/vitals.${symd}${dishh}"
 
 #--------------------------------------------------------------#
 # Now run a fortran program that will read all the TC vitals
@@ -492,18 +479,16 @@ syy6=${ymdh6ago:2:2}
 smm6=${ymdh6ago:4:2}
 sdd6=${ymdh6ago:6:2}
 shh6=${ymdh6ago:8:2}
-symd6=${ymdh6ago:2:6}
 
 ymdh6ahead=$(date --utc +%Y%m%d%H -d "${symd} ${dishh} + 6 hours")
 syyp6=${ymdh6ahead:2:2}
 smmp6=${ymdh6ahead:4:2}
 sddp6=${ymdh6ahead:6:2}
 shhp6=${ymdh6ahead:8:2}
-symdp6=${ymdh6ahead:2:6}
 
 vit_incr=6
 
-cat<<EOF >$TMPDIR/suv_input
+cat << EOF > "${TMPDIR}/suv_input"
 &datenowin   dnow%yy=${syy}, dnow%mm=${smm},
              dnow%dd=${sdd}, dnow%hh=${dishh}/
 &dateoldin  dold%yy=${syy6}, dold%mm=${smm6},
@@ -513,17 +498,20 @@ cat<<EOF >$TMPDIR/suv_input
 &hourinfo  vit_hr_incr=${vit_incr}/
 EOF
 
-numvitrecs=$(cat ${vdir}/vitals.${symd}${dishh} | wc -l)
-if [ ${numvitrecs} -eq 0 ]; then
-  set +x
-  echo " "
-  echo "!!! ERROR -- There are no vitals records for this time period."
-  echo "!!! File ${vdir}/vitals.${symd}${dishh} is empty."
-  echo "!!! It could just be that there are no storms for the current"
-  echo "!!! time.  Please check the dates and submit this job again...."
-  echo " "
-  set_trace
-  exit 8
+numvitrecs=$(wc -l "${vdir}/vitals.${symd}${dishh}")
+if [[ ${numvitrecs} -eq 0 ]]; then
+    msg=$(
+        cat << EOF
+
+!!! FATAL ERROR: There are no vitals records for this time period.
+!!! File ${vdir}/vitals.${symd}${dishh} is empty.
+!!! It could just be that there are no storms for the current
+!!! time.  Please check the dates and submit this job again....
+
+EOF
+    )
+    err=8
+    err_exit "${msg}"
 fi
 
 # - - - - - - - - - - - - -
@@ -543,8 +531,8 @@ fi
 #       was messing up the "(length($4) == 8)" statement logic.
 # - - - - - - - - - - - - -
 
-sed -e "s/\:/ /g"    ${vdir}/vitals.${symd}${dishh} > ${TMPDIR}/tempvit
-mv ${TMPDIR}/tempvit ${vdir}/vitals.${symd}${dishh}
+sed -e "s/\:/ /g" "${vdir}/vitals.${symd}${dishh}" > "${TMPDIR}/tempvit"
+mv "${TMPDIR}/tempvit" "${vdir}/vitals.${symd}${dishh}"
 
 awk '
 {
@@ -560,78 +548,61 @@ awk '
       printf ("%s19%s\n",substr($0,1,19),substr($0,20))
     }
   }
-} ' ${vdir}/vitals.${symd}${dishh}  >${TMPDIR}/vitals.${symd}${dishh}.y4
+} ' "${vdir}/vitals.${symd}${dishh}" > "${TMPDIR}/vitals.${symd}${dishh}.y4"
 
-mv ${TMPDIR}/vitals.${symd}${dishh}.y4 ${vdir}/vitals.${symd}${dishh}
+mv "${TMPDIR}/vitals.${symd}${dishh}.y4" "${vdir}/vitals.${symd}${dishh}"
 
-#cpfs $auxtcvit ${vdir}/vitals.${symd}${dishh}
-
-pgm=$(basename  $SUPVX)
-if [ -s $DATA/prep_step ]; then
-   set +e
-   . $DATA/prep_step
-    set_strict
+pgm=$(basename "${SUPVX}")
+if [[ -s "${DATA}/prep_step" ]]; then
+    source "${DATA}/prep_step"
 else
-   [ -f errfile ] && rm errfile
-   export XLFUNITS=0
-   unset $(env | grep XLFUNIT | awk -F= '{print $1}')
-
-   if [ -z "${XLFRTEOPTS:-}" ]; then
-     export XLFRTEOPTS="unit_vars=yes"
-   else
-     export XLFRTEOPTS="${XLFRTEOPTS}:unit_vars=yes"
-   fi
-
+    [[ -f errfile ]] && rm errfile
+    export XLFUNITS=0
+    # shellcheck disable=SC2046,SC2312
+    unset $(env | grep XLFUNIT | awk -F= '{print $1}')
+    export XLFRTEOPTS="${XLFRTEOPTS:+${XLFRTEOPTS}:}unit_vars=yes"
 fi
 
-if [ -s fort.*  ]; then
-  rm fort.*
-fi
+rm -f fort.*
 
-${NLN} ${vdir}/vitals.${symd}${dishh}                  fort.31
-${NLN} ${vdir}/vitals.upd.${cmodel}.${symd}${dishh}    fort.51
+${NLN} "${vdir}/vitals.${symd}${dishh}" fort.31
+${NLN} "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}" fort.51
 
-##$XLF_LINKSSH
-#if [ -z $XLF_LINKSSH ] ; then
-#if [ -s $XLF_LINKSSH ; then  $XLF_LINKSSH ; fi
-#fi
-
-$TIMEIT $SUPVX <$TMPDIR/suv_input > outout 2> errfile
+${TIMEIT} "${SUPVX}" < "${TMPDIR}/suv_input" > outout 2> errfile
 err=$?
-###cat errfile
 cat errfile >> outout
 cat outout >> supvit.out
-set +u
-[ -n "../$pgmout" ]  &&  cat outout >> ../$pgmout
-set -u
+if [[ -n "${pgmout}" ]]; then
+    cat outout >> "../${pgmout}"
+fi
 rm outout
-set +x
-echo
-echo 'The foreground exit status for SUPVIT is ' $err
-echo
-set_trace
+cat << EOF
 
-if [ $err -eq 0 ]; then
-  set +x
-  echo " "
-  echo " Normal end for program supvitql (which updates TC vitals file)."
-  echo " "
-  set_trace
+The foreground exit status for SUPVIT is ${err}
+
+EOF
+
+if [[ "${err}" -eq 0 ]]; then
+    cat << EOF
+
+Normal end for program supvitql (which updates TC vitals file).
+
+EOF
 else
-  set +x
-  echo " "
-  echo "!!! ERROR -- An error occurred while running supvitql, "
-  echo "!!! which is the program that updates the TC Vitals file."
-  echo "!!! Return code from supvitql = ${err}"
-  echo "!!! model= ${cmodel}, forecast initial time = ${symd}${dishh}"
-  echo "!!! Exiting...."
-  echo " "
-  set_trace
-fi
-if [[ ${err} -gt 0 ]]; then
-   exit 9
-fi
+    msg=$(
+        cat << EOF
 
+!!! FATAL ERROR: An error occurred while running supvitql, 
+!!! which is the program that updates the TC Vitals file.
+!!! Return code from supvitql = ${err}
+!!! model= ${cmodel}, forecast initial time = ${symd}${dishh}
+!!! Exiting....
+
+EOF
+    )
+    err=9
+    err_exit "${msg}"
+fi
 
 #------------------------------------------------------------------#
 # Now select all storms to be processed, that is, process every
@@ -640,56 +611,51 @@ fi
 # then exit.
 #------------------------------------------------------------------#
 
-numvitrecs=$(cat ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l)
-if [ ${numvitrecs} -eq 0 ]; then
-  set +x
-  echo " "
-  echo "!!! ERROR -- There are no vitals records for this time period "
-  echo "!!! in the UPDATED vitals file."
-  echo "!!! File ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} is empty."
-  echo "!!! Please check the dates and submit this job again...."
-  echo " "
-  set_trace
-  exit 8
+numvitrecs=$(wc -l "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}")
+if [[ "${numvitrecs}" -eq 0 ]]; then
+    cat << EOF
+ 
+!!! ERROR -- There are no vitals records for this time period 
+!!! in the UPDATED vitals file.
+!!! File ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} is empty.
+!!! Please check the dates and submit this job again....
+ 
+EOF
+    err=8
+    err_exit
 fi
 
-set +x
-echo " " | tee storm_list
-echo " " | tee -a storm_list
-echo " " | tee -a storm_list
-echo " *--------------------------------*" | tee -a storm_list
-echo " |        STORM SELECTION         |" | tee -a storm_list
-echo " *--------------------------------*" | tee -a storm_list
-echo " " | tee -a storm_list
-echo " Below is a list of the storms to be processed: " | tee -a storm_list
-echo " " | tee -a storm_list
-cat ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | tee -a storm_list
-echo " " | tee -a storm_list
-set_trace
+# shellcheck disable=SC2312
+cat << EOF | tee stormlist
 
-set +u
-[ -n "../$pgmout" ]  &&  cat storm_list >> ../$pgmout
-set -u
+
+
+*--------------------------------*
+|        STORM SELECTION         |
+*--------------------------------*
+
+Below is a list of the storms to be processed: 
+
+$(cat "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}")
+
+EOF
+
+if [[ -n "${pgmout}" ]]; then
+    cat storm_list >> "../${pgmout}"
+fi
 
 rm storm_list
 
-ict=1
-while [ $ict -le 15 ]
-do
-  stormflag[${ict}]=3
-  let ict=ict+1
+for ((ict = 1; ict <= 15; ict++)); do
+    stormflag[ict]=3
 done
 
 dtg_current="${symd} ${dishh}00"
-smax=$( grep "${dtg_current}" ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l)
+smax=$(grep -c "${dtg_current}" "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}")
 
-sct=1
-while [ ${sct} -le ${smax} ]
-do
-  stormflag[${sct}]=1
-  let sct=sct+1
+for ((ict = 1; ict <= smax; ict++)); do
+    stormflag[sct]=1
 done
-
 
 #-----------------------------------------------------------------#
 #
@@ -711,201 +677,214 @@ done
 # sure to check the lbms in your fortran program after getgb).
 #-----------------------------------------------------------------#
 
-set +x
-echo " "
-echo " -----------------------------------------"
-echo "   NOW CUTTING APART INPUT GRIB FILES TO "
-echo "   CREATE 1 BIG GRIB INPUT FILE "
-echo " -----------------------------------------"
-echo " "
-set_trace
+cat << EOF
+
+-----------------------------------------
+  NOW CUTTING APART INPUT GRIB FILES TO 
+  CREATE 1 BIG GRIB INPUT FILE 
+-----------------------------------------
+
+EOF
 
 #grid='255 0 151 71 70000 190000 128 0000 340000 1000 1000 64'
 #grid='255 0 360 181 90000 0000 128 -90000 -1000 1000 1000 64'
 #grid='255 0 360 181 90000 0000 128 -90000 -1000 1000 1000 0'
 
-regflag=$(grep NHC ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l)
+regflag=$(grep -c NHC "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}")
 
 # ----------------------------
 #   Process NGM, if selected
 # ----------------------------
 
-if [ ${model} -eq 5 ]; then
+if [[ "${model}" -eq 5 ]]; then
 
-  grid='255 0 151 71 70000 190000 128 0000 340000 1000 1000 64'
+    grid='255 0 151 71 70000 190000 128 0000 340000 1000 1000 64'
 
-  if [ ${regflag} = 'n' ]; then
-    set +x
-    echo " "
-    echo " *******************************************************************"
-    echo " !!! NGM model has been selected, but there are no storms in the"
-    echo " !!! TC Vitals file that are from NHC.  Therefore, unless you have"
-    echo " !!! entered your own auxiliary TC vitals file that has a storm "
-    echo " !!! within the NGM domain, the tracker will exit after reading "
-    echo " !!! in the analysis data."
-    echo " *******************************************************************"
-    echo " "
-    set_trace
-  fi
+    if [[ "${regflag}" == 'n' ]]; then
+        cat << EOF
 
-  if [ -s ${vdir}/ngmlatlon.pgrb.${symd}${dishh} ]; then
-    rm ${vdir}/ngmlatlon.pgrb.${symd}${dishh}
-  fi
+*******************************************************************
+!!! NGM model has been selected, but there are no storms in the
+!!! TC Vitals file that are from NHC.  Therefore, unless you have
+!!! entered your own auxiliary TC vitals file that has a storm 
+!!! within the NGM domain, the tracker will exit after reading 
+!!! in the analysis data.
+*******************************************************************
 
-  for fhour in ${fcsthrsngm}
-  do
-
-    if [ ! -s ${ngmdir}/${ngmgfile}${fhour} ]; then
-      set +x
-      echo " "
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " !!! NGM File missing: ${ngmdir}/${ngmgfile}${fhour}"
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      set_trace
-      continue
-    fi
-    if [ -s $TMPDIR/tmpixfile ]; then rm $TMPDIR/tmpixfile; fi
-    ${GRBINDEX:?} ${ngmdir}/${ngmgfile}${fhour} $TMPDIR/tmpixfile
-    x1=$TMPDIR/tmpixfile
-
-    set +x
-    echo " "
-    echo " Extracting NGM GRIB data for forecast hour = $fhour"
-    echo " "
-    set_trace
-
-    g1=${ngmdir}/${ngmgfile}${fhour}
-
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 100 850' $g1 $x1 $TMPDIR/ngmllu850.grb.f${fhour}; rcc1=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 100 700' $g1 $x1 $TMPDIR/ngmllu700.grb.f${fhour}; rcc2=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 100 500' $g1 $x1 $TMPDIR/ngmllu500.grb.f${fhour}; rcc3=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 33 105 10'  $g1 $x1 $TMPDIR/ngmllu10m.grb.f${fhour};  rcc4=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 41 100 850' $g1 $x1 $TMPDIR/ngmllav850.grb.f${fhour}; rcc5=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1 41 100 700' $g1 $x1 $TMPDIR/ngmllav700.grb.f${fhour}; rcc6=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1  7 100 850' $g1 $x1 $TMPDIR/ngmllz850.grb.f${fhour}; rcc7=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1  7 100 700' $g1 $x1 $TMPDIR/ngmllz700.grb.f${fhour}; rcc8=$?
-    ${COPYGB:?} -g"$grid" -k'2*-1 104 -1  2 102 0'   $g1 $x1 $TMPDIR/ngmllmslp.grb.f${fhour}; rcc9=$?
-
-    if [ $rcc1 -eq 134 -o $rcc2 -eq 134 -o $rcc3 -eq 134 -o $rcc4 -eq 134 -o $rcc5 -eq 134 -o \
-         $rcc6 -eq 134 -o $rcc7 -eq 134 -o $rcc8 -eq 134 -o $rcc9 -eq 134 ]; then
-      set +x
-      echo " "
-      echo "!!! ERROR using $COPYGB to interpolate ngm data.  We will stop execution because"
-      echo "!!! some variables may have been copied okay, while some obviously have not, "
-      echo "!!! and that could lead to unreliable results from the tracker.  Check to make"
-      echo "!!! sure you've allocated enough memory for this job (error 134 using $COPYGB is "
-      echo "!!! typically due to using more memory than you've allocated).  Exiting....."
-      echo " "
-      set_trace
-      exit 8
+EOF
     fi
 
-    cat $TMPDIR/ngmllu850.grb.f${fhour} $TMPDIR/ngmllu700.grb.f${fhour} \
-        $TMPDIR/ngmllu500.grb.f${fhour} $TMPDIR/ngmllz850.grb.f${fhour} \
-        $TMPDIR/ngmllz700.grb.f${fhour} $TMPDIR/ngmllmslp.grb.f${fhour} \
-        $TMPDIR/ngmllav850.grb.f${fhour} $TMPDIR/ngmllav700.grb.f${fhour} \
-        $TMPDIR/ngmllu10m.grb.f${fhour} \
-        >>${vdir}/ngmlatlon.pgrb.${symd}${dishh}
+    rm -f "${vdir}/ngmlatlon.pgrb.${symd}${dishh}"
 
-  done
+    for fhour in ${fcsthrsngm}; do
 
-  ${GRBINDEX:?} ${vdir}/ngmlatlon.pgrb.${symd}${dishh} ${vdir}/ngmlatlon.pgrb.ix.${symd}${dishh}
-  gribfile=${vdir}/ngmlatlon.pgrb.${symd}${dishh}
-  ixfile=${vdir}/ngmlatlon.pgrb.ix.${symd}${dishh}
+        if [[ ! -s "${ngmdir}/${ngmgfile}${fhour}" ]]; then
+            cat << EOF
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! NGM File missing: ${ngmdir}/${ngmgfile}${fhour}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOF
+            continue
+        fi
+        rm -f "${TMPDIR}/tmpixfile"
+        ${GRBINDEX:?} "${ngmdir}/${ngmgfile}${fhour}" "${TMPDIR}/tmpixfile"
+        x1="${TMPDIR}/tmpixfile"
+
+        cat << EOF
+
+Extracting NGM GRIB data for forecast hour = ${fhour}
+
+EOF
+
+        g1="${ngmdir}/${ngmgfile}${fhour}"
+
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1 33 100 850' "${g1}" "${x1}" "${TMPDIR}/ngmllu850.grb.f${fhour}"
+        rcc1=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1 33 100 700' "${g1}" "${x1}" "${TMPDIR}/ngmllu700.grb.f${fhour}"
+        rcc2=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1 33 100 500' "${g1}" "${x1}" "${TMPDIR}/ngmllu500.grb.f${fhour}"
+        rcc3=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1 33 105 10' "${g1}" "${x1}" "${TMPDIR}/ngmllu10m.grb.f${fhour}"
+        rcc4=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1 41 100 850' "${g1}" "${x1}" "${TMPDIR}/ngmllav850.grb.f${fhour}"
+        rcc5=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1 41 100 700' "${g1}" "${x1}" "${TMPDIR}/ngmllav700.grb.f${fhour}"
+        rcc6=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1  7 100 850' "${g1}" "${x1}" "${TMPDIR}/ngmllz850.grb.f${fhour}"
+        rcc7=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1  7 100 700' "${g1}" "${x1}" "${TMPDIR}/ngmllz700.grb.f${fhour}"
+        rcc8=$?
+        ${COPYGB:?} -g"${grid}" -k'2*-1 104 -1  2 102 0' "${g1}" "${x1}" "${TMPDIR}/ngmllmslp.grb.f${fhour}"
+        rcc9=$?
+
+        if [[ ${rcc1} -eq 134 || ${rcc2} -eq 134 || ${rcc3} -eq 134 || ${rcc4} -eq 134 || ${rcc5} -eq 134 ||
+            ${rcc6} -eq 134 || ${rcc7} -eq 134 || ${rcc8} -eq 134 || ${rcc9} -eq 134 ]]; then
+            msg=$(
+                cat << EOF
+
+!!! FATAL ERROR using ${COPYGB} to interpolate ngm data.  We will stop execution because
+!!! some variables may have been copied okay, while some obviously have not, 
+!!! and that could lead to unreliable results from the tracker.  Check to make
+!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is 
+!!! typically due to using more memory than you've allocated).  Exiting.....
+
+EOF
+            )
+            err=8
+            err_exit "${msg}"
+        fi
+
+        cat "${TMPDIR}/ngmllu850.grb.f${fhour}" "${TMPDIR}/ngmllu700.grb.f${fhour}" \
+            "${TMPDIR}/ngmllu500.grb.f${fhour}" "${TMPDIR}/ngmllz850.grb.f${fhour}" \
+            "${TMPDIR}/ngmllz700.grb.f${fhour}" "${TMPDIR}/ngmllmslp.grb.f${fhour}" \
+            "${TMPDIR}/ngmllav850.grb.f${fhour}" "${TMPDIR}/ngmllav700.grb.f${fhour}" \
+            "${TMPDIR}/ngmllu10m.grb.f${fhour}" \
+            >> "${vdir}/ngmlatlon.pgrb.${symd}${dishh}"
+
+    done
+
+    ${GRBINDEX:?} "${vdir}/ngmlatlon.pgrb.${symd}${dishh}" "${vdir}/ngmlatlon.pgrb.ix.${symd}${dishh}"
+    gribfile="${vdir}/ngmlatlon.pgrb.${symd}${dishh}"
+    ixfile="${vdir}/ngmlatlon.pgrb.ix.${symd}${dishh}"
 
 fi
-
 
 # ----------------------------------
 #   Process Early NAM, if selected
 # ----------------------------------
 
-if [ ${model} -eq 6 ]; then
+if [[ "${model}" -eq 6 ]]; then
 
-  grid='255 0 301 141 70000 190000 128 0000 340000  500  500 64'
+    grid='255 0 301 141 70000 190000 128 0000 340000  500  500 64'
 
-  if [ ${regflag} = 'n' ]; then
-    set +x
-    echo " "
-    echo " *******************************************************************"
-    echo " !!! NAM model has been selected, but there are no storms in the"
-    echo " !!! TC Vitals file that are from NHC.  Therefore, unless you have"
-    echo " !!! entered your own auxiliary TC vitals file that has a storm "
-    echo " !!! within the NAM domain, the tracker will exit after reading "
-    echo " !!! in the analysis data."
-    echo " *******************************************************************"
-    echo " "
-    set_trace
-  fi
+    if [[ "${regflag}" == 'n' ]]; then
+        cat << EOF
 
-  if [ -s ${vdir}/namlatlon.pgrb.${symd}${dishh} ]; then
-    rm ${vdir}/namlatlon.pgrb.${symd}${dishh}
-  fi
+*******************************************************************
+!!! NAM model has been selected, but there are no storms in the
+!!! TC Vitals file that are from NHC.  Therefore, unless you have
+!!! entered your own auxiliary TC vitals file that has a storm 
+!!! within the NAM domain, the tracker will exit after reading 
+!!! in the analysis data.
+*******************************************************************
 
-  for fhour in ${fcsthrsnam}
-  do
-
-    if [ ! -s ${namdir}/${namgfile}${fhour}.tm00 ]; then
-      set +x
-      echo " "
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " !!! Early NAM File missing: ${namdir}/${namgfile}${fhour}.tm00"
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      set_trace
-      continue
-    fi
-    if [ -s $TMPDIR/tmpixfile ]; then rm $TMPDIR/tmpixfile; fi
-    ${GRBINDEX:?} ${namdir}/${namgfile}${fhour}.tm00 $TMPDIR/tmpixfile
-    x1=$TMPDIR/tmpixfile
-
-    set +x
-    echo " "
-    echo " Extracting Early NAM GRIB data for forecast hour = $fhour"
-    echo " "
-    set_trace
-
-    g1=${namdir}/${namgfile}${fhour}.tm00
-
-    if [ -s $TMPDIR/namlatlon.pgrb ]; then rm $TMPDIR/namlatlon.pgrb; fi
-    ${COPYGB:?} -g"$grid" -k'4*-1 33 100 850' $g1 $x1 $TMPDIR/namllu850.grb.f${fhour}; rcc1=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1 33 100 700' $g1 $x1 $TMPDIR/namllu700.grb.f${fhour}; rcc2=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1 33 100 500' $g1 $x1 $TMPDIR/namllu500.grb.f${fhour}; rcc3=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1 33 105 10'  $g1 $x1 $TMPDIR/namllu10m.grb.f${fhour}; rcc4=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1 41 100 850' $g1 $x1 $TMPDIR/namllav850.grb.f${fhour}; rcc5=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1 41 100 700' $g1 $x1 $TMPDIR/namllav700.grb.f${fhour}; rcc6=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1  7 100 850' $g1 $x1 $TMPDIR/namllz850.grb.f${fhour}; rcc7=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1  7 100 700' $g1 $x1 $TMPDIR/namllz700.grb.f${fhour}; rcc8=$?
-    ${COPYGB:?} -g"$grid" -k'4*-1  2 102   0' $g1 $x1 $TMPDIR/namllmslp.grb.f${fhour}; rcc9=$?
-
-    if [ $rcc1 -eq 134 -o $rcc2 -eq 134 -o $rcc3 -eq 134 -o $rcc4 -eq 134 -o $rcc5 -eq 134 -o \
-         $rcc6 -eq 134 -o $rcc7 -eq 134 -o $rcc8 -eq 134 -o $rcc9 -eq 134 ]; then
-      set +x
-      echo " "
-      echo "!!! ERROR using $COPYGB to interpolate nam data.  We will stop execution because"
-      echo "!!! some variables may have been copied okay, while some obviously have not, "
-      echo "!!! and that could lead to unreliable results from the tracker.  Check to make"
-      echo "!!! sure you've allocated enough memory for this job (error 134 using $COPYGB is "
-      echo "!!! typically due to using more memory than you've allocated).  Exiting....."
-      echo " "
-      set_trace
-      exit 8
+EOF
     fi
 
-    cat $TMPDIR/namllu850.grb.f${fhour} $TMPDIR/namllu700.grb.f${fhour} \
-        $TMPDIR/namllu500.grb.f${fhour} $TMPDIR/namllz850.grb.f${fhour} \
-        $TMPDIR/namllz700.grb.f${fhour} $TMPDIR/namllmslp.grb.f${fhour} \
-        $TMPDIR/namllav850.grb.f${fhour} $TMPDIR/namllav700.grb.f${fhour} \
-        $TMPDIR/namllu10m.grb.f${fhour} \
-        >>${vdir}/namlatlon.pgrb.${symd}${dishh}
+    rm -f "${vdir}/namlatlon.pgrb.${symd}${dishh}"
 
-  done
+    for fhour in ${fcsthrsnam}; do
+        if [[ ! -s "${namdir}/${namgfile}${fhour}.tm00" ]]; then
+            cat << EOF
 
-  ${GRBINDEX:?} ${vdir}/namlatlon.pgrb.${symd}${dishh} ${vdir}/namlatlon.pgrb.ix.${symd}${dishh}
-  gribfile=${vdir}/namlatlon.pgrb.${symd}${dishh}
-  ixfile=${vdir}/namlatlon.pgrb.ix.${symd}${dishh}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Early NAM File missing: ${namdir}/${namgfile}${fhour}.tm00
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOF
+            continue
+        fi
+        rm -f "${TMPDIR}/tmpixfile"
+        ${GRBINDEX:?} "${namdir}/${namgfile}${fhour}.tm00" "${TMPDIR}/tmpixfile"
+        x1="${TMPDIR}/tmpixfile"
+
+        cat << EOF
+
+Extracting Early NAM GRIB data for forecast hour = ${fhour}
+
+EOF
+
+        g1="${namdir}/${namgfile}${fhour}.tm00"
+
+        rm -f "${TMPDIR}/namlatlon.pgrb"
+        ${COPYGB:?} -g"${grid}" -k'4*-1 33 100 850' "${g1}" "${x1}" "${TMPDIR}/namllu850.grb.f${fhour}"
+        rcc1=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1 33 100 700' "${g1}" "${x1}" "${TMPDIR}/namllu700.grb.f${fhour}"
+        rcc2=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1 33 100 500' "${g1}" "${x1}" "${TMPDIR}/namllu500.grb.f${fhour}"
+        rcc3=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1 33 105 10' "${g1}" "${x1}" "${TMPDIR}/namllu10m.grb.f${fhour}"
+        rcc4=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1 41 100 850' "${g1}" "${x1}" "${TMPDIR}/namllav850.grb.f${fhour}"
+        rcc5=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1 41 100 700' "${g1}" "${x1}" "${TMPDIR}/namllav700.grb.f${fhour}"
+        rcc6=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1  7 100 850' "${g1}" "${x1}" "${TMPDIR}/namllz850.grb.f${fhour}"
+        rcc7=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1  7 100 700' "${g1}" "${x1}" "${TMPDIR}/namllz700.grb.f${fhour}"
+        rcc8=$?
+        ${COPYGB:?} -g"${grid}" -k'4*-1  2 102   0' "${g1}" "${x1}" "${TMPDIR}/namllmslp.grb.f${fhour}"
+        rcc9=$?
+
+        if [[ "${rcc1}" -eq 134 || "${rcc2}" -eq 134 || "${rcc3}" -eq 134 || "${rcc4}" -eq 134 || "${rcc5}" -eq 134 ||
+            "${rcc6}" -eq 134 || "${rcc7}" -eq 134 || "${rcc8}" -eq 134 || "${rcc9}" -eq 134 ]]; then
+            cat << EOF
+
+!!! FATAL ERROR using ${COPYGB} to interpolate nam data.  We will stop execution because
+!!! some variables may have been copied okay, while some obviously have not, 
+!!! and that could lead to unreliable results from the tracker.  Check to make
+!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is 
+!!! typically due to using more memory than you've allocated).  Exiting.....
+
+EOF
+            err=8
+            err_exit
+        fi
+
+        cat "${TMPDIR}/namllu850.grb.f${fhour}" "${TMPDIR}/namllu700.grb.f${fhour}" \
+            "${TMPDIR}/namllu500.grb.f${fhour}" "${TMPDIR}/namllz850.grb.f${fhour}" \
+            "${TMPDIR}/namllz700.grb.f${fhour}" "${TMPDIR}/namllmslp.grb.f${fhour}" \
+            "${TMPDIR}/namllav850.grb.f${fhour}" "${TMPDIR}/namllav700.grb.f${fhour}" \
+            "${TMPDIR}/namllu10m.grb.f${fhour}" \
+            >> "${vdir}/namlatlon.pgrb.${symd}${dishh}"
+
+    done
+
+    ${GRBINDEX:?} "${vdir}/namlatlon.pgrb.${symd}${dishh}" "${vdir}/namlatlon.pgrb.ix.${symd}${dishh}"
+    gribfile="${vdir}/namlatlon.pgrb.${symd}${dishh}"
+    ixfile="${vdir}/namlatlon.pgrb.ix.${symd}${dishh}"
 
 fi
-
 
 # ------------------------------
 #   Process ECMWF, if selected
@@ -924,643 +903,575 @@ fi
 # be taken out, and the data should then be processed as the other normal
 # full-coverage global models (ukmet, mrf, gfs, NAVGEM) currently are.
 
-if [ ${model} -eq 4 ]; then
+if [[ "${model}" -eq 4 ]]; then
+    if [[ ! -s "${ecmwfdir}/${ecmwfgfile}" ]]; then
+        msg=$(
+            cat << EOF
 
-  if [ ! -s ${ecmwfdir}/${ecmwfgfile} ]; then
-    set +x
-    echo " "
-    echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo " !!! ECMWF GRIB or Index File missing from directory: ${ecmwfdir}"
-    echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo " "
-    echo " !!! Due to missing ECMWF file, execution is ending...."
-    echo " "
-    set_trace
-    exit 8
-  fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! ECMWF GRIB or Index File missing from directory: ${ecmwfdir}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  ${GRBINDEX:?} ${ecmwfdir}/${ecmwfgfile} $TMPDIR/${ecmwfgfile}.ix
-  x1=$TMPDIR/${ecmwfgfile}.ix
+!!! Due to missing ECMWF file, execution is ending....
 
-  if [ -s ${vdir}/ecmwf.bufzone.grb.${symd}${dishh} ]; then
-    rm ${vdir}/ecmwf.bufzone.grb.${symd}${dishh}
-  fi
-  if [ -s ${vdir}/ecmwf.bufzone.ix.${symd}${dishh} ]; then
-    rm ${vdir}/ecmwf.bufzone.ix.${symd}${dishh}
-  fi
+EOF
+        )
+        err=8
+        err_exit "${msg}"
+    fi
 
-  g1=${ecmwfdir}/${ecmwfgfile}
-  ecgrid='255 0 144 33 40000 0000 128 -40000 357500 2500 2500 64'
-  ${COPYGB:?} -g"$ecgrid" $g1 $x1 ${vdir}/ecmwf.bufzone.grb.${symd}${dishh}
-  ${GRBINDEX:?} ${vdir}/ecmwf.bufzone.grb.${symd}${dishh} ${vdir}/ecmwf.bufzone.ix.${symd}${dishh}
-  gribfile=${vdir}/ecmwf.bufzone.grb.${symd}${dishh}
-  ixfile=${vdir}/ecmwf.bufzone.ix.${symd}${dishh}
+    ${GRBINDEX:?} "${ecmwfdir}/${ecmwfgfile}" "${TMPDIR}/${ecmwfgfile}.ix"
+    x1="${TMPDIR}/${ecmwfgfile}.ix"
+
+    rm -f "${vdir}/ecmwf.bufzone.grb.${symd}${dishh}"
+    rm -f "${vdir}/ecmwf.bufzone.ix.${symd}${dishh}"
+
+    g1="${ecmwfdir}/${ecmwfgfile}"
+    ecgrid='255 0 144 33 40000 0000 128 -40000 357500 2500 2500 64'
+    ${COPYGB:?} -g"${ecgrid}" "${g1}" "${x1}" "${vdir}/ecmwf.bufzone.grb.${symd}${dishh}"
+    ${GRBINDEX:?} "${vdir}/ecmwf.bufzone.grb.${symd}${dishh}" "${vdir}/ecmwf.bufzone.ix.${symd}${dishh}"
+    gribfile="${vdir}/ecmwf.bufzone.grb.${symd}${dishh}"
+    ixfile="${vdir}/ecmwf.bufzone.ix.${symd}${dishh}"
 
 fi
-
 
 # ------------------------------
 #   Process GFS, if selected
 # ------------------------------
 
-if [ ${model} -eq 1 ]; then
+if [[ "${model}" -eq 1 ]]; then
 
-  if [ -s ${vdir}/gfsgribfile.${symd}${dishh} ]; then
-    rm ${vdir}/gfsgribfile.${symd}${dishh}
-  fi
+    rm -f "${vdir}/gfsgribfile.${symd}${dishh}"
 
-  for fhour in ${fcsthrsgfs}
-  do
+    for fhour in ${fcsthrsgfs}; do
+        if [[ ! -s "${gfsdir}/${gfsgfile}${fhour}" ]]; then
+            cat << EOF
 
-    if [ ! -s ${gfsdir}/${gfsgfile}${fhour} ]; then
-      set +x
-      echo " "
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " !!! GFS File missing: ${gfsdir}/${gfsgfile}${fhour}"
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      set_trace
-      continue
-    fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! GFS File missing: ${gfsdir}/${gfsgfile}${fhour}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOF
+            continue
+        fi
 
-    gfile=${gfsdir}/${gfsgfile}${fhour}
-    ${WGRIB:?} -s $gfile >$TMPDIR/gfs.ix
+        gfile="${gfsdir}/${gfsgfile}${fhour}"
+        ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/gfs.ix"
 
-    for parm in ${wgrib_parmlist}
-    do
-      case ${parm} in
-        "SurfaceU")
-          grep "UGRD:10 m " $TMPDIR/gfs.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                          -o ${vdir}/gfsgribfile.${symd}${dishh} ;;
-        "SurfaceV")
-          grep "VGRD:10 m " $TMPDIR/gfs.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                          -o ${vdir}/gfsgribfile.${symd}${dishh} ;;
-                 *)
-          grep "${parm}" $TMPDIR/gfs.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                          -o ${vdir}/gfsgribfile.${symd}${dishh} ;;
-      esac
+        for parm in ${wgrib_parmlist}; do
+            case "${parm}" in
+                "SurfaceU") parm="UGRD:10 m" ;;
+                "SurfaceV") parm="VGRD:10 m" ;;
+                *) ;;
+            esac
+            # shellcheck disable=SC2312
+            grep "${parm}" "${TMPDIR}/gfs.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
+                -o "${vdir}/gfsgribfile.${symd}${dishh}"
+        done
 
     done
 
-  done
-
-  ${GRBINDEX:?} ${vdir}/gfsgribfile.${symd}${dishh} ${vdir}/gfsixfile.${symd}${dishh}
-  gribfile=${vdir}/gfsgribfile.${symd}${dishh}
-  ixfile=${vdir}/gfsixfile.${symd}${dishh}
+    ${GRBINDEX:?} "${vdir}/gfsgribfile.${symd}${dishh}" "${vdir}/gfsixfile.${symd}${dishh}"
+    gribfile="${vdir}/gfsgribfile.${symd}${dishh}"
+    ixfile="${vdir}/gfsixfile.${symd}${dishh}"
 
 fi
-
 
 # ------------------------------
 #   Process GDAS, if selected
 # ------------------------------
 
-if [ ${model} -eq 8 ]; then
+if [[ "${model}" -eq 8 ]]; then
 
-  export nest_type="fixed"
-  export trkrebd=360.0
-  export trkrwbd=0.0
-  export trkrnbd=85.0
-  export trkrsbd=-85.0
-  rundescr="xxxx"
-  atcfdescr="xxxx"
+    export nest_type="fixed"
+    export trkrebd=360.0
+    export trkrwbd=0.0
+    export trkrnbd=85.0
+    export trkrsbd=-85.0
+    rundescr="xxxx"
+    atcfdescr="xxxx"
 
-  if [ -s ${vdir}/gdasgribfile.${symd}${dishh} ]; then
-    rm ${vdir}/gdasgribfile.${symd}${dishh}
-  fi
+    rm -f "${vdir}/gdasgribfile.${symd}${dishh}"
 
-  if [ ${gribver} -eq 1 ]; then
+    if [[ "${gribver}" -eq 1 ]]; then
 
-    # Use GRIB1 input data
+        # Use GRIB1 input data
 
-    for fhr in $( seq -6 $BKGFREQ 3 ); do
-      if [ $fhr -lt 0 ]; then
-        fpref=pgm$(expr $fhr \* -1)
-      elif [ $fhr -eq 0 ]; then
-        fpref=pges
-      elif [ $fhr -gt 0 ]; then
-        fpref=pgp$fhr
-      fi
-      gfile=$DATA/${fpref}prep
+        for ((fhr = -6; fhr <= 3; fhr += BKGFREQ)); do
+            if [[ "${fhr}" -lt 0 ]]; then
+                fpref="pgm$((-fhr))"
+            elif [[ "${fhr}" -eq 0 ]]; then
+                fpref=pges
+            elif [[ "${fhr}" -gt 0 ]]; then
+                fpref="pgp${fhr}"
+            fi
+            gfile="${DATA}/${fpref}prep"
 
-      if [ ! -s $gfile ]; then
-        set +x
-        echo " "
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " !!! gdas File missing: $gfile"
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " "
-        set_trace
-        continue
-      fi
+            if [[ ! -s "${gfile}" ]]; then
+                cat << EOF
 
-      ${WGRIB:?} -s $gfile >$TMPDIR/gdas.ix
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! gdas File missing: ${gfile}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      for parm in ${wgrib_parmlist}
-      do
+EOF
+                continue
+            fi
 
-        case ${parm} in
-          "SurfaceU")
-            grep "UGRD:10 m " $TMPDIR/gdas.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                            -o ${vdir}/gdasgribfile.${symd}${dishh} ;;
-          "SurfaceV")
-            grep "VGRD:10 m " $TMPDIR/gdas.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                            -o ${vdir}/gdasgribfile.${symd}${dishh} ;;
-                   *)
-            grep "${parm}" $TMPDIR/gdas.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                            -o ${vdir}/gdasgribfile.${symd}${dishh} ;;
-        esac
+            ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/gdas.ix"
 
-      done
+            for parm in ${wgrib_parmlist}; do
+                case "${parm}" in
+                    "SurfaceU") parm="UGRD:10 m" ;;
+                    "SurfaceV") parm="VGRD:10 m" ;;
+                    *) ;;
+                esac
+                # shellcheck disable=SC2312
+                grep "${parm}" "${TMPDIR}/gdas.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
+                    -o "${vdir}/gdasgribfile.${symd}${dishh}"
+            done
 
-    done
+        done
 
-  else
+    else
 
-    # Use GRIB2 input data....
+        # Use GRIB2 input data....
+        for ((fhr = -6; fhr <= 3; fhr += BKGFREQ)); do
+            if [[ "${fhr}" -lt 0 ]]; then
+                fhour="0$((-fhr))"
+                fpref=pgm$((-fhr))
+            elif [[ "${fhr}" -eq 0 ]]; then
+                fhour=00
+                fpref=pges
+            elif [[ "${fhr}" -gt 0 ]]; then
+                fhour="0${fhr}"
+                fpref="pgp${fhr}"
+            fi
+            gfile="${DATA}/${fpref}prep"
 
-    for fhr in $( seq -6 $BKGFREQ 3 ); do
-      if [ $fhr -lt 0 ]; then
-        fhour=0$(expr $fhr \* -1)
-        fpref=pgm$(expr $fhr \* -1)
-      elif [ $fhr -eq 0 ]; then
-        fhour=00
-        fpref=pges
-      elif [ $fhr -gt 0 ]; then
-        fhour=0$fhr
-        fpref=pgp$fhr
-      fi
-      gfile=$DATA/${fpref}prep
+            if [[ ! -s "${gfile}" ]]; then
+                cat << EOF
 
-      if [ ! -s $gfile ]; then
-        set +x
-        echo " "
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " !!! gdas File missing: $gfile"
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " "
-        set_trace
-        continue
-      fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! gdas File missing: ${gfile}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      ${WGRIB2:?} -s $gfile >$TMPDIR/gdas.ix
+EOF
+                continue
+            fi
 
-      for parm in ${wgrib_parmlist}
-      do
-        case ${parm} in
-          "SurfaceU")
-            grep "UGRD:10 m " $TMPDIR/gdas.ix | ${WGRIB2:?} -i $gfile -append -grib \
-                            ${vdir}/gdasgribfile.${symd}${dishh} ;;
-          "SurfaceV")
-            grep "VGRD:10 m " $TMPDIR/gdas.ix | ${WGRIB2:?} -i $gfile -append -grib \
-                            ${vdir}/gdasgribfile.${symd}${dishh} ;;
-                   *)
-            grep "${parm}" $TMPDIR/gdas.ix | ${WGRIB2:?} -i $gfile -append -grib \
-                            ${vdir}/gdasgribfile.${symd}${dishh} ;;
-        esac
-      done
+            ${WGRIB2:?} -s "${gfile}" > "${TMPDIR}/gdas.ix"
 
-    done
+            for parm in ${wgrib_parmlist}; do
+                case "${parm}" in
+                    "SurfaceU") parm="UGRD:10 m" ;;
+                    "SurfaceV") parm="VGRD:10 m" ;;
+                    *) ;;
+                esac
+                # shellcheck disable=SC2312
+                grep "${parm}" "${TMPDIR}/gdas.ix" | ${WGRIB2:?} -i "${gfile}" -append -grib \
+                    "${vdir}/gdasgribfile.${symd}${dishh}"
+            done
 
-  fi
+        done
 
-  if [ ${gribver} -eq 1 ]; then
-    ${GRBINDEX:?} ${vdir}/gdasgribfile.${symd}${dishh} ${vdir}/gdasixfile.${symd}${dishh}
-  else
-    ${GRB2INDEX:?} ${vdir}/gdasgribfile.${symd}${dishh} ${vdir}/gdasixfile.${symd}${dishh}
-  fi
+    fi
 
-  gribfile=${vdir}/gdasgribfile.${symd}${dishh}
-  ixfile=${vdir}/gdasixfile.${symd}${dishh}
+    if [[ "${gribver}" -eq 1 ]]; then
+        ${GRBINDEX:?} "${vdir}/gdasgribfile.${symd}${dishh}" "${vdir}/gdasixfile.${symd}${dishh}"
+    else
+        ${GRB2INDEX:?} "${vdir}/gdasgribfile.${symd}${dishh}" "${vdir}/gdasixfile.${symd}${dishh}"
+    fi
+
+    gribfile="${vdir}/gdasgribfile.${symd}${dishh}"
+    ixfile="${vdir}/gdasixfile.${symd}${dishh}"
 
 fi
+
 # ------------------------------
 #   Process MRF, if selected
 # ------------------------------
 
-if [ ${model} -eq 2 ]; then
+if [[ "${model}" -eq 2 ]]; then
 
-  if [ -s ${vdir}/mrfgribfile.${symd}${dishh} ]; then
-    rm ${vdir}/mrfgribfile.${symd}${dishh}
-  fi
+    rm -f "${vdir}/mrfgribfile.${symd}${dishh}"
 
-  for fhour in ${fcsthrsmrf}
-  do
+    for fhour in ${fcsthrsmrf}; do
+        if [[ ! -s "${mrfdir}/${mrfgfile}${fhour}" ]]; then
+            cat << EOF
 
-    if [ ! -s ${mrfdir}/${mrfgfile}${fhour} ]; then
-      set +x
-      echo " "
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " !!! MRF File missing: ${mrfdir}/${mrfgfile}${fhour}"
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " "
-      set_trace
-      continue
-    fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! MRF File missing: ${mrfdir}/${mrfgfile}${fhour}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    gfile=${mrfdir}/${mrfgfile}${fhour}
-    ${WGRIB:?} -s $gfile >$TMPDIR/mrf.ix
+EOF
+            continue
+        fi
 
-    for parm in ${wgrib_parmlist}
-    do
+        gfile="${mrfdir}/${mrfgfile}${fhour}"
+        ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/mrf.ix"
 
-      case ${parm} in
-        "SurfaceU")
-          grep "UGRD:10 m " $TMPDIR/mrf.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                          -o ${vdir}/mrfgribfile.${symd}${dishh} ;;
-        "SurfaceV")
-          grep "VGRD:10 m " $TMPDIR/mrf.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                          -o ${vdir}/mrfgribfile.${symd}${dishh} ;;
-                 *)
-          grep "${parm}" $TMPDIR/mrf.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                          -o ${vdir}/mrfgribfile.${symd}${dishh} ;;
-      esac
+        for parm in ${wgrib_parmlist}; do
+            case "${parm}" in
+                "SurfaceU") parm="UGRD:10 m" ;;
+                "SurfaceV") parm="VGRD:10 m" ;;
+                *) ;;
+            esac
+            # shellcheck disable=SC2312
+            grep "${parm}" "${TMPDIR}/mrf.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
+                -o "${vdir}/mrfgribfile.${symd}${dishh}"
+        done
 
     done
 
-  done
-
-  ${GRBINDEX:?} ${vdir}/mrfgribfile.${symd}${dishh} ${vdir}/mrfixfile.${symd}${dishh}
-  gribfile=${vdir}/mrfgribfile.${symd}${dishh}
-  ixfile=${vdir}/mrfixfile.${symd}${dishh}
+    ${GRBINDEX:?} "${vdir}/mrfgribfile.${symd}${dishh}" "${vdir}/mrfixfile.${symd}${dishh}"
+    gribfile="${vdir}/mrfgribfile.${symd}${dishh}"
+    ixfile="${vdir}/mrfixfile.${symd}${dishh}"
 
 fi
-
 
 # ------------------------------
 #   Process UKMET, if selected
 # ------------------------------
 
-if [ ${model} -eq 3 ]; then
+if [[ "${model}" -eq 3 ]]; then
 
-  if [ -s ${vdir}/ukmetgribfile.${symd}${dishh} ]; then
-    rm ${vdir}/ukmetgribfile.${symd}${dishh}
-  fi
+    rm -f "${vdir}/ukmetgribfile.${symd}${dishh}"
 
-  wgrib_parmlist=' HGT:850 HGT:700 UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 UGRD:sfc VGRD:sfc ABSV:850 ABSV:700 PRMSL:MSL '
+    wgrib_parmlist='HGT:850 HGT:700 UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 UGRD:sfc VGRD:sfc ABSV:850 ABSV:700 PRMSL:MSL '
 
-  for fhour in ${fcsthrsukmet}
-  do
+    for fhour in ${fcsthrsukmet}; do
+        if [[ ! -s "${ukmetdir}/${ukmetgfile}${fhour}" ]]; then
+            cat << EOF
 
-    if [ ! -s ${ukmetdir}/${ukmetgfile}${fhour} ]; then
-      set +x
-      echo " "
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " !!! UKMET File missing: ${ukmetdir}/${ukmetgfile}${fhour}"
-      echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      echo " "
-      set_trace
-      continue
-    fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! UKMET File missing: ${ukmetdir}/${ukmetgfile}${fhour}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    gfile=${ukmetdir}/${ukmetgfile}${fhour}
-    ${WGRIB:?} -s $gfile >$TMPDIR/ukmet.ix
+EOF
+            continue
+        fi
 
-    for parm in ${wgrib_parmlist}
-    do
-      grep "${parm}" $TMPDIR/ukmet.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                     -o ${vdir}/ukmetgribfile.${symd}${dishh}
+        gfile="${ukmetdir}/${ukmetgfile}${fhour}"
+        ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/ukmet.ix"
+
+        for parm in ${wgrib_parmlist}; do
+            # shellcheck disable=SC2312
+            grep "${parm}" "${TMPDIR}/ukmet.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
+                -o "${vdir}/ukmetgribfile.${symd}${dishh}"
+        done
+
     done
 
-  done
-
-  ${GRBINDEX:?} ${vdir}/ukmetgribfile.${symd}${dishh} ${vdir}/ukmetixfile.${symd}${dishh}
-  gribfile=${vdir}/ukmetgribfile.${symd}${dishh}
-  ixfile=${vdir}/ukmetixfile.${symd}${dishh}
+    ${GRBINDEX:?} "${vdir}/ukmetgribfile.${symd}${dishh}" "${vdir}/ukmetixfile.${symd}${dishh}"
+    gribfile="${vdir}/ukmetgribfile.${symd}${dishh}"
+    ixfile="${vdir}/ukmetixfile.${symd}${dishh}"
 
 fi
-
 
 # ------------------------------
 #   Process NAVGEM, if selected
 # ------------------------------
 
-if [ ${model} -eq 7 ]; then
+if [[ "${model}" -eq 7 ]]; then
 
-  if [ -s ${vdir}/ngpsgribfile.${symd}${dishh} ]; then
-    rm ${vdir}/ngpsgribfile.${symd}${dishh}
-  fi
+    rm -f "${vdir}/ngpsgribfile.${symd}${dishh}"
 
-  if [ ! -s ${ngpsdir}/${ngpsgfile} ]; then
-    set +x
-    echo " "
-    echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo " !!! NAVGEM File missing: ${ngpsdir}/${ngpsgfile}"
-    echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo " "
-    echo " !!! Due to missing NAVGEM file, execution is ending...."
-    echo " "
-    set_trace
-    exit 8
-  fi
+    if [[ ! -s "${ngpsdir}/${ngpsgfile}" ]]; then
+        msg=$(
+            cat << EOF
 
-  gfile=${ngpsdir}/${ngpsgfile}
-  ${WGRIB:?} -s $gfile >$TMPDIR/ngps.ix
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! NAVGEM File missing: ${ngpsdir}/${ngpsgfile}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  for fhour in ${fcsthrsngps}
-  do
+!!! Due to missing NAVGEM file, execution is ending....
 
-    if [ $fhour = '00' ]; then
-      vtstring=":anl:"
-    else
-      vtstring="${fhour}hr"
+EOF
+        )
+        err=8
+        err_exit "${msg}"
     fi
 
-    for parm in ${wgrib_parmlist}
-    do
-      case ${parm} in
-        "SurfaceU")
-          grep "UGRD:19 m " $TMPDIR/ngps.ix | grep ${vtstring} | \
-            ${WGRIB:?} -s $gfile -i -grib -append -o ${vdir}/ngpsgribfile.${symd}${dishh} ;;
-        "SurfaceV")
-          grep "VGRD:19 m " $TMPDIR/ngps.ix | grep ${vtstring} | \
-            ${WGRIB:?} -s $gfile -i -grib -append -o ${vdir}/ngpsgribfile.${symd}${dishh} ;;
-                 *)
-          grep "${parm}" $TMPDIR/ngps.ix | grep ${vtstring} | \
-            ${WGRIB:?} -s $gfile -i -grib -append -o ${vdir}/ngpsgribfile.${symd}${dishh} ;;
-      esac
+    gfile="${ngpsdir}/${ngpsgfile}"
+    ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/ngps.ix"
+
+    for fhour in ${fcsthrsngps}; do
+        if [[ "${fhour}" == '00' ]]; then
+            vtstring=":anl:"
+        else
+            vtstring="${fhour}hr"
+        fi
+
+        for parm in ${wgrib_parmlist}; do
+            case "${parm}" in
+                "SurfaceU") parm="UGRD:19 m" ;;
+                "SurfaceV") parm="VGRD:19 m" ;;
+                *) ;;
+            esac
+            # shellcheck disable=SC2312
+            grep "${parm}" "${TMPDIR}/ngps.ix" | grep "${vtstring}" |
+                ${WGRIB:?} -s "${gfile}" -i -grib -append -o "${vdir}/ngpsgribfile.${symd}${dishh}"
+        done
+
     done
 
-  done
-
-  ${GRBINDEX:?} ${vdir}/ngpsgribfile.${symd}${dishh} ${vdir}/ngpsixfile.${symd}${dishh}
-  gribfile=${vdir}/ngpsgribfile.${symd}${dishh}
-  ixfile=${vdir}/ngpsixfile.${symd}${dishh}
+    ${GRBINDEX:?} "${vdir}/ngpsgribfile.${symd}${dishh}" "${vdir}/ngpsixfile.${symd}${dishh}"
+    gribfile="${vdir}/ngpsgribfile.${symd}${dishh}"
+    ixfile="${vdir}/ngpsixfile.${symd}${dishh}"
 
 fi
-
 
 # ---------------------------------------------
 #   Process User-specified Model, if selected
 # ---------------------------------------------
 
-if [ ${model} -eq 9 ]; then
+if [[ "${model}" -eq 9 ]]; then
 
-# We need to first check whether or not the data in the file are stored
-# on a lat/lon grid or not.  We do this by scanning the analysis file
-# with Wesley's grib utility, and checking the value of the "Data
-# Representation Type", which is stored in byte #6 in the GDS of each
-# grib file.  A value of 0 indicates an equidistant lat/lon grid.
+    # We need to first check whether or not the data in the file are stored
+    # on a lat/lon grid or not.  We do this by scanning the analysis file
+    # with Wesley's grib utility, and checking the value of the "Data
+    # Representation Type", which is stored in byte #6 in the GDS of each
+    # grib file.  A value of 0 indicates an equidistant lat/lon grid.
 
-  if [ -s ${vdir}/otherlatlon.pgrb.${symdh} ]; then
-    rm ${vdir}/otherlatlon.pgrb.${symdh}
-  fi
+    rm -f "${vdir}/otherlatlon.pgrb.${symdh}"
 
-  gridtyp=$(${WGRIB:?} -GDS10 ${otherdir}/${fnamebeg}00${fnameend} | \
-           awk -FGDS10= '{print $2}' | awk '{print $6}' | sed -n 1p)
+    # shellcheck disable=SC2312
+    gridtyp=$(${WGRIB:?} -GDS10 "${otherdir}/${fnamebeg}00${fnameend}" |
+        awk -FGDS10= '{print $2}' | awk '{print $6}' | sed -n 1p)
 
-  if [ ${gridtyp} -eq 0 ]; then
+    if [[ "${gridtyp}" -eq 0 ]]; then
 
-#   The data are already on a lat/lon grid, we do not need to
-#   interpolate the data, just pull out the records that we need
-#   using wgrib.
+        #   The data are already on a lat/lon grid, we do not need to
+        #   interpolate the data, just pull out the records that we need
+        #   using wgrib.
 
-    for fhour in ${fcsthrsother}
-    do
+        for fhour in ${fcsthrsother}; do
+            if [[ ! -s "${otherdir}/${fnamebeg}${fhour}${fnameend}" ]]; then
+                cat << EOF
 
-      if [ ! -s ${otherdir}/${fnamebeg}${fhour}${fnameend} ]; then
-        set +x
-        echo " "
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo "!!! Forecast File missing: ${otherdir}/${fnamebeg}00${fnameend}"
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " "
-        set_trace
-        continue
-      fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Forecast File missing: ${otherdir}/${fnamebeg}00${fnameend}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      gfile=${otherdir}/${fnamebeg}${fhour}${fnameend}
-      ${WGRIB:?} -s $gfile >$TMPDIR/other.ix
+EOF
+                continue
+            fi
 
-      for parm in ${wgrib_parmlist}
-      do
+            gfile="${otherdir}/${fnamebeg}${fhour}${fnameend}"
+            ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/other.ix"
 
-        case ${parm} in
-          "SurfaceU")
-            grep "UGRD:10 m " $TMPDIR/other.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                            -o ${vdir}/otherlatlon.pgrb.${symdh} ;;
-          "SurfaceV")
-            grep "VGRD:10 m " $TMPDIR/other.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                            -o ${vdir}/otherlatlon.pgrb.${symdh} ;;
-                   *)
-            grep "${parm}" $TMPDIR/other.ix | ${WGRIB:?} -s $gfile -i -grib -append \
-                                            -o ${vdir}/otherlatlon.pgrb.${symdh} ;;
-        esac
+            for parm in ${wgrib_parmlist}; do
+                case "${parm}" in
+                    "SurfaceU") parm="UGRD:10 m" ;;
+                    "SurfaceV") parm="VGRD:10 m" ;;
+                    *) ;;
+                esac
+                # shellcheck disable=SC2312
+                grep "${parm}" "${TMPDIR}/other.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
+                    -o "${vdir}/otherlatlon.pgrb.${symdh}"
+            done
 
-      done
+        done
 
-    done
+    else
 
-  else
+        #   The data are on a grid that is something other than a lat/lon grid.
+        #   Use Mark Iredell's interpolator to interpolate the data to a lat/lon
+        #   grid and pull out the records that we need.
 
-#   The data are on a grid that is something other than a lat/lon grid.
-#   Use Mark Iredell's interpolator to interpolate the data to a lat/lon
-#   grid and pull out the records that we need.
+        othergrid='255 0 360 181 90000 0000 128 -90000 -1000 1000 1000 64'
 
-    othergrid='255 0 360 181 90000 0000 128 -90000 -1000 1000 1000 64'
+        for fhour in ${fcsthrsother}; do
 
-    for fhour in ${fcsthrsother}
-    do
+            if [[ ! -s "${otherdir}/${fnamebeg}${fhour}${fnameend}" ]]; then
+                cat << EOF
 
-      if [ ! -s ${otherdir}/${fnamebeg}${fhour}${fnameend} ]; then
-        set +x
-        echo " "
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo "!!! Forecast File missing: ${otherdir}/${fnamebeg}00${fnameend}"
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " "
-        set +x
-        continue
-      fi
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Forecast File missing: ${otherdir}/${fnamebeg}00${fnameend}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      if [ -s $TMPDIR/tmpixfile ]; then rm $TMPDIR/tmpixfile; fi
-      ${GRBINDEX:?} ${otherdir}/${fnamebeg}${fhour}${fnameend} $TMPDIR/tmpixfile
-      x1=$TMPDIR/tmpixfile
+EOF
+                continue
+            fi
 
-      g1=${otherdir}/${fnamebeg}${fhour}${fnameend}
+            rm -f "${TMPDIR}/tmpixfile"
+            ${GRBINDEX:?} "${otherdir}/${fnamebeg}${fhour}${fnameend}" "${TMPDIR}/tmpixfile"
+            x1="${TMPDIR}/tmpixfile"
 
-      ${COPYGB:?} -g"$othergrid" -k'4*-1 33 100 850' $g1 $x1 $TMPDIR/otherllu850.grb.f${fhour}; rcc1=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1 33 100 700' $g1 $x1 $TMPDIR/otherllu700.grb.f${fhour}; rcc2=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1 33 100 500' $g1 $x1 $TMPDIR/otherllu500.grb.f${fhour}; rcc3=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1 33 105 10'  $g1 $x1 $TMPDIR/otherllu10m.grb.f${fhour}; rcc4=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1 41 100 850' $g1 $x1 $TMPDIR/otherllav850.grb.f${fhour}; rcc5=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1 41 100 700' $g1 $x1 $TMPDIR/otherllav700.grb.f${fhour}; rcc6=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1  7 100 850' $g1 $x1 $TMPDIR/otherllz850.grb.f${fhour}; rcc7=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1  7 100 700' $g1 $x1 $TMPDIR/otherllz700.grb.f${fhour}; rcc8=$?
-      ${COPYGB:?} -g"$othergrid" -k'4*-1  2 102   0' $g1 $x1 $TMPDIR/otherllmslp.grb.f${fhour}; rcc9=$?
+            g1="${otherdir}/${fnamebeg}${fhour}${fnameend}"
 
-      if [ $rcc1 -eq 134 -o $rcc2 -eq 134 -o $rcc3 -eq 134 -o $rcc4 -eq 134 -o $rcc5 -eq 134 -o \
-           $rcc6 -eq 134 -o $rcc7 -eq 134 -o $rcc8 -eq 134 -o $rcc9 -eq 134 ]; then
-        set +x
-        echo " "
-        echo "!!! ERROR using $COPYGB to interpolate data.  We will stop execution because"
-        echo "!!! some variables may have been copied okay, while some obviously have not, "
-        echo "!!! and that could lead to unreliable results from the tracker.  Check to make"
-        echo "!!! sure you've allocated enough memory for this job (error 134 using $COPYGB is "
-        echo "!!! typically due to using more memory than you've allocated).  Exiting....."
-        echo " "
-        set_trace
-        exit 8
-      fi
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1 33 100 850' "${g1}" "${x1}" "${TMPDIR}/otherllu850.grb.f${fhour}"
+            rcc1=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1 33 100 700' "${g1}" "${x1}" "${TMPDIR}/otherllu700.grb.f${fhour}"
+            rcc2=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1 33 100 500' "${g1}" "${x1}" "${TMPDIR}/otherllu500.grb.f${fhour}"
+            rcc3=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1 33 105 10' "${g1}" "${x1}" "${TMPDIR}/otherllu10m.grb.f${fhour}"
+            rcc4=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1 41 100 850' "${g1}" "${x1}" "${TMPDIR}/otherllav850.grb.f${fhour}"
+            rcc5=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1 41 100 700' "${g1}" "${x1}" "${TMPDIR}/otherllav700.grb.f${fhour}"
+            rcc6=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1  7 100 850' "${g1}" "${x1}" "${TMPDIR}/otherllz850.grb.f${fhour}"
+            rcc7=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1  7 100 700' "${g1}" "${x1}" "${TMPDIR}/otherllz700.grb.f${fhour}"
+            rcc8=$?
+            ${COPYGB:?} -g"${othergrid}" -k'4*-1  2 102   0' "${g1}" "${x1}" "${TMPDIR}/otherllmslp.grb.f${fhour}"
+            rcc9=$?
 
-      cat $TMPDIR/otherllu850.grb.f${fhour} $TMPDIR/otherllu700.grb.f${fhour} \
-          $TMPDIR/otherllu500.grb.f${fhour} $TMPDIR/otherllz850.grb.f${fhour} \
-          $TMPDIR/otherllz700.grb.f${fhour} $TMPDIR/otherllmslp.grb.f${fhour} \
-         $TMPDIR/otherllav850.grb.f${fhour} $TMPDIR/otherllav700.grb.f${fhour} \
-          $TMPDIR/otherllu10m.grb.f${fhour} \
-          >>${vdir}/otherlatlon.pgrb.${symdh}
+            if [[ "${rcc1}" -eq 134 || "${rcc2}" -eq 134 || "${rcc3}" -eq 134 || "${rcc4}" -eq 134 || "${rcc5}" -eq 134 ||
+                "${rcc6}" -eq 134 || "${rcc7}" -eq 134 || "${rcc8}" -eq 134 || "${rcc9}" -eq 134 ]]; then
+                msg=$(
+                    cat << EOF
 
-    done
+!!! FATAL ERROR using ${COPYGB} to interpolate data.  We will stop execution because
+!!! some variables may have been copied okay, while some obviously have not, 
+!!! and that could lead to unreliable results from the tracker.  Check to make
+!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is 
+!!! typically due to using more memory than you've allocated).  Exiting.....
 
-  fi
+EOF
+                )
+                err=8
+                err_exit "${msg}"
+            fi
 
-  ${GRBINDEX:?} ${vdir}/otherlatlon.pgrb.${symdh} ${vdir}/otherlatlon.pgrb.ix.${symdh}
-  gribfile=${vdir}/otherlatlon.pgrb.${symdh}
-  ixfile=${vdir}/otherlatlon.pgrb.ix.${symdh}
+            cat "${TMPDIR}/otherllu850.grb.f${fhour}" "${TMPDIR}/otherllu700.grb.f${fhour}" \
+                "${TMPDIR}/otherllu500.grb.f${fhour}" "${TMPDIR}/otherllz850.grb.f${fhour}" \
+                "${TMPDIR}/otherllz700.grb.f${fhour}" "${TMPDIR}/otherllmslp.grb.f${fhour}" \
+                "${TMPDIR}/otherllav850.grb.f${fhour}" "${TMPDIR}/otherllav700.grb.f${fhour}" \
+                "${TMPDIR}/otherllu10m.grb.f${fhour}" \
+                >> "${vdir}/otherlatlon.pgrb.${symdh}"
+
+        done
+
+    fi
+
+    ${GRBINDEX:?} "${vdir}/otherlatlon.pgrb.${symdh}" "${vdir}/otherlatlon.pgrb.ix.${symdh}"
+    gribfile="${vdir}/otherlatlon.pgrb.${symdh}"
+    ixfile="${vdir}/otherlatlon.pgrb.ix.${symdh}"
 
 fi
-
 
 #-------------------------------------------#
 #   Now qsub the jobs to run the tracker    #
 #-------------------------------------------#
 
-ist=1
-while [ $ist -le 15 ]
-do
-  if [ ${stormflag[${ist}]} -ne 1 ]
-  then
-    set +x; echo "Storm number $ist NOT selected for processing"; set_trace
-  else
-    set +x; echo "Storm number $ist IS selected for processing...."; set_trace
-  fi
-  let ist=ist+1
+for ((ist = 1; ist <= 15; ist++)); do
+    if [[ "${stormflag[ist]}" -ne 1 ]]; then
+        echo "Storm number ${ist} NOT selected for processing"
+    else
+        echo "Storm number ${ist} IS selected for processing...."
+    fi
 done
 
 # Load the forecast hours for this particular model into an array
 # that will be passed into the executable via a namelist....
 
-ifh=1
-while [ $ifh -le ${maxtime} ]
-do
-  fh[${ifh}]=$( echo ${fcsthrs} | awk '{print $n}' n=$ifh)
-  let ifh=ifh+1
+for ((ifh = 1; ifh <= mattime; ifh++)); do
+    fh[ifh]=$(echo "${fcsthrs}" | awk '{print $n}' n="${ifh}")
 done
 
-namelist=${vdir}/gettrk.input.${cmodel}.${symdh}
-ATCFNAME=$( echo "${atcfname}" | tr '[a-z]' '[A-Z]')
+namelist="${vdir}/gettrk.input.${cmodel}.${symdh}"
 
-export atcfymdh=${scc}${syy}${smm}${sdd}${shh}
+export atcfymdh="${scc}${syy}${smm}${sdd}${shh}"
+
 contour_interval=100.0
 write_vit=n
 want_oci=.TRUE.
 
-echo "&datein inp%bcc=${scc},inp%byy=${syy},inp%bmm=${smm},"      >${namelist}
-echo "        inp%bdd=${sdd},inp%bhh=${shh},inp%model=${model}," >>${namelist}
-echo "        inp%modtyp='${modtyp}',"                           >>${namelist}
-echo "        inp%lt_units='${lead_time_units}',"                >>${namelist}
-echo "        inp%file_seq='${file_sequence}',"                  >>${namelist}
-echo "        inp%nesttyp='${nest_type}'/"                       >>${namelist}
-echo "&atcfinfo atcfnum=${atcfnum},atcfname='${ATCFNAME}',"      >>${namelist}
-echo "          atcfymdh=${atcfymdh},atcffreq=${atcffreq}/"      >>${namelist}
-echo "&trackerinfo trkrinfo%westbd=${trkrwbd},"                  >>${namelist}
-echo "      trkrinfo%eastbd=${trkrebd},"                         >>${namelist}
-echo "      trkrinfo%northbd=${trkrnbd},"                        >>${namelist}
-echo "      trkrinfo%southbd=${trkrsbd},"                        >>${namelist}
-echo "      trkrinfo%type='${trkrtype}',"                        >>${namelist}
-echo "      trkrinfo%mslpthresh=${MSLPTHRESH},"                  >>${namelist}
-echo "      trkrinfo%v850thresh=${V850THRESH},"                  >>${namelist}
-echo "      trkrinfo%gridtype='${modtyp}',"                      >>${namelist}
-echo "      trkrinfo%contint=${contour_interval},"               >>${namelist}
-echo "      trkrinfo%want_oci=${want_oci},"                      >>${namelist}
-echo "      trkrinfo%out_vit='${write_vit}',"                    >>${namelist}
-echo "      trkrinfo%gribver=${gribver},"                        >>${namelist}
-echo "      trkrinfo%g2_jpdtn=${g2_jpdtn}/"                      >>${namelist}
-echo "&phaseinfo phaseflag='${PHASEFLAG}',"                      >>${namelist}
-echo "           phasescheme='${PHASE_SCHEME}',"                 >>${namelist}
-echo "           wcore_depth=${WCORE_DEPTH}/"                    >>${namelist}
-echo "&structinfo structflag='${STRUCTFLAG}',"                   >>${namelist}
-echo "            ikeflag='${IKEFLAG}'/"                         >>${namelist}
-echo "&fnameinfo  gmodname='${atcfname}',"                       >>${namelist}
-echo "            rundescr='${rundescr}',"                       >>${namelist}
-echo "            atcfdescr='${atcfdescr}'/"                     >>${namelist}
-echo "&verbose verb=3/"                                          >>${namelist}
-echo "&waitinfo use_waitfor='n',"                                >>${namelist}
-echo "          wait_min_age=10,"                                >>${namelist}
-echo "          wait_min_size=100,"                              >>${namelist}
-echo "          wait_max_wait=1800,"                             >>${namelist}
-echo "          wait_sleeptime=5,"                               >>${namelist}
-echo "          per_fcst_command=''/"                            >>${namelist}
+cat << EOF > "${namelist}"
+&datein inp%bcc=${scc},inp%byy=${syy},inp%bmm=${smm},
+        inp%bdd=${sdd},inp%bhh=${shh},inp%model=${model},
+        inp%modtyp='${modtyp}',
+        inp%lt_units='${lead_time_units}',
+        inp%file_seq='${file_sequence}',
+        inp%nesttyp='${nest_type}'/
+&atcfinfo atcfnum=${atcfnum},atcfname='${atcfname^^}',
+          atcfymdh=${atcfymdh},atcffreq=${atcffreq}/
+&trackerinfo trkrinfo%westbd=${trkrwbd},
+      trkrinfo%eastbd=${trkrebd},
+      trkrinfo%northbd=${trkrnbd},
+      trkrinfo%southbd=${trkrsbd},
+      trkrinfo%type='${trkrtype}',
+      trkrinfo%mslpthresh=${MSLPTHRESH},
+      trkrinfo%v850thresh=${V850THRESH},
+      trkrinfo%gridtype='${modtyp}',
+      trkrinfo%contint=${contour_interval},
+      trkrinfo%want_oci=${want_oci},
+      trkrinfo%out_vit='${write_vit}',
+      trkrinfo%gribver=${gribver},
+      trkrinfo%g2_jpdtn=${g2_jpdtn}/
+&phaseinfo phaseflag='${PHASEFLAG}',
+           phasescheme='${PHASE_SCHEME}',
+           wcore_depth=${WCORE_DEPTH}/
+&structinfo structflag='${STRUCTFLAG}',
+            ikeflag='${IKEFLAG}'/
+&fnameinfo  gmodname='${atcfname}',
+            rundescr='${rundescr}',
+            atcfdescr='${atcfdescr}'/
+&verbose verb=3/
+&waitinfo use_waitfor='n',
+          wait_min_age=10,
+          wait_min_size=100,
+          wait_max_wait=1800,
+          wait_sleeptime=5,
+          per_fcst_command=''/
+EOF
 
-pgm=$(basename  $GETTX)
-if [ -s $DATA/prep_step ]; then
-   . $DATA/prep_step
+pgm=$(basename "${GETTX}")
+if [[ -s "${DATA}/prep_step" ]]; then
+    source "${DATA}/prep_step"
 else
-   [ -f errfile ] && rm errfile
-   export XLFUNITS=0
-   unset $(env | grep XLFUNIT | awk -F= '{print $1}')
-
-   set +u
-   if [ -z "$XLFRTEOPTS" ]; then
-     export XLFRTEOPTS="unit_vars=yes"
-   else
-     export XLFRTEOPTS="${XLFRTEOPTS}:unit_vars=yes"
-   fi
-   set -u
-
+    rm -f errfile
+    export XLFUNITS=0
+    # shellcheck disable=SC2046,SC2312
+    unset $(env | grep XLFUNIT | awk -F= '{print $1}')
+    export XLFRTEOPTS="${XLFRTEOPTS:+${XLFRTEOPTS}:}unit_vars=yes"
 fi
 
-touch   ${vdir}/tmp.gfs.atcfunix.${symdh}
+touch "${vdir}/tmp.gfs.atcfunix.${symdh}"
 
 #----------------------------------
 
-if [ -s fort.*  ]; then
-  rm fort.*
+rm -f fort.*
+
+${NLN} "${gribfile}" fort.11
+${NLN} "${vdir}/tmp.gfs.atcfunix.${symdh}" fort.14
+${NLN} "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}" fort.12
+${NLN} "${ixfile}" fort.31
+${NLN} "${vdir}/trak.${cmodel}.all.${symdh}" fort.61
+${NLN} "${vdir}/trak.${cmodel}.atcf.${symdh}" fort.62
+${NLN} "${vdir}/trak.${cmodel}.radii.${symdh}" fort.63
+${NLN} "${vdir}/trak.${cmodel}.atcfunix.${symdh}" fort.64
+
+if [[ "${BKGFREQ}" -eq 1 ]]; then
+    ${NLN} "${FIXgfs}/am/${cmodel}.tracker_leadtimes_hrly" "fort.15"
+elif [[ "${BKGFREQ}" -eq 3 ]]; then
+    ${NLN} "${FIXgfs}/am/${cmodel}.tracker_leadtimes" "fort.15"
 fi
 
-${NLN} ${gribfile}                                   fort.11
-${NLN} ${vdir}/tmp.gfs.atcfunix.${symdh}             fort.14
-${NLN} ${vdir}/vitals.upd.${cmodel}.${symd}${dishh}  fort.12
-${NLN} ${ixfile}                                     fort.31
-${NLN} ${vdir}/trak.${cmodel}.all.${symdh}           fort.61
-${NLN} ${vdir}/trak.${cmodel}.atcf.${symdh}          fort.62
-${NLN} ${vdir}/trak.${cmodel}.radii.${symdh}         fort.63
-${NLN} ${vdir}/trak.${cmodel}.atcfunix.${symdh}      fort.64
-
-if [ $BKGFREQ -eq 1 ]; then
-  ${NLN} ${FIXgfs}/am/${cmodel}.tracker_leadtimes_hrly fort.15
-elif [ $BKGFREQ -eq 3 ]; then
-  ${NLN} ${FIXgfs}/am/${cmodel}.tracker_leadtimes      fort.15
-fi
-
-##$XLF_LINKSSH
-#if [ -z $XLF_LINKSSH ] ; then
-###if [ -s $XLF_LINKSSH ; then  $XLF_LINKSSH ; fi
-#fi
-
-$TIMEIT ${APRNGETTX} $GETTX <${namelist} > outout 2> errfile
+${TIMEIT} "${APRNGETTX}" "${GETTX}" < "${namelist}" > outout 2> errfile
 err=$?
-###cat errfile
 cat errfile >> outout
-cat outout > ${DATA}/model_track.out
-set +u
-[ -n "../$pgmout" ]  &&  cat outout >> ../$pgmout
-set -u
+cat outout > "${DATA}/model_track.out"
+if [[ -n "${pgmout}" ]]; then
+    cat outout >> "../${pgmout}"
+fi
 rm outout
-set +x
-echo
-echo 'The foreground exit status for GETTRK is ' $err
-echo
-set_trace
+cat << EOF
 
-if [[ ${err} -gt 0 ]]; then
-   exit 9
+"The foreground exit status for GETTRK is ${err}"
+
+EOF
+
+if [[ "${err}" -gt 0 ]]; then
+    err=9
+    err_exit
 fi
 
-if [ -s fort.*  ]; then
-  rm fort.*
-fi
+rm -f fort.*
 
 cpreq "${vdir}/trak.${cmodel}.all.${symdh}" "${DATA}/model_track.all"
-
 
 exit 0
