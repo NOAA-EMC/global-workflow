@@ -114,7 +114,6 @@ for ((nset = 1; nset <= downset; nset++)); do
         # if at final record and have not reached the final processor then write echo's to
         # cmdfile for remaining processors
         if [[ "${last}" -eq "${ncount}" ]]; then
-            nproc_used=${iproc}
             for ((pproc = iproc + 1; pproc <= nproc; pproc++)); do
                 echo "/bin/echo ${pproc}" >> "${DATA}/cmdfile"
             done
