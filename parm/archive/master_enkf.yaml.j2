@@ -10,11 +10,6 @@ datasets:
     {% endfilter %}
 {% else %}
 
-    # Archive individual member data
-    # Member COM path lists (COMIN_*_MEM_list) and COMIN_CONF are provided by Python
-    # via ArchiveTarVars.get_member_com_paths() method
-
-    # Archive member data
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
     {% endfilter %}
