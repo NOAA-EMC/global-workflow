@@ -31,33 +31,33 @@ workdir="${5}"
 cd "${workdir}" || exit 2
 
 if [[ "${F00FLAG}" == "YES" ]]; then
-   f00flag=".true."
+    f00flag=".true."
 else
-   f00flag=".false."
+    f00flag=".false."
 fi
 
 export pgm="gfs_bufr.x"
 #. prep_step
 
 if [[ "${MAKEBUFR}" == "YES" ]]; then
-   bufrflag=".true."
+    bufrflag=".true."
 else
-   bufrflag=".false."
+    bufrflag=".false."
 fi
 
 # check if read in bufr_ij_gfs_${CASE}.txt
 
 export CASE=${CASE_HIST:-${CASE}}
 
-if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt"  ]]; then
-  # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt
-  ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
-  np1=0
+if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" ]]; then
+    # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt
+    ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
+    np1=0
 else
-  # find the nearest neighbor grid point(i,j) in the code
-  np1=1
-  echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
-  echo "Find the nearest neighbor grid (i,j) in the code"
+    # find the nearest neighbor grid point(i,j) in the code
+    np1=1
+    echo "No bufr_ij_gfs_${CASE}.txt For CASE ${CASE}"
+    echo "Find the nearest neighbor grid (i,j) in the code"
 fi
 
 ##fformat="netcdf"
@@ -81,14 +81,14 @@ EOF
 
 filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.log.f${fhr}.${logfm}"
 if [[ -z ${filename} ]]; then
-  echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
-  exit 2
+    echo "FATAL ERROR: COULD NOT LOCATE logf${fhr} file"
+    exit 2
 fi
 
 filename="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.log.f${fhr_p}.${logfm}"
 if [[ -z ${filename} ]]; then
-  echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
-  exit 2
+    echo "FATAL ERROR: COULD NOT LOCATE logf${fhr_p} file"
+    exit 2
 fi
 
 #------------------------------------------------------------------
@@ -100,17 +100,16 @@ ${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr_p}.${atmfm}" "flxf${fh
 ${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
 ${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
 
-
 #------------------------------------------------------------------
 "${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${fhr}"
 
 export err=$?
 
 if [[ ${err} -ne 0 ]]; then
-   echo "WARNING GFS postsnd job error, Please check files "
-   echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f${fhr}.${atmfm}"
-   echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr}.${atmfm}"
-   exit "${err}"
+    echo "FATAL ERROR: GFS postsnd job error, Please check files "
+    echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f${fhr}.${atmfm}"
+    echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr}.${atmfm}"
+    err_exit
 fi
 
 exit 0
