@@ -57,7 +57,6 @@ else
 fi
 
 # 1.b Output locations from bulletin files
-# shellcheck disable=SC2312
 Nb=$(find . -type f -name "*.cbull" -printf '.' | wc -c)
 echo ' '
 echo "   Number of bulletin files :   ${Nb}"
@@ -79,7 +78,6 @@ source awipsbull.data
 
 # 2.c Generate list of bulletins to process
 echo '   Generating buoy list ...'
-# shellcheck disable=SC2312
 bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" | awk '{print $1}')
 
 # 2.d Looping over buoys running formbul
@@ -89,7 +87,6 @@ echo
 for bull in ${bulls}; do
     fname="${RUN}.${bull}.cbull"
     oname="awipsbull.${bull}.${cycle}.${RUN}.wave"
-    # shellcheck disable=SC2312
     headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' | awk '{ print $3}')
     echo "Processing ${bull} (${headr} ${oname}) ..."
 

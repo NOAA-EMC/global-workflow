@@ -150,7 +150,7 @@ for loop in ${loops}; do
     while [[ ${n} -lt ${ntype} ]]; do
         n=$((n + 1))
         for type in ${diagtype[n]}; do
-            #shellcheck disable=SC2012,SC2312
+            #shellcheck disable=SC2012
             count=$(ls dir.*/"${type}_${loop}"* 2> /dev/null | wc -l)
             if [[ ${count} -eq 0 ]]; then
                 continue

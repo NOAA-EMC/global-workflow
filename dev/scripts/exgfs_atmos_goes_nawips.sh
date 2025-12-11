@@ -21,7 +21,6 @@ done
 NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
 NAGRIB="${GEMEXE}/nagrib2"
 
-# shellcheck disable=SC2312
 entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}')
 
 if [[ "${entry}" != "" ]]; then

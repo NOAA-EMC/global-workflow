@@ -383,7 +383,6 @@ ${NLN} "${FIXgfs}/gsi/IASI_CLDDET.NL" IASI_CLDDET.NL
 #If using correlated error, link to the covariance files
 if [[ "${USE_CORRELATED_OBERRS}" == "YES" ]]; then
     if grep -q "Rcov" "${ANAVINFO}"; then
-        # shellcheck disable=SC2312
         mapfile -t covfile_array < <(find "${FIXgfs}/gsi/" -name "Rcov*")
         if ((${#covfile_array[@]} > 0)); then
             for covfile in "${covfile_array[@]}"; do
@@ -413,7 +412,6 @@ fi
 ##############################################################
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
-# shellcheck disable=SC2312
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
     if [[ ${file:0:4} == "hirs" ]]; then
         ${NLN} "${HIRS_FIX}/${file}.SpcCoeff.bin" "./crtm_coeffs/${file}.SpcCoeff.bin"
@@ -645,7 +643,6 @@ fi
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
 if [[ "${USE_SELECT}" == "YES" ]]; then
     rm -f obs_input.*
-    # shellcheck disable=SC2312
     nl=$(file "${SELECT_OBS}" | cut -d: -f2 | grep -c tar)
     if [[ ${nl} -eq 1 ]]; then
         rm -f obsinput.tar
@@ -677,7 +674,6 @@ EOF
     chmod 755 "${DATA}/unzip_radstat.sh"
 
     rm -f "${DATA}/cmdfile"
-    #shellcheck disable=SC2312
     listdiag=$(tar -xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
     for type in ${listdiag}; do
         diag_file=$(echo "${type}" | cut -d',' -f1)
@@ -860,7 +856,6 @@ cat fort.2* > "${GSISTAT}"
 
 # If requested, create obsinput tarball from obs_input.* files
 if [[ ${RUN_SELECT} == "YES" ]]; then
-    # shellcheck disable=SC2312
     echo "$(date) START tar obs_input" >&2
     if [[ -s obsinput.tar ]]; then
         rm -f obsinput.tar
@@ -871,7 +866,6 @@ if [[ ${RUN_SELECT} == "YES" ]]; then
     chmod 750 "${SELECT_OBS}"
     ${CHGRP_CMD} "${SELECT_OBS}"
     rm -f obsinput.tar
-    # shellcheck disable=SC2312
     echo "$(date) END tar obs_input" >&2
 fi
 
@@ -907,7 +901,6 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
 fi
 
-# shellcheck disable=SC2312
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
 
 ################################################################################
