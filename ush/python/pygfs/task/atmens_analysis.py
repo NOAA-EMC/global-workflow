@@ -43,8 +43,6 @@ class AtmEnsAnalysis(Analysis):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
-                'letkf_app': "true",
-                'atm_enkfonly': self.task_config.DOENKFONLY_ATM,
             })
         )
 

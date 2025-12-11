@@ -26,33 +26,56 @@ MEMDIR="ensstat" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx
 BIASDIR=${DATA}/${GDUMP}.${gPDY}/${gcyc}/atmos
 BIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_air  ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
 
-EXSCRIPT_GEN_YAML=${RUNSATBIASCONVPY:-${USHgfs}/gen_run_satbias_conv_yaml.py}
-EXSCRIPT=${RUNSATBIASCONVPY:-${USHgfs}/run_satbias_conv.py}
-EXYAML=${RUNSATBIASCONVYAML:-${USHgfs}/satbias_converter.yaml}
-export EXX=${RUNSATBIASCONVX:-${EXECgfs}/satbias2ioda.x}
+ABIAS_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias
+ABIASPC_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias_pc
+ABIAS_SAT_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar
+ABIAS_AIR_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar
+
+SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECgfs}/satbias2ioda.x}
+SATBIAS2IODAY=${HOMEgfs}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
 OUTPUT=${DATA}/output
-PYRUNTMP=${DATA}/tmp
 
 if [[ ! -d "${COMOUT_ATMOS_ANALYSIS_PREV}" ]]; then mkdir -p "${COMOUT_ATMOS_ANALYSIS_PREV}"; fi
-if [[ -d "${OUTPUT}" ]]; then rm -rf "${OUTPUT}"; fi
-if [[ -d "${PYRUNTMP}" ]]; then rm -rf "${PYRUNTMP}"; fi
+if [[ ! -d "${OUTPUT}" ]]; then mkdir -p "${OUTPUT}"; fi
 
 if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     # JEDI run
     cd "${DATA}" || exit
-    cpreq "${EXYAML}" "./"
+    if [[ ! -d "testrun/varbc" ]]; then mkdir -p "testrun/varbc"; fi
+    /bin/ln -sf ${ABIAS_SAT}   ./satbias_in
+    /bin/ln -sf ${ABIASPC_SAT} ./satbias_pc
+    grep  -i 'NaN'  satbias_in && echo 'Stop. There are NaN in ${ABIAS}.' && exit 1
 
-# Generate YAML
-${EXSCRIPT_GEN_YAML} -o run_satbias_conv.yaml
-err=$?
+    # Get instruments from satbias_in
+    obsclass=`grep '_' satbias_in   | awk '{print $2}' | uniq`
+
+    # Loop over instruments. Covert GSI abias to JEDI format
+    for instrument in $(echo ${obsclass}); do
+        echo ${instrument}
+	/bin/cp -f ${SATBIAS2IODAY}  satbias_converter.yaml
+	sed -i -e "s/INSTRUMENT/${instrument}/g" satbias_converter.yaml
+
+	${SATBIAS2IODAX} satbias_converter.yaml
+
+	export err=$?
+	if [[ ${err} -ne 0 ]]; then
+            err_exit "satbias2iodas.x failed for ${instrument}, ABORT!"
+	fi
+
+	/bin/rm -f testrun/varbc/*nc
+        /bin/rm -f  testrun/varbc/*txt
+
+	cd ./testrun/varbc/
+	grep ${instrument}  ../../satbias_in  | awk '{print $2" "$3" "$4}' > \
+            ${OUTPUT}/gdas.t${gcyc}z.${instrument}.tlapse.txt
+	/bin/cp -p satbias_${instrument}.nc4  ${OUTPUT}/gdas.t${gcyc}z.${instrument}.satbias.nc
+	/bin/mv  satbias_${instrument}.nc4  ${OUTPUT}/gdas.t${gcyc}z.${instrument}.satbias_cov.nc
+        cd ${DATA}
+	/bin/rm -rf satbias_converter.yaml
+    done
 
     if [[ ${err} -eq 0 ]]; then
-${EXSCRIPT} -c run_satbias_conv.yaml
-err=$?
-    fi
-    
-    if [[ ${err} -eq 0 ]]; then
-        cd "${OUTPUT}/${GDUMP}.${gPDY}/${gcyc}/atmos" || exit
+        cd "${OUTPUT}" || exit
         for file in ${BIASFILES}; do
             cpreq "${BIASDIR}/${file}" "./enkf${file}.txt"
             err=$?
@@ -61,9 +84,9 @@ err=$?
             fi
 	done
         # TODO: Temporary solution and need to process abias_air for JEDI when ready 
-	tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
+	tar -cvf ${ABIAS_AIR_JEDI_TAR} "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
 	rm -rf "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
-        tar -cvf "${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar" *
+        tar -cvf ${ABIAS_SAT_JEDI_TAR} ./*.nc ./*.txt
         err=$?
     fi
 

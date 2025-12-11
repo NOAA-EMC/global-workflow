@@ -169,11 +169,11 @@ ush/fv3gfs_make_orog.sh
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle_driver.sh
+ush/gsi_satbias2ioda_all.sh
 ush/jediinc2fv3.py
 ush/imsfv3_scf2ioda.py
 ush/bufr_snocvr_snomad.py
 ush/atparse.bash
-ush/run_bufr2ioda.py
 ush/bufr2ioda_insitu*
 ush/python/gsincdiag_to_ioda
 ush/python/ufsda
@@ -181,6 +181,7 @@ ush/python/pyiodaconv
 ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
+ush/python/run_bufr2ioda.py
 ush/spoc
 # ush log file
 ush/fetch-fix-data.log

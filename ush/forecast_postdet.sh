@@ -198,7 +198,16 @@ EOF
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           inc_files=("csg_jedi_increment.atm.i006.tile1.nc" "csg_jedi_increment.atm.i006.tile2.nc" "csg_jedi_increment.atm.i006.tile3.nc" "csg_jedi_increment.atm.i006.tile4.nc" "csg_jedi_increment.atm.i006.tile5.nc" "csg_jedi_increment.atm.i006.tile6.nc")
           increment_file_on_native_grid=".true."
-          res_latlon_dynamics="csg_jedi_increment.atm.i006"
+          if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
+              res_latlon_dynamics="csg_jedi_increment.atm.i006"
+	  else
+              res_latlon_dynamics="jedi_increment.atm.i006"
+	  fi
+          if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
+            inc_files=("increment.atm.i006.nc")
+            res_latlon_dynamics="increment.atm.i006.nc"
+            increment_file_on_native_grid=".false."
+          fi
         else
           inc_files=("increment.atm.i006.nc")
           res_latlon_dynamics="increment.atm.i006.nc"
@@ -228,6 +237,9 @@ EOF
       for inc_file in "${inc_files[@]}"; do
         if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
           increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${prefix_atminc}${inc_file}"
+          if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
+            increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${prefix_atminc}${inc_file}"
+          fi            
         else
           if [[ "${RUN}" == "gcafs" ]]; then
             increment_file="${COMIN_ATMOS_ANALYSIS}/gcdas.t${cyc}z.${prefix_atminc}${inc_file}"
@@ -242,7 +254,7 @@ EOF
       if [[ ${DO_LAND_IAU} = ".true." ]]; then
         local TN sfc_increment_file
         for TN in $(seq 1 "${ntiles}"); do
-          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/increment.sfc.i006.tile${TN}.nc"
+          sfc_increment_file="${COMIN_ATMOS_ANALYSIS}/increment.sfc.tile${TN}.nc"
           if [[ ! -f "${sfc_increment_file}" ]]; then
             echo "FATAL ERROR: DO_LAND_IAU=${DO_LAND_IAU}, but missing increment file ${sfc_increment_file}, ABORT!"
             exit 1
@@ -299,7 +311,7 @@ EOF
       ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
       ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
       ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-      if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+      if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
       fi

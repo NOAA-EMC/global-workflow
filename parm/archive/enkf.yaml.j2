@@ -7,8 +7,10 @@ enkf:
             {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
             {% endfor %}
-            {% for fhr in range(fhmin, fhmax + 1, fhout) %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % (fhr - fhmin) }}.log"
+            {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
+            {% set ngrps = fhrs | length %}
+            {% for grp in range(0, ngrps) %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % grp }}.log"
             {% endfor %}
         {% if not DOENKFONLY_ATM %}
            {% if not DO_JEDIATMENS %}
@@ -77,10 +79,10 @@ enkf:
         # Ensemble mean state
         {% if not DO_JEDIATMENS %}
             {% set da_stat_files = ["enkfstat.txt",
-                                    "gsistat.ensmean.tar",
-                                    "cnvstat.ensmean.tar",
-                                    "oznstat.ensmean.tar",
-                                    "radstat.ensmean.tar"] %}
+                                    "gsistat_ensmean.txt",
+                                    "cnvstat_ensmean.tar",
+                                    "oznstat_ensmean.tar",
+                                    "radstat_ensmean.tar"] %}
             {% set da_conf_files = [] %}
         {% else %}
             {% if lobsdiag_forenkf %}
@@ -128,7 +130,9 @@ enkf:
         # Ensemble mean analyses/increments
         # soil DA increments
         {% if DO_GSISOILDA %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i006.nc"
+            {% for fhr in IAUFHRS %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_increment.sfc.i{{ '%03d' % fhr }}.nc"
+            {% endfor %}
         {% endif %}
 
         # Atmospheric analyses/increment
@@ -143,11 +147,6 @@ enkf:
                 {% endif %}
             {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}csg_ensmean_jedi_analysis.atm.a{{ '%03d' % fhr }}.nc"
-            {% endif %}
-
-        # soil DA increments
-            {% if DO_GSISOILDA %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}increment.sfc.i{{ '%03d' % fhr }}.nc"
             {% endif %}
 
         {% endfor %}
