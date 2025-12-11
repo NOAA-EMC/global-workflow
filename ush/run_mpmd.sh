@@ -34,12 +34,12 @@ cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in 
 
 # If USE_CFP is not set, run in serial mode
 if [[ "${USE_CFP:-}" != "YES" ]]; then
-  echo "INFO: Using serial mode for MPMD job"
-  chmod 755 "${cmdfile}"
-  bash +x "${cmdfile}" > mpmd.out 2>&1
-  rc=$?
-  cat mpmd.out
-  exit "${rc}"
+    echo "INFO: Using serial mode for MPMD job"
+    chmod 755 "${cmdfile}"
+    bash +x "${cmdfile}" > mpmd.out 2>&1
+    rc=$?
+    cat mpmd.out
+    exit "${rc}"
 fi
 
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
@@ -58,56 +58,56 @@ cat << EOF
   INFO: The proc_num corresponds to the line in '${mpmd_cmdfile}'
 EOF
 
-if [[ "${launcher:-}" =~ ^srun.* ]]; then  #  srun-based system e.g. Hera, Orion, etc.
+if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion, etc.
 
-  # Slurm requires a counter in front of each line in the script
-  # Read the incoming cmdfile and create srun usable cmdfile
-  nm=0
-  # shellcheck disable=SC2312
-  while IFS= read -r line; do
-    echo "${nm} ${line}" >> "${mpmd_cmdfile}"
-    ((nm=nm+1))
-  done < "${cmdfile}"
+    # Slurm requires a counter in front of each line in the script
+    # Read the incoming cmdfile and create srun usable cmdfile
+    nm=0
+    # shellcheck disable=SC2312
+    while IFS= read -r line; do
+        echo "${nm} ${line}" >> "${mpmd_cmdfile}"
+        ((nm = nm + 1))
+    done < "${cmdfile}"
 
-  set +e
-  # shellcheck disable=SC2086
-  ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
-  err=$?
-  set_strict
+    set +e
+    # shellcheck disable=SC2086
+    ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
+    err=$?
+    set_strict
 
-elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then  # mpiexec
+elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
 
-  # Redirect output from each process to its own stdout
-  # Read the incoming cmdfile and create mpiexec usable cmdfile
-  nm=0
-  echo "#!/bin/bash" >> "${mpmd_cmdfile}"
-  # shellcheck disable=SC2312
-  while IFS= read -r line; do
-    echo "${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
-    ((nm=nm+1))
-  done < "${cmdfile}"
-  chmod 755 "${mpmd_cmdfile}"
+    # Redirect output from each process to its own stdout
+    # Read the incoming cmdfile and create mpiexec usable cmdfile
+    nm=0
+    echo "#!/bin/bash" >> "${mpmd_cmdfile}"
+    # shellcheck disable=SC2312
+    while IFS= read -r line; do
+        echo "${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
+        ((nm = nm + 1))
+    done < "${cmdfile}"
+    chmod 755 "${mpmd_cmdfile}"
 
-  # shellcheck disable=SC2086
-  ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
-  err=$?
+    # shellcheck disable=SC2086
+    ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
+    err=$?
 
 else
 
-  echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
-  err=1
+    echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
+    err=1
 
 fi
 
 # On success concatenate processor specific output into a single mpmd.out
 if [[ ${err} -eq 0 ]]; then
-  rm -f "${mpmd_cmdfile}"
-  out_files=$(find . -name 'mpmd.*.out')
-  for file in ${out_files}; do
-    cat "${file}" >> mpmd.out
-    rm -f "${file}"
-  done
-  cat mpmd.out
+    rm -f "${mpmd_cmdfile}"
+    out_files=$(find . -name 'mpmd.*.out')
+    for file in ${out_files}; do
+        cat "${file}" >> mpmd.out
+        rm -f "${file}"
+    done
+    cat mpmd.out
 fi
 
 exit "${err}"
