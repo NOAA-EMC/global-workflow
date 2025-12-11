@@ -27,10 +27,10 @@ fi
 #GENERATE MONTHLY MEAN FILES FROM SFS DAILY ICE HISTORY FILES.
 if [[ "${RUN}" == sfs ]]; then
     if [[ ${FHMAX_GFS} -lt 744 ]]; then
-    echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
-    exit 0
+        echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
+        exit 0
     else
-    last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
+        last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
     fi
     if [[ -f ${last_fh_output} ]]; then
        file_list="${DATAoutput}/CICE_OUTPUT/iceh_24h_????_??_28_12.nc"

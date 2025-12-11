@@ -45,7 +45,7 @@ if [[ "${RUN}" == sfs ]]; then
        echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
        exit 0
     else
-    last_fh_output="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc"
+       last_fh_output="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${FHOUT_OCN}hr_avg.f${FHMAX_GFS}.nc"
     fi
     if [[ -f ${last_fh_output} ]]; then
        file_list="${DATAoutput}/MOM6_OUTPUT/ocn_????_??_28_12.nc"

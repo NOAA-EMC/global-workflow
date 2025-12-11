@@ -340,6 +340,10 @@ EOF
     else
       local restart_interval_start=${restart_interval}
       local restart_interval_end=${FHMAX}
+      if (( ${restart_interval_start} > ${restart_interval_end} )); then 
+        restart_interval_start=0
+        restart_interval=${FHMAX}
+      fi
     fi
     FV3_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${restart_interval}" "${restart_interval_end}")"
   fi
@@ -979,6 +983,10 @@ CMEPS_postdet() {
     else
       local restart_interval_start=${cmeps_restart_interval}
       local restart_interval_end=${FHMAX}
+      if (( ${restart_interval_start} > ${restart_interval_end} )); then 
+        restart_interval_start=0
+        cmeps_restart_interval=${FHMAX}
+      fi
     fi
     CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
   fi
