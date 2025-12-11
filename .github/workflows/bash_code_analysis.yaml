@@ -1,8 +1,8 @@
 name: bash_code_analysis
 on:
-  push:
-    branches:
-      - develop
+  # push:
+  #   branches:
+  #     - develop
   pull_request:
 
   workflow_dispatch:
@@ -32,11 +32,12 @@ jobs:
       #   with:
       #     filter_mode: nofilter
       #     level: warning
+      #     reporter: github-pr-review
 
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@v4
       - name: shfmt scan
-        run: shfmt -d dev/jobs dev/job_cards dev/scripts
+        run: shfmt -d dev/jobs dev/job_cards dev/scripts dev/ush ush
 
   shellcheck:
     runs-on: ubuntu-22.04
@@ -57,10 +58,13 @@ jobs:
         with:
           filter_mode: nofilter
           level: warning
+          reporter: github-pr-review
           path: |
             dev/jobs
-            jobs
-            scripts
+            dev/job_cards
+            dev/scripts
+            dev/ush
+            ush
           pattern: |
             config.*
             J*
@@ -88,6 +92,7 @@ jobs:
         with:
           filter_mode: added
           level: warning
+          reporter: github-pr-review
           check_all_files_with_shebangs: true
           pattern: |
             config.*

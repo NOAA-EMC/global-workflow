@@ -9,7 +9,7 @@
 #									#
 # Log:									#
 # K. Brill/HPC		04/12/05					#
-#########################################################################  
+#########################################################################
 
 # Set GEMPAK paths.
 
@@ -55,7 +55,7 @@ cpfs "${snd}" "${COMOUT_ATMOS_GEMPAK}/${snd_out}"
 cpfs "${sfc}" "${COMOUT_ATMOS_GEMPAK}/${sfc_out}"
 
 if [[ ${SENDDBN} == "YES" ]]; then
-   "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SFC "${job}" "${COMOUT_ATMOS_GEMPAK}/${sfc_out}"
-   "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SND "${job}" "${COMOUT_ATMOS_GEMPAK}/${snd_out}"
+    "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SFC "${job}" "${COMOUT_ATMOS_GEMPAK}/${sfc_out}"
+    "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SND "${job}" "${COMOUT_ATMOS_GEMPAK}/${snd_out}"
 fi
 echo "done" > "${DATA}/gembufr.done"
