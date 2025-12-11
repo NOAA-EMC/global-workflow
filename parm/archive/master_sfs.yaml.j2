@@ -21,7 +21,6 @@ datasets:
 {% endfilter %}
 {% endif %}
 
-# Archive the first 41 days daily ocean history files
 {% filter indent(width=4) %}
 {% include "ocean_product_mem_daily.yaml.j2" %}
 {% endfilter %}
@@ -37,7 +36,6 @@ datasets:
 {% endfilter %}
 {% endif %}
 
-# Archive the first 41 days daily ice history files
 {% filter indent(width=4) %}
 {% include "ice_product_mem_daily.yaml.j2" %}
 {% endfilter %}

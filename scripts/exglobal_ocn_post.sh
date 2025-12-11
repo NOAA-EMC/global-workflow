@@ -30,6 +30,8 @@ if [[ "${RUN}" == sfs ]]; then
       ncks -d z_l,2,2 -v temp "${input_file}" "${tmp_file}"
       ncwa -a z_l -O "${tmp_file}" "${output_file}"
       ncks -A -v geolon,geolat "${input_file}" "${output_file}"
+      #compress the data
+      xz "${output_file}"
 
       rm -f "${tmp_file}"
 
@@ -61,6 +63,11 @@ if [[ "${RUN}" == sfs ]]; then
          python3 "${CALC_TCHP}" "${in_file}" "${out_file_tchp}"
          python3 "${CALC_OHC}" "${in_file}" "${out_file_ocnheat}"
          rm -f "${DATAoutput}/MOM6_OUTPUT/ocn_${f_name:4:4}_${f_name:9:2}_merge.nc"
+          # Compress the monthly mean data
+         xz "${in_file}"
+         xz "${out_file_dt20c}"
+         xz "${out_file_tchp}"
+         xz "${out_file_ocnheat}"
        done
     fi
 
@@ -86,6 +93,10 @@ for fhr in "${MOM6_OUTPUT_FH[@]}"; do
     python3 "${CALC_D20}" "${input_file}" "${output_file_dt20c}"
     python3 "${CALC_TCHP}" "${input_file}" "${output_file_tchp}"
     python3 "${CALC_OHC}" "${input_file}" "${output_file_ocnheat}"
+    # compress the data
+    xz "${output_file_dt20c}"
+    xz "${output_file_tchp}"
+    xz "${output_file_ocnheat}"
     done
 fi
 
