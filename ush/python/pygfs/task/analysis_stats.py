@@ -98,12 +98,12 @@ class AnalysisStats(Analysis):
             jcb_config = self.jedi_dict[analysis].jcb_config
             model = self.jedi_dict[analysis].model
             diag_archive = os.path.join(jcb_config[f"{model}_obsdatain_path"],
-                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats.tar.gz")
+                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx.tar.gz")
             Jedi.extract_tar(diag_archive)
 
             # Initialize JEDI application
             logger.info(f"Initializing JEDI ioda-stats extraction application")
-            self.jedi_dict[analysis].initialize(observations=self.task_config.observations[analysis], clean_empty_obsspaces=True)
+            self.jedi_dict[analysis].initialize(clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, analysis: str) -> None:
@@ -145,10 +145,12 @@ class AnalysisStats(Analysis):
                                                      f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
 
             # concatenate text files into one summary file
-            summaryfile = os.path.join(self.task_config.anldir[analysis], f"{self.task_config.APREFIX}{analysis}_stats.txt")
+            jcb_config = self.jedi_dict[analysis].jcb_config
+            model = self.jedi_dict[analysis].model
+            summaryfile = os.path.join(jcb_config[f"{model}_obsdataout_path"], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
                 for ob in self.task_config.observations[analysis]:
-                    textfile = os.path.join(self.jedi_dict[analysis].jcb_config[f"{self.jedi_dict[analysis].model}_obsdataout_path"], f"{ob}_ioda_stats.txt")
+                    textfile = os.path.join(jcb_config[f"{model}_obsdataout_path"], f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
                         with open(textfile, 'r') as infile:

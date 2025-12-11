@@ -46,6 +46,9 @@ class Jedi:
         None
         """
 
+        # Parse inputs
+        # ------------
+
         # Create the configuration dictionary for JEDI object
         local_dict = AttrDict(
             {
@@ -70,16 +73,33 @@ class Jedi:
         if 'jcb_algo' in config and 'jcb_algo_yaml' in config:
             raise WorkflowKeyError("Either 'jcb_algo' or 'jcb_algo_yaml' must be specified in JEDI config, but not both")
 
-        # Initialize JCB config dictionary, adding JCB algorithm YAML if it exists
-        self.jcb_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
+        # Construct JCB config dictionary
+        # -------------------------------
+
+        # Render JCB base config YAML
+        self._jcb_base_config = parse_j2yaml(self.jedi_config.jcb_base_yaml, task_config)
+
+        # Construct JCB config dictionary
         if self.jedi_config.jcb_algo_yaml is not None:
-            self.jcb_config.update(parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config))
-            if 'algorithm' not in self.jcb_config:
+            # Render JCB algorithm config YAML if specified
+            self._jcb_algo_config = parse_j2yaml(self.jedi_config.jcb_algo_yaml, task_config)
+            if 'algorithm' not in self._jcb_algo_config:
                 raise WorkflowKeyError("JCB algorithm not specified in jcb_algo_yaml")
+
+            self.jcb_config = AttrDict({**self._jcb_base_config, **self._jcb_algo_config})
+        else:
+            self.jcb_config = AttrDict(self._jcb_base_config)
+
+        # Set JCB algorithm if not already specified in JCB algorithm config YAML
         if self.jedi_config.jcb_algo is not None:
             self.jcb_config.algorithm = self.jedi_config.jcb_algo
+
+        # Set observations list in JCB config if obs_list_yaml specified
         if self.jedi_config.obs_list_yaml is not None:
             self.jcb_config['observations'] = parse_j2yaml(self.jedi_config.obs_list_yaml, task_config)['observations']
+
+        # Set object attributes
+        # ---------------------
 
         # Set model attribute, checking that "app_path_model" is present in jcb_config
         key = 'app_path_model'
@@ -94,8 +114,45 @@ class Jedi:
         self._jedi_config = self.jedi_config.deepcopy()
         self._jcb_config = self.jcb_config.deepcopy()
 
+    @staticmethod
     @logit(logger)
-    def initialize(self, clean_empty_obsspaces: Optional[bool] = False, observations: Optional[str] = None) -> None:
+    def get_jedi_dict(jedi_config_dict: dict, task_config: AttrDict, expected_block_names: Optional[list] = None):
+        """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
+
+        Parameters
+        ----------
+        jedi_config_dict : dict
+            dictionary parsed from a J2-YAML file specifying configuration dictionaries for JEDI objects
+        expected_block_names (optional) : str
+            list of names of blocks expected to be in jedi_config_yaml YAML file
+
+        Returns
+        ----------
+        None
+        """
+
+        # Initialize dictionary of Jedi objects
+        jedi_dict = AttrDict()
+
+        # Loop through dictionary of Jedi configuration dictionaries
+        for block_name in jedi_config_dict:
+            # jedi_app_name key is set to name for this block
+            jedi_config_dict[block_name]['jedi_app_name'] = block_name
+
+            # Construct JEDI object
+            jedi_dict[block_name] = Jedi(jedi_config_dict[block_name], task_config)
+
+        # Make sure jedi_dict has the blocks we expect
+        if expected_block_names:
+            for block_name in expected_block_names:
+                if block_name not in jedi_dict:
+                    raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_yaml}")
+
+        # Return dictionary of JEDI objects
+        return jedi_dict
+
+    @logit(logger)
+    def initialize(self, clean_empty_obsspaces: Optional[bool] = False) -> None:
         """Initialize JEDI application
 
         This method will initialize a JEDI application.
@@ -109,16 +166,11 @@ class Jedi:
         clean_empty_obsspaces: bool
             Flag to clean empty observation spaces from JEDI input configuration dictionary.
             Default is False.
-        observations (optional): List[str]
-            List of observation types to be processed.
 
         Returns
         ----------
         None
         """
-
-        if observations is not None:
-            self.jcb_config.observations = observations
 
         # Render JEDI executable config dictionary
         logger.info(f"Generating JEDI YAML config: {self.jedi_config.exe_config_yaml}")
@@ -195,43 +247,6 @@ class Jedi:
 
         return exe_config
 
-    @staticmethod
-    @logit(logger)
-    def get_jedi_dict(jedi_config_dict: dict, task_config: AttrDict, expected_block_names: Optional[list] = None):
-        """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
-
-        Parameters
-        ----------
-        jedi_config_dict : dict
-            dictionary parsed from a J2-YAML file specifying configuration dictionaries for JEDI objects
-        expected_block_names (optional) : str
-            list of names of blocks expected to be in jedi_config_yaml YAML file
-
-        Returns
-        ----------
-        None
-        """
-
-        # Initialize dictionary of Jedi objects
-        jedi_dict = AttrDict()
-
-        # Loop through dictionary of Jedi configuration dictionaries
-        for block_name in jedi_config_dict:
-            # jedi_app_name key is set to name for this block
-            jedi_config_dict[block_name]['jedi_app_name'] = block_name
-
-            # Construct JEDI object
-            jedi_dict[block_name] = Jedi(jedi_config_dict[block_name], task_config)
-
-        # Make sure jedi_dict has the blocks we expect
-        if expected_block_names:
-            for block_name in expected_block_names:
-                if block_name not in jedi_dict:
-                    raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_yaml}")
-
-        # Return dictionary of JEDI objects
-        return jedi_dict
-
     @logit(logger)
     def clean_empty_obsspaces(self):
         """
@@ -271,7 +286,7 @@ class Jedi:
 
     @logit(logger)
     def stage_obsdatain(self, comin) -> None:
-        """Stage observation data files specified in JCB configuration dictionary
+        """Stage observation input files specified in JCB configuration dictionary
 
         This method will stage observation data files specified in the JCB configuration
         dictionary
@@ -313,7 +328,7 @@ class Jedi:
 
     @logit(logger)
     def save_obsdataout(self, comout: str, archive_name: str) -> None:
-        """Archive diag files and compress archive into COM directory
+        """Archive observation output files and compress archive into COM directory
 
         Parameters
         ----------
@@ -334,25 +349,27 @@ class Jedi:
                 raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
         # Set paths of output tar files
-        tarball = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"], f"{archive_name}.tar")
-
-        # Get lists of files to put in tarballs
-        diaglist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"],
-                                          self.jcb_config[f"{self.model}_obsdataout_prefix"] + '*' + self.jcb_config[f"{self.model}_obsdataout_suffix"]))
-
-        # Create tarball of diag files in COM
-        logger.debug(f"Creating tarball {tarball} with {len(diaglist)} diag files")
-        with tarfile.open(tarball, "w") as archive:
-            for diagfile in diaglist:
-                archive.add(diagfile, arcname=os.path.basename(diagfile))
+        tarball = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"], f"{archive_name}.tar.gz")
+    
+        # Create compressed tarball of obs output files in COM
+        logger.info(f"Archiving observation output files to {tarball}")
+        with tarfile.open(tarball, "w:gz") as archive:
+            for observation_from_jcb in self.jcb_config['observations']:
+                obsdataout_file = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"],
+                                        self.jcb_config[f"{self.model}_obsdataout_prefix"] + observation_from_jcb + self.jcb_config[f"{self.model}_obsdataout_suffix"])
+                if os.path.exists(obsdataout_file):
+                    logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")
+                    archive.add(obsdataout_file, arcname=os.path.basename(obsdataout_file))
+                else:
+                    logger.warning(f"Observation output file {obsdataout_file} does not exist and will be skipped")
 
         # Compress the tar file
-        logger.info(f"Compressing {tarball}")
-        with open(tarball, 'rb') as f_in, gzip.open(f"{tarball}.gz", 'wb') as f_out:
-            f_out.writelines(f_in)
+        #logger.info(f"Compressing {tarball}")
+        #with open(tarball, 'rb') as f_in, gzip.open(f"{tarball}.gz", 'wb') as f_out:
+        #    f_out.writelines(f_in)
 
         # Copy files to COM
-        FileHandler({'copy_opt': [[f"{tarball}.gz", comout]]}).sync()
+        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
 
     @logit(logger)
     def stage_obsbiasin(self, comin) -> None:
@@ -414,7 +431,7 @@ class Jedi:
 
     @logit(logger)
     def save_obsbiasout(self, comout: str, archive_name: str) -> None:
-        """Tar radiative bias correction files and into COM directory
+        """Tar bias correction files and into COM directory
 
         Parameters
         ----------
@@ -440,20 +457,41 @@ class Jedi:
         tarball = f"{archive_name}.tar"
 
         # Get lists of files to put in tarballs
-        satlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiasin_suffix"]))
-        satcovlist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"], '*' + self.jcb_config[f"{self.model}_obsbiascovin_suffix"]))
-        tlaplist = glob.glob(os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"], '*' + self.jcb_config[f"{self.model}_obstlapsein_suffix"]))
+        satlist = []
+        satcovlist = []
+        tlaplist = []
+        for ob in self.jcb_config['observations']:
+            # Sat bias file
+            satfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"],
+                                   self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiasin_suffix"])
+            if os.path.exists(satfile):
+                satlist.append(satfile)
 
-        # Create tarball of radiance bias correction files
-        logger.info(f"Creating radiance bias correction tarball {tarball}")
-        with tarfile.open(tarball, 'w') as radbcor:
-            logger.info(f"Adding {radbcor.getnames()}")
+            # Sat bias cov file
+            satcovfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"],
+                                      self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiascovin_suffix"])
+            if os.path.exists(satcovfile):
+                satcovlist.append(satcovfile)
+
+            # Temperature lapse rate file
+            tlapfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
+                                    self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obstlapsein_suffix"])
+            if os.path.exists(tlapfile):
+                tlaplist.append(tlapfile)
+
+        # Create tarball of bias correction files
+        logger.info(f"Creating bias correction tarball {tarball}")
+        with tarfile.open(tarball, 'w') as bcor:
+            logger.info(f"Adding {bcor.getnames()}")
             for satfile in satlist + satcovlist:
-                radbcor.add(satfile, arcname=os.path.basename(satfile))
+                logger.info(f"Adding satellite bias correction file {satfile} to {tarball}")
+                bcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                radbcor.add(tlapfile, arcname=os.path.basename(tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
-                                                                                self.jcb_config[f"{self.model}_obsbiasout_prefix"])))
+                tlapsfile_rename = tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
+                                                    self.jcb_config[f"{self.model}_obsbiasout_prefix"])
+                logger.info(f"Adding temperature lapse rate file {tlapfile_replace} to {tarball}")
+                bcor.add(tlapfile, arcname=os.path.basename(tlapfile_replace))
 
         # Copy files to COM
         FileHandler({'copy_opt': [[tarball, comout]]}).sync()
