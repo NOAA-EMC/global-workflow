@@ -563,7 +563,7 @@ FV3_predet() {
             gcafs)
                 cpreq "${PARMgfs}/post/gcafs/postxconfig-NT-gcafs.txt" "${DATA}/postxconfig-NT.txt"
                 cpreq "${PARMgfs}/post/gcafs/postxconfig-NT-gcafs.txt" "${DATA}/postxconfig-NT_FH00.txt"
-                cpreq "${PARMgfs}/ufs/post_itag_gcafs" "${DATA}/itag"  # TODO: Need a GCAFS version when available in the UFS-weather-model
+                cpreq "${PARMgfs}/ufs/post_itag_gcafs" "${DATA}/itag"
                 cpreq "${PARMgfs}/post/optics_luts_DUST_nasa.dat" "${DATA}/."
                 cpreq "${PARMgfs}/post/optics_luts_NITR_nasa.dat" "${DATA}/."
                 cpreq "${PARMgfs}/post/optics_luts_SALT_nasa.dat" "${DATA}/."
