@@ -98,7 +98,7 @@ class AnalysisStats(Analysis):
             jcb_config = self.jedi_dict[analysis].jcb_config
             model = self.jedi_dict[analysis].model
             diag_archive = os.path.join(jcb_config[f"{model}_obsdatain_path"],
-                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats
+                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
             Jedi.extract_tar(diag_archive)
 
             # Initialize JEDI application
