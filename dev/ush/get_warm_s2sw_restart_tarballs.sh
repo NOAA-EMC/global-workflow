@@ -33,9 +33,9 @@ fi
 
 cd "${untar_dir}"
 
-ptargets=( "enkfgdas_restartb_grp1.tar" "enkfgdas_restartb_grp2.tar" "enkfgdas_restartb_grp3.tar" "enkfgdas_restartb_grp4.tar" "enkfgdas_restartb_grp5.tar" "enkfgdas_restartb_grp6.tar" "enkfgdas_restartb_grp7.tar" "enkfgdas_restartb_grp8.tar" "gdas_restartb.tar" "gdasocean_restart.tar" "gdaswave_restart.tar" )
+ptargets=("enkfgdas_restartb_grp1.tar" "enkfgdas_restartb_grp2.tar" "enkfgdas_restartb_grp3.tar" "enkfgdas_restartb_grp4.tar" "enkfgdas_restartb_grp5.tar" "enkfgdas_restartb_grp6.tar" "enkfgdas_restartb_grp7.tar" "enkfgdas_restartb_grp8.tar" "gdas_restartb.tar" "gdasocean_restart.tar" "gdaswave_restart.tar")
 
-targets=( "enkfgdas_restarta_grp1.tar" "enkfgdas_restarta_grp2.tar" "enkfgdas_restarta_grp3.tar" "enkfgdas_restarta_grp4.tar" "enkfgdas_restarta_grp5.tar" "enkfgdas_restarta_grp6.tar" "enkfgdas_restarta_grp7.tar" "enkfgdas_restarta_grp8.tar" "gdas_restarta.tar" "gdasocean_analysis.tar")
+targets=("enkfgdas_restarta_grp1.tar" "enkfgdas_restarta_grp2.tar" "enkfgdas_restarta_grp3.tar" "enkfgdas_restarta_grp4.tar" "enkfgdas_restarta_grp5.tar" "enkfgdas_restarta_grp6.tar" "enkfgdas_restarta_grp7.tar" "enkfgdas_restarta_grp8.tar" "gdas_restarta.tar" "gdasocean_analysis.tar")
 
 # This is all specific to Gaea C6
 clusters="es"
@@ -48,7 +48,7 @@ tasks=1
 
 # Construct a wrapper script in a loop to submit to the sbatch system
 for tarball in "${targets[@]}"; do
-  sbatch << EOF
+    sbatch << EOF
 #!/bin/bash
 #SBATCH --job-name=get_retro_${tarball}
 #SBATCH --output=get_retro_${tarball}.out
@@ -81,7 +81,7 @@ done
 
 # Now do the same for the previous cycle tarballs
 for tarball in "${ptargets[@]}"; do
-  sbatch << EOF
+    sbatch << EOF
 #!/bin/bash
 #SBATCH --job-name=get_retro_${tarball}
 #SBATCH --output=get_retro_${tarball}.out
