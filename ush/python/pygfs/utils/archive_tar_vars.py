@@ -46,7 +46,6 @@ Logging
 All public operational functions are decorated with @logit(logger).
 """
 import os
-from copy import deepcopy
 from logging import getLogger
 from typing import Any, Dict, Tuple
 from wxflow import AttrDict, logit, to_YMD, to_YMDH
@@ -351,7 +350,7 @@ class ArchiveTarVars:
 
             for mem in range(first_group_mem, last_group_mem + 1):
                 # Create member-specific cycle dictionary
-                cycle_dict = deepcopy(ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict'])
+                cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
                 cycle_dict['${MEMDIR}'] = f"mem{mem:03d}"
 
                 # Generate COM paths for this member and append to lists
@@ -364,7 +363,7 @@ class ArchiveTarVars:
 
             # Add ensstat path (COMIN_CONF)
             # Note: COMIN_CONF is a single path string, not a list like the other entries
-            cycle_dict = deepcopy(ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict'])
+            cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
             cycle_dict['${MEMDIR}'] = 'ensstat'
             if config_dict.get('COM_CONF_TMPL'):
                 member_lists['COMIN_CONF'] = ArchiveTarVars._replace_template_vars(  # type: ignore[assignment]
