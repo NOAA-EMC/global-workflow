@@ -19,13 +19,13 @@ def main():
     archive = Archive(config)
 
     # Collect all variables for YAML templates (config keys, COM paths, cycle vars, member paths)
-    # Uses centralized method from ArchiveTarVars utility class
+    # Note: Member COM paths from get_member_com_paths() are already relative to ROTDIR
     archive_dict = ArchiveTarVars.get_all_yaml_vars(archive.task_config)
 
-    with chdir(config.ROTDIR):
+    # Determine which archives to create
+    atardir_sets = archive.configure_tars(archive_dict)
 
-        # Determine which archives to create
-        atardir_sets = archive.configure_tars(archive_dict)
+    with chdir(config.ROTDIR):
 
         # Create the backup tarballs and store in ATARDIR
         for atardir_set in atardir_sets:
