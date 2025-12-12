@@ -55,7 +55,7 @@ class NEXUSEmissions(Task):
         """
         super().__init__(config)
 
-        self.task_config = AttrDict(config)
+        # self.task_config = AttrDict(config)
         self.AERO_INPUTS_DIR = self.task_config.get('AERO_INPUTS_DIR', None)
         self.COMOUT_CHEM_INPUT = self.task_config.get('COMOUT_CHEM_INPUT', None)
 
@@ -65,13 +65,9 @@ class NEXUSEmissions(Task):
         else:
             nforecast_hours = self.task_config["FHMAX_GFS"]
 
-        # Create start date based on SDATE
-        # TODO: Find reason for current_cycle dropping from task_config after chem_fire_emission.py
-        # SDATE is added to self.task_config as a copy of self.task_config["current_cycle"]
-        # self.task_config['current_cycle'] = self.task_config["SDATE"]
-        self.start_date = self.task_config["CDATE"]
+        self.start_date = self.task_config["current_cycle"]
         self.total_hrs = nforecast_hours + 1
-        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{self.total_hrs}H')
+        self.end_date = self.task_config["current_cycle"] + to_timedelta(f'{self.total_hrs}H')
 
         logger.info(f'start_date: {self.start_date}')
         logger.info(f'nforecast_hours: {nforecast_hours}')

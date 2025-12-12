@@ -51,11 +51,14 @@ class ChemFireEmissions(Task):
         logger.info(f"Number of forecast hours: {nforecast_hours}")
 
         # Create start date based on SDATE
-        self.start_date = self.task_config["CDATE"] - to_timedelta('24H')  # include previous day
+        import pprint 
+        pprint.pprint(self.task_config)
+        logger.info(f"current cycle : {self.task_config['current_cycle']}")
+        self.start_date = self.task_config["current_cycle"] - to_timedelta('24H')  # include previous day
         logger.info(f"Start date: {self.start_date}")
 
         # end date = SDATE + nforecast hours + 36
-        self.end_date = self.task_config["CDATE"] + to_timedelta(f'{nforecast_hours + 36}H')
+        self.end_date = self.task_config["current_cycle"] + to_timedelta(f'{nforecast_hours + 36}H')
         logger.info(f"End date: {self.end_date}")
 
         # Calculate number of days spanned by start and end date (inclusive)
