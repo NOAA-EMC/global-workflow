@@ -48,7 +48,7 @@ All public operational functions are decorated with @logit(logger).
 import os
 from logging import getLogger
 from typing import Any, Dict, Tuple
-from wxflow import AttrDict, logit, to_YMD, to_YMDH
+from wxflow import AttrDict, logit, to_YMD, to_YMDH, add_to_datetime, to_timedelta
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -102,12 +102,20 @@ class ArchiveTarVars:
         # Add config variables (config keys, COM* variables from job scripts)
         arch_dict.update(ArchiveTarVars.add_config_vars(config_dict))
 
-        # Add cycle-specific variables
+        # Add minimal cycle variables
         arch_dict.update(ArchiveTarVars._get_cycle_vars(config_dict))
 
-        # Add member COM paths for ensemble groups (ENSGRP != 0)
-        # Returns empty dict if ENSGRP == 0 (ensemble mean archiving)
-        arch_dict.update(ArchiveTarVars.get_member_com_paths(config_dict))
+        # Add YAML-specific cycle variables (analysis/restart times, archive flags)
+        arch_dict.update(ArchiveTarVars._get_yaml_specific_cyc_vars(config_dict))
+
+        # Add COM paths based on ensemble group (all relative to ROTDIR)
+        ensgrp = config_dict.get('ENSGRP', 0)
+        if ensgrp == 0:
+            # ENSGRP=0: Generate relative paths for ensemble mean/spread (enkf.yaml.j2)
+            arch_dict.update(ArchiveTarVars.get_enkf_ensstat_com_paths(config_dict))
+        else:
+            # ENSGRP!=0: Generate relative paths for member data
+            arch_dict.update(ArchiveTarVars.get_enkf_member_com_paths(config_dict))
 
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
@@ -201,20 +209,69 @@ class ArchiveTarVars:
     @staticmethod
     @logit(logger)
     def _get_cycle_vars(config_dict: AttrDict) -> Dict[str, Any]:
-        """Calculate cycle-specific variables using wxflow timetools.
+        """Calculate minimal cycle-specific variables using wxflow timetools.
+
+        This method computes only the basic cycle timestamp variables. For EnKF-specific
+        variables like analysis/restart times and archive flags, see _get_yaml_specific_cyc_vars().
 
         Parameters
         ----------
         config_dict : AttrDict
             Configuration dictionary from Archive.task_config
+            Required keys: current_cycle
 
         Returns
         -------
         Dict[str, Any]
-            Dictionary containing:
+            Dictionary containing basic cycle variables:
             - cycle_HH: (str) Cycle hour (e.g., '00', '06')
             - cycle_YMDH: (str) Full cycle timestamp (YYYYMMDDHH)
             - cycle_YMD: (str) Cycle date (YYYYMMDD)
+
+        Notes
+        -----
+        For EnKF-specific cycle variables (analysis/restart times, archive flags),
+        use _get_yaml_specific_cyc_vars() which returns anl_YMD, anl_HH, rst_YMD,
+        rst_HH, assim_freq, archive_increments, archive_at_cyc, archive_ics,
+        archive_ics_at_cyc, save_warm_start_forecast, save_warm_start_cycled.
+        """
+        # Only compute minimal cycle variables here. YAML-specific cycle
+        # variables (analysis/restart times and archive flags) are
+        # computed by _get_yaml_specific_cyc_vars(). This keeps
+        # _get_cycle_vars() lightweight and stable for other callers.
+        current_cycle = config_dict.current_cycle
+        cycle_HH = current_cycle.strftime("%H")
+        cycle_YMDH = to_YMDH(current_cycle)
+        cycle_YMD = to_YMD(current_cycle)
+
+        return {
+            'cycle_HH': cycle_HH,
+            'cycle_YMDH': cycle_YMDH,
+            'cycle_YMD': cycle_YMD,
+        }
+
+    @staticmethod
+    @logit(logger)
+    def _get_yaml_specific_cyc_vars(config_dict: AttrDict) -> Dict[str, Any]:
+        """Compute YAML-specific cycle variables used by master_enkf.yaml.
+
+        This method computes EnKF-specific cycle variables including analysis/restart
+        times, assimilation frequency, and archive timing booleans that were previously
+        computed inside _get_cycle_vars(). These variables are specific to EnKF ensemble
+        archiving workflows and are not needed by other archive systems.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary from Archive.task_config
+            Required keys: current_cycle, assim_freq, SDATE, ARCH_CYC, ARCH_WARMICFREQ
+            Optional keys: DOIAU_ENKF (default: False), ENSGRP (default: 0),
+                          NMEM_EARCGRP, NMEM_ENS
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing EnKF-specific cycle variables:
             - anl_YMD: (str) Analysis date (depends on DOIAU_ENKF)
             - anl_HH: (str) Analysis hour (depends on DOIAU_ENKF)
             - rst_YMD: (str) Restart date (depends on DOIAU_ENKF)
@@ -224,12 +281,14 @@ class ArchiveTarVars:
             - archive_at_cyc: (bool) Whether current cycle hour matches ARCH_CYC
             - archive_ics: (bool) Whether to archive ensemble ICs (group b)
             - archive_ics_at_cyc: (bool) Whether IC offset hour matches archive cycle
+            - save_warm_start_forecast: (bool) Warm start forecast flag (placeholder)
+            - save_warm_start_cycled: (bool) Warm start cycled flag (placeholder)
+            - first_group_mem: (int or None) First member number in archive group (ENSGRP != 0)
+            - last_group_mem: (int or None) Last member number in archive group (ENSGRP != 0)
+            - enkf_epos_fhrs: (list) EnKF forecast hours list for epos post-processing
+            - enkf_epos_ngrps: (int) Number of EnKF epos post-processing groups
         """
-        from wxflow import add_to_datetime, to_timedelta
-
-        # Initialize general cycle variables dictionary using AttrDict for dot notation access
-        general_cycle_vars = AttrDict()
-
+        # helpers already imported at module level
         current_cycle = config_dict.current_cycle
         doiau_enkf = config_dict.get('DOIAU_ENKF', False)
         assim_freq = config_dict.get('assim_freq', 6)
@@ -237,69 +296,98 @@ class ArchiveTarVars:
         arch_warmicfreq = config_dict.get('ARCH_WARMICFREQ', 1)
         arch_cyc = config_dict.get('ARCH_CYC', 0)
 
-        # Cycle time variables
-        general_cycle_vars['cycle_HH'] = current_cycle.strftime("%H")
-        general_cycle_vars['cycle_YMDH'] = to_YMDH(current_cycle)
-        general_cycle_vars['cycle_YMD'] = to_YMD(current_cycle)
+        vars_out: Dict[str, Any] = {}
 
-        # Analysis time (depends on DOIAU_ENKF: -3H if IAU on, else current cycle)
+        # Analysis time
         anl_delta = to_timedelta("-3H") if doiau_enkf else to_timedelta("0H")
         anl_time = add_to_datetime(current_cycle, anl_delta)
-        general_cycle_vars['anl_YMD'] = to_YMD(anl_time)
-        general_cycle_vars['anl_HH'] = anl_time.strftime("%H")
+        vars_out['anl_YMD'] = to_YMD(anl_time)
+        vars_out['anl_HH'] = anl_time.strftime("%H")
 
-        # Restart time (depends on DOIAU_ENKF: +3H if IAU on, else +6H)
+        # Restart time
         rst_delta = to_timedelta("+3H") if doiau_enkf else to_timedelta("+6H")
         rst_time = add_to_datetime(current_cycle, rst_delta)
-        general_cycle_vars['rst_YMD'] = to_YMD(rst_time)
-        general_cycle_vars['rst_HH'] = rst_time.strftime("%H")
+        vars_out['rst_YMD'] = to_YMD(rst_time)
+        vars_out['rst_HH'] = rst_time.strftime("%H")
 
         # Assimilation frequency
-        general_cycle_vars['assim_freq'] = str(assim_freq)
+        vars_out['assim_freq'] = str(assim_freq)
 
         # Archive timing booleans - increments (group a)
         if sdate:
             current_cycle_days = (current_cycle - sdate).days
-            general_cycle_vars['archive_increments'] = (current_cycle_days % arch_warmicfreq == 0)
+            vars_out['archive_increments'] = (current_cycle_days % arch_warmicfreq == 0)
         else:
-            general_cycle_vars['archive_increments'] = False
-        general_cycle_vars['archive_at_cyc'] = (arch_cyc == int(general_cycle_vars['cycle_HH']))
+            vars_out['archive_increments'] = False
+        vars_out['archive_at_cyc'] = (arch_cyc == int(current_cycle.strftime("%H")))
 
         # Archive timing booleans - ICs (group b)
         ics_offset_cycle = add_to_datetime(current_cycle, to_timedelta(f"+{assim_freq}H"))
         if sdate:
             ics_offset_days = (ics_offset_cycle - sdate).days
-            general_cycle_vars['archive_ics'] = (ics_offset_days % arch_warmicfreq == 0)
+            vars_out['archive_ics'] = (ics_offset_days % arch_warmicfreq == 0)
         else:
-            general_cycle_vars['archive_ics'] = False
-        general_cycle_vars['archive_ics_at_cyc'] = ((arch_cyc - assim_freq) % 24 == int(general_cycle_vars['cycle_HH']))
+            vars_out['archive_ics'] = False
+        vars_out['archive_ics_at_cyc'] = ((arch_cyc - assim_freq) % 24 == int(current_cycle.strftime("%H")))
 
-        # Warm start flags (currently placeholders)
-        general_cycle_vars['save_warm_start_forecast'] = False
-        general_cycle_vars['save_warm_start_cycled'] = False
+        # Warm start flags (placeholders)
+        vars_out['save_warm_start_forecast'] = False
+        vars_out['save_warm_start_cycled'] = False
 
-        return general_cycle_vars
+        # Ensemble member range calculation for archiving groups
+        vars_out['first_group_mem'] = None
+        vars_out['last_group_mem'] = None
+
+        ensgrp = config_dict.get('ENSGRP', 0)
+        if ensgrp != 0:
+            nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
+            nmem_ens = config_dict.get('NMEM_ENS')
+            if nmem_earcgrp and nmem_ens:
+                vars_out['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
+                vars_out['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
+
+        # Forecast hour calculations for archive templates
+        # Used by enkf.yaml.j2 for log archiving loops (epos post-processing groups)
+        fhmin_enkf = config_dict.get('FHMIN_ENKF', 0)
+        fhmax_enkf = config_dict.get('FHMAX_ENKF', 0)
+        fhout_enkf = config_dict.get('FHOUT_ENKF', 3)
+
+        # Generate forecast hour list: range(fhmin, fhmax + fhout, fhout)
+        # Example: fhmin=0, fhmax=9, fhout=3 -> [0, 3, 6, 9]
+        enkf_fhrs = list(range(fhmin_enkf, fhmax_enkf + fhout_enkf, fhout_enkf))
+        vars_out['enkf_epos_fhrs'] = enkf_fhrs
+        vars_out['enkf_epos_ngrps'] = len(enkf_fhrs)
+
+        return vars_out
 
     @staticmethod
-    def _replace_template_vars(template: str, var_dict: Dict[str, Any]) -> str:
-        """Replace template variables in string with actual values
+    @logit(logger)
+    def _replace_template_vars(template: str, var_dict: Dict[str, Any], rotdir: str) -> str:
+        """Replace template variables and return a path relative to ROTDIR.
 
         Parameters
         ----------
         template : str
-            Template string with variables to replace
+            Template string with variables to replace (e.g., "${ROTDIR}/${RUN}.${YMD}/${HH}")
         var_dict : Dict[str, Any]
             Dictionary of variable names and values
+        rotdir : str
+            Absolute ROTDIR used to strip from generated paths to create
+            relative paths.
 
         Returns
         -------
         str
-            String with variables replaced
+            Path relative to ROTDIR for portability in tar archives
         """
+        # First replace all template variables
         replace_com = template
         for var, value in var_dict.items():
             replace_com = replace_com.replace(var, value)
-        return replace_com
+
+        # Then strip ROTDIR prefix to make path relative
+        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
+        return replace_com.replace(rotdir_prefix, "") if rotdir_prefix in replace_com else replace_com
 
     @staticmethod
     @logit(logger)
@@ -329,12 +417,12 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def get_member_com_paths(config_dict: AttrDict) -> Dict[str, Any]:
-        """Get member-specific COM paths (relative to ROTDIR) for ensemble group members.
+    def get_enkf_member_com_paths(config_dict: AttrDict) -> Dict[str, Any]:
+        """Generate relative COM paths for ensemble group members (ENSGRP != 0).
 
-        This method generates relative COM paths for ensemble members in a group (ENSGRP != 0).
-        It calculates the member range for the specified group and returns lists of
-        relative COM paths for all members in that group, plus the ensstat path.
+        This method creates relative COM paths (relative to ROTDIR) for ensemble members
+        in a group. It calculates the member range for the specified group and returns
+        lists of relative COM paths for all members, plus the ensstat path.
 
         Parameters
         ----------
@@ -357,79 +445,135 @@ class ArchiveTarVars:
 
         Notes
         -----
-        This method is only called when ENSGRP != 0 (archiving individual member data).
-        When ENSGRP == 0 (archiving ensemble means/spreads), member COM paths are not
-        needed and an empty dict is returned.
-
-        All returned paths are relative to ROTDIR (e.g., 'enkfgdas.20231215/00/atmos/mem001')
-        rather than absolute paths (e.g., '/scratch/.../ROTDIR/enkfgdas.20231215/00/atmos/mem001').
+        This method should ONLY be called when ENSGRP != 0 (archiving individual members).
+        All returned paths are relative to ROTDIR (e.g., 'enkfgdas.20231215/00/atmos/mem001').
+        These relative paths are portable and suitable for tar archive contents.
         """
         ensgrp = config_dict.get('ENSGRP', 0)
 
         # Only create member COM paths when ENSGRP != 0 (archiving individual members)
         if ensgrp == 0:
             return {}
-        else:
-            # Create lists of member paths for the group
-            nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
-            nmem_ens = config_dict.get('NMEM_ENS')
 
-            if nmem_earcgrp is None or nmem_ens is None:
-                raise ValueError("NMEM_EARCGRP and NMEM_ENS required when ENSGRP != 0")
+        # Get member range by calling _get_yaml_specific_cyc_vars
+        yaml_vars = ArchiveTarVars._get_yaml_specific_cyc_vars(config_dict)
+        first_group_mem = yaml_vars.get('first_group_mem')
+        last_group_mem = yaml_vars.get('last_group_mem')
 
-            # Determine which members belong to this group
-            first_group_mem = (ensgrp - 1) * nmem_earcgrp + 1
-            last_group_mem = min(ensgrp * nmem_earcgrp, nmem_ens)
+        if first_group_mem is None or last_group_mem is None:
+            raise ValueError("first_group_mem and last_group_mem should be defined in _get_yaml_specific_cyc_vars()")
 
-            logger.info(f"Processing ensemble group {ensgrp}: members {first_group_mem} to {last_group_mem}")
+        logger.info(f"Processing relative paths for ensemble group {ensgrp}: members {first_group_mem} to {last_group_mem}")
 
-            # Define template mappings (list key -> template key) and initialize empty lists
-            template_mappings = [
-                ('COMIN_ATMOS_ANALYSIS_MEM_list', 'COM_ATMOS_ANALYSIS_TMPL'),
-                ('COMIN_ATMOS_HISTORY_MEM_list', 'COM_ATMOS_HISTORY_TMPL'),
-                ('COMIN_ATMOS_RESTART_MEM_list', 'COM_ATMOS_RESTART_TMPL'),
-                ('COMIN_OCEAN_ANALYSIS_MEM_list', 'COM_OCEAN_ANALYSIS_TMPL'),
-                ('COMIN_OCEAN_LETKF_MEM_list', 'COM_OCEAN_LETKF_TMPL'),
-                ('COMIN_OCEAN_HISTORY_MEM_list', 'COM_OCEAN_HISTORY_TMPL'),
-                ('COMIN_OCEAN_RESTART_MEM_list', 'COM_OCEAN_RESTART_TMPL'),
-                ('COMIN_ICE_ANALYSIS_MEM_list', 'COM_ICE_ANALYSIS_TMPL'),
-                ('COMIN_ICE_LETKF_MEM_list', 'COM_ICE_LETKF_TMPL'),
-                ('COMIN_ICE_HISTORY_MEM_list', 'COM_ICE_HISTORY_TMPL'),
-                ('COMIN_ICE_RESTART_MEM_list', 'COM_ICE_RESTART_TMPL'),
-                ('COMIN_MED_RESTART_MEM_list', 'COM_MED_RESTART_TMPL'),
-            ]
+        # Define template mappings (list key -> template key)
+        template_mappings = [
+            ('COMIN_ATMOS_ANALYSIS_MEM_list', 'COM_ATMOS_ANALYSIS_TMPL'),
+            ('COMIN_ATMOS_HISTORY_MEM_list', 'COM_ATMOS_HISTORY_TMPL'),
+            ('COMIN_ATMOS_RESTART_MEM_list', 'COM_ATMOS_RESTART_TMPL'),
+            ('COMIN_OCEAN_ANALYSIS_MEM_list', 'COM_OCEAN_ANALYSIS_TMPL'),
+            ('COMIN_OCEAN_LETKF_MEM_list', 'COM_OCEAN_LETKF_TMPL'),
+            ('COMIN_OCEAN_HISTORY_MEM_list', 'COM_OCEAN_HISTORY_TMPL'),
+            ('COMIN_OCEAN_RESTART_MEM_list', 'COM_OCEAN_RESTART_TMPL'),
+            ('COMIN_ICE_ANALYSIS_MEM_list', 'COM_ICE_ANALYSIS_TMPL'),
+            ('COMIN_ICE_LETKF_MEM_list', 'COM_ICE_LETKF_TMPL'),
+            ('COMIN_ICE_HISTORY_MEM_list', 'COM_ICE_HISTORY_TMPL'),
+            ('COMIN_ICE_RESTART_MEM_list', 'COM_ICE_RESTART_TMPL'),
+            ('COMIN_MED_RESTART_MEM_list', 'COM_MED_RESTART_TMPL'),
+        ]
 
-            # Initialize member lists from template mappings
-            member_lists = {list_key: [] for list_key, _ in template_mappings}
+        # Initialize relative member lists
+        member_lists = {list_key: [] for list_key, _ in template_mappings}
 
-            # Get ROTDIR for converting absolute paths to relative paths
-            rotdir = config_dict.ROTDIR + os.sep
-
-            for mem in range(first_group_mem, last_group_mem + 1):
-                # Create member-specific cycle dictionary
-                cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
-                cycle_dict['${MEMDIR}'] = f"mem{mem:03d}"
-
-                # Generate COM paths for this member and append to lists
-                for list_key, template_key in template_mappings:
-                    if config_dict.get(template_key):
-                        com_path = ArchiveTarVars._replace_template_vars(
-                            config_dict[template_key], cycle_dict
-                        )
-                        # Convert to relative path (remove ROTDIR prefix)
-                        rel_path = com_path.replace(rotdir, "") if rotdir in com_path else com_path
-                        member_lists[list_key].append(rel_path)
-
-            # Add ensstat path (COMIN_CONF)
-            # Note: COMIN_CONF is a single path string, not a list like the other entries
+        for mem in range(first_group_mem, last_group_mem + 1):
+            # Create member-specific cycle dictionary
             cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
-            cycle_dict['${MEMDIR}'] = 'ensstat'
-            if config_dict.get('COM_CONF_TMPL'):
-                ensstat_path = ArchiveTarVars._replace_template_vars(
-                    config_dict['COM_CONF_TMPL'], cycle_dict
-                )
-                # Convert to relative path (remove ROTDIR prefix)
-                member_lists['COMIN_CONF'] = ensstat_path.replace(rotdir, "") if rotdir in ensstat_path else ensstat_path  # type: ignore[assignment]
+            cycle_dict['${MEMDIR}'] = f"mem{mem:03d}"
 
-            logger.debug(f"Generated relative COM path lists for group {ensgrp} ({last_group_mem - first_group_mem + 1} members)")
-            return member_lists
+            # Generate relative COM paths for this member
+            for list_key, template_key in template_mappings:
+                if config_dict.get(template_key):
+                    rel_path = ArchiveTarVars._replace_template_vars(
+                        config_dict[template_key], cycle_dict, config_dict.ROTDIR
+                    )
+                    member_lists[list_key].append(rel_path)
+
+        # Add ensstat path (COMIN_CONF)
+        # Note: COMIN_CONF is a single path string, not a list like the other entries
+        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
+        cycle_dict['${MEMDIR}'] = 'ensstat'
+        if config_dict.get('COM_CONF_TMPL'):
+            rel_ensstat = ArchiveTarVars._replace_template_vars(
+                config_dict['COM_CONF_TMPL'], cycle_dict, config_dict.ROTDIR
+            )
+            member_lists['COMIN_CONF'] = rel_ensstat  # type: ignore[assignment]
+
+        logger.debug(f"Generated {len(member_lists)} relative COM path lists for group {ensgrp} ({last_group_mem - first_group_mem + 1} members)")
+        return member_lists
+
+    @staticmethod
+    @logit(logger)
+    def get_enkf_ensstat_com_paths(config_dict: AttrDict) -> Dict[str, str]:
+        """Generate relative COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
+
+        This method creates relative COM paths from absolute paths already defined
+        in config_dict by the job scripts. If a COMIN_* or COMOUT_* variable exists,
+        it will be converted to a relative path (relative to ROTDIR).
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary from Archive.task_config
+            Required keys: ROTDIR
+            Optional keys: COMIN_*, COMOUT_* variables (created by job scripts)
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary with relative COMIN paths for ensemble statistics:
+            - Keys match enkf.yaml.j2 template variable names
+            - Values are paths relative to ROTDIR for portability
+
+        Notes
+        -----
+        This method should ONLY be called when ENSGRP == 0 (ensemble mean archiving).
+        For individual member archiving (ENSGRP != 0), use get_enkf_member_com_paths().
+
+        All paths are relative to ROTDIR for portability in tar archives.
+
+        Examples
+        --------
+        >>> # Job script creates: COMIN_ATMOS_HISTORY_ENSSTAT=/path/to/ROTDIR/enkfgdas.20211221/00/atmos/ensstat
+        >>> ensstat_paths = ArchiveTarVars.get_enkf_ensstat_com_paths(config)
+        >>> ensstat_paths['COMIN_ATMOS_HISTORY_ENSSTAT']
+        'enkfgdas.20211221/00/atmos/ensstat'
+        """
+        ensstat_paths = {}
+        rotdir = config_dict.get('ROTDIR', '')
+
+        # Normalize ROTDIR with trailing slash for clean prefix removal
+        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
+
+        # List of COMIN/COMOUT variables to convert to relative paths
+        # These are created by the job scripts via declare_from_tmpl
+        com_vars = [
+            'COMIN_ATMOS_HISTORY',
+            'COMIN_ATMOS_HISTORY_ENSSTAT',
+            'COMIN_ATMOS_ANALYSIS_ENSSTAT',
+            'COMIN_SNOW_ANALYSIS_ENSSTAT',
+            'COMIN_OCEAN_ANALYSIS_ENSSTAT',
+            'COMIN_ICE_ANALYSIS_ENSSTAT',
+            'COMIN_CONF',
+        ]
+
+        # Convert absolute paths to relative paths
+        for var_name in com_vars:
+            if var_name in config_dict:
+                abs_path = config_dict[var_name]
+                # Strip ROTDIR prefix to create relative path
+                rel_path = abs_path.replace(rotdir_prefix, '') if rotdir_prefix in abs_path else abs_path
+                ensstat_paths[var_name] = rel_path
+                logger.debug(f"Converted {var_name}: {abs_path} -> {rel_path}")
+
+        logger.info(f"Generated {len(ensstat_paths)} relative ensemble statistics COM paths")
+        return ensstat_paths
+

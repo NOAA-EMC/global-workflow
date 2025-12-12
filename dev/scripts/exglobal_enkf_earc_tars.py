@@ -19,13 +19,16 @@ def main():
     archive = Archive(config)
 
     # Collect all variables for YAML templates (config keys, COM paths, cycle vars, member paths)
-    # Note: Member COM paths from get_member_com_paths() are already relative to ROTDIR
+    # Note: Member COM paths are relative to ROTDIR for portability in tar archives
     archive_dict = ArchiveTarVars.get_all_yaml_vars(archive.task_config)
 
-    # Determine which archives to create
-    atardir_sets = archive.configure_tars(archive_dict)
-
+    # Change to ROTDIR for the entire archiving workflow so that relative paths
+    # in YAML templates (e.g., logs/..., enkfgdas.20211221/...) are resolved
+    # correctly during both file existence checks (glob) and tar creation
     with chdir(config.ROTDIR):
+
+        # Determine which archives to create
+        atardir_sets = archive.configure_tars(archive_dict)
 
         # Create the backup tarballs and store in ATARDIR
         for atardir_set in atardir_sets:

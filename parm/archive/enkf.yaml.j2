@@ -7,9 +7,7 @@ enkf:
             {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
             {% endfor %}
-            {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
-            {% set ngrps = fhrs | length %}
-            {% for grp in range(0, ngrps) %}
+            {% for grp in range(0, enkf_epos_ngrps) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % grp }}.log"
             {% endfor %}
             {% if not DO_JEDIATMENS %}
