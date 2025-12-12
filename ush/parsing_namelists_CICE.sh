@@ -67,6 +67,7 @@ CICE_namelists() {
     local CICE_RESTART_REARR="box"
     local CICE_RESTART_IOTASKS=-99
     local CICE_RESTART_FORMAT="pnetcdf2"
+    local CICE_RESTART_MOD='none'
     local CICE_DUMPFREQ="y"                  # "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
     local CICE_DUMPFREQ_N=10000              # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by ufs.configure
     local CICE_DIAGFREQ=$((86400 / DT_CICE)) # frequency of diagnostic output in timesteps, recommended for 1x per day
