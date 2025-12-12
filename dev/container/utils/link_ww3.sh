@@ -53,25 +53,6 @@ do
    model=ww3_${nm}
   #echo "model: $model"
 
-   run_model_script=${HOMEgfs}/ush/container/run_${type}_${model}.sh
-   rm -f "${run_model_script}"
-
-   cat > "${run_model_script}" << EOF_MODEL
-#!/bin/bash
-
-# Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
-export OMP_NUM_THREADS=1
-
-source /usr/lmod/lmod/init/bash
-module purge
-module use ${HOMEgfs}/sorc/gfs_utils.fd/modulefiles
-module load gfsutils_container.intel
-
-${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${pdlib}/bin/${model} "\$@"
-EOF_MODEL
-
-   chmod 755 "${run_model_script}"
-
    link_model_script=${HOMEgfs}/exec/${type}_${model}.x
    rm -f "${link_model_script}"
 
@@ -79,7 +60,9 @@ EOF_MODEL
 #!/bin/bash
  LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
- singularity exec ${bindings} ${container} ${run_model_script} "\$@"
+ singularity exec ${bindings} ${container} \\
+             ${HOMEgfs}/dev/container/env/gfsutils-env.sh \\
+             ${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${pdlib}/bin/${model} "\$@"
 EOF_LINK
 
    chmod 755 "${link_model_script}"

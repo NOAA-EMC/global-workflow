@@ -420,7 +420,7 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas*           ./
-  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/bufr2ioda.x"     ./gdas_bufr2ioda.x
+  # cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/bufr2ioda.x"     ./gdas_bufr2ioda.x
   cp -f  "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe"   ./gdas_calcfIMS.x
   cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe"  ./gdas_apply_incr.x
 fi

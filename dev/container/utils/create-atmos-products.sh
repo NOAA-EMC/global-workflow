@@ -28,7 +28,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! -v HOMEgfs || ! -v container || ! -v bindings ]]; then
-   echo "Usage: create-container-links.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings list-of-binding-dirs [-v]"
+   echo "Usage: create-atmos-products.sh -H/--HOMEgfs gw-home-dir -c/--container container-fullpath -b/--bindings list-of-binding-dirs [-v]"
    exit 11
 fi
 
@@ -48,6 +48,7 @@ cat > "${eap_script}" << EOF_ATMOS_PRODUCTS
  singularity exec \\
         ${bindings} \\
         ${container} \\
+        ${HOMEgfs}/dev/container/env/gfsutils-env.sh \\
         ${HOMEgfs}/scripts/exglobal_atmos_products.sh "\$@"
 EOF_ATMOS_PRODUCTS
 

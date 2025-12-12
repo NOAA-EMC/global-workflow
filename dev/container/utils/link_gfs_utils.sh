@@ -28,7 +28,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! -v HOMEgfs || ! -v container ]]; then
-   echo "Usage: link_model.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings -B dirname [-B dirname1 [...]] [-v]"
+   echo "Usage: link_gfs_utils.sh -H/-HOMEgfs gw-home-dir -c/--container full-path-container-image -b/--bindings -B dirname [-B dirname1 [...]] [-v]"
    exit 11
 fi
 
@@ -45,51 +45,30 @@ do
    model=${nm}
    # echo "model: $model"
 
-   run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
-   rm -f "${run_model_script}"
+   run_gfs_script="${HOMEgfs}/exec/${model}.x"
+   rm -f "${run_gfs_script}"
 
-   cat > "${run_model_script}" << EOF_MODEL
-#!/bin/bash
-
-source /usr/lmod/lmod/init/bash
-module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
-module load gfsutils_container.intel
-module load wgrib2/3.6.0
-
-${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${model}.x "\$@"
-EOF_MODEL
-
-   chmod 755 "${run_model_script}"
-
-  #link_model_script=${HOMEgfs}/exec/${model}
-  #rm -f ${link_model_script}
-
-   link_model_script=${HOMEgfs}/exec/${model}.x
-   rm -f "${link_model_script}"
-
-   cat > "${link_model_script}" << EOF_LINK
+   cat > "${run_gfs_script}" << EOF_LINK
 #!/bin/bash
  LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
- singularity exec "${bindings}" "${container}" "${run_model_script}" "\$@"
+ singularity exec "${bindings}" "${container}" "${run_model_script}" \\
+             ${HOMEgfs}/dev/container/env/gfsutils-env.sh \\
+             ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${model}.x "\$@"
 EOF_LINK
 
-   chmod 755 "${link_model_script}"
+   chmod 755 "${run_gfs_script}"
 done
 
-direct_model_script=${HOMEgfs}/exec/ocnicepost.x
-rm -f "${direct_model_script}"
+ocnicepost_script=${HOMEgfs}/exec/ocnicepost.x
+rm -f "${ocnicepost_script}"
 
-cat > "${direct_model_script}" << EOF_DIRECT
+cat > "${ocnicepost_script}" << EOF_DIRECT
 #!/bin/bash
 
-source /usr/lmod/lmod/init/bash
-module use "${HOMEgfs}/sorc/gfs_utils.fd/modulefiles"
-module load gfsutils_container.intel
-module load wgrib2/3.6.0
-
+${HOMEgfs}/dev/container/env/gfsutils-env.sh \\
 ${HOMEgfs}/sorc/gfs_utils.fd/install/bin/ocnicepost.x "\$@"
 EOF_DIRECT
 
-chmod 755 "${direct_model_script}"
+chmod 755 "${ocnicepost_script}"
 

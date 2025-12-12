@@ -40,25 +40,6 @@ for nm in emcsfc_ice_blend emcsfc_snow2mdl fregrid global_cycle regridStates.x
 do
    model=${nm}
 
-   run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
-   rm -f "${run_model_script}"
-
-   cat > "${run_model_script}" << EOF_MODEL
-#!/bin/bash
-
-source /usr/lmod/lmod/init/bash
-module purge
-module use ${HOMEgfs}/sorc/ufs_utils.fd/modulefiles
-module load build.container.intel
-
-${HOMEgfs}/sorc/ufs_utils.fd/exec/${model} "\$@"
-EOF_MODEL
-
-   chmod 755 "${run_model_script}"
-
-  #link_model_script=${HOMEgfs}/exec/${model}
-  #rm -f ${link_model_script}
-
    link_model_script=${HOMEgfs}/exec/${model}
    rm -f "${link_model_script}"
 
@@ -67,6 +48,8 @@ EOF_MODEL
  LD_LIBRARY_PATH=$(dirname "${container}")
  export LD_LIBRARY_PATH
  singularity exec ${bindings} ${container} ${run_model_script} "\$@"
+             ${HOMEgfs}/dev/container/env/ufsutils-env.sh \\
+             ${HOMEgfs}/sorc/ufs_utils.fd/exec/${model} "\$@"
 EOF_LINK
 
    chmod 755 "${link_model_script}"

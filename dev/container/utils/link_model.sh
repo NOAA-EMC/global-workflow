@@ -47,22 +47,6 @@ if [[ "${verbose}" == "true" ]]; then
    set -x
 fi
 
-run_model_script=${HOMEgfs}/ush/container/run_${model}.sh
-rm -f "${run_model_script}"
-
-cat > "${run_model_script}" << EOF_MODEL
-#!/bin/bash
-
-source /usr/lmod/lmod/init/bash
-module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
-module load ufs_container.intel
-
-export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libibverbs:\$LD_LIBRARY_PATH
-
-${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
-EOF_MODEL
-
 link_model_script=${HOMEgfs}/exec/${model}.x
 rm -f "${link_model_script}"
 
@@ -92,7 +76,8 @@ cat > "${link_model_script}" << EOF_URSA
     -B /apps/slurm/default/lib/libpmi2.so \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} "\$@"
+    ${HOMEgfs}/dev/container/env/model-env.sh \\
+    ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_URSA
     ;;
 
@@ -111,7 +96,8 @@ cat > "${link_model_script}" << EOF_GAEA
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} "\$@"
+    ${HOMEgfs}/dev/container/env/model-env.sh \\
+    ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_GAEA
     ;;
 
@@ -132,7 +118,8 @@ cat > "${link_model_script}" << EOF_NOAACLOUD
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} "\$@"
+    ${HOMEgfs}/dev/container/env/model-env.sh \\
+    ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_NOAACLOUD
     ;;
 
@@ -145,12 +132,12 @@ cat > "${link_model_script}" << EOF_LINK
  singularity exec \\
     ${bindings} \\
     ${container} \\
-    ${run_model_script} "\$@"
+    ${HOMEgfs}/dev/container/env/model-env.sh \\
+    ${HOMEgfs}/sorc/ufs_model.fd/tests/${model}.x "\$@"
 EOF_LINK
     ;;
 
 esac
 
-chmod 755 "${run_model_script}"
 chmod 755 "${link_model_script}"
 

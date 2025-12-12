@@ -6,8 +6,8 @@ BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
 AERO_INPUTS_DIR: '/contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310'
 PACKAGEROOT: '' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
-STMP: '/lustre/${USER}/stmp/'
-PTMP: '/lustre/${USER}/ptmp/'
+STMP: '/lustre/${USER}/container-stmp/'
+PTMP: '/lustre/${USER}/container-ptmp/'
 NOSCRUB: '${HOMEDIR}'
 COMINsyn: '/bucket/syndat'
 # BQS properties

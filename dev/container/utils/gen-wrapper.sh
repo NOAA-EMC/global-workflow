@@ -36,22 +36,9 @@ if [[ "${verbose}" == "true" ]]; then
    set -x
 fi
 
-exec_python_script="${HOMEgfs}"/exec/run_python.sh 
+python_env_script="${HOMEgfs}"/exec/python-env.sh 
 
-cat > "${exec_python_script}" << EOF_EXEC_PYTHON
-#!/bin/bash
- LD_LIBRARY_PATH=\$(dirname "${container}")
- export LD_LIBRARY_PATH
-
- singularity exec \\
-        ${bindings} \\
-        ${container} \\
-        ${HOMEgfs}/ush/container/run_python.sh "\$@"
-EOF_EXEC_PYTHON
-
-run_python_script="${HOMEgfs}"/ush/container/run_python.sh
-
-cat > "${run_python_script}" << EOF_RUN_PYTHON
+cat > "${python_env_script}" << EOF_PYTHON_ENV
 #!/bin/bash
 
 source /usr/lmod/lmod/init/bash
@@ -66,15 +53,28 @@ module load py-numpy
 module load py-jinja2
 module load py-pyyaml
 
-wxflowPATH=${HOMEgfs}/ush/python:${HOMEgfs}/sorc/wxflow/src
-export PYTHONPATH=\${PYTHONPATH:+\${PYTHONPATH}:}${HOMEgfs}/ush:\${wxflowPATH}
+wxflowPATH=${HOMEgfs}/ush:${HOMEgfs}/ush/python:${HOMEgfs}/sorc/wxflow/src
+export PYTHONPATH=\${PYTHONPATH:+\${PYTHONPATH}:}\${wxflowPATH}
 
 python "\$@"
-EOF_RUN_PYTHON
+EOF_PYTHON_ENV
+
+exec_python_script="${HOMEgfs}"/exec/run_python.sh 
+
+cat > "${exec_python_script}" << EOF_EXEC_PYTHON
+#!/bin/bash
+ LD_LIBRARY_PATH=\$(dirname "${container}")
+ export LD_LIBRARY_PATH
+
+ singularity exec \\
+        ${bindings} \\
+        ${container} \\
+        ${python_env_script} "\$@"
+EOF_EXEC_PYTHON
 
 sed -i 's/RUN_WITH_CONTAINER=NO/RUN_WITH_CONTAINER=YES/g' "${HOMEgfs}/ush/preamble.sh"
 chmod +x "${exec_python_script}"
-chmod +x "${run_python_script}"
+chmod +x "${python_env_script}"
 
 for item in JGLOBAL_WAVE_INIT
 do
