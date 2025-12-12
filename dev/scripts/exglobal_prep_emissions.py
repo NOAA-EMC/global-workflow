@@ -17,17 +17,14 @@ if __name__ == '__main__':
 
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
-
+    nxsemis = NEXUSEmissions(config.copy())
     # Instantiate the emissions pre-processing task
-    fireemis = ChemFireEmissions(config)
+    fireemis = ChemFireEmissions(config.copy())
     fireemis.initialize()
     fireemis.configure()
     fireemis.execute()
     fireemis.finalize()
 
-    config = cast_strdict_as_dtypedict(os.environ)
-
-    nxsemis = NEXUSEmissions(config)
     nxsemis.initialize()
     nxsemis.configure()
     nxsemis.execute()
