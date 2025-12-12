@@ -486,7 +486,7 @@ class Jedi:
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
                 tlapfile_rename = tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
-                                                    self.jcb_config[f"{self.model}_obsbiasout_prefix"])
+                                                   self.jcb_config[f"{self.model}_obsbiasout_prefix"])
                 logger.info(f"Adding temperature lapse rate file {tlapfile_rename} to {tarball}")
                 bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
 
