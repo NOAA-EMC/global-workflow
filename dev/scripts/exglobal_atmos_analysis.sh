@@ -529,7 +529,6 @@ fi
 cpreq "${GBIAS}" satbias_in
 cpreq "${GBIASPC}" satbias_pc
 cpreq "${GBIASAIR}" aircftbias_in
-cpreq "${GRADSTAT}" radstat.tar
 
 ##############################################################
 # Required model guess files
@@ -674,6 +673,7 @@ EOF
     chmod 755 "${DATA}/unzip_diag.sh"
 
     rm -f "${DATA}/cmdfile"
+    cpreq "${GRADSTAT}" radstat.tar
     tar -xvf radstat.tar
     listdiag=$(find ./ -path "./diag_*_ges.*" -type f)
     for type in ${listdiag}; do
