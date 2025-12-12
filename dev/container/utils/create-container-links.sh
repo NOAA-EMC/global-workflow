@@ -54,3 +54,5 @@ fi
 "${HOMEgfs}/dev/container/utils/link_gfs_utils.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}"
 "${HOMEgfs}/dev/container/utils/link_ufs_utils.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}"
 
+"${HOMEgfs}/dev/container/utils/link_gsi.sh" -H "${HOMEgfs}" -c "${container}" -b "${bindings}" -M "${machineid}"
+
