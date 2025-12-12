@@ -64,7 +64,7 @@ export DO_AWIPS="{{ DO_AWIPS }}"         # AWIPS products
 # Experiment mode (cycled or forecast-only)
 export MODE="{{ MODE }}" # cycled/forecast-only
 export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for automated testing
-export GEFSTYPE="{{ GEFSTYPE }}" # near-real-time/gefs-offline
+export GEFSTYPE="{{ GEFSTYPE }}" # gefs-real-time/gefs-offline
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
@@ -111,8 +111,6 @@ source "${EXPDIR}/config.com"
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
-export REDOUT="1>"
-export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
 export SENDSDM=${SENDSDM:-"NO"}

@@ -12,11 +12,11 @@ if (( $# != 1 )); then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "stage_ic aerosol_init fetch"
-    echo "prep prep_sfc prepatmiodaobs"
+    echo "prep prep_sfc"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
-    echo "prepobsaero aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
+    echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
@@ -69,8 +69,7 @@ case ${machine} in
     export PARTITION_BATCH="compute"
     npe_node_max=48
     max_tasks_per_node=48
-    # TODO Supply a max mem/node value for AWS
-    mem_node_max=""
+    mem_node_max="192GB"
     ;;
   "AZUREPW")
     export PARTITION_BATCH="compute"
@@ -114,13 +113,6 @@ case ${step} in
     tasks_per_node=14
     threads_per_task=1
     memory="${mem_node_max}"
-    ;;
-
-  "prepatmiodaobs")
-    walltime="00:30:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "aerosol_init")
@@ -338,14 +330,6 @@ case ${step} in
     ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    ;;
-
-  "prepobsaero")
-    walltime="00:30:00"
-    ntasks=1
-    threads_per_task=1
-    tasks_per_node=1
-    memory="96GB"
     ;;
 
   "aeroanlinit")
@@ -773,12 +757,19 @@ case ${step} in
     fi
     ;;
 
-  "analdiag")
+  "analdiag" | "ediag")
     walltime="00:15:00"
     ntasks=96             # Should be at least twice ediag's tasks
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="48GB"
+    #if [[ "${step}" == "ediag" ]]; then
+    #  ntasks=48
+    #fi
+    threads_per_task=1
+    if [[ ${ntasks} -gt ${max_tasks_per_node} ]]; then
+      ntasks=${max_tasks_per_node}
+      export is_exclusive=True
+    fi
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "anlstat")
@@ -868,7 +859,7 @@ case ${step} in
     MEDTHREADS=${nthreads_mediator:-1}
     MEDPETS=${MEDPETS:-${FV3PETS}}
     (( MEDPETS = FV3PETS ))
-    (( MEDTHREADS = FV3THREADS )) 
+    (( MEDTHREADS = FV3THREADS ))
     (( "${MEDPETS}" > 4800 )) && MEDPETS=4800
     export MEDPETS MEDTHREADS
     echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
@@ -994,7 +985,7 @@ case ${step} in
     ;;
 
   "upp")
-    #ntasks cannot be greater than $CASE_HIST      
+    #ntasks cannot be greater than $CASE_HIST
     #define resources based on $CASE_HIST for upp
     case "${CASE_HIST}" in
       "C48" | "C96")
@@ -1270,14 +1261,6 @@ case ${step} in
     fi
     ;;
 
-  "ediag")
-    walltime="00:15:00"
-    ntasks=48
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    memory="30GB"
-    ;;
-
   "eupd")
     walltime="00:45:00"
     case "${CASE}" in
@@ -1395,7 +1378,7 @@ case ${step} in
     elif [[ "${RUN}" = *gfs ]]; then
       ntasks=28
       tasks_per_node=28
-      memory="4GB"
+      memory="6GB"
     fi
     ;;
 
