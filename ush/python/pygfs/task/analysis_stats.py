@@ -148,7 +148,7 @@ class AnalysisStats(Analysis):
             model = self.jedi_dict[analysis].model
             summaryfile = os.path.join(jcb_config[f"{model}_obsdataout_path"], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
-                for ob in self.task_config.observations[analysis]:
+                for ob in self.jedi_dict[analysis].jcb_config.observations:
                     textfile = os.path.join(jcb_config[f"{model}_obsdataout_path"], f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
@@ -195,7 +195,7 @@ class AnalysisStats(Analysis):
         for diag in diag_tars:
             input_tar_basename = f"{self.task_config.APREFIX}{diag}"
             input_tar = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS,
-                                     input_tar_basename)
+                                     f"{input_tar_basename}.tar")
             dest = os.path.join(diag_dir_path, input_tar_basename)
             if os.path.exists(input_tar):
                 diag_tar_copy_list.append([input_tar, dest])
@@ -247,7 +247,7 @@ class AnalysisStats(Analysis):
 
         # Tar up the ioda files
         iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda',
-                                       f"{self.task_config.APREFIX}atmos_gsi_ioda_diags.tar.gz")
+                                       f"{self.task_config.APREFIX}atmos_gsi_analysis.ioda_hofx.tar.gz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
         iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc4'))

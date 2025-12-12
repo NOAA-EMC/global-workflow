@@ -17,9 +17,9 @@ class Analysis(Task):
     """
     @logit(logger, name="Analysis")
     def __init__(self, config: Dict[str, Any]):
-        """Constructor global atm analysis task
+        """Constructor global analysis task
 
-        This method will construct a global atm analysis task.
+        This method will construct a global analysis task.
         This includes:
         - extending the task_config attribute AttrDict to include parameters required for this task
 
