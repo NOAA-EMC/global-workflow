@@ -98,7 +98,7 @@ else
 fi
 mv "./tests/fv3_${COMPILE_ID}.exe" "./tests/${EXEC_NAME}"
 mkdir -p "${HOMEgfs_}/exec"
-ln -sf "./tests/${EXEC_NAME}" "${HOMEgfs_}/exec/${EXEC_NAME}"
+ln -sf "${HOMEgfs_}/sorc/ufs_model.fd/tests/${EXEC_NAME}" "${HOMEgfs_}/exec/${EXEC_NAME}"
 if [[ ! -f "./tests/modules.ufs_model.lua" ]]; then mv "./tests/modules.fv3_${COMPILE_ID}.lua" "./tests/modules.ufs_model.lua"; fi
 if [[ ! -f "./tests/ufs_common.lua" ]]; then cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua; fi
 
