@@ -485,10 +485,10 @@ class Jedi:
                 bcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                tlapsfile_rename = tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
+                tlapfile_rename = tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
                                                     self.jcb_config[f"{self.model}_obsbiasout_prefix"])
-                logger.info(f"Adding temperature lapse rate file {tlapfile_replace} to {tarball}")
-                bcor.add(tlapfile, arcname=os.path.basename(tlapfile_replace))
+                logger.info(f"Adding temperature lapse rate file {tlapfile_rename} to {tarball}")
+                bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
 
         # Copy files to COM
         FileHandler({'copy_opt': [[tarball, comout]]}).sync()

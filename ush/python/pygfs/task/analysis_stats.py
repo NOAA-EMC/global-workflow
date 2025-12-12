@@ -48,7 +48,6 @@ class AnalysisStats(Analysis):
         self.task_config.update(AttrDict(
             {
                 #
-                'observations': parse_j2yaml(self.task_config.OBS_LIST_YAML, self.task_config)['observations'],
                 'outdir': {
                     'atmos': self.task_config.COMOUT_ATMOS_ANLMON,
                     'aero': self.task_config.COMOUT_AERO_ANLMON,
