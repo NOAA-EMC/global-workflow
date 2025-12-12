@@ -444,7 +444,7 @@ class Jedi:
 
         # Check that other required keys are present in jcb_config
         for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
-                     'obsbiasout_prefix', 'obsbiasin_suffix', 'obsbiascovin_suffix',
+                     'obsbiasout_prefix', 'obsbiasout_suffix', 'obsbiascovout_suffix',
                      'obstlapsein_suffix']:
             key = f'{self.model}_{stem}'
             if key not in self.jcb_config:
@@ -460,19 +460,19 @@ class Jedi:
         for ob in self.jcb_config['observations']:
             # Sat bias file
             satfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"],
-                                   self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiasin_suffix"])
+                                   self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiasout_suffix"])
             if os.path.exists(satfile):
                 satlist.append(satfile)
 
             # Sat bias cov file
             satcovfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"],
-                                      self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiascovin_suffix"])
+                                      self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiascovout_suffix"])
             if os.path.exists(satcovfile):
                 satcovlist.append(satcovfile)
 
             # Temperature lapse rate file
             tlapfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
-                                    self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obstlapsein_suffix"])
+                                    self.jcb_config[f"{self.model}_obsbiasin_prefix"] + ob + self.jcb_config[f"{self.model}_obstlapsein_suffix"])
             if os.path.exists(tlapfile):
                 tlaplist.append(tlapfile)
 
