@@ -150,8 +150,7 @@ for loop in ${loops}; do
     while [[ ${n} -lt ${ntype} ]]; do
         n=$((n + 1))
         for type in ${diagtype[n]}; do
-            #shellcheck disable=SC2012
-            count=$(ls dir.*/"${type}_${loop}"* 2> /dev/null | wc -l)
+            count=$(find ./ -path "./dir.*/${type}_${loop}*" -type f -printf "." | wc -c)
             if [[ ${count} -eq 0 ]]; then
                 continue
             fi

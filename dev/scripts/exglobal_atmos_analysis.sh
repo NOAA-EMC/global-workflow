@@ -526,10 +526,10 @@ fi
 
 ##############################################################
 # Required bias guess files
-${NLN} "${GBIAS}" satbias_in
-${NLN} "${GBIASPC}" satbias_pc
-${NLN} "${GBIASAIR}" aircftbias_in
-${NLN} "${GRADSTAT}" radstat.gdas
+cpreq "${GBIAS}" satbias_in
+cpreq "${GBIASPC}" satbias_pc
+cpreq "${GBIASAIR}" aircftbias_in
+cpreq "${GRADSTAT}" radstat.tar
 
 ##############################################################
 # Required model guess files
@@ -660,8 +660,8 @@ fi
 ##############################################################
 # If requested, copy and de-tar guess radstat file
 if [[ "${USE_RADSTAT}" == "YES" ]]; then
-    rm -f "${DATA}/unzip_radstat.sh"
-    cat > "${DATA}/unzip_radstat.sh" << EOF
+    rm -f "${DATA}/unzip_diag.sh"
+    cat > "${DATA}/unzip_diag.sh" << EOF
 #!/bin/bash
 diag_file=\$1
 diag_suffix=\$2
@@ -671,19 +671,20 @@ ${UNCOMPRESS} \$diag_file
 fnameges=\$(echo \$fname | sed 's/_ges//g')
 ${NMV} \$fname.\$fdate\$diag_suffix \$fnameges
 EOF
-    chmod 755 "${DATA}/unzip_radstat.sh"
+    chmod 755 "${DATA}/unzip_diag.sh"
 
     rm -f "${DATA}/cmdfile"
-    listdiag=$(tar -xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
+    tar -xvf radstat.tar
+    listdiag=$(find ./ -path "./diag_*_ges.*" -type f)
     for type in ${listdiag}; do
-        diag_file=$(echo "${type}" | cut -d',' -f1)
-        echo "${DATA}/unzip_radstat.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
+        diag_file=$(basename "${type}")
+        echo "${DATA}/unzip_diag.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
     done
 
     "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to unzip radstat.gdas file!"
+        err_exit "Failed to unzip diag file!"
     fi
 fi # if [[ $USE_RADSTAT == "YES" ]
 
