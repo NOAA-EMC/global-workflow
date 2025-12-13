@@ -38,9 +38,9 @@ for lookback in "${lookbacks[@]}"; do
     init_PDY=${init_time:0:8}
     init_cyc=${init_time:8:2}
 
-    if (( init_time <= ${SDATE:-0} )); then
+    if [[ "${init_time}" -le "${SDATE:-0}" ]]; then
         echo "Skipping ver for ${init_time} because it is before the experiment began"
-        if (( lookback == "${lookbacks[0]}" )); then
+        if [[ "${lookback}" -eq "${lookbacks[0]}" ]]; then
             echo "First forecast time, no metafile produced"
             exit 0
         else
@@ -61,7 +61,8 @@ for lookback in "${lookbacks[@]}"; do
 
     # 500 MB HEIGHT METAFILE
 
-    export pgm=gdplot2_nc;. prep_step
+    export pgm=gdplot2_nc
+    source prep_step
     "${GEMEXE}/gdplot2_nc" << EOFplt
 PROJ     = STR/90.0;-95.0;0.0
 GAREA    = 5.1;-124.6;49.6;-11.9
@@ -194,25 +195,26 @@ r
 
 ex
 EOFplt
-    export err=$?;err_chk
+    export err=$?
+    err_chk
 
     #####################################################
     # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
     # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
     # FOR THIS CASE HERE.
     #####################################################
-    if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+    if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
         echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-        exit $(( err + 100 ))
+        exit $((err + 100))
     fi
 
 done
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
-    if [[ "${DBN_ALERT_TYPE}" = "GFS_METAFILE_LAST" ]] ; then
+    if [[ "${DBN_ALERT_TYPE}" = "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
