@@ -14,101 +14,101 @@ dcnt=1 # lead day
 subdata=${1}
 
 if [[ ! -d "${subdata}" ]]; then
-   mkdir -p "${subdata}"
+    mkdir -p "${subdata}"
 fi
 
 for outtype in "f2d" "f3d"; do
 
-  if [[ "${outtype}" == "f2d" ]]; then
-    varlist=${varlist_2d}
-    ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F2D}"
-  elif [[ "${outtype}" == "f3d" ]]; then
-    varlist=${varlist_3d}
-    varlist_d=${varlist_3d_d}
-    ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F3D}"
-  fi
-
-  outdirpre="${subdata}/${outtype}"
-  if [[ ! -d "${outdirpre}" ]]; then
-     mkdir -p "${outdirpre}"
-  fi
-
-  nh=${FHMIN}
-
-  while (( nh <= FHMAX_GFS )); do
-    fnh=$(printf "%3.3d" "${nh}")
-
     if [[ "${outtype}" == "f2d" ]]; then
-      if (( nh < FHMAX_HF_GFS )); then
-        outres="0p25"
-      else
-        outres="0p50"
-      fi
+        varlist=${varlist_2d}
+        ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F2D}"
     elif [[ "${outtype}" == "f3d" ]]; then
-      outres="1p00"
+        varlist=${varlist_3d}
+        varlist_d=${varlist_3d_d}
+        ARC_RFCST_PROD_ATMOS="${ARC_RFCST_PROD_ATMOS_F3D}"
     fi
 
-    if [[ "${outtype}" == "f2d" ]]; then
-      if (( nh < FHMAX_HF_GFS )); then
-        outfreq=${FHOUT_HF_GFS}
-      else
-        outfreq=${FHOUT_GFS}
-      fi
-    elif [[ "${outtype}" == "f3d" ]]; then
-     outfreq=${FHOUT_GFS}
+    outdirpre="${subdata}/${outtype}"
+    if [[ ! -d "${outdirpre}" ]]; then
+        mkdir -p "${outdirpre}"
     fi
 
-    com_var="COMIN_ATMOS_GRIB_${outres}"
-    infile1="${!com_var}/${RUN}.t${cyc}z.pres_a.${outres}.f${fnh}.grib2"
-    infile2="${!com_var}/${RUN}.t${cyc}z.pres_b.${outres}.f${fnh}.grib2"
-    outfile="${outdirpre}/${RUN}.t${cyc}z.pres_a.${outres}.f${fnh}.grib2"
-    rm -f "${outfile}" #remove outfile if it already exists before extraction
+    nh=${FHMIN}
 
-    for infile in "${infile1}" "${infile2}"; do
-      if [[ -f "${infile}" ]]; then # check if input file exists before extraction
-        new_infile="${outdirpre}/$(basename "${infile}")_ext"
-        if ! cpfs "${infile}" "${new_infile}"; then
-          echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
-          exit 1
+    while ((nh <= FHMAX_GFS)); do
+        fnh=$(printf "%3.3d" "${nh}")
+
+        if [[ "${outtype}" == "f2d" ]]; then
+            if ((nh < FHMAX_HF_GFS)); then
+                outres="0p25"
+            else
+                outres="0p50"
+            fi
+        elif [[ "${outtype}" == "f3d" ]]; then
+            outres="1p00"
         fi
-        # shellcheck disable=SC2312
-        ${WGRIB2} "${new_infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
-      else
-        echo "WARNING: ${infile} does not exist in ${com_dir}."
-      fi
-    done
 
-    check_atmos "${infile1}" "${infile2}" "${varlist}" "${fnh}"
-    copy_to_comout "${outfile}" "${ARC_RFCST_PROD_ATMOS}"
-
-    # Compute daily average for a subset of variables
-    if (( nh % 6 == 0 )) && (( nh != 0 )) && [[ "${outtype}" == "f3d" ]]; then
-      outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
-      for infile in "${infile1}" "${infile2}"; do
-        if [[ -f "${infile}" ]]; then # check if input file exists before extraction
-          new_infile="${outdirpre}/$(basename "${infile}")_ext"
-          if ! cpfs "${infile}" "${new_infile}"; then
-            echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
-            exit 1
-          fi
-          # shellcheck disable=SC2312
-          ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
-        else
-          echo "WARNING: ${infile} does not exist in ${com_dir}."
+        if [[ "${outtype}" == "f2d" ]]; then
+            if ((nh < FHMAX_HF_GFS)); then
+                outfreq=${FHOUT_HF_GFS}
+            else
+                outfreq=${FHOUT_GFS}
+            fi
+        elif [[ "${outtype}" == "f3d" ]]; then
+            outfreq=${FHOUT_GFS}
         fi
-      done
-      if [[ ${fcnt} -eq 4 ]]; then
-        daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
-        copy_to_comout "${davg_file}" "${ARC_RFCST_PROD_ATMOS}"
-        fcnt=1
-        dcnt=$(( dcnt + 1 ))
-      else
-        fcnt=$(( fcnt + 1 ))
-      fi # If at final lead hour of a given day
-    fi # if lead hour is divisible by 6 and outtype is f3d
 
-    nh=$(( nh + outfreq ))
-  done # nh
+        com_var="COMIN_ATMOS_GRIB_${outres}"
+        infile1="${!com_var}/${RUN}.t${cyc}z.pres_a.${outres}.f${fnh}.grib2"
+        infile2="${!com_var}/${RUN}.t${cyc}z.pres_b.${outres}.f${fnh}.grib2"
+        outfile="${outdirpre}/${RUN}.t${cyc}z.pres_a.${outres}.f${fnh}.grib2"
+        rm -f "${outfile}" #remove outfile if it already exists before extraction
+
+        for infile in "${infile1}" "${infile2}"; do
+            if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+                new_infile="${outdirpre}/$(basename "${infile}")_ext"
+                if ! cpfs "${infile}" "${new_infile}"; then
+                    echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+                    exit 1
+                fi
+                # shellcheck disable=SC2312
+                ${WGRIB2} "${new_infile}" | grep -F -f "${varlist}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
+            else
+                echo "WARNING: ${infile} does not exist in ${com_dir}."
+            fi
+        done
+
+        check_atmos "${infile1}" "${infile2}" "${varlist}" "${fnh}"
+        copy_to_comout "${outfile}" "${ARC_RFCST_PROD_ATMOS}"
+
+        # Compute daily average for a subset of variables
+        if ((nh % 6 == 0)) && ((nh != 0)) && [[ "${outtype}" == "f3d" ]]; then
+            outfile=${subdata}/vartmp_raw_vari_ldy${dcnt}.grib2
+            for infile in "${infile1}" "${infile2}"; do
+                if [[ -f "${infile}" ]]; then # check if input file exists before extraction
+                    new_infile="${outdirpre}/$(basename "${infile}")_ext"
+                    if ! cpfs "${infile}" "${new_infile}"; then
+                        echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
+                        exit 1
+                    fi
+                    # shellcheck disable=SC2312
+                    ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_d}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
+                else
+                    echo "WARNING: ${infile} does not exist in ${com_dir}."
+                fi
+            done
+            if [[ ${fcnt} -eq 4 ]]; then
+                daily_avg_atmos "${outfile}" "${dcnt}" "${outres}"
+                copy_to_comout "${davg_file}" "${ARC_RFCST_PROD_ATMOS}"
+                fcnt=1
+                dcnt=$((dcnt + 1))
+            else
+                fcnt=$((fcnt + 1))
+            fi # If at final lead hour of a given day
+        fi     # if lead hour is divisible by 6 and outtype is f3d
+
+        nh=$((nh + outfreq))
+    done # nh
 
 done # f2d,f3d
 

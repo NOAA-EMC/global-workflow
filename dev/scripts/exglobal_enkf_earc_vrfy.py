@@ -3,6 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
+from pygfs.utils.archive_vars import ArchiveVrfyVars
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, chdir, logit
 
 # initialize root logger
@@ -14,37 +15,20 @@ def main():
 
     config = cast_strdict_as_dtypedict(os.environ)
 
-    # Instantiate the Archive object
+    # Instantiate the Archive task object
     archive = Archive(config)
 
-    # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs',
-            'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR',
-            'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET', 'MODE', 'FHOUT_GFS',
-            'FHMAX_HF_GFS', 'FHOUT_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT', 'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
+    # Collect all archive variables in complete arch_dict for YAML templates
+    # Use static utility methods from ArchiveVrfyVars
+    arch_dict = ArchiveVrfyVars.get_all_yaml_vars(archive.task_config)
 
-    archive_dict = AttrDict()
-    for key in keys:
-        archive_dict[key] = archive.task_config.get(key)
-        if archive_dict[key] is None:
-            print(f"Warning: key ({key}) not found in task_config!")
+    # Pass arch_dict to configure_vrfy which will render the Jinja2 YAML
+    arcdir_set = archive.configure_vrfy(arch_dict)
 
-    # Also import all COMIN* directory and template variables
-    for key in archive.task_config.keys():
-        if key.startswith("COMIN"):
-            archive_dict[key] = archive.task_config[key]
+    with chdir(config.ROTDIR):
 
-    cwd = os.getcwd()
-
-    os.chdir(config.ROTDIR)
-
-    # Determine which archives to create
-    arcdir_set = archive.configure_vrfy(archive_dict)
-
-    # Populate the product archive (ARCDIR)
-    archive.execute_store_products(arcdir_set)
-
-    os.chdir(cwd)
+        # Populate the product archive (ARCDIR)
+        archive.execute_store_products(arcdir_set)
 
 
 if __name__ == '__main__':
