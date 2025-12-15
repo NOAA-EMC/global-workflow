@@ -111,7 +111,7 @@ else
 fi
 
 # Bias correction coefficients based on the ensemble mean
-${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${ABIASe}" "satbias_in"
+cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${ABIASe}" "satbias_in"
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
