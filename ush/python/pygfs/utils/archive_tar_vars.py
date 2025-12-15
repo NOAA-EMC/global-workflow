@@ -33,9 +33,6 @@ get_all_yaml_vars(config_dict):
 add_config_vars(config_dict):
   Extracts configuration keys and COM* variables (created in job scripts)
 
-_get_cycle_vars(config_dict):
-  Computes cycle-specific variables (cycle_HH, cycle_YMDH, cycle_YMD, head)
-
 Design Note
 -----------
 This is NOT a Task class - it's a utility module with functions that operate on
@@ -101,9 +98,6 @@ class ArchiveTarVars:
 
         # Add config variables (config keys, COM* variables from job scripts)
         arch_dict.update(ArchiveTarVars.add_config_vars(config_dict))
-
-        # Add minimal cycle variables
-        arch_dict.update(ArchiveTarVars._get_cycle_vars(config_dict))
 
         # Add YAML-specific cycle variables (analysis/restart times, archive flags)
         arch_dict.update(ArchiveTarVars._get_yaml_specific_cyc_vars(config_dict))
@@ -208,57 +202,11 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def _get_cycle_vars(config_dict: AttrDict) -> Dict[str, Any]:
-        """Calculate minimal cycle-specific variables using wxflow timetools.
-
-        This method computes only the basic cycle timestamp variables. For EnKF-specific
-        variables like analysis/restart times and archive flags, see _get_yaml_specific_cyc_vars().
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary from Archive.task_config
-            Required keys: current_cycle
-
-        Returns
-        -------
-        Dict[str, Any]
-            Dictionary containing basic cycle variables:
-            - cycle_HH: (str) Cycle hour (e.g., '00', '06')
-            - cycle_YMDH: (str) Full cycle timestamp (YYYYMMDDHH)
-            - cycle_YMD: (str) Cycle date (YYYYMMDD)
-
-        Notes
-        -----
-        For EnKF-specific cycle variables (analysis/restart times, archive flags),
-        use _get_yaml_specific_cyc_vars() which returns anl_YMD, anl_HH, rst_YMD,
-        rst_HH, assim_freq, archive_increments, archive_at_cyc, archive_ics,
-        archive_ics_at_cyc, save_warm_start_forecast, save_warm_start_cycled.
-        """
-        # Only compute minimal cycle variables here. YAML-specific cycle
-        # variables (analysis/restart times and archive flags) are
-        # computed by _get_yaml_specific_cyc_vars(). This keeps
-        # _get_cycle_vars() lightweight and stable for other callers.
-        current_cycle = config_dict.current_cycle
-        cycle_HH = current_cycle.strftime("%H")
-        cycle_YMDH = to_YMDH(current_cycle)
-        cycle_YMD = to_YMD(current_cycle)
-
-        return {
-            'cycle_HH': cycle_HH,
-            'cycle_YMDH': cycle_YMDH,
-            'cycle_YMD': cycle_YMD,
-        }
-
-    @staticmethod
-    @logit(logger)
     def _get_yaml_specific_cyc_vars(config_dict: AttrDict) -> Dict[str, Any]:
         """Compute YAML-specific cycle variables used by master_enkf.yaml.
 
         This method computes EnKF-specific cycle variables including analysis/restart
-        times, assimilation frequency, and archive timing booleans that were previously
-        computed inside _get_cycle_vars(). These variables are specific to EnKF ensemble
-        archiving workflows and are not needed by other archive systems.
+        times, assimilation frequency, and archive timing booleans etc.
 
         Parameters
         ----------
@@ -271,22 +219,7 @@ class ArchiveTarVars:
         Returns
         -------
         Dict[str, Any]
-            Dictionary containing EnKF-specific cycle variables:
-            - anl_YMD: (str) Analysis date (depends on DOIAU_ENKF)
-            - anl_HH: (str) Analysis hour (depends on DOIAU_ENKF)
-            - rst_YMD: (str) Restart date (depends on DOIAU_ENKF)
-            - rst_HH: (str) Restart hour (depends on DOIAU_ENKF)
-            - assim_freq: (str) Assimilation frequency in hours
-            - archive_increments: (bool) Whether to archive ensemble increments (group a)
-            - archive_at_cyc: (bool) Whether current cycle hour matches ARCH_CYC
-            - archive_ics: (bool) Whether to archive ensemble ICs (group b)
-            - archive_ics_at_cyc: (bool) Whether IC offset hour matches archive cycle
-            - save_warm_start_forecast: (bool) Warm start forecast flag (placeholder)
-            - save_warm_start_cycled: (bool) Warm start cycled flag (placeholder)
-            - first_group_mem: (int or None) First member number in archive group (ENSGRP != 0)
-            - last_group_mem: (int or None) Last member number in archive group (ENSGRP != 0)
-            - enkf_epos_fhrs: (list) EnKF forecast hours list for epos post-processing
-            - enkf_epos_ngrps: (int) Number of EnKF epos post-processing groups
+            Dictionary containing cycle variables
         """
         # helpers already imported at module level
         current_cycle = config_dict.current_cycle
@@ -297,7 +230,10 @@ class ArchiveTarVars:
         arch_cyc = config_dict.get('ARCH_CYC', 0)
 
         vars_out: Dict[str, Any] = {}
-
+        # Basic cycle variables
+        vars_out['cycle_HH'] = current_cycle.strftime("%H")
+        vars_out['cycle_YMDH'] = to_YMDH(current_cycle)
+        vars_out['cycle_YMD'] = to_YMD(current_cycle)
         # Analysis time
         anl_delta = to_timedelta("-3H") if doiau_enkf else to_timedelta("0H")
         anl_time = add_to_datetime(current_cycle, anl_delta)
@@ -576,4 +512,3 @@ class ArchiveTarVars:
 
         logger.info(f"Generated {len(ensstat_paths)} relative ensemble statistics COM paths")
         return ensstat_paths
-
