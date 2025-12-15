@@ -51,12 +51,10 @@ hgtiso200dev="gdas_200_hgt_iso_nh_anl_${cyc}.gif"
 mslpthksfclab="ANALYSIS  MEAN SEA LEVEL PRESSURE/1000-500MB THICKNESS"
 mslpthksfcdev="gdas_sfc_mslp_thk_nh_anl_${cyc}.gif"
 
-
 # Set grid date and input file name
 
 gdattim="${PDY:2:6}/${cyc}00F000"
 gdfile=gem_grids${fhr3}.gem
-
 
 #  Execute the GEMPAK program
 
@@ -274,26 +272,25 @@ EOF
 
 # Copy the GIF images into my area
 
-cpfs "${hgttmp850dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgttmp700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgtiso200dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp850dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp700dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp500dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso300dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso250dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso200dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${mslpthksfcdev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
 
 # Send the GIF images onto the NCDC area on the public ftp server
 
 if [[ ${SENDDBN} == YES ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp850dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp700dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso200dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp850dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp700dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso200dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
 fi
-
 
 ##########################################################
 #         SOUTHERN HEMISPHERE ANALYSIS CHARTS            #
@@ -310,7 +307,6 @@ hgtiso300dev="gdas_300_hgt_iso_sh_anl_${cyc}.gif"
 
 hgtiso250lab="250MB ANALYSIS  HEIGHTS/ISOTACHS"
 hgtiso250dev="gdas_250_hgt_iso_sh_anl_${cyc}.gif"
-
 
 #  Execute the GEMPAK program
 
@@ -438,23 +434,21 @@ hgtiso250dev="gdas_250_hgt_iso_sh_anl_${cyc}.gif"
   exit
 EOF
 
-
 "${GEMEXE}/gpend"
 
-
 # Copy the GIF images into my area
-cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgttmp500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgtiso300dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
-cpfs "${hgtiso250dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${mslpthksfcdev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgttmp500dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso300dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
+cpfs "${hgtiso250dev}" "${COMOUT_ATMOS_GEMPAK_GIF}/."
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
 if [[ ${SENDDBN} == YES ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso300dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtiso250dev}"
 fi
 
 exit
