@@ -154,7 +154,6 @@ for loop in ${loops}; do
                 platform="${type##avhrr[23]}"
                 atype="avhrr${platform}"
                 type="$atype"
-                diagtype[n]=${type}
             fi
             #shellcheck disable=SC2012,SC2312
             count=$(ls dir.*/"${type}_${loop}"* 2> /dev/null | wc -l)
