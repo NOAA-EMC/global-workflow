@@ -37,7 +37,7 @@ jobs:
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@v4
       - name: shfmt scan
-        run: shfmt -d dev/jobs dev/job_cards dev/scripts dev/ush ush
+        run: shfmt -d dev/jobs dev/job_cards dev/scripts dev/ush gempak ush
 
   shellcheck:
     runs-on: ubuntu-22.04
@@ -64,6 +64,7 @@ jobs:
             dev/job_cards
             dev/scripts
             dev/ush
+            gempak
             ush
           pattern: |
             config.*
@@ -100,6 +101,3 @@ jobs:
             *.env
             *.sh
             *.bash
-
-
-

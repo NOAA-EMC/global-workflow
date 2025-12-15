@@ -26,7 +26,8 @@ fi
 
 fend=F180
 
-export pgm=gdplot2_nc;. prep_step
+export pgm=gdplot2_nc
+source prep_step
 "${GEMEXE}/gdplot2_nc" << EOFplt
 gdfile   = F-${RUN} | ${PDY:2}/${cyc}00
 gdattim  = F00-${fend}-6
@@ -342,19 +343,19 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s "${metaname}" ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]]; then
     echo "FATAL ERROR: Failed to create bwx meta file"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
-    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
+    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
-            "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-                "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
     fi
 fi
 exit

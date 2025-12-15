@@ -17,7 +17,6 @@ cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 #                   FORECAST CHARTS                      #
 ##########################################################
 
-
 # Create time stamp (bottom) label
 
 echo "0${fhr3}${PDY}${cyc}" > dates
@@ -38,7 +37,6 @@ mslpthksfcdev="gfs_sfc_mslp_thk_nh_f${fhr3}_${cyc}.gif"
 
 rhvvel700lab="700MB ${fhr3}HR FORECAST  RH/VERT VEL"
 rhvvel700dev="gfs_700_rh_vvel_nh_f${fhr3}_${cyc}.gif"
-
 
 # Set grid date and input file name
 gdattim="${PDY:2:6}/${cyc}00F${fhr3}"
@@ -172,18 +170,18 @@ EOF
 
 # Copy the GIF images into my area
 
-cpfs "${mslpthksfcdev}"   "${COMOUT_ATMOS_GEMPAK_GIF}"
-cpfs "${hgtvor500dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
-cpfs "${hgtvor500usdev}"  "${COMOUT_ATMOS_GEMPAK_GIF}"
-cpfs "${rhvvel700dev}"    "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${mslpthksfcdev}" "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtvor500dev}" "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${hgtvor500usdev}" "${COMOUT_ATMOS_GEMPAK_GIF}"
+cpfs "${rhvvel700dev}" "${COMOUT_ATMOS_GEMPAK_GIF}"
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
 if [[ "${SENDDBN}" == YES ]]; then
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtvor500dev}"
-  #  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtvor500usdev}"
-  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${rhvvel700dev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${mslpthksfcdev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtvor500dev}"
+    #  "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${hgtvor500usdev}"
+    "${DBNROOT}/bin/dbn_alert" MODEL NCDCGIF "${job}" "${COMOUT_ATMOS_GEMPAK_GIF}/${rhvvel700dev}"
 fi
 
 echo "GEMPAK_GIF ${fhr3} hour completed normally"

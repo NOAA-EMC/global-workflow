@@ -556,9 +556,20 @@ FV3_predet() {
         cpreq "${PARMgfs}/ufs/post_itag_gfs" "${DATA}/itag" # TODO: Need a GEFS version when available in the UFS-weather-model
         # TODO: These should be replaced with ones from the ufs-weather-model when available there
         case ${NET} in
-            gfs | gcafs)
+            gfs)
                 cpreq "${PARMgfs}/post/gfs/postxconfig-NT-gfs-two.txt" "${DATA}/postxconfig-NT.txt"
                 cpreq "${PARMgfs}/post/gfs/postxconfig-NT-gfs-f00-two.txt" "${DATA}/postxconfig-NT_FH00.txt"
+                ;;
+            gcafs)
+                cpreq "${PARMgfs}/post/gcafs/postxconfig-NT-gcafs.txt" "${DATA}/postxconfig-NT.txt"
+                cpreq "${PARMgfs}/post/gcafs/postxconfig-NT-gcafs.txt" "${DATA}/postxconfig-NT_FH00.txt"
+                cpreq "${PARMgfs}/ufs/post_itag_gcafs" "${DATA}/itag"
+                cpreq "${PARMgfs}/post/optics_luts_DUST_nasa.dat" "${DATA}/."
+                cpreq "${PARMgfs}/post/optics_luts_NITR_nasa.dat" "${DATA}/."
+                cpreq "${PARMgfs}/post/optics_luts_SALT_nasa.dat" "${DATA}/."
+                cpreq "${PARMgfs}/post/optics_luts_SOOT_nasa.dat" "${DATA}/."
+                cpreq "${PARMgfs}/post/optics_luts_SUSO_nasa.dat" "${DATA}/."
+                cpreq "${PARMgfs}/post/optics_luts_WASO_nasa.dat" "${DATA}/."
                 ;;
             gefs)
                 cpreq "${PARMgfs}/post/gefs/postxconfig-NT-gefs.txt" "${DATA}/postxconfig-NT.txt"
