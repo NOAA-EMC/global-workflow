@@ -101,8 +101,8 @@ finished=false
 ${runcmd}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
-  echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to run rocoto on the first attempt!"
-  exit 1
+    echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to run rocoto on the first attempt!"
+    exit 1
 fi
 
 echo "Monitoring builds on compute nodes"

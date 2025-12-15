@@ -55,8 +55,12 @@ jobs:
           reporter: github-pr-review
           pattern: |
             config.*
-            J*
+            JG*
             *.env
             *.sh
             *.bash
+          exclude: |
+            */.git/*
+            */*.yml
+            */*.yaml
           check_all_files_with_shebangs: true
