@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 #
-# Metafile Script : gfs_meta_opc_np_ver
+# Metafile Script : gfs_meta_opc_na_ver
 #
 # Set up Local Variables
 #
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-mkdir -p -m 775 "${DATA}/OPC_NP_VER_F${fend}"
-cd "${DATA}/OPC_NP_VER_F${fend}" || exit 2
+mkdir -p -m 775 "${DATA}/OPC_NA_VER_F${fend}"
+cd "${DATA}/OPC_NA_VER_F${fend}" || exit 2
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
@@ -22,7 +22,7 @@ fi
 
 mdl=gfs
 MDL="GFS"
-metaname="gfsver_mpc_np_${cyc}.meta"
+metaname="gfsver_mpc_na_${cyc}.meta"
 device="nc | ${metaname}"
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
@@ -48,9 +48,9 @@ for lookback in "${lookbacks[@]}"; do
     init_PDY=${init_time:0:8}
     init_cyc=${init_time:8:2}
 
-    if (( init_time <= ${SDATE:-0} )); then
+    if [[ "${init_time}" -le "${SDATE:-0}" ]]; then
         echo "Skipping ver for ${init_time} because it is before the experiment began"
-        if (( lookback == "${lookbacks[0]}" )); then
+        if [[ "${lookback}" -eq "${lookbacks[0]}" ]]; then
             echo "First forecast time, no metafile produced"
             exit 0
         else
@@ -62,7 +62,7 @@ for lookback in "${lookbacks[@]}"; do
 
     # Create symlink in DATA to sidestep gempak path limits
     HPCGFS="${RUN}.${init_time}"
-    if [[ ! -L "${HPCGFS}" ]]; then
+    if [[ ! -L ${HPCGFS} ]]; then
         YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
         ${NLN} "${source_dir}" "${HPCGFS}"
     fi
@@ -70,11 +70,12 @@ for lookback in "${lookbacks[@]}"; do
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 
     # 500 MB HEIGHT METAFILE
-    export pgm=gdplot2_nc;. prep_step
+    export pgm=gdplot2_nc
+    source prep_step
 
     "${GEMEXE}/gdplot2_nc" << EOFplt
 PROJ     = MER
-GAREA    = 5.0;120.0;70.0;-105.0
+GAREA    = 15.0;-100.0;70.0;20.0
 map      = 1//2
 clear    = yes
 text     = 1/22/////hw
@@ -145,10 +146,12 @@ r
 
 ex
 EOFplt
-    export err=$?;err_chk
-    if (( err != 0 )); then
+
+    export err=$?
+    err_chk
+    if [[ "${err}" -ne 0 ]]; then
         echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-        exit $(( err + 100 ))
+        exit $((err + 100))
     fi
 done
 
@@ -162,10 +165,10 @@ if [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit 100
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_na_mar"
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
+        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_na_mar"
 fi
 
 exit

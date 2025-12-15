@@ -11,7 +11,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 mkdir SA2
 cd SA2 || exit 1
 
-
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
@@ -193,7 +192,7 @@ EOF
 
 for fhr in $(seq -s ' ' 6 24 126); do
     gfsfhr="F$(printf "%03g" "${fhr}")"
-    if (( fhr < 100 )); then
+    if [[ fhr -lt 100 ]]; then
         offset=6
     else
         offset=18
@@ -331,26 +330,27 @@ r
 ex
 EOF25
 done
-export err=$?;err_chk
+export err=$?
+err_chk
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
-    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
-    DBN_ALERT_TYPE=GFS_METAFILE
-    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]]; then
+        DBN_ALERT_TYPE=GFS_METAFILE
+        "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+            "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
     fi
 fi
 
