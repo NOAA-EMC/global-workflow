@@ -105,7 +105,7 @@ class Jedi:
         if 'app_path_model' in self.jcb_config:
             self.model = self.jcb_config['app_path_model'].split('/')[-1]
         elif 'app_path_observations' in self.jcb_config:
-                self.model = self.jcb_config['app_path_observations'].split('/')[-1]
+            self.model = self.jcb_config['app_path_observations'].split('/')[-1]
         else:
             raise WorkflowKeyError(f"Required key 'app_path_model' or 'app_path_observations'  not found in JCB config")
 
