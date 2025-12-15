@@ -675,7 +675,7 @@ EOF
     rm -f "${DATA}/cmdfile"
     cpreq "${GRADSTAT}" radstat.tar
     tar -xvf radstat.tar
-    listdiag=$(find ./ -path "./diag_*_ges.*" -type f)
+    listdiag=$(find ./ -maxdepth 1 -path "./diag_*_ges.*" -type f)
     for type in ${listdiag}; do
         diag_file=$(basename "${type}")
         echo "${DATA}/unzip_diag.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
@@ -684,7 +684,7 @@ EOF
     "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to unzip diag file!"
+        err_exit "Failed to unzip rad diag file!"
     fi
 fi # if [[ $USE_RADSTAT == "YES" ]
 
