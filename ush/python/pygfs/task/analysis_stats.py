@@ -44,22 +44,27 @@ class AnalysisStats(Analysis):
         """
         super().__init__(config)
 
+        _outdir = {
+            'atmos': self.task_config.COMOUT_ATMOS_ANLMON,
+            'atmos_gsi': self.task_config.COMOUT_ATMOS_ANLMON,
+        }
+        _anldir = {
+            'atmos': self.task_config.COMOUT_ATMOS_ANALYSIS,
+            'atmos_gsi': self.task_config.COMOUT_ATMOS_ANALYSIS,
+        }
+        if self.task_config.DO_AERO_ANL:
+            _outdir['aero'] = self.task_config.COMOUT_AERO_ANLMON
+            _anldir['aero'] = self.task_config.COMOUT_AERO_ANALYSIS
+        if self.task_config.DO_JEDISNOWDA:
+            _outdir['snow'] = self.task_config.COMOUT_SNOW_ANLMON
+            _anldir['snow'] = self.task_config.COMOUT_SNOW_ANALYSIS
+
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
                 #
-                'outdir': {
-                    'atmos': self.task_config.COMOUT_ATMOS_ANLMON,
-                    'aero': self.task_config.COMOUT_AERO_ANLMON,
-                    'snow': self.task_config.COMOUT_SNOW_ANLMON,
-                    'atmos_gsi': self.task_config.COMOUT_ATMOS_ANLMON,
-                },
-                'anldir': {
-                    'atmos': self.task_config.COMOUT_ATMOS_ANALYSIS,
-                    'aero': self.task_config.COMOUT_AERO_ANALYSIS,
-                    'snow': self.task_config.COMOUT_SNOW_ANALYSIS,
-                    'atmos_gsi': self.task_config.COMOUT_ATMOS_ANALYSIS,
-                },
+                'outdir': _outdir,
+                'anldir': _anldir,
             }
         ))
 
