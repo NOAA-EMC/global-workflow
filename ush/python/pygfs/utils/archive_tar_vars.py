@@ -343,12 +343,10 @@ class ArchiveTarVars:
             Dictionary containing current_cycle_dict and previous_cycle_dict
         """
         return {
-            'temp_dict': {
                 '${ROTDIR}': config_dict['ROTDIR'],
                 '${RUN}': config_dict['RUN'],
                 '${YMD}': to_YMD(config_dict['current_cycle']),
                 '${HH}': config_dict['current_cycle'].strftime("%H"),
-            }
         }
 
     @staticmethod
@@ -422,7 +420,7 @@ class ArchiveTarVars:
 
         for mem in range(first_group_mem, last_group_mem + 1):
             # Create member-specific cycle dictionary
-            cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
+            cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)
             cycle_dict['${MEMDIR}'] = f"mem{mem:03d}"
 
             # Generate relative COM paths for this member
@@ -435,7 +433,7 @@ class ArchiveTarVars:
 
         # Add ensstat path (COMIN_CONF)
         # Note: COMIN_CONF is a single path string, not a list like the other entries
-        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)['temp_dict']
+        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)
         cycle_dict['${MEMDIR}'] = 'ensstat'
         if config_dict.get('COM_CONF_TMPL'):
             rel_ensstat = ArchiveTarVars._replace_template_vars(
