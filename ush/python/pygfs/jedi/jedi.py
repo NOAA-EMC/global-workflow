@@ -101,11 +101,13 @@ class Jedi:
         # Set object attributes
         # ---------------------
 
-        # Set model attribute, checking that "app_path_model" is present in jcb_config
-        key = 'app_path_model'
-        if key not in self.jcb_config:
-            raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-        self.model = self.jcb_config['app_path_model'].split('/')[-1]
+        # Set model attribute, checking that "app_path_observations" is present in jcb_config
+        if 'app_path_model' in self.jcb_config:
+            self.model = self.jcb_config['app_path_model'].split('/')[-1]
+        elif 'app_path_observations' in self.jcb_config:
+                self.model = self.jcb_config['app_path_observations'].split('/')[-1]
+        else:
+            raise WorkflowKeyError(f"Required key 'app_path_model' or 'app_path_observations'  not found in JCB config")
 
         # Initialize JEDI application configuration dictionary to None
         self.exe_config = None
