@@ -150,7 +150,7 @@ for loop in ${loops}; do
     while [[ ${n} -lt ${ntype} ]]; do
         n=$((n + 1))
         for type in ${diagtype[n]}; do
-            count=$(find ./dir.*/${type}_${loop}* -type f -printf "." | wc -c || echo 0)
+            count=$(find ./ -path "dir."*"/${type}_${loop}"* -type f -printf "." | wc -c)
             if [[ ${count} -eq 0 ]]; then
                 continue
             fi
