@@ -32,6 +32,8 @@ systems:
     - "gefs_ww3_prepost"
   gcafs:
     - "gcafs_model"
+    - "nexus"
+    - "gsi_utils"
 build:
   gfs_model:
     command: "./build_ufs.sh -e gfs_model.x"
@@ -102,3 +104,8 @@ build:
     command: "./build_gdas.sh"
     cores: 40
     walltime: "01:45:00"
+
+  nexus:
+    command: "./build_nexus.sh"
+    cores: 8
+    walltime: "00:20:00"
