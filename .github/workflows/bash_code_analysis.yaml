@@ -31,7 +31,6 @@ jobs:
         with:
           filter_mode: nofilter
           level: warning
-          reporter: github-pr-review
 
   shellcheck:
     runs-on: ubuntu-22.04
