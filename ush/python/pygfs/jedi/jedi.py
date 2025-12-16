@@ -321,7 +321,9 @@ class Jedi:
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
             ob_src = os.path.join(comin,
-                                  self.jcb_config[f'{self.component}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.component}_obsdatain_suffix'])
+                                  self.jcb_config[f'{self.component}_obsdatain_prefix'] +
+                                  observation_from_jcb +
+                                  self.jcb_config[f'{self.component}_obsdatain_suffix'])
 
             fh_dict['copy_opt'].append([ob_src, ob_dest])
 
