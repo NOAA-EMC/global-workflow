@@ -212,6 +212,9 @@ if [[ "${DOIAU}" == "YES" ]]; then
 
         done # ensembles
 
+	# set date for global_cycle
+        export gcycle_date="${bPDY}${bcyc}"
+
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -288,6 +291,8 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             fi
         done
 
+	# set date for global_cycle
+        export gcycle_date="${PDY}${cyc}"
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
