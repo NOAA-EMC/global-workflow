@@ -96,7 +96,9 @@ if [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
 else
    BUILD_JOBS=${BUILD_JOBS:-8} "${HOMEgfs_}/sorc/ufs_model.fd/tests/compile.sh" "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_ID}" "intel" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
 fi
-mv "./tests/fv3_${COMPILE_ID}.exe" "${HOMEgfs_}/exec/${EXEC_NAME}"
+mv "./tests/fv3_${COMPILE_ID}.exe" "./tests/${EXEC_NAME}"
+mkdir -p "${HOMEgfs_}/exec"
+ln -sf "${HOMEgfs_}/sorc/ufs_model.fd/tests/${EXEC_NAME}" "${HOMEgfs_}/exec/${EXEC_NAME}"
 if [[ ! -f "./tests/modules.ufs_model.lua" ]]; then mv "./tests/modules.fv3_${COMPILE_ID}.lua" "./tests/modules.ufs_model.lua"; fi
 if [[ ! -f "./tests/ufs_common.lua" ]]; then cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua; fi
 

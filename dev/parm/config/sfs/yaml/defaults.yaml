@@ -24,7 +24,7 @@ base:
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
   reforecast: "YES"
-  FHZERO: 24
+  FHZERO: 6
   TYPE: "hydro"
   MONO: "mono"
 ocn:
