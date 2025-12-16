@@ -103,9 +103,9 @@ class Jedi:
 
         # Set model attribute, checking that "app_path_observations" is present in jcb_config
         if 'app_path_model' in self.jcb_config:
-            self.model = self.jcb_config['app_path_model'].split('/')[-1]
+            self.component = self.jcb_config['app_path_model'].split('/')[-1]
         elif 'app_path_observations' in self.jcb_config:
-            self.model = self.jcb_config['app_path_observations'].split('/')[-1]
+            self.component = self.jcb_config['app_path_observations'].split('/')[-1]
         else:
             raise WorkflowKeyError(f"Required key 'app_path_model' or 'app_path_observations'  not found in JCB config")
 
@@ -124,7 +124,7 @@ class Jedi:
         Parameters
         ----------
         jedi_config_dict : dict
-            dictionary parsed from a J2-YAML file specifying configuration dictionaries for JEDI objects
+            dictionary parsed from a Jinja2-YAML file specifying configuration dictionaries for JEDI objects
         expected_block_names (optional) : str
             list of names of blocks expected to be in jedi_config_yaml YAML file
 
@@ -305,7 +305,7 @@ class Jedi:
 
         # Check that other required keys are present in jcb_config
         for stem in ['obsdatain_path', 'obsdataout_path', 'obsdatain_prefix', 'obsdatain_suffix']:
-            key = f'{self.model}_{stem}'
+            key = f'{self.component}_{stem}'
             if key not in self.jcb_config:
                 raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
@@ -313,15 +313,15 @@ class Jedi:
         fh_dict = {'mkdir': [], 'copy_opt': []}
 
         # Make directories
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsdatain_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsdataout_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsdatain_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsdataout_path'])
 
         # Copy files
-        ob_dest = self.jcb_config[f'{self.model}_obsdatain_path']
+        ob_dest = self.jcb_config[f'{self.component}_obsdatain_path']
         for observation_from_jcb in self.jcb_config['observations']:
             # Observations
             ob_src = os.path.join(comin,
-                                  self.jcb_config[f'{self.model}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.model}_obsdatain_suffix'])
+                                  self.jcb_config[f'{self.component}_obsdatain_prefix'] + observation_from_jcb + self.jcb_config[f'{self.component}_obsdatain_suffix'])
 
             fh_dict['copy_opt'].append([ob_src, ob_dest])
 
@@ -346,21 +346,21 @@ class Jedi:
 
         # Check that other required keys are present in jcb_config
         for stem in ['obsdataout_path', 'obsdataout_prefix', 'obsdataout_suffix']:
-            key = f'{self.model}_{stem}'
+            key = f'{self.component}_{stem}'
             if key not in self.jcb_config:
                 raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
         # Set paths of output tar files
-        tarball = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"], f"{archive_name}.tar.gz")
+        tarball = os.path.join(self.jcb_config[f"{self.component}_obsdataout_path"], f"{archive_name}.tar.gz")
 
         # Create compressed tarball of obs output files in COM
         logger.info(f"Archiving observation output files to {tarball}")
         with tarfile.open(tarball, "w:gz") as archive:
             for observation_from_jcb in self.jcb_config['observations']:
-                obsdataout_file = os.path.join(self.jcb_config[f"{self.model}_obsdataout_path"],
-                                               self.jcb_config[f"{self.model}_obsdataout_prefix"] +
+                obsdataout_file = os.path.join(self.jcb_config[f"{self.component}_obsdataout_path"],
+                                               self.jcb_config[f"{self.component}_obsdataout_prefix"] +
                                                observation_from_jcb +
-                                               self.jcb_config[f"{self.model}_obsdataout_suffix"])
+                                               self.jcb_config[f"{self.component}_obsdataout_suffix"])
                 if os.path.exists(obsdataout_file):
                     logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")
                     archive.add(obsdataout_file, arcname=os.path.basename(obsdataout_file))
@@ -390,7 +390,7 @@ class Jedi:
 
         # Check that other required keys are present in jcb_config
         for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix']:
-            key = f'{self.model}_{stem}'
+            key = f'{self.component}_{stem}'
             if key not in self.jcb_config:
                 raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
@@ -398,15 +398,15 @@ class Jedi:
         fh_dict = {'mkdir': [], 'copy_opt': []}
 
         # Make directories
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasin_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.model}_obsbiasout_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsbiasin_path'])
+        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsbiasout_path'])
 
         # Copy files
         files_already_copied = []
-        bias_dest = self.jcb_config[f'{self.model}_obsbiasin_path']
+        bias_dest = self.jcb_config[f'{self.component}_obsbiasin_path']
         for observation_from_jcb in self.jcb_config['observations']:
             if observation_from_jcb in self.jcb_config.bias_files_dict and observation_from_jcb not in files_already_copied:
-                bias_src = os.path.join(comin, self.jcb_config[f'{self.model}_obsbiasin_prefix'] + self.jcb_config.bias_files_dict[observation_from_jcb])
+                bias_src = os.path.join(comin, self.jcb_config[f'{self.component}_obsbiasin_prefix'] + self.jcb_config.bias_files_dict[observation_from_jcb])
 
                 fh_dict['copy_opt'].append([bias_src, bias_dest])
 
@@ -421,8 +421,8 @@ class Jedi:
         for ob in self.jcb_config['observations']:
             if ob in self.jcb_config.bias_files_dict and not self.jcb_config.bias_files_dict[ob] in bias_file_list:
                 bias_file_list.append(self.jcb_config.bias_files_dict[ob])
-                bias_file_path = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
-                                              self.jcb_config[f"{self.model}_obsbiasin_prefix"] + self.jcb_config.bias_files_dict[ob])
+                bias_file_path = os.path.join(self.jcb_config[f"{self.component}_obsbiasin_path"],
+                                              self.jcb_config[f"{self.component}_obsbiasin_prefix"] + self.jcb_config.bias_files_dict[ob])
                 if os.path.exists(bias_file_path):
                     Jedi.extract_tar(bias_file_path)
                 else:
@@ -448,7 +448,7 @@ class Jedi:
         for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
                      'obsbiasout_prefix', 'obsbiasout_suffix', 'obsbiascovout_suffix',
                      'obstlapsein_suffix']:
-            key = f'{self.model}_{stem}'
+            key = f'{self.component}_{stem}'
             if key not in self.jcb_config:
                 raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
@@ -461,20 +461,20 @@ class Jedi:
         tlaplist = []
         for ob in self.jcb_config['observations']:
             # Sat bias file
-            satfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"],
-                                   self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiasout_suffix"])
+            satfile = os.path.join(self.jcb_config[f"{self.component}_obsbiasout_path"],
+                                   self.jcb_config[f"{self.component}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.component}_obsbiasout_suffix"])
             if os.path.exists(satfile):
                 satlist.append(satfile)
 
             # Sat bias cov file
-            satcovfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasout_path"],
-                                      self.jcb_config[f"{self.model}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.model}_obsbiascovout_suffix"])
+            satcovfile = os.path.join(self.jcb_config[f"{self.component}_obsbiasout_path"],
+                                      self.jcb_config[f"{self.component}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.component}_obsbiascovout_suffix"])
             if os.path.exists(satcovfile):
                 satcovlist.append(satcovfile)
 
             # Temperature lapse rate file
-            tlapfile = os.path.join(self.jcb_config[f"{self.model}_obsbiasin_path"],
-                                    self.jcb_config[f"{self.model}_obsbiasin_prefix"] + ob + self.jcb_config[f"{self.model}_obstlapsein_suffix"])
+            tlapfile = os.path.join(self.jcb_config[f"{self.component}_obsbiasin_path"],
+                                    self.jcb_config[f"{self.component}_obsbiasin_prefix"] + ob + self.jcb_config[f"{self.component}_obstlapsein_suffix"])
             if os.path.exists(tlapfile):
                 tlaplist.append(tlapfile)
 
@@ -487,8 +487,8 @@ class Jedi:
                 bcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                tlapfile_rename = tlapfile.replace(self.jcb_config[f"{self.model}_obsbiasin_prefix"],
-                                                   self.jcb_config[f"{self.model}_obsbiasout_prefix"])
+                tlapfile_rename = tlapfile.replace(self.jcb_config[f"{self.component}_obsbiasin_prefix"],
+                                                   self.jcb_config[f"{self.component}_obsbiasout_prefix"])
                 logger.info(f"Adding temperature lapse rate file {tlapfile_rename} to {tarball}")
                 bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
 
