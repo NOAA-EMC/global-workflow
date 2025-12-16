@@ -8,23 +8,23 @@ TROPP            'Pa'    Y       N                  -            0.0      1.0   
 
 #====== Dust Imports =================================================
 # FENGSHA input files. Note: regridding should be N or E - Use files with _FillValue != NaN
-DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
-DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
 DU_SILT           '1'  Y E           -           none none siltfrac    /dev/null
-DU_SSM            '1'  Y E           -           none none sep         /dev/null:1.0
-DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/nexus/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
-DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none PC          ExtData/nexus/FENGSHA/FENGSHA_New_Method_NESDISv1.1_9km.nc
-DU_GVF            '1'  Y E %y4-%m2-%d2T12:00:00  none none GVF         ExtData/nexus/FENGSHA/FENGSHA_GVF_LAI2.nc
-DU_LAI            '1'  Y E %y4-%m2-%d2T12:00:00  none none LAI         ExtData/nexus/FENGSHA/FENGSHA_GVF_LAI2.nc
+DU_SSM            '1'  Y E           -           none none sep         ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc
+DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none albedo_drag ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v4.nc
+DU_GVF            '1'  Y E %y4-%m2-%d2T12:00:00  none none GVF         /dev/null:0.0
+DU_LAI            '1'  Y E %y4-%m2-%d2T12:00:00  none none LAI         /dev/null/:0.0 
 
 #====== Sulfate Sources =================================================
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-SU_ANTHROL1 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2      ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-SU_ANTHROL2 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2_elev ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_ANTHROL1 NA  N Y F0 none none SO2      ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+SU_ANTHROL2 NA  N Y F0 none none SO2_elev ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 
 # Ship emissions
-SU_SHIPSO2 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO2_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-SU_SHIPSO4 NA  Y Y %y4-%m2-%d2t12:00:00 none none SO4_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+SU_SHIPSO2 NA  N Y F0 none none SO2_ship  ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+SU_SHIPSO4 NA  N Y F0 none none SO4_ship  ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 
 # Aircraft fuel consumption
 SU_AIRCRAFT NA  Y Y %y4-%m2-%d2t12:00:00 none none none /dev/null
@@ -65,11 +65,11 @@ OC_MTPO     NA  Y Y %y4-%m2-%d2t12:00:00 none none mtpo     ExtData/nexus/MEGAN_
 OC_BIOFUEL NA  Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-OC_ANTEOC1 NA  Y Y %y4-%m2-%d2t12:00:00 none none OC       ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-OC_ANTEOC2 NA  Y Y %y4-%m2-%d2t12:00:00 none none OC_elev  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+OC_ANTEOC1 NA  N Y F0 none none OC       ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+OC_ANTEOC2 NA  N Y F0 none none OC_elev  ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 
 # EDGAR based ship emissions
-OC_SHIP    NA  Y Y %y4-%m2-%d2t12:00:00 none none OC_ship  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+OC_SHIP    NA  N Y F0 none none OC_ship  ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 
 # Aircraft fuel consumption
 OC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none oc_aviation /dev/null
@@ -90,14 +90,14 @@ pSOA_ANTHRO_VOC NA Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 BC_BIOFUEL NA  Y Y %y4-%m2-%d2t12:00:00 none none biofuel /dev/null
 
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
-BC_ANTEBC1 NA  Y Y %y4-%m2-%d2t12:00:00 none none BC       ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
-BC_ANTEBC2 NA  Y Y %y4-%m2-%d2t12:00:00 none none BC_elev  ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+BC_ANTEBC1 NA  N Y F0 none none BC       ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
+BC_ANTEBC2 NA  N Y F0 none none BC_elev  ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 
 # EDGAR based ship emissions
-BC_SHIP NA  Y Y %y4-%m2-%d2t12:00:00 none none BC_ship     ExtData/nexus/CEDS/v2019/monthly/%y4/CEDS_2019_monthly.%y4%m2.nc
+BC_SHIP NA  N Y F0 none none BC_ship     ChemInput/NEXUS_DIAG.%y4%m2%d2.nc
 
 # Aircraft fuel consumption
-BC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none bc_aviation /dev/null
+BC_AIRCRAFT NA  N Y F0 none none bc_aviation /dev/null
 
 # Aviation emissions during the LTO, SDC and CRS phases of flight
 BC_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none bc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_lto.x3600_y1800_t12.2010.nc4

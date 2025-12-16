@@ -1,0 +1,35 @@
+nexus_emission:
+  data_in:
+    copy:
+      - ["{{ NEXUS_EXECUTABLE }}", "{{ DATA }}/"]
+      {% for filein in NEXUS_INPUT_FILES %}
+      - ["{{ filein }}", "{{ NEXUS_COPY_TO_FILES[loop.index0] }}"]
+      {% endfor %}
+
+  data_out:
+    mkdir:
+      {% if nmem_ens > 0 %}
+      {% for imem in range(0, nmem_ens + 1) %}
+      - "{{ COMOUT_CHEM_INPUT.replace('mem000', 'mem%03d' % imem) }}"
+      {% endfor %}
+      {% for imem in range(0, nmem_ens + 1) %}
+      - "{{ COMOUT_CHEM_RESTART.replace('mem000', 'mem%03d' % imem) }}"
+      {% endfor %}
+      {% else %}
+      - "{{ COMOUT_CHEM_INPUT }}"
+      - "{{ COMOUT_CHEM_RESTART }}"
+      {% endif %}
+    copy:
+      {% if nmem_ens > 0 %}
+      {% for imem in range(0, nmem_ens + 1) %}
+      {% for fileout in FINAL_OUTPUT %}
+      - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT.replace('mem000', 'mem%03d' % imem) }}/"]
+      {% endfor %}
+      - ["{{ DATA }}/Restarts/{{ RestartFile }}", "{{ COMOUT_CHEM_RESTART.replace('mem000', 'mem%03d' % imem) }}/"]
+      {% endfor %}
+      {% else %}
+      {% for fileout in FINAL_OUTPUT %}
+      - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT }}/"]
+      {% endfor %}
+      - ["{{ DATA }}/Restarts/{{ RestartFile }}", "{{ COMOUT_CHEM_RESTART }}/"]
+      {% endif %}

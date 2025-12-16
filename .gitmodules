@@ -27,3 +27,7 @@
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
+[submodule "sorc/nexus.fd"]
+  path = sorc/nexus.fd
+  url = https://github.com/NOAA-OAR-ARL/NEXUS.git
+  branch = feature/gcafs
