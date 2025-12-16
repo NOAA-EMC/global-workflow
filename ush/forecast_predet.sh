@@ -762,5 +762,7 @@ GOCART_predet() {
     # FHMAX gets modified when IAU is on, so keep origianl value for GOCART output
     GOCART_MAX=${FHMAX}
 
-    # GOCART output times can't be computed here because they may depend on FHROT
+    #TODO: fix to copying data so that its required for EE2 compliance.  Will submit
+    # a subsequent PR to fix this properly.
+    ${NLN} "${COMIN_CHEM_INPUT}" "${DATA}/ChemInput"
 }
