@@ -31,7 +31,7 @@ ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
 APREFIX=${APREFIX:-${RUN}.t${cyc}z.}
 GPREFIX=${GPREFIX:-${RUN}.t${GDATE:8:2}z.}
 
-# GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean.txt}  # TODO: remove (see comment and TODO below) Also, this is not a "G"BIAS (See the name, it has APREFIX in its name)
+ABIASe=${ABIASe:-${APREFIX}abias_int.txt}
 CNVSTAT="${APREFIX}cnvstat_ensmean.tar"
 OZNSTAT="${APREFIX}oznstat_ensmean.tar"
 RADSTAT="${APREFIX}radstat_ensmean.tar"
@@ -111,7 +111,7 @@ else
 fi
 
 # Bias correction coefficients based on the ensemble mean
-#${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${GBIASe}" "satbias_in"  # This file does not exist when test was run # TODO: remove
+cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${ABIASe}" "satbias_in"
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments

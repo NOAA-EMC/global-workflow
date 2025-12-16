@@ -85,10 +85,10 @@ system_builds=(
    ["gfs"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs"
    ["gefs"]="ufs_gefs gfs_utils ufs_utils upp ww3_gefs"
    ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
-   ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp"
+   ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp nexus gsi_utils"
    ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
    ["gdas"]="gdas gsi_monitor gsi_utils"
-   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils"
+   ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils nexus"
 )
 
 logs_dir="${HOMEgfs}/sorc/logs"
@@ -101,7 +101,7 @@ fi
 declare -A build_jobs build_opts build_scripts
 build_jobs=(
     ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["ufs_gcafs"]=8 ["gdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
-    ["ww3_gfs"]=1 ["ww3_gefs"]=1 ["gsi_utils"]=1 ["gsi_monitor"]=1 ["gfs_utils"]=1 ["upp"]=1
+    ["ww3_gfs"]=1 ["ww3_gefs"]=1 ["gsi_utils"]=1 ["gsi_monitor"]=1 ["gfs_utils"]=1 ["upp"]=1 ["nexus"]=1
 )
 
 # Establish build options for each job
@@ -123,6 +123,7 @@ build_opts=(
     ["gsi_utils"]="${_verbose_opt} ${_build_debug}"
     ["gsi_enkf"]="${_verbose_opt} ${_build_debug}"
     ["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
+    ["nexus"]="${_verbose_opt} ${_build_debug}"
 )
 
 # Set the build script name for each build
@@ -141,6 +142,7 @@ build_scripts=(
     ["gsi_monitor"]="build_gsi_monitor.sh"
     ["gfs_utils"]="build_gfs_utils.sh"
     ["upp"]="build_upp.sh"
+    ["nexus"]="build_nexus.sh"
 )
 
 # Check the requested systems to make sure we can build them
