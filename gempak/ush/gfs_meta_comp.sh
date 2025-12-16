@@ -12,7 +12,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 rm -Rf "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
-mkdir -p -m 775 "${DATA}/COMP"  "${DATA}/GEMPAK_META_COMP"
+mkdir -p -m 775 "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 cd "${DATA}/COMP" || exit 2
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
@@ -24,7 +24,7 @@ device="nc | ${metaname}"
 
 export COMIN="gfs.multi"
 mkdir "${COMIN}"
-for cycle in $(seq -f "%02g" -s ' ' 0  "${INTERVAL_GFS}" "${cyc}"); do
+for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
     YMD=${PDY} HH=${cycle} GRID="1p00" declare_from_tmpl gempak_dir:COM_ATMOS_GEMPAK_TMPL
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         file_out="${COMIN}/$(basename "${file_in}")"
@@ -62,6 +62,7 @@ for gareas in US NP; do
         *)
             echo "FATAL ERROR: Unknown domain"
             exit 100
+            ;;
     esac
 
     case ${cyc} in
@@ -87,9 +88,9 @@ for gareas in US NP; do
         init_PDY=${init_time:0:8}
         init_cyc=${init_time:8:2}
 
-        if (( init_time <= SDATE )); then
+        if [[ "${init_time}" -le "${SDATE}" ]]; then
             echo "Skipping generation for ${init_time} because it is before the experiment began"
-            if (( offset == "${offsets[0]}" )); then
+            if [[ "${offset}" -eq "${offsets[0]}" ]]; then
                 echo "First forecast time, no metafile produced"
                 exit 0
             fi
@@ -114,7 +115,7 @@ for gareas in US NP; do
             exit 100
         fi
 
-        testgfsfhr=$(( 126 - offset ))
+        testgfsfhr=$((126 - offset))
 
         for fhr in $(seq -s ' ' 0 6 126); do
             gfsfhr=F$(printf "%02g" "${fhr}")
@@ -127,7 +128,7 @@ for gareas in US NP; do
             hilo2="5/H#;L#/1018-1060;900-1012/5/10;10/y!6/H#;L#/1018-1060;900-1012/5/10;10/y"
             title1="5/-2/~ ? ^ ${MDL} @ HGT (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${init_cyc}Z 500 HGT!6/-3/~ ? ${MDL} @ HGT (${init_cyc}Z ${desc} CYAN)"
             title2="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${init_cyc}Z PMSL!6/-3/~ ? ${MDL} PMSL (${init_cyc}Z ${desc} CYAN)"
-            if (( fhr > testgfsfhr )); then
+            if [[ "${fhr}" -gt "${testgfsfhr}" ]]; then
                 grid="F-${MDL} | ${PDY:2}/${cyc}00"
                 grid2=" "
                 gfsoldfhr=" "
@@ -140,7 +141,8 @@ for gareas in US NP; do
                 title2="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${init_cyc}Z PMSL"
             fi
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -190,11 +192,12 @@ run
 
 ${ex}
 EOF
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
     done
 
-    if (( 10#${cyc} % 12 ==0 )); then
+    if ((10#${cyc} % 12 == 0)); then
 
         #
         # There are some differences between 00z and 12z
@@ -238,7 +241,8 @@ EOF
             gfsfhr=F$(printf "%02g" "${fhr}")
             ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -308,21 +312,23 @@ ${run_cmd}
 
 EOF
 
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
 
         # COMPARE THE GFS MODEL TO THE 12 UTC ECMWF FROM YESTERDAY
-        offset=$(( (10#${cyc}+12)%24 + 12 ))
+        offset=$(((10#${cyc} + 12) % 24 + 12))
         ecmwf_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${offset} hours")
         ecmwf_PDY=${ecmwf_date:0:8}
         # ecmwf_cyc=${ecmwf_date:8:2}
         grid2=${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak/ecmwf_glob_${ecmwf_date}
 
-        for fhr in $(seq -s ' ' $(( offset%24 )) 24 120 ); do
+        for fhr in $(seq -s ' ' $((offset % 24)) 24 120); do
             gfsfhr=F$(printf "%02g" "${fhr}")
             ecmwffhr=F$(printf "%02g" $((fhr + 24)))
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -392,7 +398,8 @@ run
 
 EOF
 
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
 
         # COMPARE THE GFS MODEL TO THE NAM and NGM
@@ -401,7 +408,8 @@ EOF
             gfsfhr=F$(printf "%02g" "${fhr}")
             namfhr=F$(printf "%02g" "${fhr}")
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 DEVICE  = ${device}
@@ -471,7 +479,8 @@ run
 
 EOF
 
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
     fi
 done
@@ -481,21 +490,21 @@ done
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
-    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
+    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
     fi
-    if (( fhr == 126 )) ; then
+    if [[ "${fhr}" -eq 126 ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_METAFILE_LAST "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
     fi

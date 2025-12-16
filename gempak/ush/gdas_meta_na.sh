@@ -16,13 +16,14 @@ if [[ ! -L "${COMIN}" ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
-if [[ "${envir}" == "para" ]] ; then
-   export m_title="GDASP"
+if [[ "${envir}" == "para" ]]; then
+    export m_title="GDASP"
 else
-   export m_title="GDAS"
+    export m_title="GDAS"
 fi
 
-export pgm=gdplot2_nc; prep_step
+export pgm=gdplot2_nc
+prep_step
 
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-GDAS | ${PDY:2}/${cyc}00
@@ -94,19 +95,19 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s gdas.meta ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s gdas.meta ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file for North America"
     exit "${err}"
 fi
 
 mv gdas.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
 export err=$?
-if (( err != 0 )) ; then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
     exit "${err}"
 fi
 
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
 fi
