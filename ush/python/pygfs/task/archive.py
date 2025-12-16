@@ -6,6 +6,7 @@ import shutil
 import tarfile
 from logging import getLogger
 from typing import Any, Dict, List
+from pygfs.utils.archive_tar_vars import ArchiveTarVars
 
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
@@ -33,16 +34,7 @@ class Archive(Task):
         None
         """
         super().__init__(config)
-
-        rotdir = self.task_config.ROTDIR + os.sep
-
-        # Find all absolute paths in the environment and get their relative paths from ${ROTDIR}
-        path_dict = self._gen_relative_paths(rotdir)
-
-        # Extend task_config with path_dict
-        self.task_config = AttrDict(**self.task_config, **path_dict)
-
-        # Boolean used for cleanup if the EXPDIR was archived
+       # Boolean used for cleanup if the EXPDIR was archived
         self.archive_expdir = False
 
     @logit(logger)
@@ -167,13 +159,59 @@ class Archive(Task):
         else:
             raise ValueError("FATAL ERROR: Invalid achiving method selected: {arch_dict.ARCHCOM_TO}")
 
-        master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
-
         # Determine if expdir archiving is requested this cycle (skip gfs/gdas ensembles)
         if "enkf" in arch_dict.RUN:
             arch_dict['archive_expdir'] = False
         else:
             arch_dict['archive_expdir'] = self._archive_expdir(arch_dict)
+
+        # Check if this is EnKF member archiving (ENSGRP != 0)
+        ensgrp = arch_dict.get('ENSGRP', 0)
+
+        if "enkf" in arch_dict.RUN and ensgrp != 0:
+            # For EnKF member archiving, render templates once per member
+            first_group_mem = arch_dict.get('first_group_mem')
+            last_group_mem = arch_dict.get('last_group_mem')
+
+            if first_group_mem is None or last_group_mem is None:
+                raise ValueError("EnKF member archiving requires first_group_mem and last_group_mem in arch_dict")
+
+            atardir_sets = self._configure_tars_enkf_members(arch_dict, archive_parm, first_group_mem, last_group_mem)
+        elif "enkf" in arch_dict.RUN and ensgrp == 0:
+            # For EnKF standard archiving (ensemble mean/spread), use standard single-pass rendering
+            atardir_sets = self._configure_tars_standard(arch_dict, archive_parm)
+        else:
+            # TODO: Expand this to other RUNs as needed
+            logger.warning("Archive tarball configuration currently only supports EnKF member archiving. Skipping other RUN types.")
+            atardir_sets = []
+
+        # Save the tarball list as a YAML in case we are using globus
+        group = arch_dict.get("ENSGRP", -1)
+        self._create_datasets_yaml(atardir_sets, group)
+
+        return atardir_sets
+
+    @logit(logger)
+    def _configure_tars_standard(self, arch_dict: AttrDict, archive_parm: str) -> List[Dict[str, Any]]:
+        """Standard single-pass template rendering for non-member archiving.
+
+        This method is used for:
+        - GFS/GDAS deterministic runs
+        - EnKF ensemble mean/spread (ENSGRP=0)
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Archive configuration dictionary
+        archive_parm : str
+            Path to archive parameter directory
+
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of datasets to archive
+        """
+        master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
 
         parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
                                    arch_dict,
@@ -181,7 +219,7 @@ class Archive(Task):
 
         # Determine if we actually archiving the EXPDIR this cycle
         # This will notify the cleanup function to remove the temporary copy
-        if arch_dict.archive_expdir:
+        if arch_dict.get('archive_expdir', False):
             # Check that "expdir" is in the set of archives to create
             for dataset in parsed_sets.datasets.values():
                 if dataset.name == "EXPDIR":
@@ -202,9 +240,86 @@ class Archive(Task):
 
             atardir_sets.append(dataset)
 
-        # Save the tarball list as a YAML in case we are using globus
-        group = arch_dict.get("ENSGRP", -1)
-        self._create_datasets_yaml(atardir_sets, group)
+        return atardir_sets
+
+    @logit(logger)
+    def _configure_tars_enkf_members(self, arch_dict: AttrDict, archive_parm: str,
+                                    first_group_mem: int, last_group_mem: int) -> List[Dict[str, Any]]:
+        """Per-member template rendering for EnKF member archiving.
+
+        This method renders templates once for each ensemble member, collecting
+        files from all members into the final datasets.
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Archive configuration dictionary (must have ENSGRP != 0)
+        archive_parm : str
+            Path to archive parameter directory
+        first_group_mem : int
+            First member number in this archive group
+        last_group_mem : int
+            Last member number in this archive group
+
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of datasets to archive (aggregated across all members)
+        """
+        from pygfs.utils.archive_tar_vars import ArchiveTarVars
+
+        master_yaml = "master_" + arch_dict.RUN + ".yaml.j2"
+
+        logger.info(f"Rendering templates for EnKF members {first_group_mem} to {last_group_mem}")
+
+        # Dictionary to accumulate datasets across all members
+        # Key: dataset name (e.g., "ENKF_GRP", "ENKF_RESTARTA_GRP", "ENKF_RESTARTB_GRP")
+        # Value: dataset dict with accumulated file lists
+        accumulated_datasets = {}
+
+        # Render template once per member
+        for mem in range(first_group_mem, last_group_mem + 1):
+            logger.debug(f"Rendering template for member {mem}")
+
+            # Create member-specific arch_dict by copying and updating with member variables
+            member_arch_dict = arch_dict.copy()
+
+            # Get member-specific COM paths (singular variables)
+            member_vars = ArchiveTarVars.get_enkf_single_member_vars(arch_dict, mem)
+            member_arch_dict.update(member_vars)
+
+            # Parse template with member-specific variables
+            member_parsed_sets = parse_j2yaml(os.path.join(archive_parm, master_yaml),
+                                             member_arch_dict,
+                                             allow_missing=False)
+
+            # Accumulate datasets
+            for dataset_key, dataset in member_parsed_sets.datasets.items():
+                dataset_name = dataset.get('name')
+
+                if dataset_name not in accumulated_datasets:
+                    # First time seeing this dataset - initialize it
+                    accumulated_datasets[dataset_name] = {
+                        'name': dataset_name,
+                        'target': dataset.get('target'),
+                        'required': [],
+                        'optional': []
+                    }
+
+                # Append this member's files to the accumulated dataset
+                if 'required' in dataset:
+                    accumulated_datasets[dataset_name]['required'].extend(dataset['required'])
+                if 'optional' in dataset:
+                    accumulated_datasets[dataset_name]['optional'].extend(dataset['optional'])
+
+        # Convert accumulated datasets to final atardir_sets format
+        atardir_sets = []
+        for dataset in accumulated_datasets.values():
+            dataset["fileset"] = Archive._create_fileset(dataset)
+            dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
+            atardir_sets.append(dataset)
+
+        logger.info(f"Accumulated {len(atardir_sets)} datasets from {last_group_mem - first_group_mem + 1} members")
 
         return atardir_sets
 

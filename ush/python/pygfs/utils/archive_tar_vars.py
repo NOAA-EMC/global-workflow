@@ -67,7 +67,8 @@ class ArchiveTarVars:
     @staticmethod
     @logit(logger)
     def get_all_yaml_vars(config_dict: AttrDict) -> AttrDict:
-        """Collect all variables needed for YAML templates.
+        """
+        Collect all variables needed for YAML templates.
 
         This method provides only the VARIABLES needed by the YAML templates
         (cycle vars, COM paths, config keys). The YAML templates handle all
@@ -93,6 +94,7 @@ class ArchiveTarVars:
         COM paths are created in the job scripts (JGLOBAL_ARCHIVE_VRFY and
         JGLOBAL_ENKF_ARCHIVE_VRFY) and passed through config_dict.
         """
+
         # Build arch_dict with variables for Jinja2 templates
         arch_dict = AttrDict()
 
@@ -107,9 +109,8 @@ class ArchiveTarVars:
         if ensgrp == 0:
             # ENSGRP=0: Generate relative paths for ensemble mean/spread (enkf.yaml.j2)
             arch_dict.update(ArchiveTarVars.get_enkf_ensstat_com_paths(config_dict))
-        else:
-            # ENSGRP!=0: Generate relative paths for member data
-            arch_dict.update(ArchiveTarVars.get_enkf_member_com_paths(config_dict))
+        # Note: ENSGRP!=0 member-specific paths are generated per-member in archive.py
+        # via get_enkf_single_member_vars() during template rendering
 
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
@@ -119,7 +120,9 @@ class ArchiveTarVars:
     @staticmethod
     @logit(logger)
     def add_config_vars(config_dict: AttrDict) -> AttrDict:
-        """Collect configuration variables for archive tar operations.
+
+        """
+        Collect configuration variables for archive tar operations.
 
         This method extracts all required configuration keys for EnKF (ensemble)
         archiving operations, including ensemble-specific parameters.
@@ -351,101 +354,6 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def get_enkf_member_com_paths(config_dict: AttrDict) -> Dict[str, Any]:
-        """Generate relative COM paths for ensemble group members (ENSGRP != 0).
-
-        This method creates relative COM paths (relative to ROTDIR) for ensemble members
-        in a group. It calculates the member range for the specified group and returns
-        lists of relative COM paths for all members, plus the ensstat path.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary from Archive.task_config
-            Required keys: ENSGRP, NMEM_EARCGRP, NMEM_ENS, ROTDIR, COM_*_TMPL variables
-
-        Returns
-        -------
-        Dict[str, Any]
-            Dictionary with:
-            - COMIN_*_MEM_list: Lists of relative COM paths for all members in group
-            - COMIN_CONF: Ensstat COM path (single string, relative to ROTDIR)
-            All paths are relative to ROTDIR for portability.
-
-        Raises
-        ------
-        ValueError
-            If NMEM_EARCGRP or NMEM_ENS are missing when ENSGRP != 0
-
-        Notes
-        -----
-        This method should ONLY be called when ENSGRP != 0 (archiving individual members).
-        All returned paths are relative to ROTDIR (e.g., 'enkfgdas.20231215/00/atmos/mem001').
-        These relative paths are portable and suitable for tar archive contents.
-        """
-        ensgrp = config_dict.get('ENSGRP', 0)
-
-        # Only create member COM paths when ENSGRP != 0 (archiving individual members)
-        if ensgrp == 0:
-            return {}
-
-        # Get member range by calling _get_yaml_specific_cyc_vars
-        yaml_vars = ArchiveTarVars._get_yaml_specific_cyc_vars(config_dict)
-        first_group_mem = yaml_vars.get('first_group_mem')
-        last_group_mem = yaml_vars.get('last_group_mem')
-
-        if first_group_mem is None or last_group_mem is None:
-            raise ValueError("first_group_mem and last_group_mem should be defined in _get_yaml_specific_cyc_vars()")
-
-        logger.info(f"Processing relative paths for ensemble group {ensgrp}: members {first_group_mem} to {last_group_mem}")
-
-        # Define template mappings (list key -> template key)
-        template_mappings = [
-            ('COMIN_ATMOS_ANALYSIS_MEM_list', 'COM_ATMOS_ANALYSIS_TMPL'),
-            ('COMIN_ATMOS_HISTORY_MEM_list', 'COM_ATMOS_HISTORY_TMPL'),
-            ('COMIN_ATMOS_RESTART_MEM_list', 'COM_ATMOS_RESTART_TMPL'),
-            ('COMIN_OCEAN_ANALYSIS_MEM_list', 'COM_OCEAN_ANALYSIS_TMPL'),
-            ('COMIN_OCEAN_LETKF_MEM_list', 'COM_OCEAN_LETKF_TMPL'),
-            ('COMIN_OCEAN_HISTORY_MEM_list', 'COM_OCEAN_HISTORY_TMPL'),
-            ('COMIN_OCEAN_RESTART_MEM_list', 'COM_OCEAN_RESTART_TMPL'),
-            ('COMIN_ICE_ANALYSIS_MEM_list', 'COM_ICE_ANALYSIS_TMPL'),
-            ('COMIN_ICE_LETKF_MEM_list', 'COM_ICE_LETKF_TMPL'),
-            ('COMIN_ICE_HISTORY_MEM_list', 'COM_ICE_HISTORY_TMPL'),
-            ('COMIN_ICE_RESTART_MEM_list', 'COM_ICE_RESTART_TMPL'),
-            ('COMIN_MED_RESTART_MEM_list', 'COM_MED_RESTART_TMPL'),
-        ]
-
-        # Initialize relative member lists
-        member_lists = {list_key: [] for list_key, _ in template_mappings}
-
-        for mem in range(first_group_mem, last_group_mem + 1):
-            # Create member-specific cycle dictionary
-            cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)
-            cycle_dict['${MEMDIR}'] = f"mem{mem:03d}"
-
-            # Generate relative COM paths for this member
-            for list_key, template_key in template_mappings:
-                if config_dict.get(template_key):
-                    rel_path = ArchiveTarVars._replace_template_vars(
-                        config_dict[template_key], cycle_dict, config_dict.ROTDIR
-                    )
-                    member_lists[list_key].append(rel_path)
-
-        # Add ensstat path (COMIN_CONF)
-        # Note: COMIN_CONF is a single path string, not a list like the other entries
-        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)
-        cycle_dict['${MEMDIR}'] = 'ensstat'
-        if config_dict.get('COM_CONF_TMPL'):
-            rel_ensstat = ArchiveTarVars._replace_template_vars(
-                config_dict['COM_CONF_TMPL'], cycle_dict, config_dict.ROTDIR
-            )
-            member_lists['COMIN_CONF'] = rel_ensstat  # type: ignore[assignment]
-
-        logger.debug(f"Generated {len(member_lists)} relative COM path lists for group {ensgrp} ({last_group_mem - first_group_mem + 1} members)")
-        return member_lists
-
-    @staticmethod
-    @logit(logger)
     def get_enkf_ensstat_com_paths(config_dict: AttrDict) -> Dict[str, str]:
         """Generate relative COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
 
@@ -510,3 +418,89 @@ class ArchiveTarVars:
 
         logger.info(f"Generated {len(ensstat_paths)} relative ensemble statistics COM paths")
         return ensstat_paths
+
+    @staticmethod
+    @logit(logger)
+    def get_enkf_single_member_vars(config_dict: AttrDict, member: int) -> Dict[str, str]:
+        """Generate relative COM paths for a single ensemble member.
+
+        This method creates relative COM paths (relative to ROTDIR) for a specific
+        ensemble member. It is designed to be called once per member during
+        template rendering iteration.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary from Archive.task_config
+            Required keys: ROTDIR, COM_*_TMPL variables
+        member : int
+            Member number (e.g., 1, 2, 3, ..., NMEM_ENS)
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary with relative COM paths for this specific member:
+            - COMIN_ATMOS_ANALYSIS_MEM: Relative path to member analysis directory
+            - COMIN_ATMOS_HISTORY_MEM: Relative path to member history directory
+            - COMIN_ATMOS_RESTART_MEM: Relative path to member restart directory
+            - COMIN_OCEAN_ANALYSIS_MEM: Relative path to member ocean analysis
+            - COMIN_OCEAN_LETKF_MEM: Relative path to member ocean LETKF
+            - COMIN_OCEAN_HISTORY_MEM: Relative path to member ocean history
+            - COMIN_OCEAN_RESTART_MEM: Relative path to member ocean restart
+            - COMIN_ICE_ANALYSIS_MEM: Relative path to member ice analysis
+            - COMIN_ICE_LETKF_MEM: Relative path to member ice LETKF
+            - COMIN_ICE_HISTORY_MEM: Relative path to member ice history
+            - COMIN_ICE_RESTART_MEM: Relative path to member ice restart
+            - COMIN_MED_RESTART_MEM: Relative path to member mediator restart
+            - member_num: Member number (padded to 3 digits, e.g., "001")
+            All paths are relative to ROTDIR for portability.
+
+        Notes
+        -----
+        This method is called during per-member template rendering in configure_tars.
+        The singular variable names (COMIN_*_MEM) are used in simplified YAML templates
+        that no longer contain member loops.
+
+        Examples
+        --------
+        >>> # Generate variables for member 5
+        >>> member_vars = ArchiveTarVars.get_enkf_single_member_vars(config, 5)
+        >>> member_vars['COMIN_ATMOS_RESTART_MEM']
+        'enkfgdas.20211221/00/atmos/mem005'
+        >>> member_vars['member_num']
+        '005'
+        """
+        # Create member-specific cycle dictionary
+        cycle_dict = ArchiveTarVars._create_cycle_dicts(config_dict)
+        cycle_dict['${MEMDIR}'] = f"mem{member:03d}"
+
+        # Define template mappings (singular key -> template key)
+        template_mappings = [
+            ('COMIN_ATMOS_ANALYSIS_MEM', 'COM_ATMOS_ANALYSIS_TMPL'),
+            ('COMIN_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL'),
+            ('COMIN_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL'),
+            ('COMIN_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL'),
+            ('COMIN_OCEAN_LETKF_MEM', 'COM_OCEAN_LETKF_TMPL'),
+            ('COMIN_OCEAN_HISTORY_MEM', 'COM_OCEAN_HISTORY_TMPL'),
+            ('COMIN_OCEAN_RESTART_MEM', 'COM_OCEAN_RESTART_TMPL'),
+            ('COMIN_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL'),
+            ('COMIN_ICE_LETKF_MEM', 'COM_ICE_LETKF_TMPL'),
+            ('COMIN_ICE_HISTORY_MEM', 'COM_ICE_HISTORY_TMPL'),
+            ('COMIN_ICE_RESTART_MEM', 'COM_ICE_RESTART_TMPL'),
+            ('COMIN_MED_RESTART_MEM', 'COM_MED_RESTART_TMPL'),
+        ]
+
+        # Generate relative COM paths for this member
+        member_vars = {}
+        for var_key, template_key in template_mappings:
+            if config_dict.get(template_key):
+                rel_path = ArchiveTarVars._replace_template_vars(
+                    config_dict[template_key], cycle_dict, config_dict.ROTDIR
+                )
+                member_vars[var_key] = rel_path
+
+        # Add member number as a padded string for convenience
+        member_vars['member_num'] = f"{member:03d}"
+
+        logger.debug(f"Generated {len(member_vars)} relative COM paths for member {member}")
+        return member_vars
