@@ -68,8 +68,8 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-drsa-precip3}
 #########################################################################
 
 # Utilities path for custom builds and role account tools
-export UTIL_PATH="${GFS_CI_ROOT}/utils"
+export GFS_CI_UTIL_PATH="${GFS_CI_ROOT}/utils"
 
 # Custom Rocoto build path for testing
-# export ROCOTO_PATH="${UTIL_PATH}/rocoto_forked/bin"
-unset ROCOTO_PATH
+# export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/rocoto_dryrun_nodaemon/bin"
+unset GFS_CI_ROCOTO_PATH

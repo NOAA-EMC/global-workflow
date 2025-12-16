@@ -12,11 +12,11 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-GFS-DEV}
 
 # Utilities path for custom builds and role account tools
 # TODO: Populate with actual role account path for this machine
-export UTIL_PATH="/path/to/role/account/utils"
+export GFS_CI_UTIL_PATH="/path/to/role/account/utils"
 
 # Custom Rocoto build path for testing
 # used for CI jobs requiring Rocoto with dry_run support
-# export ROCOTO_PATH="${UTIL_PATH}/Rocoto/bin"
-unset ROCOTO_PATH
+# export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/rocoto_dryrun_nodaemon/bin"
+unset GFS_CI_ROCOTO_PATH
 export max_concurrent_cases=5
 export max_concurrent_pr=4

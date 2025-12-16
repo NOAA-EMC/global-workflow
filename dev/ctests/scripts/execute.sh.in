@@ -15,12 +15,12 @@ rm -f ./*.db
 rm -f ./jobcard
 
 # Use custom Rocoto build with dryrun feature for testing
-# When ROCOTO_PATH is unset, the system Rocoto will be used
+# When GFS_CI_ROCOTO_PATH is unset, the system Rocoto will be used
 
 source "${HOMEgfs}/ush/detect_machine.sh"
 source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
 
-yes | "${ROCOTO_PATH}/rocotoboot" --dryrun -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
+yes | "${GFS_CI_ROCOTO_PATH}/rocotoboot" --dryrun -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
 # Rocoto outputs the job card inside of {{}}.  Strip all other output to get just the job card.
 sed -n '/^{{/,/^}}/p' < jobcard | sed '1d;$d'  > "${TEST_NAME}.sub" || true
 

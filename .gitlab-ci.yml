@@ -151,11 +151,11 @@ include:
       # Load custom Rocoto path if specified for user controle of Rocoto version
       # This allows testing with different Rocoto builds without changing system Rocoto
       source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
-      if [[ -n "${ROCOTO_PATH:-}" && -d "${ROCOTO_PATH}" ]]; then
-        export PATH="${ROCOTO_PATH}:$PATH"
+      if [[ -n "${GFS_CI_ROCOTO_PATH:-}" && -d "${GFS_CI_ROCOTO_PATH}" ]]; then
+        export PATH="${GFS_CI_ROCOTO_PATH}:$PATH"
         echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
       else
-        echo "ROCOTO_PATH not set or directory not found, using system Rocoto"
+        echo "GFS_CI_ROCOTO_PATH not set or directory not found, using system Rocoto"
       fi
 
       git submodule status
