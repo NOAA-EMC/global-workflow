@@ -1,0 +1,44 @@
+{% set cycle_YMD = sdate | to_YMD %}
+fire_emission:
+  config:
+    apply_quality_control: True
+    quality_control_threshold: 1.5
+    QFED_VARS:
+      {% for qvar in fire_vars %}
+      - "{{ qvar }}"
+      {% endfor %}
+    GBBEX_VARS:
+      {% for gvar in fire_vars %}
+      - "{{ gvar }}"
+      {% endfor %}
+    NRT_DIRECTORY: "{{ FIRE_EMIS_NRT_DIR }}/{{cycle_YMD}}/firewx"
+  data_in:
+    mkdir:
+      - "{{ DATA }}"
+    copy:
+      {% for fin in rawfiles %}
+      - ["{{ fin }}", "{{ DATA }}/"]
+      {% endfor %}
+  data_out:
+    mkdir:
+      {% if nmem_ens > 0 %}
+      {% for imem in range(0, nmem_ens + 1) %}
+      - "{{ COMOUT_CHEM_INPUT.replace('mem000', 'mem%03d' % imem) }}"
+      {% endfor %}
+      {% else %}
+      - "{{ COMOUT_CHEM_INPUT }}"
+      {% endif %}
+    copy:
+      {% if nmem_ens > 0 %}
+      {% for imem in range(0, nmem_ens + 1) %}
+      {% for fileout in processed_files %}
+      - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT.replace('mem000', 'mem%03d' % imem) }}/"]
+      {% endfor %}
+      {% endfor %}
+      {% else %}
+      {% for fileout in processed_files %}
+      - ["{{ DATA }}/{{ fileout }}", "{{ COMOUT_CHEM_INPUT }}/"]
+      {% endfor %}
+      {% endif %}
+
+

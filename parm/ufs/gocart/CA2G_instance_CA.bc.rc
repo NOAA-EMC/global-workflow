@@ -5,7 +5,7 @@
 nbins:  2
 
 aerosol_radBands_optics_file: ExtData/optics/opticsBands_BC.v1_3.RRTMG.nc
-aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_BC.v1_3.nc
+aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_BC.v1_5.nc
 
 # Aircraft emission factor: convert input unit to kg C
 aircraft_fuel_emission_factor: 1.0000
@@ -29,6 +29,10 @@ wet_removal_scheme: ufs # default value
 fwet_ice: 0.0 1.0
 fwet_snow: 0.0 1.0
 fwet_rain: 0.0 1.0
+
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: 'ufs'
 
 # Scavenging efficiency per bin [km-1] (NOT USED UNLESS RAS IS CALLED)
 fscav: 0.0  0.4
