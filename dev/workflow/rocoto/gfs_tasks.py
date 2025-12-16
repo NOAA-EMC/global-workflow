@@ -2396,6 +2396,10 @@ class GFSTasks(Tasks):
         #     to prevent clobbering files needed by the GFS forecast prematurely.
         assim_freq = self._base.get('assim_freq', 6)
         interval_gfs = int(self._base.get('INTERVAL_GFS', 0))
+
+        # Build a dependency for the next forecast cycle
+        # This only applies for the last GFS cycle
+        dep_next_fcst_seg = None
         if interval_gfs >= assim_freq:
             deps = []
             dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
@@ -2443,7 +2447,8 @@ class GFSTasks(Tasks):
                 deps_half.append(rocoto.add_dependency(dep_dict))
 
                 # Add the next forecast segment dependency for ALL cycles (enkfgdas only)
-                deps_all.append(dep_next_fcst_seg)
+                if dep_next_fcst_seg is not None:
+                    deps_all.append(dep_next_fcst_seg)
 
         else:
             if self.app_config.mode in ['cycled']:
@@ -2455,7 +2460,7 @@ class GFSTasks(Tasks):
                         deps_full.append(rocoto.add_dependency(dep_dict))
                 elif self.run in ['gdas']:
                     # The gdas files are needed by the next forecast segment.
-                    if interval_gfs == assim_freq:
+                    if dep_next_fcst_seg is not None:
                         deps_all.append(dep_next_fcst_seg)
 
                     # Date dependency for the first half cycle
