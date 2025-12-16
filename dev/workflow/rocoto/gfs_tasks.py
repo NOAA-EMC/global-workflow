@@ -2570,21 +2570,33 @@ class GFSTasks(Tasks):
                 deps_full.append(rocoto.add_dependency(dep_dict))
 
         # Build the rocoto dependencies
-        # We will always have full-cycle dependencies
-        dependencies_full = rocoto.create_dependency(dep_condition='and', dep=deps_full)
-        deps_list = [dependencies_full]
 
+        deps_list = []
         # Add half-cycle dependencies if they exist
-        if len(deps_half) > 0:
-            dependencies_half = rocoto.create_dependency(dep_condition='and', dep=deps_half)
-            deps_list.append(dependencies_half)
+        if len(deps_half) > 1:
+            raise NotImplementedError("Multiple half-cycle cleanup dependencies are not yet supported.")
+            # If such a case comes up, we would do something like this:
+            # dependencies_half = rocoto.create_dependency(dep_condition='and', dep=deps_half)
+            # dependencies_full = rocoto.create_dependency(dep_condition='and', dep=deps_full)
+            # deps_list = [dependencies_half, dependencies_full]
+            # # Combine half and full cycle dependencies with OR
+            # deps_full_half = rocoto.create_dependency(dep_condition='or', dep=deps_list)
 
-        # Combine half and full cycle dependencies with OR
-        deps_full_half = rocoto.create_dependency(dep_condition='or', dep=deps_list)
+        elif len(deps_half) == 1:
+            dependencies_half = rocoto.create_dependency(dep=deps_half)
+            dependencies_full = rocoto.create_dependency(dep_condition='and', dep=deps_full)
+            deps_list = [dependencies_half, dependencies_full]
 
-        # Add it to the complete list
+            # Combine half and full cycle dependencies with OR
+            deps_full_half = rocoto.create_dependency(dep_condition='or', dep=deps_list)
+
+        else:
+            deps_full_half = rocoto.create_dependency(dep=deps_full)
+
+        # Add full- and half-cycle to the complete list
         deps_all.append(deps_full_half)
 
+        # Combine with AND
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps_all)
 
         resources = self.get_resource('cleanup')
