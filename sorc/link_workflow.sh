@@ -328,17 +328,17 @@ fi
 #--add NEXUS files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/nexus.fd" ]]; then
-  cd "${HOMEgfs}/parm/chem" || exit 1
-  if [[ -d nexus ]]; then
-      rm -rf nexus
-  fi
-  mkdir -p nexus/gocart
-  cd nexus/gocart || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/NEXUS_Config.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Grid.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Time.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Diag.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Spec.rc.j2" .
+    cd "${HOMEgfs}/parm/chem" || exit 1
+    if [[ -d nexus ]]; then
+        rm -rf nexus
+    fi
+    mkdir -p nexus/gocart
+    cd nexus/gocart || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/NEXUS_Config.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Grid.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Time.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Diag.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Spec.rc.j2" .
 fi
 
 #------------------------------
@@ -452,8 +452,8 @@ fi
 
 # NEXUS executable
 if [[ -d "${HOMEgfs}/sorc/nexus.fd/build/bin" ]]; then
-  cd "${HOMEgfs}/exec" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
+    cd "${HOMEgfs}/exec" || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
 fi
 
 #------------------------------
