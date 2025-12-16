@@ -415,7 +415,7 @@ class Tasks:
         service_task = task_name in Tasks.SERVICE_TASKS
 
         if task_name not in Tasks.VALID_TASKS:
-            raise KeyError(f"ERROR {task_name} is not a valid tasks!")
+            raise KeyError(f"ERROR {task_name} is not a valid task!")
 
         # Combine the task configuration with the system configuration
         if service_task:

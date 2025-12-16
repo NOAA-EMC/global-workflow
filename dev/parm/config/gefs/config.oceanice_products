@@ -7,9 +7,10 @@ echo "BEGIN: config.oceanice_products"
 # Get task specific resources
 source "${EXPDIR}/config.resources" oceanice_products
 
+export write_grib2=False
+export write_netcdf=False
 export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products_${NET}.yaml"
 
 # Maximum number of rocoto tasks per member
 export MAX_TASKS=25
-
 echo "END: config.oceanice_products"

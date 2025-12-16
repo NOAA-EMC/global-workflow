@@ -73,26 +73,25 @@ USE_ANL=${USE_ANL:-0}
 bcor_exec=radmon_bcor.x
 
 netcdf_boolean=".false."
-if [[ ${RADMON_NETCDF} -eq 1 ]]; then
-   netcdf_boolean=".true."
+if [[ "${RADMON_NETCDF}" -eq 1 ]]; then
+    netcdf_boolean=".true."
 fi
 
-if [[ ${USE_ANL} -eq 1 ]]; then
-   gesanl="ges anl"
+if [[ "${USE_ANL}" -eq 1 ]]; then
+    gesanl="ges anl"
 else
-   gesanl="ges"
+    gesanl="ges"
 fi
-
 
 #--------------------------------------------------------------------
 #   Copy extraction program to working directory
 
-cpreq "${EXECgfs}/${bcor_exec}" ./${bcor_exec}
+cpreq "${EXECgfs}/${bcor_exec}" "./${bcor_exec}"
 
 #--------------------------------------------------------------------
 #   Run program for given time
 
-export pgm=${bcor_exec}
+export pgm="${bcor_exec}"
 
 iyy="${PDY:0:4}"
 imm="${PDY:4:2}"
@@ -103,39 +102,35 @@ touch "./errfile"
 
 for type in ${SATYPE}; do
 
-   for dtype in ${gesanl}; do
+    for dtype in ${gesanl}; do
 
-      source prep_step
+        source prep_step
 
-      if [[ ${dtype} == "anl" ]]; then
-         data_file="${type}_anl.${PDY}${cyc}.ieee_d"
-         bcor_file=bcor.${data_file}
-         ctl_file=${type}_anl.ctl
-         bcor_ctl=bcor.${ctl_file}
-         stdout_file=stdout.${type}_anl
-         bcor_stdout=bcor.${stdout_file}
-         input_file=${type}_anl
-      else
-         data_file="${type}.${PDY}${cyc}.ieee_d"
-         bcor_file=bcor.${data_file}
-         ctl_file=${type}.ctl
-         bcor_ctl=bcor.${ctl_file}
-         stdout_file=stdout.${type}
-         bcor_stdout=bcor.${stdout_file}
-         input_file=${type}
-      fi
+        if [[ ${dtype} == "anl" ]]; then
+            data_file="${type}_anl.${PDY}${cyc}.ieee_d"
+            bcor_file=bcor.${data_file}
+            ctl_file=${type}_anl.ctl
+            bcor_ctl=bcor.${ctl_file}
+            input_file=${type}_anl
+        else
+            data_file="${type}.${PDY}${cyc}.ieee_d"
+            bcor_file=bcor.${data_file}
+            ctl_file=${type}.ctl
+            bcor_ctl=bcor.${ctl_file}
+            input_file=${type}
+        fi
 
-      if [[ -f input ]]; then
-         rm -f input
-      fi
+        if [[ -f input ]]; then
+            rm -f input
+        fi
 
-   # Check for 0 length input file here and avoid running
-   # the executable if $input_file doesn't exist or is 0 bytes
-   #
-      if [[ -s "${input_file}" ]]; then
-         nchanl=-999
+        # Check for 0 length input file here and avoid running
+        # the executable if $input_file doesn't exist or is 0 bytes
+        #
+        if [[ -s "${input_file}" ]]; then
+            nchanl=-999
 
-         cat << EOF > input
+            cat << EOF > input
  &INPUT
   satname='${type}',
   iyy=${iyy},
@@ -153,47 +148,45 @@ for type in ${SATYPE}; do
  /
 EOF
 
-         startmsg
-         ./${bcor_exec} < input >> "${pgmout}" 2>>errfile
-         export err=$?
-         if [[ ${err} -ne 0 ]]; then
-            echo "FATAL ERROR: ${bcor_exec} failed for instrument ${type} and datatype ${dtype}!"
-            exit "${err}"
-         fi
+            startmsg
+            "./${bcor_exec}" < input >> "${pgmout}" 2>> errfile
+            export err=$?
+            if [[ "${err}" -ne 0 ]]; then
+                msg="FATAL ERROR: ${bcor_exec} failed for instrument ${type} and datatype ${dtype}!"
+                err_exit "${msg}"
+            fi
 
+            #-------------------------------------------------------------------
+            #  move data, control, and stdout files to $TANKverf_rad and compress
+            #
 
-#-------------------------------------------------------------------
-#  move data, control, and stdout files to $TANKverf_rad and compress
-#
+            if [[ -s "${bcor_file}" ]]; then
+                ${COMPRESS} "${bcor_file}"
+            fi
 
-         if [[ -s ${bcor_file} ]]; then
-            ${COMPRESS} "${bcor_file}"
-         fi
+            if [[ -s "${bcor_ctl}" ]]; then
+                ${COMPRESS} "${bcor_ctl}"
+            fi
 
-         if [[ -s ${bcor_ctl} ]]; then
-            ${COMPRESS} "${bcor_ctl}"
-         fi
-
-      fi
-   done  # dtype in $gesanl loop
+        fi
+    done # dtype in $gesanl loop
 done     # type in $SATYPE loop
-
 
 "${USHgfs}/rstprod.sh"
 tar_file=radmon_bcor.tar
 
 if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
-  tar -cf "${tar_file}" bcor*.ieee_d* bcor*.ctl*
-  ${COMPRESS} ${tar_file}
-  mv "${tar_file}.${Z}" "${TANKverf_rad}/."
+    tar -cf "${tar_file}" bcor*.ieee_d* bcor*.ctl*
+    ${COMPRESS} "${tar_file}"
+    mv "${tar_file}.${Z}" "${TANKverf_rad}/."
 
-  if [[ ${RAD_AREA} = "rgn" ]]; then
-     cwd=$(pwd)
-     cd "${TANKverf_rad}" || exit 1
-     tar -xf "${tar_file}.${Z}"
-     rm -f "${tar_file}.${Z}"
-     cd "${cwd}" || exit 1
-  fi
+    if [[ ${RAD_AREA} = "rgn" ]]; then
+        cwd=$(pwd)
+        cd "${TANKverf_rad}" || exit 1
+        tar -xf "${tar_file}.${Z}"
+        rm -f "${tar_file}.${Z}"
+        cd "${cwd}" || exit 1
+    fi
 fi
 
 ################################################################################

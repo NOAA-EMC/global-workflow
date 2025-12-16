@@ -49,10 +49,10 @@
 "ocean_model", "SW",        "SW",            "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "LW",        "LW",            "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "evap",      "evap",          "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
-"ocean_model", "lprec",     "lprec",         "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
+#"ocean_model", "lprec",     "lprec",         "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "lrunoff",   "lrunoff",       "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 #"ocean_model", "frunoff",   "frunoff",       "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
-"ocean_model", "fprec",     "fprec",         "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
+#"ocean_model", "fprec",     "fprec",         "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "LwLatSens", "LwLatSens",     "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 "ocean_model", "Heat_PmE",  "Heat_PmE",      "@[MOM6_OUTPUT_DIR]/ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 

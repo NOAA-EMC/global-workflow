@@ -386,7 +386,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_enkfonly_atm']:
                     if run == 'gdas':
                         task_names[run] = []
-                        task_names[run] += ['prep', 'fetch', 'prepatmanlbias']
+                        task_names[run] += ['prep', 'fetchatmanlbias', 'prepatmanlbias']
 
             # Ensemble tasks
             elif 'enkf' in run:
