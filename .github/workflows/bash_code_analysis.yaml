@@ -31,10 +31,8 @@ jobs:
         with:
           filter_mode: nofilter
           level: warning
-          reviewdog_flags:
-            reporter: github-pr-review
-          shfmt_flags:
-            default: ''
+          reviewdog_flags: '-reporter=github-pr-review'
+          shfmt_flags: ''
 
   shellcheck:
     runs-on: ubuntu-22.04
