@@ -109,8 +109,12 @@ class ArchiveTarVars:
         if ensgrp == 0:
             # ENSGRP=0: Generate relative paths for ensemble mean/spread (enkf.yaml.j2)
             arch_dict.update(ArchiveTarVars.get_enkf_ensstat_com_paths(config_dict))
-        # Note: ENSGRP!=0 member-specific paths are generated per-member in archive.py
-        # via get_enkf_single_member_vars() during template rendering
+        elif
+            arch_dict.update(ArchiveTarVars._create_mem_com_sets(
+                config_dict,
+                arch_dict['first_group_mem'],
+                arch_dict['last_group_mem']
+            ))
 
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
@@ -499,8 +503,29 @@ class ArchiveTarVars:
                 )
                 member_vars[var_key] = rel_path
 
-        # Add member number as a padded string for convenience
-        member_vars['member_num'] = f"{member:03d}"
-
         logger.debug(f"Generated {len(member_vars)} relative COM paths for member {member}")
         return member_vars
+
+    @staticmethod
+    @logit(logger)
+    def _create_mem_com_sets(config_dict: AttrDict, first_group_mem: int, last_group_mem: int) -> Dict[str, str]:
+        """Generate COM path sets for a group of ensemble members.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary with COM templates
+        first_group_mem : int
+            First member number in this archive group
+        last_group_mem : int
+            Last member number in this archive group
+
+        Returns
+        -------
+        Dict[str, Dict[str, str]]
+            Dictionary mapping com_set_NNN keys to member-specific COM paths
+        """
+        mem_var_set = {}
+        for member in range(first_group_mem, last_group_mem + 1):
+            mem_var_set[f"com_set_{member:02d}"] = ArchiveTarVars.get_enkf_single_member_vars(config_dict, member)
+        return mem_var_set
