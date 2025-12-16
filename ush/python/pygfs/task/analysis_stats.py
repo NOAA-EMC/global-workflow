@@ -100,8 +100,8 @@ class AnalysisStats(Analysis):
 
             # Extract diag tar file
             jcb_config = self.jedi_dict[analysis].jcb_config
-            model = self.jedi_dict[analysis].model
-            diag_archive = os.path.join(jcb_config[f"{model}_obsdatain_path"],
+            component = self.jedi_dict[analysis].component
+            diag_archive = os.path.join(jcb_config[f"{component}_obsdatain_path"],
                                         f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx.tar.gz")
             Jedi.extract_tar(diag_archive)
 
@@ -150,11 +150,11 @@ class AnalysisStats(Analysis):
 
             # concatenate text files into one summary file
             jcb_config = self.jedi_dict[analysis].jcb_config
-            model = self.jedi_dict[analysis].model
-            summaryfile = os.path.join(jcb_config[f"{model}_obsdataout_path"], f"{self.task_config.APREFIX}{analysis}_stats.txt")
+            component = self.jedi_dict[analysis].component
+            summaryfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{self.task_config.APREFIX}{analysis}_stats.txt")
             with open(summaryfile, 'w') as outfile:
                 for ob in self.jedi_dict[analysis].jcb_config.observations:
-                    textfile = os.path.join(jcb_config[f"{model}_obsdataout_path"], f"{ob}_ioda_stats.txt")
+                    textfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{ob}_ioda_stats.txt")
                     if os.path.exists(textfile):
                         logger.info(f"Concatenating {textfile} to {summaryfile}")
                         with open(textfile, 'r') as infile:
