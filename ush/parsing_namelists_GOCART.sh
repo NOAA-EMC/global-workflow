@@ -13,21 +13,21 @@ GOCART_namelists() {
         local inst_aod_freq="${fhout_aero_padded}0000"
 
         # Other gocart fields not currently used
-        local inst_du_ss_freq="120000"
-        local tavg_du_ss_freq="120000"
-        local inst_ca_freq="120000"
-        local inst_ni_freq="120000"
-        local inst_su_freq="120000"
-        local inst_du_bin_freq="010000"
-        local tavg_du_bin_freq="030000"
-        local inst_ss_bin_freq="060000"
-        local inst_ca_bin_freq="120000"
-        local inst_ni_bin_freq="120000"
-        local inst_su_bin_freq="120000"
-        local inst_2d_freq="030000"
-        local inst_3d_freq="060000"
-        local tavg_2d_rad_freq="120000"
-        local tavg_3d_rad_freq="120000"
+        local inst_du_ss_freq="${fhout_aero_padded}0000"
+        local tavg_du_ss_freq="${fhout_aero_padded}0000"
+        local inst_ca_freq="${fhout_aero_padded}0000"
+        local inst_ni_freq="${fhout_aero_padded}0000"
+        local inst_su_freq="${fhout_aero_padded}0000"
+        local inst_du_bin_freq="${fhout_aero_padded}0000"
+        local tavg_du_bin_freq="${fhout_aero_padded}0000"
+        local inst_ss_bin_freq="${fhout_aero_padded}0000"
+        local inst_ca_bin_freq="${fhout_aero_padded}0000"
+        local inst_ni_bin_freq="${fhout_aero_padded}0000"
+        local inst_su_bin_freq="${fhout_aero_padded}0000"
+        local inst_2d_freq="${fhout_aero_padded}0000"
+        local inst_3d_freq="${fhout_aero_padded}0000"
+        local tavg_2d_rad_freq="${fhout_aero_padded}0000"
+        local tavg_3d_rad_freq="${fhout_aero_padded}0000"
 
         for template_in in "${AERO_CONFIG_DIR}/"*.rc; do
             base_in="$(basename "${template_in}")"
@@ -48,7 +48,9 @@ GOCART_namelists() {
             } > "${DATA}/AERO_ExtData.rc"
             # shellcheck disable=SC2320
             status=$?
-            if ((status != 0)); then exit "${status}"; fi
+            if [[ ${status} -ne 0 ]]; then
+                exit "${status}"
+            fi
         fi
     fi
 }
