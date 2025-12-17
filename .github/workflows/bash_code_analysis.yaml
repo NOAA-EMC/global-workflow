@@ -17,7 +17,7 @@ jobs:
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: write  # to get PR metadata
+      pull-requests: read  # to get PR metadata
       security-events: write
 
     steps:
@@ -30,7 +30,8 @@ jobs:
         uses: reviewdog/action-shfmt@v1
         with:
           filter_mode: nofilter
-          level: warning
+          fail_level: any
+          level: any
           reviewdog_flags: '-reporter=github-pr-review'
           shfmt_flags: ''
 
@@ -39,7 +40,7 @@ jobs:
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: write  # to get PR metadata
+      pull-requests: read  # to get PR metadata
       security-events: write
 
     steps:
@@ -52,7 +53,8 @@ jobs:
         uses: reviewdog/action-shellcheck@v1
         with:
           filter_mode: nofilter
-          level: warning
+          fail_level: any
+          level: any
           reporter: github-pr-review
           pattern: |
             config.*
