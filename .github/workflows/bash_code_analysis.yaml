@@ -8,18 +8,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: read  # for actions/checkout to fetch code
+  pull-requests: write  # to get PR metadata
+  security-events: write
 
 jobs:
 
   shfmt:
     runs-on: ubuntu-22.04
-
-    permissions:
-      contents: read  # for actions/checkout to fetch code
-      pull-requests: write  # to get PR metadata
-      security-events: write
-      checks: write
 
     steps:
       - name: Checkout code
@@ -39,12 +35,6 @@ jobs:
 
   shellcheck:
     runs-on: ubuntu-22.04
-
-    permissions:
-      contents: read  # for actions/checkout to fetch code
-      pull-requests: write  # to get PR metadata
-      security-events: write
-      checks: write
 
     steps:
       - name: Checkout code
