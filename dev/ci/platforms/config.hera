@@ -57,14 +57,6 @@ export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 #########################################################################
 export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 
-
-#########################################################################
-# CI CRON system configuration
-#########################################################################
-export GW_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
-export max_concurrent_cases=5
-export max_concurrent_pr=4
-
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
 
