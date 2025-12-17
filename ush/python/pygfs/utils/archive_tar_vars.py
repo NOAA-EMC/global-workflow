@@ -280,26 +280,35 @@ class ArchiveTarVars:
         # Ensemble member range calculation for archiving groups
         vars_out['first_group_mem'] = None
         vars_out['last_group_mem'] = None
+        # Only set these variables if RUN contains 'enkf'
+        vars_out['nmem_ens'] = config_dict.get('NMEM_ENS', None)
+        if 'enkf' in config_dict.get('RUN', ''):
+            vars_out['fhmin'] = config_dict.get('FHMIN_ENKF', 0)
+            vars_out['fhmax'] = config_dict.get('FHMAX_ENKF', 0)
+            vars_out['fhout'] = config_dict.get('FHOUT_ENKF', 3)
+            if config_dict.get('RUN', '') == 'enkfgfs':
+                vars_out['do_calc_increment'] = config_dict.get('DO_CALC_INCREMENT_ENKF_GFS', False)
+                vars_out['nmem_ens'] = config_dict.get('NMEM_ENS_GFS', None)
+                vars_out['restart_interval'] = config_dict.get('restart_interval_enkfgfs', None)
+                vars_out['is_gdas'] = False
+                vars_out['is_gfs'] = True
+            elif config_dict.get('RUN', '') == 'enkfgdas':
+                vars_out['do_calc_increment'] = config_dict.get('DO_CALC_INCREMENT', False)
+                vars_out['restart_interval'] = config_dict.get('restart_interval_enkfgdas', None)
+                vars_out['is_gdas'] = True
+                vars_out['is_gfs'] = False
+            else:
+                logger.warning(
+                    f"RUN='{config_dict.get('RUN', '')}' does not match a supported EnKF type ('enkfgfs' or 'enkfgdas'). "
+                )
 
         ensgrp = config_dict.get('ENSGRP', 0)
         if ensgrp != 0:
             nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
-            nmem_ens = config_dict.get('NMEM_ENS')
+            nmem_ens = vars_out['nmem_ens']
             if nmem_earcgrp and nmem_ens:
                 vars_out['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
                 vars_out['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
-
-        # Forecast hour calculations for archive templates
-        # Used by enkf.yaml.j2 for log archiving loops (epos post-processing groups)
-        fhmin_enkf = config_dict.get('FHMIN_ENKF', 0)
-        fhmax_enkf = config_dict.get('FHMAX_ENKF', 0)
-        fhout_enkf = config_dict.get('FHOUT_ENKF', 3)
-
-        # Generate forecast hour list: range(fhmin, fhmax + fhout, fhout)
-        # Example: fhmin=0, fhmax=9, fhout=3 -> [0, 3, 6, 9]
-        enkf_fhrs = list(range(fhmin_enkf, fhmax_enkf + fhout_enkf, fhout_enkf))
-        vars_out['enkf_epos_fhrs'] = enkf_fhrs
-        vars_out['enkf_epos_ngrps'] = len(enkf_fhrs)
 
         return vars_out
 

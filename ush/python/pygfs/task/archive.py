@@ -167,7 +167,10 @@ class Archive(Task):
 
 
         # Construct master YAML filename based on RUN
-        master_yaml = f"master_{arch_dict.RUN}.yaml.j2"
+        if "enkf" in arch_dict.RUN:
+            master_yaml = "master_enkf.yaml.j2"
+        else:
+            master_yaml = f"master_{arch_dict.RUN}.yaml.j2"
         master_yaml_path = os.path.join(archive_parm, master_yaml)
 
         # Check if this is EnKF member archiving (ENSGRP != 0)
