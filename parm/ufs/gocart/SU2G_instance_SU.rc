@@ -3,7 +3,7 @@
 #
 
 aerosol_radBands_optics_file: ExtData/optics/opticsBands_SU.v1_3.RRTMG.nc
-aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_SU.v1_3.nc
+aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_SU.v1_5.nc
 
 nbins: 4
 
@@ -22,6 +22,10 @@ aircraft_fuel_emission_factor: 0.0008
 
 # Scavenging efficiency per bin [km-1] (NOT USED UNLESS RAS IS CALLED)
 fscav: 0.0  0.0  0.4  0.4
+
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: 'ufs'
 
 # Dry particle radius [um], used for settling
 particle_radius_microns: 0.0 0.0 0.35 0.0

@@ -165,13 +165,14 @@ class GCAFSTasks(Tasks):
         str
             XML representation of the task
         """
+        cycledef = f'{self.run}_half,{self.run}' if self.run in ['gcdas', 'enkfgcdas'] else self.run
 
         resources = self.get_resource('prep_emissions')
         task_name = f'{self.run}_prep_emissions'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'envars': self.envars,
-                     'cycledef': self.run,
+                     'cycledef': cycledef,
                      'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/prep_emissions.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -218,7 +219,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def sfcanl(self):
+        """
+        Create a task for surface analysis (sfcanl).
 
+        This task performs the surface analysis step in the workflow, depending on whether JEDI atmospheric variational analysis is enabled.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'gcdas_atmanlfinal'}
@@ -245,7 +255,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def atmanlinit(self):
+        """
+        Create a task for atmospheric analysis initialization.
 
+        This task initializes the atmospheric analysis, including hybrid variational analysis if enabled.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -281,7 +300,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def atmanlvar(self):
+        """
+        Create a task for atmospheric analysis variational step.
 
+        This task performs the variational analysis step for the atmospheric component.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlinit'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -305,7 +333,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def atmanlfv3inc(self):
+        """
+        Create a task for applying FV3 increments to the atmospheric analysis.
 
+        This task applies the FV3 increment files to the atmospheric analysis fields.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -329,7 +366,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def atmanlfinal(self):
+        """
+        Create a task for finalizing the atmospheric analysis.
 
+        This task finalizes the atmospheric analysis by applying all necessary increments and adjustments.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfv3inc'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -353,7 +399,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def aeroanlgenb(self):
+        """
+        Create a task for generating aerosol background error files.
 
+        This task generates the background fields required for aerosol analysis.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -377,7 +432,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def aeroanlinit(self):
+        """
+        Create a task for initializing aerosol analysis.
 
+        This task initializes the aerosol analysis by preparing the necessary background and observation data.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': 'gcdas_aeroanlgenb', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -403,7 +467,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def aeroanlvar(self):
+        """
+        Create a task for the aerosol analysis variational step.
 
+        This task performs the variational analysis for the aerosol component.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {
             'type': 'task', 'name': f'{self.run}_aeroanlinit',
@@ -429,7 +502,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def aeroanlfinal(self):
+        """
+        Create a task for finalizing the aerosol analysis.
 
+        This task finalizes the aerosol analysis by applying all necessary increments and adjustments.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -601,24 +683,35 @@ class GCAFSTasks(Tasks):
     def _fcst_cycled(self):
 
         anldep = 'gcdas'
+
+        # Create the nested dependency structure
+        or_dependencies = []
+
+        # Always group sfcanl and aeroanlfinal together with AND
+        sfcanl_aero_deps = []
         dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
-        dep = rocoto.add_dependency(dep_dict)
-        dependencies = rocoto.create_dependency(dep=dep)
-
-        if self.options['do_aero_fcst']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-
+        sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
         if self.options['use_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
+            sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
 
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
+        sfcanl_aero_and = rocoto.create_dependency(dep_condition='and', dep=sfcanl_aero_deps)
+        or_dependencies.append(sfcanl_aero_and)
 
         if self.run in ['gcdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+            or_dependencies.append(rocoto.add_dependency(dep_dict))
+
+        # Create OR dependency between the analysis group and stage_ic
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=or_dependencies)
+
+        if self.options['do_aero_fcst']:
+            # Wrap the OR dependency in a list for the AND condition
+            and_deps = [dependencies]
+            dep_dict = {'type': 'task', 'name': f'{self.run}_prep_emissions'}
+            and_deps.append(rocoto.add_dependency(dep_dict))
+
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=and_deps)
 
         cycledef = 'gcdas_half,gcdas' if self.run in ['gcdas'] else self.run
 
@@ -739,6 +832,16 @@ class GCAFSTasks(Tasks):
         # return task
 
     def atmanlupp(self):
+        """
+        Create a task for UPP post-processing of the atmospheric analysis.
+
+        This task runs the Unified Post Processor (UPP) on the atmospheric analysis output.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         postenvars = self.envars.copy()
         postenvar_dict = {'FHR3': '000',
                           'UPP_RUN': 'analysis'}
@@ -775,6 +878,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def atmanlprod(self):
+        """
+        Create a task for generating atmospheric analysis products.
+
+        This task generates products from the atmospheric analysis output using UPP.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         postenvars = self.envars.copy()
         postenvar_dict = {'FHR_LIST': '-1'}
         for key, value in postenvar_dict.items():
@@ -804,12 +917,50 @@ class GCAFSTasks(Tasks):
         return task
 
     def atmupp(self):
+        """
+        Create a task for UPP post-processing of the atmospheric forecast.
+
+        This task runs the Unified Post Processor (UPP) on the atmospheric forecast output.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         return self._upptask(upp_run='forecast', task_id='atmupp')
 
     def goesupp(self):
+        """
+        Create a task for UPP post-processing of GOES satellite data.
+
+        This task runs the Unified Post Processor (UPP) for GOES satellite output.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         return self._upptask(upp_run='goes', task_id='goesupp')
 
     def _upptask(self, upp_run="forecast", task_id="atmupp"):
+        """
+        Helper method to create a UPP post-processing task.
+
+        This method creates a Rocoto task for running the Unified Post Processor (UPP)
+        on either forecast or GOES satellite output, depending on the arguments.
+
+        Parameters
+        ----------
+        upp_run : str, optional
+            Type of UPP run ('forecast' or 'goes'). Default is 'forecast'.
+        task_id : str, optional
+            Identifier for the task. Default is 'atmupp'.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
 
         VALID_UPP_RUN = ["forecast", "goes"]
         if upp_run not in VALID_UPP_RUN:
@@ -1008,6 +1159,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def metp(self):
+        """
+        Create a task for METplus verification.
+
+        This task runs METplus to verify model output against observations for various cases.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1065,6 +1226,16 @@ class GCAFSTasks(Tasks):
         return task
 
     def anlstat(self):
+        """
+        Create a task for analysis statistics.
+
+        This task computes statistics for the analysis, including aerosol analysis if enabled.
+
+        Returns
+        -------
+        str
+            XML representation of the task
+        """
         deps = []
         if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
