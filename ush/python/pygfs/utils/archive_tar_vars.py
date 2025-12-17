@@ -109,7 +109,7 @@ class ArchiveTarVars:
         if ensgrp == 0:
             # ENSGRP=0: Generate relative paths for ensemble mean/spread (enkf.yaml.j2)
             arch_dict.update(ArchiveTarVars.get_enkf_ensstat_com_paths(config_dict))
-        elif
+        else:
             arch_dict.update(ArchiveTarVars._create_mem_com_sets(
                 config_dict,
                 arch_dict['first_group_mem'],
