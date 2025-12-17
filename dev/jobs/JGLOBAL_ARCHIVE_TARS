@@ -80,17 +80,15 @@ fi
 # Run archive script
 ###############################################################
 
-set +eu
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
+unset_strict
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
 export err=$?
-set +x
+set_strict
 if [[ ${err} -ne 0 ]]; then
     err_exit "failed to archive the COM structure"
 fi
-set_trace
-set_strict
 
 ##############################################
 # End JOB SPECIFIC work
@@ -106,10 +104,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (
-    echo "${DATAROOT} does not exist. ABORT!"
-    exit 1
-)
+cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

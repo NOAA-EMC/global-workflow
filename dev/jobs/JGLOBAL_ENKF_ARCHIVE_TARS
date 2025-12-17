@@ -23,16 +23,14 @@ mkdir -p "${COMIN_CONF}"
 ###############################################################
 
 # Calls an external bash command; do not fail on unassigned/error
-set +eu
 export -n SHELLOPTS
+unset_strict
 "${SCRgfs}/exglobal_enkf_earc_tars.py"
 export err=$?
-set +x
+set_strict
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to archive the ensemble COM structure"
 fi
-set_trace
-set_strict
 
 ###############################################################
 
@@ -50,10 +48,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (
-    echo "${DATAROOT} does not exist. ABORT!"
-    exit 1
-)
+cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

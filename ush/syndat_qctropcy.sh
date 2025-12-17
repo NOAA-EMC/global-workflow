@@ -229,9 +229,9 @@ cpreq "${slmask}" slmask.126
 pgm=$(basename "${EXECgfs}/syndat_qctropcy.x")
 export pgm
 if [[ -s prep_step ]]; then
-    set +u
+    unset_strict
     source prep_step
-    set -u
+    set_strict
 else
     [[ -f errfile ]] && rm errfile
     # shellcheck disable=SC2046

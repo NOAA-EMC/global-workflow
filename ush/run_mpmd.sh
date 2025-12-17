@@ -68,7 +68,7 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion,
         ((nm = nm + 1))
     done < "${cmdfile}"
 
-    set +e
+    unset_strict
     # shellcheck disable=SC2086
     ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
     err=$?

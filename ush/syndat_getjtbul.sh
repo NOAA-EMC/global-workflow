@@ -102,9 +102,9 @@ fi
 pgm=$(basename "${EXECgfs}/syndat_getjtbul.x")
 export pgm
 if [[ -s prep_step ]]; then
-    set +u
+    unset_strict
     source prep_step
-    set -u
+    set_strict
 else
     [[ -f errfile ]] && rm errfile
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')

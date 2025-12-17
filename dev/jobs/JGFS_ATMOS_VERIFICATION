@@ -29,13 +29,16 @@ done
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
     # Override the -e in VERIF_GLOBALSH's shebang and un-export SHELLOPTS
     # TODO: clean up the verif-global script so it does not raise false-positive errors
-    set +eu
+    unset_strict
     export -n SHELLOPTS
     bash -x "${VERIF_GLOBALSH}"
     err=$?
+    set_strict
     if [[ ${err} -ne 0 ]]; then
         exit "${err}"
     fi
 fi
 
-if [[ ${KEEPDATA:-"NO"} == "NO" ]]; then rm -rf "${DATAROOT}"; fi # TODO: This should be $DATA
+if [[ ${KEEPDATA:-"NO"} == "NO" ]]; then
+    rm -rf "${DATAROOT}" # TODO: This should be $DATA
+fi
