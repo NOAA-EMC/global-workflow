@@ -1,0 +1,25 @@
+# Variables provided by archive_vars.py:
+# - cycle_HH, cycle_YMDH, cycle_YMD, head
+# - ARCDIR
+# - All COMIN_* paths
+
+# Ensemble (EnKF) archiving template
+# Used for: enkfgdas, enkfgfs, enkfgcafs, enkfgcdas
+
+# Build head string (e.g., 'gfs.t00z.')
+{% set head = RUN + ".t" + cycle_HH + "z." %}
+
+mkdir:
+    - "{{ ARCDIR }}"
+
+copy_opt:
+    # Ensemble analysis statistics
+    {% if DO_JEDIATMENS == True %}
+    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}stat.atm.tar",
+       "{{ ARCDIR }}/atmensstat.{{ RUN }}.{{ cycle_YMDH }}"]
+    {% else %}
+    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}enkfstat.txt",
+       "{{ ARCDIR }}/enkfstat.{{ RUN }}.{{ cycle_YMDH }}"]
+    - ["{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}gsistat_ensmean.txt",
+       "{{ ARCDIR }}/gsistat.{{ RUN }}.{{ cycle_YMDH }}.ensmean"]
+    {% endif %}

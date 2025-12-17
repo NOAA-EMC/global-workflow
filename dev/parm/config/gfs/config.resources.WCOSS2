@@ -35,7 +35,7 @@ case ${step} in
     ;;
 
   "arch_vrfy" | "arch_tars" | "earc_vrfy" | "earc_tars" | "getic")
-    declare -x "memory"="10GB"
+    declare -x "memory"="3GB"
     ;;
 
   "eupd")

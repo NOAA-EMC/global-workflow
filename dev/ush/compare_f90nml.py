@@ -77,8 +77,7 @@ def compare_dicts(dict1: Dict, dict2: Dict, path: str = "") -> None:
             max_len = len(max(diff_dict[path], key=len))
             for kk in diff_dict[path].keys():
                 items = diff_dict[path][kk]
-                print(
-                    f"{kk:>{max_len+2}} : {' | '.join(map(str, diff_dict[path][kk]))}")
+                print(f"{kk:>{max_len + 2}} : {' | '.join(map(str, diff_dict[path][kk]))}")
 
     _print_diffs(result)
 

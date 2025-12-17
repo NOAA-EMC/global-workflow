@@ -99,6 +99,12 @@ runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
 finished=false
 ${runcmd}
+rc=$?
+if [[ "${rc}" -ne 0 ]]; then
+  echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to run rocoto on the first attempt!"
+  exit 1
+fi
+
 echo "Monitoring builds on compute nodes"
 while [[ "${finished}" == "false" ]]; do
    sleep 1m
@@ -139,7 +145,7 @@ while [[ "${finished}" == "false" ]]; do
             echo "Rocoto reported that the build failed for ${job}"
          fi
       done < rocotostat.out
-
+      exit 1
    fi
 done
 
