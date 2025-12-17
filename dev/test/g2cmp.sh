@@ -4,7 +4,7 @@
 # The files must have the same fields in the same order
 
 # shellcheck disable=SC2155
-HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/../.." && pwd -P)
+HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
 declare -rx HOMEgfs
 
 file1=${1:?}
