@@ -34,7 +34,7 @@ class Archive(Task):
         None
         """
         super().__init__(config)
-       # Boolean used for cleanup if the EXPDIR was archived
+        # Boolean used for cleanup if the EXPDIR was archived
         self.archive_expdir = False
 
     @logit(logger)
@@ -165,7 +165,6 @@ class Archive(Task):
         else:
             arch_dict['archive_expdir'] = self._archive_expdir(arch_dict)
 
-
         # Construct master YAML filename based on RUN
         if "enkf" in arch_dict.RUN:
             master_yaml = "master_enkf.yaml.j2"
@@ -249,7 +248,7 @@ class Archive(Task):
 
     @logit(logger)
     def _configure_tars_enkf_members(self, arch_dict: AttrDict, master_yaml_path: str,
-                                    first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
+                                     first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
         """Per-member template rendering for EnKF member archiving.
 
         This method renders templates once for each ensemble member, collecting
@@ -293,8 +292,8 @@ class Archive(Task):
 
             # Parse template with member-specific variables
             member_parsed_sets = parse_j2yaml(master_yaml_path,
-                                             member_dict,
-                                             allow_missing=False)
+                                               member_dict,
+                                               allow_missing=False)
 
             # Accumulate datasets
             for dataset_key, dataset in member_parsed_sets.datasets.items():
