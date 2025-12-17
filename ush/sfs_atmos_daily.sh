@@ -23,8 +23,12 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
 OUTDIR="${COMOUT_ATMOS_GRIB}"
-GMERGE="/ncrc/home1/Yangxing.Zheng/wgrib2/gmerge"
+#GMERGE="/ncrc/home1/Yangxing.Zheng/wgrib2/gmerge"
 mkdir -m 755 -p "${OUTDIR}"
+mkdir -m 755 -p "${OUTDIR}/acc.daily.${ENSMEM}"
+mkdir -m 755 -p "${OUTDIR}/acc.monthly.${ENSMEM}"
+mkdir -m 755 -p "${OUTDIR}/inst.daily.${ENSMEM}"
+mkdir -m 755 -p "${OUTDIR}/inst.monthly.${ENSMEM}"
 
 # Lists of variables
 dailyinstvars="(:TMP|UGRD|VGRD):(2|5|10|30|50|100|200|250|300|500|600|700|850|925|1000) mb|HGT:(2|5|10|30|50|100|200|500|700|850|1000) mb|SPFH:(5|30|100|200|300|500|600|700|850|925|1000) mb|VVEL:500 mb|(STRM|VPOT):(200|850) mb|(PRES|HGT|:TMP|CNWAT|WEASD|PEVPR|ICETK|WILT|FLDCP|SUNSD|:LFTX|CAPE|LAND|ICEC|FDNSSTMP|CPOFP):surface|TMP:1 hybrid|(PVORT|:TMP):(450|550|650) K|(TSOIL|SOILW|SOILL):(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL|MSLET|PWAT|TOZNE" 
@@ -52,11 +56,12 @@ lastfhr=${lastftime:4:4}
 vt_final=$(wgrib2 "${lastfile}" -d 1 -vt)
 mm_final=${vt_final:11:2}
 dd_final=${vt_final:13:2}
+yy_final=${vt_final:7:4}
 
 # set filenames for valid date year and following year
 filename_start="${MEMDIR}.${vt_date}.${yy_init}"
 filename_start_next="${MEMDIR}.${vt_date}.${yy_init_next}"
-filename_end=".grib.${cyc}z.grb2"
+filename_end=".grib.t${cyc}z.grb2"
 
 #### Set indexes for finding months of validation date for loops
 months_in_year=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12")
@@ -144,7 +149,8 @@ done
 
 ### This second loop needs to be done if the end month is earlier
 ### than the start month or the same (e.g., full year run)
-if (( start_idx==end_idx )) || (( end_idx < start_idx )); then
+### also making sure it is not the same month and year (just one month data)
+if (( start_idx==end_idx )) || (( end_idx < start_idx )) && (( $yy_init != $yy_final )); then
 
 # loop from start of calendar year to valid date month
 for (( i=0; i<end_idx+1; i++ ))
@@ -188,3 +194,5 @@ do
   rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
 
 done
+
+fi  # end of if block for checking end month vs. start month
