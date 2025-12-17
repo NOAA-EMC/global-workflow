@@ -7,18 +7,18 @@ on:
 
   workflow_dispatch:
 
-permissions:
-  contents: read  # for actions/checkout to fetch code
-  pull-requests: write  # to get PR metadata
-  security-events: write
-
 jobs:
 
   shfmt:
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # to get PR metadata
+      security-events: write
+
     steps:
-      - name: Checkout code
+      - name: checkout code
         uses: actions/checkout@v6
         with:
           submodules: false
@@ -36,13 +36,18 @@ jobs:
   shellcheck:
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # to get PR metadata
+      security-events: write
+
     steps:
-      - name: Checkout code
+      - name: checkout code
         uses: actions/checkout@v6
         with:
           submodules: false
       
-      - name: Shellcheck Scan
+      - name: shellcheck scan
         uses: reviewdog/action-shellcheck@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
