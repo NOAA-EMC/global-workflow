@@ -48,17 +48,21 @@ set -e
 force_launch="False"
 skip_wait="False"
 while getopts ":fnh" flag; do
-  case "${flag}" in
-    f) force_launch="True";;
-    n) skip_wait="True";;
-    h) echo "Usage: ./launch_java_agent.sh [now] [force]
+    case "${flag}" in
+        f) force_launch="True" ;;
+        n) skip_wait="True" ;;
+        h)
+            echo "Usage: ./launch_java_agent.sh [now] [force]
 Two mutually exclusive optional arguments:
     -n (now) causes the script to launch the Jenkins agent without waiting before trying again.
     -f (force) forces the script to launch the Jenkins regarless of its connection status."
-       exit 0 ;;
-    *) echo "Unknown flag: ${flag}"
-       exit 1;;
-  esac
+            exit 0
+            ;;
+        *)
+            echo "Unknown flag: ${flag}"
+            exit 1
+            ;;
+    esac
 done
 
 controller_url="https://jenkins.epic.oarcloud.noaa.gov"
@@ -75,13 +79,16 @@ host=$(hostname)
 
 source "${HOMEgfs_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2 | gaeac5 | gaeac6 )
-    echo "Launch Jenkins Java Controler on ${MACHINE_ID}";;
-  noaacloud )
-    echo "Launch Jenkins Java Controler on ${PW_CSP}";;
-  *)
-    echo "Unsupported platform. Exiting with error."
-    exit 1;;
+    hera | orion | hercules | wcoss2 | gaeac5 | gaeac6)
+        echo "Launch Jenkins Java Controler on ${MACHINE_ID}"
+        ;;
+    noaacloud)
+        echo "Launch Jenkins Java Controler on ${PW_CSP}"
+        ;;
+    *)
+        echo "Unsupported platform. Exiting with error."
+        exit 1
+        ;;
 esac
 
 LOG=launched_agent-$(date +%Y%m%d%M).log
@@ -92,18 +99,18 @@ module use "${HOMEgfs_}/modulefiles"
 module load "gw_setup.${MACHINE_ID}"
 
 if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-  source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
+    source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
 else
-  source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
+    source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
 fi
 
 JAVA_HOME="${JENKINS_AGENT_LAUNCH_DIR}/JAVA/jdk-17.0.10"
 if [[ ! -d "${JAVA_HOME}" ]]; then
-  JAVA_HOME=/usr/lib/jvm/jre-17
-  if [[ ! -d "${JAVA_HOME}" ]]; then
-    echo "ERROR: JAVA_HOME not found. Exiting with error."
-    exit 1
-  fi
+    JAVA_HOME=/usr/lib/jvm/jre-17
+    if [[ ! -d "${JAVA_HOME}" ]]; then
+        echo "ERROR: JAVA_HOME not found. Exiting with error."
+        exit 1
+    fi
 fi
 
 JAVA="${JAVA_HOME}/bin/java"
@@ -112,36 +119,36 @@ ${JAVA} -version
 
 GH=$(command -v gh || echo "${HOME}/bin/gh")
 if [[ ! -f "${GH}" ]]; then
-   echo "FATAL ERROR: GitHub CLI (gh) not found. (exiting with error)"
-   exit 1
+    echo "FATAL ERROR: GitHub CLI (gh) not found. (exiting with error)"
+    exit 1
 fi
 ${GH} --version
 export GH
 
 check_token=$("${GH}" auth status 2>&1 | grep "Token:") || true
 if [[ "${check_token}" != *"*****"* ]]; then
-  echo "gh not authenticating with emcbot token"
-  exit 1
+    echo "gh not authenticating with emcbot token"
+    exit 1
 fi
 echo "gh authenticating with emcbot TOKEN ok"
 
 if [[ -d "${JENKINS_AGENT_LAUNCH_DIR}" ]]; then
-  echo "Jenkins Agent Launch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
+    echo "Jenkins Agent Launch Directory: ${JENKINS_AGENT_LAUNCH_DIR}"
 else
-  echo "ERROR: Jenkins Agent Launch Directory not found. Exiting with error."
-  exit 1
+    echo "ERROR: Jenkins Agent Launch Directory not found. Exiting with error."
+    exit 1
 fi
 cd "${JENKINS_AGENT_LAUNCH_DIR}"
 echo "Entered directory ${PWD}"
 
 if ! [[ -f agent.jar ]]; then
-  curl -sO "${controller_url}/jnlpJars/agent.jar"
-  echo "Updated agent.jar downloaded"
+    curl -sO "${controller_url}/jnlpJars/agent.jar"
+    echo "Updated agent.jar downloaded"
 fi
 
 if [[ ! -f "${controller_user_auth_token}" ]]; then
-   echo "User Jenkins authetication TOKEN to the controller for using the Remote API does not exist"
-   exit 1
+    echo "User Jenkins authetication TOKEN to the controller for using the Remote API does not exist"
+    exit 1
 fi
 
 JENKINS_TOKEN=$(cat "${controller_user_auth_token}")
@@ -159,18 +166,18 @@ check_node_online() {
     rm -f curl_response
     curl_response=$(curl --silent -u "${controller_user}:${JENKINS_TOKEN}" "${controller_url}/computer/${MACHINE_ID^}-EMC/api/json?pretty=true") || true
     if [[ "${curl_response}" == "" ]]; then
-       echo "ERROR: Jenkins controller not reachable. Exiting with error."
-       exit 1
+        echo "ERROR: Jenkins controller not reachable. Exiting with error."
+        exit 1
     fi
     if [[ "${curl_response}" == *"Token expired"* ]]; then
-       echo "ERROR: Jenkins Token expired"
-       exit 1
+        echo "ERROR: Jenkins Token expired"
+        exit 1
     fi
     echo -n "${curl_response}" > curl_response
     ONLINE_STATUS=$(./parse.py curl_response)
 }
 
-lauch_agent () {
+lauch_agent() {
     echo "Launching Jenkins Agent on ${host} using internal workspace ${JENKINS_WORK_DIR}"
 
     # Clear the remoting cache
@@ -180,31 +187,34 @@ lauch_agent () {
     fi
 
     command="nohup ${JAVA} -jar agent.jar -jnlpUrl ${controller_url}/computer/${MACHINE_ID^}-EMC/jenkins-agent.jnlp  -secret @jenkins-secret-file -workDir ${JENKINS_WORK_DIR}"
-    echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >& "${LOG}"
+    echo -e "Launching Jenkins Agent on ${host} with the command:\n${command}" >&"${LOG}"
     ${command} >> "${LOG}" 2>&1 &
     nohup_PID=$!
     echo "Java agent running on PID: ${nohup_PID}" >> "${LOG}" 2>&1
 }
 
 if [[ "${force_launch}" == "True" ]]; then
-  lauch_agent
-  exit
+    lauch_agent
+    exit
 fi
 
 check_node_online
 offline="${ONLINE_STATUS}"
 
 if [[ "${offline}" != "False" ]]; then
-   if [[ "${skip_wait}" != "True" ]]; then
-      echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
-      sleep 300
-      offline=$(set -e; check_node_online)
-   fi
-   if [[ "${offline}" != "False" ]]; then
-     lauch_agent
+    if [[ "${skip_wait}" != "True" ]]; then
+        echo "Jenkins Agent is offline. Waiting 5 more minutes to check again in the event it is a temp network issue"
+        sleep 300
+        offline=$(
+            set -e
+            check_node_online
+        )
+    fi
+    if [[ "${offline}" != "False" ]]; then
+        lauch_agent
     else
-      echo "Jenkins Agent is online (nothing done)"
+        echo "Jenkins Agent is online (nothing done)"
     fi
 else
-  echo "Jenkins Agent is online (nothing done)"
+    echo "Jenkins Agent is online (nothing done)"
 fi
