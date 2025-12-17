@@ -2,7 +2,7 @@
 set -eux
 
 function usage() {
-  cat << EOF
+    cat << EOF
 Builds the GFS utility programs.
 
 Usage: ${BASH_SOURCE[0]} [-d][-h][-j n][-v]
@@ -15,29 +15,29 @@ Usage: ${BASH_SOURCE[0]} [-d][-h][-j n][-v]
   -v:
     Turn on verbose output
 EOF
-  exit 1
+    exit 1
 }
 
 OPTIND=1
 while getopts ":j:dvh" option; do
-  case "${option}" in
-    d) BUILD_TYPE="Debug";;
-    v) BUILD_VERBOSE="YES";;
-    j) BUILD_JOBS="${OPTARG}";;
-    h)
-      usage
-      ;;
-    :)
-      echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-      usage
-      ;;
-    *)
-      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
-      ;;
-  esac
+    case "${option}" in
+        d) BUILD_TYPE="Debug" ;;
+        v) BUILD_VERBOSE="YES" ;;
+        j) BUILD_JOBS="${OPTARG}" ;;
+        h)
+            usage
+            ;;
+        :)
+            echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+            usage
+            ;;
+        *)
+            echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
+            usage
+            ;;
+    esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 # shellcheck disable=SC2155
 readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
@@ -45,8 +45,8 @@ readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." &
 source "${HOMEgfs_}/ush/detect_machine.sh"
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
-BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
-BUILD_JOBS=${BUILD_JOBS:-8} \
-"${HOMEgfs_}/sorc/gfs_utils.fd/ush/build.sh"
+    BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
+    BUILD_JOBS=${BUILD_JOBS:-8} \
+    "${HOMEgfs_}/sorc/gfs_utils.fd/ush/build.sh"
 
 exit
