@@ -303,7 +303,10 @@ class ArchiveTarVars:
                 )
 
         ensgrp = config_dict.get('ENSGRP', 0)
-        if ensgrp != 0:
+
+        if ensgrp == 0:
+            vars_out['enkf_epos_ngrps'] = len(range(vars_out['fhmin'], vars_out['fhmax'] + vars_out['fhout'], vars_out['fhout']))
+        else:
             nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
             nmem_ens = vars_out['nmem_ens']
             if nmem_earcgrp and nmem_ens:

@@ -227,13 +227,13 @@ class Archive(Task):
         if arch_dict.get('archive_expdir', False):
             # Check that "expdir" is in the set of archives to create
             for dataset in parsed_sets.datasets.values():
-                if dataset.name == "EXPDIR":
+                if dataset.get('name') == "EXPDIR":
                     # If found, check if we should archive this cycle
                     self.archive_expdir = True
                     break
 
             # If requested, get workflow hashes/statuses/diffs for EXPDIR archiving
-            if self.archive_expdir and (arch_dict.ARCH_HASHES or arch_dict.ARCH_DIFFS):
+            if self.archive_expdir and (arch_dict.get('ARCH_HASHES') or arch_dict.get('ARCH_DIFFS')):
                 self._pop_git_info(arch_dict)
 
         atardir_sets = []
@@ -243,7 +243,7 @@ class Archive(Task):
             dataset["fileset"] = Archive._create_fileset(dataset)
             dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
 
-            atardir_sets.append(dataset)
+            atardir_sets.append(AttrDict(dataset))
 
         return atardir_sets
 
@@ -283,20 +283,17 @@ class Archive(Task):
         for mem in range(first_group_mem, last_group_mem + 1):
             logger.debug(f"Rendering template for member {mem}")
 
-            # Mutate arch_dict in-place for this member
-            com_key = f"com_set_{mem:02d}"
-            member_vars = arch_dict.get(com_key)
+            # Create member-specific dict combining arch_dict with member COM paths
+            member_vars = arch_dict.get(f"com_set_{mem:02d}")
             if member_vars is None:
-                raise ValueError(f"Member COM paths for {com_key} not found in arch_dict.")
+                raise ValueError(f"Member COM paths for com_set_{mem:02d} not found in arch_dict.")
 
-            # Remove all com_set_XXX keys (including the current member's) from arch_dict in one line
-            [arch_dict.pop(k) for k in list(arch_dict.keys()) if k.startswith("com_set_")]
-            # Flatten the current member's COM paths to the top level of arch_dict
-            arch_dict.update(member_vars)
+            # Create temporary dict with member-specific variables
+            member_dict = {**arch_dict, **member_vars}
 
             # Parse template with member-specific variables
             member_parsed_sets = parse_j2yaml(master_yaml_path,
-                                             arch_dict,
+                                             member_dict,
                                              allow_missing=False)
 
             # Accumulate datasets
@@ -322,8 +319,8 @@ class Archive(Task):
         atardir_sets = []
         for dataset in accumulated_datasets.values():
             dataset["fileset"] = Archive._create_fileset(dataset)
-            dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
-            atardir_sets.append(dataset)
+            dataset["has_rstprod"] = Archive._has_rstprod(dataset['fileset'])
+            atardir_sets.append(AttrDict(dataset))
 
         logger.info(f"Accumulated {len(atardir_sets)} datasets from {last_group_mem - first_group_mem + 1} members")
 
@@ -405,8 +402,8 @@ class Archive(Task):
 
         # Check that all required files are present and add them to the list of files to archive
         if "required" in atardir_set:
-            if atardir_set.required is not None:
-                for item in atardir_set.required:
+            if atardir_set['required'] is not None:
+                for item in atardir_set['required']:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
                         raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
@@ -415,8 +412,8 @@ class Archive(Task):
 
         # Check for optional files and add found items to the list of files to archive
         if "optional" in atardir_set:
-            if atardir_set.optional is not None:
-                for item in atardir_set.optional:
+            if atardir_set['optional'] is not None:
+                for item in atardir_set['optional']:
                     glob_set = glob.glob(item)
                     if len(glob_set) == 0:
                         logger.warning(f"WARNING: optional file/glob {item} not found!")
