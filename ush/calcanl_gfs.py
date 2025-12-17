@@ -12,81 +12,8 @@ import gsi_utils
 from collections import OrderedDict
 import datetime
 from wxflow import cast_as_dtype
-from netCDF4 import Dataset, num2date
-import numpy as np
 
 python2fortran_bool = {True: '.true.', False: '.false.'}
-
-
-def calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
-                  ComIn_Ges, GPrefix,
-                  FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                  ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, run, JEDI):
-    print('calcanl_gcafs beginning at: ', datetime.datetime.utcnow())
-
-    IAUHH = IAUHrs
-
-    # copy and link files
-    # The GCAFS system currently runs 3DVar only, so check a single condition here
-    if not (DoIAU and l4DEnsVar and Write4Danl):
-        # for full res analysis
-        CalcAnlDir = RunDir + '/calcanl_' + format(6, '02')
-        if not os.path.exists(CalcAnlDir):
-            gsi_utils.make_dir(CalcAnlDir)
-        gsi_utils.link_file(RunDir + '/siginc.nc', CalcAnlDir + '/siginc.nc.06')
-        gsi_utils.link_file(RunDir + '/sigf06', CalcAnlDir + '/ges.06')
-        gsi_utils.link_file(RunDir + '/siganl', CalcAnlDir + '/anl.06')
-
-        # iovars and incvars for aerosol in gsi-utils do not match correctly,
-        # hard-coded here.
-        aerovars = [['so4', 'mass_fraction_of_sulfate_in_air'],
-                    ['bc1', 'mass_fraction_of_hydrophobic_black_carbon_in_air'],
-                    ['bc2', 'mass_fraction_of_hydrophilic_black_carbon_in_air'],
-                    ['oc1', 'mass_fraction_of_hydrophobic_organic_carbon_in_air'],
-                    ['oc2', 'mass_fraction_of_hydrophilic_organic_carbon_in_air'],
-                    ['dust1', 'mass_fraction_of_dust001_in_air'],
-                    ['dust2', 'mass_fraction_of_dust002_in_air'],
-                    ['dust3', 'mass_fraction_of_dust003_in_air'],
-                    ['dust4', 'mass_fraction_of_dust004_in_air'],
-                    ['dust5', 'mass_fraction_of_dust005_in_air'],
-                    ['seas1', ''],                                   # no seas1 increment
-                    ['seas2', 'mass_fraction_of_sea_salt001_in_air'],
-                    ['seas3', 'mass_fraction_of_sea_salt002_in_air'],
-                    ['seas4', 'mass_fraction_of_sea_salt003_in_air'],
-                    ['seas5', 'mass_fraction_of_sea_salt004_in_air']
-                    ]
-
-        inc_file = os.path.join(CalcAnlDir, 'siginc.nc.06')
-        anl_file = os.path.join(CalcAnlDir, 'anl.06')
-        ges_file = os.path.join(CalcAnlDir, 'ges.06')
-        with Dataset(inc_file, mode='r') as incfile, Dataset(ges_file, mode='r') as gesfile, Dataset(anl_file, mode='a') as anlfile:
-            for ioname, incname in aerovars:
-                bkg = gesfile.variables[ioname][:]
-                # no seas1 increment
-                if ioname == 'seas1':
-                    anl = bkg
-                else:
-                    increment = incfile.variables[incname][:]
-                    # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
-                    increment_reshape = np.transpose(increment, (2, 0, 1))
-                    anl = bkg + increment_reshape[np.newaxis, :, :, :]
-
-                anlfile.variables[ioname][:] = anl[:]
-            # update time (from 6 to 0) and time units in anlfile so UPP can create anl variables
-            time = gesfile.variables['time']
-            time_val = time[:]
-            time_units = time.units
-            time_calendar = getattr(time, "calendar", "standard")
-            cycle_time = num2date(time_val, units=time_units, calendar=time_calendar)
-            time_units_new = f"hours since {cycle_time[0]}"
-            anlfile.variables['time'][:] = 0.0
-            anlfile.variables['time'].setncattr("units", time_units_new)
-
-    else:
-        print('Condition not recognized, exiting...')
-        sys.exit(1)
-
-    print('calcanl_gcafs successfully completed at: ', datetime.datetime.utcnow())
 
 
 # function to calculate analysis from a given increment file and background
@@ -430,16 +357,8 @@ if __name__ == '__main__':
     JEDI = gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES'))
 
     print(locals())
-    if Run == 'gcdas':
-        calcanl_gcafs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
-                      ComIn_Ges, GPrefix,
-                      FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                      ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc,
-                      Run, JEDI)
-
-    else:
-        calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
-                    ComIn_Ges, GPrefix,
-                    FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
-                    ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc,
-                    Run, JEDI)
+    calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
+                ComIn_Ges, GPrefix,
+                FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
+                ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc,
+                Run, JEDI)
