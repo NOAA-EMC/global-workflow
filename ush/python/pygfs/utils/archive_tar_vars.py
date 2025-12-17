@@ -44,7 +44,6 @@ All public operational functions are decorated with @logit(logger).
 """
 import os
 from logging import getLogger
-from typing import Any, Dict, Tuple
 from wxflow import AttrDict, logit, to_YMD, to_YMDH, add_to_datetime, to_timedelta
 
 logger = getLogger(__name__.split('.')[-1])
@@ -81,7 +80,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, Any]
+        AttrDict
             Dictionary containing variables for Jinja2 templates:
             - cycle_HH, cycle_YMDH, cycle_YMD, head: Cycle-specific variables
             - COMIN_*, COMOUT_*, COM_*: All COM directory paths (from job scripts)
@@ -154,7 +153,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, Any]
+        AttrDict
             Dictionary containing all EnKF archive variables
 
         Notes
@@ -209,7 +208,7 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def _get_yaml_specific_cyc_vars(config_dict: AttrDict) -> Dict[str, Any]:
+    def _get_yaml_specific_cyc_vars(config_dict: AttrDict) -> AttrDict:
         """Compute YAML-specific cycle variables used by master_enkf.yaml.
 
         This method computes EnKF-specific cycle variables including analysis/restart
@@ -225,7 +224,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, Any]
+        AttrDict
             Dictionary containing cycle variables
         """
         # helpers already imported at module level
@@ -236,7 +235,7 @@ class ArchiveTarVars:
         arch_warmicfreq = config_dict.get('ARCH_WARMICFREQ', 1)
         arch_cyc = config_dict.get('ARCH_CYC', 0)
 
-        vars_out: Dict[str, Any] = {}
+        vars_out = AttrDict()
         # Basic cycle variables
         vars_out['cycle_HH'] = current_cycle.strftime("%H")
         vars_out['cycle_YMDH'] = to_YMDH(current_cycle)
@@ -317,14 +316,14 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def _replace_template_vars(template: str, var_dict: Dict[str, Any], rotdir: str) -> str:
+    def _replace_template_vars(template: str, var_dict: AttrDict, rotdir: str) -> str:
         """Replace template variables and return a path relative to ROTDIR.
 
         Parameters
         ----------
         template : str
             Template string with variables to replace (e.g., "${ROTDIR}/${RUN}.${YMD}/${HH}")
-        var_dict : Dict[str, Any]
+        var_dict : AttrDict
             Dictionary of variable names and values
         rotdir : str
             Absolute ROTDIR used to strip from generated paths to create

@@ -5,7 +5,7 @@ import os
 import shutil
 import tarfile
 from logging import getLogger
-from typing import Any, Dict, List
+from typing import List
 from copy import deepcopy
 
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
@@ -21,12 +21,12 @@ class Archive(Task):
     """
 
     @logit(logger, name="Archive")
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: AttrDict) -> None:
         """Constructor for the Archive task
 
         Parameters
         ----------
-        config : Dict[str, Any]
+        config : AttrDict
             Incoming configuration for the task from the environment
 
         Returns
@@ -38,17 +38,17 @@ class Archive(Task):
         self.archive_expdir = False
 
     @logit(logger)
-    def configure_vrfy(self, arch_dict: Dict[str, Any]) -> (Dict[str, Any]):
+    def configure_vrfy(self, arch_dict: AttrDict) -> (AttrDict):
         """Determine which files will need to be created to archive to arcdir.
 
         Parameters
         ----------
-        arch_dict : Dict[str, Any]
+        arch_dict : AttrDict
             Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
 
         Return
         ------
-        arcdir_set : Dict[str, Any]
+        arcdir_set : AttrDict
             Set of FileHandler instructions to copy files to the ARCDIR
         """
 
@@ -83,20 +83,20 @@ class Archive(Task):
         # Collect datasets that need to be archived
         self.tar_cmd = ""
 
-        return arcdir_set
+        return AttrDict(arcdir_set)
 
     @logit(logger)
-    def configure_tars(self, arch_dict: Dict[str, Any]) -> (List[Dict[str, Any]]):
+    def configure_tars(self, arch_dict: AttrDict) -> (List[AttrDict]):
         """Determine which tarballs will need to be created.
 
         Parameters
         ----------
-        arch_dict : Dict[str, Any]
+        arch_dict : AttrDict
             Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
 
         Return
         ------
-        atardir_sets : List[Dict[str, Any]]
+        atardir_sets : List[AttrDict]
             List of tarballs and instructions for creating them via tar or htar
         """
 
@@ -199,7 +199,7 @@ class Archive(Task):
         return atardir_sets
 
     @logit(logger)
-    def _configure_tars_standard(self, arch_dict: AttrDict, master_yaml_path: str) -> List[Dict[str, Any]]:
+    def _configure_tars_standard(self, arch_dict: AttrDict, master_yaml_path: str) -> List[AttrDict]:
         """Standard single-pass template rendering for non-member archiving.
 
         This method is used for:
@@ -215,7 +215,7 @@ class Archive(Task):
 
         Returns
         -------
-        List[Dict[str, Any]]
+        List[AttrDict]
             List of datasets to archive
         """
         parsed_sets = parse_j2yaml(master_yaml_path,
@@ -249,7 +249,7 @@ class Archive(Task):
 
     @logit(logger)
     def _configure_tars_enkf_members(self, arch_dict: AttrDict, master_yaml_path: str,
-                                    first_group_mem: int, last_group_mem: int) -> List[Dict[str, Any]]:
+                                    first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
         """Per-member template rendering for EnKF member archiving.
 
         This method renders templates once for each ensemble member, collecting
@@ -268,7 +268,7 @@ class Archive(Task):
 
         Returns
         -------
-        List[Dict[str, Any]]
+        List[AttrDict]
             List of datasets to archive (aggregated across all members)
         """
 
@@ -288,8 +288,8 @@ class Archive(Task):
             if member_vars is None:
                 raise ValueError(f"Member COM paths for com_set_{mem:02d} not found in arch_dict.")
 
-            # Create temporary dict with member-specific variables
-            member_dict = {**arch_dict, **member_vars}
+            # Create temporary AttrDict with member-specific variables
+            member_dict = AttrDict({**arch_dict, **member_vars})
 
             # Parse template with member-specific variables
             member_parsed_sets = parse_j2yaml(master_yaml_path,
@@ -327,12 +327,12 @@ class Archive(Task):
         return atardir_sets
 
     @logit(logger)
-    def execute_store_products(self, arcdir_set: Dict[str, Any]) -> None:
+    def execute_store_products(self, arcdir_set: AttrDict) -> None:
         """Perform local archiving of data products to ARCDIR.
 
         Parameters
         ----------
-        arcdir_set : Dict[str, Any]
+        arcdir_set : AttrDict
             FileHandler instructions to populate ARCDIR with
 
         Return
@@ -344,12 +344,12 @@ class Archive(Task):
         FileHandler(arcdir_set).sync()
 
     @logit(logger)
-    def execute_backup_dataset(self, atardir_set: Dict[str, Any]) -> None:
+    def execute_backup_dataset(self, atardir_set: AttrDict) -> None:
         """Create a backup tarball from a yaml dict.
 
         Parameters
         ----------
-        atardir_set: Dict[str, Any]
+        atardir_set: AttrDict
             Dict defining set of files to backup and the target tarball.
 
         Return
@@ -378,7 +378,7 @@ class Archive(Task):
 
     @staticmethod
     @logit(logger)
-    def _create_fileset(atardir_set: Dict[str, Any]) -> List:
+    def _create_fileset(atardir_set: AttrDict) -> List:
         """
         Collect the list of all available files from the parsed yaml dict.
         Globs are expanded and if required files are missing, an error is
@@ -390,7 +390,7 @@ class Archive(Task):
 
         Parameters
         ----------
-        atardir_set: Dict
+        atardir_set: AttrDict
             Contains full paths for required and optional files to be archived.
         """
 
@@ -451,7 +451,7 @@ class Archive(Task):
         return False
 
     @logit(logger)
-    def _protect_rstprod(self, atardir_set: Dict[str, Any]) -> None:
+    def _protect_rstprod(self, atardir_set: AttrDict) -> None:
         """
         Changes the group of the target tarball to rstprod and the permissions to
         640.  If this fails for any reason, attempt to delete the file before exiting.
@@ -496,7 +496,7 @@ class Archive(Task):
                 tarball.add(filename)
 
     @logit(logger)
-    def _gen_relative_paths(self, root_path: str) -> Dict[str, Any]:
+    def _gen_relative_paths(self, root_path: str) -> AttrDict:
         """Generate a dict of paths in self.task_config relative to root_path
 
         Parameters
@@ -506,7 +506,7 @@ class Archive(Task):
 
         Return
         ------
-        rel_path_dict : Dict
+        rel_path_dict : AttrDict
             Dictionary of paths relative to root_path.  Members will be named
             based on the dict names in self.config.  For COM paths, the names will
             follow COMIN_<NAME> --> <name>_dir.  For all other directories, the
@@ -525,7 +525,7 @@ class Archive(Task):
 
     @staticmethod
     @logit(logger)
-    def _construct_arcdir_set(arcdir_j2yaml, arch_dict) -> Dict:
+    def _construct_arcdir_set(arcdir_j2yaml, arch_dict) -> AttrDict:
         """Construct the list of files to send to the ARCDIR and Fit2Obs
            directories from a template.
 
@@ -542,7 +542,7 @@ class Archive(Task):
 
         Return
         ------
-        arcdir_set : Dict
+        arcdir_set : AttrDict
             FileHandler dictionary (i.e. with top level "mkdir" and "copy" keys)
             containing all directories that need to be created and what data
             files need to be copied to the ARCDIR and the Fit2Obs directory.
@@ -626,7 +626,7 @@ class Archive(Task):
         return
 
     @logit(logger)
-    def _archive_expdir(self, arch_dict: Dict[str, Any]) -> bool:
+    def _archive_expdir(self, arch_dict: AttrDict) -> bool:
         """
         This function checks if the EXPDIR should be archived this RUN/cycle
         and returns the temporary path in the ROTDIR where the EXPDIR will be
@@ -634,7 +634,7 @@ class Archive(Task):
 
         Parameters
         ----------
-        arch_dict: Dict
+        arch_dict: AttrDict
             Dictionary with required parameters, including the following:
 
             current_cycle: Datetime
@@ -683,7 +683,7 @@ class Archive(Task):
             return False
 
     @logit(logger)
-    def _pop_git_info(self, arch_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def _pop_git_info(self, arch_dict: AttrDict) -> None:
         """
         This function checks the configuration options ARCH_HASHES and ARCH_DIFFS
         and ARCH_EXPDIR_FREQ to determine if the git hashes and/or diffs should be
@@ -692,7 +692,7 @@ class Archive(Task):
 
         Parameters
         ----------
-        arch_dict: Dict
+        arch_dict: AttrDict
             Dictionary with required parameters, including the following:
 
             EXPDIR: str
@@ -757,7 +757,7 @@ class Archive(Task):
 
         return
 
-    def _arch_warm_start_increments(self, arch_dict: Dict[str, Any]) -> bool:
+    def _arch_warm_start_increments(self, arch_dict: AttrDict) -> bool:
         """
         This method determines if warm restart increments are to be archived based on the
         configuration settings ARCH_CYC (integer cycle number to archive on) and
@@ -783,7 +783,7 @@ class Archive(Task):
         # Otherwise, do not archive warm restarts
         return False
 
-    def _arch_warm_restart_ics(self, arch_dict: Dict[str, Any]) -> bool:
+    def _arch_warm_restart_ics(self, arch_dict: AttrDict) -> bool:
         """
         This method determines if warm ICs are to be archived based on the
         configuration settings ARCH_CYC (integer cycle number to archive on) and
@@ -814,7 +814,7 @@ class Archive(Task):
         # Otherwise, do not archive warm restarts
         return False
 
-    def _arch_restart(self, arch_dict: Dict) -> bool:
+    def _arch_restart(self, arch_dict: AttrDict) -> bool:
         """
         This method determines if warm restarts or warm ICs are to be archived based on the
         tar_type and the booleans arch_increments and arch_warm_ics.
