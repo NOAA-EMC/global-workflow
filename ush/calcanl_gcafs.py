@@ -1,18 +1,11 @@
 #!/usr/bin/env python
 # calcanl_gcafs.py
-# cory.r.martin@noaa.gov
-# 2025-12-17
 # script to run executables to produce netCDF analysis
 # on GCAFS gaussian grid for downstream users
 # based on calcanl_gfs.py
 import os
-import shutil
-import subprocess
-import sys
-import gsi_utils
-from collections import OrderedDict
 import datetime
-from wxflow import cast_as_dtype, FileHandler
+from wxflow import FileHandler
 from netCDF4 import Dataset, num2date
 import numpy as np
 
