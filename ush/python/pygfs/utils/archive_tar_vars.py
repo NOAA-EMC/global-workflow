@@ -361,10 +361,10 @@ class ArchiveTarVars:
             Dictionary containing current_cycle_dict and previous_cycle_dict
         """
         return {
-                '${ROTDIR}': config_dict['ROTDIR'],
-                '${RUN}': config_dict['RUN'],
-                '${YMD}': to_YMD(config_dict['current_cycle']),
-                '${HH}': config_dict['current_cycle'].strftime("%H"),
+            '${ROTDIR}': config_dict['ROTDIR'],
+            '${RUN}': config_dict['RUN'],
+            '${YMD}': to_YMD(config_dict['current_cycle']),
+            '${HH}': config_dict['current_cycle'].strftime("%H"),
         }
 
     @staticmethod
