@@ -224,6 +224,7 @@ check_builds() {
 }
 
 # Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
+# shellcheck disable=SC2329
 function cleanup() {
     echo "Exiting build script. Terminating subprocesses..."
     for pid in "${build_ids[@]}"; do

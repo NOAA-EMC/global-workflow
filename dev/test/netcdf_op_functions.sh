@@ -40,6 +40,7 @@ function ncgrplst { ncks -m "${1}" | grep 'group:' | cut -d ':' -f 2 | cut -d ' 
 # ncvarlst $fl_nm : What variables are in file?
 function ncvarlst { ncks --trd -m "${1}" | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
+# shellcheck disable=SC2329
 function ncmax {
     temp_file=${PTMP:-${HOME}}/foo.nc
     ncwa -y max -O -C -v "${1}" "${2}" "${temp_file}"
