@@ -14,8 +14,9 @@ jobs:
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # to get PR metadata
+      pull-requests: write  # to get PR metadata
       security-events: write
+      checks: write
 
     steps:
       - name: checkout code
@@ -38,8 +39,9 @@ jobs:
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # to get PR metadata
+      pull-requests: write  # to get PR metadata
       security-events: write
+      checks: write
 
     steps:
       - name: checkout code
