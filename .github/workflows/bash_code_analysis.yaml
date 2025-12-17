@@ -19,6 +19,7 @@ jobs:
       contents: read  # for actions/checkout to fetch code
       pull-requests: write  # to get PR metadata
       security-events: write
+      checks: write
 
     steps:
       - name: Checkout code
@@ -29,7 +30,7 @@ jobs:
       - name: shfmt scan
         uses: reviewdog/action-shfmt@v1
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           filter_mode: nofilter
           fail_level: any
           level: any
@@ -43,6 +44,7 @@ jobs:
       contents: read  # for actions/checkout to fetch code
       pull-requests: write  # to get PR metadata
       security-events: write
+      checks: write
 
     steps:
       - name: Checkout code
@@ -53,11 +55,11 @@ jobs:
       - name: Shellcheck Scan
         uses: reviewdog/action-shellcheck@v1
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
           filter_mode: nofilter
           fail_level: any
           level: any
-          reporter: github-pr-review
           pattern: |
             config.*
             JG*
