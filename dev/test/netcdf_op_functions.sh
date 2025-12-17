@@ -14,6 +14,7 @@ function ncattget { ncks --trd -M -m "${3}" | grep -E -i "^${2} attribute [0-9]+
 # ncunits $att_val $fl_nm : Which variables have given units?
 function ncunits { ncks --trd -m "${2}" | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
+# shellcheck disable=SC2329
 function ncavg {
     temp_file=${PTMP:-${HOME}}/foo.nc
     ncwa -y avg -O -C -v "${1}" "${2}" "${temp_file}"
