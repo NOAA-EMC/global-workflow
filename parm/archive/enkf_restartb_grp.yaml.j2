@@ -4,28 +4,24 @@ enkf_restartb_grp:
     required:
         # Grab surface analysis data.
         # If IAU is on, grab the beginning of the window, otherwise grab the center.
-        {% set prefix = anl_YMD + "." + anl_HH + "0000" %}
         {% for itile in range(1, 7) %}
-        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ prefix }}.sfcanl_data.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ anl_prefix }}.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
 
         # Now get the restart files.
         {% if is_gdas %}
-        {% for r_time in range(restart_interval, fhmax + 1, restart_interval) %}
-        {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
-        {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
-        {% set r_prefix = r_dt | to_YMD + "." + r_dt | strftime("%H") + "0000" %}
-        {% for itile in range(1, 7) %}
-        {% for datatype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
+            {% for r_prefix in restart_prefixes %}
+                {% for itile in range(1, 7) %}
+                    {% for datatype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
         - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
-        {% if DO_CA %}
+                    {% if DO_CA %}
         - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ r_prefix }}.ca_data.tile{{ itile }}.nc"
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                {% endfor %}
         - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ r_prefix }}.coupler.res"
         - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ r_prefix }}.fv_core.res.nc"
-        {% endfor %}
+            {% endfor %}
         {% endif %}
 
         # Add ocean restarts

@@ -240,11 +240,14 @@ class ArchiveTarVars:
         vars_out['cycle_HH'] = current_cycle.strftime("%H")
         vars_out['cycle_YMDH'] = to_YMDH(current_cycle)
         vars_out['cycle_YMD'] = to_YMD(current_cycle)
-        # Analysis time
+
+        # Analysis time (for surface analysis restart files)
         anl_delta = to_timedelta("-3H") if doiau_enkf else to_timedelta("0H")
         anl_time = add_to_datetime(current_cycle, anl_delta)
         vars_out['anl_YMD'] = to_YMD(anl_time)
         vars_out['anl_HH'] = anl_time.strftime("%H")
+        # Pre-computed analysis prefix for use in YAML templates
+        vars_out['anl_prefix'] = vars_out['anl_YMD'] + "." + vars_out['anl_HH'] + "0000"
 
         # Restart time
         rst_delta = to_timedelta("+3H") if doiau_enkf else to_timedelta("+6H")
@@ -300,6 +303,20 @@ class ArchiveTarVars:
                 logger.warning(
                     f"RUN='{config_dict.get('RUN', '')}' does not match a supported EnKF type ('enkfgfs' or 'enkfgdas'). "
                 )
+
+            # Pre-compute all restart time prefixes for YAML templates
+            # This avoids computing them repeatedly in template loops
+            restart_interval = vars_out.get('restart_interval')
+            fhmax = vars_out.get('fhmax')
+            if vars_out['is_gdas'] and restart_interval and fhmax:
+                vars_out['restart_prefixes'] = []
+                for r_time in range(restart_interval, fhmax + 1, restart_interval):
+                    r_dt = add_to_datetime(current_cycle, to_timedelta(f"{r_time}H"))
+                    vars_out['restart_prefixes'].append(
+                        f"{to_YMD(r_dt)}.{r_dt.strftime('%H')}0000"
+                    )
+            else:
+                vars_out['restart_prefixes'] = []
 
         ensgrp = config_dict.get('ENSGRP', 0)
 
