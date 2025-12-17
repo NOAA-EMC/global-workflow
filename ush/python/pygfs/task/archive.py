@@ -291,9 +291,10 @@ class Archive(Task):
             member_dict = AttrDict({**arch_dict, **member_vars})
 
             # Parse template with member-specific variables
-            member_parsed_sets = parse_j2yaml(master_yaml_path,
-                                               member_dict,
-                                               allow_missing=False)
+            member_parsed_sets = parse_j2yaml(
+                master_yaml_path,
+                member_dict,
+                allow_missing=False)
 
             # Accumulate datasets
             for dataset_key, dataset in member_parsed_sets.datasets.items():
