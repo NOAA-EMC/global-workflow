@@ -27,8 +27,8 @@ source "${EXPDIR}/config.ufs" ${string}
 source "${EXPDIR}/config.resources" efcs
 
 # Stochastic physics parameters (only for ensemble forecasts)
-if [[ "${TYPE}" == "hydro" ]] ; then
-    export DO_SKEB="NO" # SKEB turned off for hydrostatic runs due to bug in FV3
+if [[ "${CASE}" == "C96" ]] ; then
+    export DO_SKEB="NO" # SKEB turned off for C96
     export SKEB=-999.
 else
     export DO_SKEB="YES" # SKEB turned on for all other resolutions
