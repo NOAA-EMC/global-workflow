@@ -43,7 +43,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
             print(f"Adding increment to background for variable: {ioname}")
             bkg = gesfile.variables[ioname][:]
             increment = incfile.variables[incname + '_inc'][:]
-            anl = bkg + increment
+            anl = bkg + np.flip(increment, axis=1)
 
             anlfile.variables[ioname][:] = anl[:]
  
@@ -64,7 +64,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
         ps_inc = delp_inc[-1] / (bk[-1] - bk[-2])
 
         # add increment to background surface pressure
-        pressfc_anl = pressfc + ps_inc
+        pressfc_anl = pressfc +  np.flip(ps_inc, axis=0)
         anlfile.variables['pressfc'][:] = pressfc_anl[:]
 
     # add aerosol increments to background aerosol fields
@@ -111,7 +111,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
         anlfile.variables['time'].setncattr("units", time_units_new)
 
     # copy analysis file to output location
-    out_anl_file = os.path.join(ComOut, APrefix + 'atmanl.nc')
+    out_anl_file = os.path.join(ComOut, APrefix + 'analysis.atm.a006.nc')
     FileHandler({'copy': [[anl_file, out_anl_file]]}).sync()
 
     print('calcanl_gcafs successfully completed at: ', datetime.datetime.utcnow())
