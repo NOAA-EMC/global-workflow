@@ -12,13 +12,13 @@ source "${EXPDIR}/config.resources" atmos_products
 export MAX_TASKS=25
 
 if [[ "${RUN:-}" == "gcdas" ]]; then
-  export downset=1
+  export downset=2
   export FHOUT_PGBS=${FHOUT:-1}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="NO"  # Create interpolated sflux.1p00 file
   export WGNE="NO"  # WGNE products are created for first FHMAX_WGNE forecast hours
   export FHMAX_WGNE=0
 elif [[ "${RUN:-}" == "gcafs" ]]; then
-  export downset=1
+  export downset=2
   export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
   export FLXGF="NO"  # Create interpolated sflux.1p00 file
   export WGNE="NO"  # WGNE products are created for first FHMAX_WGNE forecast hours
@@ -30,5 +30,7 @@ export paramlista="${PARMgfs}/product/gcafs.fFFF.paramlist.a.txt"
 export paramlista_anl="${PARMgfs}/product/gcafs.anl.paramlist.a.txt"
 export paramlista_f000="${PARMgfs}/product/gcafs.f000.paramlist.a.txt"
 export paramlistb="${PARMgfs}/product/gcafs.fFFF.paramlist.b.txt"
+export paramlistb_anl="${PARMgfs}/product/gcafs.anl.paramlist.b.txt"
+export paramlistb_f000="${PARMgfs}/product/gcafs.f000.paramlist.b.txt"
 
 echo "END: config.atmos_products"
