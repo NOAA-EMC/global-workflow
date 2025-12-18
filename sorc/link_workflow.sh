@@ -2,11 +2,11 @@
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
-HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
+HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." > /dev/null 2>&1 && pwd)"
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
 
 function usage() {
-  cat <<EOF
+    cat << EOF
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
@@ -16,7 +16,7 @@ Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
   -o:
     Configure for NCO (copy instead of link)
 EOF
-  exit 1
+    exit 1
 }
 
 RUN_ENVIR="emc"
@@ -24,35 +24,35 @@ RUN_ENVIR="emc"
 # Reset option counter in case this script is sourced
 OPTIND=1
 while getopts ":ho-:" option; do
-  case "${option}" in
-  h) usage ;;
-  o)
-    echo "-o option received, configuring for NCO"
-    RUN_ENVIR="nco"
-    ;;
-  -)
-    if [[ "${OPTARG}" == "nest" ]]; then
-      LINK_NEST=ON
-    fi
-    ;;
-  :)
-    echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-    usage
-    ;;
-  *)
-    echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-    usage
-    ;;
-  esac
+    case "${option}" in
+        h) usage ;;
+        o)
+            echo "-o option received, configuring for NCO"
+            RUN_ENVIR="nco"
+            ;;
+        -)
+            if [[ "${OPTARG}" == "nest" ]]; then
+                LINK_NEST=ON
+            fi
+            ;;
+        :)
+            echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+            usage
+            ;;
+        *)
+            echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
+            usage
+            ;;
+    esac
 done
 shift $((OPTIND - 1))
 
 # LINK is always ln, LINK_OR_COPY can be ln or cp depending on RUN_ENVIR being emc or nco, respectively
 LINK="ln -fs"
 if [[ "${RUN_ENVIR}" == "nco" ]]; then
-  LINK_OR_COPY="cp -rp"
+    LINK_OR_COPY="cp -rp"
 else
-  LINK_OR_COPY="ln -fs"
+    LINK_OR_COPY="ln -fs"
 fi
 
 # shellcheck disable=SC1091
@@ -70,17 +70,17 @@ ${LINK_OR_COPY} "${HOMEgfs}/versions/run.${machine}.ver" "${HOMEgfs}/versions/ru
 #--model fix fields
 #------------------------------
 case "${machine}" in
-"wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-"hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
-"orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
-"hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
-"gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
-"gaeac6") FIX_DIR="/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix" ;;
-"noaacloud") FIX_DIR="/lustre/fix" ;;
-*)
-  echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
-  exit 1
-  ;;
+    "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
+    "hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
+    "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
+    "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
+    "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
+    "gaeac6") FIX_DIR="/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix" ;;
+    "noaacloud") FIX_DIR="/lustre/fix" ;;
+    *)
+        echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
+        exit 1
+        ;;
 esac
 
 # Source fix version file
@@ -89,55 +89,55 @@ source "${HOMEgfs}/versions/fix.ver"
 # Link GDASapp python packages in ush/python
 packages=("jcb")
 for package in "${packages[@]}"; do
-  cd "${HOMEgfs}/ush/python" || exit 1
-  if [[ -s "${package}" ]]; then
-      rm -f "${package}"
-  fi
-  ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
+    cd "${HOMEgfs}/ush/python" || exit 1
+    if [[ -s "${package}" ]]; then
+        rm -f "${package}"
+    fi
+    ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
 
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
-  mkdir -p "${HOMEgfs}/fix" || exit 1
+    mkdir -p "${HOMEgfs}/fix" || exit 1
 fi
 cd "${HOMEgfs}/fix" || exit 1
 for dir in aer \
-  am \
-  chem \
-  cice \
-  cpl \
-  datm \
-  gsi \
-  lut \
-  mom6 \
-  orog \
-  sfc_climo \
-  ugwd \
-  verif \
-  wave; do
-  if [[ -d "${dir}" ]]; then
-    if [[ "${RUN_ENVIR}" == "nco" ]]; then
-        chmod -R 755 "${dir}"
+    am \
+    chem \
+    cice \
+    cpl \
+    datm \
+    gsi \
+    lut \
+    mom6 \
+    orog \
+    sfc_climo \
+    ugwd \
+    verif \
+    wave; do
+    if [[ -d "${dir}" ]]; then
+        if [[ "${RUN_ENVIR}" == "nco" ]]; then
+            chmod -R 755 "${dir}"
+        fi
+        rm -rf "${dir}"
     fi
-    rm -rf "${dir}"
-  fi
-  fix_ver="${dir}_ver"
-  ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
+    fix_ver="${dir}_ver"
+    ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
 # global-nest uses different versions of orog and ugwd
 if [[ "${LINK_NEST:-OFF}" == "ON" ]]; then
-  for dir in orog \
-    ugwd; do
-    nestdir=${dir}_nest
-    if [[ -d "${nestdir}" ]]; then
-      if [[ "${RUN_ENVIR}" == "nco" ]]; then
-          chmod -R 755 "${nestdir}"
-      fi
-      rm -rf "${nestdir}"
-    fi
-    fix_ver="${dir}_nest_ver"
-    ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${nestdir}"
-  done
+    for dir in orog \
+        ugwd; do
+        nestdir=${dir}_nest
+        if [[ -d "${nestdir}" ]]; then
+            if [[ "${RUN_ENVIR}" == "nco" ]]; then
+                chmod -R 755 "${nestdir}"
+            fi
+            rm -rf "${nestdir}"
+        fi
+        fix_ver="${dir}_nest_ver"
+        ${LINK_OR_COPY} "${FIX_DIR}/${dir}/${!fix_ver}" "${nestdir}"
+    done
 fi
 
 #---------------------------------------
@@ -150,52 +150,52 @@ ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 cd "${HOMEgfs}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
-for dir in gfs gcafs gefs sfs
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
+
+for dir in gfs gcafs gefs sfs; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
 done
 
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
     optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat
-do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
+    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
 done
 
-  for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
+for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 
 cd "${HOMEgfs}/scripts" || exit 8
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  declare -a gdas_scripts=(exglobal_prep_ocean_obs.py)
-  for gdas_script in "${gdas_scripts[@]}"; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
-  done
+    declare -a gdas_scripts=(exglobal_prep_ocean_obs.py)
+    for gdas_script in "${gdas_scripts[@]}"; do
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/scripts/${gdas_script}" .
+    done
 fi
 
 # Link these templates from ufs-weather-model
 cd "${HOMEgfs}/parm/ufs" || exit 1
 declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
-  "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN"
-  "MOM6_data_table.IN"
-  "ice_in.IN"
-  "ufs.configure.atm.IN"
-  "ufs.configure.atmaero.IN"
-  "ufs.configure.s2s.IN"
-  "ufs.configure.s2sa.IN"
-  "ufs.configure.s2sw.IN"
-  "ufs.configure.s2swa.IN"
-  "ufs.configure.leapfrog_atm_wav.IN"
-  "ww3_shel.nml.IN"
-  "post_itag_gfs"
-  "post_itag_gcafs"
-  "global_control.nml.IN")
+    "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN"
+    "MOM6_data_table.IN"
+    "ice_in.IN"
+    "ufs.configure.atm.IN"
+    "ufs.configure.atmaero.IN"
+    "ufs.configure.s2s.IN"
+    "ufs.configure.s2sa.IN"
+    "ufs.configure.s2sw.IN"
+    "ufs.configure.s2swa.IN"
+    "ufs.configure.leapfrog_atm_wav.IN"
+    "ww3_shel.nml.IN"
+    "post_itag_gfs"
+    "post_itag_gcafs"
+    "global_control.nml.IN")
+
 for file in "${ufs_templates[@]}"; do
-  if [[ -s "${file}" ]]; then
-      rm -f "${file}"
-  fi
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
+    if [[ -s "${file}" ]]; then
+        rm -f "${file}"
+    fi
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
 # Link the script from ufs-weather-model that parses the templates
@@ -207,42 +207,42 @@ ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
 
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
-  cd "${HOMEgfs}/parm" || exit 1
-  mkdir -p regrid_sfc
-  cd regrid_sfc || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm/regrid_sfc/regrid.nml_tmpl" .
+    cd "${HOMEgfs}/parm" || exit 1
+    mkdir -p regrid_sfc
+    cd regrid_sfc || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/parm/regrid_sfc/regrid.nml_tmpl" .
 fi
 
 #------------------------------
 #--add GDASApp fix directory
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  cd "${HOMEgfs}/fix" || exit 1
-  mkdir -p gdas
-  cd gdas || exit 1
-  for gdas_sub in fv3jedi gsibec obs soca aero snow; do
-    if [[ -d "${gdas_sub}" ]]; then
-      rm -rf "${gdas_sub}"
-    fi
-    fix_ver="gdas_${gdas_sub}_ver"
-    ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
-  done
+    cd "${HOMEgfs}/fix" || exit 1
+    mkdir -p gdas
+    cd gdas || exit 1
+    for gdas_sub in fv3jedi gsibec obs soca aero snow; do
+        if [[ -d "${gdas_sub}" ]]; then
+            rm -rf "${gdas_sub}"
+        fi
+        fix_ver="gdas_${gdas_sub}_ver"
+        ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
+    done
 fi
 
 #------------------------------
 #--add GDASApp parm directory
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
-  cd "${HOMEgfs}/parm" || exit 1
-  mkdir -p gdas
-  cd gdas || exit 1
-  declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
-  for comp in "${gdasapp_comps[@]}"; do
-    if [[ -d "${comp}" ]]; then
-        rm -rf "${comp}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
-  done
+    cd "${HOMEgfs}/parm" || exit 1
+    mkdir -p gdas
+    cd gdas || exit 1
+    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+    for comp in "${gdasapp_comps[@]}"; do
+        if [[ -d "${comp}" ]]; then
+            rm -rf "${comp}"
+        fi
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
+    done
 fi
 
 #------------------------------
@@ -251,31 +251,31 @@ fi
 sources=("config" "scripts")
 targets=("parm/gdas" "ush")
 for i in "${!sources[@]}"; do
-  src="${HOMEgfs}/sorc/gdas.cd/sorc/spoc/dump/${sources[${i}]}"
-  dst="${HOMEgfs}/${targets[${i}]}"
+    src="${HOMEgfs}/sorc/gdas.cd/sorc/spoc/dump/${sources[${i}]}"
+    dst="${HOMEgfs}/${targets[${i}]}"
 
-  if [[ -d "${src}" ]]; then
-    cd "${dst}" || exit 1
-    ${LINK_OR_COPY} "${src}" "spoc"
-  fi
+    if [[ -d "${src}" ]]; then
+        cd "${dst}" || exit 1
+        ${LINK_OR_COPY} "${src}" "spoc"
+    fi
 done
 
 #------------------------------
 #--add GDASApp files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
-  cd "${HOMEgfs}/ush/python" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/soca"  .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py"    .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py"    .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py"         .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/gsincdiag_to_ioda" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/pyiodaconv"        .
-  cd "${HOMEgfs}/ush" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh"            .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py"         .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"           .
+    cd "${HOMEgfs}/ush/python" || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/soca" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ufsda" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_json.py" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/gen_bufr2ioda_yaml.py" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/gsincdiag_to_ioda" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/pyiodaconv" .
+    cd "${HOMEgfs}/ush" || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py" .
 fi
 
 #------------------------------
@@ -283,26 +283,26 @@ fi
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd" ]]; then
 
-  cd "${HOMEgfs}/parm" || exit 1
-  if [[ -d monitor ]]; then
-      rm -rf monitor
-  fi
-  mkdir -p monitor
-  cd monitor || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_cost.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_gnorm.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" da_mon.parm
-  # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/parm/gdas_minmon.parm" .
-  # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/parm/gfs_minmon.parm" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm" .
-  # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" .
+    cd "${HOMEgfs}/parm" || exit 1
+    if [[ -d monitor ]]; then
+        rm -rf monitor
+    fi
+    mkdir -p monitor
+    cd monitor || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_cost.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/fix/gfs_minmon_gnorm.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" da_mon.parm
+    # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/parm/gdas_minmon.parm" .
+    # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/parm/gfs_minmon.parm" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm" .
+    # ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm" .
 fi
 
 #-------------------------------------------
@@ -310,36 +310,35 @@ fi
 #-------------------------------------------
 if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo" ]]; then
 
-  cd "${HOMEgfs}/parm" || exit 1
+    cd "${HOMEgfs}/parm" || exit 1
 
-  mkdir -p gsinfo
+    mkdir -p gsinfo
 
-  cd gsinfo || exit 1
+    cd gsinfo || exit 1
 
-  for dir in convinfo satinfo ozinfo obs_input hirs_fix; do
-    if [[ -d "${dir}" ]]; then
-        rm -rf "${dir}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo/${dir}" "${dir}"
-  done
+    for dir in convinfo satinfo ozinfo obs_input hirs_fix; do
+        if [[ -d "${dir}" ]]; then
+            rm -rf "${dir}"
+        fi
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/fix/build_gsinfo/${dir}" "${dir}"
+    done
 fi
-
 
 #------------------------------
 #--add NEXUS files
 #------------------------------
 if [[ -d "${HOMEgfs}/sorc/nexus.fd" ]]; then
-  cd "${HOMEgfs}/parm/chem" || exit 1
-  if [[ -d nexus ]]; then
-      rm -rf nexus
-  fi
-  mkdir -p nexus/gocart
-  cd nexus/gocart || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/NEXUS_Config.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Grid.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Time.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Diag.rc.j2" .
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Spec.rc.j2" .
+    cd "${HOMEgfs}/parm/chem" || exit 1
+    if [[ -d nexus ]]; then
+        rm -rf nexus
+    fi
+    mkdir -p nexus/gocart
+    cd nexus/gocart || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/NEXUS_Config.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Grid.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Time.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Diag.rc.j2" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/config/gocart/HEMCO_sa_Spec.rc.j2" .
 fi
 
 #------------------------------
@@ -351,24 +350,24 @@ mkdir -p "${HOMEgfs}/exec" || exit 1
 cd "${HOMEgfs}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
-  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
-  mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x \
-  ensadd.x ensppf.x ensstat.x wave_stat.x; do
-  if [[ -s "${utilexe}" ]]; then
-      rm -f "${utilexe}"
-  fi
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
+    syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
+    mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x \
+    ensadd.x ensppf.x ensstat.x wave_stat.x; do
+    if [[ -s "${utilexe}" ]]; then
+        rm -f "${utilexe}"
+    fi
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
 declare -a model_systems=("gfs" "gefs" "sfs" "gcafs")
 for sys in "${model_systems[@]}"; do
-  model_exe="${sys}_model.x"
-  if [[ -s "${model_exe}" ]]; then
-    rm -f "${model_exe}"
-  fi
-  if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
-  fi
+    model_exe="${sys}_model.x"
+    if [[ -s "${model_exe}" ]]; then
+        rm -f "${model_exe}"
+    fi
+    if [[ -f "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+    fi
 done
 
 # WW3 pre/post executables
@@ -380,16 +379,16 @@ wave_systems["gefs"]="pdlib_OFF"
 wave_systems["sfs"]="pdlib_OFF"
 
 for sys in "${!wave_systems[@]}"; do
-  build_loc="${wave_systems[${sys}]}"
-  if [[ -d "${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${build_loc}" ]]; then
-    for ww3exe in "${ww3_exes[@]}"; do
-      target_ww3_exe="${sys}_${ww3exe}.x"
-      if [[ -s "${target_ww3_exe}" ]]; then
-        rm -f "${target_ww3_exe}"
-      fi
-      ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${build_loc}/bin/${ww3exe}" "${HOMEgfs}/exec/${target_ww3_exe}"
-    done
-  fi
+    build_loc="${wave_systems[${sys}]}"
+    if [[ -d "${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${build_loc}" ]]; then
+        for ww3exe in "${ww3_exes[@]}"; do
+            target_ww3_exe="${sys}_${ww3exe}.x"
+            if [[ -s "${target_ww3_exe}" ]]; then
+                rm -f "${target_ww3_exe}"
+            fi
+            ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/WW3/install/${build_loc}/bin/${ww3exe}" "${HOMEgfs}/exec/${target_ww3_exe}"
+        done
+    fi
 done
 
 if [[ -s "upp.x" ]]; then
@@ -398,63 +397,63 @@ fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
 for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
-  if [[ -s "${ufs_utilsexe}" ]]; then
-      rm -f "${ufs_utilsexe}"
-  fi
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/exec/${ufs_utilsexe}" .
+    if [[ -s "${ufs_utilsexe}" ]]; then
+        rm -f "${ufs_utilsexe}"
+    fi
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_utils.fd/exec/${ufs_utilsexe}" .
 done
 
 # GSI
 if [[ -d "${HOMEgfs}/sorc/gsi_enkf.fd/install" ]]; then
-  for gsiexe in enkf.x gsi.x; do
-    if [[ -s "${gsiexe}" ]]; then
-        rm -f "${gsiexe}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/install/bin/${gsiexe}" .
-  done
+    for gsiexe in enkf.x gsi.x; do
+        if [[ -s "${gsiexe}" ]]; then
+            rm -f "${gsiexe}"
+        fi
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_enkf.fd/install/bin/${gsiexe}" .
+    done
 fi
 
 # GSI Utils
 if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd/install" ]]; then
-  for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
-    interp_inc.x recentersigp.x; do
-    if [[ -s "${exe}" ]]; then
-        rm -f "${exe}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_utils.fd/install/bin/${exe}" .
-  done
+    for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
+        getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
+        interp_inc.x recentersigp.x; do
+        if [[ -s "${exe}" ]]; then
+            rm -f "${exe}"
+        fi
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_utils.fd/install/bin/${exe}" .
+    done
 fi
 
 # GSI Monitor
 if [[ -d "${HOMEgfs}/sorc/gsi_monitor.fd/install" ]]; then
-  for exe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
-    radmon_bcoef.x radmon_bcor.x radmon_time.x; do
-    if [[ -s "${exe}" ]]; then
-        rm -f "${exe}"
-    fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/install/bin/${exe}" .
-  done
+    for exe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
+        radmon_bcoef.x radmon_bcor.x radmon_time.x; do
+        if [[ -s "${exe}" ]]; then
+            rm -f "${exe}"
+        fi
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gsi_monitor.fd/install/bin/${exe}" .
+    done
 fi
 
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
-  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas*           ./
-  cp -f  "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe"   ./gdas_calcfIMS.x
-  cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe"  ./gdas_apply_incr.x
+    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas* ./
+    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe" ./gdas_calcfIMS.x
+    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
 fi
 
 # GDASApp libraries
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
-  mkdir -p "${HOMEgfs}/lib" || exit 1
-  cd "${HOMEgfs}/lib" || exit 1
-  cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
+    mkdir -p "${HOMEgfs}/lib" || exit 1
+    cd "${HOMEgfs}/lib" || exit 1
+    cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
 fi
 
 # NEXUS executable
 if [[ -d "${HOMEgfs}/sorc/nexus.fd/build/bin" ]]; then
-  cd "${HOMEgfs}/exec" || exit 1
-  ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
+    cd "${HOMEgfs}/exec" || exit 1
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
 fi
 
 #------------------------------
@@ -462,123 +461,123 @@ fi
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
 if [[ -d ufs_model.fd ]]; then
-  if [[ -d upp.fd ]]; then
-      rm -rf upp.fd
-  fi
-  ${LINK} ufs_model.fd/UFSATM/upp upp.fd
+    if [[ -d upp.fd ]]; then
+        rm -rf upp.fd
+    fi
+    ${LINK} ufs_model.fd/UFSATM/upp upp.fd
 fi
 
 if [[ -d gsi_enkf.fd ]]; then
-  if [[ -d gsi.fd ]]; then
-      rm -rf gsi.fd
-  fi
-  ${LINK} gsi_enkf.fd/src/gsi gsi.fd
+    if [[ -d gsi.fd ]]; then
+        rm -rf gsi.fd
+    fi
+    ${LINK} gsi_enkf.fd/src/gsi gsi.fd
 
-  if [[ -d enkf.fd ]]; then
-      rm -rf enkf.fd
-  fi
-  ${LINK} gsi_enkf.fd/src/enkf enkf.fd
+    if [[ -d enkf.fd ]]; then
+        rm -rf enkf.fd
+    fi
+    ${LINK} gsi_enkf.fd/src/enkf enkf.fd
 fi
 
 if [[ -d gsi_utils.fd ]]; then
-  if [[ -d calc_analysis.fd ]]; then
-      rm -rf calc_analysis.fd
-  fi
-  ${LINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd .
+    if [[ -d calc_analysis.fd ]]; then
+        rm -rf calc_analysis.fd
+    fi
+    ${LINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd .
 
-  if [[ -d calc_increment_ens.fd ]]; then
-      rm -rf calc_increment_ens.fd
-  fi
-  ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd .
+    if [[ -d calc_increment_ens.fd ]]; then
+        rm -rf calc_increment_ens.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd .
 
-  if [[ -d calc_increment_ens_ncio.fd ]]; then
-      rm -rf calc_increment_ens_ncio.fd
-  fi
-  ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd .
+    if [[ -d calc_increment_ens_ncio.fd ]]; then
+        rm -rf calc_increment_ens_ncio.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd .
 
-  if [[ -d getsfcensmeanp.fd ]]; then
-      rm -rf getsfcensmeanp.fd
-  fi
-  ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd .
+    if [[ -d getsfcensmeanp.fd ]]; then
+        rm -rf getsfcensmeanp.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd .
 
-  if [[ -d getsigensmeanp_smooth.fd ]]; then
-      rm -rf getsigensmeanp_smooth.fd
-  fi
-  ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd .
+    if [[ -d getsigensmeanp_smooth.fd ]]; then
+        rm -rf getsigensmeanp_smooth.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd .
 
-  if [[ -d getsigensstatp.fd ]]; then
-      rm -rf getsigensstatp.fd
-  fi
-  ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd .
+    if [[ -d getsigensstatp.fd ]]; then
+        rm -rf getsigensstatp.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd .
 
-  if [[ -d recentersigp.fd ]]; then
-      rm -rf recentersigp.fd
-  fi
-  ${LINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd .
+    if [[ -d recentersigp.fd ]]; then
+        rm -rf recentersigp.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd .
 
-  if [[ -d interp_inc.fd ]]; then
-      rm -rf interp_inc.fd
-  fi
-  ${LINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd .
+    if [[ -d interp_inc.fd ]]; then
+        rm -rf interp_inc.fd
+    fi
+    ${LINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd .
 fi
 
 if [[ -d gsi_monitor.fd ]]; then
-  if [[ -d oznmon_horiz.fd ]]; then
-      rm -rf oznmon_horiz.fd
-  fi
-  ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd .
+    if [[ -d oznmon_horiz.fd ]]; then
+        rm -rf oznmon_horiz.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd .
 
-  if [[ -d oznmon_time.fd ]]; then
-      rm -rf oznmon_time.fd
-  fi
-  ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd .
+    if [[ -d oznmon_time.fd ]]; then
+        rm -rf oznmon_time.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd .
 
-  if [[ -d radmon_angle.fd ]]; then
-      rm -rf radmon_angle.fd
-  fi
-  ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd radmon_angle.fd
+    if [[ -d radmon_angle.fd ]]; then
+        rm -rf radmon_angle.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd radmon_angle.fd
 
-  if [[ -d radmon_bcoef.fd ]]; then
-      rm -rf radmon_bcoef.fd
-  fi
-  ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd radmon_bcoef.fd
+    if [[ -d radmon_bcoef.fd ]]; then
+        rm -rf radmon_bcoef.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd radmon_bcoef.fd
 
-  if [[ -d radmon_bcor.fd ]]; then
-      rm -rf radmon_bcor.fd
-  fi
-  ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd radmon_bcor.fd
+    if [[ -d radmon_bcor.fd ]]; then
+        rm -rf radmon_bcor.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd radmon_bcor.fd
 
-  if [[ -d radmon_time.fd ]]; then
-      rm -rf radmon_time.fd
-  fi
-  ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd radmon_time.fd
+    if [[ -d radmon_time.fd ]]; then
+        rm -rf radmon_time.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd radmon_time.fd
 fi
 
 for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
-  if [[ -d "${prog}" ]]; then
-      rm -rf "${prog}"
-  fi
-  ${LINK} "ufs_utils.fd/sorc/${prog}" "${prog}"
+    if [[ -d "${prog}" ]]; then
+        rm -rf "${prog}"
+    fi
+    ${LINK} "ufs_utils.fd/sorc/${prog}" "${prog}"
 done
 
 for prog in enkf_chgres_recenter_nc.fd \
-  fbwndgfs.fd \
-  gaussian_sfcanl.fd \
-  gfs_bufr.fd \
-  mkgfsawps.fd \
-  overgridid.fd \
-  rdbfmsua.fd \
-  supvit.fd \
-  syndat_getjtbul.fd \
-  syndat_maksynrc.fd \
-  syndat_qctropcy.fd \
-  tave.fd \
-  tocsbufr.fd \
-  vint.fd \
-  webtitle.fd \
-  ocnicepost.fd; do
-  if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
-  ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
+    fbwndgfs.fd \
+    gaussian_sfcanl.fd \
+    gfs_bufr.fd \
+    mkgfsawps.fd \
+    overgridid.fd \
+    rdbfmsua.fd \
+    supvit.fd \
+    syndat_getjtbul.fd \
+    syndat_maksynrc.fd \
+    syndat_qctropcy.fd \
+    tave.fd \
+    tocsbufr.fd \
+    vint.fd \
+    webtitle.fd \
+    ocnicepost.fd; do
+    if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
+    ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
 done
 
 exit 0
