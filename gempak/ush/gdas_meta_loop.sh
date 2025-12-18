@@ -16,19 +16,20 @@ if [[ ! -L "${COMIN}" ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
-if [[ "${envir}" == "para" ]] ; then
-   export m_title="GDASP"
+if [[ "${envir}" == "para" ]]; then
+    export m_title="GDASP"
 else
-   export m_title="GDAS"
+    export m_title="GDAS"
 fi
 
-export pgm=gdplot2_nc;. prep_step
+export pgm=gdplot2_nc
+source prep_step
 
-for (( fhr=24; fhr<=144; fhr+=24 )); do
+for ((fhr = 24; fhr <= 144; fhr += 24)); do
     day=$(date --utc +%Y%m%d -d "${PDY} ${cyc} - ${fhr} hours")
-    if (( ${day}${cyc} < SDATE )); then
+    if [[ "${day}${cyc}" -lt "${SDATE}" ]]; then
         # Stop looking because these cycles weren't run
-        if (( fhr == 24 )); then
+        if [[ "${fhr}" -eq 24 ]]; then
             exit
         else
             break
@@ -123,7 +124,7 @@ EOF
 
         gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
-"${GEMEXE}/gdplot2_nc" << EOF
+        "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL = mepowo.gsf
 GDFILE	= ${gdfile}
 GDATTIM	= F000
@@ -223,19 +224,19 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s gdasloop.meta ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s gdasloop.meta ]]; then
     echo "FATAL ERROR: Failed to create gdasloop meta file"
     exit "${err}"
 fi
 
 mv gdasloop.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 export err=$?
-if (( err != 0 )) ; then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
     exit "${err}"
 fi
 
-if [[ ${SENDDBN} == "YES" ]] ; then
+if [[ ${SENDDBN} == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 fi

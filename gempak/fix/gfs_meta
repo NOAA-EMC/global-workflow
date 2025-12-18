@@ -14,8 +14,8 @@ ${HOMEgfs}/gempak/ush/gfs_meta_trop.sh 384
 ${HOMEgfs}/gempak/ush/gfs_meta_usext.sh 384
 ${HOMEgfs}/gempak/ush/gfs_meta_mar_ql.sh 24 48 96 180
 ${HOMEgfs}/gempak/ush/gfs_meta_mar_comp.sh 126
-${HOMEgfs}/gempak/ush/gfs_meta_opc_na_ver 126
-${HOMEgfs}/gempak/ush/gfs_meta_opc_np_ver 126
+${HOMEgfs}/gempak/ush/gfs_meta_opc_na_ver.sh 126
+${HOMEgfs}/gempak/ush/gfs_meta_opc_np_ver.sh 126
 ${HOMEgfs}/gempak/ush/gfs_meta_mar_atl.sh 180
 ${HOMEgfs}/gempak/ush/gfs_meta_mar_pac.sh 180
 ${HOMEgfs}/gempak/ush/gfs_meta_mar_ver.sh 48

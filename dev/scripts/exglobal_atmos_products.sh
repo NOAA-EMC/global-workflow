@@ -97,7 +97,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         if [[ ${rc} == 0 ]]; then # Matched the grep
             last=$((last + 1))
         fi
-        if [[ ${iproc} -eq ${nproc} ]]; then
+        if [[ ${iproc} -eq ${nproc} || ${last} -gt ${ncount} ]]; then
             last=${ncount}
         fi
 
@@ -114,7 +114,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         # if at final record and have not reached the final processor then write echo's to
         # cmdfile for remaining processors
         if [[ "${last}" -eq "${ncount}" ]]; then
-            for ((pproc = iproc + 1; pproc < nproc; pproc++)); do
+            for ((pproc = iproc + 1; pproc <= nproc; pproc++)); do
                 echo "/bin/echo ${pproc}" >> "${DATA}/cmdfile"
             done
             break
