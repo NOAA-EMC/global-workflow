@@ -20,7 +20,8 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
 OUTDIR="${COMOUT_ATMOS_GRIB}"
-mkdir -m 755 -p "${OUTDIR}"
+mkdir -m 755 -p "${OUTDIR}/acc.monthly.${MEMDIR}"
+mkdir -m 755 -p "${OUTDIR}/inst.monthly.${MEMDIR}"
 
 # Lists of variables
 monthlyinstvars="(:TMP|UGRD|VGRD|STRM|VPOT):(200|850) mb|HGT:(200|500|700|850) mb|(:TMP|WEASD|CPOFP|LAND):surface|SOILW:(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL"
