@@ -791,16 +791,18 @@ class Archive(Task):
         """
 
         # Get the variables need to determine if warm restart ICs should be archived
+
         cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
         SDATE = arch_dict.SDATE
         RUN = arch_dict.RUN
-        assim_freq = arch_dict.assim_freq
+        assim_freq = int(arch_dict.assim_freq)
+        arch_cyc_val = int(arch_dict.ARCH_CYC)
 
         # The GDAS and EnKFGDAS ICs always lag the forecast increments by assim_freq hours
         if "gdas" in RUN:
-            arch_cyc = (arch_dict.ARCH_CYC - assim_freq) % 24
+            arch_cyc = (arch_cyc_val - assim_freq) % 24
         else:
-            arch_cyc = arch_dict.ARCH_CYC
+            arch_cyc = arch_cyc_val
 
         if cycle_HH != arch_cyc:
             # Not the right cycle hour

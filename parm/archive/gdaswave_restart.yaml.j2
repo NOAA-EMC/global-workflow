@@ -11,4 +11,4 @@ gdaswave_restart:
         {% else %}
         {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
         {% endif %}
-        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"
+        - "{{ COMIN_WAVE_RESTART }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"

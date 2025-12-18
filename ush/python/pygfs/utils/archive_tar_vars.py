@@ -103,18 +103,37 @@ class ArchiveTarVars:
         # Add YAML-specific cycle variables (analysis/restart times, archive flags)
         arch_dict.update(ArchiveTarVars._get_yaml_specific_cyc_vars(config_dict))
 
-        # Add COM paths based on ensemble group (all relative to ROTDIR)
-        ensgrp = config_dict.get('ENSGRP', 0)
-        if ensgrp == 0:
-            # ENSGRP=0: Generate relative paths for ensemble mean/spread (enkf.yaml.j2)
-            arch_dict.update(ArchiveTarVars.get_enkf_ensstat_com_paths(config_dict))
+        if config_dict.get('RUN') in ['enkfgfs', 'enkfgdas']:
+            # EnKF systems: Handle ensemble member-specific paths
+            ensgrp = config_dict.get('ENSGRP', 0)
+            if ensgrp == 0:
+                # ENSGRP=0: Ensemble mean/spread (enkf.yaml.j2)
+                arch_dict.update(ArchiveTarVars.get_enkf_com_paths(config_dict))
+            else:
+                # ENSGRP>0: Individual member groups
+                arch_dict.update(ArchiveTarVars._create_mem_com_sets(
+                    config_dict,
+                    arch_dict['first_group_mem'],
+                    arch_dict['last_group_mem']
+                ))
+        elif config_dict.get('RUN') == 'gfs':
+            # GFS system: Route through tarball-specific method
+            tarball_type = config_dict.get('TARBALL_TYPE', '')
+            if tarball_type:
+                arch_dict.update(ArchiveTarVars.get_gfs_com_paths(config_dict, tarball_type))
+        elif config_dict.get('RUN') == 'gdas':
+            # GDAS system: Route through tarball-specific method
+            tarball_type = config_dict.get('TARBALL_TYPE', '')
+            if tarball_type:
+                arch_dict.update(ArchiveTarVars.get_gdas_com_paths(config_dict, tarball_type))
+        elif config_dict.get('RUN') == 'gcafs':
+            # GCAFS system: All COM paths
+            arch_dict.update(ArchiveTarVars.get_gcafs_com_paths(config_dict))
+        elif config_dict.get('RUN') == 'gcdas':
+            # GCDAS system: All COM paths
+            arch_dict.update(ArchiveTarVars.get_gcdas_com_paths(config_dict))
         else:
-            arch_dict.update(ArchiveTarVars._create_mem_com_sets(
-                config_dict,
-                arch_dict['first_group_mem'],
-                arch_dict['last_group_mem']
-            ))
-
+            logger.warning(f"Unknown RUN type '{config_dict.get('RUN')}', no COM paths added")
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
 
@@ -154,57 +173,90 @@ class ArchiveTarVars:
         Returns
         -------
         AttrDict
-            Dictionary containing all EnKF archive variables
+            Dictionary containing all archive variables
 
         Notes
         -----
-        Missing keys will be silently skipped (not added to enkf_dict).
-        This method should be used for EnKF-specific archiving (enkfgdas, enkfgfs).
+        Missing keys will be silently skipped (not added to config_dict).
+        This method is used for all archive operations (GFS, GDAS, EnKF, etc.).
         """
-        enkf_dict = AttrDict()
+        config_vars = AttrDict()
 
-        # Configuration keys for EnKF archiving
+        # Common configuration keys (present in both exglobal_enkf_earc_tars.py and exglobal_archive_tars.py)
         config_keys = [
             # Basic configuration
-            'ATARDIR', 'current_cycle', 'IAUFHRS', 'RUN', 'PDY', 'PSLOT',
+            'ATARDIR', 'current_cycle', 'RUN', 'PDY', 'PSLOT',
             # Archive control
             'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'PARMgfs', 'ARCDIR', 'SDATE', 'MODE',
-            # Ensemble configuration
-            'ENSGRP', 'NMEM_EARCGRP', 'NMEM_ENS', 'NMEM_ENS_GFS',
-            # EnKF-specific operations
-            'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS', 'lobsdiag_forenkf',
-            # Forecast configuration
-            'FHMIN_ENKF', 'FHMAX_ENKF_GFS', 'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF',
-            # EnKF settings
-            'ENKF_SPREAD', 'DOIAU_ENKF', 'IAU_OFFSET', 'IAUFHRS_ENKF',
-            # Restart intervals
-            'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
-            # Hybrid and data assimilation
-            'DOHYBVAR', 'DOIAU', 'DO_CA', 'DO_CALC_INCREMENT', 'assim_freq',
-            # Archive timing
+            # Data assimilation
+            'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
+            'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
+            # Ocean/Ice DA
+            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS',
+            # Archive timing and control
             'ARCH_CYC', 'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
-            # Ocean and ice DA
-            'DOHYBVAR_OCN', 'DOLETKF_OCN',
             # Other
-            'DO_JEDISNOWDA', 'NET', 'DO_GSISOILDA', 'DO_LAND_IAU'
+            'NET',
         ]
+
+        # Add system-specific keys based on RUN type
+        if 'enkf' in config_dict.get('RUN', ''):
+            # EnKF-specific keys (only in exglobal_enkf_earc_tars.py)
+            config_keys.extend([
+                # Ensemble configuration
+                'ENSGRP', 'NMEM_EARCGRP', 'NMEM_ENS_GFS',
+                # EnKF-specific operations
+                'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS', 'lobsdiag_forenkf', 'DO_CALC_INCREMENT',
+                # EnKF forecast configuration
+                'FHMIN_ENKF', 'FHMAX_ENKF_GFS', 'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF',
+                # EnKF settings
+                'ENKF_SPREAD', 'DOIAU_ENKF', 'IAU_OFFSET', 'IAUFHRS_ENKF',
+                # EnKF restart intervals
+                'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
+            ])
+        else:
+            # Archive-specific keys (only in exglobal_archive_tars.py)
+            config_keys.extend([
+                # Forecast configuration
+                'FHMIN', 'FHMAX', 'FHOUT',
+                'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS',
+                'FHOUT_OCN', 'FHOUT_ICE', 'FHOUT_OCN_GFS', 'FHOUT_ICE_GFS',
+                'FHOUT_WAV', 'FHOUT_WAV_GFS', 'FHOUT_HF_WAV', 'FHMAX_WAV', 'FHMAX_HF_WAV', 'FHMAX_WAV_GFS',
+                # Monitoring and verification
+                'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_FIT2OBS', 'FHMAX_FITS',
+                # Model components
+                'DO_OCN', 'DO_ICE', 'DO_WAVE', 'DO_PREP_OBS_AERO', 'WRITE_DOPOST',
+                # Data assimilation
+                'DO_JEDIATMVAR', 'DO_JEDIOCNVAR', 'DO_AERO_ANL', 'DO_AERO_FCST', 'ATMINC_GRID',
+                # Restart intervals
+                'restart_interval_gdas', 'restart_interval_gfs',
+                # Archive control
+                'ARCH_GAUSSIAN', 'ARCH_GAUSSIAN_FHMAX', 'ARCH_GAUSSIAN_FHINC',
+                'ARCH_EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES', 'ARCH_DIFFS',
+                # Grid and resolution
+                'OCNRES', 'ICERES', 'waveGRD', 'WAVE_OUT_GRIDS',
+                # Other
+                'DO_BUFRSND', 'NUM_SND_COLLECTIVES', 'DOBNDPNT_WAVE',
+                'OFFSET_START_HOUR', 'EXPDIR', 'EDATE', 'HOMEgfs',
+                'DO_GEMPAK', 'DATASETS_YAML', 'TARBALL_TYPE',
+            ])
 
         # Extract keys if they exist in config_dict
         for key in config_keys:
             if key in config_dict:
-                enkf_dict[key] = config_dict[key]
+                config_vars[key] = config_dict[key]
             else:
-                logger.warning(f"Config key '{key}' not found in config_dict; skipping.")
+                logger.debug(f"Config key '{key}' not found in config_dict; skipping.")
 
         # Import COM* directory and template variables created by job scripts
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
-                enkf_dict[key] = config_dict.get(key)
+                config_vars[key] = config_dict.get(key)
 
-        logger.info(f"Collected {len(enkf_dict)} archive tar variables")
-        logger.debug(f"Archive variables: {list(enkf_dict.keys())}")
+        logger.info(f"Collected {len(config_vars)} archive tar variables")
+        logger.debug(f"Archive variables: {list(config_vars.keys())}")
 
-        return enkf_dict
+        return config_vars
 
     @staticmethod
     @logit(logger)
@@ -303,90 +355,148 @@ class ArchiveTarVars:
                 logger.warning(
                     f"RUN='{config_dict.get('RUN', '')}' does not match a supported EnKF type ('enkfgfs' or 'enkfgdas'). "
                 )
-
+            if config_dict.get('ENSGRP') == 0:
+                vars_out['enkf_epos_ngrps'] = len(range(vars_out['fhmin'], vars_out['fhmax'] + vars_out['fhout'], vars_out['fhout']))
+            else:
+                nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
+                nmem_ens = vars_out['nmem_ens']
+            if nmem_earcgrp and nmem_ens:
+                vars_out['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
+                vars_out['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
             # Pre-compute all restart time prefixes for YAML templates
-            # This avoids computing them repeatedly in template loops
-            restart_interval = vars_out.get('restart_interval')
-            fhmax = vars_out.get('fhmax')
-            if vars_out['is_gdas'] and restart_interval and fhmax:
+            if vars_out['is_gdas'] and vars_out.get('restart_interval') and vars_out.get('fhmax'):
                 vars_out['restart_prefixes'] = []
-                for r_time in range(restart_interval, fhmax + 1, restart_interval):
+                for r_time in range(vars_out.get('restart_interval'), vars_out.get('fhmax') + 1, vars_out.get('restart_interval')):
                     r_dt = add_to_datetime(current_cycle, to_timedelta(f"{r_time}H"))
                     vars_out['restart_prefixes'].append(
                         f"{to_YMD(r_dt)}.{r_dt.strftime('%H')}0000"
                     )
             else:
                 vars_out['restart_prefixes'] = []
-
-        ensgrp = config_dict.get('ENSGRP', 0)
-
-        if ensgrp == 0:
-            vars_out['enkf_epos_ngrps'] = len(range(vars_out['fhmin'], vars_out['fhmax'] + vars_out['fhout'], vars_out['fhout']))
-        else:
-            nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
-            nmem_ens = vars_out['nmem_ens']
-            if nmem_earcgrp and nmem_ens:
-                vars_out['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
-                vars_out['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
-
         return vars_out
 
     @staticmethod
     @logit(logger)
-    def _replace_template_vars(template: str, var_dict: AttrDict, rotdir: str) -> str:
-        """Replace template variables and return a path relative to ROTDIR.
+    def get_gfs_com_paths(config_dict: AttrDict, tarball_type: str) -> AttrDict:
+        """Generate relative COM paths for GFS tarball archiving.
+
+        System-specific entry point that routes to get_tarball_com_paths with
+        the specified tarball type. Used by master_gfs.yaml.j2 template.
 
         Parameters
         ----------
-        template : str
-            Template string with variables to replace (e.g., "${ROTDIR}/${RUN}.${YMD}/${HH}")
-        var_dict : AttrDict
-            Dictionary of variable names and values
-        rotdir : str
-            Absolute ROTDIR used to strip from generated paths to create
-            relative paths.
-
-        Returns
-        -------
-        str
-            Path relative to ROTDIR for portability in tar archives
-        """
-        # First replace all template variables
-        replace_com = template
-        for var, value in var_dict.items():
-            replace_com = replace_com.replace(var, value)
-
-        # Then strip ROTDIR prefix to make path relative
-        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
-        return replace_com.replace(rotdir_prefix, "") if rotdir_prefix in replace_com else replace_com
-
-    @staticmethod
-    @logit(logger)
-    def _create_cycle_dicts(config_dict: AttrDict) -> AttrDict:
-        """Create cycle directories for template substitution
-
-        Parameters
-        ----------
-        rotdir : str
-            ROTDIR path
-        run : str
-            RUN type
+        config_dict : AttrDict
+            Configuration dictionary with ROTDIR and COMIN_* variables
+        tarball_type : str
+            Type of GFS tarball (from TARBALL_TYPE variable in template)
 
         Returns
         -------
         AttrDict
-            Dictionary containing current_cycle_dict and previous_cycle_dict
+            Dictionary with relative COM paths for the specified GFS tarball
         """
-        return {
-            '${ROTDIR}': config_dict['ROTDIR'],
-            '${RUN}': config_dict['RUN'],
-            '${YMD}': to_YMD(config_dict['current_cycle']),
-            '${HH}': config_dict['current_cycle'].strftime("%H"),
-        }
+        return ArchiveTarVars.get_tarball_com_paths(config_dict, tarball_type, 'gfs')
 
     @staticmethod
     @logit(logger)
-    def get_enkf_ensstat_com_paths(config_dict: AttrDict) -> AttrDict:
+    def get_gdas_com_paths(config_dict: AttrDict, tarball_type: str) -> AttrDict:
+        """Generate relative COM paths for GDAS tarball archiving.
+
+        System-specific entry point that routes to get_tarball_com_paths with
+        the specified tarball type. Used by master_gdas.yaml.j2 template.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary with ROTDIR and COMIN_* variables
+        tarball_type : str
+            Type of GDAS tarball (from TARBALL_TYPE variable in template)
+
+        Returns
+        -------
+        AttrDict
+            Dictionary with relative COM paths for the specified GDAS tarball
+        """
+        return ArchiveTarVars.get_tarball_com_paths(config_dict, tarball_type, 'gdas')
+
+    @staticmethod
+    @logit(logger)
+    def get_gcafs_com_paths(config_dict: AttrDict) -> AttrDict:
+        """Generate relative COM paths for GCAFS archiving.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary with ROTDIR and COMIN_* variables
+
+        Returns
+        -------
+        AttrDict
+            Dictionary with relative COM paths for GCAFS archiving
+        """
+        com_vars = [
+            'COMIN_ATMOS_HISTORY',
+            'COMIN_ATMOS_RESTART',
+            'COMIN_ATMOS_ANALYSIS',
+            'COMIN_ATMOS_INPUT',
+            'COMIN_ATMOS_GOES',
+            'COMIN_ATMOS_GEMPAK',
+            'COMIN_ATMOS_GENESIS',
+            'COMIN_ATMOS_BUFR',
+            'COMIN_ATMOS_WAFS',
+            'COMIN_ATMOS_TRACK',
+            'COMIN_ATMOS_WMO',
+            'COMIN_CHEM_HISTORY',
+            'COMIN_WAVE_HISTORY',
+            'COMIN_WAVE_PREP',
+            'COMIN_WAVE_GRID',
+            'COMIN_WAVE_STATION',
+            'COMIN_WAVE_GEMPAK',
+            'COMIN_OCEAN_HISTORY',
+            'COMIN_OCEAN_RESTART',
+            'COMIN_OCEAN_INPUT',
+            'COMIN_OCEAN_ANALYSIS',
+            'COMIN_ICE_HISTORY',
+            'COMIN_ICE_RESTART',
+            'COMIN_ICE_INPUT',
+            'COMIN_ICE_ANALYSIS',
+            'COMIN_MED_RESTART',
+            'COMIN_CONF',
+        ]
+        return ArchiveTarVars._create_relative_com_paths(config_dict, com_vars)
+
+    @staticmethod
+    @logit(logger)
+    def get_gcdas_com_paths(config_dict: AttrDict) -> AttrDict:
+        """Generate relative COM paths for GCDAS archiving.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary with ROTDIR and COMIN_* variables
+
+        Returns
+        -------
+        AttrDict
+            Dictionary with relative COM paths for GCDAS archiving
+        """
+        com_vars = [
+            'COMIN_OBS',
+            'COMIN_ATMOS_RESTART',
+            'COMIN_ATMOS_ANALYSIS',
+            'COMIN_SNOW_ANALYSIS',
+            'COMIN_OCEAN_RESTART',
+            'COMIN_OCEAN_ANALYSIS',
+            'COMIN_ICE_RESTART',
+            'COMIN_ICE_ANALYSIS',
+            'COMIN_MED_RESTART',
+            'COMIN_CONF',
+        ]
+        return ArchiveTarVars._create_relative_com_paths(config_dict, com_vars)
+
+    @staticmethod
+    @logit(logger)
+    def get_enkf_com_paths(config_dict: AttrDict) -> AttrDict:
         """Generate relative COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
 
         This method creates relative COM paths from absolute paths already defined
@@ -417,18 +527,12 @@ class ArchiveTarVars:
         Examples
         --------
         >>> # Job script creates: COMIN_ATMOS_HISTORY_ENSSTAT=/path/to/ROTDIR/enkfgdas.20211221/00/atmos/ensstat
-        >>> ensstat_paths = ArchiveTarVars.get_enkf_ensstat_com_paths(config)
-        >>> ensstat_paths['COMIN_ATMOS_HISTORY_ENSSTAT']
+        >>> com_paths = ArchiveTarVars.get_enkf_com_paths(config)
+        >>> com_paths['COMIN_ATMOS_HISTORY_ENSSTAT']
         'enkfgdas.20211221/00/atmos/ensstat'
         """
-        ensstat_paths = {}
+        com_paths = {}
         rotdir = config_dict.get('ROTDIR', '')
-
-        # Normalize ROTDIR with trailing slash for clean prefix removal
-        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
-
-        # List of COMIN/COMOUT variables to convert to relative paths
-        # These are created by the job scripts via declare_from_tmpl
         com_vars = [
             'COMIN_ATMOS_HISTORY',
             'COMIN_ATMOS_HISTORY_ENSSTAT',
@@ -438,22 +542,18 @@ class ArchiveTarVars:
             'COMIN_ICE_ANALYSIS_ENSSTAT',
             'COMIN_CONF',
         ]
-
-        # Convert absolute paths to relative paths
         for var_name in com_vars:
             if var_name in config_dict:
                 abs_path = config_dict[var_name]
-                # Strip ROTDIR prefix to create relative path
-                rel_path = abs_path.replace(rotdir_prefix, '') if rotdir_prefix in abs_path else abs_path
-                ensstat_paths[var_name] = rel_path
+                rel_path = ArchiveTarVars._make_path_relative(abs_path, rotdir)
+                com_paths[var_name] = rel_path
                 logger.debug(f"Converted {var_name}: {abs_path} -> {rel_path}")
-
-        logger.info(f"Generated {len(ensstat_paths)} relative ensemble statistics COM paths")
-        return ensstat_paths
+        logger.info(f"Generated {len(com_paths)} relative ensemble statistics COM paths")
+        return com_paths
 
     @staticmethod
     @logit(logger)
-    def get_enkf_single_member_vars(config_dict: AttrDict, member: int) -> AttrDict:
+    def get_enkf_member_com_paths(config_dict: AttrDict, member: int) -> AttrDict:
         """Generate relative COM paths for a single ensemble member.
 
         This method creates relative COM paths (relative to ROTDIR) for a specific
@@ -526,7 +626,7 @@ class ArchiveTarVars:
         member_vars = {}
         for var_key, template_key in template_mappings:
             if config_dict.get(template_key):
-                rel_path = ArchiveTarVars._replace_template_vars(
+                rel_path = ArchiveTarVars._create_relative_mem_com_paths(
                     config_dict[template_key], cycle_dict, config_dict.ROTDIR
                 )
                 member_vars[var_key] = rel_path
@@ -555,5 +655,233 @@ class ArchiveTarVars:
         """
         mem_var_set = {}
         for member in range(first_group_mem, last_group_mem + 1):
-            mem_var_set[f"com_set_{member:02d}"] = ArchiveTarVars.get_enkf_single_member_vars(config_dict, member)
+            mem_var_set[f"com_set_{member:02d}"] = ArchiveTarVars.get_enkf_member_com_paths(config_dict, member)
         return mem_var_set
+
+    @staticmethod
+    @logit(logger)
+    def get_tarball_com_paths(config_dict: AttrDict, tarball_type: str, run: str) -> AttrDict:
+        """Generate relative COM paths for specific GFS/GDAS tarball types.
+
+        Maps tarball types to their required COM variables and creates relative
+        paths (relative to ROTDIR) for archiving. This method centralizes the
+        tarball-to-COM-variable mapping logic.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Configuration dictionary with ROTDIR and COMIN_* variables
+        tarball_type : str
+            Type of tarball (e.g., 'gfsa', 'gfs_pgrb2b', 'gdas', etc.)
+        run : str
+            RUN type ('gfs' or 'gdas')
+
+        Returns
+        -------
+        AttrDict
+            Dictionary with relative COM paths for the specified tarball type
+
+        Raises
+        ------
+        KeyError
+            If tarball_type is not recognized for the specified RUN
+
+        Notes
+        -----
+        Supported tarball types (matching YAML filenames):
+        - GFS: gfsa, gfsb, gfs_flux, gfs_flux_1p00, gfs_pgrb2b, gfs_restarta,
+               gfs_netcdfa, gfs_netcdfb, gfs_downstream, gfsocean_analysis, gfswave,
+               ocean_6hravg, ocean_grib2, ocean_native, ice_6hravg, ice_grib2,
+               ice_native, chem
+        - GDAS: gdas, gdas_restarta, gdas_restartb, gdasocean_analysis,
+                gdasocean_restart, gdasocean, gdasice, gdasice_restart,
+                gdaswave, gdaswave_restart
+        """
+        # Define tarball-type to COM variables mapping
+        # Each key matches a YAML filename (without .yaml.j2 extension)
+        if run == 'gfs':
+            tarball_mappings = {
+                'gfsa': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_GENESIS', 'COMIN_ATMOS_GRIB_0p25',
+                         'COMIN_ATMOS_GRIB_1p00', 'COMIN_ATMOS_HISTORY', 'COMIN_ATMOS_MINMON',
+                         'COMIN_ATMOS_TRACK', 'COMIN_CHEM_ANALYSIS', 'COMIN_CONF', 'COMIN_OBS',
+                         'COMIN_SNOW_ANALYSIS'],
+                'gfsb': ['COMIN_ATMOS_GRIB_0p25', 'COMIN_ATMOS_GRIB_1p00'],
+                'gfs_flux': ['COMIN_ATMOS_MASTER'],
+                'gfs_flux_1p00': ['COMIN_ATMOS_GRIB_1p00'],
+                'gfs_pgrb2b': ['COMIN_ATMOS_GRIB_0p25', 'COMIN_ATMOS_GRIB_1p00'],
+                'gfs_restarta': ['COMIN_ATMOS_INPUT', 'COMIN_ATMOS_RESTART'],
+                'gfs_netcdfa': ['COMIN_ATMOS_ANALYSIS'],
+                'gfs_netcdfb': ['COMIN_ATMOS_HISTORY'],
+                'gfs_downstream': ['COMIN_ATMOS_BUFR', 'COMIN_ATMOS_GEMPAK'],
+                'gfsocean_analysis': ['COMIN_CONF', 'COMIN_ICE_ANALYSIS', 'COMIN_ICE_BMATRIX',
+                                      'COMIN_OCEAN_ANALYSIS', 'COMIN_OCEAN_BMATRIX'],
+                'gfswave': ['COMIN_WAVE_STATION'],
+                'ocean_6hravg': ['COMIN_OCEAN_HISTORY'],
+                'ocean_grib2': ['COMIN_OCEAN_GRIB'],
+                'ocean_native': ['COMIN_OCEAN_NETCDF'],
+                'ice_6hravg': ['COMIN_ICE_HISTORY'],
+                'ice_grib2': ['COMIN_ICE_GRIB'],
+                'ice_native': ['COMIN_ICE_NETCDF'],
+                'chem': ['COMIN_CHEM_HISTORY'],
+            }
+        elif run == 'gdas':  # gdas
+            tarball_mappings = {
+                'gdas': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_ANLMON', 'COMIN_ATMOS_GRIB_0p25',
+                         'COMIN_ATMOS_GRIB_1p00', 'COMIN_ATMOS_HISTORY', 'COMIN_ATMOS_MASTER',
+                         'COMIN_ATMOS_MINMON', 'COMIN_ATMOS_OZNMON', 'COMIN_ATMOS_RADMON',
+                         'COMIN_CHEM_ANALYSIS', 'COMIN_CONF', 'COMIN_OBS', 'COMIN_SNOW_ANALYSIS',
+                         'COMIN_SNOW_ANLMON'],
+                'gdas_restarta': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_RESTART', 'COMIN_OBS'],
+                'gdas_restartb': ['COMIN_ATMOS_RESTART'],
+                'gdasocean_analysis': ['COMIN_CONF', 'COMIN_ICE_ANALYSIS', 'COMIN_ICE_BMATRIX',
+                                       'COMIN_OCEAN_ANALYSIS', 'COMIN_OCEAN_BMATRIX'],
+                'gdasocean_restart': ['COMIN_MED_RESTART', 'COMIN_OCEAN_RESTART'],
+                'gdasocean': ['COMIN_CONF', 'COMIN_OCEAN_HISTORY'],
+                'gdasice': ['COMIN_CONF', 'COMIN_ICE_HISTORY'],
+                'gdasice_restart': ['COMIN_ICE_RESTART'],
+                'gdaswave': ['COMIN_WAVE_RESTART', 'COMIN_WAVE_STATION'],
+                'gdaswave_restart': ['COMIN_WAVE_RESTART'],
+            }
+        else:
+            raise ValueError(f"Unsupported RUN type '{run}' for tarball COM path generation. Must be 'gfs' or 'gdas'.")
+
+        if tarball_type not in tarball_mappings:
+            raise KeyError(f"Unknown {run.upper()} tarball type: {tarball_type}")
+
+        com_vars = tarball_mappings[tarball_type]
+        return ArchiveTarVars._create_relative_com_paths(config_dict, com_vars)
+
+    @staticmethod
+    @logit(logger)
+    def _create_cycle_dicts(config_dict: AttrDict) -> AttrDict:
+        """Create cycle directories for template substitution
+
+        Parameters
+        ----------
+        rotdir : str
+            ROTDIR path
+        run : str
+            RUN type
+
+        Returns
+        -------
+        AttrDict
+            Dictionary containing current_cycle_dict and previous_cycle_dict
+        """
+        return {
+            '${ROTDIR}': config_dict['ROTDIR'],
+            '${RUN}': config_dict['RUN'],
+            '${YMD}': to_YMD(config_dict['current_cycle']),
+            '${HH}': config_dict['current_cycle'].strftime("%H"),
+        }
+
+    @staticmethod
+    @logit(logger)
+    def _make_path_relative(abs_path: str, rotdir: str) -> str:
+        """Strip ROTDIR prefix to create relative path.
+
+        Parameters
+        ----------
+        abs_path : str
+            Absolute path that may contain ROTDIR prefix
+        rotdir : str
+            ROTDIR to strip from path
+
+        Returns
+        -------
+        str
+            Path relative to ROTDIR
+
+        Examples
+        --------
+        >>> ArchiveTarVars._make_path_relative('/data/rotdir/gfs.20251218/00', '/data/rotdir')
+        'gfs.20251218/00'
+        """
+        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
+        return abs_path.replace(rotdir_prefix, '') if rotdir_prefix in abs_path else abs_path
+
+    @staticmethod
+    @logit(logger)
+    def _create_relative_mem_com_paths(template: str, var_dict: AttrDict, rotdir: str) -> str:
+        """Replace template variables in a member template and return a path relative to ROTDIR.
+
+        Parameters
+        ----------
+        template : str
+            Template string with variables to replace (e.g., "${ROTDIR}/${RUN}.${YMD}/${HH}")
+        var_dict : AttrDict
+            Dictionary of variable names and values
+        rotdir : str
+            Absolute ROTDIR used to strip from generated paths
+
+        Returns
+        -------
+        str
+            Path relative to ROTDIR for portability in tar archives
+
+        Examples
+        --------
+        >>> template = "${ROTDIR}/${RUN}.${YMD}/${HH}"
+        >>> var_dict = AttrDict({
+        ...     "${ROTDIR}": "/path/to/rotdir",
+        ...     "${RUN}": "gfs",
+        ...     "${YMD}": "20251218",
+        ...     "${HH}": "00",
+        ... })
+        >>> rotdir = "/path/to/rotdir"
+        >>> ArchiveTarVars._create_relative_mem_com_paths(template, var_dict, rotdir)
+        'gfs.20251218/00'
+        """
+        # First replace all template variables
+        replace_com = template
+        for var, value in var_dict.items():
+            replace_com = replace_com.replace(var, value)
+
+        # Then strip ROTDIR prefix to make path relative
+        return ArchiveTarVars._make_path_relative(replace_com, rotdir)
+
+    @staticmethod
+    @logit(logger)
+    def _create_relative_com_paths(config_dict: AttrDict, com_var_list: list) -> AttrDict:
+        """
+        Convert absolute COM paths to relative paths for non-EnKF archiving.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Must contain ROTDIR and absolute COMIN_*/COMOUT_* variables.
+        com_var_list : list
+            List of COM variable names to convert (e.g., ['COMIN_ATMOS_HISTORY'])
+
+        Returns
+        -------
+        AttrDict
+            Relative COM paths for requested variables.
+
+        Notes
+        -----
+        - Only processes variables that exist in config_dict
+        - Strips ROTDIR prefix to create relative paths
+        - Used by get_gcafs_com_paths, get_gcdas_com_paths
+
+        Examples
+        --------
+        >>> config_dict = AttrDict({
+        ...     'ROTDIR': '/data/rotdir',
+        ...     'COMIN_ATMOS_HISTORY': '/data/rotdir/gfs.20251218/00/atmos/history',
+        ... })
+        >>> ArchiveTarVars._create_relative_com_paths(config_dict, ['COMIN_ATMOS_HISTORY'])
+        {'COMIN_ATMOS_HISTORY': 'gfs.20251218/00/atmos/history'}
+        """
+        com_paths = AttrDict()
+        rotdir = config_dict['ROTDIR']
+
+        for var_name in com_var_list:
+            if var_name in config_dict:
+                abs_path = config_dict[var_name]
+                rel_path = ArchiveTarVars._make_path_relative(abs_path, rotdir)
+                com_paths[var_name] = rel_path
+                logger.debug(f"Converted {var_name}: {abs_path} -> {rel_path}")
+
+        logger.info(f"Created {len(com_paths)} relative COM paths")
+        return com_paths

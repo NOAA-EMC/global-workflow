@@ -7,13 +7,13 @@ gdas_restarta:
         {% if DO_JEDIATMVAR and not (ATMINC_GRID == 'gaussian') %}
             {% for iaufhr in IAUFHRS %}
                 {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.atm.i{{ "%03d" % iaufhr }}.tile{{ itile+1 }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_increment.atm.i{{ "%03d" % iaufhr }}.tile{{ itile+1 }}.nc"
                 {% endfor %}
             {% endfor %}
         {% else %}
         # IAU increments
             {% for iaufhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
             {% endfor %}
         {% endif %}
 
@@ -21,7 +21,7 @@ gdas_restarta:
         {% if DO_GSISOILDA %}
             {% if DO_LAND_IAU %}    #regridded tiles for land iau
                 {% for itile in range(1,7) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/increment.sfc.tile{{ itile }}.nc"
                 {% endfor %}
             {% endif %}
         {% endif %}
@@ -35,25 +35,25 @@ gdas_restarta:
         {% set anl_timedelta = anl_offset | to_timedelta %}
         {% set anl_time = current_cycle | add_to_datetime(anl_timedelta) %}
         {% for itile in range(1,7) %}
-        - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
 
         # Initial biases
         {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat.tar"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.dtf.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.done.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_air.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_pc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}cnvstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_int.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.dtf.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.done.txt"
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}rad_varbc_params.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}rad_varbc_params.tar"
         {% endif %}
 
         # Input BUFR files
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
+        - "{{ COMIN_OBS }}/{{ head }}nsstbufr"
+        - "{{ COMIN_OBS }}/{{ head }}prepbufr"
+        - "{{ COMIN_OBS }}/{{ head }}prepbufr.acft_profiles"
     optional:
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}radstat.tar"

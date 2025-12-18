@@ -19,7 +19,7 @@ def main():
     archive = Archive(config)
 
     # Collect all variables for YAML templates (config keys, COM paths, cycle vars, member paths)
-    # Note: Member COM paths are relative to ROTDIR for portability in tar archives
+    # Note: COM paths are relative to ROTDIR for portability in tar archives
     archive_dict = ArchiveTarVars.get_all_yaml_vars(archive.task_config)
 
     # Change to ROTDIR for the entire archiving workflow so that relative paths

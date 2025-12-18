@@ -2,6 +2,6 @@ gdasice:
     name: "GDASICE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasice.tar"
     required:
-        - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.ic.nc"
-        - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ RUN }}.t{{ cycle_HH }}z.inst.f006.nc"
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.ice_in'
+        - "{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ cycle_HH }}z.ic.nc"
+        - "{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ cycle_HH }}z.inst.f006.nc"
+        - '{{ COMIN_CONF }}/ufs.ice_in'

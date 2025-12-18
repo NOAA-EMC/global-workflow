@@ -5,7 +5,7 @@ gdaswave:
     required:
         #Save HAFS restart file: 
         {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
-        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"
+        - "{{ COMIN_WAVE_RESTART }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"
 
         # TODO explicitly name the wave grid files to archive
         {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
@@ -17,10 +17,10 @@ gdaswave:
                               '${MEMDIR}':'',
                               '${GRDRESNAME}':grd}) %}
         {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
-        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*"
+        - "{{ file_path }}/{{ head }}*"
         {% endfor %}
 
         # Wave point output
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}bull.tar"
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}cbull.tar"
-        - "{{ COMIN_WAVE_STATION | relpath(ROTDIR) }}/{{ head }}spec.tar.gz"
+        - "{{ COMIN_WAVE_STATION }}/{{ head }}bull.tar"
+        - "{{ COMIN_WAVE_STATION }}/{{ head }}cbull.tar"
+        - "{{ COMIN_WAVE_STATION }}/{{ head }}spec.tar.gz"
