@@ -101,6 +101,7 @@ parm/ufs/post_itag_gcafs
 parm/ufs/ww3_shel.nml.IN
 parm/ufs/global_control.nml.IN
 parm/regrid_sfc
+parm/chem/nexus
 
 # Ignore sorc and logs folders from externals
 #--------------------------------------------
