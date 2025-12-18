@@ -43,6 +43,10 @@ case ${step} in
         export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;
+  
+  "offlineanl")
+    export memory="240GB"
+    ;;
 
   "eupd")
     case "${CASE}" in
