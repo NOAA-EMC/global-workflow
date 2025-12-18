@@ -156,7 +156,7 @@ fi
 # Loop over the dates in the window to update the surface restarts
 for hr in "${!gcycle_dates[@]}"; do
 
-    gcycle_date="${gcycle_dates[hr]}"
+    export gcycle_date="${gcycle_dates[hr]}"
     FHR="${soilinc_fhrs[hr]}"
     echo "Updating surface restarts for ${gcycle_date} ..."
 
