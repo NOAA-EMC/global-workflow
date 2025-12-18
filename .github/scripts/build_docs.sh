@@ -22,10 +22,10 @@ cp -R "${DOCS_DIR}/build/html/." artifact/documentation
 # so it will be available in the artifacts
 warning_file="${DOCS_DIR}/build/warnings.log"
 if [[ -s ${warning_file} ]]; then
-  cp -r "${DOCS_DIR}/build/warnings.log" artifact/doc_warnings.log
-  cp artifact/doc_warnings.log artifact/documentation
-  echo "Warnings were encountered while building documentation."
-  echo "========== Begin warnings =========="
-  cat artifact/doc_warnings.log
-  echo "=========== End warnings ==========="
+    cp -r "${DOCS_DIR}/build/warnings.log" artifact/doc_warnings.log
+    cp artifact/doc_warnings.log artifact/documentation
+    echo "Warnings were encountered while building documentation."
+    echo "========== Begin warnings =========="
+    cat artifact/doc_warnings.log
+    echo "=========== End warnings ==========="
 fi
