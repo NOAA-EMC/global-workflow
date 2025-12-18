@@ -212,6 +212,8 @@ if [[ "${DOIAU}" == "YES" ]]; then
 
         done # ensembles
 
+        export gcycle_date="${bPDY}${bcyc}"
+
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -287,6 +289,8 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
                     "${DATA}/soil_xainc.${cmem}"
             fi
         done
+
+        export gcycle_date="${PDY}${cyc}"
 
         "${CYCLESH}" && true
         export err=$?
