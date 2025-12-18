@@ -27,9 +27,9 @@ base:
 prepoceanobs:
   use_exp_obs: "YES"
   # retro
-  # dmpdir_exp: /lfs/h2/emc/da/noscrub/common_obsForge
+  # dmpdir_exp: /lfs/h2/emc/global/noscrub/emc.global/ocean
   # realtime
-  dmpdir_exp: /lfs/h2/emc/da/noscrub/emc.da/obsForge/COMROOT/realtime
+  dmpdir_exp: /lfs/h2/emc/global/noscrub/emc.global/ocean
 
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
