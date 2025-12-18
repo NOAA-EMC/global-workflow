@@ -362,7 +362,7 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def _create_cycle_dicts(config_dict: AttrDict) -> Dict[str, Dict[str, str]]:
+    def _create_cycle_dicts(config_dict: AttrDict) -> AttrDict:
         """Create cycle directories for template substitution
 
         Parameters
@@ -374,7 +374,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, Dict[str, str]]
+        AttrDict
             Dictionary containing current_cycle_dict and previous_cycle_dict
         """
         return {
@@ -386,7 +386,7 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def get_enkf_ensstat_com_paths(config_dict: AttrDict) -> Dict[str, str]:
+    def get_enkf_ensstat_com_paths(config_dict: AttrDict) -> AttrDict:
         """Generate relative COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
 
         This method creates relative COM paths from absolute paths already defined
@@ -402,7 +402,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, str]
+        AttrDict
             Dictionary with relative COMIN paths for ensemble statistics:
             - Keys match enkf.yaml.j2 template variable names
             - Values are paths relative to ROTDIR for portability
@@ -453,7 +453,7 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def get_enkf_single_member_vars(config_dict: AttrDict, member: int) -> Dict[str, str]:
+    def get_enkf_single_member_vars(config_dict: AttrDict, member: int) -> AttrDict:
         """Generate relative COM paths for a single ensemble member.
 
         This method creates relative COM paths (relative to ROTDIR) for a specific
@@ -470,7 +470,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, str]
+        AttrDict
             Dictionary with relative COM paths for this specific member:
             - COMIN_ATMOS_ANALYSIS_MEM: Relative path to member analysis directory
             - COMIN_ATMOS_HISTORY_MEM: Relative path to member history directory
@@ -536,7 +536,7 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def _create_mem_com_sets(config_dict: AttrDict, first_group_mem: int, last_group_mem: int) -> Dict[str, str]:
+    def _create_mem_com_sets(config_dict: AttrDict, first_group_mem: int, last_group_mem: int) -> AttrDict:
         """Generate COM path sets for a group of ensemble members.
 
         Parameters
@@ -550,7 +550,7 @@ class ArchiveTarVars:
 
         Returns
         -------
-        Dict[str, Dict[str, str]]
+        AttrDict
             Dictionary mapping com_set_NNN keys to member-specific COM paths
         """
         mem_var_set = {}
