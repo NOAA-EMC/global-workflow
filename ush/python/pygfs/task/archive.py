@@ -6,8 +6,6 @@ import shutil
 import tarfile
 from logging import getLogger
 from typing import List
-from copy import deepcopy
-
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
                     strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml)
