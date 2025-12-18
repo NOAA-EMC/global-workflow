@@ -2450,6 +2450,15 @@ class GFSTasks(Tasks):
                 if dep_next_fcst_seg is not None:
                     deps_all.append(dep_next_fcst_seg)
 
+                # earc_vrfy runs on the full cycles, so the dependency does not exist
+                # for the half cycle. Instead, we will need to depend on the epmn
+                # metatask and the echgres task for the half cycle.
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+                deps_half.append(rocoto.add_dependency(dep_dict))
+                if not self.options['do_jediatmvar']:
+                    dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+                    deps_half.append(rocoto.add_dependency(dep_dict))
+
         else:
             if self.app_config.mode in ['cycled']:
                 if self.run in ['gfs']:
@@ -2574,13 +2583,11 @@ class GFSTasks(Tasks):
         deps_list = []
         # Add half-cycle dependencies if they exist
         if len(deps_half) > 1:
-            raise NotImplementedError("Multiple half-cycle cleanup dependencies are not yet supported.")
-            # If such a case comes up, we would do something like this:
-            # dependencies_half = rocoto.create_dependency(dep_condition='and', dep=deps_half)
-            # dependencies_full = rocoto.create_dependency(dep_condition='and', dep=deps_full)
-            # deps_list = [dependencies_half, dependencies_full]
-            # # Combine half and full cycle dependencies with OR
-            # deps_full_half = rocoto.create_dependency(dep_condition='or', dep=deps_list)
+            dependencies_half = rocoto.create_dependency(dep_condition='and', dep=deps_half)
+            dependencies_full = rocoto.create_dependency(dep_condition='and', dep=deps_full)
+            deps_list = [dependencies_half, dependencies_full]
+            # Combine half and full cycle dependencies with OR
+            deps_full_half = rocoto.create_dependency(dep_condition='or', dep=deps_list)
 
         elif len(deps_half) == 1:
             dependencies_half = rocoto.create_dependency(dep=deps_half)
