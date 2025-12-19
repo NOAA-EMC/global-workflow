@@ -37,6 +37,10 @@ load(pathJoin("ncdiag-A", (os.getenv("ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 
+load(pathJoin("g2c", (os.getenv("g2c_ver") or "None")))
+load(pathJoin("libjpeg-turbo", (os.getenv("libjpeg_turbo_ver") or "None")))
+load(pathJoin("libaec", (os.getenv("libaec_ver") or "None")))
+
 prepend_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304")
 setenv("HPC_OPT", "/apps/ops/para/libs")
 load(pathJoin("met", (os.getenv("met_ver") or "None")))
