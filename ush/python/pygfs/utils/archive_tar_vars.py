@@ -121,11 +121,17 @@ class ArchiveTarVars:
             tarball_type = config_dict.get('TARBALL_TYPE', '')
             if tarball_type:
                 arch_dict.update(ArchiveTarVars.get_gfs_com_paths(config_dict, tarball_type))
+                # For gfswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
+                if tarball_type == 'gfswave':
+                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
         elif config_dict.get('RUN') == 'gdas':
             # GDAS system: Route through tarball-specific method
             tarball_type = config_dict.get('TARBALL_TYPE', '')
             if tarball_type:
                 arch_dict.update(ArchiveTarVars.get_gdas_com_paths(config_dict, tarball_type))
+                # For gfswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
+                if tarball_type == 'gdaswave':
+                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
         elif config_dict.get('RUN') == 'gcafs':
             # GCAFS system: All COM paths
             arch_dict.update(ArchiveTarVars.get_gcafs_com_paths(config_dict))
@@ -699,6 +705,7 @@ class ArchiveTarVars:
         """
         # Define tarball-type to COM variables mapping
         # Each key matches a YAML filename (without .yaml.j2 extension)
+        wave_grid_res_com_list = [k for k in config_dict.keys() if k.startswith('COMIN_WAVE_GRID_')]
         if run == 'gfs':
             tarball_mappings = {
                 'gfsa': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_GENESIS', 'COMIN_ATMOS_GRIB_0p25',
@@ -715,7 +722,7 @@ class ArchiveTarVars:
                 'gfs_downstream': ['COMIN_ATMOS_BUFR', 'COMIN_ATMOS_GEMPAK'],
                 'gfsocean_analysis': ['COMIN_CONF', 'COMIN_ICE_ANALYSIS', 'COMIN_ICE_BMATRIX',
                                       'COMIN_OCEAN_ANALYSIS', 'COMIN_OCEAN_BMATRIX'],
-                'gfswave': ['COMIN_WAVE_STATION'],
+                'gfswave': ['COMIN_WAVE_STATION'] + wave_grid_res_com_list,
                 'ocean_6hravg': ['COMIN_OCEAN_HISTORY'],
                 'ocean_grib2': ['COMIN_OCEAN_GRIB'],
                 'ocean_native': ['COMIN_OCEAN_NETCDF'],
@@ -739,7 +746,7 @@ class ArchiveTarVars:
                 'gdasocean': ['COMIN_CONF', 'COMIN_OCEAN_HISTORY'],
                 'gdasice': ['COMIN_CONF', 'COMIN_ICE_HISTORY'],
                 'gdasice_restart': ['COMIN_ICE_RESTART'],
-                'gdaswave': ['COMIN_WAVE_RESTART', 'COMIN_WAVE_STATION'],
+                'gdaswave': ['COMIN_WAVE_RESTART', 'COMIN_WAVE_STATION'] + wave_grid_res_com_list,
                 'gdaswave_restart': ['COMIN_WAVE_RESTART'],
             }
         else:
