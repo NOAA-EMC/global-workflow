@@ -133,17 +133,17 @@ do
   do
     start_hr=$((j-6))
     end_hr=$((j+24-6))
-    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" $start_hr 6 $end_hr)
+    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "$start_hr" 6 "$end_hr")
     # shellcheck disable=SC2086
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
-  list_daily=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}/daily_*.grb")
+  list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
-  rm "${OUTDIR}/inst.daily.${MEMDIR}/daily*.grb"
+  rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
   
 done
 
@@ -181,17 +181,17 @@ do
   do
     start_hr=$((j-6))
     end_hr=$((j+24-6)) 
-    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" $start_hr 6 $end_hr)
+    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "$start_hr" 6 "$end_hr")
     # shellcheck disable=SC2086
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
-  list_daily=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}/daily_*.grb")
+  list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start_next}${filemm}${filename_end}"
-  rm "${OUTDIR}/inst.daily.${MEMDIR}/daily*.grb"
+  rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
 
 done
 
