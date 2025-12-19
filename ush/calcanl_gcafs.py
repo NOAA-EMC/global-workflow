@@ -34,8 +34,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
                ['dpres', 'delp'],
                ['delz', 'delz'],
                ['o3mr', 'o3mr'],
-               ['clwmr', 'liq_wat'],
-               ['icmr', 'icmr'],]
+               ['clwmr', 'liq_wat']]
 
     with Dataset(inc_file, mode='r') as incfile, Dataset(ges_file, mode='r') as gesfile, Dataset(anl_file, mode='a') as anlfile:
         # loop over meteorological variables and add increments to background
