@@ -37,9 +37,9 @@ dailyaccvars="(ACPCP|APCP|NCPCP|CPRAT|PRATE|LHTFL|SHTFL|GFLUX|SNOHF|UFLX|VFLX|WA
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
 
 if [[ -s "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f1002.grib2 ]]; then
-  lastfile=$(find "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f????.grib2" | sort -V | tail -1)
+  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f????.grib2 | sort -V | tail -1)
 else
-  lastfile=$(find "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f???.grib2" | sort -V | tail -1)
+  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f???.grib2 | sort -V | tail -1)
 fi
 
 # get validation date of first file
