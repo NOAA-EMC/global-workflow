@@ -274,7 +274,7 @@ class Archive(Task):
         # Dictionary to accumulate datasets across all members
         # Key: dataset name (e.g., "ENKF_GRP", "ENKF_RESTARTA_GRP", "ENKF_RESTARTB_GRP")
         # Value: dataset dict with accumulated file lists
-        accumulated_datasets = {}
+        accumulated_datasets = AttrDict()
 
         # Render template once per member
         for mem in range(first_group_mem, last_group_mem + 1):
@@ -309,9 +309,9 @@ class Archive(Task):
 
                 # Append this member's files to the accumulated dataset
                 if 'required' in dataset:
-                    accumulated_datasets[dataset_name]['required'].extend(dataset['required'])
+                    accumulated_datasets[dataset_name].required.extend(dataset['required'])
                 if 'optional' in dataset:
-                    accumulated_datasets[dataset_name]['optional'].extend(dataset['optional'])
+                    accumulated_datasets[dataset_name].optional.extend(dataset['optional'])
 
         # Convert accumulated datasets to final atardir_sets format
         atardir_sets = []
