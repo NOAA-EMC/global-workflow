@@ -181,10 +181,10 @@ class Archive(Task):
             if first_group_mem is None or last_group_mem is None:
                 raise ValueError("EnKF member archiving requires first_group_mem and last_group_mem in arch_dict")
 
-            atardir_sets = self._configure_tars_enkf_members(arch_dict, master_yaml_path, first_group_mem, last_group_mem)
+            atardir_sets = self._parse_yaml_enkf_members(arch_dict, master_yaml_path, first_group_mem, last_group_mem)
         elif "enkf" in arch_dict.RUN and ensgrp == 0:
             # For EnKF standard archiving (ensemble mean/spread), use standard single-pass rendering
-            atardir_sets = self._configure_tars_standard(arch_dict, master_yaml_path)
+            atardir_sets = self._parse_yaml_enkf_standard(arch_dict, master_yaml_path)
         else:
             # TODO For GFS/GDAS deterministic runs, use standard single-pass rendering
             atardir_sets = []
@@ -196,7 +196,7 @@ class Archive(Task):
         return atardir_sets
 
     @logit(logger)
-    def _configure_tars_standard(self, arch_dict: AttrDict, master_yaml_path: str) -> List[AttrDict]:
+    def _parse_yaml_enkf_standard(self, arch_dict: AttrDict, master_yaml_path: str) -> List[AttrDict]:
         """Standard single-pass template rendering for non-member archiving.
 
         This method is used for:
@@ -245,7 +245,7 @@ class Archive(Task):
         return atardir_sets
 
     @logit(logger)
-    def _configure_tars_enkf_members(self, arch_dict: AttrDict, master_yaml_path: str,
+    def _parse_yaml_enkf_members(self, arch_dict: AttrDict, master_yaml_path: str,
                                      first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
         """Per-member template rendering for EnKF member archiving.
 
