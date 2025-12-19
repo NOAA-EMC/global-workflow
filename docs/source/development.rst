@@ -83,16 +83,29 @@ The commonly run tests are written in YAML format and can be found in the ``dev/
 ::
 
     cd workflow
-    ./generate_workflows.sh -A "your_hpc_account" -b -G -c /path/to/root/directory
+    ./generate_workflows.sh -A "your_hpc_account" -b -GESC -c /path/to/RUNTESTS/directory
 
 where:
 
     * ``-A`` is used to specify the HPC (slurm or PBS) account to use
     * ``-b`` indicates that the workflow should be built fresh
-    * ``-G`` specifies that all of the GFS cases should be run (this also influences the build flags to use)
+    * ``-GESC`` specifies that all of the GFS, GEFS, SFS, GCAFS cases should be run (this also influences the build flags to use)
     * ``-c`` tells the tool to append the rocotorun commands for each experiment to your crontab
 
 More details on how to use the tool are provided by running ``generate_workflows.sh -h``.
+
+Developers should be able to monitor the progress of their tests by using ``rocotostat`` on the generated XML file in the ``EXPDIR``.  Once the tests are complete, the output logs can be found in the ``logs`` subdirectory of each experiment directory.
+Helper scripts to summarize the testing is available in `dev/ush/rocoto_helpers.sh <./dev/ush/rocoto_helpers.sh>`_.
+The helper functions from the above scripts are available on the command-line by sourcing the `gw_setup.sh <./dev/ush/gw_setup.sh>`_ script.
+
+Once the tests are setup and running, developers can use the command-line helper functions `gw_expstat` and `gw_cistat`.  More help is available by running these commands with the ``-h`` option.
+
+When opening a pull request, developers should indicate which CI tests were run and on which platform(s).
+They should report the results of the tests in the PR description.  Developers should include the output of the ``gw_cistat`` command for the tests they ran in the PR description.
+E.g.
+::
+
+    gw_cistat -r /path/to/RUNTESTS/directory
 
 ----------------
 Comparison Tools
@@ -240,4 +253,3 @@ Moving forward you'll want to perform the "remote update" command regularly to u
 ::
 
    git remote update
-

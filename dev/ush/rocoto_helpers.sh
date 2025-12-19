@@ -91,17 +91,35 @@ _gw_pad_str() {
 # Globals:
 #   None
 # Arguments:
-#   RUNTESTS : Path to CI RUNTESTS directory containing EXPDIR subdirectory
+#   -r RUNTESTS : Path to CI RUNTESTS directory containing EXPDIR subdirectory
 # Outputs:
 #   Writes formatted status information for all experiments to stdout
 #   Writes warnings to stdout for experiments with DEAD tasks
 # Returns:
 #   0 on success, 1 on error (e.g., missing XML files)
 # Usage:
-#   gw_cistat /path/to/RUNTESTS
+#   gw_cistat -r /path/to/RUNTESTS
 #######################################
 gw_cistat() {
-    local RUNTESTS=${1?"RUNTESTS directory argument is required"}
+    local RUNTESTS=""
+    while getopts "r:" opt; do
+        case "${opt}" in
+            r)
+                RUNTESTS="${OPTARG}"
+                ;;
+            *)
+                echo "Usage: gw_cistat -r RUNTESTS"
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if [[ -z "${RUNTESTS}" ]]; then
+        echo "FATAL ERROR: RUNTESTS directory argument is required"
+        echo "Usage: gw_cistat -r RUNTESTS"
+        return 1
+    fi
     local expdir pslot
     local summary details nactive ndead
     local max_width str_len pad_len left_pad right_pad
