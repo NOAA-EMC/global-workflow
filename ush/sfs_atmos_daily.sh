@@ -37,9 +37,9 @@ dailyaccvars="(ACPCP|APCP|NCPCP|CPRAT|PRATE|LHTFL|SHTFL|GFLUX|SNOHF|UFLX|VFLX|WA
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
 
 if [[ -s "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f1002.grib2 ]]; then
-  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f???.grib2 | sort -V | tail -1)
+  lastfile=$(find "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f????.grib2" | sort -V | tail -1)
 else
-  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f???.grib2 | sort -V | tail -1)
+  lastfile=$(find "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f???.grib2" | sort -V | tail -1)
 fi
 
 # get validation date of first file
@@ -138,12 +138,12 @@ do
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
-  list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
+  list_daily=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}/daily_*.grb")
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
-  rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
+  rm "${OUTDIR}/inst.daily.${MEMDIR}/daily*.grb"
   
 done
 
@@ -186,12 +186,12 @@ do
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
-  list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
+  list_daily=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}/daily_*.grb")
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start_next}${filemm}${filename_end}"
-  rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
+  rm "${OUTDIR}/inst.daily.${MEMDIR}/daily*.grb"
 
 done
 
