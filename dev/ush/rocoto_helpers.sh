@@ -45,7 +45,7 @@ gw_expstat() {
         echo "FATAL ERROR: '${pslot}.xml' does not exist in '${expdir}', ABORT!"
         return 1
     else
-        rocotostat -w "${expdir}/${pslot}.xml" -d "${expdir}/${pslot}.db" -v 10 ${summarize_flag}
+        rocotostat -w "${expdir}/${pslot}.xml" -d "${expdir}/${pslot}.db" -v 10 "${summarize_flag}"
     fi
 }
 
@@ -71,7 +71,7 @@ _gw_pad_str() {
     local pad_char="${3:-#}"
     local str_len pad_len left_pad right_pad left_padding right_padding
     str_len=${#str}
-    pad_len=$(((max_width - str_len)))
+    pad_len=$((max_width - str_len))
     if [[ ${pad_len} -le 0 ]]; then
         echo "${str}"
         return
@@ -136,7 +136,7 @@ gw_cistat() {
         _gw_pad_str "${pslot}" 70 "#"
         summary=$(gw_expstat -e "${expdir}" -s)
         cat <<< "${summary}"
-        nactive=$(grep "ACTIVE" <<< "${summary}" | wc -l)
+        nactive=$(grep "Active" <<< "${summary}" | wc -l)
         if [[ ${nactive} -gt 0 ]]; then
             details=$(gw_expstat -e "${expdir}")
             ndead=0
