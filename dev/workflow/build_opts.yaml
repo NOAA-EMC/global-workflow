@@ -1,7 +1,7 @@
 host_override:  # over-ride options for host
   # Gaea must use the login nodes for builds
   GAEAC6:
-    max_cores: 4
+    max_cores: 8
     walltime_ratio: 1.5  # Uniformly adjust the wallclock by this factor (builds are slower on head nodes)
     build:
       gdas:
