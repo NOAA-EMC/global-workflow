@@ -3,7 +3,7 @@
 # Compare two grib2 files with wgrib2
 # The files must have the same fields in the same order
 
-# shellcheck disable=SC2155,SC2312
+# shellcheck disable=SC2155
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
 declare -rx HOMEgfs
 
@@ -13,5 +13,4 @@ file2=${2:?}
 source "${HOMEgfs}/dev/ush/load_modules.sh" run
 
 # Use wgrib2 to compute correlations and print any record that does not have corr=1 for mismatch
-#shellcheck disable=SC2312
 wgrib2 "${file2}" -var -lev -rpn "sto_1" -import_grib "${file1}" -rpn "rcl_1:print_corr:print_rms" | grep -v "rpn_corr=1"

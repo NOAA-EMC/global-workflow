@@ -52,7 +52,6 @@ FV3_namelists() {
         nrec=$(wc -l < "${FIELD_TABLE}")
         prec=${nrec}
         if ((dnats > 0)); then
-            # shellcheck disable=SC2312
             prec=$(grep -F -n TRACER "${FIELD_TABLE}" 2> /dev/null | tail -n "${dnats}" | head -1 | cut -d: -f1)
             prec=${prec:-0}
             prec=$((prec > 0 ? prec - 1 : prec))

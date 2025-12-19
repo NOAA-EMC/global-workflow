@@ -676,7 +676,6 @@ CICE_predet() {
 
     # CICE does not have a concept of high frequency output like FV3
     # Convert output settings into an explicit list for CICE
-    # shellcheck disable=SC2312
     mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
     # Fix files
