@@ -14,6 +14,7 @@ datasets:
             - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.f{{ '%03d' % fhr }}.nc"
             - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfc.f{{ '%03d' % fhr }}.nc"
             {% endfor %}
+{# TODO: reenable when pres_b files are ready to archive
             {% if ARCH_GAUSSIAN %}
             {% for fhr in range(0, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
             - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2"
@@ -22,6 +23,7 @@ datasets:
             - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2.idx"
             {% endfor %}
             {% endif %}
+end TODO #}
             - "{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.input.nml"
             # Forecast GRIB2 products
             {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
