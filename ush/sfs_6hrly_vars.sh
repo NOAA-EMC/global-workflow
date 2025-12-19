@@ -33,7 +33,7 @@ declare -a filevars=( "dlwrfsfc" "dswrfsfc" "ulwrfsfc" "uswrfsfc" "ulwrftoa" "lh
 "lftxsfc" "capesfc" "rh2m" "hlcy3000_0m" "maxwind10m" )
 
 # get validation date of first file
-firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.grb2f000"
+firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
 vt_init="$(wgrib2 "${firstfile}" -d 1 -vt)"
 vt_date="${vt_init:7:10}"  
 
