@@ -246,7 +246,7 @@ class Archive(Task):
 
     @logit(logger)
     def _parse_yaml_enkf_members(self, arch_dict: AttrDict, master_yaml_path: str,
-                                     first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
+                                 first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
         """Per-member template rendering for EnKF member archiving.
 
         This method renders templates once for each ensemble member, collecting
