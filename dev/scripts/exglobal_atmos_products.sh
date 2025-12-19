@@ -9,15 +9,11 @@ if [[ "${FORECAST_HOUR}" -le 0 ]]; then
         fhr3="analysis"
         # shellcheck disable=SC2034  # paramlista is used later indirectly
         paramlista="${paramlista_anl}"
-        # shellcheck disable=SC2034  # paramlistb is used later indirectly
-        paramlistb="${paramlistb_anl}"
         FLXGF="NO"
     elif [[ "${FORECAST_HOUR}" -eq 0 ]]; then
         fhr3=$(printf "f%03d" "${FORECAST_HOUR}")
         # shellcheck disable=SC2034  # paramlista is used later indirectly
         paramlista="${paramlista_f000}"
-        # shellcheck disable=SC2034  # paramlistb is used later indirectly
-        paramlistb="${paramlistb_f000}"
     fi
     PGBS="YES"
 else
