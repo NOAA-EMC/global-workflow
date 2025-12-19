@@ -2608,7 +2608,7 @@ class GFSTasks(Tasks):
 
         resources = self.get_resource('cleanup')
         cycledef = self.run.replace('enkf', '')
-        cycledef = f'gdas_half, {cycledef}' if 'gdas' in cycledef else cycledef
+        cycledef = f'gdas_half,{cycledef}' if 'gdas' in cycledef else cycledef
         task_name = f'{self.run}_cleanup'
         task_dict = {'task_name': task_name,
                      'resources': resources,
