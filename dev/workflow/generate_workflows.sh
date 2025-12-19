@@ -265,7 +265,7 @@ fi
 # Set HOMEgfs if it wasn't set by the user
 if [[ "${_specified_home}" == "false" ]]; then
     script_relpath="$(dirname "${BASH_SOURCE[0]}")"
-    HOMEgfs="$(cd "${script_relpath}/../.." && pwd)"
+    HOMEgfs="$(cd "${script_relpath}" && git rev-parse --show-toplevel)"
     if [[ "${_verbose}" == "true" ]]; then
         printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
     fi
