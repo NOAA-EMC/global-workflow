@@ -137,7 +137,7 @@ class ArchiveTarVars:
                     arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
                 # Add tarball-specific variables for multiple tarball types
                 if tarball_type in ['gdaswave_restart', 'gdaswave', 'gdas_restarta',
-                                   'gdas_restartb', 'gdasocean_analysis']:
+                        'gdas_restartb', 'gdasocean_analysis']:
                     arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
         elif config_dict.get('RUN') == 'gcafs':
             # GCAFS system: All COM paths
@@ -1029,11 +1029,11 @@ class ArchiveTarVars:
             restart_interval = config_dict.get('restart_interval_gdas', 6)
             fhmax = config_dict.get('FHMAX', 9)
             tarball_vars['r_prefix_list'] = ArchiveTarVars._calculate_restart_prefixes(
-                current_cycle, restart_interval, fhmax
-            )
+            current_cycle, restart_interval, fhmax
+        )
 
             logger.info(f"Calculated {len(tarball_vars['r_prefix_list'])} restart prefixes for gdas_restartb "
-                       f"(interval={restart_interval}H, FHMAX={fhmax}H)")
+            f"(interval={restart_interval}H, FHMAX={fhmax}H)")
 
         return tarball_vars
 
