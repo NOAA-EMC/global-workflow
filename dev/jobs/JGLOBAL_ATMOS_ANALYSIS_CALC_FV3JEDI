@@ -2,7 +2,6 @@
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-# shellcheck disable=SC2312
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_fv3jedi" -c "base analcalc_fv3jedi"
 
