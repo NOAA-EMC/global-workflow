@@ -27,15 +27,9 @@ gdas_restarta:
         {% endif %}
 
         # Surface analysis tiles
-        {% if DOHYBVAR and DOIAU %}
-        {% set anl_offset = "-3H" %}
-        {% else %}
-        {% set anl_offset = "0H" %}
-        {% endif %}
-        {% set anl_timedelta = anl_offset | to_timedelta %}
-        {% set anl_time = current_cycle | add_to_datetime(anl_timedelta) %}
+        # anl_time_YMD and anl_time_HH are pre-calculated in Python: -3H if DOHYBVAR and DOIAU, 0H otherwise
         {% for itile in range(1,7) %}
-        - "{{ COMIN_ATMOS_RESTART }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.sfcanl_data.tile{{ itile }}.nc"
+        - "{{ COMIN_ATMOS_RESTART }}/{{ anl_time_YMD }}.{{ anl_time_HH }}0000.sfcanl_data.tile{{ itile }}.nc"
         {% endfor %}
 
         # Initial biases

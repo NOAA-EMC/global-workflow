@@ -3,17 +3,12 @@ gfsocean_analysis:
     name: "GFSOCEAN_ANALYSIS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfsocean_analysis.tar"
     required:
-        {% if DOIAU %}
-        {% set anl_delta = "-3H" | to_timedelta %}
-        {% else %}
-        {% set anl_delta = "0H" | to_timedelta %}
-        {% endif %}
-        {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
+        {# anl_time_YMD and anl_time_HH are pre-calculated in Python: -3H if DOIAU, 0H otherwise #}
         # analysis and analysis increments
         - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}jedi_analysis.a006.nc'
         - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}jedi_increment.i006.nc'
         - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}mom6_increment.i006.nc'
-        - '{{ COMIN_ICE_ANALYSIS }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc'
+        - '{{ COMIN_ICE_ANALYSIS }}/{{ anl_time_YMD }}.{{ anl_time_HH }}0000.analysis.cice_model.res.nc'
         - '{{ COMIN_ICE_ANALYSIS }}/{{ head }}jedi_analysis.a006.nc'
         - '{{ COMIN_ICE_ANALYSIS }}/{{ head }}jedi_increment.i006.nc'
         - '{{ COMIN_ICE_ANALYSIS }}/{{ head }}pp_increment.i006.nc'

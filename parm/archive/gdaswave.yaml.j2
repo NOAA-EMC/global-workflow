@@ -3,9 +3,8 @@ gdaswave:
     name: "GDASWAVE"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdaswave.tar"
     required:
-        #Save HAFS restart file:
-        {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
-        - "{{ COMIN_WAVE_RESTART }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"
+        {# offset_dt_fv3 is pre-calculated in Python: +6H (FV3 format: YYYYMMDD.HHMMSS) #}
+        - "{{ COMIN_WAVE_RESTART }}/{{ offset_dt_fv3 }}.restart.ww3.nc"
         # TODO explicitly name the wave grid files to archive
         {% for file_path in WAVE_GRID_RES_COM_list %}
         - "{{ file_path }}/{{ head }}*"

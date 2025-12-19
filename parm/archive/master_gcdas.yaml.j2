@@ -44,13 +44,9 @@ datasets:
             - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}atm.f{{ fhr3 }}.nc"
             - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}sfc.f{{ fhr3 }}.nc"
             {% endfor %}
+            {# restart_prefixes are pre-calculated in Python #}
             # Now get the restart files.
-            {% for r_time in range(restart_interval_gdas, FHMAX + 1, restart_interval_gdas) %}
-            {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
-            {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
-            {% set r_YMD = r_dt | to_YMD %}
-            {% set r_HH = r_dt | strftime("%H") %}
-            {% set r_prefix = r_YMD + "." + r_HH + "0000" %}
+            {% for r_prefix in restart_prefixes %}
             {% for itile in range(1, 7) %}
             {% for datatype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
             - "{{ COMIN_ATMOS_RESTART }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"

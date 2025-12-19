@@ -44,7 +44,7 @@ All public operational functions are decorated with @logit(logger).
 """
 import os
 from logging import getLogger
-from wxflow import AttrDict, logit, to_YMD, to_YMDH, add_to_datetime, to_timedelta
+from wxflow import AttrDict, logit, to_YMD, to_YMDH, add_to_datetime, to_timedelta, to_fv3time
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -124,20 +124,33 @@ class ArchiveTarVars:
                 # For gfswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
                 if tarball_type == 'gfswave':
                     arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
+                # Add tarball-specific variables for gfs_restarta and gfsocean_analysis
+                if tarball_type in ['gfs_restarta', 'gfsocean_analysis']:
+                    arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
         elif config_dict.get('RUN') == 'gdas':
             # GDAS system: Route through tarball-specific method
             tarball_type = config_dict.get('TARBALL_TYPE', '')
             if tarball_type:
                 arch_dict.update(ArchiveTarVars.get_gdas_com_paths(config_dict, tarball_type))
-                # For gfswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
+                # For gdaswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
                 if tarball_type == 'gdaswave':
                     arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
+                # Add tarball-specific variables for multiple tarball types
+                if tarball_type in ['gdaswave_restart', 'gdaswave', 'gdas_restarta',
+                                   'gdas_restartb', 'gdasocean_analysis']:
+                    arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
         elif config_dict.get('RUN') == 'gcafs':
             # GCAFS system: All COM paths
             arch_dict.update(ArchiveTarVars.get_gcafs_com_paths(config_dict))
         elif config_dict.get('RUN') == 'gcdas':
             # GCDAS system: All COM paths
             arch_dict.update(ArchiveTarVars.get_gcdas_com_paths(config_dict))
+            # Add restart prefixes for GCDAS archiving
+            restart_interval = config_dict.get('restart_interval_gdas', 6)
+            fhmax = config_dict.get('FHMAX', 9)
+            arch_dict['restart_prefixes'] = ArchiveTarVars._calculate_restart_prefixes(
+                config_dict['current_cycle'], restart_interval, fhmax
+            )
         else:
             logger.warning(f"Unknown RUN type '{config_dict.get('RUN')}', no COM paths added")
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
@@ -369,14 +382,13 @@ class ArchiveTarVars:
             if nmem_earcgrp and nmem_ens:
                 vars_out['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
                 vars_out['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
-            # Pre-compute all restart time prefixes for YAML templates
+            # Pre-compute all restart time prefixes for YAML templates using helper method
             if vars_out['is_gdas'] and vars_out.get('restart_interval') and vars_out.get('fhmax'):
-                vars_out['restart_prefixes'] = []
-                for r_time in range(vars_out.get('restart_interval'), vars_out.get('fhmax') + 1, vars_out.get('restart_interval')):
-                    r_dt = add_to_datetime(current_cycle, to_timedelta(f"{r_time}H"))
-                    vars_out['restart_prefixes'].append(
-                        f"{to_YMD(r_dt)}.{r_dt.strftime('%H')}0000"
-                    )
+                vars_out['restart_prefixes'] = ArchiveTarVars._calculate_restart_prefixes(
+                    current_cycle,
+                    vars_out['restart_interval'],
+                    vars_out['fhmax']
+                )
             else:
                 vars_out['restart_prefixes'] = []
         return vars_out
@@ -892,3 +904,174 @@ class ArchiveTarVars:
 
         logger.info(f"Created {len(com_paths)} relative COM paths")
         return com_paths
+
+    @staticmethod
+    @logit(logger)
+    def get_tarball_specific_vars(config_dict: AttrDict, tarball_type: str) -> AttrDict:
+        """
+        Calculate tarball-specific template variables.
+
+        This method computes variables that are specific to certain tarballs,
+        such as offset times for wave restart files and analysis times that depend
+        on IAU settings.
+
+        Parameters
+        ----------
+        config_dict : AttrDict
+            Archive configuration dictionary with current_cycle and optional DOIAU, DOHYBVAR
+        tarball_type : str
+            Type of tarball being created (e.g., 'gdaswave_restart', 'gdas_restarta')
+
+        Returns
+        -------
+        AttrDict
+            Dictionary of tarball-specific variables, which may include:
+            - offset_dt: datetime offset for wave restart files based on IAU
+            - anl_time: analysis time adjusted for IAU/hybrid var
+            - prefix: formatted datetime prefix for restart files (YYYYMMDD.HHMMSS)
+            - offset_YMD, offset_HH: formatted date/hour components
+            - r_prefix_list: list of restart prefixes for restart intervals
+
+        Notes
+        -----
+        Time offset logic by tarball type:
+
+        gdaswave_restart, gdaswave:
+          - If DOIAU: +3H (IAU window beginning) or +6H (standard)
+
+        gdas_restarta, gfs_restarta, gdasocean_analysis, gfsocean_analysis:
+          - If DOHYBVAR and DOIAU: -3H (IAU window beginning)
+          - Otherwise: 0H (current cycle)
+
+        gdas_restartb:
+          - If DOIAU: -3H offset_dt with formatted prefix
+          - Always includes center time prefix
+          - Calculates r_prefix_list for restart intervals
+
+        Examples
+        --------
+        >>> config_dict = AttrDict({
+        ...     'current_cycle': datetime(2025, 12, 18, 0),
+        ...     'DOIAU': True
+        ... })
+        >>> ArchiveTarVars.get_tarball_specific_vars(config_dict, 'gdaswave_restart')
+        {'offset_dt': datetime(2025, 12, 18, 3)}
+        """
+        tarball_vars = AttrDict()
+        current_cycle = config_dict['current_cycle']
+
+        if tarball_type in ['gdaswave_restart']:
+            # Wave restart offset time calculation
+            # If IAU is enabled, use +3H offset (beginning of IAU window)
+            # Otherwise, use +6H offset (standard forecast time)
+            doiau = config_dict.get('DOIAU', False)
+            offset_hours = 3 if doiau else 6
+
+            offset_dt = add_to_datetime(current_cycle, to_timedelta(f"+{offset_hours}H"))
+            # Return formatted string for direct use in YAML
+            tarball_vars['offset_dt_fv3'] = to_fv3time(offset_dt)
+
+            logger.info(f"Calculated offset_dt_fv3 for {tarball_type}: {to_fv3time(offset_dt)} "
+                       f"(DOIAU={doiau}, offset={offset_hours}H)")
+
+        elif tarball_type in ['gdaswave']:
+            # Wave data always uses +6H offset
+            offset_dt = add_to_datetime(current_cycle, to_timedelta("+6H"))
+            # Return formatted string for direct use in YAML
+            tarball_vars['offset_dt_fv3'] = to_fv3time(offset_dt)
+
+            logger.info(f"Calculated offset_dt_fv3 for {tarball_type}: {to_fv3time(offset_dt)} (+6H)")
+
+        elif tarball_type in ['gdas_restarta', 'gfs_restarta', 'gdasocean_analysis', 'gfsocean_analysis']:
+            # Analysis time calculation
+            # If hybrid var with IAU: use -3H (beginning of IAU window)
+            # Otherwise: use 0H (current cycle time)
+            dohybvar = config_dict.get('DOHYBVAR', False)
+            doiau = config_dict.get('DOIAU', False)
+
+            if dohybvar and doiau:
+                anl_offset = "-3H"
+            else:
+                anl_offset = "0H"
+
+            anl_time = add_to_datetime(current_cycle, to_timedelta(anl_offset))
+            # Return formatted strings for direct use in YAML
+            tarball_vars['anl_time_YMD'] = to_YMD(anl_time)
+            tarball_vars['anl_time_HH'] = anl_time.strftime("%H")
+
+            logger.info(f"Calculated anl_time for {tarball_type}: {to_YMD(anl_time)}.{anl_time.strftime('%H')}0000 "
+                       f"(DOHYBVAR={dohybvar}, DOIAU={doiau}, offset={anl_offset})")
+
+        elif tarball_type == 'gdas_restartb':
+            # Restart B has multiple time calculations
+            doiau = config_dict.get('DOIAU', False)
+
+            # If IAU is on, calculate offset time (-3H) and its prefix
+            if doiau:
+                offset_dt = add_to_datetime(current_cycle, to_timedelta("-3H"))
+                offset_YMD = to_YMD(offset_dt)
+                offset_HH = offset_dt.strftime("%H")
+                offset_prefix = f"{offset_YMD}.{offset_HH}0000"
+
+                tarball_vars['offset_dt'] = offset_dt
+                tarball_vars['offset_YMD'] = offset_YMD
+                tarball_vars['offset_HH'] = offset_HH
+                tarball_vars['offset_prefix'] = offset_prefix
+
+                logger.debug(f"Calculated offset_prefix for gdas_restartb: {offset_prefix} (DOIAU=True)")
+
+            # Always calculate center time prefix
+            cycle_YMD = to_YMD(current_cycle)
+            cycle_HH = current_cycle.strftime("%H")
+            tarball_vars['center_prefix'] = f"{cycle_YMD}.{cycle_HH}0000"
+
+            # Calculate restart interval prefixes using helper method
+            restart_interval = config_dict.get('restart_interval_gdas', 6)
+            fhmax = config_dict.get('FHMAX', 9)
+            tarball_vars['r_prefix_list'] = ArchiveTarVars._calculate_restart_prefixes(
+                current_cycle, restart_interval, fhmax
+            )
+
+            logger.info(f"Calculated {len(tarball_vars['r_prefix_list'])} restart prefixes for gdas_restartb "
+                       f"(interval={restart_interval}H, FHMAX={fhmax}H)")
+
+        return tarball_vars
+
+    @staticmethod
+    @logit(logger)
+    def _calculate_restart_prefixes(current_cycle: 'datetime', restart_interval: int, fhmax: int) -> list:
+        """Calculate restart time prefixes for a given interval and forecast max.
+
+        This is a reusable helper for calculating restart file prefixes that appear
+        at regular intervals (e.g., every 6 hours) throughout a forecast period.
+
+        Parameters
+        ----------
+        current_cycle : datetime
+            Current cycle time
+        restart_interval : int
+            Interval in hours between restart files
+        fhmax : int
+            Maximum forecast hour
+
+        Returns
+        -------
+        list
+            List of restart prefixes in format "YYYYMMDD.HHMMSS"
+
+        Examples
+        --------
+        >>> from datetime import datetime
+        >>> cycle = datetime(2025, 12, 18, 0)
+        >>> ArchiveTarVars._calculate_restart_prefixes(cycle, 6, 12)
+        ['20251218.060000', '20251218.120000']
+        """
+        restart_prefixes = []
+        for r_time in range(restart_interval, fhmax + 1, restart_interval):
+            r_dt = add_to_datetime(current_cycle, to_timedelta(f"+{r_time}H"))
+            r_prefix = f"{to_YMD(r_dt)}.{r_dt.strftime('%H')}0000"
+            restart_prefixes.append(r_prefix)
+
+        logger.debug(f"Calculated {len(restart_prefixes)} restart prefixes "
+                    f"(interval={restart_interval}H, FHMAX={fhmax}H)")
+        return restart_prefixes
