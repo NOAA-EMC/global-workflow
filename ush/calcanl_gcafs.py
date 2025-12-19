@@ -110,10 +110,6 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
         anlfile.variables['time'][:] = 0.0
         anlfile.variables['time'].setncattr("units", time_units_new)
 
-    # copy analysis file to output location
-    out_anl_file = os.path.join(ComOut, APrefix + 'analysis.atm.a006.nc')
-    FileHandler({'copy': [[anl_file, out_anl_file]]}).sync()
-
     print('calcanl_gcafs successfully completed at: ', datetime.datetime.utcnow())
 
 
