@@ -45,7 +45,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
             anl = bkg + np.flip(increment, axis=1)
 
             anlfile.variables[ioname][:] = anl[:]
- 
+
         # handle pressfc as a special case
         print("Adding increment to background for variable: pressfc")
         # read bk attribute and compute ps_inc from delp_inc
@@ -63,7 +63,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
         ps_inc = delp_inc[-1] / (bk[-1] - bk[-2])
 
         # add increment to background surface pressure
-        pressfc_anl = pressfc +  np.flip(ps_inc, axis=0)
+        pressfc_anl = pressfc + np.flip(ps_inc, axis=0)
         anlfile.variables['pressfc'][:] = pressfc_anl[:]
 
     # add aerosol increments to background aerosol fields
