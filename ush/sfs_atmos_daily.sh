@@ -25,21 +25,21 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 OUTDIR="${COMOUT_ATMOS_GRIB}"
 #GMERGE="/ncrc/home1/Yangxing.Zheng/wgrib2/gmerge"
 mkdir -m 755 -p "${OUTDIR}"
-mkdir -m 755 -p "${OUTDIR}/acc.daily.${ENSMEM}"
-mkdir -m 755 -p "${OUTDIR}/acc.monthly.${ENSMEM}"
-mkdir -m 755 -p "${OUTDIR}/inst.daily.${ENSMEM}"
-mkdir -m 755 -p "${OUTDIR}/inst.monthly.${ENSMEM}"
+mkdir -m 755 -p "${OUTDIR}/acc.daily.${MEMDIR}"
+mkdir -m 755 -p "${OUTDIR}/acc.monthly.${MEMDIR}"
+mkdir -m 755 -p "${OUTDIR}/inst.daily.${MEMDIR}"
+mkdir -m 755 -p "${OUTDIR}/inst.monthly.${MEMDIR}"
 
 # Lists of variables
 dailyinstvars="(:TMP|UGRD|VGRD):(2|5|10|30|50|100|200|250|300|500|600|700|850|925|1000) mb|HGT:(2|5|10|30|50|100|200|500|700|850|1000) mb|SPFH:(5|30|100|200|300|500|600|700|850|925|1000) mb|VVEL:500 mb|(STRM|VPOT):(200|850) mb|(PRES|HGT|:TMP|CNWAT|WEASD|PEVPR|ICETK|WILT|FLDCP|SUNSD|:LFTX|CAPE|LAND|ICEC|FDNSSTMP|CPOFP):surface|TMP:1 hybrid|(PVORT|:TMP):(450|550|650) K|(TSOIL|SOILW|SOILL):(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL|MSLET|PWAT|TOZNE" 
 dailyaccvars="(ACPCP|APCP|NCPCP|CPRAT|PRATE|LHTFL|SHTFL|GFLUX|SNOHF|UFLX|VFLX|WATR|DLWRF|DSWRF|ULWRF|USWRF|CDUVB|NDDSF|VDDSF|CSDLF|CSDSF|CSUSF):surface|TSNOWP:surface|TMAX|TMIN|MAXUW|MAXVW|(USWRF|ULWRF|DSWRF):top of atmosphere|TCDC:entire atmosphere"
 
-firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.grb2f000"
+firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
 
-if [[ -s "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.grb2f1002 ]]; then
-  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.grb2f???? | sort -V | tail -1)
+if [[ -s "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f1002.grib2 ]]; then
+  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f???.grib2 | sort -V | tail -1)
 else
-  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.grb2f??? | sort -V | tail -1)
+  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f???.grib2 | sort -V | tail -1)
 fi
 
 # get validation date of first file
@@ -118,7 +118,7 @@ do
   fi
 
   ### Make list of files for the whole month
-  list=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.grb2f%03.0f" "${fhi}" 6 "${fhf}")
+  list=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "${fhi}" 6 "${fhf}")
   
   # month of loop for filename
   filemm="${months_in_year[$i]}"
@@ -133,7 +133,7 @@ do
   do
     start_hr=$((j-6))
     end_hr=$((j+24-6))
-    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.grb2f%03.0f" $start_hr 6 $end_hr)
+    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" $start_hr 6 $end_hr)
     # shellcheck disable=SC2086
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
@@ -167,7 +167,7 @@ do
   fi
 
   ### Make list of files for the whole month
-  list=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.grb2f%03.0f" "${fhi}" 6 "${fhf}")
+  list=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "${fhi}" 6 "${fhf}")
 
   # month of loop for filename
   filemm="${months_in_year[$i]}"
@@ -181,7 +181,7 @@ do
   do
     start_hr=$((j-6))
     end_hr=$((j+24-6)) 
-    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.grb2f%03.0f" $start_hr 6 $end_hr)
+    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" $start_hr 6 $end_hr)
     # shellcheck disable=SC2086
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
