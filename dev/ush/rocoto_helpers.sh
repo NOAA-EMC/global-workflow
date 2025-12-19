@@ -122,8 +122,7 @@ gw_cistat() {
     fi
     local expdir pslot
     local summary details nactive ndead
-    local max_width str_len pad_len left_pad right_pad
-    for expdir in $(ls -1d "${RUNTESTS}/EXPDIR/"*); do
+    for expdir in "${RUNTESTS}/EXPDIR/"*; do
         if [[ ! -d "${expdir}" ]]; then
             echo "Skipping '${expdir}' as it is not a experiment directory"
             continue
@@ -136,11 +135,10 @@ gw_cistat() {
         _gw_pad_str "${pslot}" 70 "#"
         summary=$(gw_expstat -e "${expdir}" -s)
         cat <<< "${summary}"
-        nactive=$(grep "Active" <<< "${summary}" | wc -l)
+        nactive=$(grep -c "Active" <<< "${summary}")
         if [[ ${nactive} -gt 0 ]]; then
             details=$(gw_expstat -e "${expdir}")
-            ndead=0
-            ndead=$(grep "DEAD" <<< "${details}" | wc -l)
+            ndead=$(grep -c "DEAD" <<< "${details}")
             if [[ ${ndead} -gt 0 ]]; then
                 echo "WARNING: There are ${ndead} DEAD tasks in experiment '${pslot}'"
             fi
