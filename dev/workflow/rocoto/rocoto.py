@@ -164,10 +164,14 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
             strings.append(f'\t{e}\n')
         strings.append('\n')
 
+    # Write dependency block: flatten any nested items and strip leading tabs
     if dependency is not None and len(dependency) > 0:
         strings.append('\t<dependency>\n')
         for d in dependency:
-            strings.append(f'\t\t{d}\n')
+            # Flatten nested lists/tuples and write each element as an XML line
+            for e in _traverse(d):
+                s = str(e).lstrip('\t')  # remove accidental leading tabs from pieces
+                strings.append(f'\t\t{s}\n')
         strings.append('\t</dependency>\n')
         strings.append('\n')
 
@@ -428,20 +432,18 @@ def create_dependency(dep_condition=None, dep=[]) -> List[str]:
     if len(dep) > 0:
         if dep_condition is not None:
             strings.append(f'<{dep_condition}>')
-
+            
+        # Flatten any nested lists/tuples and return plain XML strings (no leading tabs)
         for d in dep:
-            if dep_condition is None:
-                strings.append(f'{d}')
-            else:
-                for e in _traverse(d):
-                    strings.append(f'\t{e}')
-
+            for e in _traverse(d):
+                strings.append(str(e))
+                    
         if dep_condition is not None:
             strings.append(f'</{dep_condition}>')
-
+            
     return strings
 
-
+ 
 def create_envar(name: str, value: Union[str, float, int]) -> str:
     """
     create a Rocoto environment variable given name and value
