@@ -432,18 +432,18 @@ def create_dependency(dep_condition=None, dep=[]) -> List[str]:
     if len(dep) > 0:
         if dep_condition is not None:
             strings.append(f'<{dep_condition}>')
-            
+
         # Flatten any nested lists/tuples and return plain XML strings (no leading tabs)
         for d in dep:
             for e in _traverse(d):
                 strings.append(str(e))
-                    
+
         if dep_condition is not None:
             strings.append(f'</{dep_condition}>')
-            
+
     return strings
 
- 
+
 def create_envar(name: str, value: Union[str, float, int]) -> str:
     """
     create a Rocoto environment variable given name and value
