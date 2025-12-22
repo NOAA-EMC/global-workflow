@@ -3,7 +3,7 @@
 # Compare two grib2 files with wgrib2
 # The files must have the same fields in the same order
 
-HOMEgfs=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
+HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 declare -rx HOMEgfs
 
 file1=${1:?}

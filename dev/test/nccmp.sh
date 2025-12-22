@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-HOMEgfs=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
+HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 declare -rx HOMEgfs
 
 source "${HOMEgfs}/dev/ush/load_modules.sh" run

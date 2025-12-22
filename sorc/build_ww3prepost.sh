@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
-readonly HOMEgfs_=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
+readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 cd "${HOMEgfs_}/sorc" || exit 1
 
 # Default settings

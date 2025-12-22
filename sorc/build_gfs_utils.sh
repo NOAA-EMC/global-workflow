@@ -40,7 +40,7 @@ done
 shift $((OPTIND - 1))
 
 # shellcheck disable=SC2155
-readonly HOMEgfs_=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
+readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 
 source "${HOMEgfs_}/ush/detect_machine.sh"
 
