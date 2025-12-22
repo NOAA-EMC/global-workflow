@@ -58,7 +58,6 @@ for grid in "${grids[@]}"; do
         echo "FATAL ERROR: Failed during the execution of trim_rh"
         exit "${err}"
     fi
-    # shellcheck disable=SC2312
     var_count=$(${WGRIB2} "${output_file_prefix}_${grid}" -match "LAND|ICEC" | wc -l)
     if [[ "${var_count}" -eq 2 ]]; then
         mod_icec "${output_file_prefix}_${grid}"

@@ -60,7 +60,8 @@ class AtmEnsAnalysis(Analysis):
         This method will initialize a global atmens analysis.
         This includes:
         - stage input files from COM and create output directories
-        - extract bias corrections from tar files
+        - stage observation files
+        - stage bias correction files
         - initialize JEDI applications
 
         Parameters
@@ -76,15 +77,19 @@ class AtmEnsAnalysis(Analysis):
         logger.info(f"Staging files from COM")
         FileHandler(self.task_config.data_in).sync()
 
-        # Extract bias corrections from tar files
-        logger.info(f"Extracting bias corrections from tar files")
-        self.untar_bias_corrections()
+        # Stage observation files
+        logger.info(f"Staging observation files")
+        self.jedi_dict['atmensanlobs'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/atmos")
+
+        # Stage bias correction files
+        logger.info(f"Staging bias correction files")
+        self.jedi_dict['atmensanlobs'].stage_obsbiasin(self.task_config.COMIN_ATMOS_ANALYSIS_PREV)
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
-        self.jedi_dict['atmensanlobs'].initialize(self.task_config, clean_empty_obsspaces=True)
-        self.jedi_dict['atmensanlsol'].initialize(self.task_config)
-        self.jedi_dict['atmensanlfv3inc'].initialize(self.task_config)
+        self.jedi_dict['atmensanlobs'].initialize(clean_empty_obsspaces=True)
+        self.jedi_dict['atmensanlsol'].initialize()
+        self.jedi_dict['atmensanlfv3inc'].initialize()
 
     @logit(logger)
     def initialize_letkf(self) -> None:
@@ -126,7 +131,7 @@ class AtmEnsAnalysis(Analysis):
 
         This method will finalize a global atmens analysis using JEDI.
         This includes:
-        - compress and tar output diag files and place in COM
+        - archive, compress, and save diag files in COM directory
         - save output files and YAMLs to COM
 
         Parameters
@@ -138,9 +143,10 @@ class AtmEnsAnalysis(Analysis):
         None
         """
 
-        # Compress and tar diag files in COM directory
-        self.tar_diag_files(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
-                            f"{self.task_config.APREFIX_ENS}stat.atm.tar")
+        # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
+        self.jedi_dict['atmensanlobs'].save_obsdataout(self.task_config.COMOUT_ATMOS_ANALYSIS_ENS,
+                                                       f"{self.task_config.APREFIX_ENS}atmos_analysis.ens_mean.ioda_hofx")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

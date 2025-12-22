@@ -71,7 +71,6 @@ while true; do
 
     # Get job statistics
     echo "Gather Rocoto statistics"
-    # shellcheck disable=SC2312 # We want to use the exit code of the command
     full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
     error_stat=$?
 
