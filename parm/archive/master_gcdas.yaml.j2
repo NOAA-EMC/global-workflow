@@ -14,7 +14,7 @@ datasets:
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlinit.log"
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlvar.log"
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlfinal.log"
-            - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aerostat.tgz"
+            - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
             - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}aerovar.yaml"
                 {% for itile in range(1,7) %}
             - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
