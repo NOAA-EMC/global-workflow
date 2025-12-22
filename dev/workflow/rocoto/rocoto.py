@@ -433,7 +433,8 @@ def create_dependency(dep_condition=None, dep=[]) -> List[str]:
         if dep_condition is not None:
             strings.append(f'<{dep_condition}>')
 
-        # Flatten any nested lists/tuples and return plain XML strings (no leading tabs)
+        # Flatten any nested lists/tuples and return plain XML strings
+        # Note: tabbing is handled at task creation by create_innermost_task
         for d in dep:
             for e in _traverse(d):
                 strings.append(str(e))
