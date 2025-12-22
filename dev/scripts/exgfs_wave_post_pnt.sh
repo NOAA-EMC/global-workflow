@@ -86,7 +86,6 @@ if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
     cpreq -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
     if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
         #only do boundary points
-        # shellcheck disable=SC2312
         sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
             echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
             echo "         Ending job without doing anything."
@@ -94,7 +93,6 @@ if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
         }
     else
         #exclude boundary points
-        # shellcheck disable=SC2312
         sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
     fi
 fi
@@ -182,7 +180,6 @@ if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
 fi
 
 # Create new buoy_log.ww3
-# shellcheck disable=SC2312
 awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags
 grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
 rm -f buoy_log.dat
@@ -199,7 +196,6 @@ fi
 
 # 1.f Data summary
 
-# shellcheck disable=SC2312
 cat << EOF
 
 Input files read and processed at : $(date)
@@ -219,11 +215,8 @@ EOF
 
 echo '   Making command file for wave post points '
 
-# shellcheck disable=SC2312
 grep -F -f ibp_tags buoy_log.dat | awk '{ print $2 }' > buoys
-# shellcheck disable=SC2312
 grep -F -f buoys buoy_log.ww3 | awk '{ print $1 }' > points
-# shellcheck disable=SC2312
 points=$(awk '{print $0 "\\n"}' points | tr -d '\n')
 rm -f buoys
 

@@ -93,8 +93,8 @@ class MarineRecenter(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['gridgen'].initialize(self.task_config)
-        self.jedi_dict['ens_handler'].initialize(self.task_config)
+        self.jedi_dict['gridgen'].initialize()
+        self.jedi_dict['ens_handler'].initialize()
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

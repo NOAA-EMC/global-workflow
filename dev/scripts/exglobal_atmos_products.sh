@@ -58,7 +58,6 @@ for ((nset = 1; nset <= downset; nset++)); do
     paramlist="paramlist${grp}"
     parmfile="${!paramlist}"
 
-    # shellcheck disable=SC2312
     ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${parmfile}" | ${WGRIB2} -i -grib "${tmpfile}" "${MASTER_FILE}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
@@ -68,7 +67,6 @@ for ((nset = 1; nset <= downset; nset++)); do
     # Number of processors available to process $nset
     nproc=${ntasks}
 
-    # shellcheck disable=SC2312
     ncount=$(${WGRIB2} "${tmpfile}" | wc -l)
     if [[ "${nproc}" -gt "${ncount}" ]]; then
         echo "WARNING: Total no. of available processors '${nproc}' exceeds no. of records '${ncount}' in ${tmpfile}"
@@ -89,8 +87,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         # if final record of is u-component, add next record v-component
         # if final record is land, add next record icec
         # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
-        set +e
-        # shellcheck disable=SC2312
+        unset_strict
         ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw"
         rc=$?
         set_strict
