@@ -87,11 +87,11 @@ class FV3AnalysisCalc(Analysis):
 
         # Initialize GDASApp JEDI addincrement application
         logger.info(f"Initializing GDASApp JEDI addincrement applications")
-        self.jedi_dict['atm_addincrement'].initialize(self.task_config)
+        self.jedi_dict['atm_addincrement'].initialize()
         if self.task_config.DO_AERO_ANL:
-            self.jedi_dict['aero_addincrement'].initialize(self.task_config)
+            self.jedi_dict['aero_addincrement'].initialize()
         if self.task_config.DO_JEDISNOWDA:
-            self.jedi_dict['snow_addincrement'].initialize(self.task_config)
+            self.jedi_dict['snow_addincrement'].initialize()
 
     @logit(logger)
     def execute(self) -> None:

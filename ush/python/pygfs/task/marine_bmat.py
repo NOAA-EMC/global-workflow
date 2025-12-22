@@ -98,19 +98,19 @@ class MarineBMat(Analysis):
                             simple_geom=True, mom_input="./anl_geom/MOM_input")
 
         # initialize vtscales python script
-        vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb(self.task_config, 'soca_vtscales')
+        vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb_template('soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
 
         # initialize JEDI applications
-        self.jedi_dict['gridgen'].initialize(self.task_config)
-        self.jedi_dict['soca_diagb'].initialize(self.task_config)
-        self.jedi_dict['soca_chgres'].initialize(self.task_config)
-        self.jedi_dict['soca_parameters_diffusion_vt'].initialize(self.task_config)
-        self.jedi_dict['soca_setcorscales'].initialize(self.task_config)
-        self.jedi_dict['soca_parameters_diffusion_hz'].initialize(self.task_config)
+        self.jedi_dict['gridgen'].initialize()
+        self.jedi_dict['soca_diagb'].initialize()
+        self.jedi_dict['soca_chgres'].initialize()
+        self.jedi_dict['soca_parameters_diffusion_vt'].initialize()
+        self.jedi_dict['soca_setcorscales'].initialize()
+        self.jedi_dict['soca_parameters_diffusion_hz'].initialize()
         if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
-            self.jedi_dict['soca_ensb'].initialize(self.task_config)
-            self.jedi_dict['soca_ensweights'].initialize(self.task_config)
+            self.jedi_dict['soca_ensb'].initialize()
+            self.jedi_dict['soca_ensweights'].initialize()
 
     @logit(logger)
     def execute(self) -> None:

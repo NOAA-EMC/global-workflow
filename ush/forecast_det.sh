@@ -43,7 +43,6 @@ UFS_det() {
 
     # However, if this was run before, a DATArestart/FV3_RESTART must exist with data in it.
     local file_array nrestarts
-    # shellcheck disable=SC2312
     mapfile -t file_array < <(find "${DATArestart}/FV3_RESTART" -name "????????.??0000.coupler.res" | sort)
     nrestarts=${#file_array[@]}
     if [[ ${nrestarts} -eq 0 ]]; then
