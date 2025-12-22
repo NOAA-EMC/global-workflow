@@ -95,7 +95,7 @@ where:
 More details on how to use the tool are provided by running ``generate_workflows.sh -h``.
 
 Developers should be able to monitor the progress of their tests by using ``rocotostat`` on the generated XML file in the ``EXPDIR``.  Once the tests are complete, the output logs can be found in the ``logs`` subdirectory of each experiment directory.
-Helper scripts to summarize the testing is available in `dev/ush/rocoto_helpers.sh <./dev/ush/rocoto_helpers.sh>`_.
+Helper scripts to summarize the testing are available in `dev/ush/rocoto_helpers.sh <./dev/ush/rocoto_helpers.sh>`_.
 The helper functions from the above scripts are available on the command-line by sourcing the `gw_setup.sh <./dev/ush/gw_setup.sh>`_ script.
 
 Once the tests are setup and running, developers can use the command-line helper functions `gw_expstat` and `gw_cistat`.  More help is available by running these commands with the ``-h`` option.
