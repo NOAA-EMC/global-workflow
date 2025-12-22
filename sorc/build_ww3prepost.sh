@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
+# shellcheck disable=SC2155
 readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 cd "${HOMEgfs_}/sorc" || exit 1
 
