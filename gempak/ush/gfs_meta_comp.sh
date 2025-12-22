@@ -2,9 +2,7 @@
 # Metafile Script : gfs_meta_comp.sh
 #
 # This is a script which creates a metafile that runs a comparison of 500 MB 
-# heights and PMSL between the older GFS model run and the newer one. The 
-# metafile also generates a comparison between the UKMET older run and the newer
-# GFS model run.
+# heights and PMSL between the older GFS model run and the newer one.
 #
 # Log :
 # J. Carr/HPC    5/12/97   Developed Script
@@ -40,9 +38,6 @@ metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 PDY2=`echo $PDY | cut -c3-`
 #
-#XXW export MODEL=$COMROOT/nawips/prod
-# BV export MODEL=$COMROOT/nawips/${envir}
-# BV export HPCGFS=${MODEL}/${mdl}.$PDY
 export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/${COMPONENT}/gempak
 export COMIN00=${COMINgempak}/${mdl}.${PDY}/00/${COMPONENT}/gempak
 export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/${COMPONENT}/gempak
@@ -65,12 +60,8 @@ elif [ ${cyc} -eq 18 ] ; then
 fi
 export COMIN=$DATA/GEMPAK_META_COMP
 
-#XXW export HPCNAM=${MODEL}/nam.$PDY
-#XXW export HPCNGM=${MODEL}/ngm.$PDY
-# BV export HPCNAM=$COMROOT/nawips/prod/nam.$PDY
 export HPCNAM=${COMINnam}.$PDY/gempak
 
-# export HPCNGM=$COMROOT/nawips/prod/ngm.$PDY
 #
 # DEFINE YESTERDAY
 PDYm1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
@@ -116,8 +107,6 @@ if [ ${cyc} -eq 12 ] ; then
             elif [ ${runtime} = "12y" ] ; then
                 cyc2="12"
                 desc="Y"
-                #XXW export HPCGFS=${MODEL}/gfs.${PDYm1}
-                # BV export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDYm1}
                 export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1200"
@@ -126,8 +115,6 @@ if [ ${cyc} -eq 12 ] ; then
             elif [ ${runtime} = "122d" ] ; then
                 cyc2="12"
                 desc="Y2"
-                #XXW export HPCGFS=${MODEL}/gfs.${PDYm2}
-                # BV export HPCGFS=$COMROOT/nawips/${esnvir}/gfs.${PDYm2}
                 export HPCGFS=${COMINgempak}/${mdl}.${PDYm2}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m2}/1200"
@@ -215,176 +202,12 @@ EOF
 export err=$?;err_chk
             done
         done
-        # COMPARE THE 1200 UTC GFS MODEL TO THE 0000 UTC UKMET MODEL
-        grid="F-${MDL} | ${PDY2}/${cyc}00"
-        # JY export HPCUKMET=$COMROOT/nawips/prod/ukmet.${PDY}
-        export HPCUKMET=${COMINukmet}.${PDY}/gempak
-        grid2="F-UKMETHPC | ${PDY2}/0000"
-        # for gfsfhr in 00 12 24 36 48 60 84 108
-        for gfsfhr in 00 12 24 84 108
-        do
-            ukmetfhr=F`expr ${gfsfhr} + 12`
-            gfsfhr=F${gfsfhr}
-
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-\$MAPFIL= mepowo.gsf
-DEVICE  = ${device}
-MAP     = 1/1/1/yes
-CLEAR   = yes
-GAREA   = ${garea}
-PROJ    = ${proj}
-LATLON  = ${latlon}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-
-SKIP    = 0
-PANEL   = 0
-CONTUR  = 2
-CLRBAR  = 
-GLEVEL  = 500
-GVCORD  = PRES
-GDPFUN  = sm5s(hght)
-LINE    = 5/1/3/2
-SCALE   = -1
-CTYPE   = c
-CINT    = 6
-FINT    = 
-FLINE   = 
-HLSYM   = 1;1//21//hw 
-TEXT    = s/21//hw
-WIND    = 0
-REFVEC  = 
-HILO    = 5/H#;L#//5/5;5/y
-TITLE   = 5/-1/~ ? ${MDL} @ HGT (12Z YELLOW)|~${gareas} 12Z VS UK 00Z 500 HGT!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDATTIM = ${ukmetfhr}
-GDPFUN  = sm5s(hght)
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 6/-2/~ ? UKMET @ HGT (00Z CYAN)!0
-l
-ru
-
-CLEAR   = yes
-GLEVEL  = 0
-GVCORD  = none
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)
-CINT    = 4                                           
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-LINE    = 5/1/3/2
-HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 5/-1/~ ? ${MDL} PMSL (12Z YELLOW)|~${gareas} 12Z VS UK 00Z PMSL!0
-l
-ru
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ukmetfhr}
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 6/-2/~ ? UKMET PMSL (00Z CYAN)!0
-l
-ru
-
-EOF
-export err=$?;err_chk
-        done
-        # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
-        grid="F-${MDL} | ${PDY2}/${cyc}00"
-        #XXW grid2=${MODEL}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12 
-        grid2=${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12 
-        for gfsfhr in 00 24 48 72 96 120
-        do
-            ecmwffhr=F`expr ${gfsfhr} + 24`
-	    gfsfhr=F${gfsfhr}
-		
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-\$MAPFIL= mepowo.gsf
-DEVICE  = ${device}
-MAP     = 1/1/1/yes
-CLEAR   = yes
-GAREA   = ${garea}
-PROJ    = ${proj}
-LATLON  = ${latlon}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-
-SKIP    = 0            
-PANEL   = 0
-CONTUR  = 2
-CLRBAR  = 
-GLEVEL  = 500                                                                     
-GVCORD  = PRES 
-GDPFUN  = sm5s(hght)
-LINE    = 5/1/3/2         
-SCALE   = -1           
-CTYPE   = c            
-CINT    = 6            
-FINT    = 
-FLINE   = 
-HLSYM   = 1;1//21//hw 
-TEXT    = s/21//hw                                                                       
-WIND    = 0              
-REFVEC  =                                                                         
-HILO    = 5/H#;L#//5/5;5/y
-TITLE   = 5/-1/~ ? ${MDL} @ HGT (12Z YELLOW)|~${gareas} 12Z VS EC Y 12Z 500 HGT!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDATTIM = ${ecmwffhr}
-GDPFUN  = sm5s(hght)
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 6/-2/~ ? ECMWF @ HGT (12Z YEST CYAN)!0
-l
-run
-
-CLEAR   = yes
-GLEVEL  = 0
-GVCORD  = none
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)
-CINT    = 4                                           
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-LINE    = 5/1/3/2
-HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 5/-1/~ ? ${MDL} PMSL (12Z YELLOW)|~${gareas} 12Z VS EC Y 12Z PMSL!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ecmwffhr}
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 6/-2/~ ? ECMWF PMSL (12Z YEST CYAN)!0
-l
-run
-
-EOF
-export err=$?;err_chk
-        done
-        # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC NAM AND NGM
+        # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC NAM
         grid="F-${MDL} | ${PDY2}/${cyc}00"
         grid2="F-NAMHPC | ${PDY2}/${cyc}00"
-        # grid2ngm="F-NGMHPC | ${PDY2}/${cyc}00"
         for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84
         do
             namfhr=F${gfsfhr}
-        #   ngmfhr=F${gfsfhr}
             gfsfhr=F${gfsfhr}
 		
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -417,7 +240,7 @@ TEXT    = s/21//hw
 WIND    =               
 REFVEC  =                                                                         
 HILO    = 3/H#;L#//5/5;5/y
-TITLE   = 3/-1/~ ? ${MDL} @ HGT (12Z YELLOW)|~${gareas} ${MDL}/NAM/NGM 500 HGT!0
+TITLE   = 3/-1/~ ? ${MDL} @ HGT (12Z YELLOW)|~${gareas} ${MDL}/NAM 500 HGT!0
 l
 run
 
@@ -441,7 +264,7 @@ GDFILE  = ${grid}
 GDATTIM = ${gfsfhr}
 LINE    = 3/1/3/2
 HILO    = 3/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 3/-1/~ ? ${MDL} PMSL (12Z YELLOW)|~${gareas} ${MDL}/NAM/NGM PMSL!0
+TITLE   = 3/-1/~ ? ${MDL} PMSL (12Z YELLOW)|~${gareas} ${MDL}/NAM PMSL!0
 l
 run
 
@@ -591,171 +414,7 @@ EOF
 export err=$?;err_chk
             done
         done
-        # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC UKMET FROM YESTERDAY
-        grid="F-${MDL} | ${PDY2}/${cyc}00"
-        #XXW export HPCUKMET=${MODEL}/ukmet.${PDYm1}
-        export HPCUKMET=${COMINukmet}.${PDYm1}/gempak
-        grid2="F-UKMETHPC | ${PDY2m1}/1200"
-        # for gfsfhr in 00 12 24 36 48 60 84 108
-        for gfsfhr in 00 12 24 84 108
-        do
-            ukmetfhr=F`expr ${gfsfhr} + 12`
-            gfsfhr=F${gfsfhr}
-	    
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-\$MAPFIL= mepowo.gsf
-DEVICE  = ${device}
-MAP     = 1/1/1/yes
-CLEAR   = yes
-GAREA   = ${garea}
-PROJ    = ${proj}
-LATLON  = ${latlon}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-SKIP    = 0            
-PANEL   = 0
-CONTUR  = 2
-CLRBAR  = 
-GLEVEL  = 500                                                                     
-GVCORD  = PRES 
-GDPFUN  = sm5s(hght)
-LINE    = 5/1/3/2         
-SCALE   = -1           
-TYPE    = c            
-CINT    = 6            
-FINT    = 
-FLINE   = 
-HLSYM   = 1.2;1.2//21//hw 
-TEXT    = s/21//hw                                                                       
-WIND    =               
-REFVEC  =                                                                         
-HILO    = 5/H#;L#//5/5;5/y
-TITLE   = 5/-1/~ ? ${MDL} @ HEIGHTS (00Z YELLOW)|~${gareas} 00Z VS UK Y 12Z 500 HGT!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDATTIM = ${ukmetfhr}
-GDPFUN  = sm5s(hght)
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 6/-2/~ ? UKMET @ HEIGHTS (12Z YEST CYAN)!0
-l
-run
-
-CLEAR   = yes
-GLEVEL  = 0
-GVCORD  = none
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)
-CINT    = 4                                           
-HLSYM   = 1.2;1.2//21//hw                                                           
-TEXT    = s/21//hw                                                                
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-LINE    = 5/1/3/2
-HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 5/-1/~ ? ${MDL} PMSL (00Z YELLOW) |~${gareas} 00Z VS UK Y 12Z PMSL!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ukmetfhr}
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 6/-2/~ ? UKMET PMSL (12Z YEST CYAN)!0
-l
-run
-
-EOF
-export err=$?;err_chk
-        done
-        # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
-        grid="F-${MDL} | ${PDY2}/${cyc}00"
-        # JY grid2="$COMROOT/nawips/prod/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
-        grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
-        for gfsfhr in 12 36 60 84 108
-        do
-            ecmwffhr=F`expr ${gfsfhr} + 12`
-            gfsfhr=F${gfsfhr}
-	    
-export pgm=gdplot2_nc;. prep_step; startmsg
-$GEMEXE/gdplot2_nc << EOF
-\$MAPFIL= mepowo.gsf
-DEVICE  = ${device}
-MAP     = 1/1/1/yes
-CLEAR   = yes
-GAREA   = ${garea}
-PROJ    = ${proj}
-LATLON  = ${latlon}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-SKIP    = 0            
-PANEL   = 0
-CONTUR  = 2
-CLRBAR  = 
-GLEVEL  = 500                                                                     
-GVCORD  = PRES 
-GDPFUN  = sm5s(hght)
-LINE    = 5/1/3/2         
-SCALE   = -1           
-TYPE    = c            
-CINT    = 6            
-FINT    = 
-FLINE   = 
-HLSYM   = 1.2;1.2//21//hw 
-TEXT    = s/21//hw                                                                       
-WIND    =               
-REFVEC  =                                                                         
-HILO    = 5/H#;L#//5/5;5/y
-TITLE   = 5/-1/~ ? ${MDL} @ HGT (00Z YELLOW)|~${gareas} 00Z VS EC Y 12Z 500 HGT!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDATTIM = ${ecmwffhr}
-GDPFUN  = sm5s(hght)
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 6/-2/~ ? ECMWF @ HGT (12Z YEST CYAN)!0
-l
-run
-
-CLEAR   = yes
-GLEVEL  = 0
-GVCORD  = none
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)
-CINT    = 4                                           
-HLSYM   = 1.2;1.2//21//hw                                                           
-TEXT    = s/21//hw                                                                
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-LINE    = 5/1/3/2
-HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 5/-1/~ ? ${MDL} PMSL (00Z YELLOW) |~${gareas} 00Z VS EC Y 12Z PMSL!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ecmwffhr}
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 6/-2/~ ? ECMWF PMSL (12Z YEST CYAN)!0
-l
-run
-
-EOF
-export err=$?;err_chk
-        done
-        # COMPARE THE 0000 UTC GFS MODEL TO THE 0000 UTC NAM AND NGM
+        # COMPARE THE 0000 UTC GFS MODEL TO THE 0000 UTC NAM
         grid="F-${MDL} | ${PDY2}/${cyc}00"
         grid2="F-NAMHPC | ${PDY2}/${cyc}00"
         for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84
@@ -793,7 +452,7 @@ TEXT    = s/21//hw
 WIND    =               
 REFVEC  =                                                                         
 HILO    = 3/H#;L#//5/5;5/y
-TITLE   = 3/-1/~ ? ${MDL} @ HGT (00Z YELLOW)|~${gareas} ${MDL}/NAM/NGM 500 HGT!0
+TITLE   = 3/-1/~ ? ${MDL} @ HGT (00Z YELLOW)|~${gareas} ${MDL}/NAM 500 HGT!0
 l
 run
 
@@ -819,7 +478,7 @@ GDFILE  = ${grid}
 GDATTIM = ${gfsfhr}
 LINE    = 3/1/3/2
 HILO    = 3/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 3/-1/~ ? ${MDL} PMSL (00Z YELLOW) |~${gareas} ${MDL}/NAM/NGM PMSL!0
+TITLE   = 3/-1/~ ? ${MDL} PMSL (00Z YELLOW) |~${gareas} ${MDL}/NAM PMSL!0
 l
 run
 

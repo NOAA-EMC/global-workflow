@@ -76,10 +76,6 @@ export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${c
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
 export COMINgempak=${COMINgempak:-$(compath.py ${envir}/${NET}/${gfs_ver})}
 
-# export ukmet_ver=v2.2.0
-export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
-# export ecmwf_ver=v2.1.0
-export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
 # export nam_ver=v4.2.0
 export COMINnam=${COMINnam:-$(compath.py ${envir}/nam/${nam_ver})/nam}
 
