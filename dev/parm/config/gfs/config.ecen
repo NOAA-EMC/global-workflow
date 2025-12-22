@@ -13,7 +13,6 @@ source "${EXPDIR}/config.resources" ecen
 # below queries IAUFHRS_ENKF to determine NECENGRP
 export NECENGRP=1
 if [[ ${DOIAU_ENKF} = "YES" ]]; then
-   # shellcheck disable=SC2312
    ngrps=$(grep -o ',' <<<"${IAUFHRS_ENKF}" | grep -c .)
    ((ngrps++))
    export NECENGRP=${ngrps}

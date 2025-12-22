@@ -1,6 +1,5 @@
 #! /bin/env bash
 
-# shellcheck disable=SC2312
 # shellcheck disable=SC2317  # TODO: remove this when the script is corrected of errors
 
 if [[ -t 0 ]]; then

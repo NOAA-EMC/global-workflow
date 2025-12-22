@@ -138,7 +138,6 @@ case "${MODULE_TYPE}" in
 
         # Detect the Python major.minor version
         _regex="[0-9]+\.[0-9]+"
-        # shellcheck disable=SC2312
         if [[ $(python --version) =~ ${_regex} ]]; then
             export PYTHON_VERSION="${BASH_REMATCH[0]}"
         else

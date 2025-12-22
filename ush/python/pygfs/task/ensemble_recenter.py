@@ -80,8 +80,8 @@ class EnsembleRecenter(Analysis):
 
         # Initialize JEDI ensemble increment recentering application
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['correction_increment'].initialize(self.task_config)
-        self.jedi_dict['ensemble_recenter'].initialize(self.task_config)
+        self.jedi_dict['correction_increment'].initialize()
+        self.jedi_dict['ensemble_recenter'].initialize()
 
     @logit(logger)
     def execute(self) -> None:

@@ -540,7 +540,6 @@ for _case in "${_yaml_list[@]}"; do
     fi
 
     # Check if DATAROOT is already present; eval will return just DATAROOT from the sourcing
-    # shellcheck disable=SC2312
     eval "$(
         PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >&/dev/null
         echo _dataroot="${STMP}/RUNDIRS/${_pslot}"
