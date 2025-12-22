@@ -13,7 +13,7 @@ export MAX_TASKS=25
 
 # Scripts used by this job
 export SFS_6HRLY_VARSSH="${USHgfs}/sfs_6hrly_vars.sh"
-export SFS_ATMOS_DAILYSH="${USHgfs}/sfs_daily_atmos.sh"
-export SFS_ATMOS_MONTHLYSH="${USHgfs}/sfs_monthly_atmos.sh"
+export SFS_ATMOS_DAILYSH="${USHgfs}/sfs_atmos_daily.sh"
+export SFS_ATMOS_MONTHLYSH="${USHgfs}/sfs_atmos_monthly.sh"
 
 echo "END: config.atmos_post"

@@ -144,7 +144,9 @@ do
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
   rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
-  
+  if [ $yy_init == $yy_final ]; then
+    break
+  fi  
 done
 
 ### This second loop needs to be done if the end month is earlier
