@@ -6,71 +6,63 @@ import numpy as np
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 
+# 1. Load 4D dataset with Dask (Time, Depth, Lat, Lon)
+# Important: Keep depth as a single chunk for interpolation/integration
 
-def calculate_TCHP(ds, temp_var_name='temp', depth_dim_name='depth'):
-    """
-    Calculates Tropical Cyclone Heat Potential (TCHP) in kJ/cm^2.
+ds = xr.open_dataset(input_file, chunks={'time': 1, 'lat': 100, 'lon': 100})
+temp = ds.temp  # Temperature array
+depths = ds.z_l  # Vertical coordinate
 
-    Args:
-        ds (xr.Dataset or xr.DataArray): Dataset containing 'temp' and 'salt'.
-        temp_var_name (str): Name of the temperature variable.
-        depth_dim_name (str): Name of the vertical dimension.
+# Constants
+RHO = 1025.0  # kg/m^3 approximate for seawater.
+CP = 4000.0  # J/(kg*K) - an approximation (3990 for seawater, 4200 for freshwater)
 
-    Returns:
-        xr.DataArray: TCHP in kJ/cm^2.
-    """
-    # We ignore the impact of temp and salinity on density
-    temp = ds[temp_var_name]
-    depths = ds[depth_dim_name]
-    TARGET_TEMP = 26.0
-    # --- Step 1: Find the depth of the 26°C isotherm (D26) ---
-    # We use masking to find the shallowest depth where temp is >= 26C.
-    # A precise, interpolated method is better, but this finds the top of the 26C layer.
-    depth_26C = depths.where(temp >= TARGET_TEMP).max(dim=depth_dim_name, skipna=True)
-    # Replace NaNs (where 26C isotherm is not present) with a deep depth for integration limit
-    # (e.g., max depth of the data, or a standard deep value)
-    max_depth = depths.max().item()
-    d26_filled = depth_26C.fillna(max_depth)
 
-    # --- Step 2: Integrate excess heat from surface to D26 ---
-    # Excess heat is the difference between current temp and 26C, but only when >= 26C
-    # Specific heat capacity of seawater (approx constant J/(kg*K))
-    # Use rho and Cp directly
-    rho = 1025.0  # kg/m^3 approximate for seawater.
-    Cp = 4000  # J/(kg*K) - an approximation (3990 for seawater, 4200 for freshwater)
+def calc_tchp_profile(t_prof, z_coords):
+    """Function to calculate TCHP for a single 1D vertical profile."""
 
-    # Mask temperatures below 26C to NaN so they are ignored in integration
-    excess_temp = temp.where(temp >= TARGET_TEMP) - TARGET_TEMP
+    # If surface is already < 26C, TCHP is nan
+    if t_prof[0] < 26:
+        return np.nan
 
-    # Calculate Ocean Heat Content (OHC) in J/m^2
-    # The integration requires careful handling of vertical levels.
-    # Integrate depth-by-depth up to D26
-    # Create a mask that is True from surface down to (but not past) D26 at each point
-    depth_mask = ds[depth_dim_name] <= d26_filled
+    # Find D26 depth via linear interpolation
+    # Profiles usually go surface (warm) to deep (cold)
 
-    # Apply mask and calculate OHC (approximate integral using the depth delta)
-    # A simplified calculation using layer thicknesses:
-    # Calculate layer thicknesses (assuming uniform spacing for simplicity here, adjust as needed)
-    dz = np.abs(ds[depth_dim_name].diff(dim=depth_dim_name))
-    # Pad dz to match original dimensions for broadcasting
-    dz = dz.pad({depth_dim_name: (0, 1)}, constant_values=0)
+    d26 = np.interp(26, t_prof[::-1], z_coords[::-1])
 
-    # OHC is integral(rho * Cp * (T - 26)) dz
-    ohc_J_per_m2 = (rho * Cp * excess_temp * dz).sum(dim=depth_dim_name, skipna=True)
+    # Mask temperatures below 26C for integration
+    #t_minus_26 = np.where(t_prof >= 26, t_prof - 26, 0)
+    t_minus_26 = np.where(t_prof >= 26, t_prof - 26, np.nan)
+
+    # Integrate (T-26) from 0 to D26 using trapezoidal rule
+    # Note: Integration only goes up to the interpolated D26
+    mask = z_coords <= d26
+    integration = np.trapezoid(t_minus_26[mask], z_coords[mask])
+
+    tchp_J_per_m2 = RHO * CP * integration  # in J/m^2
 
     # Convert to TCHP units (kJ/cm^2)
     # 1 J/m^2 = 1e-3 kJ / 1e4 cm^2 = 1e-7 kJ/cm^2
-    TCHP = ohc_J_per_m2 * 1e-7
-    # Set NaN values back where TCHP couldn't be calculated (e.g. 26C isotherm wasn't present)
-    TCHP = TCHP.where(~np.isnan(depth_26C))
-    TCHP.attrs['units'] = 'kJ/cm^2'
-    TCHP.attrs['long_name'] = 'Tropical Cyclone Heat Potential'
-    TCHP.name = 'TCHP'
+    tchp = tchp_J_per_m2 * 1e-7
 
-    return TCHP
+    return tchp
 
 
-# Example Usage:
-ds = xr.open_dataset(input_file)
-tchp_result = calculate_TCHP(ds, temp_var_name='temp', depth_dim_name='z_l')
-tchp_result.to_netcdf(output_file)
+# 2. Apply the function across 4D space using apply_ufunc
+TCHP = xr.apply_ufunc(
+    calc_tchp_profile,
+    temp,
+    depths,
+    input_core_dims=[['z_l'], ['z_l']], # Core dimension for interpolation
+    output_core_dims=[[]],
+    vectorize=True,                         # Automatically loops over non-core dims
+    dask="parallelized",                    # Enables Dask parallel processing
+    output_dtypes=[float]
+)
+
+TCHP.attrs['units'] = 'kJ/cm^2'
+TCHP.attrs['long_name'] = 'Tropical Cyclone Heat Potential'
+TCHP.name = 'TCHP'
+
+# 3. Compute and Save
+TCHP.to_netcdf(output_file)
