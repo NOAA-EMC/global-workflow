@@ -244,7 +244,9 @@ function build() {
         echo "Creating logs folder"
         mkdir -p "${logs_dir}" || exit 1
     fi
-    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
+    # TODO: return to build_compute.sh when the GDASApp can be built on compute nodes again
+    "${HOMEgfs_}/sorc/build_all.sh" all
+    # "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
 
 }
 
