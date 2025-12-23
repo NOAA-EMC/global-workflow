@@ -79,7 +79,7 @@ while getopts ":c:h" option; do
 done
 
 num_args=$#
-case ${num_args} in
+case $num_args in
     2) # Direct directory paths
         dirA=$1
         dirB=$2
@@ -100,7 +100,7 @@ case ${num_args} in
         usage
         exit 1
         ;;
-esac
+    esac
 
 # Contains a bunch of NetCDF Operator shortcuts (will load nco module)
 source ./netcdf_op_functions.sh
