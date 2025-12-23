@@ -94,6 +94,110 @@ if [[ "${rc}" -ne 0 ]]; then
     exit 1
 fi
 
+# grep for <command> tags in the build.xml and collect the commands in an array
+mapfile -t commands < <(grep -oP '(?<=<command>).*(?=</command>)' "${build_xml}")
+# get the corresponding log file names from the build.xml in an array
+mapfile -t logs < <(grep -oP '(?<=<join><cyclestr>).*(?=</cyclestr></join>)' "${build_xml}")
+# get the number of build jobs each command corresponds to in an array.  The build jobs are the strings -j N in each command.
+mapfile -t cores < <(echo "${commands[@]}" | grep -oP '(?<=-j )\d+')
+# create an array of build names from the log file names (by obtaining the basename and stripping the .log extension)
+mapfile -t names < <(printf "%s\n" "${logs[@]}" | xargs -n1 basename | sed 's/\.log$//')
+
+echo "The following build commands will be executed with the corresponding logs:"
+declare -A build_names build_status build_commands build_logs build_cores build_pids
+for i in "${!names[@]}"; do
+
+    name="${names[i]}"
+
+    build_names["${name}"]="${name}"
+    build_status["${name}"]="pending"
+    build_commands["${name}"]="${commands[i]}"
+    build_logs["${name}"]="${logs[i]}"
+    build_cores["${name}"]="${cores[i]}"
+    build_pids["${name}"]=""
+
+    echo
+    echo "Name:    ${build_names[${name}]}"
+    echo "Command: ${build_commands[${name}]}"
+    echo "Log:     ${build_logs[${name}]}"
+    echo "Cores:   ${build_cores[${name}]}"
+    echo "Status:  ${build_status[${name}]}"
+done
+
+max_cores=40 # Set the maximum number of cores to use for building
+
+# copy build_names into a new array to iterate over
+builds_to_process=("${!build_names[@]}")
+
+builds_in_progress=true
+current_cores=0
+while [[ ${builds_in_progress} == true ]]; do
+
+    for name in "${!builds_to_process[@]}"; do
+
+        if [[ ${build_status[${name}]} == "completed" ]]; then
+            continue
+        fi
+
+        # Check if the build is still running
+        pid="${build_pids[${name}]}"
+        if [[ -z "${pid}" ]]; then # No pid means build not started yet
+            cores_needed="${build_cores[${name}]}"
+            if (( current_cores + cores_needed <= max_cores )); then
+                # Launch the build command in the background and redirect output to log file
+                command="${build_commands[${name}]}"
+                log_file="${build_logs[${name}]}"
+                echo "Launching build command: ${command} > ${log_file} 2>&1"
+                bash -c "${command} > ${log_file} 2>&1 &"
+                pid=$!
+                build_pids["${name}"]="${pid}"
+                build_status["${name}"]="building"
+                current_cores=$((current_cores + cores_needed))
+            else
+                # Not enough cores available, skip to next build
+                continue
+            fi
+
+        else
+
+            if ! ps -p "${pid}" > /dev/null 2>&1; then
+                # Build has finished
+                wait "${pid}"
+                rc=$?
+                if [[ "${rc}" -ne 0 ]]; then
+                    echo "BUILD ERROR: Build command '${build_commands[${name}]}' failed with exit code ${rc}."
+                    echo "See log file: ${build_logs[${name}]}.log"
+                    build_status["${name}"]="failed"
+                else
+                    echo "BUILD SUCCESS: Build command '${build_commands[${name}]}' completed successfully."
+                    build_status["${name}"]="completed"
+                    current_cores=$((current_cores - build_cores[${name}]))
+                fi
+            fi
+
+        fi
+
+        # If the build failed, exit immediately
+        if [[ ${build_status[${name}]} == "failed" ]]; then
+            exit 1
+        fi
+
+    done
+
+    # Remove completed builds from the list to process
+    builds_to_process=()
+    builds_in_progress=false
+    for name in "${!build_names[@]}"; do
+        if [[ ${build_status[${name}]} != "completed" ]]; then
+            builds_to_process+=("${name}")
+            builds_in_progress=true
+        fi
+    done
+
+    sleep 10s
+
+done
+
 echo "Launching builds in parallel on compute nodes ..."
 runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
