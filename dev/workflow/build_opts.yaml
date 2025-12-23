@@ -10,8 +10,9 @@ host_override:  # over-ride options for host
       gdas:
         # Memory requests over 32GB on Gaea are increasing the core count. Instead, we need to limit cores.
         # TODO: reenable when the system administrators fix the issue.
+        # memory: "60G"
         # cores: 8
-        memory: "60G"
+        memory: "32G"
         cores: 4
         walltime: "02:30:00"
 systems:
