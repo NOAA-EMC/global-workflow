@@ -103,6 +103,11 @@ class ArchiveTarVars:
         # Add YAML-specific cycle variables (analysis/restart times, archive flags)
         arch_dict.update(ArchiveTarVars._get_yaml_specific_cyc_vars(config_dict))
 
+        # Add tarball-specific variables if TARBALL_TYPE is defined
+        tarball_type = config_dict.get('TARBALL_TYPE', '')
+        if tarball_type:
+            arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
+
         if config_dict.get('RUN') in ['enkfgfs', 'enkfgdas']:
             # EnKF systems: Handle ensemble member-specific paths
             ensgrp = config_dict.get('ENSGRP', 0)
@@ -110,46 +115,25 @@ class ArchiveTarVars:
                 # ENSGRP=0: Ensemble mean/spread (enkf.yaml.j2)
                 arch_dict.update(ArchiveTarVars.get_enkf_com_paths(config_dict))
             else:
-                # ENSGRP>0: Individual member groups
+                # ENSGRP=!0: Individual member groups
                 arch_dict.update(ArchiveTarVars._create_mem_com_sets(
                     config_dict,
                     arch_dict['first_group_mem'],
                     arch_dict['last_group_mem']
                 ))
-        elif config_dict.get('RUN') == 'gfs':
-            # GFS system: COMIN variables already set in job scripts
-            tarball_type = config_dict.get('TARBALL_TYPE', '')
-            if tarball_type:
-                # For gfswave, collect all COMIN_WAVE_GRID_* paths from config_dict
-                if tarball_type == 'gfswave':
-                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in config_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
-                # Add tarball-specific variables for gfs_restarta and gfsocean_analysis
-                if tarball_type in ['gfs_restarta', 'gfsocean_analysis']:
-                    arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
-        elif config_dict.get('RUN') == 'gdas':
-            # GDAS system: COMIN variables already set in job scripts
-            tarball_type = config_dict.get('TARBALL_TYPE', '')
-            if tarball_type:
-                # For gdaswave, collect all COMIN_WAVE_GRID_* paths from config_dict
-                if tarball_type == 'gdaswave':
-                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in config_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
-                # Add tarball-specific variables for multiple tarball types
-                if tarball_type in ['gdaswave_restart', 'gdaswave', 'gdas_restarta',
-                                    'gdas_restartb', 'gdasocean_analysis']:
-                    arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
+        elif config_dict.get('RUN') in ['gfs', 'gdas']:
+            # GFS/GDAS systems: COMIN variables already set in job scripts
+            # For wave tarballs, collect all COMIN_WAVE_GRID_* paths from config_dict
+            if tarball_type in ['gfswave', 'gdaswave']:
+                arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in config_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
         elif config_dict.get('RUN') == 'gcafs':
             # GCAFS system: COMIN variables already set in job scripts
-            pass
+            logger.info("GCAFS system: COMIN variables already set in job scripts")
         elif config_dict.get('RUN') == 'gcdas':
-            # GCDAS system: COMIN variables already set in job scripts
-            # Add restart prefixes for GCDAS archiving
-            restart_interval = config_dict.get('restart_interval_gdas', 6)
-            fhmax = config_dict.get('FHMAX', 9)
-            arch_dict['restart_prefixes'] = ArchiveTarVars._calculate_restart_prefixes(
-                config_dict['current_cycle'], restart_interval, fhmax
-            )
+            logger.info("GCDAS system: COMIN variables already set in job scripts")
         else:
-            logger.info(f"RUN type '{config_dict.get('RUN')}': COMIN variables from job scripts")
+            logger.info(f"Unknown RUN type '{config_dict.get('RUN')}', no additional COM paths added")
+
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
 
@@ -708,6 +692,20 @@ class ArchiveTarVars:
 
             logger.info(f"Calculated {len(tarball_vars['r_prefix_list'])} restart prefixes for gdas_restartb "
                         f"(interval={restart_interval}H, FHMAX={fhmax}H)")
+
+        elif tarball_type == 'gcdas':
+            # GCDAS restart prefixes calculation
+            restart_interval = config_dict.get('restart_interval_gdas', 6)
+            fhmax = config_dict.get('FHMAX', 9)
+            tarball_vars['restart_prefixes'] = ArchiveTarVars._calculate_restart_prefixes(
+                current_cycle, restart_interval, fhmax
+            )
+
+            logger.info(f"Calculated {len(tarball_vars['restart_prefixes'])} restart prefixes for gcdas "
+                        f"(interval={restart_interval}H, FHMAX={fhmax}H)")
+
+        else:
+            logger.warning(f"Tarball type '{tarball_type}' does not have specific variable calculations")
 
         return tarball_vars
 
