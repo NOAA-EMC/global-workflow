@@ -7,13 +7,13 @@ gfswave:
         # Wave GRIB2 regional forecast products
         {% for file_path in WAVE_GRID_RES_COM_list %}
             {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
-                - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
-                - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
+        - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
+        - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
             {% endfor %}
             # Global wave GRIB2 forecast products
             {% for fh in range(FHMAX_HF_WAV + FHOUT_WAV_GFS, FHMAX_WAV_GFS + FHOUT_WAV_GFS, FHOUT_WAV_GFS) %}
-                - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
-                - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
+        - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2"
+        - "{{ file_path }}/{{ head }}*.*.f{{ '%03d' % fh }}.grib2.idx"
             {% endfor %}
         {% endfor %}
 
@@ -24,7 +24,7 @@ gfswave:
 
         # Wave boundary point output
         {% if DOBNDPNT_WAVE %}
-            - "{{ COMIN_WAVE_STATION }}/{{ head }}ibpbull.tar"
-            - "{{ COMIN_WAVE_STATION }}/{{ head }}ibpcbull.tar"
-            - "{{ COMIN_WAVE_STATION }}/{{ head }}ibp.tar"
+        - "{{ COMIN_WAVE_STATION }}/{{ head }}ibpbull.tar"
+        - "{{ COMIN_WAVE_STATION }}/{{ head }}ibpcbull.tar"
+        - "{{ COMIN_WAVE_STATION }}/{{ head }}ibp.tar"
         {% endif %}

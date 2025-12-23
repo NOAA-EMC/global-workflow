@@ -117,34 +117,31 @@ class ArchiveTarVars:
                     arch_dict['last_group_mem']
                 ))
         elif config_dict.get('RUN') == 'gfs':
-            # GFS system: Route through tarball-specific method
+            # GFS system: COMIN variables already set in job scripts
             tarball_type = config_dict.get('TARBALL_TYPE', '')
             if tarball_type:
-                arch_dict.update(ArchiveTarVars.get_gfs_com_paths(config_dict, tarball_type))
-                # For gfswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
+                # For gfswave, collect all COMIN_WAVE_GRID_* paths from config_dict
                 if tarball_type == 'gfswave':
-                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
+                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in config_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
                 # Add tarball-specific variables for gfs_restarta and gfsocean_analysis
                 if tarball_type in ['gfs_restarta', 'gfsocean_analysis']:
                     arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
         elif config_dict.get('RUN') == 'gdas':
-            # GDAS system: Route through tarball-specific method
+            # GDAS system: COMIN variables already set in job scripts
             tarball_type = config_dict.get('TARBALL_TYPE', '')
             if tarball_type:
-                arch_dict.update(ArchiveTarVars.get_gdas_com_paths(config_dict, tarball_type))
-                # For gdaswave, collect all COMIN_WAVE_GRID_* relative paths from arch_dict
+                # For gdaswave, collect all COMIN_WAVE_GRID_* paths from config_dict
                 if tarball_type == 'gdaswave':
-                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in arch_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
+                    arch_dict['WAVE_GRID_RES_COM_list'] = [v for k, v in config_dict.items() if k.startswith('COMIN_WAVE_GRID_')]
                 # Add tarball-specific variables for multiple tarball types
                 if tarball_type in ['gdaswave_restart', 'gdaswave', 'gdas_restarta',
                                     'gdas_restartb', 'gdasocean_analysis']:
                     arch_dict.update(ArchiveTarVars.get_tarball_specific_vars(config_dict, tarball_type))
         elif config_dict.get('RUN') == 'gcafs':
-            # GCAFS system: All COM paths
-            arch_dict.update(ArchiveTarVars.get_gcafs_com_paths(config_dict))
+            # GCAFS system: COMIN variables already set in job scripts
+            pass
         elif config_dict.get('RUN') == 'gcdas':
-            # GCDAS system: All COM paths
-            arch_dict.update(ArchiveTarVars.get_gcdas_com_paths(config_dict))
+            # GCDAS system: COMIN variables already set in job scripts
             # Add restart prefixes for GCDAS archiving
             restart_interval = config_dict.get('restart_interval_gdas', 6)
             fhmax = config_dict.get('FHMAX', 9)
@@ -152,7 +149,7 @@ class ArchiveTarVars:
                 config_dict['current_cycle'], restart_interval, fhmax
             )
         else:
-            logger.warning(f"Unknown RUN type '{config_dict.get('RUN')}', no COM paths added")
+            logger.info(f"RUN type '{config_dict.get('RUN')}': COMIN variables from job scripts")
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
         logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
 
@@ -393,133 +390,15 @@ class ArchiveTarVars:
                 vars_out['restart_prefixes'] = []
         return vars_out
 
-    @staticmethod
-    @logit(logger)
-    def get_gfs_com_paths(config_dict: AttrDict, tarball_type: str) -> AttrDict:
-        """Generate relative COM paths for GFS tarball archiving.
 
-        System-specific entry point that routes to get_tarball_com_paths with
-        the specified tarball type. Used by master_gfs.yaml.j2 template.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary with ROTDIR and COMIN_* variables
-        tarball_type : str
-            Type of GFS tarball (from TARBALL_TYPE variable in template)
-
-        Returns
-        -------
-        AttrDict
-            Dictionary with relative COM paths for the specified GFS tarball
-        """
-        return ArchiveTarVars.get_tarball_com_paths(config_dict, tarball_type, 'gfs')
-
-    @staticmethod
-    @logit(logger)
-    def get_gdas_com_paths(config_dict: AttrDict, tarball_type: str) -> AttrDict:
-        """Generate relative COM paths for GDAS tarball archiving.
-
-        System-specific entry point that routes to get_tarball_com_paths with
-        the specified tarball type. Used by master_gdas.yaml.j2 template.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary with ROTDIR and COMIN_* variables
-        tarball_type : str
-            Type of GDAS tarball (from TARBALL_TYPE variable in template)
-
-        Returns
-        -------
-        AttrDict
-            Dictionary with relative COM paths for the specified GDAS tarball
-        """
-        return ArchiveTarVars.get_tarball_com_paths(config_dict, tarball_type, 'gdas')
-
-    @staticmethod
-    @logit(logger)
-    def get_gcafs_com_paths(config_dict: AttrDict) -> AttrDict:
-        """Generate relative COM paths for GCAFS archiving.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary with ROTDIR and COMIN_* variables
-
-        Returns
-        -------
-        AttrDict
-            Dictionary with relative COM paths for GCAFS archiving
-        """
-        com_vars = [
-            'COMIN_ATMOS_HISTORY',
-            'COMIN_ATMOS_RESTART',
-            'COMIN_ATMOS_ANALYSIS',
-            'COMIN_ATMOS_INPUT',
-            'COMIN_ATMOS_GOES',
-            'COMIN_ATMOS_GEMPAK',
-            'COMIN_ATMOS_GENESIS',
-            'COMIN_ATMOS_BUFR',
-            'COMIN_ATMOS_WAFS',
-            'COMIN_ATMOS_TRACK',
-            'COMIN_ATMOS_WMO',
-            'COMIN_CHEM_HISTORY',
-            'COMIN_WAVE_HISTORY',
-            'COMIN_WAVE_PREP',
-            'COMIN_WAVE_GRID',
-            'COMIN_WAVE_STATION',
-            'COMIN_WAVE_GEMPAK',
-            'COMIN_OCEAN_HISTORY',
-            'COMIN_OCEAN_RESTART',
-            'COMIN_OCEAN_INPUT',
-            'COMIN_OCEAN_ANALYSIS',
-            'COMIN_ICE_HISTORY',
-            'COMIN_ICE_RESTART',
-            'COMIN_ICE_INPUT',
-            'COMIN_ICE_ANALYSIS',
-            'COMIN_MED_RESTART',
-            'COMIN_CONF',
-        ]
-        return ArchiveTarVars._create_relative_com_paths(config_dict, com_vars)
-
-    @staticmethod
-    @logit(logger)
-    def get_gcdas_com_paths(config_dict: AttrDict) -> AttrDict:
-        """Generate relative COM paths for GCDAS archiving.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary with ROTDIR and COMIN_* variables
-
-        Returns
-        -------
-        AttrDict
-            Dictionary with relative COM paths for GCDAS archiving
-        """
-        com_vars = [
-            'COMIN_OBS',
-            'COMIN_ATMOS_RESTART',
-            'COMIN_ATMOS_ANALYSIS',
-            'COMIN_SNOW_ANALYSIS',
-            'COMIN_OCEAN_RESTART',
-            'COMIN_OCEAN_ANALYSIS',
-            'COMIN_ICE_RESTART',
-            'COMIN_ICE_ANALYSIS',
-            'COMIN_MED_RESTART',
-            'COMIN_CONF',
-        ]
-        return ArchiveTarVars._create_relative_com_paths(config_dict, com_vars)
 
     @staticmethod
     @logit(logger)
     def get_enkf_com_paths(config_dict: AttrDict) -> AttrDict:
-        """Generate relative COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
+        """Extract absolute COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
 
-        This method creates relative COM paths from absolute paths already defined
-        in config_dict by the job scripts. If a COMIN_* or COMOUT_* variable exists,
-        it will be converted to a relative path (relative to ROTDIR).
+        This method extracts absolute COM paths from config_dict. The paths will be
+        converted to relative paths AFTER YAML rendering in archive.py.
 
         Parameters
         ----------
@@ -531,26 +410,26 @@ class ArchiveTarVars:
         Returns
         -------
         AttrDict
-            Dictionary with relative COMIN paths for ensemble statistics:
+            Dictionary with absolute COMIN paths for ensemble statistics:
             - Keys match enkf.yaml.j2 template variable names
-            - Values are paths relative to ROTDIR for portability
+            - Values are absolute paths (conversion to relative happens after YAML rendering)
 
         Notes
         -----
         This method should ONLY be called when ENSGRP == 0 (ensemble mean archiving).
         For individual member archiving (ENSGRP != 0), use get_enkf_member_com_paths().
 
-        All paths are relative to ROTDIR for portability in tar archives.
+        Paths remain absolute at this stage. Relative path conversion happens in
+        archive.py after YAML rendering.
 
         Examples
         --------
         >>> # Job script creates: COMIN_ATMOS_HISTORY_ENSSTAT=/path/to/ROTDIR/enkfgdas.20211221/00/atmos/ensstat
         >>> com_paths = ArchiveTarVars.get_enkf_com_paths(config)
         >>> com_paths['COMIN_ATMOS_HISTORY_ENSSTAT']
-        'enkfgdas.20211221/00/atmos/ensstat'
+        '/path/to/ROTDIR/enkfgdas.20211221/00/atmos/ensstat'
         """
         com_paths = {}
-        rotdir = config_dict.get('ROTDIR', '')
         com_vars = [
             'COMIN_ATMOS_HISTORY',
             'COMIN_ATMOS_HISTORY_ENSSTAT',
@@ -563,20 +442,18 @@ class ArchiveTarVars:
         for var_name in com_vars:
             if var_name in config_dict:
                 abs_path = config_dict[var_name]
-                rel_path = ArchiveTarVars._make_path_relative(abs_path, rotdir)
-                com_paths[var_name] = rel_path
-                logger.debug(f"Converted {var_name}: {abs_path} -> {rel_path}")
-        logger.info(f"Generated {len(com_paths)} relative ensemble statistics COM paths")
+                com_paths[var_name] = abs_path
+                logger.debug(f"Extracted {var_name}: {abs_path}")
+        logger.info(f"Extracted {len(com_paths)} absolute ensemble statistics COM paths (will convert to relative after YAML rendering)")
         return com_paths
 
     @staticmethod
     @logit(logger)
     def get_enkf_member_com_paths(config_dict: AttrDict, member: int) -> AttrDict:
-        """Generate relative COM paths for a single ensemble member.
+        """Generate absolute COM paths for a single ensemble member.
 
-        This method creates relative COM paths (relative to ROTDIR) for a specific
-        ensemble member. It is designed to be called once per member during
-        template rendering iteration.
+        This method creates absolute COM paths for a specific ensemble member.
+        The paths will be converted to relative paths AFTER YAML rendering in archive.py.
 
         Parameters
         ----------
@@ -589,21 +466,21 @@ class ArchiveTarVars:
         Returns
         -------
         AttrDict
-            Dictionary with relative COM paths for this specific member:
-            - COMIN_ATMOS_ANALYSIS_MEM: Relative path to member analysis directory
-            - COMIN_ATMOS_HISTORY_MEM: Relative path to member history directory
-            - COMIN_ATMOS_RESTART_MEM: Relative path to member restart directory
-            - COMIN_OCEAN_ANALYSIS_MEM: Relative path to member ocean analysis
-            - COMIN_OCEAN_LETKF_MEM: Relative path to member ocean LETKF
-            - COMIN_OCEAN_HISTORY_MEM: Relative path to member ocean history
-            - COMIN_OCEAN_RESTART_MEM: Relative path to member ocean restart
-            - COMIN_ICE_ANALYSIS_MEM: Relative path to member ice analysis
-            - COMIN_ICE_LETKF_MEM: Relative path to member ice LETKF
-            - COMIN_ICE_HISTORY_MEM: Relative path to member ice history
-            - COMIN_ICE_RESTART_MEM: Relative path to member ice restart
-            - COMIN_MED_RESTART_MEM: Relative path to member mediator restart
+            Dictionary with absolute COM paths for this specific member:
+            - COMIN_ATMOS_ANALYSIS_MEM: Absolute path to member analysis directory
+            - COMIN_ATMOS_HISTORY_MEM: Absolute path to member history directory
+            - COMIN_ATMOS_RESTART_MEM: Absolute path to member restart directory
+            - COMIN_OCEAN_ANALYSIS_MEM: Absolute path to member ocean analysis
+            - COMIN_OCEAN_LETKF_MEM: Absolute path to member ocean LETKF
+            - COMIN_OCEAN_HISTORY_MEM: Absolute path to member ocean history
+            - COMIN_OCEAN_RESTART_MEM: Absolute path to member ocean restart
+            - COMIN_ICE_ANALYSIS_MEM: Absolute path to member ice analysis
+            - COMIN_ICE_LETKF_MEM: Absolute path to member ice LETKF
+            - COMIN_ICE_HISTORY_MEM: Absolute path to member ice history
+            - COMIN_ICE_RESTART_MEM: Absolute path to member ice restart
+            - COMIN_MED_RESTART_MEM: Absolute path to member mediator restart
             - member_num: Member number (padded to 3 digits, e.g., "001")
-            All paths are relative to ROTDIR for portability.
+            Paths are absolute (conversion to relative happens after YAML rendering).
 
         Notes
         -----
@@ -611,12 +488,15 @@ class ArchiveTarVars:
         The singular variable names (COMIN_*_MEM) are used in simplified YAML templates
         that no longer contain member loops.
 
+        Paths remain absolute at this stage. Relative path conversion happens in
+        archive.py after YAML rendering.
+
         Examples
         --------
         >>> # Generate variables for member 5
         >>> member_vars = ArchiveTarVars.get_enkf_single_member_vars(config, 5)
         >>> member_vars['COMIN_ATMOS_RESTART_MEM']
-        'enkfgdas.20211221/00/atmos/mem005'
+        '/path/to/ROTDIR/enkfgdas.20211221/00/atmos/mem005'
         >>> member_vars['member_num']
         '005'
         """
@@ -640,16 +520,17 @@ class ArchiveTarVars:
             ('COMIN_MED_RESTART_MEM', 'COM_MED_RESTART_TMPL'),
         ]
 
-        # Generate relative COM paths for this member
+        # Generate absolute COM paths for this member
         member_vars = {}
         for var_key, template_key in template_mappings:
             if config_dict.get(template_key):
-                rel_path = ArchiveTarVars._create_relative_mem_com_paths(
-                    config_dict[template_key], cycle_dict, config_dict.ROTDIR
-                )
-                member_vars[var_key] = rel_path
+                # Replace template variables to create absolute path
+                abs_path = config_dict[template_key]
+                for var, value in cycle_dict.items():
+                    abs_path = abs_path.replace(var, value)
+                member_vars[var_key] = abs_path
 
-        logger.debug(f"Generated {len(member_vars)} relative COM paths for member {member}")
+        logger.debug(f"Generated {len(member_vars)} absolute COM paths for member {member} (will convert to relative after YAML rendering)")
         return member_vars
 
     @staticmethod
@@ -676,99 +557,7 @@ class ArchiveTarVars:
             mem_var_set[f"com_set_{member:02d}"] = ArchiveTarVars.get_enkf_member_com_paths(config_dict, member)
         return mem_var_set
 
-    @staticmethod
-    @logit(logger)
-    def get_tarball_com_paths(config_dict: AttrDict, tarball_type: str, run: str) -> AttrDict:
-        """Generate relative COM paths for specific GFS/GDAS tarball types.
 
-        Maps tarball types to their required COM variables and creates relative
-        paths (relative to ROTDIR) for archiving. This method centralizes the
-        tarball-to-COM-variable mapping logic.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Configuration dictionary with ROTDIR and COMIN_* variables
-        tarball_type : str
-            Type of tarball (e.g., 'gfsa', 'gfs_pgrb2b', 'gdas', etc.)
-        run : str
-            RUN type ('gfs' or 'gdas')
-
-        Returns
-        -------
-        AttrDict
-            Dictionary with relative COM paths for the specified tarball type
-
-        Raises
-        ------
-        KeyError
-            If tarball_type is not recognized for the specified RUN
-
-        Notes
-        -----
-        Supported tarball types (matching YAML filenames):
-        - GFS: gfsa, gfsb, gfs_flux, gfs_flux_1p00, gfs_pgrb2b, gfs_restarta,
-               gfs_netcdfa, gfs_netcdfb, gfs_downstream, gfsocean_analysis, gfswave,
-               ocean_6hravg, ocean_grib2, ocean_native, ice_6hravg, ice_grib2,
-               ice_native, chem
-        - GDAS: gdas, gdas_restarta, gdas_restartb, gdasocean_analysis,
-                gdasocean_restart, gdasocean, gdasice, gdasice_restart,
-                gdaswave, gdaswave_restart
-        """
-        # Define tarball-type to COM variables mapping
-        # Each key matches a YAML filename (without .yaml.j2 extension)
-        wave_grid_res_com_list = [k for k in config_dict.keys() if k.startswith('COMIN_WAVE_GRID_')]
-        if run == 'gfs':
-            tarball_mappings = {
-                'gfsa': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_GENESIS', 'COMIN_ATMOS_GRIB_0p25',
-                         'COMIN_ATMOS_GRIB_1p00', 'COMIN_ATMOS_HISTORY', 'COMIN_ATMOS_MINMON',
-                         'COMIN_ATMOS_TRACK', 'COMIN_CHEM_ANALYSIS', 'COMIN_CONF', 'COMIN_OBS',
-                         'COMIN_SNOW_ANALYSIS'],
-                'gfsb': ['COMIN_ATMOS_GRIB_0p25', 'COMIN_ATMOS_GRIB_1p00'],
-                'gfs_flux': ['COMIN_ATMOS_MASTER'],
-                'gfs_flux_1p00': ['COMIN_ATMOS_GRIB_1p00'],
-                'gfs_pgrb2b': ['COMIN_ATMOS_GRIB_0p25', 'COMIN_ATMOS_GRIB_1p00'],
-                'gfs_restarta': ['COMIN_ATMOS_INPUT', 'COMIN_ATMOS_RESTART'],
-                'gfs_netcdfa': ['COMIN_ATMOS_ANALYSIS'],
-                'gfs_netcdfb': ['COMIN_ATMOS_HISTORY'],
-                'gfs_downstream': ['COMIN_ATMOS_BUFR', 'COMIN_ATMOS_GEMPAK'],
-                'gfsocean_analysis': ['COMIN_CONF', 'COMIN_ICE_ANALYSIS', 'COMIN_ICE_BMATRIX',
-                                      'COMIN_OCEAN_ANALYSIS', 'COMIN_OCEAN_BMATRIX'],
-                'gfswave': ['COMIN_WAVE_STATION'] + wave_grid_res_com_list,
-                'ocean_6hravg': ['COMIN_OCEAN_HISTORY'],
-                'ocean_grib2': ['COMIN_OCEAN_GRIB'],
-                'ocean_native': ['COMIN_OCEAN_NETCDF'],
-                'ice_6hravg': ['COMIN_ICE_HISTORY'],
-                'ice_grib2': ['COMIN_ICE_GRIB'],
-                'ice_native': ['COMIN_ICE_NETCDF'],
-                'chem': ['COMIN_CHEM_HISTORY'],
-            }
-        elif run == 'gdas':  # gdas
-            tarball_mappings = {
-                'gdas': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_ANLMON', 'COMIN_ATMOS_GRIB_0p25',
-                         'COMIN_ATMOS_GRIB_1p00', 'COMIN_ATMOS_HISTORY', 'COMIN_ATMOS_MASTER',
-                         'COMIN_ATMOS_MINMON', 'COMIN_ATMOS_OZNMON', 'COMIN_ATMOS_RADMON',
-                         'COMIN_CHEM_ANALYSIS', 'COMIN_CONF', 'COMIN_OBS', 'COMIN_SNOW_ANALYSIS',
-                         'COMIN_SNOW_ANLMON'],
-                'gdas_restarta': ['COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_RESTART', 'COMIN_OBS'],
-                'gdas_restartb': ['COMIN_ATMOS_RESTART'],
-                'gdasocean_analysis': ['COMIN_CONF', 'COMIN_ICE_ANALYSIS', 'COMIN_ICE_BMATRIX',
-                                       'COMIN_OCEAN_ANALYSIS', 'COMIN_OCEAN_BMATRIX'],
-                'gdasocean_restart': ['COMIN_MED_RESTART', 'COMIN_OCEAN_RESTART'],
-                'gdasocean': ['COMIN_CONF', 'COMIN_OCEAN_HISTORY'],
-                'gdasice': ['COMIN_CONF', 'COMIN_ICE_HISTORY'],
-                'gdasice_restart': ['COMIN_ICE_RESTART'],
-                'gdaswave': ['COMIN_WAVE_RESTART', 'COMIN_WAVE_STATION'] + wave_grid_res_com_list,
-                'gdaswave_restart': ['COMIN_WAVE_RESTART'],
-            }
-        else:
-            raise ValueError(f"Unsupported RUN type '{run}' for tarball COM path generation. Must be 'gfs' or 'gdas'.")
-
-        if tarball_type not in tarball_mappings:
-            raise KeyError(f"Unknown {run.upper()} tarball type: {tarball_type}")
-
-        com_vars = tarball_mappings[tarball_type]
-        return ArchiveTarVars._create_relative_com_paths(config_dict, com_vars)
 
     @staticmethod
     @logit(logger)
@@ -793,117 +582,6 @@ class ArchiveTarVars:
             '${YMD}': to_YMD(config_dict['current_cycle']),
             '${HH}': config_dict['current_cycle'].strftime("%H"),
         }
-
-    @staticmethod
-    @logit(logger)
-    def _make_path_relative(abs_path: str, rotdir: str) -> str:
-        """Strip ROTDIR prefix to create relative path.
-
-        Parameters
-        ----------
-        abs_path : str
-            Absolute path that may contain ROTDIR prefix
-        rotdir : str
-            ROTDIR to strip from path
-
-        Returns
-        -------
-        str
-            Path relative to ROTDIR
-
-        Examples
-        --------
-        >>> ArchiveTarVars._make_path_relative('/data/rotdir/gfs.20251218/00', '/data/rotdir')
-        'gfs.20251218/00'
-        """
-        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
-        return abs_path.replace(rotdir_prefix, '') if rotdir_prefix in abs_path else abs_path
-
-    @staticmethod
-    @logit(logger)
-    def _create_relative_mem_com_paths(template: str, var_dict: AttrDict, rotdir: str) -> str:
-        """Replace template variables in a member template and return a path relative to ROTDIR.
-
-        Parameters
-        ----------
-        template : str
-            Template string with variables to replace (e.g., "${ROTDIR}/${RUN}.${YMD}/${HH}")
-        var_dict : AttrDict
-            Dictionary of variable names and values
-        rotdir : str
-            Absolute ROTDIR used to strip from generated paths
-
-        Returns
-        -------
-        str
-            Path relative to ROTDIR for portability in tar archives
-
-        Examples
-        --------
-        >>> template = "${ROTDIR}/${RUN}.${YMD}/${HH}"
-        >>> var_dict = AttrDict({
-        ...     "${ROTDIR}": "/path/to/rotdir",
-        ...     "${RUN}": "gfs",
-        ...     "${YMD}": "20251218",
-        ...     "${HH}": "00",
-        ... })
-        >>> rotdir = "/path/to/rotdir"
-        >>> ArchiveTarVars._create_relative_mem_com_paths(template, var_dict, rotdir)
-        'gfs.20251218/00'
-        """
-        # First replace all template variables
-        replace_com = template
-        for var, value in var_dict.items():
-            replace_com = replace_com.replace(var, value)
-
-        # Then strip ROTDIR prefix to make path relative
-        return ArchiveTarVars._make_path_relative(replace_com, rotdir)
-
-    @staticmethod
-    @logit(logger)
-    def _create_relative_com_paths(config_dict: AttrDict, com_var_list: list) -> AttrDict:
-        """
-        Convert absolute COM paths to relative paths for non-EnKF archiving.
-
-        Parameters
-        ----------
-        config_dict : AttrDict
-            Must contain ROTDIR and absolute COMIN_*/COMOUT_* variables.
-        com_var_list : list
-            List of COM variable names to convert (e.g., ['COMIN_ATMOS_HISTORY'])
-
-        Returns
-        -------
-        AttrDict
-            Relative COM paths for requested variables.
-
-        Notes
-        -----
-        - Only processes variables that exist in config_dict
-        - Strips ROTDIR prefix to create relative paths
-        - Used by get_gcafs_com_paths, get_gcdas_com_paths
-
-        Examples
-        --------
-        >>> config_dict = AttrDict({
-        ...     'ROTDIR': '/data/rotdir',
-        ...     'COMIN_ATMOS_HISTORY': '/data/rotdir/gfs.20251218/00/atmos/history',
-        ... })
-        >>> ArchiveTarVars._create_relative_com_paths(config_dict, ['COMIN_ATMOS_HISTORY'])
-        {'COMIN_ATMOS_HISTORY': 'gfs.20251218/00/atmos/history'}
-        """
-        com_paths = AttrDict()
-        rotdir = config_dict['ROTDIR']
-
-        for var_name in com_var_list:
-            if var_name in config_dict:
-                abs_path = config_dict[var_name]
-                rel_path = ArchiveTarVars._make_path_relative(abs_path, rotdir)
-                com_paths[var_name] = rel_path
-                logger.debug(f"Converted {var_name}: {abs_path} -> {rel_path}")
-
-        logger.info(f"Created {len(com_paths)} relative COM paths")
-        return com_paths
 
     @staticmethod
     @logit(logger)

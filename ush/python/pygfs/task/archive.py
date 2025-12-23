@@ -75,8 +75,7 @@ class Archive(Task):
         arch_dict['path_exists'] = os.path.exists
 
         # Parse the input jinja yaml template
-        arcdir_set = Archive._construct_arcdir_set(arcdir_j2yaml,
-                                                   arch_dict)
+        arcdir_set = parse_j2yaml(arcdir_j2yaml, arch_dict, allow_missing=True)
 
         # Collect datasets that need to be archived
         self.tar_cmd = ""
@@ -158,15 +157,12 @@ class Archive(Task):
             raise ValueError(f"FATAL ERROR: Invalid archiving method selected: {arch_dict.ARCHCOM_TO}")
 
         # Determine if expdir archiving is requested this cycle (skip gfs/gdas ensembles)
-        if "enkf" in arch_dict.RUN:
-            arch_dict['archive_expdir'] = False
-        else:
-            arch_dict['archive_expdir'] = self._archive_expdir(arch_dict)
-
         # Construct master YAML filename based on RUN
         if "enkf" in arch_dict.RUN:
+            arch_dict['archive_expdir'] = False
             master_yaml = "master_enkf.yaml.j2"
         else:
+            arch_dict['archive_expdir'] = self._archive_expdir(arch_dict)
             master_yaml = f"master_{arch_dict.RUN}.yaml.j2"
         master_yaml_path = os.path.join(archive_parm, master_yaml)
 
@@ -177,17 +173,19 @@ class Archive(Task):
             # For EnKF member archiving, render templates once per member
             first_group_mem = arch_dict.get('first_group_mem')
             last_group_mem = arch_dict.get('last_group_mem')
-
             if first_group_mem is None or last_group_mem is None:
                 raise ValueError("EnKF member archiving requires first_group_mem and last_group_mem in arch_dict")
-
             atardir_sets = self._parse_yaml_enkf_members(arch_dict, master_yaml_path, first_group_mem, last_group_mem)
-        elif "enkf" in arch_dict.RUN and ensgrp == 0:
-            # For EnKF standard archiving (ensemble mean/spread), use standard single-pass rendering
-            atardir_sets = self._parse_yaml_enkf_standard(arch_dict, master_yaml_path)
+
+        elif (
+                ("enkf" in arch_dict.RUN and ensgrp == 0) or
+                arch_dict.RUN in ["gfs", "gefs", "gdas", "gcdas", "gcafs"]
+            ):
+                # Single-pass rendering for EnKF mean/spread and deterministic runs
+                parsed_sets = parse_j2yaml(master_yaml_path, arch_dict, allow_missing=False)
+                atardir_sets = self._process_additional_datasets(arch_dict, parsed_sets)
         else:
-            # TODO For GFS/GDAS deterministic runs, use standard single-pass rendering
-            atardir_sets = []
+            raise ValueError(f"FATAL ERROR: Unsupported RUN type for archiving: {arch_dict.RUN}")
 
         # Save the tarball list as a YAML in case we are using globus
         group = arch_dict.get("ENSGRP", -1)
@@ -196,28 +194,28 @@ class Archive(Task):
         return atardir_sets
 
     @logit(logger)
-    def _parse_yaml_enkf_standard(self, arch_dict: AttrDict, master_yaml_path: str) -> List[AttrDict]:
-        """Standard single-pass template rendering for non-member archiving.
+    def _process_additional_datasets(self, arch_dict: AttrDict, parsed_sets: AttrDict) -> List[AttrDict]:
+        """Process parsed YAML datasets into final archive format with EXPDIR handling.
 
-        This method is used for:
-        - GFS/GDAS deterministic runs
+        This method converts parsed datasets to the final atardir_sets format,
+        handling EXPDIR archiving logic, path conversion, fileset creation,
+        and rstprod checking. Used for:
+        - GFS/GDAS/GCAFS/GCDAS deterministic runs
         - EnKF ensemble mean/spread (ENSGRP=0)
+        - EnKF member aggregation (called from _parse_yaml_enkf_members)
 
         Parameters
         ----------
         arch_dict : AttrDict
             Archive configuration dictionary
-        master_yaml_path : str
-            Full path to the master YAML template (e.g., /path/to/master_gfs.yaml.j2)
+        parsed_sets : AttrDict
+            Parsed YAML datasets from parse_j2yaml
 
         Returns
         -------
         List[AttrDict]
             List of datasets to archive
         """
-        parsed_sets = parse_j2yaml(master_yaml_path,
-                                   arch_dict,
-                                   allow_missing=False)
 
         # Determine if we actually archiving the EXPDIR this cycle
         # This will notify the cleanup function to remove the temporary copy
@@ -236,6 +234,9 @@ class Archive(Task):
         atardir_sets = []
 
         for dataset in parsed_sets.datasets.values():
+
+            # Convert COMIN paths from absolute to relative before creating fileset
+            dataset = self._convert_dataset_paths_to_relative(dataset, arch_dict['ROTDIR'])
 
             dataset["fileset"] = Archive._create_fileset(dataset)
             dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
@@ -313,12 +314,9 @@ class Archive(Task):
                 if 'optional' in dataset:
                     accumulated_datasets[dataset_name].optional.extend(dataset['optional'])
 
-        # Convert accumulated datasets to final atardir_sets format
-        atardir_sets = []
-        for dataset in accumulated_datasets.values():
-            dataset["fileset"] = Archive._create_fileset(dataset)
-            dataset["has_rstprod"] = Archive._has_rstprod(dataset['fileset'])
-            atardir_sets.append(AttrDict(dataset))
+        # Convert accumulated datasets to parsed_sets format and process with standard method
+        member_parsed_sets = AttrDict({'datasets': accumulated_datasets})
+        atardir_sets = self._process_additional_datasets(arch_dict, member_parsed_sets)
 
         logger.info(f"Accumulated {len(atardir_sets)} datasets from {last_group_mem - first_group_mem + 1} members")
 
@@ -493,66 +491,61 @@ class Archive(Task):
             for filename in fileset:
                 tarball.add(filename)
 
-    @logit(logger)
-    def _gen_relative_paths(self, root_path: str) -> AttrDict:
-        """Generate a dict of paths in self.task_config relative to root_path
-
-        Parameters
-        ----------
-        root_path : str
-            Path to base all relative paths off of
-
-        Return
-        ------
-        rel_path_dict : AttrDict
-            Dictionary of paths relative to root_path.  Members will be named
-            based on the dict names in self.config.  For COM paths, the names will
-            follow COMIN_<NAME> --> <name>_dir.  For all other directories, the
-            names will follow <NAME> --> <name>_dir.
-        """
-
-        rel_path_dict = {}
-        for key, value in self.task_config.items():
-            if isinstance(value, str):
-                if root_path in value:
-                    rel_path = value.replace(root_path, "")
-                    rel_key = (key[4:] if key.startswith("COMIN_") else key).lower() + "_dir"
-                    rel_path_dict[rel_key] = rel_path
-
-        return rel_path_dict
-
     @staticmethod
     @logit(logger)
-    def _construct_arcdir_set(arcdir_j2yaml, arch_dict) -> AttrDict:
-        """Construct the list of files to send to the ARCDIR and Fit2Obs
-           directories from a template.
+    def _convert_dataset_paths_to_relative(dataset: AttrDict, rotdir: str) -> AttrDict:
+        """Convert all COMIN paths in a dataset from absolute to relative paths.
 
-           TODO Copying Fit2Obs data doesn't belong in archiving should be
-                moved elsewhere.
+        This method processes the 'required' and 'optional' lists in a rendered
+        dataset and converts any paths that start with ROTDIR to relative paths.
+        This ensures tarball contents use portable relative paths.
 
         Parameters
         ----------
-        arcdir_j2yaml: str
-            The filename of the ARCDIR jinja template to parse.
+        dataset : AttrDict
+            Dataset dictionary from parsed YAML with 'required' and 'optional' lists
+        rotdir : str
+            ROTDIR path to strip from absolute paths
 
-        arch_dict: Dict
-            The context dictionary to parse arcdir_j2yaml with.
+        Returns
+        -------
+        AttrDict
+            Dataset with all COMIN paths converted to relative paths
 
-        Return
-        ------
-        arcdir_set : AttrDict
-            FileHandler dictionary (i.e. with top level "mkdir" and "copy" keys)
-            containing all directories that need to be created and what data
-            files need to be copied to the ARCDIR and the Fit2Obs directory.
+        Notes
+        -----
+        This method is called AFTER YAML rendering to convert paths that were
+        rendered with absolute COMIN variables into relative paths suitable for
+        tar archiving.
+
+        Examples
+        --------
+        >>> dataset = AttrDict({
+        ...     'required': ['/data/rotdir/gfs.20251218/00/atmos/file1.nc'],
+        ...     'optional': ['/data/rotdir/gfs.20251218/00/atmos/file2.nc']
+        ... })
+        >>> Archive._convert_dataset_paths_to_relative(dataset, '/data/rotdir')
+        {'required': ['gfs.20251218/00/atmos/file1.nc'],
+         'optional': ['gfs.20251218/00/atmos/file2.nc']}
         """
+        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
 
-        # Get the FileHandler dictionary for creating directories and copying
-        # to the ARCDIR and VFYARC directories.
-        arcdir_set = parse_j2yaml(arcdir_j2yaml,
-                                  arch_dict,
-                                  allow_missing=True)
+        # Convert required paths
+        if 'required' in dataset and dataset['required'] is not None:
+            dataset['required'] = [
+                path.replace(rotdir_prefix, '') if rotdir_prefix in path else path
+                for path in dataset['required']
+            ]
 
-        return arcdir_set
+        # Convert optional paths
+        if 'optional' in dataset and dataset['optional'] is not None:
+            dataset['optional'] = [
+                path.replace(rotdir_prefix, '') if rotdir_prefix in path else path
+                for path in dataset['optional']
+            ]
+
+        logger.debug(f"Converted dataset '{dataset.get('name', 'UNKNOWN')}' paths to relative")
+        return dataset
 
     @staticmethod
     @logit(logger)
