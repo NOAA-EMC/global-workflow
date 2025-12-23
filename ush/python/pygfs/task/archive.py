@@ -178,12 +178,12 @@ class Archive(Task):
             atardir_sets = self._parse_yaml_enkf_members(arch_dict, master_yaml_path, first_group_mem, last_group_mem)
 
         elif (
-                ("enkf" in arch_dict.RUN and ensgrp == 0) or
-                arch_dict.RUN in ["gfs", "gefs", "gdas", "gcdas", "gcafs"]
-            ):
-                # Single-pass rendering for EnKF mean/spread and deterministic runs
-                parsed_sets = parse_j2yaml(master_yaml_path, arch_dict, allow_missing=False)
-                atardir_sets = self._process_additional_datasets(arch_dict, parsed_sets)
+            ("enkf" in arch_dict.RUN and ensgrp == 0) or
+            arch_dict.RUN in ["gfs", "gefs", "gdas", "gcdas", "gcafs"]
+        ):
+            # Single-pass rendering for EnKF mean/spread and deterministic runs
+            parsed_sets = parse_j2yaml(master_yaml_path, arch_dict, allow_missing=False)
+            atardir_sets = self._process_additional_datasets(arch_dict, parsed_sets)
         else:
             raise ValueError(f"FATAL ERROR: Unsupported RUN type for archiving: {arch_dict.RUN}")
 

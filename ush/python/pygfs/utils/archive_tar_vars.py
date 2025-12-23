@@ -390,8 +390,6 @@ class ArchiveTarVars:
                 vars_out['restart_prefixes'] = []
         return vars_out
 
-
-
     @staticmethod
     @logit(logger)
     def get_enkf_com_paths(config_dict: AttrDict) -> AttrDict:
@@ -556,8 +554,6 @@ class ArchiveTarVars:
         for member in range(first_group_mem, last_group_mem + 1):
             mem_var_set[f"com_set_{member:02d}"] = ArchiveTarVars.get_enkf_member_com_paths(config_dict, member)
         return mem_var_set
-
-
 
     @staticmethod
     @logit(logger)
