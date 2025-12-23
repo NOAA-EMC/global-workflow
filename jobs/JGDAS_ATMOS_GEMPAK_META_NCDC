@@ -74,16 +74,8 @@ export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
 export COMOUTncdc=${COMOUTncdc:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 
-# export ukmet_ver=v2.2.0
-export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
-# export ecmwf_ver=v2.1.0
-export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
-
-export COMOUTukmet=${COMOUT}
-export COMOUTecmwf=${COMOUT}
-
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $COMOUTncdc $COMOUTukmet $COMOUTecmwf
+  mkdir -m 775 -p $COMOUT $COMOUTncdc
 fi
 
 export pgmout=OUTPUT.$$
@@ -93,9 +85,7 @@ env
 ########################################################
 # Execute the script.
 $USHgempak/gdas_meta_na.sh
-$USHgempak/gdas_ecmwf_meta_ver.sh
 $USHgempak/gdas_meta_loop.sh
-$USHgempak/gdas_ukmet_meta_ver.sh
 export err=$?; err_chk
 ########################################################
 

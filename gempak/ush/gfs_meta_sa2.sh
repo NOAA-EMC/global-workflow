@@ -1,9 +1,9 @@
 #! /bin/sh
 #
-# Metafile Script : ukmet_gfs_meta_sa2.sh
+# Metafile Script : gfs_meta_sa2.sh
 #
 # Creates several South American gfs charts, including 500mb and psml 
-# comparisons to the ecmwf and ukmet
+# comparisons to the ecmwf
 #
 # Log :
 # J. Carr/HPC       07/2002   Added this metafile
@@ -16,7 +16,7 @@
 #
 set -x
 #
-echo " start with ukmet_gfs_meta_sa2.sh"
+echo " start with gfs_meta_sa2.sh"
 
 export PS4='SA2:$SECONDS + '
 cp $FIXgempak/datatype.tbl datatype.tbl
@@ -37,7 +37,6 @@ device="nc | ${metaname}"
 if [ ${cyc} -eq "12" ] || [ ${cyc} -eq "18" ] 
 then
     exit
-# elif [ ${cyc} -eq "00" ] && [ `echo $COMIN | awk -F/ '{print $5}' | awk -F. '{print $1}'` = "gfs" ]
 elif [ ${cyc} -eq "00" ] && [ ${mdl} = "gfs" ]
 then 
     # don't want to run from 00z gfs
@@ -45,7 +44,6 @@ then
 fi
 
 PDY2=`echo ${PDY} | cut -c3-`
-# export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDY}
 export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/${COMPONENT}/gempak
 
 grid1="F-GFSHPC | ${PDY2}/${cyc}00"
@@ -201,173 +199,6 @@ ru
 ex
 EOF
 
-if [ ${cyc} -eq "00" ]; then
-    times="012 036 060 084 108 132"
-else
-    times="006 030 054 078 102 126"
-fi
-
-for gfsfhr in `echo ${times}`
-do
-    if [ ${cyc} == "06" ]; then
-        ecmwffhr="F`expr ${gfsfhr} + 18`"
-    else
-        ecmwffhr="F`expr ${gfsfhr} + 12`"
-    fi
-    while [ `expr length $ecmwffhr` -lt 3 ]
-        do
-            ecmwffhr="F0`expr ${gfsfhr} + 6`"
-        done
-    gfsfhr="F${gfsfhr}"
-    grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
-
-$GEMEXE/gdplot2_nc << EOF10
-\$MAPFIL = mepowo.gsf
-GDFILE	= ${grid1} !${grid2}
-GDATTIM	= ${gfsfhr}!${ecmwffhr}
-DEVICE	= ${device}
-PANEL	= 0
-TEXT	= 1/21//hw
-CONTUR	= 2
-MAP	= 6/1/1/yes
-CLEAR   = yes
-CLRBAR  = 1
-PROJ    = mer//3;3;0;1
-GAREA   = -71;-135;20;-20
-LATLON	= 18//1/1/10
-
-GLEVEL  = 500                                                                     
-GVCORD  = PRES                                                                    
-PANEL   = 0                                                                      
-SKIP    = 0            
-SCALE   = -1           
-GDPFUN  = sm5s(hght)!sm5s(hght)         
-TYPE    = c            
-CONTUR  = 1                                                                       
-CINT    = 6            
-FINT    = 
-FLINE   = 
-HLSYM   =                                                                         
-WIND    =               
-REFVEC  =                                                                         
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#//5/5;5/y!2/H#;L#//5/5;5/y
-TITLE   = 31/-1/~ ? ${MDL} @ HGHT (WHITE)|~EC VS ${MDL} 500!2/-2/~ ? ECMWF 500 HGHT (RED)
-l
-r
-
-GLEVEL  = 0
-GVCORD  = none
-PANEL   = 0                                                                       
-SKIP    = 0                                           
-SCALE   = 0
-GDPFUN  = (pmsl)!(pmsl)
-TYPE    = c                                                                       
-CONTUR  = 7                                                                      
-CINT    = 4                                           
-FINT    =                                                                        
-FLINE   =                                                                        
-HLSYM   = 1.5;1.5//21//hw                                                           
-CLRBAR  = 1                                                                       
-WIND    = 
-REFVEC  =                                                                         
-TEXT    = 1/21//hw                                                                
-CLEAR   = yes
-GDFILE  = ${grid1}!${grid2}
-GDATTIM = ${gfsfhr}!${ecmwffhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#/1020-1060;900-1010/5/10;10!2/H#;L#/1020-1060;900-1010/5/10;10
-TITLE   = 31/-1/~ ? ${MDL} PMSL (WHITE)|~EC VS ${MDL} PMSL!2/-2/~ ? ECMWF PMSL (RED)
-l
-r
-
-ex
-EOF10
-done
-
-if [ ${cyc} -eq "00" ]; then
-    times="000 012 024 036 048 060 072 096 120 144"
-elif [ ${cyc} -eq "06" ]; then
-    times="006 018 030 042 054 066 090 114 138"
-fi
-
-for gfsfhr in  `echo ${times}`
-do
-    if [ ${cyc} -eq "06" ]; then
-        ukmetfhr="`expr ${gfsfhr} + 6`"
-        while [ `expr length $ukmetfhr` -lt 3 ]
-           do
-              ukmetfhr="0`expr ${gfsfhr} + 6`"
-           done 
-    else
-        ukmetfhr=${gfsfhr}
-    fi
-    gfsfhr="F${gfsfhr}"
-    grid3="${COMINukmet}.${PDY}/gempak/ukmet_${PDY}00f${ukmetfhr}"
-
-$GEMEXE/gdplot2_nc << EOF25
-\$MAPFIL = mepowo.gsf
-DEVICE  = ${device}
-PANEL   = 0
-TEXT    = 1/21//hw
-CONTUR  = 2
-MAP     = 6/1/1/yes
-CLEAR   = yes
-CLRBAR  = 
-GLEVEL  = 500                                                                     
-GVCORD  = PRES                                                                    
-PANEL   = 0                                                                      
-SKIP    = 0            
-SCALE   = -1           
-GDPFUN  = sm5s(hght)!sm5s(hght)        
-TYPE    = c            
-CONTUR  = 1                                                                       
-CINT    = 6            
-FINT    = 
-FLINE   = 
-HLSYM   =                                                                         
-GVECT   =                                                                         
-WIND    =               
-REFVEC  =                                                                         
-clear   = yes
-GDFILE  = ${grid1}!${grid3}
-GDATTIM = ${gfsfhr}!F${ukmetfhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#//5/7;7/y!2/H#;L#//5/5;5/y
-TITLE   = 31/-1/~ ? ${MDL} @ HGHT (WHITE)|~UK VS ${MDL} 500!2/-2/~ ? UKMET 500 HGHT (RED)
-l
-r
-
-GLEVEL  = 0
-GVCORD  = none
-PANEL   = 0                                                                       
-SKIP    = 0                                           
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)!sm5s(pmsl)
-TYPE    = c                                                                       
-CONTUR  = 2                                                                       
-CINT    = 4                                           
-FINT    =                                                                        
-FLINE   =                                                                        
-HLSYM   = 1.5;1.5//21//hw                                                           
-CLRBAR  =                                                                        
-WIND    = 
-REFVEC  =                                                                         
-TEXT    = 1/21//hw                                                                
-CLEAR   = yes
-GDFILE  = ${grid1}!${grid3}
-GDATTIM = ${gfsfhr}!F${ukmetfhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#/1020-1060;900-1010/5/10;10!2/H#;L#/1020-1060;900-1010/5/10;10
-TITLE   = 31/-1/~ ? ${MDL} PMSL (WHITE)|~UK VS ${MDL} PMSL!2/-2/~ ? UKMET PMSL (RED)
-l
-r
- 
-ex
-EOF25
-done
-
-
 if [ $SENDCOM = "YES" ] ; then
    mv ${metaname} ${COMOUT}/${mdl}_${PDY}_${cyc}_${metatype}
    if [ $SENDDBN = "YES" ] ; then
@@ -381,7 +212,6 @@ if [ $SENDCOM = "YES" ] ; then
    fi
 fi
 
-#export COMIN=/com/nawips/${envir}/ukmet.${PDY}
-echo " end with ukmet_gfs_meta_sa2.sh"
+echo " end with gfs_meta_sa2.sh"
 
 exit
