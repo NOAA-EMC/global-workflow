@@ -4,14 +4,14 @@ function _usage() {
     cat << EOF
 Builds all of the global-workflow components on compute nodes.
 
-Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT [gfs gefs sfs gcafs gsi gdas all]
+Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT -b [gfs gefs sfs gcafs gsi gdas all]
   -h:
     Print this help message and exit
   -v:
     Verbose mode
   -A:
-    HPC account to use for the compute-node builds [REQUIRED]
-  -c Build on compute nodes (default is NO)
+    HPC account to use for the compute-node builds [REQUIRED when building on compute nodes]
+  -b Build on login nodes (DEFAULT: NO)
 
   Input arguments are the system(s) to build.
   Valid options are
@@ -31,14 +31,14 @@ build_xml="build.xml"
 build_db="build.db"
 build_lock_db="build_lock.db"
 HPC_ACCOUNT="UNDEFINED"
-build_on_compute="NO"
+build_on_compute="YES"
 
 OPTIND=1
-while getopts ":hA:vc" option; do
+while getopts ":hA:vb" option; do
     case "${option}" in
         h) _usage ;;
         A) HPC_ACCOUNT="${OPTARG}" ;;
-        c) build_on_compute="YES" ;;
+        b) build_on_compute="NO" ;;
         v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -59,8 +59,8 @@ else
     systems=$*
 fi
 
-if [[ "${HPC_ACCOUNT}" == "UNDEFINED" ]]; then
-    echo "FATAL ERROR: -A <HPC_ACCOUNT> is required, ABORT!"
+if [[ "${build_on_compute}" == "YES" && "${HPC_ACCOUNT}" == "UNDEFINED" ]]; then
+    echo "FATAL ERROR: -A <HPC_ACCOUNT> is required when building on compute nodes, ABORT!"
     _usage
 fi
 
