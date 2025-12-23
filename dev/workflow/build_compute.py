@@ -121,6 +121,9 @@ def get_build_specs(build_specs: Dict, host_spec: Dict) -> Dict:
                 build_specs.build[key].cores = override.max_cores
                 build_specs.build[key].walltime = timedelta_to_HMS(override_walltime)
 
+            if build_specs.build[key].memory > override.max_memory:
+                build_specs.build[key].memory = override.max_memory
+
             # Adjust build walltime by the walltime_ratio
             build_specs.build[key].walltime = timedelta_to_HMS(
                 to_timedelta(build_specs.build[key].walltime) * override.walltime_ratio)
