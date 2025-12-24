@@ -46,9 +46,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           filter_mode: nofilter
-          fail_on_error: true
           level: any
-          reviewdog_flags: '-reporter=github-pr-review'
+          reviewdog_flags: '-reporter=${{ steps.reporter.outputs.value }} -fail_level=any'
           shfmt_flags: ''
 
   shellcheck:
@@ -87,7 +86,7 @@ jobs:
         uses: reviewdog/action-shellcheck@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
+          reporter: ${{ steps.reporter.outputs.value }}
           filter_mode: nofilter
           fail_level: any
           level: any
