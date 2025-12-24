@@ -18,7 +18,7 @@ datasets:
     # The ensemble increments (group a) should be saved on the ARCH_CYC
     # The forecasts are only run for enkfgdas RUNs, so skip for enkfgfs
     # Note: All archive timing variables (archive_*, save_warm_start_*) are provided by Python via ArchiveTarVars._get_cycle_vars()
-    {% if archive_increments and archive_at_cyc and is_gdas %}
+    {% if archive_increments %}
         {% filter indent(width=4) %}
 {% include "enkf_restarta_grp.yaml.j2" %}
         {% endfilter %}
@@ -26,7 +26,7 @@ datasets:
 
     # The ensemble ICs (group b) are restarts and always lag increments by assim_freq
     # Note: archive_ics and archive_ics_at_cyc are provided by Python via ArchiveTarVars._get_cycle_vars()
-    {% if archive_ics and archive_ics_at_cyc and is_gdas %}
+    {% if archive_ics %}
         {% filter indent(width=4) %}
 {% include "enkf_restartb_grp.yaml.j2" %}
         {% endfilter %}

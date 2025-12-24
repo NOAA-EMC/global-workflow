@@ -50,7 +50,7 @@ enkf_restarta_grp:
         {% endif %}
 
         {% if DOHYBVAR_OCN %}
-        - "{{ COMIN_MED_RESTART_MEM }}/{{ cycle_YMD }}.{{ rst_HH }}0000.ufs.cpld.cpl.r.nc"
+        - "{{ COMIN_MED_RESTART_MEM }}/{{ cycle_YMD }}.{{ rst_HH_restarta }}0000.ufs.cpld.cpl.r.nc"
         - "{{ COMIN_OCEAN_ANALYSIS_MEM }}/{{ head }}mom6_increment.i006.nc"
         - "{{ COMIN_ICE_ANALYSIS_MEM }}/{{ anl_YMD }}.{{ anl_HH }}0000.analysis.cice_model.res.nc"
         {% endif %} # DOHYBVAR_OCN
