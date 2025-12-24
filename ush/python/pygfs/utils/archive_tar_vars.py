@@ -289,7 +289,7 @@ class ArchiveTarVars:
         vars_out['cycle_HH'] = current_cycle.strftime("%H")
         vars_out['cycle_YMDH'] = to_YMDH(current_cycle)
         vars_out['cycle_YMD'] = to_YMD(current_cycle)
-        tarball_vars['cycle_fv3time'] = to_fv3time(current_cycle)
+        vars_out['cycle_fv3time'] = to_fv3time(current_cycle)
 
         # Assimilation frequency
         vars_out['assim_freq'] = str(assim_freq)
@@ -366,7 +366,9 @@ class ArchiveTarVars:
 
         # Forecast output frequency
         enkf_vars['fhout'] = config_dict.get('FHOUT_ENKF', 3)
-
+        enkf_vars['fhmin'] = config_dict.get('FHMIN_ENKF', 0)
+        enkf_vars['fhmax'] = config_dict.get('FHMAX_ENKF', 0)
+        enkf_vars['nmem_ens'] = config_dict.get('NMEM_ENS')
         # System-specific configuration
         if config_dict.get('RUN', '') == 'enkfgfs':
             enkf_vars['do_calc_increment'] = config_dict.get('DO_CALC_INCREMENT_ENKF_GFS', False)
@@ -390,7 +392,6 @@ class ArchiveTarVars:
             enkf_vars['enkf_epos_ngrps'] = len(range(enkf_vars['fhmin'], enkf_vars['fhmax'] + enkf_vars['fhout'], enkf_vars['fhout']))
         else:
             nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
-            nmem_ens = enkf_vars['nmem_ens']
             if nmem_earcgrp and nmem_ens:
                 enkf_vars['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
                 enkf_vars['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
