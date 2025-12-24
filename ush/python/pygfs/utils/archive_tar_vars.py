@@ -289,6 +289,7 @@ class ArchiveTarVars:
         vars_out['cycle_HH'] = current_cycle.strftime("%H")
         vars_out['cycle_YMDH'] = to_YMDH(current_cycle)
         vars_out['cycle_YMD'] = to_YMD(current_cycle)
+        tarball_vars['cycle_fv3time'] = to_fv3time(current_cycle)
 
         # Assimilation frequency
         vars_out['assim_freq'] = str(assim_freq)
