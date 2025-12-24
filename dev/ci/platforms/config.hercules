@@ -65,4 +65,4 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
 export GFS_CI_UTIL_PATH="/work/noaa/global/glopara/utils"
 
 # used for CI jobs requiring Rocoto with dry_run support
-export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/src/rocoto_dryrun_nodaemon"
+export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/src/rocoto_dryrun_nodaemon/bin"
