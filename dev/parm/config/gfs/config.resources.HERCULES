@@ -37,6 +37,7 @@ case ${step} in
         esac
         ;;
 
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     *)
         ;;
 esac
