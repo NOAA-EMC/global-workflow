@@ -116,7 +116,7 @@ class ArchiveTarVars:
                 arch_dict.update(ArchiveTarVars.get_enkf_com_paths(config_dict))
             else:
                 # ENSGRP=!0: Individual member groups
-                arch_dict.update(ArchiveTarVars._create_mem_com_sets(
+                arch_dict.update(ArchiveTarVars._create_enkf_mem_com_sets(
                     config_dict,
                     arch_dict['first_group_mem'],
                     arch_dict['last_group_mem']
@@ -368,7 +368,6 @@ class ArchiveTarVars:
         enkf_vars['fhout'] = config_dict.get('FHOUT_ENKF', 3)
         enkf_vars['fhmin'] = config_dict.get('FHMIN_ENKF', 0)
         enkf_vars['fhmax'] = config_dict.get('FHMAX_ENKF', 0)
-        enkf_vars['nmem_ens'] = config_dict.get('NMEM_ENS')
         # System-specific configuration
         if config_dict.get('RUN', '') == 'enkfgfs':
             enkf_vars['do_calc_increment'] = config_dict.get('DO_CALC_INCREMENT_ENKF_GFS', False)
@@ -378,6 +377,7 @@ class ArchiveTarVars:
             enkf_vars['is_gfs'] = True
         elif config_dict.get('RUN', '') == 'enkfgdas':
             enkf_vars['do_calc_increment'] = config_dict.get('DO_CALC_INCREMENT', False)
+            enkf_vars['nmem_ens'] = config_dict.get('NMEM_ENS')
             enkf_vars['restart_interval'] = config_dict.get('restart_interval_enkfgdas', None)
             enkf_vars['is_gdas'] = True
             enkf_vars['is_gfs'] = False
@@ -392,9 +392,9 @@ class ArchiveTarVars:
             enkf_vars['enkf_epos_ngrps'] = len(range(enkf_vars['fhmin'], enkf_vars['fhmax'] + enkf_vars['fhout'], enkf_vars['fhout']))
         else:
             nmem_earcgrp = config_dict.get('NMEM_EARCGRP')
-            if nmem_earcgrp and nmem_ens:
+            if nmem_earcgrp and enkf_vars['nmem_ens']:
                 enkf_vars['first_group_mem'] = (ensgrp - 1) * nmem_earcgrp + 1
-                enkf_vars['last_group_mem'] = min(ensgrp * nmem_earcgrp, nmem_ens)
+                enkf_vars['last_group_mem'] = min(ensgrp * nmem_earcgrp, enkf_vars['nmem_ens'])
 
         # Pre-compute all restart time prefixes for YAML templates using helper method
         if enkf_vars.get('is_gdas') and enkf_vars.get('restart_interval') and enkf_vars.get('fhmax'):
@@ -623,7 +623,7 @@ class ArchiveTarVars:
 
     @staticmethod
     @logit(logger)
-    def _create_mem_com_sets(config_dict: AttrDict, first_group_mem: int, last_group_mem: int) -> AttrDict:
+    def _create_enkf_mem_com_sets(config_dict: AttrDict, first_group_mem: int, last_group_mem: int) -> AttrDict:
         """Generate COM path sets for a group of ensemble members.
 
         Parameters
