@@ -86,12 +86,12 @@ output_files:
         - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfc.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/history/gefs.t{{ cyc }}z.sfc.f048.nc]
 
         # Ocean forecast history files (2 files: 24hr averages at f024 and f048)
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f024.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.ocean.t{{ cyc }}z.24hr_avg.f048.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.t{{ cyc }}z.24hr_avg.f024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.t{{ cyc }}z.24hr_avg.f024.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.t{{ cyc }}z.24hr_avg.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ocean/history/gefs.t{{ cyc }}z.24hr_avg.f048.nc]
 
         # Ice forecast history files (2 files: 24hr averages at f024 and f048)
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f024.nc]
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.ice.t{{ cyc }}z.24hr_avg.f048.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.t{{ cyc }}z.24hr_avg.f024.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.t{{ cyc }}z.24hr_avg.f024.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.t{{ cyc }}z.24hr_avg.f048.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/ice/history/gefs.t{{ cyc }}z.24hr_avg.f048.nc]
 
         # Wave forecast history files (2 files: points output at f006 and f048)
         - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/history/gefs.t{{ cyc }}z.points.f006.nc, {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/history/gefs.t{{ cyc }}z.points.f006.nc]
