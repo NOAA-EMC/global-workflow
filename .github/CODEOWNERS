@@ -2,8 +2,7 @@
 # This file is to ensure that new development gets reviewed by the appropriate SME
 
 # global-workflow default owners (not a complete list)
-* @DavidHuber-NOAA
-* @aerorahul
+* @DavidHuber-NOAA @aerorahul
 
 # Specific directory owners
 # dev/
@@ -157,8 +156,8 @@ ush/forecast_postdet.sh @aerorahul
 ush/forecast_predet.sh @aerorahul
 ush/fv3gfs_remap_weights.sh
 ush/gaussian_sfcanl.sh @BrianCurtis-NOAA
-ush/getdump.sh @DavidHuber-NOAA @aerorahul 
-ush/getges.sh @DavidHuber-NOAA @aerorahul 
+ush/getdump.sh @DavidHuber-NOAA @aerorahul
+ush/getges.sh @DavidHuber-NOAA @aerorahul
 ush/getgfsnctime @CoryMartin-NOAA
 ush/getioda.sh @nicholasesposito @CoryMartin-NOAA @RussTreadon-NOAA
 ush/getncdimlen @CoryMartin-NOAA
