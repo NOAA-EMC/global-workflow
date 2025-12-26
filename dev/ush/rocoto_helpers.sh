@@ -17,6 +17,7 @@
 gw_expstat() {
     local expdir=""
     local summarize_flag=""
+    local OPTIND=1
 
     while getopts "e:s" opt; do
         case "${opt}" in
@@ -102,6 +103,8 @@ _gw_pad_str() {
 #######################################
 gw_cistat() {
     local RUNTESTS=""
+    local OPTIND=1
+
     while getopts "r:" opt; do
         case "${opt}" in
             r)
