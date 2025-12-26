@@ -2,9 +2,7 @@
 Start your run
 ==============
 
-Make sure a rocoto module is loaded: ``module load rocoto``
-
-If needed check for available rocoto modules on machine: ``module avail rocoto`` or ``module spider rocoto``
+Make sure a rocoto module is loaded. The easiest way to do this is ``source dev/ush/gw_setup.sh``.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Start your run from within your EXPDIR
