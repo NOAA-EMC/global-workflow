@@ -15,15 +15,14 @@ Python provides VARIABLES -> YAML templates build FILE SETS
 
 Python Code Responsibilities:
   - Compute cycle-specific variables (cycle_HH, cycle_YMDH, cycle_YMD, head)
-  - Calculate COM directory paths with grid loops (0p25, 0p50, 1p00)
+  - Calculate COM directory paths for ENKF system with grid loops (0p25, 0p50, 1p00)
   - Extract configuration keys (RUN, DO_* flags, FHMAX*, etc.)
   - Provide complete arch_dict to YAML templates
 
-YAML Template Responsibilities (parm/archive/*_arcdir.yaml.j2):
+YAML Template Responsibilities (parm/archive/master_*.yaml.j2):
   - Build file sets with source -> destination mappings
   - Handle loops (forecast hours, grids, basins)
   - Apply conditionals (DO_* flags, MODE, RUN type)
-  - Create mkdir lists for directory creation
 
 Key Functions
 -------------
@@ -36,7 +35,7 @@ add_config_vars(config_dict):
 Design Note
 -----------
 This is NOT a Task class - it's a utility module with functions that operate on
-config_dict dictionaries. This avoids duplicate Task instantiation in archive workflows.
+config_dict dictionaries.
 
 Logging
 -------
@@ -57,9 +56,11 @@ class ArchiveTarVars:
     for three systems:
     - GFS: Global Forecast System
     - GEFS: Global Ensemble Forecast System
-    - GCAFS: Global Climate Analysis Forecast System
+    - GCAFS: Global Chemistry and Aerosol Forecast System
+    - GDAS: Global Data Assimilation Systems (GDAS and GCDAS)
+    - EnKF: Ensemble Kalman Filter systems (EnKFGFS, EnKFGDAS)
 
-    The YAML templates (parm/archive/*_arcdir.yaml.j2) contain all file set
+    The YAML templates (parm/archive/master_*.yaml.j2) contain all file set
     generation logic. This class only provides the variables they need.
     """
 
@@ -146,7 +147,7 @@ class ArchiveTarVars:
         """
         Collect configuration variables for archive tar operations.
 
-        This method extracts all required configuration keys for EnKF (ensemble)
+        This method extracts all required configuration keys for
         archiving operations, including ensemble-specific parameters.
 
         Parameters
@@ -449,7 +450,7 @@ class ArchiveTarVars:
     def _get_gcdas_specific_cyc_vars(config_dict: AttrDict, current_cycle) -> AttrDict:
         """Compute GCDAS-specific cycle variables.
 
-        This method computes variables specific to GCDAS (Global Climate Data
+        This method computes variables specific to GCDAS (Global Chemistry Data
         Assimilation System) including restart prefixes for archiving.
 
         Parameters
@@ -517,7 +518,7 @@ class ArchiveTarVars:
         >>> com_paths['COMIN_ATMOS_HISTORY_ENSSTAT']
         '/path/to/ROTDIR/enkfgdas.20211221/00/atmos/ensstat'
         """
-        com_paths = {}
+        com_paths = AttrDict()
         com_vars = [
             'COMIN_ATMOS_HISTORY',
             'COMIN_ATMOS_HISTORY_ENSSTAT',
