@@ -3,10 +3,17 @@ host_override:  # over-ride options for host
   GAEAC6:
     max_cores: 8
     walltime_ratio: 1.5  # Uniformly adjust the wallclock by this factor (builds are slower on head nodes)
+    # Memory requests over 32GB on Gaea are increasing the core count. Instead, we need to limit cores.
+    # TODO: remove this declaration when the system administrators fix the issue.
+    max_memory: "32G"
     build:
       gdas:
-        cores: 8
-        memory: "60G"
+        # Memory requests over 32GB on Gaea are increasing the core count. Instead, we need to limit cores.
+        # TODO: reenable when the system administrators fix the issue.
+        # memory: "60G"
+        # cores: 8
+        memory: "32G"
+        cores: 4
         walltime: "02:30:00"
 systems:
   common:
