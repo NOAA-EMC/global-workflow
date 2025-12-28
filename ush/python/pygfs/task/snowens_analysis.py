@@ -53,12 +53,14 @@ class SnowEnsAnalysis(Analysis):
         _res = int(self.task_config['CASE_ENS'][1:])
 
         # if 00z, do SCF preprocessing
-        _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
-        logger.info(f"Checking for IMS file: {_ims_file}")
-        if self.task_config.cyc == 0 and os.path.exists(_ims_file):
-            _DO_IMS_SCF = True
-        else:
-            _DO_IMS_SCF = False
+        _imsnc_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.nc')
+        _imsasc_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
+        _ims_file = (
+            _imsnc_file if os.path.exists(_imsnc_file)
+            else _imsasc_file if os.path.exists(_imsasc_file)
+            else None
+        )
+        _DO_IMS_SCF = (self.task_config.cyc == 0 and _ims_file is not None)
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
