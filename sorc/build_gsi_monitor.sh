@@ -2,7 +2,7 @@
 set -eux
 
 # shellcheck disable=SC2155
-readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
+readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 
 OPTIND=1
 while getopts ":j:dv" option; do
