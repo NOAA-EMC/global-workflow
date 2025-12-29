@@ -38,7 +38,7 @@ EOF
 }
 
 # shellcheck disable=SC2155
-readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
+readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 cd "${HOMEgfs}/sorc" || exit 1
 
 _build_ufs_opt=""
