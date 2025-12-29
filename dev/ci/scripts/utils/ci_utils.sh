@@ -2,7 +2,7 @@
 
 # Determine HOMEgfs_ and source machine detection early
 if [[ -z "${HOMEgfs_}" ]]; then
-    HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+    HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 fi
 source "${HOMEgfs_}/ush/detect_machine.sh"
 
