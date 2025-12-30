@@ -147,7 +147,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             err_exit "FATAL ERROR: Failed to recenter the ensemble analyses!"
         fi
     else
-        # copy ensemble mean increment
+        # Link ensemble mean increment
         ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
 
         # Compute ensemble mean increment

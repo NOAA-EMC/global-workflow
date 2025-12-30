@@ -588,9 +588,9 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
             COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
         for fhr in ${fhrs}; do
-            cpreq "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}${ENKF_SUFFIX}atm.f0${fhr}.nc" "./ensemble_data/sigf${fhr}_ens_${memchar}"
+            ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}${ENKF_SUFFIX}atm.f0${fhr}.nc" "./ensemble_data/sigf${fhr}_ens_${memchar}"
             if [[ "${cnvw_option}" == ".true." ]]; then
-                cpreq "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfc.f0${fhr}.nc" "./ensemble_data/sfcf${fhr}_ens_${memchar}"
+                ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}sfc.f0${fhr}.nc" "./ensemble_data/sfcf${fhr}_ens_${memchar}"
             fi
         done
     done
