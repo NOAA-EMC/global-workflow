@@ -13,6 +13,19 @@ cd "${CASEDIR}"
 rm -f ./*.db
 rm -f ./jobcard
 
+# Clean up any existing DATAROOT to avoid data clashes on repeated runs
+# Extract STMP from config.base (same technique as generate_workflows.sh)
+if [[ -f "${CASEDIR}/config.base" ]]; then
+    eval "$(
+        PDY=0 cyc=0 source "${CASEDIR}/config.base" 2>/dev/null || true
+        echo _dataroot="${STMP:-}/RUNDIRS/${TEST_NAME}"
+    )"
+    if [[ -n "${_dataroot}" && -d "${_dataroot}" ]]; then
+        echo "Removing existing DATAROOT: ${_dataroot}"
+        rm -rf "${_dataroot}"
+    fi
+fi
+
 # Use custom Rocoto build with dryrun feature for testing
 # When GFS_CI_ROCOTO_PATH is unset, the system Rocoto will be used
 
