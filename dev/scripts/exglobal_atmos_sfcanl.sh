@@ -76,7 +76,6 @@ else
 fi
 
 # If any snow files are missing, don't apply snow in the global_cycle step.
-# shellcheck disable=SC2312
 if [[ ! -f "${FNSNOA}" ]] || [[ ! -f "${FNSNOG}" ]]; then
     export FNSNOA=" "
     export CYCLVARS=FSNOL=99999.,FSNOS=99999.,

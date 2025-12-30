@@ -45,13 +45,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" && true
-export err=$?
-set +e
-if [[ ${err} -ne 0 ]]; then
-    err_exit "${DATAROOT} does not exist, ABORT!"
-fi
-set_trace
+cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

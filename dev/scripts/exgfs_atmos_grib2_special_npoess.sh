@@ -110,7 +110,6 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_a.0p50.f${fhr3}.grib2" tmpfile2
     cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_b.0p50.f${fhr3}.grib2" tmpfile2b
     cat tmpfile2 tmpfile2b > tmpfile
-    # shellcheck disable=SC2312
     ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib pgb2file tmpfile && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
