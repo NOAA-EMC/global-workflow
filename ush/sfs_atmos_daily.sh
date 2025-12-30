@@ -23,7 +23,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
 OUTDIR="${COMOUT_ATMOS_GRIB}"
-#GMERGE="/ncrc/home1/Yangxing.Zheng/wgrib2/gmerge"
 mkdir -m 755 -p "${OUTDIR}"
 mkdir -m 755 -p "${OUTDIR}/acc.daily.${MEMDIR}"
 mkdir -m 755 -p "${OUTDIR}/acc.monthly.${MEMDIR}"
