@@ -68,8 +68,8 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
 
     for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         fhrchar=$(printf %03i "${fhr}")
-        cpreq "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.f${fhrchar}.nc" "sfcf${fhrchar}_${memchar}"
-        cpreq "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}.nc" "atmf${fhrchar}_${memchar}"
+        ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.f${fhrchar}.nc" "sfcf${fhrchar}_${memchar}"
+        ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}.nc" "atmf${fhrchar}_${memchar}"
     done
 done
 
