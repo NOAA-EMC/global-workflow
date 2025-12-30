@@ -148,7 +148,7 @@ include:
       echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
 
-      # Load custom Rocoto path if specified for user controle of Rocoto version
+      # Load custom Rocoto path if specified for user control of Rocoto version
       # This allows testing with different Rocoto builds without changing system Rocoto
       source "${GW_HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
       if [[ -n "${GFS_CI_ROCOTO_PATH:-}" && -d "${GFS_CI_ROCOTO_PATH}" ]]; then
