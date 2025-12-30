@@ -296,19 +296,19 @@ EOF
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
-            cpreq "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-            cpreq "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
-            cpreq "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
+            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
+            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
             if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                cpreq "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-                cpreq "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
+                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
+                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
             fi
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                cpreq "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-                cpreq "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
                 if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    cpreq "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                    cpreq "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
                 fi
             fi
         done
@@ -482,7 +482,7 @@ WW3_postdet() {
     cd "${cwd}" || exit 1
 
     # Link output files
-    cpreq "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
 
     # Loop for gridded output (uses FHINC)
     local fhr fhr3 FHINC
@@ -496,8 +496,8 @@ WW3_postdet() {
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-        cpreq "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
-        cpreq "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
 
         if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
             fhinc=${FHOUT_WAV}
@@ -511,8 +511,8 @@ WW3_postdet() {
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-        cpreq "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
-        cpreq "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
 
         fhr=$((fhr + fhinc))
     done
@@ -635,7 +635,7 @@ MOM6_postdet() {
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 fi
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                cpreq "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
 
                 last_fhr=${fhr}
 
@@ -648,7 +648,7 @@ MOM6_postdet() {
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                cpreq "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
             done
             ;;
         *)
@@ -752,7 +752,7 @@ CICE_postdet() {
     local vdate seconds vdatestr fhr fhr3 interval last_fhr
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-    cpreq "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
 
     # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
     local source_file dest_file
@@ -789,7 +789,7 @@ CICE_postdet() {
                 ;;
         esac
 
-        cpreq "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+        ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
 
         last_fhr=${fhr}
     done

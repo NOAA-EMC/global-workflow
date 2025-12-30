@@ -129,7 +129,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
 
     if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
         # Link ensemble mean analysis
-        cpreq "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_analysis.atm.a00${FHR}.nc" "./atmanl_ensmean"
+        ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_analysis.atm.a00${FHR}.nc" "./atmanl_ensmean"
 
         # Compute ensemble mean analysis
         DATAPATH="./"
@@ -148,7 +148,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         fi
     else
         # copy ensemble mean increment
-        cpreq "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
+        ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
 
         # Compute ensemble mean increment
         DATAPATH="./"

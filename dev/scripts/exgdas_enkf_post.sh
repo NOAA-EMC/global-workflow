@@ -82,8 +82,8 @@ fi
 
 for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     fhrchar=$(printf %03i "${fhr}")
-    cpreq "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc" "sfcf${fhrchar}.ensmean"
-    cpreq "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensmean"
+    ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc" "sfcf${fhrchar}.ensmean"
+    ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensmean"
     if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
         for imem in $(seq 1 "${NMEM_ENS}"); do
             memchar="mem"$(printf %03i "${imem}")
@@ -93,7 +93,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         done
     fi
     if [[ "${ENKF_SPREAD}" == "YES" ]]; then
-        cpreq "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensspread.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensspread"
+        ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensspread.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensspread"
     fi
 done
 

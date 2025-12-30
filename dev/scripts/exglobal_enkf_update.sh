@@ -152,15 +152,15 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
         fi
 
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc" \
                 "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         else
-            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \
                 "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
 
         if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" \
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" \
                 "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
     done
@@ -332,7 +332,7 @@ fi
 
 # Cat runtime output files.
 cat stdout stderr > enkfstat.txt
-cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
+${NLN} enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 
 ################################################################################
 #  Postprocessing
