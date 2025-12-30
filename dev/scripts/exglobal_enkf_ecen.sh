@@ -112,17 +112,17 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
             COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
-        cpreq "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
+        ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.a00${FHR}.nc" "./atmanl_${memchar}"
+            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.a00${FHR}.nc" "./atmanl_${memchar}"
         fi
         mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
-        cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.i00${FHR}.nc" "./atminc_${memchar}"
+        ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.i00${FHR}.nc" "./atminc_${memchar}"
         if [[ "${RECENTER_ENKF}" == "YES" ]]; then
             if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-                cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_analysis.atm.a006.nc" "./ratmanl_${memchar}"
+                ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_analysis.atm.a006.nc" "./ratmanl_${memchar}"
             else
-                cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
+                ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
             fi
         fi
     done

@@ -89,7 +89,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             memchar="mem"$(printf %03i "${imem}")
             MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
                 COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
-            cpreq "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
+            ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
         done
     fi
     if [[ "${ENKF_SPREAD}" == "YES" ]]; then
