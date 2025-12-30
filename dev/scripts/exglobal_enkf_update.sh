@@ -332,7 +332,7 @@ fi
 
 # Cat runtime output files.
 cat stdout stderr > enkfstat.txt
-${NLN} enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
+cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 
 ################################################################################
 #  Postprocessing

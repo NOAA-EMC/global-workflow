@@ -309,13 +309,13 @@ if [[ ${cyc} -eq 00 ]]; then
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
     if [[ ! -L "${HPCECMWF}" ]]; then
-        cpreq "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
+        ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then
-        cpreq "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+        ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
     fi
     if [[ ! -L "${HPCUKMET}" ]]; then
-        cpreq "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
+        ${NLN} "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
     fi
     grid1="F-${MDL} | ${PDY:2}/${cyc}00"
     grid2="${HPCECMWF_m1}/ecmwf_glob_${PDYm1}12"

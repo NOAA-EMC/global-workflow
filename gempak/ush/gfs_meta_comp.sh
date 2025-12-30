@@ -36,7 +36,7 @@ done
 
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
-    cpreq "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
+    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
 #
@@ -233,7 +233,7 @@ EOF
         ukmet_cyc=${ukmet_date:8:2}
         export HPCUKMET=ukmet.${ukmet_PDY}
         if [[ ! -L "${HPCUKMET}" ]]; then
-            cpreq "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
+            ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 

@@ -55,7 +55,7 @@ for area in ${areas}; do
         cyclenum=${stime:6}
 
         if [[ ! -L "ukmet.20${sdatenum}" ]]; then
-            cpreq "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
+            ${NLN} "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
         fi
         gdfile="ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
 

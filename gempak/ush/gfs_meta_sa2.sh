@@ -37,10 +37,10 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
 if [[ ! -L "${HPCECMWF}" ]]; then
-    cpreq "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
+    ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
 fi
 if [[ ! -L "${HPCUKMET}" ]]; then
-    cpreq "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
+    ${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
 fi
 
 "${GEMEXE}/gdplot2_nc" << EOF
