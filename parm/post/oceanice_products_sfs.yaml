@@ -24,6 +24,7 @@ ocean:
   namelist:
     write_grib2: {{ write_ocean_grib2 }}
     write_netcdf: {{ write_ocean_netcdf }}
+    write_subset: {{ write_ocean_subset }}
     ftype: "ocean"
     maskvar: "temp"
     sinvar: "sin_rot"
@@ -35,7 +36,7 @@ ocean:
     ocean_levels: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 226, 241, 267]
     {% endif %}
   subset: 
-    variables: ['SSH', 'SST', 'SSS', 'SSU', 'SSV', 'ePBL', 'MLD_003', 'MLD_0125', 'latent', 'sensible', 'SW', 'LW', 'taux', 'tauy', 'temp', 'so', 'uo', 'vo']
+    variables: ['SSH', 'SST', 'SSU', 'SSV', 'ePBL', 'MLD_003', 'MLD_0125', 'latent', 'sensible', 'SW', 'LW', 'taux', 'tauy', 'temp', 'so', 'uo', 'vo']
     compress_with: 'zlib'
     compress: True
     compress_level: 9
@@ -44,7 +45,9 @@ ocean:
       - ["{{ COMIN_OCEAN_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
   data_out:
     mkdir:
+      {% if write_ocean_subset %}
       - "{{ COMOUT_OCEAN_NETCDF }}/native"
+      {% endif %}
       {% for grid in product_grids %}
       {% if write_ocean_netcdf %}
       - "{{ COMOUT_OCEAN_NETCDF }}/{{ grid }}"
@@ -54,7 +57,9 @@ ocean:
       {% endif %}
       {% endfor %}
     copy:
+      {% if write_ocean_subset %}
       - ["{{ DATA }}/ocean_subset.nc", "{{ COMOUT_OCEAN_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      {% endif %}
       {% for grid in product_grids %}
       {% if write_ocean_netcdf %}
       - ["{{ DATA }}/ocean.{{ grid }}.nc", "{{ COMOUT_OCEAN_NETCDF }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
@@ -69,6 +74,7 @@ ice:
   namelist:
     write_grib2: {{ write_ice_grib2 }}
     write_netcdf: {{ write_ice_netcdf }}
+    write_subset: {{ write_ice_subset }}
     ftype: "ice"
     maskvar: "tmask"
     sinvar: ""
@@ -84,7 +90,9 @@ ice:
       - ["{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
   data_out:
     mkdir:
+      {% if write_ice_subset %}
       - "{{ COMOUT_ICE_NETCDF }}/native"
+      {% endif %}
       {% for grid in product_grids %}
       {% if write_ice_netcdf %}
       - "{{ COMOUT_ICE_NETCDF }}/{{ grid }}"
@@ -94,7 +102,9 @@ ice:
       {% endif %}
       {% endfor %}
     copy:
+      {% if write_ice_subset %}
       - ["{{ DATA }}/ice_subset.nc", "{{ COMOUT_ICE_NETCDF }}/native/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.native.f{{ '%03d' % forecast_hour }}.nc"]
+      {% endif %}
       {% for grid in product_grids %}
       {% if write_ice_netcdf %}
       - ["{{ DATA }}/ice.{{ grid }}.nc", "{{ COMOUT_ICE_NETCDF }}/{{ grid }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ grid }}.f{{ '%03d' % forecast_hour }}.nc"]
