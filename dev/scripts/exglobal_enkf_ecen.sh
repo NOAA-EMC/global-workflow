@@ -219,7 +219,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             cpreq "${ATMANL_GSI}" atmanl_gsi
             cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
             SIGLEVEL="${SIGLEVEL:-"${FIXgfs}/am/global_hyblev.l${LEVS}.txt"}"
-            cpreq "${CHGRESNC}" chgres.x
+            ${NLN} "${CHGRESNC}" chgres.x
             chgresnml=chgres_nc_gauss.nml
             nmltitle=chgres
 
