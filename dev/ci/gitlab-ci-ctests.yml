@@ -68,7 +68,7 @@
     source "${GW_HOMEgfs}/dev/ush/gw_setup.sh"
     # Platform config loaded by gw_setup.sh, now check for custom Rocoto
     if [[ -n "${GFS_CI_ROCOTO_PATH:-}" && -d "${GFS_CI_ROCOTO_PATH}" ]]; then
-      export PATH="${GFS_CI_ROCOTO_PATH}:$PATH"
+      export PATH="${GFS_CI_ROCOTO_PATH}:${PATH}"
       echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
     else
       echo "GFS_CI_ROCOTO_PATH not set or directory not found, using system Rocoto"
