@@ -12,7 +12,7 @@ ds = xr.open_dataset(input_file)
 # 1. Load large dataset with Dask chunking
 # Chunking by spatial/temporal dimensions, keeping the vertical (depth) dimension contiguous
 ds = xr.open_dataset(input_file)
-temp = ds.temp  # Assuming 'thetao' is temperature
+temp = ds.temp  # Assuming 'temp' is temperature
 depths = ds.z_l # Vertical coordinate
 
 
@@ -38,7 +38,7 @@ dt20c = xr.apply_ufunc(
     output_core_dims=[[]],
     vectorize=True,
     dask="parallelized",
-    output_dtypes=[np.float64]
+    output_dtypes=[float]
 )
 
 # 3. Trigger computation and save results
