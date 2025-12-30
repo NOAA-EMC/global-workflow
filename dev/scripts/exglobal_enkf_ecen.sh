@@ -112,24 +112,24 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
             COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
-        ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
+        cpreq "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.a00${FHR}.nc" "./atmanl_${memchar}"
+            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.a00${FHR}.nc" "./atmanl_${memchar}"
         fi
         mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
-        ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.i00${FHR}.nc" "./atminc_${memchar}"
+        cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}increment.atm.i00${FHR}.nc" "./atminc_${memchar}"
         if [[ "${RECENTER_ENKF}" == "YES" ]]; then
             if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-                ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_analysis.atm.a006.nc" "./ratmanl_${memchar}"
+                cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_analysis.atm.a006.nc" "./ratmanl_${memchar}"
             else
-                ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
+                cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}recentered_increment.atm.i00${FHR}.nc" "./ratminc_${memchar}"
             fi
         fi
     done
 
     if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
         # Link ensemble mean analysis
-        ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_analysis.atm.a00${FHR}.nc" "./atmanl_ensmean"
+        cpreq "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_analysis.atm.a00${FHR}.nc" "./atmanl_ensmean"
 
         # Compute ensemble mean analysis
         DATAPATH="./"
@@ -147,8 +147,8 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             err_exit "FATAL ERROR: Failed to recenter the ensemble analyses!"
         fi
     else
-        # Link ensemble mean increment
-        ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
+        # copy ensemble mean increment
+        cpreq "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
 
         # Compute ensemble mean increment
         DATAPATH="./"
@@ -168,7 +168,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
 
         # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
         if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
-            ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
+            cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
         else
             DATAPATH="./"
             ATMGESNAME="atmges"
@@ -214,12 +214,12 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
 
         # if we already have a ensemble resolution GSI analysis then just link to it
         if [[ -f ${ATMANL_GSI_ENSRES} ]]; then
-            ${NLN} "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
+            cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
         else
-            ${NLN} "${ATMANL_GSI}" atmanl_gsi
-            ${NLN} "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
+            cpreq "${ATMANL_GSI}" atmanl_gsi
+            cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
             SIGLEVEL="${SIGLEVEL:-"${FIXgfs}/am/global_hyblev.l${LEVS}.txt"}"
-            ${NLN} "${CHGRESNC}" chgres.x
+            cpreq "${CHGRESNC}" chgres.x
             chgresnml=chgres_nc_gauss.nml
             nmltitle=chgres
 

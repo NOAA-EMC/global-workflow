@@ -19,7 +19,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export HPCGFS="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${HPCGFS} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
+    cpreq "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 fi
 
 mdl=gfs
@@ -37,10 +37,10 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
 if [[ ! -L "${HPCECMWF}" ]]; then
-    ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
+    cpreq "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
 fi
 if [[ ! -L "${HPCUKMET}" ]]; then
-    ${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
+    cpreq "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
 fi
 
 "${GEMEXE}/gdplot2_nc" << EOF

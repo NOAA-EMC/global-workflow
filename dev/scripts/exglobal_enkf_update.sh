@@ -140,27 +140,27 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
 
     for FHR in ${nfhrs}; do
-        ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atm.f00${FHR}${ENKF_SUFFIX}.nc" \
+        cpreq "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atm.f00${FHR}${ENKF_SUFFIX}.nc" \
             "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         if [[ "${hofx_2m_sfcfile}" == ".true." ]]; then
-            ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfc.f00${FHR}${ENKF_SUFFIX}.nc" \
+            cpreq "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfc.f00${FHR}${ENKF_SUFFIX}.nc" \
                 "bfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
         if [[ "${cnvw_option}" == ".true." ]]; then
-            ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfc.f00${FHR}.nc" \
+            cpreq "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfc.f00${FHR}.nc" \
                 "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
 
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc" \
+            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc" \
                 "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \
+            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \
                 "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
 
         if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" \
+            cpreq "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" \
                 "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
     done
@@ -168,16 +168,16 @@ done
 
 # Ensemble mean guess
 for FHR in ${nfhrs}; do
-    ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.atm.f00${FHR}.nc" \
+    cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.atm.f00${FHR}.nc" \
         "sfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
     if [[ "${cnvw_option}" == ".true." ]]; then
-        ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
+        cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
             "sfgsfc_${PDY}${cyc}_fhr0${FHR}_ensmean"
     fi
     if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-        ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
+        cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
             "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
-        ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}ensmean_increment.sfc.i00${FHR}.nc" \
+        cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}ensmean_increment.sfc.i00${FHR}.nc" \
             "sfcincr_${PDY}${cyc}_fhr0${FHR}_ensmean"
     fi
 done

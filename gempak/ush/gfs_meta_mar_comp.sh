@@ -20,7 +20,7 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         file_out="${COMIN}/$(basename "${file_in}")"
         if [[ ! -L "${file_out}" ]]; then
-            ${NLN} "${file_in}" "${file_out}"
+            cpreq "${file_in}" "${file_out}"
         fi
     done
 done
@@ -31,7 +31,7 @@ done
 #
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
-    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
+    cpreq "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
 mdl=gfs
@@ -74,11 +74,11 @@ for garea in NAtl NPac; do
             continue
         fi
 
-        # Create symlink in DATA to sidestep gempak path limits
+        # Copy to DATA to sidestep gempak path limits
         HPCGFS="${RUN}.${init_time}"
         if [[ ! -L ${HPCGFS} ]]; then
             YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-            ${NLN} "${source_dir}" "${HPCGFS}"
+            cpreq "${source_dir}" "${HPCGFS}"
         fi
 
         case ${cyc} in
@@ -226,7 +226,7 @@ EOF
 
         export HPCUKMET="ukmet.${ukmet_PDY}"
         if [[ ! -L "${HPCUKMET}" ]]; then
-            ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
+            cpreq"${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 
@@ -315,7 +315,7 @@ EOF
 
         HPCECMWF=ecmwf.${PDY}
         if [[ ! -L "${HPCECMWF}" ]]; then
-            ${NLN} "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
+            cpreq "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
         fi
         grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"
 

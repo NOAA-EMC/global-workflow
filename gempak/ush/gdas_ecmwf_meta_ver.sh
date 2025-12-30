@@ -20,7 +20,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    cpreq "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"
@@ -45,7 +45,7 @@ for area in ${areas}; do
         sdatenum=$(date --utc +%y%m%d -d "${PDY} ${cyc2} - ${fhr} hours")
 
         if [[ ! -L "ecmwf.20${sdatenum}" ]]; then
-            ${NLN} "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
+            cpreq "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
         fi
         gdfile="ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
 

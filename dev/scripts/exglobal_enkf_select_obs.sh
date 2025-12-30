@@ -46,7 +46,7 @@ CHEM_INVOBS=${CHEM_INVOBS:-""}
 ################################################################################
 # ObsInput file from ensemble mean
 rm -f obs*input*
-${NLN} "${SELECT_OBS}" obsinput.tar
+cpreq "${SELECT_OBS}" obsinput.tar
 
 # Whether to save or skip obs
 if [[ "${RUN_SELECT}" == "YES" && "${USE_SELECT}" == "NO" ]]; then
