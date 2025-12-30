@@ -7,9 +7,7 @@ input_file = sys.argv[1]
 output_file = sys.argv[2]
 
 # 1. Load 4D dataset with Dask (Time, Depth, Lat, Lon)
-# Important: Keep depth as a single chunk for interpolation/integration
-
-ds = xr.open_dataset(input_file, chunks={'time': 1, 'lat': 100, 'lon': 100})
+ds = xr.open_dataset(input_file)
 temp = ds.temp  # Temperature array
 depths = ds.z_l  # Vertical coordinate
 
@@ -31,21 +29,24 @@ def calc_tchp_profile(t_prof, z_coords):
     d26 = np.interp(26, t_prof[::-1], z_coords[::-1])
 
     # Mask temperatures below 26C for integration
-    #t_minus_26 = np.where(t_prof >= 26, t_prof - 26, 0)
+    # t_minus_26 = np.where(t_prof >= 26, t_prof - 26, 0)
     t_minus_26 = np.where(t_prof >= 26, t_prof - 26, np.nan)
 
     # Integrate (T-26) from 0 to D26 using trapezoidal rule
     # Note: Integration only goes up to the interpolated D26
     mask = z_coords <= d26
-    integration = np.trapezoid(t_minus_26[mask], z_coords[mask])
+    if hasattr(np, 'trapezoid'):
+        integration = np.trapezoid(t_minus_26[mask], z_coords[mask])
+    else:
+        integration = np.trapz(t_minus_26[mask], z_coords[mask])
 
     tchp_J_per_m2 = RHO * CP * integration  # in J/m^2
 
     # Convert to TCHP units (kJ/cm^2)
     # 1 J/m^2 = 1e-3 kJ / 1e4 cm^2 = 1e-7 kJ/cm^2
-    tchp = tchp_J_per_m2 * 1e-7
+    TCHP = tchp_J_per_m2 * 1e-7
 
-    return tchp
+    return TCHP
 
 
 # 2. Apply the function across 4D space using apply_ufunc
