@@ -1,6 +1,6 @@
 [![Read The Docs Status](https://readthedocs.org/projects/global-workflow/badge/?badge=latest)](http://global-workflow.readthedocs.io/)
-[![bash code analysis](https://github.com/NOAA-EMC/global-workflow/workflows/bash_code_analysis/badge.svg?branch=develop&event=push)](https://github.com/NOAA-EMC/global-workflow/actions?query=workflow%3Abash_code_analysis+event%3Apush+branch%3Adevelop)
-[![python code analysis](https://github.com/NOAA-EMC/global-workflow/workflows/python_code_analysis/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions?query=workflow%3Apython_code_analysis+event%3Apush+branch%3Adevelop)
+[![shellnorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml)
+[![pynorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/wcoss2.json)
 
 ![Custom badge](https://gist.githubusercontent.com/emcbot/66059582886cb5c2485ff64bf24e7f93/raw/ursa_pipeline_badge.svg)
