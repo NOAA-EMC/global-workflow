@@ -50,8 +50,10 @@ class SnowAnalysis(Analysis):
         _res = int(self.task_config['CASE'][1:])
 
         # if 00z, do SCF preprocessing
-        _ims_file = os.path.join(self.task_config.COMIN_OBS,
-            f'{self.task_config.OPREFIX}imssnow96.{self.task_config.ims_scf_obs_suffix}')
+        _ims_file = os.path.join(
+            self.task_config.COMIN_OBS,
+            f'{self.task_config.OPREFIX}imssnow96.{self.task_config.ims_scf_obs_suffix}'
+        )
         _DO_IMS_SCF = (self.task_config.cyc == 0 and os.path.exists(_ims_file))
 
         # Extend task_config with variables repeatedly used across this class
