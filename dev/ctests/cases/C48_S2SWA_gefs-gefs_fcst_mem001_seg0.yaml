@@ -13,6 +13,7 @@
 input_files:
     mkdir:
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/input
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/prep
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart
@@ -62,6 +63,40 @@ input_files:
         # Wave prep file (1 file) - from 12Z cycle
         - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/prep/gefs.t{{ cyc }}z.mod_def.glo_500.bin,
            {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/prep/gefs.t{{ cyc }}z.mod_def.glo_500.bin]
+
+        # Chemistry input files (NEXUS diagnostics for aerosol emissions)
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210323.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210323.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210324.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210324.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210325.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210325.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210326.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210326.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210327.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210327.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210328.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210328.nc]
+
+        # Fire emissions input files
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210322.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210322.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210323.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210323.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210324.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210324.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210325.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210325.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210326.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210326.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210327.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210327.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210328.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210328.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210329.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210329.nc]
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210330.nc,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/FIRE_EMIS_20210330.nc]
 
 output_files:
     cmpfiles:
