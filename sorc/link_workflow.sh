@@ -2,7 +2,7 @@
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
-HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." > /dev/null 2>&1 && pwd)"
+HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" > /dev/null 2>&1 && git rev-parse --show-toplevel)
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
 
 function usage() {

@@ -1,0 +1,58 @@
+# CTest Case: C48_ATM-gfs_tracker
+#
+# Purpose: Validate the execution of the tropical cyclone tracking algorithm
+# on a series of atmospheric forecast GRIB2 files. This test ensures that
+# the JGFS_ATMOS_CYCLONE_TRACKER job correctly identifies vortices and
+# produces valid tracker output files (a-deck and b-deck).
+#
+# Source pedigree: consumes the baseline gfs_atmos_prod_f000-f002 (and subsequent)
+# GRIB2 products in `products/atmos/grib2/0p25` under STAGED_CTESTS and compares
+# tracker products dropped in `products/atmos/cyclone/tracks`.
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+{% set SRC_GRIB_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
+{% set DST_GRIB_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
+{% set SRC_TRACKS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/tracks' %}
+{% set DST_TRACKS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/tracks' %}
+
+input_files:
+    # Stage the same forecast history that fed the ops tracker run.
+    mkdir:
+        - {{ DST_GRIB_DIR }}
+        - {{ DST_TRACKS_DIR }}
+
+    copy:
+        # Files originate from {{ SRC_GRIB_DIR }} inside the staged COMROOT.
+        # Tracker requires files at FHOUT_CYCLONE=6 hour intervals up to FHMAX_CYCLONE=120
+        # (21 files: f000, f006, f012, ..., f120)
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f000.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f000.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f006.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f006.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f012.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f012.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f018.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f018.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f024.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f024.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f030.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f030.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f036.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f036.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f042.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f042.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f048.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f048.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f054.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f054.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f060.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f060.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f066.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f066.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f072.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f072.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f078.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f078.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f084.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f084.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f090.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f090.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f096.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f096.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f102.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f102.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f108.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f108.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f114.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f114.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f120.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f120.grib2]
+
+output_files:
+    # Tracker outputs - compare atcf format files
+    # Note: atcfunix.gfs.* files are created by a separate archiving step, not by the tracker job itself
+    cmpfiles:
+        - [{{ SRC_TRACKS_DIR }}/avno.t{{ cyc }}z.cyclone.trackatcfunix, {{ DST_TRACKS_DIR }}/avno.t{{ cyc }}z.cyclone.trackatcfunix]
+        - [{{ SRC_TRACKS_DIR }}/avnop.t{{ cyc }}z.cyclone.trackatcfunix, {{ DST_TRACKS_DIR }}/avnop.t{{ cyc }}z.cyclone.trackatcfunix]
