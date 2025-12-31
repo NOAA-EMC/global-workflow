@@ -5,7 +5,6 @@ import glob
 import gsincdiag_to_ioda.proc_gsi_ncdiag as gsid
 import gzip
 import tarfile
-import time
 from logging import getLogger
 from pprint import pformat
 from typing import Optional, Dict, Any
@@ -223,8 +222,8 @@ class AnalysisStats(Analysis):
             os.remove(diag)
 
         # Copy diag files to ges or anl directory
-        anl_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_anl*.nc4"))
-        ges_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_ges*.nc4"))
+        anl_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_anl*.nc"))
+        ges_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_ges*.nc"))
         copy_anl_diags = []
         for diag in anl_diags:
             copy_anl_diags.append([diag, os.path.join(diag_dir_anl_path, os.path.basename(diag))])
@@ -242,7 +241,7 @@ class AnalysisStats(Analysis):
 
         # now we need to combine the two sets of ioda files into one file
         # by adding certain groups from the anl file to the ges file
-        ges_ioda_files = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc4'))
+        ges_ioda_files = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc'))
         for ges_ioda_file in ges_ioda_files:
             anl_ioda_file = ges_ioda_file.replace('_ges_', '_anl_').replace(diag_ioda_dir_ges_path, diag_ioda_dir_anl_path)
             if os.path.exists(anl_ioda_file):
@@ -258,7 +257,7 @@ class AnalysisStats(Analysis):
                                        f"{self.task_config.APREFIX}atmos_gsi_analysis.ioda_hofx.tar.gz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
-        iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc4'))
+        iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc'))
         logger.info(f"Gathering {len(iodastatfiles)} GSI IODA files to {iodastatzipfile}")
         with tarfile.open(iodastatzipfile, "w|gz") as archive:
             for targetfile in iodastatfiles:
