@@ -5,6 +5,7 @@ import glob
 import gsincdiag_to_ioda.proc_gsi_ncdiag as gsid
 import gzip
 import tarfile
+import time
 from logging import getLogger
 from pprint import pformat
 from typing import Optional, Dict, Any
@@ -247,7 +248,7 @@ class AnalysisStats(Task):
         FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
-            input_tar_basename = f"{self.task_config.APREFIX}{diag}"
+            input_tar_basename = f"{self.task_config.APREFIX}{diag}.tar"
             input_tar = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS,
                                      input_tar_basename)
             dest = os.path.join(diag_dir_path, input_tar_basename)
@@ -256,7 +257,7 @@ class AnalysisStats(Task):
         FileHandler({'copy_opt': diag_tar_copy_list}).sync()
 
         # Untar and gunzip diag files
-        gsi_diag_tars = glob.glob(os.path.join(diag_dir_path, f"{self.task_config.APREFIX}*stat"))
+        gsi_diag_tars = glob.glob(os.path.join(diag_dir_path, f"{self.task_config.APREFIX}*stat.tar"))
         for diag_tar in gsi_diag_tars:
             logger.info(f"Untarring {diag_tar}")
             with tarfile.open(diag_tar, "r") as tar:
@@ -283,7 +284,9 @@ class AnalysisStats(Task):
         FileHandler({'copy_opt': copy_ges_diags}).sync()
 
         # Convert GSI diag files to ioda files using gsincdiag2ioda converter scripts
+        logger.info("Converting GSI guess diag files to IODA files")
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_ges_path, DiagDir=diag_dir_ges_path)
+        logger.info("Converting GSI analysis diag files to IODA files")
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_anl_path, DiagDir=diag_dir_anl_path)
 
         # now we need to combine the two sets of ioda files into one file
