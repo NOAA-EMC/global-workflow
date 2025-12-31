@@ -20,11 +20,11 @@
 # shellcheck disable=SC2311  # TODO: #FIXME: remove this when this script is corrected
 
 usage() {
-	#
-	# Print usage statement
-	#
-	#shellcheck disable=SC2217
-	echo <<-'EOF'
+    #
+    # Print usage statement
+    #
+    #shellcheck disable=SC2217
+    echo <<- 'EOF'
 		Differences relevant output files in two UFS model directories. GRiB files
 		  are compared via correlation reported by wgrib2. NetCDF files are compared
 		  by using NetCDF operators to calculate a diff then make sure all non-
@@ -43,30 +43,30 @@ usage() {
 }
 
 while getopts ":c:h" option; do
-	case "${option}" in
-	c) coord_file=${OPTARG} ;;
-	h)
-		usage
-		exit 0
-		;;
-	*)
-		echo "Unknown option ${option}"
-		exit 1
-		;;
-	esac
+    case "${option}" in
+        c) coord_file=${OPTARG} ;;
+        h)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option ${option}"
+            exit 1
+            ;;
+    esac
 done
 
 num_args=$#
 case ${num_args} in
-2) # Direct directory paths
-	dirA=$1
-	dirB=$2
-	;;
-*) # Unknown option
-	echo "${num_args} is not a valid number of arguments, use 2"
-	usage
-	exit 1
-	;;
+    2) # Direct directory paths
+        dirA=$1
+        dirB=$2
+        ;;
+    *) # Unknown option
+        echo "${num_args} is not a valid number of arguments, use 2"
+        usage
+        exit 1
+        ;;
 esac
 
 source ./netcdf_op_functions.sh
@@ -79,15 +79,15 @@ files="data_table diag_table fd_ufs.yaml field_table ice_in input.nml med_modeli
 		model_configure ufs.configure pio_in ww3_multi.inp ww3_shel.inp"
 
 for file in ${files}; do
-	echo "=== ${file} ==="
-	fileA="${dirA}/${file}"
-	fileB="${dirB}/${file}"
-	if [[ -f "${fileA}" ]]; then
-		diff "${fileA}" "${fileB}" || :
-	else
-		echo
-		echo
-	fi
+    echo "=== ${file} ==="
+    fileA="${dirA}/${file}"
+    fileB="${dirB}/${file}"
+    if [[ -f "${fileA}" ]]; then
+        diff "${fileA}" "${fileB}" || :
+    else
+        echo
+        echo
+    fi
 done
 
 # GRiB files
@@ -96,22 +96,22 @@ files="$(basename_list '' "${dirA}"/GFSFLX.Grb*)"
 module load wgrib2/2.0.8
 
 for file in ${files}; do
-	echo "=== ${file} ==="
-	fileA="${dirA}/${file}"
-	fileB="${dirB}/${file}"
-	./diff_grib_files.py "${fileA}" "${fileB}"
+    echo "=== ${file} ==="
+    fileA="${dirA}/${file}"
+    fileB="${dirB}/${file}"
+    ./diff_grib_files.py "${fileA}" "${fileB}"
 done
 
 # NetCDF Files
 files=""
 files="${files} $(basename_list '' "${dirA}"/atm.f*.nc "${dirA}"/sfc.f*.nc)"
 if [[ -d "${dirA}/history" ]]; then
-	files="$(basename_list 'history/' "${dirA}"/history/*.nc)"
+    files="$(basename_list 'history/' "${dirA}"/history/*.nc)"
 fi
 
 for file in ${files}; do
-	echo "=== ${file} ==="
-	fileA="${dirA}/${file}"
-	fileB="${dirB}/${file}"
-	nccmp -q "${fileA}" "${fileB}" "${coord_file}"
+    echo "=== ${file} ==="
+    fileA="${dirA}/${file}"
+    fileB="${dirB}/${file}"
+    nccmp -q "${fileA}" "${fileB}" "${coord_file}"
 done

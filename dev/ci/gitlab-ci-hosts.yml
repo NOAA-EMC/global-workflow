@@ -249,11 +249,17 @@ finalize_success-ursa:
   parallel:
     matrix:
       - CTEST_NAME:
+        # C48_ATM CTests
+        - C48_ATM-gfs_stage_ic
         - C48_ATM-gfs_fcst_seg0
         - C48_ATM-gfs_atmos_prod_f000-f002
+        - C48_ATM-gfs_tracker
+        - C48_ATM-gfs_genesis
+        # C48_S2SW CTests
         - C48_S2SW-gfs_fcst_seg0
         - C48_S2SW-gfs_ocean_prod_f006
         - C48_S2SW-gfs_ice_prod_f006
+        # C48_S2SWA_gefs CTests
         - C48_S2SWA_gefs-gefs_fcst_mem001_seg0
 
 # Host-specific CTest setup jobs

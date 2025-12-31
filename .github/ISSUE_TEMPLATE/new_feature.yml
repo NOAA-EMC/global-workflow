@@ -1,6 +1,5 @@
 name: New Feature
 description: New capability is desired
-labels: ["triage"]
 type: "feature"
 projects: ["NOAA-EMC/41"]
 

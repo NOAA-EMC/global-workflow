@@ -25,13 +25,14 @@ fi
 
 fend=F216
 
-if [[ "${envir}" == "para" ]] ; then
-   export m_title="GFSP"
+if [[ "${envir}" == "para" ]]; then
+    export m_title="GFSP"
 else
-   export m_title="GFS"
+    export m_title="GFS"
 fi
 
-export pgm=gdplot2_nc;. prep_step
+export pgm=gdplot2_nc
+source prep_step
 
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-GFS | ${PDY:2}/${cyc}00
@@ -214,25 +215,24 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s gfs.meta.ak ]]; then
-  echo "FATAL ERROR: Failed to create alaska meta file"
-  exit "${err}"
+if [[ "${err}" -ne 0 ]] || [[ ! -s gfs.meta.ak ]]; then
+    echo "FATAL ERROR: Failed to create alaska meta file"
+    exit "${err}"
 fi
 
 mv gfs.meta.ak "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
 export err=$?
-if (( err != 0 )) ; then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
-    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]] ; then
+    if [[ ${DBN_ALERT_TYPE} = "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
     fi
 fi
-

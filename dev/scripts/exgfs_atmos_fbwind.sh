@@ -38,7 +38,6 @@ for fhr3 in 006 012 024; do
     cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_a.0p25.f${fhr3}.grib2" "tmp_pgrb2_0p25${fhr3}"
     cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_b.0p25.f${fhr3}.grib2" "tmp_pgrb2b_0p25${fhr3}"
     cat "tmp_pgrb2_0p25${fhr3}" "tmp_pgrb2b_0p25${fhr3}" > "tmp0p25filef${fhr3}"
-    # shellcheck disable=SC2312
     ${WGRIB2} "tmp0p25filef${fhr3}" | grep -F -f "${PARMgfs}/product/gfs_fbwnd_parmlist_g2" |
         ${WGRIB2} -i -grib "tmpfilef${fhr3}" "tmp0p25filef${fhr3}"
     ${CNVGRIB} -g21 "tmpfilef${fhr3}" "gfs.t${cyc}z.grbf${fhr3}_grb1"

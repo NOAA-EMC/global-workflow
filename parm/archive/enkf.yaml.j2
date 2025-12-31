@@ -83,7 +83,7 @@ enkf:
                                         "correction_increment.yaml",
                                         "ensemble_recenter.yaml"] %}
             {% else %}
-                {% set da_stat_files = ["stat.atm.tar"]%}
+                {% set da_stat_files = ["atmos_analysis.ioda_hofx.ens_mean.tar.gz"]%}
                 {% set da_conf_files = ["atmensanlletkf.yaml",
                                         "atmensanlfv3inc.yaml",
                                         "correction_increment.yaml",
@@ -98,7 +98,7 @@ enkf:
         {% endfor %}
 
         {% if DO_JEDISNOWDA %}
-        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar"
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar.gz"
             {% for itile in range(1,7) %}
         # Snow analysis is 3dvar
         - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.snow_increment.sfc_data.tile{{ itile }}.nc"

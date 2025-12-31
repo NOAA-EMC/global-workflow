@@ -73,13 +73,13 @@
 CASE=${CASE:-C768}
 CASE_HIST=${CASE_HIST:-${CASE}}
 resh=${CASE_HIST:1}
-LONB_CASE=$((resh*4))
-LATB_CASE=$((resh*2))
+LONB_CASE=$((resh * 4))
+LATB_CASE=$((resh * 2))
 LONB_SFC=${LONB_SFC:-${LONB_CASE}}
 LATB_SFC=${LATB_SFC:-${LATB_CASE}}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
-LEVSP1=$(( LEVS + 1 ))
+LEVSP1=$((LEVS + 1))
 FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 
 #  Filenames.
@@ -94,6 +94,7 @@ SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVSP1}.txt}
 
 ################################################################################
 #  Make surface analysis
+
 # input interpolation weights
 cpreq "${FIXWGTS}" "./weights.nc"
 
@@ -132,7 +133,7 @@ if [[ "${DO_LAND_IAU:-.false.}" == ".true." ]]; then
 fi
 
 # Executable namelist
-cat <<EOF > fort.41
+cat << EOF > fort.41
 &setup
   yy=${PDY:0:4},
   mm=${PDY:4:2},
@@ -155,8 +156,8 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_SFC:-1}
 ${APRUNSFC} "${GAUSFCANLEXE}"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
-   exit "${err}"
+    echo "FATAL ERROR: ${GAUSFCANLEXE} returned non-zero exit status!"
+    exit "${err}"
 fi
 
 # output gaussian global surface analysis files
