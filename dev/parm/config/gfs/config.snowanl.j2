@@ -14,6 +14,7 @@ export APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/apply_incr_nml.j2"
 
 export TASK_CONFIG_YAML="${PARMgfs}/gdas/snow/snow_det_config.yaml.j2"
 export OBS_LIST_YAML="${PARMgfs}/gdas/snow/snow_obs_list.yaml.j2"
+export fail_on_missing=False,  # False: just warn; True: fail & exit
 
 export PREP_SNOCVR_SNOMAD_YAML="${PARMgfs}/gdas/snow/prep/prep_snocvr_snomad.yaml.j2"
 export OBSBUILDER="${USHgfs}/bufr_snocvr_snomad.py"

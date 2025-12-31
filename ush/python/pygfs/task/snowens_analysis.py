@@ -51,22 +51,43 @@ class SnowEnsAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config['CASE_ENS'][1:])
+        _fail_on_missing = str(self.task_config.fail_on_missing[0]).lower() == "true" \
+            if isinstance(self.task_config.fail_on_missing, list) \
+            else bool(self.task_config.fail_on_missing)
 
         # if 00z, do SCF preprocessing
         _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
         logger.info(f"Checking for IMS file: {_ims_file}")
-        if self.task_config.cyc == 0 and os.path.exists(_ims_file):
-            _DO_IMS_SCF = True
+        _DO_IMS_SCF = False
+        if self.task_config.cyc == 0:
+            if os.path.exists(_ims_file):
+                _DO_IMS_SCF = True
+            else:
+                if _fail_on_missing:
+                    raise FileNotFoundError(
+                        f"IMS obs file required but not found: {_ims_file}"
+                    )
+                else:
+                    logger.warning(f"IMS obs file missing: {_ims_file}")
         else:
-            _DO_IMS_SCF = False
+            logger.info("Not 00z cycle — Skipping IMS preprocessing.")
 
         # if 00z, do GHCN preprocessing
         _ghcn_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}ghcn_snow.csv')
         logger.info(f"Checking for GHCN csv file: {_ghcn_file}")
-        if self.task_config.cyc == 0 and os.path.exists(_ghcn_file):
-            _DO_GHCN = True
+        _DO_GHCN = False
+        if self.task_config.cyc == 0:
+            if os.path.exists(_ghcn_file):
+                _DO_GHCN = True
+            else:
+                if _fail_on_missing:
+                    raise FileNotFoundError(
+                        f"GHCN obs file required but not found: {_ghcn_file}"
+                    )
+                else:
+                    logger.warning(f"GHCN obs file missing: {_ghcn_file}")
         else:
-            _DO_GHCN = False
+            logger.info("Not 00z cycle — Skipping GHCN preprocessing.")
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
