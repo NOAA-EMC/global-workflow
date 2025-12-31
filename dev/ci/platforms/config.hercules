@@ -8,7 +8,7 @@
 #########################################################################
 
 # Main CI root directory
-export GFS_CI_ROOT=/work2/noaa/global/${USER}/GFS_CI_CD/HERCULES
+export GFS_CI_ROOT=/work2/noaa/global/role-global/GFS_CI_CD/HERCULES
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
@@ -48,5 +48,21 @@ export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
 # This is where runner state/config files are stored (--working-directory parameter)
 export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
+#########################################################################
+# CTest functional test directories for pre stagged input data
+#########################################################################
+export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
+
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
+
+#########################################################################
+# System-specific settings
+# Platform-specific paths and utilities for CI/CD operations
+#########################################################################
+
+# Utilities path for custom builds and role account tools
+export GFS_CI_UTIL_PATH="/work/noaa/global/glopara/utils"
+
+# used for CI jobs requiring Rocoto with dry_run support
+export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/src/rocoto_dryrun_nodaemon/bin"
