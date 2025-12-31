@@ -16,10 +16,10 @@ rm -f ./jobcard
 # Clean up any existing DATAROOT to avoid data clashes on repeated runs
 # Extract STMP from config.base (same technique as generate_workflows.sh)
 if [[ -f "${CASEDIR}/config.base" ]]; then
-    eval "$(
-        PDY=0 cyc=0 source "${CASEDIR}/config.base" 2>/dev/null || true
-        echo _dataroot="${STMP:-}/RUNDIRS/${TEST_NAME}"
-    )"
+    _dataroot=$(
+        PDY=0 cyc=0 source "${CASEDIR}/config.base" > /dev/null 2>&1 || true
+        echo "${STMP:-}/RUNDIRS/${TEST_NAME}"
+    )
     if [[ -n "${_dataroot}" && -d "${_dataroot}" ]]; then
         echo "Removing existing DATAROOT: ${_dataroot}"
         rm -rf "${_dataroot}"
