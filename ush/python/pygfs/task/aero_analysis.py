@@ -77,7 +77,7 @@ class AerosolAnalysis(Analysis):
 
         # Create dictionary of Jedi objects
         expected_keys = ['aeroanlvar']
-        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, expected_keys)
+        self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
     def initialize(self) -> None:
@@ -86,7 +86,8 @@ class AerosolAnalysis(Analysis):
         This method will initialize a global aerosol analysis using JEDI.
         This includes:
         - stage input files from COM and create output directories
-        - extract bias corrections from tar files
+        - stage observation files
+        - stage bias correction files
         - initialize JEDI application
         """
 
@@ -94,13 +95,17 @@ class AerosolAnalysis(Analysis):
         logger.info(f"Staging files from COM")
         FileHandler(self.task_config.data_in).sync()
 
-        # Extract bias corrections from tar files
-        logger.info(f"Extracting bias corrections from tar files")
-        self.untar_bias_corrections()
+        # Stage observation files
+        logger.info(f"Staging observation files")
+        self.jedi_dict['aeroanlvar'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/chem")
 
-        # initialize JEDI variational application
+        # Stage bias correction files
+        logger.info(f"Staging bias correction files")
+        self.jedi_dict['aeroanlvar'].stage_obsbiasin(self.task_config.COMIN_CHEM_ANALYSIS_PREV)
+
+        # Initialize JEDI variational application
         logger.info(f"Initializing JEDI variational DA application")
-        self.jedi_dict['aeroanlvar'].initialize(self.task_config, clean_empty_obsspaces=True)
+        self.jedi_dict['aeroanlvar'].initialize(clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -125,23 +130,24 @@ class AerosolAnalysis(Analysis):
         This method will finalize a global aerosol analysis using JEDI.
         This includes:
         - apply increments to the original RESTART files
-        - compress and tar output diag files in COM
-        - tar radiative bias correction files in COM
+        - archive, compress, and save diag files to COM
+        - archive and save radiative bias correction files to COM
         - save output files and YAMLs to COM
-
         """
 
         # ---- add increments to RESTART files
         logger.info('Adding increments to RESTART files')
         self._add_fms_cube_sphere_increments()
 
-        # Compress and tar diag files in COM directory
-        self.tar_diag_files(self.task_config.COMOUT_CHEM_ANALYSIS,
-                            f"{self.task_config['APREFIX']}aerostat.tgz")
+        # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
+        self.jedi_dict['aeroanlvar'].save_obsdataout(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                     f"{self.task_config.APREFIX}aero_analysis.ioda_hofx")
 
-        # Tar radiative bias correction files into COM directory
-        self.tar_radiative_bias_corrections(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                            f"{self.task_config.APREFIX}aero_varbc_params.tar")
+        # Archive and save radiative bias correction files into COM directory
+        logger.info(f"Saving radiative bias correction files to COM")
+        self.jedi_dict['aeroanlvar'].save_obsbiasout(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                     f"{self.task_config.APREFIX}aero_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

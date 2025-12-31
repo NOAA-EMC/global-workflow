@@ -62,11 +62,15 @@
 # How has this been tested?
 <!-- Please list any test you conducted, including the machine.
 
+Include the output of `gw_cistat -r /path/to/RUNTESTS/directory` for the tests you ran.
+`gw_cistat` is available after sourcing the `gw_setup.sh` script in `dev/ush/`.
+
 Example:
 - Clone and build on WCOSS
 - Cycled test on Orion
 - Forecast-only on Hera
 -->
+
 
 # Checklist
 - [ ] Any dependent changes have been merged and published

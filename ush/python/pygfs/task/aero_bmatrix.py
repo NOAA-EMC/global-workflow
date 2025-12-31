@@ -83,9 +83,9 @@ class AerosolBMatrix(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['aero_interpbkg'].initialize(self.task_config)
-        self.jedi_dict['aero_diagb'].initialize(self.task_config)
-        self.jedi_dict['aero_diffusion'].initialize(self.task_config)
+        self.jedi_dict['aero_interpbkg'].initialize()
+        self.jedi_dict['aero_diagb'].initialize()
+        self.jedi_dict['aero_diffusion'].initialize()
 
     @logit(logger)
     def execute(self) -> None:

@@ -4,24 +4,40 @@
 # Hercules-specific job resources
 
 case ${step} in
-  "eobs")
-    # The number of tasks and cores used must be the same for eobs
-    # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
-    # For Hercules, this is only an issue at C384; use 20 tasks/node
-    if [[ "${CASE}" = "C384" ]]; then
-      export tasks_per_node=20
-    fi
-    ;;
-  "atmanlvar")
-    export tasks_per_node=48
-    export memory="400GB"
-    ;;
+    "eobs")
+        # The number of tasks and cores used must be the same for eobs
+        # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+        # For Hercules, this is only an issue at C384; use 20 tasks/node
+        if [[ "${CASE}" = "C384" ]]; then
+              export tasks_per_node=20
+        fi
+        ;;
+    "atmanlvar")
+        export tasks_per_node=48
+        export memory="400GB"
+        ;;
 
-  "atmensanlobs")
-    export tasks_per_node=48
-    export memory="400GB"
-    ;;
+    "atmensanlobs")
+        export tasks_per_node=48
+        export memory="400GB"
+        ;;
 
-  *)
-    ;;
+    "eupd")
+        # The eupd step requires a large amount of memory or it will result in spurious NaN values.
+        # This is accomplished by increasing the threads per task. C384 should be OK.
+        case "${CASE}" in
+            "C1152" | "C768")
+                export threads_per_task=8
+                ;;
+            "C192" | "C96" | "C48")
+                export threads_per_task=4
+               ;;
+            *)
+               ;;
+        esac
+
+        export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+        ;;
+    *)
+        ;;
 esac

@@ -97,17 +97,17 @@ cat > "${DATA}/diag.sh" << EOF
 #!/bin/bash
 set -x
 
-type=\$1
+dtype=\$1
 loop=\$2
 string=\$3
 count=\$4
 suffix=\$5
 
 # Match files with this prefix
-diag_files=dir.*/\${type}_\${loop}
+diag_files=dir.*/\${dtype}_\${loop}
 
 # Name of combined diagnostic file from matched files
-out_diag_file=diag_\${type}_\${string}.${PDY}${cyc}\${suffix}
+out_diag_file=diag_\${dtype}_\${string}.${PDY}${cyc}\${suffix}
 
 # Combine diagnostic files
 if [[ \${count} -gt 1 ]]; then
@@ -149,14 +149,16 @@ for loop in ${loops}; do
     n=-1
     while [[ ${n} -lt ${ntype} ]]; do
         n=$((n + 1))
-        for type in ${diagtype[n]}; do
-            #shellcheck disable=SC2012,SC2312
-            count=$(ls dir.*/"${type}_${loop}"* 2> /dev/null | wc -l)
+        for dtype in ${diagtype[n]}; do
+            if [[ "${dtype}" == *"avhrr"* ]]; then # recast dtype in avhrr form
+                dtype="avhrr${dtype##avhrr[23]}"
+            fi
+            count=$(find ./ -path "./dir.*/${dtype}_${loop}*" -type f -printf "." | wc -c)
             if [[ ${count} -eq 0 ]]; then
                 continue
             fi
-            echo "${DATA}/diag.sh ${type} ${loop} ${string} ${count} ${DIAG_SUFFIX:-}.nc4" >> cmdfile
-            echo "diag_${type}_${string}.${PDY}${cyc}${DIAG_SUFFIX:-}.nc4${COMPRESS_SUFFIX:-}" >> "${diaglist[n]}"
+            echo "${DATA}/diag.sh ${dtype} ${loop} ${string} ${count} ${DIAG_SUFFIX:-}.nc4" >> cmdfile
+            echo "diag_${dtype}_${string}.${PDY}${cyc}${DIAG_SUFFIX:-}.nc4${COMPRESS_SUFFIX:-}" >> "${diaglist[n]}"
             numfile[n]=$((numfile[n] + 1))
         done
     done

@@ -1,6 +1,6 @@
-=====================================
-Global Chemistry and Aerosol Forecast
-=====================================
+====================================================
+Global Chemistry and Aerosol Forecast System (GCAFS)
+====================================================
 
 Overview
 --------
@@ -14,7 +14,9 @@ Key Features
 
 * Interactive GOCART aerosol module for forecasting dust, sea salt, sulfate, black carbon, and organic carbon
 * Optional full atmospheric chemistry with gas-phase and heterogeneous reactions
-* Integration with biomass burning emissions sources (QFED, GBBEPX)
+* Integration with biomass burning emissions sources (QFED, GBBEPx)
+* NEXUS emissions preprocessing system for anthropogenic and biogenic sources
+* Support for multiple emission inventories (CEDS, HTAP, CAMS)
 * Aerosol-radiation-cloud interactions
 * Optional aerosol data assimilation
 
@@ -62,6 +64,45 @@ The GCAFS workflow includes these main tasks:
 The workflow is managed by the Rocoto workflow manager, with tasks defined in the
 ``workflow/rocoto/gcafs_tasks.py`` file.
 
+Configuration Files
+------------------
+
+GCAFS configuration is managed through several key files in the ``parm/config/gcafs/`` directory:
+
+### config.aero.j2
+
+The primary configuration file for aerosol settings, containing:
+
+**Aerosol Model Settings:**
+
+.. code-block:: bash
+
+   export AERO_INPUTS_DIR="/path/to/aerosol/data"    # Base directory for aerosol input data
+   export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"    # GOCART configuration files
+   export fscav_aero="'*:0.3','so2:0.0',..."         # Convective scavenging factors
+   export dnats_aero=2                               # Number of diagnostic tracers
+
+**Fire Emissions Settings:**
+
+.. code-block:: bash
+
+   export AERO_EMIS_FIRE="gbbepx"                    # Fire dataset: gbbepx, qfed, none
+   export AERO_EMIS_FIRE_VERSION="061"               # Dataset version
+   export AERO_EMIS_FIRE_HIST=1                      # Historical (1) vs NRT (0)
+
+**NEXUS Emissions Settings:**
+
+.. code-block:: bash
+
+   export NEXUS_CONFIG="gocart"                      # NEXUS configuration set
+   export NEXUS_TSTEP=3600                           # Time step (seconds)
+   export NEXUS_DO_CEDS2019=.true.                   # Enable CEDS 2019
+   export NEXUS_DO_HTAPv2=.true.                     # Enable HTAP v2
+   export NEXUS_DO_CAMS=.false.                      # Enable CAMS
+
+These settings are processed as Jinja2 templates, allowing for experiment-specific customization
+through template variables like ``{{ NEXUS_CONFIG | default('gocart') }}``.
+
 Emissions Preprocessing
 -----------------------
 
@@ -72,48 +113,97 @@ The ``prep_emissions`` task is a critical component of the GCAFS workflow that p
 This task performs several important functions:
 
 1. **Configuration Generation**: Creates customized GOCART configuration files from templates
-2. **Emissions File Preparation**: Processes and prepares emissions data files
-3. **Historical Data Handling**: Retrieves historical fire emissions when needed
-4. **Fire Emissions Selection**: Configures the selected biomass burning emissions source (QFED/GBBEPx)
-5. **Template Variable Processing**: Processes all template variables in the configuration files
+2. **Fire Emissions Processing**: Handles biomass burning emissions from QFED or GBBEPx datasets
+3. **NEXUS Preprocessing**: Processes anthropogenic and biogenic emissions through the NEXUS system
+4. **Emissions File Preparation**: Generates model-ready emissions data files
+5. **Historical Data Handling**: Retrieves historical emissions when needed for testing or spin-up
+6. **Template Variable Processing**: Processes all template variables in the configuration files
 
 The task is implemented in ``ush/python/pygfs/task/aero_emissions.py`` as the ``AerosolEmissions`` class.
 
-### Detailed Workflow
+### Fire Emissions Configuration
 
-When the ``prep_emissions`` task runs, it follows these steps:
+GCAFS supports multiple biomass burning emission datasets that can be configured through the ``config.aero`` file:
 
-1. **Initialization**:
-   ```python
-   def initialize(self):
-       # Parse the YAML template for chemistry emissions
-       yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm/chem/chem_emission.yaml.j2')
-       yamlvars = parse_j2yaml(path=yaml_template)
-       self.task_config.append(yamlvars)
-   ```
+**Available Fire Emission Datasets:**
 
-   This loads the base configuration template and merges it with the task configuration.
+* **GBBEPx** (Global Biomass Burning Emissions Product): NOAA/NWS operational fire emissions
+* **QFED** (Quick Fire Emission Dataset): NASA fire emissions with near-real-time updates  
+* **None**: Disable fire emissions entirely
 
+**Configuration Options:**
 
-2. **Historical Fire Emission Handling**:
-   ```python
-   if self.task_config.fire_emissions == 'historical':
-       # Handle historical fire emissions
-       self.task_config.fire_emissions = 'historical'
-       self.task_config.fire_emissions_file = os.path.join(self.task_config.HOMEgfs, 'parm/chem/historical_fire_emissions.txt')
-   ```
+.. code-block:: bash
 
-   This sets up the task to use historical fire emissions data if specified.
+   # Select fire emissions dataset
+   export AERO_EMIS_FIRE="gbbepx"           # Options: gbbepx, qfed, none
+   export AERO_EMIS_FIRE_VERSION="061"      # Dataset version
+   export AERO_EMIS_FIRE_HIST=1             # Use historical (1) or near-real-time (0)
+   
+   # Directories for emissions data
+   export FIRE_EMIS_NRT_DIR=""              # Near-real-time data location
+   export FIRE_EMIS_DIR=""                  # Historical data location
 
-3. **Fire Emission Configuration**:
-   ```python
-   if self.task_config.fire_emissions == 'qfed':
-       # Configure QFED emissions
-       self.task_config.fire_emissions = 'qfed'
-       self.task_config.fire_emissions_file = os.path.join(self.task_config.HOMEgfs, 'parm/chem/qfed_fire_emissions.txt')
-   ```
+### NEXUS Emissions Preprocessing
 
-   This sets up the task to use QFED emissions data if specified.
+NEXUS (Next-generation Emissions eXchange Utility System) preprocesses anthropogenic and biogenic emissions from multiple global inventories:
+
+**Supported Emission Inventories:**
+
+* **CEDS** (Community Emissions Data System): Global anthropogenic emissions (2019/2024 versions)
+* **HTAP** (Hemispheric Transport of Air Pollution): Regional high-resolution emissions (v2/v3)
+* **CAMS** (Copernicus Atmosphere Monitoring Service): European reanalysis emissions
+* **MEGAN** (Model of Emissions of Gases and Aerosols from Nature): Biogenic emissions (future)
+
+**NEXUS Configuration:**
+
+.. code-block:: bash
+
+   # NEXUS system configuration
+   export NEXUS_CONFIG="gocart"             # Configuration set (gocart, none)
+   export NEXUS_TSTEP=3600                  # Time step in seconds
+   
+   # Grid specification (0.25-degree global)
+   export NEXUS_NX=1440                     # Longitude points
+   export NEXUS_NY=720                      # Latitude points
+   
+   # Enable/disable emission inventories
+   export NEXUS_DO_CEDS2019=.true.          # CEDS 2019 emissions
+   export NEXUS_DO_CEDS2024=.false.         # CEDS 2024 emissions  
+   export NEXUS_DO_HTAPv2=.true.            # HTAP v2 emissions
+   export NEXUS_DO_CAMS=.false.             # CAMS emissions
+
+### Emission Dataset Details
+
+**Fire Emissions:**
+
+* **GBBEPx (Global Biomass Burning Emissions Product)**: 
+  - Operational NOAA/NWS fire emissions based on VIIRS satellite data
+  - Near-real-time updates with ~6-hour latency
+  - Includes wildfire, agricultural burning, and prescribed burns
+  
+* **QFED (Quick Fire Emission Dataset)**:
+  - NASA fire emissions using MODIS satellite observations
+  - Available in near-real-time and historical versions
+  - High spatial resolution with detailed speciation
+
+**Anthropogenic/Biogenic Emissions:**
+
+* **CEDS (Community Emissions Data System)**:
+  - Global gridded emissions inventory (1750-2019/2024)
+  - Anthropogenic sources: energy, industry, transport, residential, agriculture
+  - Species: SO2, NOx, CO, NH3, black carbon, organic carbon, PM2.5
+  
+* **HTAP (Hemispheric Transport of Air Pollution)**:
+  - Regional high-resolution emissions for Europe, Asia, North America
+  - Focuses on transboundary air pollution
+  - Complements CEDS with finer spatial detail
+  
+* **CAMS (Copernicus Atmosphere Monitoring Service)**:
+  - European Centre reanalysis emissions
+  - Consistent with meteorological fields
+  - Includes temporal disaggregation capabilities
+
 GOCART Configuration Files
 --------------------------
 
@@ -156,12 +246,21 @@ are replaced at runtime with values from the workflow configuration.
 Emissions Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-External data sources for emissions are configured in:
+External data sources for emissions are configured through ExtData resource files:
 
 - **ExtData.gbbepx**: GBBEPx biomass burning emissions configuration
-- **ExtData.qfed**: QFED fire emissions configuration
-- **ExtData.other**: Anthropogenic, biogenic, and other emission sources
+- **ExtData.qfed**: QFED fire emissions configuration  
+- **ExtData.nexus**: NEXUS-processed anthropogenic/biogenic emissions
+- **ExtData.other**: Additional emission sources (volcanic, lightning, etc.)
 - **ExtData.none**: Placeholder configuration when emissions are disabled
+
+The NEXUS system processes emissions through HEMCO (Harmonized Emissions Component) configuration files:
+
+- **NEXUS_Config.rc**: Master configuration orchestrating all emission sources
+- **HEMCO_sa_Grid.rc**: Grid definition and interpolation settings
+- **HEMCO_sa_Time.rc**: Temporal scaling patterns (diurnal, weekly, seasonal)
+- **HEMCO_sa_Spec.rc**: Species mapping between inventories and GOCART tracers
+- **HEMCO_sa_Diag.rc**: Diagnostic output configuration
 
 To modify the aerosol configuration, edit these files or create custom versions in your experiment
 directory. The file ``gocart_tracer.list`` defines the complete set of aerosol tracers used in the model.
@@ -174,7 +273,7 @@ The ExtData configuration files specify how external data sources are imported i
 .. code-block:: none
 
    # Import Name | Units | Clim | Regrid | Time Template | Offset | Scale | Var on File | File Template
-   OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 biomass ExtData/nexus/QFED/%y4/%m2/qfed2.emis_oc.006.%y4%m2%d2.nc4
+   OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 OC ChemInput/FIRE_EMIS.%y4%m2%d2.nc4
 
 Field descriptions:
 
@@ -203,6 +302,24 @@ For example, in the QFED configuration:
 
 This imports SO2 emissions from QFED into the SU_BIOMASS variable, using a scale factor of 0.7778, from files with a date-based naming pattern.
 
+### NEXUS ExtData Configuration
+
+The NEXUS-processed emissions are configured through **ExtData.nexus**, which handles anthropogenic and biogenic emissions from multiple inventories. Example entries:
+
+.. code-block:: none
+
+   # Anthropogenic SO2 from CEDS
+   SU_ANTHRO NA N Y %y4-%m2-%d2t12:00:00 none none so2_anthro ExtData/nexus/CEDS/%y4/CEDS.emis_so2.%y4%m2%d2.nc4
+   
+   # Black carbon from HTAP  
+   BC_ANTHRO NA N Y %y4-%m2-%d2t12:00:00 none none bc_anthro ExtData/nexus/HTAP/%y4/HTAP.emis_bc.%y4%m2%d2.nc4
+
+The NEXUS preprocessing system generates these files by:
+
+1. Reading emission inventories (CEDS, HTAP, CAMS) from ``NEXUS_INPUT_DIR``
+2. Applying temporal scaling patterns (diurnal, weekly, seasonal)
+3. Regridding to the model resolution
+4. Outputting model-ready netCDF files with standardized variable names
 
 AERO_HISTORY.rc File Details
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -275,12 +392,25 @@ corresponding frequency parameters are properly set in your workflow.
 Output Products
 ---------------
 
-GCAFS produces standard meteorological outputs plus aerosol fields including:
+GCAFS produces standard meteorological outputs plus comprehensive aerosol fields including:
 
+**Core Aerosol Fields:**
 * Aerosol mass concentrations (dust, sea salt, sulfate, black carbon, organic carbon)
-* Aerosol optical depth fields
+* Aerosol optical depth fields at multiple wavelengths
 * PM2.5 and PM10 concentrations
-* Full chemical species concentrations when running with chemistry enabled
+* Aerosol extinction coefficients
 
-Output frequency is controlled by the standard global-workflow configuration options
-in the same manner as GFS.
+**Process-Specific Diagnostics:**
+* Emission fields from fires and anthropogenic sources (when NEXUS diagnostics enabled)
+* Dry and wet deposition fluxes
+* Optical properties (single scattering albedo, asymmetry parameter)
+* Column-integrated aerosol mass
+
+**Advanced Outputs:**
+* 3D aerosol concentrations on model levels
+* Aerosol number concentrations
+* Full chemical species concentrations when running with chemistry enabled
+* NEXUS diagnostic emissions for verification
+
+Output frequency and collections are controlled through the ``AERO_HISTORY.rc`` configuration file,
+with standard global-workflow configuration options determining the base output settings.

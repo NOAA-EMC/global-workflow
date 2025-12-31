@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 #
 # Resets the lmod environment and loads the modules necessary to run all the
@@ -32,6 +32,9 @@ if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
     PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
     export PYTHONPATH
 fi
+
+# Source rocoto helper functions for use in the global-workflow
+source "${HOMEgfs}/dev/ush/rocoto_helpers.sh"
 
 if [[ ${unset_homegfs} == "YES" ]]; then
     unset HOMEgfs

@@ -33,13 +33,14 @@ device="nc | mrf.meta"
 #         ;;
 # esac
 
-if [[ "${envir}" = "para" ]] ; then
-   export m_title="GFSP"
+if [[ "${envir}" = "para" ]]; then
+    export m_title="GFSP"
 else
-   export m_title="GFS"
+    export m_title="GFS"
 fi
 
-export pgm=gdplot2_nc; prep_step
+export pgm=gdplot2_nc
+prep_step
 
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-GFS | ${PDY:2}/${cyc}00
@@ -218,23 +219,24 @@ STNPLT  =
 
 exit
 EOF
-export err=$?; err_chk
+export err=$?
+err_chk
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s mrf.meta ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s mrf.meta ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file mrf.meta"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv mrf.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
-    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"

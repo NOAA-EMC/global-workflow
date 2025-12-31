@@ -229,12 +229,12 @@ cpreq "${slmask}" slmask.126
 pgm=$(basename "${EXECgfs}/syndat_qctropcy.x")
 export pgm
 if [[ -s prep_step ]]; then
-    set +u
+    unset_strict
     source prep_step
-    set -u
+    set_strict
 else
     [[ -f errfile ]] && rm errfile
-    # shellcheck disable=SC2046,SC2312
+    # shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 

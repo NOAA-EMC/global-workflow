@@ -45,7 +45,7 @@ copy_req:
 {% if MODE == "cycled" %}
     # Deterministic analysis files (cycled mode only) - REQUIRED
     {% if DO_AERO_ANL %}
-    - ["{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aerostat.tgz",
+    - ["{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aero_analysis.ioda_hofx.tar.gz",
        "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]
     {% endif %}
 

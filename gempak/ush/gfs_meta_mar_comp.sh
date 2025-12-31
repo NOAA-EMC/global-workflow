@@ -56,6 +56,7 @@ for garea in NAtl NPac; do
         *)
             echo "FATAL ERROR: Unknown domain"
             exit 100
+            ;;
     esac
 
     offsets=(6 12)
@@ -64,9 +65,9 @@ for garea in NAtl NPac; do
         init_PDY=${init_time:0:8}
         init_cyc=${init_time:8:2}
 
-        if (( init_time <= SDATE )); then
+        if [[ "${init_time}" -le "${SDATE}" ]]; then
             echo "Skipping generation for ${init_time} because it is before the experiment began"
-            if (( offset == "${offsets[0]}" )); then
+            if [[ "${offset}" -eq "${offsets[0]}" ]]; then
                 echo "First forecast time, no metafile produced"
                 exit 0
             fi
@@ -93,16 +94,17 @@ for garea in NAtl NPac; do
                 ;;
             *)
                 echo "FATAL ERROR: Invalid cycle ${cyc} passed to ${BASH_SOURCE[0]}"
+                ;;
         esac
 
         case ${cyc}_${init_cyc} in
-            00_*)   testgfsfhr=114;;
-            06_00)  testgfsfhr=84;;
-            06_18)  testgfsfhr=72;;
-            12_00)  testgfsfhr=114;;
-            12_06)  testgfsfhr=78;;
-            18_06)  testgfsfhr=72;;
-            18_12)  testgfsfhr=84;;
+            00_*) testgfsfhr=114 ;;
+            06_00) testgfsfhr=84 ;;
+            06_18) testgfsfhr=72 ;;
+            12_00) testgfsfhr=114 ;;
+            12_06) testgfsfhr=78 ;;
+            18_06) testgfsfhr=72 ;;
+            18_12) testgfsfhr=84 ;;
             *)
                 echo "FATAL ERROR: Undefined pairing of cycles"
                 exit 200
@@ -120,7 +122,7 @@ for garea in NAtl NPac; do
             hilo2="5/H#;L#/1018-1060;900-1012/5/10;10/y!6/H#;L#/1018-1060;900-1012/5/10;10/y"
             title1="5/-2/~ ? ^ ${MDL} @ HGT (${cyc}Z YELLOW)|^${garea} ${cyc}Z vs ${init_cyc}Z 500 HGT!6/-3/~ ? ${MDL} @ HGT (${init_cyc}Z CYAN)"
             title2="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${garea} ${cyc}Z vs ${init_cyc}Z PMSL!6/-3/~ ? ${MDL} PMSL (${init_cyc}Z CYAN)"
-            if (( fhr > testgfsfhr )); then
+            if [[ "${fhr}" -gt "${testgfsfhr}" ]]; then
                 grid2=" "
                 gfsoldfhr=" "
                 gdpfun1="sm5s(hght)"
@@ -132,7 +134,8 @@ for garea in NAtl NPac; do
                 title2="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${garea} ${cyc}Z vs ${init_cyc}Z PMSL"
             fi
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
@@ -181,11 +184,12 @@ run
 
 ${ex}
 EOF
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
     done
 
-    if (( 10#${cyc} % 12 ==0 )); then
+    if ((10#${cyc} % 12 == 0)); then
 
         #
         # There are some differences between 00z and 12z
@@ -230,7 +234,8 @@ EOF
             gfsfhr=F$(printf "%02g" "${fhr}")
             ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
@@ -298,15 +303,15 @@ l
 ${run_cmd}
 
 EOF
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
 
         # COMPARE THE GFS MODEL TO THE 12 UTC ECMWF FROM YESTERDAY
-        offset=$(( (10#${cyc}+12)%24 + 12 ))
+        offset=$(((10#${cyc} + 12) % 24 + 12))
         ecmwf_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${offset} hours")
         ecmwf_PDY=${ecmwf_date:0:8}
         # ecmwf_cyc=${ecmwf_date:8:2}
-
 
         HPCECMWF=ecmwf.${PDY}
         if [[ ! -L "${HPCECMWF}" ]]; then
@@ -314,11 +319,12 @@ EOF
         fi
         grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"
 
-        for fhr in $(seq -s ' ' $(( offset%24 )) 24 120 ); do
+        for fhr in $(seq -s ' ' $((offset % 24)) 24 120); do
             gfsfhr=F$(printf "%02g" "${fhr}")
             ecmwffhr=F$(printf "%02g" $((fhr + 24)))
 
-            export pgm=gdplot2_nc;. prep_step
+            export pgm=gdplot2_nc
+            source prep_step
             "${GEMEXE}/gdplot2_nc" << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
@@ -386,7 +392,8 @@ l
 run
 
 EOF
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
 
         # COMPARE THE GFS MODEL TO THE NAM and NGM
@@ -462,7 +469,8 @@ l
 run
 
 EOF
-            export err=$?;err_chk
+            export err=$?
+            err_chk
         done
     fi
 done
@@ -472,13 +480,13 @@ done
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert MODEL" "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
 fi

@@ -113,9 +113,7 @@ if [[ ! -f "${FNSNOA}" || ! -f "${FNSNOG}" ]]; then
     export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 else
     # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-    # shellcheck disable=SC2312
     snoa_count=$("${WGRIB}" -4yr "${FNSNOA}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')
-    # shellcheck disable=SC2312
     snog_count=$("${WGRIB}" -4yr "${FNSNOG}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')
     if [[ ${snoa_count} -le ${snog_count} ]]; then
         export FNSNOA=" "
@@ -212,6 +210,8 @@ if [[ "${DOIAU}" == "YES" ]]; then
 
         done # ensembles
 
+        export gcycle_date="${bPDY}${bcyc}"
+
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -287,6 +287,8 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
                     "${DATA}/soil_xainc.${cmem}"
             fi
         done
+
+        export gcycle_date="${PDY}${cyc}"
 
         "${CYCLESH}" && true
         export err=$?

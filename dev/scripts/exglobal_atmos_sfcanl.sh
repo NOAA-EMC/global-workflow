@@ -76,7 +76,6 @@ else
 fi
 
 # If any snow files are missing, don't apply snow in the global_cycle step.
-# shellcheck disable=SC2312
 if [[ ! -f "${FNSNOA}" ]] || [[ ! -f "${FNSNOG}" ]]; then
     export FNSNOA=" "
     export CYCLVARS=FSNOL=99999.,FSNOS=99999.,
@@ -156,7 +155,7 @@ fi
 # Loop over the dates in the window to update the surface restarts
 for hr in "${!gcycle_dates[@]}"; do
 
-    gcycle_date="${gcycle_dates[hr]}"
+    export gcycle_date="${gcycle_dates[hr]}"
     FHR="${soilinc_fhrs[hr]}"
     echo "Updating surface restarts for ${gcycle_date} ..."
 
