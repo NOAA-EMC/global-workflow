@@ -763,5 +763,5 @@ GOCART_predet() {
 
     #TODO: fix to copying data so that its required for EE2 compliance.  Will submit
     # a subsequent PR to fix this properly.
-    cpreq -R "${COMIN_CHEM_INPUT}" "${DATA}/ChemInput"
+    ${NLN} "${COMIN_CHEM_INPUT}" "${DATA}/ChemInput"
 }

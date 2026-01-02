@@ -844,7 +844,7 @@ GOCART_rc() {
 
     # link directory containing GOCART input dataset, if provided
     if [[ -n "${AERO_INPUTS_DIR}" ]]; then
-        cpreq "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
+        ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
         status=$?
         if [[ ${status} -ne 0 ]]; then
             exit "${status}"
