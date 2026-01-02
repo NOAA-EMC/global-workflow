@@ -200,8 +200,9 @@ class AnalysisStats(Analysis):
         for diag in diag_tars:
             input_tar_basename = f"{self.task_config.APREFIX}{diag}.tar"
             input_tar = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS,
-                                     f"{input_tar_basename}.tar")
+                                     input_tar_basename)
             dest = os.path.join(diag_dir_path, input_tar_basename)
+            logger.info(f"Preparing to copy {input_tar} to {dest}")
             if os.path.exists(input_tar):
                 diag_tar_copy_list.append([input_tar, dest])
         FileHandler({'copy_opt': diag_tar_copy_list}).sync()
@@ -222,8 +223,8 @@ class AnalysisStats(Analysis):
             os.remove(diag)
 
         # Copy diag files to ges or anl directory
-        anl_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_anl*.nc"))
-        ges_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_ges*.nc"))
+        anl_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_anl*.nc4"))
+        ges_diags = glob.glob(os.path.join(diag_dir_path, "diag_*_ges*.nc4"))
         copy_anl_diags = []
         for diag in anl_diags:
             copy_anl_diags.append([diag, os.path.join(diag_dir_anl_path, os.path.basename(diag))])
