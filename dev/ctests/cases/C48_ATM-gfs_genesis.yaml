@@ -1,0 +1,59 @@
+# CTest Case: C48_ATM-gfs_genesis
+#
+# Purpose: Validate the execution of the tropical cyclone genesis detection
+# algorithm. This test ensures that the JGFS_ATMOS_CYCLONE_GENESIS job
+# runs successfully and produces the expected output files containing
+# genesis probability information.
+#
+# Source pedigree: consumes GRIB2 products from gfs_atmos_prod in
+# `products/atmos/grib2/0p25` under STAGED_CTESTS and verifies genesis_vital
+# outputs against baseline COMROOT.
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+{% set SRC_GRIB_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
+{% set DST_GRIB_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/grib2/0p25' %}
+{% set SRC_GENESIS_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/genesis_vital' %}
+{% set DST_GENESIS_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/products/atmos/cyclone/genesis_vital' %}
+
+input_files:
+    # Provide the GRIB2 products that drive the genesis detector pipeline.
+    mkdir:
+        - {{ DST_GRIB_DIR }}
+        - {{ DST_GENESIS_DIR }}
+
+    copy:
+        # Files originate from {{ SRC_GRIB_DIR }} within the staged baseline COMROOT.
+        # Genesis requires files at FHOUT_CYCLONE=6 hour intervals up to FHMAX_CYCLONE=120
+        # (21 files: f000, f006, f012, ..., f120)
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f000.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f000.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f006.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f006.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f012.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f012.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f018.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f018.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f024.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f024.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f030.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f030.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f036.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f036.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f042.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f042.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f048.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f048.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f054.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f054.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f060.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f060.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f066.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f066.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f072.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f072.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f078.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f078.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f084.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f084.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f090.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f090.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f096.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f096.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f102.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f102.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f108.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f108.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f114.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f114.grib2]
+        - [{{ SRC_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f120.grib2, {{ DST_GRIB_DIR }}/gfs.t{{ cyc }}z.pres_a.0p25.f120.grib2]
+
+output_files:
+    # Genesis vitals outputs - compare vitals and atcf files
+    cmpfiles:
+        - [{{ SRC_GENESIS_DIR }}/all.vitals.gfs.gfso.2021, {{ DST_GENESIS_DIR }}/all.vitals.gfs.gfso.2021]
+        - [{{ SRC_GENESIS_DIR }}/genesis.vitals.gfs.gfso.2021, {{ DST_GENESIS_DIR }}/genesis.vitals.gfs.gfso.2021]
+        - [{{ SRC_GENESIS_DIR }}/storms.gfso.atcf_gen.altg.{{ PDY }}{{ cyc }}, {{ DST_GENESIS_DIR }}/storms.gfso.atcf_gen.altg.{{ PDY }}{{ cyc }}]
+        - [{{ SRC_GENESIS_DIR }}/trak.gfso.atcfunix.altg.{{ PDY }}{{ cyc }}, {{ DST_GENESIS_DIR }}/trak.gfso.atcfunix.altg.{{ PDY }}{{ cyc }}]

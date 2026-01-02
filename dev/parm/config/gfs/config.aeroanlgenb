@@ -10,7 +10,6 @@ source "${EXPDIR}/config.resources" aeroanlgenb
 
 export TASK_CONFIG_YAML="${PARMgfs}/gdas/aero/aero_bmat_config.yaml.j2"
 export OBS_LIST_YAML="${PARMgfs}/gdas/aero/aero_obs_list.yaml.j2"
-export BIAS_FILES_YAML="${PARMgfs}/gdas/aero/aero_bias_files.yaml.j2"
 
 export aero_diffusion_iter=200
 export aero_diffusion_horiz_len=300e3

@@ -1,0 +1,39 @@
+# CTest Case: C48_ATM-gfs_stage_ic
+#
+# Purpose: Validate the staging of atmospheric initial conditions (ICs)
+# from a baseline COM directory to the experiment's ROTDIR. This test
+# ensures that the JGFS_ATMOS_STAGE_IC job correctly handles file
+# staging, directory creation, and timestamping.
+#
+# Source pedigree: inputs come from the nightly STAGED_CTESTS COMROOT snapshot
+# for `PSLOT=C48_ATM` (e.g., 2021032312) and are compared to the same baseline.
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+{% set SRC_INPUT_DIR = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/input' %}
+{% set DST_INPUT_DIR = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/input' %}
+
+input_files:
+    # Stage the IC bundle produced by JGFS_ATMOS_STAGE_IC in the baseline COMROOT.
+    mkdir:
+        # Mirror the model/atmos/input branch under the test COMROOT destination.
+        - {{ DST_INPUT_DIR }}
+
+output_files:
+    # Validate that the staged ICs match the authoritative baseline copies.
+    cmpfiles:
+        - [{{ SRC_INPUT_DIR }}/gfs_ctrl.nc, {{ DST_INPUT_DIR }}/gfs_ctrl.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile1.nc, {{ DST_INPUT_DIR }}/gfs_data.tile1.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile2.nc, {{ DST_INPUT_DIR }}/gfs_data.tile2.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile3.nc, {{ DST_INPUT_DIR }}/gfs_data.tile3.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile4.nc, {{ DST_INPUT_DIR }}/gfs_data.tile4.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile5.nc, {{ DST_INPUT_DIR }}/gfs_data.tile5.nc]
+        - [{{ SRC_INPUT_DIR }}/gfs_data.tile6.nc, {{ DST_INPUT_DIR }}/gfs_data.tile6.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile1.nc, {{ DST_INPUT_DIR }}/sfc_data.tile1.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile2.nc, {{ DST_INPUT_DIR }}/sfc_data.tile2.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile3.nc, {{ DST_INPUT_DIR }}/sfc_data.tile3.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile4.nc, {{ DST_INPUT_DIR }}/sfc_data.tile4.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile5.nc, {{ DST_INPUT_DIR }}/sfc_data.tile5.nc]
+        - [{{ SRC_INPUT_DIR }}/sfc_data.tile6.nc, {{ DST_INPUT_DIR }}/sfc_data.tile6.nc]

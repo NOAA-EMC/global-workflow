@@ -37,18 +37,13 @@ input_files:
     mkdir:
         - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/5p00
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/native
 
     copy:
         # Ocean history files from forecast (6-hour averaged output for f006)
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.ocean.t{{ cyc }}z.6hr_avg.f006.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ocean/history/gfs.t{{ cyc }}z.6hr_avg.f006.nc]
 
 output_files:
     cmpfiles:
-        # Ocean GRIB2 products at 5.0 degree resolution for f006 (mx500 model grid)
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/5p00/gfs.ocean.t{{ cyc }}z.5p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/5p00/gfs.ocean.t{{ cyc }}z.5p00.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/5p00/gfs.ocean.t{{ cyc }}z.5p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/grib2/5p00/gfs.ocean.t{{ cyc }}z.5p00.f006.grib2.idx]
-
         # Ocean native netCDF products
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/gfs.ocean.t{{ cyc }}z.native.f006.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/native/gfs.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ocean/netcdf/native/gfs.t{{ cyc }}z.native.f006.nc]

@@ -89,6 +89,7 @@ class MarineAnalysis(Analysis):
         This method will initialize the marine analysis.
         This includes:
         - staging input files from COM and create output directories
+        - staging observation files
         - preparing the namelists for deterministic MOM6 and analysis geometry
         - asserting that dates of the history files are correct
         - initializing all the JEDI applications required for the marine analysis
@@ -107,6 +108,10 @@ class MarineAnalysis(Analysis):
         logger.info(f"Staging files from COM and creating input/output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # Stage observation files
+        logger.info(f"Staging observations")
+        self.jedi_dict['var'].stage_obsdatain(self.task_config.COMIN_OBS)
+
         # prepare the deterministic MOM6 input.nml
         logger.info(f"Preparing deterministic MOM6 input namelist")
         mdau.prep_input_nml(self.task_config)
@@ -124,8 +129,8 @@ class MarineAnalysis(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['var'].initialize(self.task_config, clean_empty_obsspaces=True)
-        self.jedi_dict['soca_incpostproc'].initialize(self.task_config)
+        self.jedi_dict['var'].initialize(clean_empty_obsspaces=True)
+        self.jedi_dict['soca_incpostproc'].initialize()
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application
@@ -157,7 +162,8 @@ class MarineAnalysis(Analysis):
         This method will finalize a global marine analysis.
         This includes:
         - Saving output files to COM
-        - Saving observation statistics to COM
+        - Archiving, compressing, and saving diag files in COM directory
+        - Saving (legacy) observation statistics to COM
 
         Parameters
         ----------
@@ -172,10 +178,15 @@ class MarineAnalysis(Analysis):
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
 
-        # Save obs diag statistics to COM (success is optional)
-        logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
+        self.jedi_dict['var'].save_obsdataout(self.task_config.COMOUT_OCEAN_ANALYSIS,
+                                              f"{self.task_config.APREFIX}marine_analysis.ioda_hofx")
+
+        # Save obs diag statistics to COM (this is for legacy obs monitoring)
+        logger.info(f"Copy (legacy) observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
         try:
-            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb_template(algorithm_in='soca_diags_finalize')
         except Exception as e:
             logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
         FileHandler(diags_list).sync()

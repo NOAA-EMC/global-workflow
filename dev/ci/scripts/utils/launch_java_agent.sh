@@ -70,7 +70,7 @@ controller_user=${controller_user:-"terry.mcguinness"}
 controller_user_auth_token="jenkins_token"
 
 # Set the HOMEgfs_ variable to the root directory of the global workflow
-HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 host=$(hostname)
 
 #########################################################################
