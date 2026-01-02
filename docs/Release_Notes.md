@@ -1,9 +1,9 @@
-GFS V16.3.28 RELEASE NOTES
+GFS V16.3.29 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Annual CO2 fix file update for 2026.
+Remove UKMET reference from gfs gempak jobs.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.28
-cd gfs.v16.3.28
-git clone -b EMC-v16.3.28 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.29
+cd gfs.v16.3.29
+git clone -b EMC-v16.3.29 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -51,47 +51,49 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.28` and `gfs_ver=v16.3.28`
+* in `versions/run.ver` change `version=v16.3.29` and `gfs_ver=v16.3.29`
 
 SORC CHANGES
 ------------
 
-* New MODEL tag: `GFS.v16.3.28`
+* No changes from GFS v16.3.28
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.27
+* No changes from GFS v16.3.28
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.27
+* No changes from GFS v16.3.28
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.27
+* Remove COM declarations UKMET and ECMWF from the JGDAS_ATMOS_GEMPAK_META_NCDC and JGFS_ATMOS_GEMPAK_META J-Jobs.
+* Remove the gdas_ecmwf_meta_var.sh and gdas_ukmet_meta_var.sh scripts from gempak/ush.
+* Remove references to UKMET and ECMWF from the gempak/ush gfs_meta_comp.sh, gfs_meta_crb.sh, gfs_meta_hur.sh, gfs_meta_mar_comp.sh, gfs_meta_sa2.sh, and gfs_meta_usext.sh scripts.
 
 FIX CHANGES
 -----------
 
-* New 2026 CO2 fix files are added.
+* No changes from GFS v16.3.28.
 
 MODULE CHANGES
 --------------
 
-* New 2026 CO2 fix files are added.
+* No changes from GFS v16.3.28.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No significant changes from GFS v16.3.25
+* No significant changes from GFS v16.3.28.
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* New 2026 CO2 fix files are added.
+* No changes from GFS v16.3.28.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -104,22 +106,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.27
+* No changes from GFS v16.3.28
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.27
+* No changes from GFS v16.3.28
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.27
+* No changes from GFS v16.3.28
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.27
+* No changes from GFS v16.3.28
 
 PREPARED BY
 -----------
