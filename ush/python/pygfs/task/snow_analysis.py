@@ -48,9 +48,9 @@ class SnowAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config['CASE'][1:])
-        _fail_on_missing = str(self.task_config.fail_on_missing[0]).lower() == "true" \
-            if isinstance(self.task_config.fail_on_missing, list) \
-            else bool(self.task_config.fail_on_missing)
+        _fail_on_missing = str(self.task_config.fail_on_missing_snowobs[0]).lower() == "true" \
+            if isinstance(self.task_config.fail_on_missing_snowobs, list) \
+            else bool(self.task_config.fail_on_missing_snowobs)
 
         # if 00z, do SCF preprocessing
         _ims_file = os.path.join(
