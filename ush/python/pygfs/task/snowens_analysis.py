@@ -56,7 +56,10 @@ class SnowEnsAnalysis(Analysis):
             else bool(self.task_config.fail_on_missing)
 
         # if 00z, do SCF preprocessing
-        _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
+        _ims_file = os.path.join(
+            self.task_config.COMIN_OBS,
+            f'{self.task_config.OPREFIX}imssnow96.{self.task_config.ims_scf_obs_suffix}'
+        )
         logger.info(f"Checking for IMS file: {_ims_file}")
         _DO_IMS_SCF = False
         if self.task_config.cyc == 0:
