@@ -14,7 +14,7 @@ from wxflow import (AttrDict,
                     Task,
                     add_to_datetime, to_timedelta,
                     WorkflowException,
-                    Executable, which)
+                    Executable, which, cast_strdict_as_dtypedict)
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -23,12 +23,20 @@ class OceanIceProducts(Task):
     """Ocean Ice Products Task
     """
 
+    configs = cast_strdict_as_dtypedict(os.environ)
+
     VALID_COMPONENTS = ['ocean', 'ice']
     COMPONENT_RES_MAP = {'ocean': 'OCNRES', 'ice': 'ICERES'}
-    VALID_PRODUCT_GRIDS = {'mx025': ['1p00', '0p25'],
-                           'mx050': ['1p00', '0p50'],
-                           'mx100': ['1p00'],
-                           'mx500': ['5p00']}
+
+    if configs['RUN'] == 'sfs':
+        VALID_PRODUCT_GRIDS = {'mx025': ['1p00'],
+                               'mx050': ['1p00'],
+                               'mx100': ['1p00']}
+    else:
+        VALID_PRODUCT_GRIDS = {'mx025': ['1p00', '0p25'],
+                               'mx050': ['1p00', '0p50'],
+                               'mx100': ['1p00'],
+                               'mx500': ['5p00']}
 
     # These could be read from the yaml file
     TRIPOLE_DIMS_MAP = {'mx025': [1440, 1080], 'mx050': [720, 526], 'mx100': [360, 320], 'mx500': [72, 35]}
@@ -141,6 +149,7 @@ class OceanIceProducts(Task):
         localconf.debug = ".true." if config.oceanice_yaml.ocnicepost.namelist.debug else ".false."
         localconf.write_grib2 = ".true." if config.oceanice_yaml[config.component].namelist.write_grib2 else ".false."
         localconf.write_netcdf = ".true." if config.oceanice_yaml[config.component].namelist.write_netcdf else ".false."
+        localconf.write_subset = ".true." if config.oceanice_yaml[config.component].namelist.write_subset else ".false."
 
         logger.debug(f"localconf:\n{pformat(localconf)}")
 
@@ -173,8 +182,9 @@ class OceanIceProducts(Task):
         # Run the ocnicepost.x executable if interpolated variables are wanted
         #localconf.write_grib2 = ".true." if config.oceanice_yaml[config.component].namelist.write_grib2 else ".false."
         #localconf.write_netcdf = ".true." if config.oceanice_yaml[config.component].namelist.write_netcdf else ".false."
-        print(config.oceanice_yaml[config.component].namelist.write_netcdf)
-        print(config.oceanice_yaml[config.component].namelist.write_grib2)
+        print("write_netcdf: ", config.oceanice_yaml[config.component].namelist.write_netcdf)
+        print("write_grib2: ", config.oceanice_yaml[config.component].namelist.write_grib2)
+        print("write_subset: ", config.oceanice_yaml[config.component].namelist.write_subset)
         if config.oceanice_yaml[config.component].namelist.write_netcdf or config.oceanice_yaml[config.component].namelist.write_grib2:
             OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 

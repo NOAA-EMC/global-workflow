@@ -18,19 +18,19 @@ if [[ "${RUN}" == sfs ]]; then
        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
        vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
        new_file="iceh_24h_${vdate_mid_str}.nc"
-       ori_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-       ${NLN} "${COMOUT_ICE_HISTORY}/${ori_file}" "${DATAoutput}/CICE_OUTPUT/${new_file}"
+       ori_file="${RUN}.t${cyc}z.native.f${fhr3}.nc"
+       ${NLN} "${COMOUT_ICE_NETCDF}/native/${ori_file}" "${DATAoutput}/CICE_OUTPUT/${new_file}"
        last_fhr=${fhr}
      done
 fi
 
-#GENERATE MONTHLY MEAN FILES FROM SFS DAILY ICE HISTORY FILES.
+#GENERATE MONTHLY MEAN FILES FROM SFS DAILY ICE PRODUCT FILES.
 if [[ "${RUN}" == sfs ]]; then
     if [[ ${FHMAX_GFS} -lt 744 ]]; then
         echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
         exit 0
     else
-        last_fh_output="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.${FHOUT_ICE}hr_avg.f${FHMAX_GFS}.nc"
+        last_fh_output="${COMOUT_ICE_NETCDF}/native/${RUN}.t${cyc}z.native.f${FHMAX_GFS}.nc"
     fi
     if [[ -f ${last_fh_output} ]]; then
        file_list="${DATAoutput}/CICE_OUTPUT/iceh_24h_????_??_28_12.nc"
@@ -47,7 +47,7 @@ if [[ "${RUN}" == sfs ]]; then
 
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-       echo "FATAL ERROR: Failed to generate monthly mean ice history files"
+       echo "FATAL ERROR: Failed to generate monthly mean ice products files"
        exit "${err}"
     fi
 fi

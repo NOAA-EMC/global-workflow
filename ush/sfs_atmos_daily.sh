@@ -23,7 +23,6 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
 
 OUTDIR="${COMOUT_ATMOS_GRIB}"
-#GMERGE="/ncrc/home1/Yangxing.Zheng/wgrib2/gmerge"
 mkdir -m 755 -p "${OUTDIR}"
 mkdir -m 755 -p "${OUTDIR}/acc.daily.${MEMDIR}"
 mkdir -m 755 -p "${OUTDIR}/acc.monthly.${MEMDIR}"
@@ -133,18 +132,20 @@ do
   do
     start_hr=$((j-6))
     end_hr=$((j+24-6))
-    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" $start_hr 6 $end_hr)
+    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "$start_hr" 6 "$end_hr")
     # shellcheck disable=SC2086
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
-  list_daily=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}/daily_*.grb")
+  list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
-  rm "${OUTDIR}/inst.daily.${MEMDIR}/daily*.grb"
-  
+  rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
+  if [ $yy_init == $yy_final ]; then
+    break
+  fi  
 done
 
 ### This second loop needs to be done if the end month is earlier
@@ -181,17 +182,17 @@ do
   do
     start_hr=$((j-6))
     end_hr=$((j+24-6)) 
-    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" $start_hr 6 $end_hr)
+    list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "$start_hr" 6 "$end_hr")
     # shellcheck disable=SC2086
     ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
-  list_daily=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}/daily_*.grb")
+  list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start_next}${filemm}${filename_end}"
-  rm "${OUTDIR}/inst.daily.${MEMDIR}/daily*.grb"
+  rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
 
 done
 
