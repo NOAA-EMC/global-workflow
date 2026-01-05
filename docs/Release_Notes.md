@@ -71,9 +71,7 @@ PARM/CONFIG CHANGES
 SCRIPT CHANGES
 --------------
 
-* Remove COM declarations UKMET and ECMWF from the JGDAS_ATMOS_GEMPAK_META_NCDC and JGFS_ATMOS_GEMPAK_META J-Jobs.
-* Remove the gdas_ecmwf_meta_var.sh and gdas_ukmet_meta_var.sh scripts from gempak/ush.
-* Remove references to UKMET and ECMWF from the gempak/ush gfs_meta_comp.sh, gfs_meta_crb.sh, gfs_meta_hur.sh, gfs_meta_mar_comp.sh, gfs_meta_sa2.sh, and gfs_meta_usext.sh scripts.
+* No changes from GFS v16.3.29.
 
 FIX CHANGES
 -----------
@@ -83,7 +81,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.29.
+* An extraneous ``module use`` was removed from ``build_all.sh``.  This module path was required when building GFS v16.3.25, but is no longer required.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
