@@ -81,7 +81,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* An extraneous ``module use`` was removed from ``build_all.sh``.  This module path was required when building GFS v16.3.25, but is no longer required.
+* An extraneous ``module use`` was removed from ``build_fv3.sh``.  This module path was required when building GFS v16.3.25, but is no longer required.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
