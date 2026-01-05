@@ -640,15 +640,5 @@ scan_repository_compliance({
   ]
 })
 ```
-
-### MCP Server Configuration
-
-**Gateway URL**: `http://localhost:18888/mcp` (or `http://<server-ip>:18888/mcp`)
-**Authentication**: `Bearer eib-mcp-gateway-token-2025`
-**Protocol Version**: `2025-06-18` (MCP Streaming HTTP)
-
-**Important**: The MCP server uses **quiet mode** to prevent console output from corrupting the MCP stdio protocol. Logs are written to `mcp_server_node/logs/mcp-server.log`.
-
 ---
-
 Remember: This is a production weather forecasting system. Changes must be thoroughly tested and should not disrupt operational workflows. Always follow the existing patterns and conventions when extending the system
