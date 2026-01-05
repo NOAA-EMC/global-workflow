@@ -1,9 +1,9 @@
-GFS V16.3.29 RELEASE NOTES
+GFS V16.3.30 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Remove UKMET reference from gfs gempak jobs.
+This removes an extraneous module path from the build script.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.29
-cd gfs.v16.3.29
-git clone -b EMC-v16.3.29 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.30
+cd gfs.v16.3.30
+git clone -b EMC-v16.3.30 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -51,22 +51,22 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.29` and `gfs_ver=v16.3.29`
+* in `versions/run.ver` change `version=v16.3.30` and `gfs_ver=v16.3.30`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 SCRIPT CHANGES
 --------------
@@ -78,22 +78,22 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.28.
+* No changes from GFS v16.3.29.
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.28.
+* No changes from GFS v16.3.29.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No significant changes from GFS v16.3.28.
+* No significant changes from GFS v16.3.29.
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.28.
+* No changes from GFS v16.3.29.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -106,22 +106,22 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.28
+* No changes from GFS v16.3.29
 
 PREPARED BY
 -----------
