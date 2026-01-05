@@ -23,7 +23,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    cpreq "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 #
@@ -312,7 +312,7 @@ if [[ ${cyc} -eq 00 ]]; then
         ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then
-        ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
+        Ln -sf "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
     fi
     if [[ ! -L "${HPCUKMET}" ]]; then
         ${NLN} "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"

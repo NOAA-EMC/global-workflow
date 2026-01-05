@@ -19,7 +19,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 #
 export HPCGFS="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${HPCGFS} ]]; then
-    cpreq "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
+    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 fi
 
 mdl=gfs

@@ -20,7 +20,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    cpreq "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"

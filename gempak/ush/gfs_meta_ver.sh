@@ -21,7 +21,7 @@ device="nc | ${metaname}"
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
-    cpreq "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
@@ -54,7 +54,7 @@ for lookback in "${lookbacks[@]}"; do
     HPCGFS="${RUN}.${init_time}"
     if [[ ! -L "${HPCGFS}" ]]; then
         YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-        cpreq "${source_dir}" "${HPCGFS}"
+        cpreq -R "${source_dir}" "${HPCGFS}"
     fi
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"

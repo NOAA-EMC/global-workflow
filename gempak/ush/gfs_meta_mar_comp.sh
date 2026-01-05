@@ -78,7 +78,7 @@ for garea in NAtl NPac; do
         HPCGFS="${RUN}.${init_time}"
         if [[ ! -L ${HPCGFS} ]]; then
             YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-            cpreq "${source_dir}" "${HPCGFS}"
+            cpreq -R "${source_dir}" "${HPCGFS}"
         fi
 
         case ${cyc} in
