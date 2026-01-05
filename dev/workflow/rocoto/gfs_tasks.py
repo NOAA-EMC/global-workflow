@@ -1192,8 +1192,8 @@ class GFSTasks(Tasks):
     def _atmosoceaniceprod(self, component: str):
 
         products_dict = {'atmos': {'config': 'atmos_products',
-                                   'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.master.f#fhr3_last#.grib2'},
+                                   'history_path_tmpl': 'COM_ATMOS_HISTORY_TMPL',
+                                   'history_file_tmpl': f'{self.run}.t@Hz.log.f#fhr3_last#.txt'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
                                    'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_nextp1#.nc'},
