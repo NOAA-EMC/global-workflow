@@ -33,5 +33,8 @@ if __name__ == '__main__':
     # Compute the increment between the analysis and background
     offline_anl.calc_increment()
 
+    # Compute the tref increment
+    offline_anl.calc_tref_inc()
+
     # Copy the analysis increment and regridded analysis back to COM
     offline_anl.finalize()
