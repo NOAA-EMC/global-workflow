@@ -144,6 +144,7 @@ sorc/syndat_maksynrc.fd
 sorc/syndat_qctropcy.fd
 sorc/tave.fd
 sorc/tocsbufr.fd
+sorc/tref_calc.fd
 sorc/upp.fd
 sorc/vint.fd
 sorc/webtitle.fd
