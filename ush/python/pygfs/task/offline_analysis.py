@@ -81,11 +81,14 @@ class OfflineAnalysis(Task):
         fcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
                                     f"{self.task_config.GPREFIX}atm.f006.nc")
         files_to_copy.append([fcst_file_in, os.path.join(self.task_config.DATA, "atmges_mem001")])
+        sfcfcst_file_in = os.path.join(self.task_config.COMIN_ATMOS_HISTORY_PREV,
+                                       f"{self.task_config.GPREFIX}sfc.f006.nc")
+        files_to_copy.append([sfcfcst_file_in, os.path.join(self.task_config.DATA, "sfcges_mem001")])
         # TODO: Re-stage all of the inputs on HPSS to match EE2-compliant filenames
         anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}atmanl.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
-        # sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{GPREFIX}analysis.sfc.a006.nc")
-        # files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
+        sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}sfcanl.nc")
+        files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
         FileHandler({'copy': files_to_copy}).sync()
 
         # generate namelists for the executables
@@ -129,9 +132,26 @@ class OfflineAnalysis(Task):
             f90nml.write(namelist, nmlfile)
         logger.info(f"Wrote namelist to {os.path.join(self.task_config.DATA, 'calc_increment.nml')}")
 
+        # setup namelist for tref increment calculation
+        logger.info("Generating namelist for 'tref_calc'")
+        namelist = {
+            "tref_calc_setup": {
+                "i_output": self.task_config.nlon_interp,
+                "j_output": self.task_config.nlat_interp,
+                "sfcanl_file": "sfcanl.input.nc",
+                "sfcf006_file": "sfcges_mem001",
+                "output_file": "dtfanl.nc",
+            }
+        }
+
+        logger.info(namelist)
+        with open(os.path.join(self.task_config.DATA, 'tref_calc.nml'), 'w') as nmlfile:
+            f90nml.write(namelist, nmlfile)
+        logger.info(f"Wrote namelist to {os.path.join(self.task_config.DATA, 'tref_calc.nml')}")
+
         # copy executables to $DATA
         executables_to_copy = []
-        executable_list = ['enkf_chgres_recenter_nc.x', 'calc_increment_ens_ncio.x']
+        executable_list = ['enkf_chgres_recenter_nc.x', 'calc_increment_ens_ncio.x', 'tref_calc.x']
         for exec_name in executable_list:
             executables_to_copy.append([os.path.join(self.task_config.EXECgfs, exec_name),
                                         os.path.join(self.task_config.DATA, exec_name)])
@@ -153,6 +173,30 @@ class OfflineAnalysis(Task):
         exe = Executable(self.task_config.APRUN_CHGRES)
         exe.add_default_arg(os.path.join(self.task_config.DATA, 'enkf_chgres_recenter_nc.x'))
         exe.add_default_arg(os.path.join(self.task_config.DATA, 'chgres_nc_gauss.nml'))
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
+
+    @logit(logger)
+    def calc_tref_inc(self) -> None:
+        """Interpolate the tref analysis and compute the dtf increment.
+
+        Parameters
+        ----------
+        self : OfflineAnalysis
+            Instance of the OfflineAnalysis object
+        """
+
+        # set up and run the executable
+        exe = Executable(self.task_config.APRUN_CHGRES)
+        exe.add_default_arg(os.path.join(self.task_config.DATA, 'tref_calc.x'))
+        exe.add_default_arg(os.path.join(self.task_config.DATA, 'tref_calc.nml'))
         try:
             logger.debug(f"Executing {exe}")
             exe()
@@ -216,9 +260,8 @@ class OfflineAnalysis(Task):
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}snogrb_t1534.3072.1536")])
         # TODO: Re-stage the inputs for the GCDAS offline analysis on HPSS following EE2-compliant filenames, then update this line
         transfer_files.append([
-            os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''),
-                         f"{self.task_config.APREFIX_IN}dtfanl.nc"),
+            os.path.join(self.task_config.DATA, "dtfanl.nc"),
             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                         f"{self.task_config.APREFIX}analysis.dtf.a006.nc")
+                         f"{self.task_config.APREFIX}increment.dtf.i006.nc")
         ])
         FileHandler({'copy': transfer_files}).sync()
