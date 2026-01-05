@@ -177,7 +177,7 @@ for FHR in ${nfhrs}; do
     if [[ "${DO_GSISOILDA}" == "YES" ]]; then
         cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.sfc.f00${FHR}.nc" \
             "bfg_${PDY}${cyc}_fhr0${FHR}_ensmean"
-        cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}ensmean_increment.sfc.i00${FHR}.nc" \
+        ${NLN} "${COMIN_ATMOS_ANALYSIS_STAT}/${APREFIX}ensmean_increment.sfc.i00${FHR}.nc" \
             "sfcincr_${PDY}${cyc}_fhr0${FHR}_ensmean"
     fi
 done
