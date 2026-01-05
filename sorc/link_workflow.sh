@@ -2,7 +2,7 @@
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
-HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." > /dev/null 2>&1 && pwd)"
+HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" > /dev/null 2>&1 && git rev-parse --show-toplevel)
 TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
 
 function usage() {
@@ -352,7 +352,7 @@ cd "${HOMEgfs}/exec" || exit 1
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
     syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
     mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x \
-    ensadd.x ensppf.x ensstat.x wave_stat.x; do
+    ensadd.x ensppf.x ensstat.x wave_stat.x tref_calc.x; do
     if [[ -s "${utilexe}" ]]; then
         rm -f "${utilexe}"
     fi
@@ -573,6 +573,7 @@ for prog in enkf_chgres_recenter_nc.fd \
     syndat_qctropcy.fd \
     tave.fd \
     tocsbufr.fd \
+    tref_calc.fd \
     vint.fd \
     webtitle.fd \
     ocnicepost.fd; do

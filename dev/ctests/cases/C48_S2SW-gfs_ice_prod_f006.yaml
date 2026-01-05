@@ -37,18 +37,13 @@ input_files:
     mkdir:
         - {{ DST_DIR }}/gdas.{{ PDY }}/{{ cyc_offset }}/model/ice/restart
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/native
 
     copy:
         # Ice history files from forecast (6-hour averaged output for f006)
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.ice.t{{ cyc }}z.6hr_avg.f006.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.t{{ cyc }}z.6hr_avg.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/ice/history/gfs.t{{ cyc }}z.6hr_avg.f006.nc]
 
 output_files:
     cmpfiles:
-        # Ice GRIB2 products at 5.0 degree resolution for f006 (mx500 model grid)
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2.idx, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/grib2/5p00/gfs.ice.t{{ cyc }}z.5p00.f006.grib2.idx]
-
         # Ice native netCDF products
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/gfs.ice.t{{ cyc }}z.native.f006.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/native/gfs.t{{ cyc }}z.native.f006.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/ice/netcdf/native/gfs.t{{ cyc }}z.native.f006.nc]
