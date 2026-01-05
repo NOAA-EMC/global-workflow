@@ -30,7 +30,7 @@ if __name__ == '__main__':
         config.STAT_ANALYSES.append('atmos')
     else:
         config.STAT_ANALYSES.append('atmos_gsi')
-    
+
     # GCDAS uses offline GDAS, remove atmos analysis
     if config.RUN == 'gcdas':
         config.STAT_ANALYSES = [anl for anl in config.STAT_ANALYSES if 'atmos' not in anl]
