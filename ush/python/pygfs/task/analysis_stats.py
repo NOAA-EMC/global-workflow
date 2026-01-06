@@ -202,9 +202,11 @@ class AnalysisStats(Analysis):
             input_tar = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS,
                                      input_tar_basename)
             dest = os.path.join(diag_dir_path, input_tar_basename)
-            logger.info(f"Preparing to copy {input_tar} to {dest}")
             if os.path.exists(input_tar):
+                logger.info(f"{input_tar} exists. Preparing to copy it to {dest}")
                 diag_tar_copy_list.append([input_tar, dest])
+            else:
+                logger.warning(f"{input_tar} does not exist to copy. Skipping ...")
         FileHandler({'copy_opt': diag_tar_copy_list}).sync()
 
         # Untar and gunzip diag files
