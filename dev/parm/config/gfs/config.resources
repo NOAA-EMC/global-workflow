@@ -164,10 +164,10 @@ case ${step} in
     ntasks=1
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     if [[ ${tasks_per_node} -gt 40 ]]; then
         tasks_per_node=40
-        export is_exclusive=False
+        is_exclusive=False
     fi
     NTASKS=${ntasks}
     ;;
@@ -177,10 +177,10 @@ case ${step} in
     ntasks=2
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     if [[ ${tasks_per_node} -gt 40 ]]; then
         tasks_per_node=40
-        export is_exclusive=False
+        is_exclusive=False
     fi
     NTASKS=${ntasks}
     ;;
@@ -190,10 +190,10 @@ case ${step} in
     ntasks=3
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     if [[ ${tasks_per_node} -gt 40 ]]; then
         tasks_per_node=40
-        export is_exclusive=False
+        is_exclusive=False
     fi
     NTASKS=${ntasks}
     ;;
@@ -205,7 +205,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
     memory="1GB"
-    export prepost=True
+    prepost=True
     ;;
 
   "waveawipsbulls")
@@ -214,7 +214,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "waveawipsgridded")
@@ -226,7 +226,7 @@ case ${step} in
     if [[ "${RUN}" = *gfs ]]; then
       memory="2GB"
     fi
-    export prepost=True
+    prepost=True
     ;;
 
   "atmanlinit")
@@ -252,7 +252,7 @@ case ${step} in
     ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmanlfv3inc")
@@ -264,7 +264,7 @@ case ${step} in
     ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmanlfinal")
@@ -272,7 +272,7 @@ case ${step} in
     ntasks=${max_tasks_per_node}
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "snowanl")
@@ -410,7 +410,7 @@ case ${step} in
     export layout_y
 
     ntasks=$(( layout_x * layout_y * 6 ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "aeroanlgenb")
@@ -444,7 +444,7 @@ case ${step} in
     ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
 
     ;;
 
@@ -524,7 +524,7 @@ case ${step} in
 
     walltime="00:30:00"
     threads_per_task=1
-    export is_exclusive=True
+    is_exclusive=True
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
@@ -554,7 +554,7 @@ case ${step} in
 
     walltime="00:30:00"
     threads_per_task=1
-    export is_exclusive=True
+    is_exclusive=True
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
@@ -595,7 +595,7 @@ case ${step} in
         exit 4
     esac
 
-    export is_exclusive=True
+    is_exclusive=True
     threads_per_task=1
     ;;
 
@@ -624,7 +624,7 @@ case ${step} in
     esac
 
     walltime="00:30:00"
-    export is_exclusive=True
+    is_exclusive=True
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
@@ -714,7 +714,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export threads_per_task_cycle=${threads_per_task}
     export tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "ecen_fv3jedi")
@@ -727,7 +727,7 @@ case ${step} in
     ntasks=$(( ntasks_ensemble_recenter ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "analcalc_fv3jedi")
@@ -738,7 +738,7 @@ case ${step} in
     ntasks=$(( layout_x * layout_y * 6 ))
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "analcalc")
@@ -752,7 +752,7 @@ case ${step} in
     elif [[ "${RUN}" = *gfs ]]; then
       export threads_per_task_echgres=12
     fi
-    export is_exclusive=True
+    is_exclusive=True
     memory="48GB"
     if [[ "${CASE}" == "C384" || "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
        memory="${mem_node_max}"
@@ -769,7 +769,7 @@ case ${step} in
     threads_per_task=1
     if [[ ${ntasks} -gt ${max_tasks_per_node} ]]; then
       ntasks=${max_tasks_per_node}
-      export is_exclusive=True
+      is_exclusive=True
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
@@ -787,11 +787,11 @@ case ${step} in
     ntasks=${ntiles:-6}
     threads_per_task=4
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "fcst" | "efcs")
-    export is_exclusive=True
+    is_exclusive=True
 
     # Determine if using ESMF-managed threading or traditional threading
     # If using traditional threading, set them to 1
@@ -1017,7 +1017,7 @@ case ${step} in
     if (( tasks_per_node > max_tasks_per_node )); then
       tasks_per_node=${max_tasks_per_node}
     fi
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmos_products")
@@ -1026,7 +1026,7 @@ case ${step} in
     ntasks=24
     threads_per_task=1
     tasks_per_node="${ntasks}"
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "verfozn")
@@ -1106,7 +1106,7 @@ case ${step} in
     fi
     ntasks=1
     tasks_per_node=1
-    export memory="80G"
+    memory="80G"
     ;;
 
   "echgres")
@@ -1128,14 +1128,14 @@ case ${step} in
     walltime="00:30:00"
     ntasks=1
     tasks_per_node=1
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "mom6ic")
     walltime="00:30:00"
     ntasks=24
     tasks_per_node=24
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "arch_tars" | "getic" | "fetch" | "globus" | "globus_earc" )
@@ -1190,7 +1190,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="96GB"
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmensanlsol")
@@ -1202,7 +1202,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="96GB"
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmensanlletkf")
@@ -1214,7 +1214,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="96GB"
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmensanlfv3inc")
@@ -1226,7 +1226,7 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="96GB"
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "atmensanlfinal")
@@ -1234,7 +1234,7 @@ case ${step} in
     ntasks=${max_tasks_per_node}
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "eobs")
@@ -1253,7 +1253,7 @@ case ${step} in
     # NOTE The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     # Unset tasks_per_node if it is not a multiple of max_tasks_per_node
     # to prevent dropping data on the floor.  This should be set int
     # config.resources.{machine} instead.  This will result in an error at
@@ -1284,7 +1284,7 @@ case ${step} in
         ;;
     esac
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "ecen")
@@ -1297,7 +1297,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     export threads_per_task_cycle=${threads_per_task}
     export tasks_per_node_cycle=${tasks_per_node}
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "esfc")
@@ -1324,12 +1324,12 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="${mem_node_max}"
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "postsnd")
     walltime="02:00:00"
-    export ntasks=141
+    ntasks=141
     export ntasks_postsndcfp=9
     case "${CASE}" in
       "C768")
@@ -1350,7 +1350,7 @@ case ${step} in
     if (( postsnd_req_cores > max_tasks_per_node )); then
         tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
-    export is_exclusive=True
+    is_exclusive=True
     ;;
 
   "awips")
@@ -1359,7 +1359,7 @@ case ${step} in
     tasks_per_node=1
     threads_per_task=1
     memory="4GB"
-    export prepost=True
+    prepost=True
     ;;
 
   "npoess")
@@ -1368,7 +1368,7 @@ case ${step} in
     tasks_per_node=1
     threads_per_task=1
     memory="3GB"
-    export prepost=True
+    prepost=True
     ;;
 
   "gempak")
@@ -1384,7 +1384,7 @@ case ${step} in
       tasks_per_node=28
       memory="6GB"
     fi
-    export prepost=True
+    prepost=True
     ;;
 
   "fbwind")
@@ -1408,7 +1408,7 @@ if [[ -f "${EXPDIR}/config.resources.${machine}" ]]; then
 fi
 
 # Check for RUN-specific variables and export them
-for resource_var in threads_per_task ntasks tasks_per_node NTASKS memory walltime; do
+for resource_var in threads_per_task ntasks tasks_per_node NTASKS memory walltime is_exclusive prepost; do
    run_resource_var="${resource_var}_${RUN}"
    if [[ -n "${!run_resource_var+0}" ]]; then
       declare -x "${resource_var}"="${!run_resource_var}"
