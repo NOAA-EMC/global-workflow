@@ -205,6 +205,7 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     NTASKS=${ntasks}
     memory="1GB"
+    export prepost=True
     ;;
 
   "waveawipsbulls")
@@ -225,6 +226,7 @@ case ${step} in
     if [[ "${RUN}" = *gfs ]]; then
       memory="2GB"
     fi
+    export prepost=True
     ;;
 
   "atmanlinit")
@@ -1357,6 +1359,7 @@ case ${step} in
     tasks_per_node=1
     threads_per_task=1
     memory="4GB"
+    export prepost=True
     ;;
 
   "npoess")
@@ -1365,6 +1368,7 @@ case ${step} in
     tasks_per_node=1
     threads_per_task=1
     memory="3GB"
+    export prepost=True
     ;;
 
   "gempak")
@@ -1380,6 +1384,7 @@ case ${step} in
       tasks_per_node=28
       memory="6GB"
     fi
+    export prepost=True
     ;;
 
   "fbwind")
