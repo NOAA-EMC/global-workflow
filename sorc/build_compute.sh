@@ -193,7 +193,7 @@ if [[ "${build_on_compute}" != "YES" ]]; then
 
         # Check for any failed builds, and abort all if any found
         abort_all_builds=false
-        for name in "${!build_names[@]}"; do
+        for name in "${build_names[@]}"; do
             if [[ ${build_status[${name}]} == "failed" ]]; then
                 echo "Detected failed build: ${name}"
                 abort_all_builds=true
