@@ -85,17 +85,17 @@ mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
 # Delete the rocoto XML and database if they exist
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
+echo "Generating build.xml for building global-workflow programs ..."
 yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
-echo "Generating build.xml for building global-workflow programs on compute nodes ..."
-# Catch errors manually from here out
-set +e
-
 "${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
     exit 1
 fi
+
+# Catch errors manually from here out
+set +e
 
 if [[ "${build_on_compute}" != "YES" ]]; then
 
@@ -105,36 +105,36 @@ if [[ "${build_on_compute}" != "YES" ]]; then
     mapfile -t commands < <(grep -oP '(?<=<command>).*(?=</command>)' "${build_xml}")
     # get the corresponding log file names from the build.xml in an array
     mapfile -t logs < <(grep -oP '(?<=<join><cyclestr>).*(?=</cyclestr></join>)' "${build_xml}")
-    # get the number of build jobs each command corresponds to in an array.  The build jobs are the strings -j N in each command.
-    mapfile -t cores < <(echo "${commands[@]}" | grep -oP '(?<=-j )\d+')
-    # create an array of build names from the log file names (by obtaining the basename and stripping the .log extension)
-    mapfile -t names < <(printf "%s\n" "${logs[@]}" | xargs -n1 basename | sed 's/\.log$//')
 
     # Initialize associative arrays to track build status
-    declare -A build_names build_status build_commands build_logs build_cores build_pids
-    for i in "${!names[@]}"; do
+    declare -A build_names build_status build_dirs build_commands build_logs build_cores build_pids
+    for i in "${!logs[@]}"; do
 
-        name="${names[i]}"
+        cmd="${commands[i]}"
+        log="${logs[i]}"
+        name=$(echo "${log}" | xargs -n1 basename | sed 's/\.log$//')
 
         build_names["${name}"]="${name}"
-        build_commands["${name}"]="${commands[i]}"
-        build_logs["${name}"]="${logs[i]}"
-        build_cores["${name}"]="${cores[i]}"
+        build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
+        build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
+        build_logs["${name}"]="${log}"
+        build_cores["${name}"]="$(echo "${cmd}" | grep -oP '(?<=-j )\d+')"
         build_status["${name}"]="pending"
         build_pids["${name}"]=""
 
     done
-    unset commands logs cores names
+    unset commands logs
 
     # copy build_names into a new array to iterate over
     builds_to_process=("${!build_names[@]}")
 
-    declare -r max_cores=40
+    # Maximum number of cores to use for builds on head node
+    declare -r max_cores=20
     current_cores=0
     builds_in_progress=true
     while [[ ${builds_in_progress} == true ]]; do
 
-        for name in "${!builds_to_process[@]}"; do
+        for name in "${builds_to_process[@]}"; do
 
             # If the build is already completed, skip it
             if [[ ${build_status[${name}]} == "completed" ]]; then
@@ -145,15 +145,18 @@ if [[ "${build_on_compute}" != "YES" ]]; then
             pid="${build_pids[${name}]}"
             if [[ -z "${pid}" ]]; then # No pid means build not started yet
                 cores_needed="${build_cores[${name}]}"
-                if (( current_cores + cores_needed <= max_cores )); then
+                if ((current_cores + cores_needed <= max_cores)); then
                     # Launch the build command in the background and redirect output to log file
+                    dir="${build_dirs[${name}]}"
                     command="${build_commands[${name}]}"
                     log_file="${build_logs[${name}]}"
-                    echo "Launching build command: ${command} > ${log_file} 2>&1"
-                    bash -c "${command} > ${log_file} 2>&1 &"
+                    cd "${dir}" || exit 1
+                    ${command} > "${log_file}" 2>&1 &
                     pid=$!
+                    echo "Build for ${name} started with PID ${pid}, using ${cores_needed} cores."
                     build_pids["${name}"]="${pid}"
                     build_status["${name}"]="building"
+                    # Update the current cores in use
                     current_cores=$((current_cores + cores_needed))
                 else
                     # Not enough cores available, skip to next build
@@ -162,16 +165,17 @@ if [[ "${build_on_compute}" != "YES" ]]; then
 
             else
 
+                #echo "Checking status of build for ${name} with PID ${pid} ..."
                 if ! ps -p "${pid}" > /dev/null 2>&1; then
                     # Build has finished
                     wait "${pid}"
                     rc=$?
                     if [[ "${rc}" -ne 0 ]]; then
-                        echo "BUILD ERROR: Build command '${build_commands[${name}]}' failed with exit code ${rc}."
-                        echo "See log file: ${build_logs[${name}]}.log"
+                        echo "BUILD ERROR: Build for ${name} failed with exit code ${rc}."
+                        echo "See log file: ${build_logs[${name}]}"
                         build_status["${name}"]="failed"
                     else
-                        echo "BUILD SUCCESS: Build command '${build_commands[${name}]}' completed successfully."
+                        echo "BUILD SUCCESS: Build for ${name} completed successfully."
                         build_status["${name}"]="completed"
                     fi
                     # Free up the cores used by this build (regardless of success or failure)
@@ -180,9 +184,9 @@ if [[ "${build_on_compute}" != "YES" ]]; then
 
             fi
 
-            # If the build failed, exit immediately
+            # If the build failed, do not submit any more builds
             if [[ ${build_status[${name}]} == "failed" ]]; then
-                exit 1
+                break
             fi
 
         done
@@ -196,11 +200,14 @@ if [[ "${build_on_compute}" != "YES" ]]; then
             fi
         done
         if [[ ${abort_all_builds} == true ]]; then
-            echo "FATAL ERROR: One or more builds failed. Aborting remaining builds."
+            echo "FATAL ERROR: One or more builds failed. Aborting all builds."
             # Terminate all running build processes
-            for pid in "${build_pids[@]}"; do
+            for i in "${!build_pids[@]}"; do
+                pid="${build_pids[${i}]}"
+                name="${build_names[${i}]}"
                 if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
-                    kill "${pid}"
+                    echo "Terminating build for ${name} with PID ${pid} ..."
+                    pkill -P "${pid}" # Kill any child processes
                 fi
             done
             exit 1
@@ -216,7 +223,8 @@ if [[ "${build_on_compute}" != "YES" ]]; then
             fi
         done
 
-        sleep 30s
+        echo "Waiting for builds to complete. Current cores in use: ${current_cores}/${max_cores}"
+        sleep 1m
 
     done
 
