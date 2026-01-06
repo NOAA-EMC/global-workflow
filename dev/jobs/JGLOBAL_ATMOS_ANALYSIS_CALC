@@ -33,7 +33,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 if [[ "${RUN}" == "gcdas" ]]; then
     YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
+        COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
 fi
 
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
