@@ -31,6 +31,7 @@ done
 #
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
@@ -226,6 +227,7 @@ EOF
 
         export HPCUKMET="ukmet.${ukmet_PDY}"
         if [[ ! -L "${HPCUKMET}" ]]; then
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
@@ -315,6 +317,7 @@ EOF
 
         HPCECMWF=ecmwf.${PDY}
         if [[ ! -L "${HPCECMWF}" ]]; then
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
         fi
         grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"

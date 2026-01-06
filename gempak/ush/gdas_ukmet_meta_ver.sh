@@ -55,6 +55,7 @@ for area in ${areas}; do
         cyclenum=${stime:6}
 
         if [[ ! -L "ukmet.20${sdatenum}" ]]; then
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
         fi
         gdfile="ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
