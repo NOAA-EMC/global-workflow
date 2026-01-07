@@ -5,6 +5,18 @@ SFS_6HRLY_VARSSH=${SFS_6HRLY_VARSSH:-"${USHgfs}/sfs_6hrly_vars.sh"}
 SFS_ATMOS_DAILYSH=${SFS_ATMOS_DAILYSH:-"${USHgfs}/sfs_atmos_daily.sh"}
 SFS_ATMOS_MONTHLYSH=${SFS_ATMOS_MONTHLYSH:-"${USHgfs}/sfs_atmos_monthly.sh"}
 
+# Check if GMERGE is set; if not, print error and exit with status 1
+if [[ -z "${GMERGE:-}" ]]; then
+    echo "Error: GMERGE is not defined. Exiting script." >&2
+    exit 1
+fi
+
+# Check if WGRIB2 is set; if not, print error and exit with status 1
+if [[ -z "${WGRIB2:-}" ]]; then
+    echo "Error: WGRIB2 is not defined. Exiting script." >&2
+    exit 1
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
