@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -ux
+set -e
+
 ######################################################################################
 
 # GENERATE 6-HOURLY GRIB2 FILES FOR SELECTED SFS VARIABLES.
@@ -34,7 +37,11 @@ declare -a filevars=( "dlwrfsfc" "dswrfsfc" "ulwrfsfc" "uswrfsfc" "ulwrftoa" "lh
 
 # get validation date of first file
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
-vt_init="$(wgrib2 "${firstfile}" -d 1 -vt)"
+vt_init="$(${WGRIB2} "${firstfile}" -d 1 -vt)"
+if (( ${?} > 0 )); then
+  echo "FATAL ERROR: WGRIB2 is not defined"
+  exit 1
+fi
 vt_date="${vt_init:7:10}"  
 
 for (( i=0; i<${#vars[@]}; i++)); do
@@ -46,6 +53,6 @@ for (( i=0; i<${#vars[@]}; i++)); do
 
    # shellcheck disable=SC2046
    # shellcheck disable=SC2002
-  cat $(eval "ls -v ${COMIN_ATMOS_MASTER}/*") | wgrib2 - -match "${var}" -grib "${OUTDIR}/${filename}"
+  cat $(eval "ls -v ${COMIN_ATMOS_MASTER}/*") | ${WGRIB2} - -match "${var}" -grib "${OUTDIR}/${filename}"
 
 done

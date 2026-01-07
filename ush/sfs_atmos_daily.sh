@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -ux
+set -e
+
 ###########################################################################################
 
 # GENERATE DAILY MEAN GRIB2 FILES FOR SFS MASTER 6-HOURLY DATA FILES. THIS SCRIPT 
@@ -42,17 +45,23 @@ else
 fi
 
 # get validation date of first file
-vt_init=$(wgrib2 "${firstfile}" -d 1 -vt)
+vt_init=$(${WGRIB2} "${firstfile}" -d 1 -vt)
+
+if (( ${?} > 0 )); then
+  echo "FATAL ERROR: WGRIB2 is not defined"
+  exit 1
+fi
+
 vt_date=${vt_init:7:10}  # for filename
 yy_init=${vt_init:7:4}
 yy_init_next=$((yy_init+1))
 mm_init=${vt_init:11:2}
 
 # get dates and times of last file
-lastftimemsg=$(wgrib2 "${lastfile}" -d 1 -ftime2)
+lastftimemsg=$(${WGRIB2} "${lastfile}" -d 1 -ftime2)
 lastftime="${lastftimemsg% hour fcst}"
 lastfhr=${lastftime:4:4}
-vt_final=$(wgrib2 "${lastfile}" -d 1 -vt)
+vt_final=$(${WGRIB2} "${lastfile}" -d 1 -vt)
 mm_final=${vt_final:11:2}
 dd_final=${vt_final:13:2}
 yy_final=${vt_final:7:4}
@@ -74,7 +83,7 @@ else
 fi
 
 #### check for leap year
-itime=$(wgrib2 -t "${firstfile}"|head -1|cut -d= -f2)
+itime=$(${WGRIB2} -t "${firstfile}"|head -1|cut -d= -f2)
 for i in {1..12}
 do
   yyyy=${itime:0:4}
@@ -125,7 +134,11 @@ do
   #merge the min/max/acc/ave variables into daily periods
   # shellcheck disable=SC2086
   # shellcheck disable=SC2086
-  ${GMERGE} - ${list} | wgrib2 - -match "${dailyaccvars}" -merge_fcst 4 "${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
+  ${GMERGE} - ${list} | ${WGRIB2} - -match "${dailyaccvars}" -merge_fcst 4 "${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
+  if (( ${?} > 0 )); then
+    echo "FATAL ERROR: GMERGE is not defined"
+    exit 1
+  fi
 
   # daily averages for instantaneous variables
   for j in $(seq "${fhi}" 24 "${fhf}")
@@ -134,14 +147,14 @@ do
     end_hr=$((j+24-6))
     list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "$start_hr" 6 "$end_hr")
     # shellcheck disable=SC2086
-    ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
+    ${GMERGE} - ${list_6hrly} | ${WGRIB2} - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
   list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
-  ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
+  ${GMERGE} - ${list_daily} | ${WGRIB2} - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
   rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
   if [ $yy_init == $yy_final ]; then
     break
@@ -175,7 +188,7 @@ do
 
   #merge the min/max/acc/ave variables into daily periods
   # shellcheck disable=SC2086
-  ${GMERGE} - ${list} | wgrib2 - -match "${dailyaccvars}" -merge_fcst 4 "${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start_next}${filemm}${filename_end}"
+  ${GMERGE} - ${list} | ${WGRIB2} - -match "${dailyaccvars}" -merge_fcst 4 "${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start_next}${filemm}${filename_end}"
  
   # daily averages for instantaneous variables
   for j in $(seq "${fhi}" 24 "${fhf}")
@@ -184,14 +197,14 @@ do
     end_hr=$((j+24-6)) 
     list_6hrly=$(seq -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f%03.0f.grib2" "$start_hr" 6 "$end_hr")
     # shellcheck disable=SC2086
-    ${GMERGE} - ${list_6hrly} | wgrib2 - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
+    ${GMERGE} - ${list_6hrly} | ${WGRIB2} - -match "${dailyinstvars}" -fcst_ave 6hr "${OUTDIR}/inst.daily.${MEMDIR}/daily_${end_hr}.grb"
   done
 
   list_daily=$(ls -v "${OUTDIR}"/inst.daily."${MEMDIR}"/daily_*.grb)
 
   #### merge all days into single grib2 file and remove unneeded files
   # shellcheck disable=SC2086
-  ${GMERGE} - ${list_daily} | wgrib2 - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start_next}${filemm}${filename_end}"
+  ${GMERGE} - ${list_daily} | ${WGRIB2} - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start_next}${filemm}${filename_end}"
   rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
 
 done

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -ux
+set -e
+
 ###########################################################################################
 
 # GENERATE MONTHLY MEAN GRIB2 FILES FOR SFS MASTER 6-HOURLY DATA FILES. THIS SCRIPT 
@@ -32,11 +35,15 @@ monthlyaccvars="(ACPCP|APCP|NCPCP|PRATE|LHTFL|SHTFL|UFLX|VFLX|CDUVB|DLWRF|USWRF|
 for file in "${OUTDIR}/acc.daily.${MEMDIR}"/*; do
   filename=${file##*/}
   filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  wgrib2 "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
+  ${WGRIB2} "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
+  if (( ${?} > 0 )); then
+    echo "FATAL ERROR: WGRIB2 is not defined"
+    exit 1
+  fi
 done
 
 for file in "${OUTDIR}/inst.daily.${MEMDIR}"/*; do
   filename=${file##*/}
   filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  wgrib2 "${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
+  ${WGRIB2} "${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
 done
