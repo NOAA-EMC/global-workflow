@@ -4,14 +4,14 @@ function _usage() {
     cat << EOF
 Builds all of the global-workflow components on compute nodes.
 
-Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT -b [gfs gefs sfs gcafs gsi gdas all]
+Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT -c [gfs gefs sfs gcafs gsi gdas all]
   -h:
     Print this help message and exit
   -v:
     Verbose mode
   -A:
     HPC account to use for the compute-node builds [REQUIRED when building on compute nodes]
-  -b Build on login nodes (DEFAULT: NO)
+  -c Build on compute nodes (DEFAULT: NO)
 
   Input arguments are the system(s) to build.
   Valid options are
@@ -31,14 +31,14 @@ build_xml="build.xml"
 build_db="build.db"
 build_lock_db="build_lock.db"
 HPC_ACCOUNT="UNDEFINED"
-build_on_compute="YES"
+compute_build="NO"
 
 OPTIND=1
-while getopts ":hA:vb" option; do
+while getopts ":hA:vc" option; do
     case "${option}" in
         h) _usage ;;
         A) HPC_ACCOUNT="${OPTARG}" ;;
-        b) build_on_compute="NO" ;;
+        c) compute_build="YES" ;;
         v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -59,7 +59,7 @@ else
     systems=$*
 fi
 
-if [[ "${build_on_compute}" == "YES" && "${HPC_ACCOUNT}" == "UNDEFINED" ]]; then
+if [[ "${compute_build}" == "YES" && "${HPC_ACCOUNT}" == "UNDEFINED" ]]; then
     echo "FATAL ERROR: -A <HPC_ACCOUNT> is required when building on compute nodes, ABORT!"
     _usage
 fi
@@ -87,7 +87,7 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
 yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
-"${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
+"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
@@ -97,7 +97,7 @@ fi
 # Catch errors manually from here out
 set +e
 
-if [[ "${build_on_compute}" != "YES" ]]; then
+if [[ "${compute_build}" != "YES" ]]; then
 
     echo "Building on head node as requested ..."
 
