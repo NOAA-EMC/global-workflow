@@ -45,6 +45,9 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
     export WGRIB2=wgrib2
 else
     source "${HOMEgfs}/dev/ush/load_modules.sh" run
+    export GMERGE=gmerge
+    export WGRIB2=wgrib2
+
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}";
