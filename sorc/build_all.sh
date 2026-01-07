@@ -101,6 +101,9 @@ if [[ "${compute_build}" != "YES" ]]; then
 
     echo "Building on head node as requested ..."
 
+    # Maximum number of cores to use for builds on head node
+    declare -r max_cores=20
+
     # grep for <command> tags in the build.xml and collect the commands in an array
     mapfile -t commands < <(grep -oP '(?<=<command>).*(?=</command>)' "${build_xml}")
     # get the corresponding log file names from the build.xml in an array
@@ -114,11 +117,19 @@ if [[ "${compute_build}" != "YES" ]]; then
         log="${logs[i]}"
         name=$(echo "${log}" | xargs -n1 basename | sed 's/\.log$//')
 
+        # Get the number of cores from the command (-j N).
+        # If N is greater than max_cores, set it to max_cores and update the command accordingly.
+        cores=$(echo "${cmd}" | grep -oP '(?<=-j )\d+')
+        if [[ ${cores} -gt ${max_cores} ]]; then
+            cores=${max_cores}
+            cmd="$(echo "${cmd}" | sed -E "s/-j [0-9]+/-j ${cores}/")"
+        fi
+
         build_names["${name}"]="${name}"
         build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
         build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
         build_logs["${name}"]="${log}"
-        build_cores["${name}"]="$(echo "${cmd}" | grep -oP '(?<=-j )\d+')"
+        build_cores["${name}"]="${cores}"
         build_status["${name}"]="pending"
         build_pids["${name}"]=""
 
@@ -128,8 +139,6 @@ if [[ "${compute_build}" != "YES" ]]; then
     # copy build_names into a new array to iterate over
     builds_to_process=("${!build_names[@]}")
 
-    # Maximum number of cores to use for builds on head node
-    declare -r max_cores=20
     current_cores=0
     builds_in_progress=true
     while [[ ${builds_in_progress} == true ]]; do
