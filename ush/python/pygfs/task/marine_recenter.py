@@ -3,12 +3,11 @@
 from logging import getLogger
 import os
 from typing import Dict
-import pygfs.utils.marine_da_utils as mdau
 from pygfs.jedi import Jedi
 from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler,
                     add_to_datetime, to_timedelta, to_fv3time, to_isotime,
-                    parse_j2yaml,
+                    parse_j2yaml, parse_j2tmpl,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -55,7 +54,6 @@ class MarineRecenter(Analysis):
                 'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'cice_rst_date': _cice_rst_date,
-                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
             }
         ))
 
@@ -89,7 +87,9 @@ class MarineRecenter(Analysis):
         FileHandler(self.task_config.data_in).sync()
 
         # prepare the MOM6 input.nml
-        mdau.prep_input_nml(self.task_config)
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input.nml.j2'),
+                     self.task_config,
+                     output_file="mom_input.nml")
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
