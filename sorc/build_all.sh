@@ -86,7 +86,7 @@ mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
-yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
+yaml="${HOMEgfs}/sorc/build_opts.yaml"
 "${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
