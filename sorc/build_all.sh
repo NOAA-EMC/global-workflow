@@ -134,13 +134,13 @@ nbuilds=${#build_names[@]}
 nback=$((nbuilds + 4))
 
 print_build_status() {
-    echo "------------------------------------------------------------------------"
-    printf "| %-12s | %-30s | %-10s | %-9s |\n" "System" "Build Command" "PID" "Status"
-    echo "------------------------------------------------------------------------"
+    echo "------------------------------------------------"
+    printf "| %-18s | %-10s | %-10s |\n" "System" "PID" "Status"
+    echo "------------------------------------------------"
     for name in "${build_names[@]}"; do
-        printf "| %-12s | %-30s | %-10s | %-9s |\n" "${name}" "${build_commands[${name}]}" "${build_pids[${name}]}" "${build_status[${name}]}"
+        printf "| %-18s | %-10s | %-10s |\n" "${name}" "${build_pids[${name}]}" "${build_status[${name}]}"
     done
-    echo "------------------------------------------------------------------------"
+    echo "------------------------------------------------"
 }
 
 # Catch errors manually from here out
@@ -303,6 +303,7 @@ else
         echo "${stat_out}" > rocotostat.out
         # Ignore 1st 2 lines and store each row of rocotostat output in an array
         mapfile -t stat_lines < <(tail -n +3 rocotostat.out)
+        rm -f rocotostat.out
 
         # Loop through each line of the rocotostat output and update build_pids and build_status arrays
         for line in "${stat_lines[@]}"; do
