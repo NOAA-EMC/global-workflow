@@ -8,15 +8,19 @@ echo "BEGIN: config.esnowanl"
 # Get task specific resources
 source "${EXPDIR}/config.resources" esnowanl
 
-export TASK_CONFIG_YAML="${PARMgfs}/gdas/snow/snow_ens_config.yaml.j2"
-export OBS_LIST_YAML="${PARMgfs}/gdas/snow/snow_obs_list.yaml.j2"
-
 # Name of the executable that applies increment to bkg and its namelist template
 export APPLY_INCR_EXE="${EXECgfs}/gdas_apply_incr.x"
 export ENS_APPLY_INCR_NML_TMPL="${PARMgfs}/gdas/snow/ens_apply_incr_nml.j2"
 
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/snow/snow_ens_config.yaml.j2"
+export OBS_LIST_YAML="${PARMgfs}/gdas/snow/snow_obs_list.yaml.j2"
+export ims_scf_obs_suffix="asc" # asc-ascii; nc-netcdf
+export fail_on_missing_snowobs=False    # False: just warn; True: fail & exit
+
 export PREP_SNOCVR_SNOMAD_YAML="${PARMgfs}/gdas/snow/prep/prep_snocvr_snomad.yaml.j2"
 export OBSBUILDER="${USHgfs}/bufr_snocvr_snomad.py"
+export PREP_GHCN_YAML="${PARMgfs}/gdas/snow/prep/prep_ghcn.yaml.j2"
+export GHCN2IODACONV="${USHgfs}/ghcn_snod2ioda.py"
 
 export io_layout_x="{{ IO_LAYOUT_X }}"
 export io_layout_y="{{ IO_LAYOUT_Y }}"
