@@ -22,7 +22,7 @@ indent_style = tab
 indent_size = 4
 max_line_length = 79
 
-[jobs/*]
+[dev/jobs/*]
 indent_style = space
 indent_size = 4
 shell_variant = bash

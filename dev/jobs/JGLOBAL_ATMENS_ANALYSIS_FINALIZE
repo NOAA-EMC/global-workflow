@@ -1,0 +1,53 @@
+#! /usr/bin/env bash
+
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlfinal" -c "base atmensanl atmensanlfinal"
+
+##############################################
+# Set variables used in the script
+##############################################
+GDUMP="gdas"
+GDUMP_ENS="enkf${GDUMP}"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Generate COM variable from template
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_ANALYSIS_ENS:COM_ATMOS_ANALYSIS_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL
+
+mkdir -m 755 -p "${COMOUT_ATMOS_ANALYSIS_ENS}"
+mkdir -m 755 -p "${COMOUT_CONF}"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASATMENSFINALPY:-${SCRgfs}/exglobal_atmens_analysis_finalize.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

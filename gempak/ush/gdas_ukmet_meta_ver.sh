@@ -15,7 +15,8 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-export pgm=gdplot2_nc;. prep_step
+export pgm=gdplot2_nc
+source prep_step
 
 device="nc | ukmetver_12.meta"
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
@@ -33,7 +34,7 @@ areas="SAM NAM"
 
 # GENERATING THE METAFILES.
 for area in ${areas}; do
-    if [[ "${area}" == "NAM" ]] ; then
+    if [[ "${area}" == "NAM" ]]; then
         garea="5.1;-124.6;49.6;-11.9"
         proj="STR/90.0;-95.0;0.0"
         latlon="0"
@@ -150,19 +151,19 @@ export err=$?
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s ukmetver_12.meta ]]; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s ukmetver_12.meta ]]; then
     echo "FATAL ERROR: Failed to create ukmet meta file"
     exit "${err}"
 fi
 
 mv ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 export err=$?
-if (( err != 0 )) ; then
+if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
     exit "${err}"
 fi
 
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL UKMETVER_HPCMETAFILE "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 fi

@@ -3,9 +3,9 @@
 # This script takes in a master flux file and creates interpolated flux files at various interpolated resolutions
 # Generate 0.25 / 0.5 / 1 degree interpolated grib2 flux files for each input sflux grib2 file
 
-input_file=${1:-"sfluxfile_in"}  # Input sflux grib2 file
-output_file_prefix=${2:-"sfluxfile_out"}  # Prefix for output sflux grib2 file; the prefix is appended by resolution e.g. _0p25
-grid_string=${3:-"1p00"}  # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated
+input_file=${1:-"sfluxfile_in"}          # Input sflux grib2 file
+output_file_prefix=${2:-"sfluxfile_out"} # Prefix for output sflux grib2 file; the prefix is appended by resolution e.g. _0p25
+grid_string=${3:-"1p00"}                 # Target grids; e.g. "0p25" or "0p25:0p50"; If multiple, they need to be ":" seperated
 
 # wgrib2 options for regridding
 defaults="-set_grib_type same -set_bitmap 1 -set_grib_max_bits 16"
@@ -28,22 +28,22 @@ IFS=':' read -ra grids <<< "${grid_string}"
 
 output_grids=""
 for grid in "${grids[@]}"; do
-  gridopt="grid${grid}"
-  output_grids="${output_grids} -new_grid ${!gridopt} ${output_file_prefix}_${grid}"
+    gridopt="grid${grid}"
+    output_grids="${output_grids} -new_grid ${!gridopt} ${output_file_prefix}_${grid}"
 done
 
 #shellcheck disable=SC2086
 ${WGRIB2} "${input_file}" ${defaults} \
-                          ${interp_winds} \
-                          ${interp_bilinear} \
-                          ${interp_neighbor} \
-                          ${interp_budget} \
-                          ${increased_bits} \
-                          ${output_grids}
+    ${interp_winds} \
+    ${interp_bilinear} \
+    ${interp_neighbor} \
+    ${interp_budget} \
+    ${increased_bits} \
+    ${output_grids}
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-   echo "FATAL ERROR: WGRIB2 failed to interpolate surface flux parameters to a new grib2 file"
-   exit "${err}"
+    echo "FATAL ERROR: WGRIB2 failed to interpolate surface flux parameters to a new grib2 file"
+    exit "${err}"
 fi
 
 exit 0

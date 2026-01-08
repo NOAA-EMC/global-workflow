@@ -2,8 +2,7 @@
 # This file is to ensure that new development gets reviewed by the appropriate SME
 
 # global-workflow default owners (not a complete list)
-* @DavidHuber-NOAA
-* @aerorahul
+* @DavidHuber-NOAA @aerorahul
 
 # Specific directory owners
 # dev/
@@ -157,8 +156,8 @@ ush/forecast_postdet.sh @aerorahul
 ush/forecast_predet.sh @aerorahul
 ush/fv3gfs_remap_weights.sh
 ush/gaussian_sfcanl.sh @BrianCurtis-NOAA
-ush/getdump.sh @DavidHuber-NOAA @aerorahul 
-ush/getges.sh @DavidHuber-NOAA @aerorahul 
+ush/getdump.sh @DavidHuber-NOAA @aerorahul
+ush/getges.sh @DavidHuber-NOAA @aerorahul
 ush/getgfsnctime @CoryMartin-NOAA
 ush/getioda.sh @nicholasesposito @CoryMartin-NOAA @RussTreadon-NOAA
 ush/getncdimlen @CoryMartin-NOAA
@@ -208,7 +207,8 @@ ush/python/pygfs/jedi/jedi.py @DavidNew-NOAA
 ush/python/pygfs/task/__init__.py @aerorahul
 ush/python/pygfs/task/aero_analysis.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
-ush/python/pygfs/task/aero_emissions.py @bbakernoaa
+ush/python/pygfs/task/chem_fire_emission.py @bbakernoaa
+ush/python/pygfs/task/nexus_emission.py @bbakernoaa
 ush/python/pygfs/task/analysis.py @DavidNew-NOAA @RussTreadon-NOAA
 ush/python/pygfs/task/analysis_stats.py @CoryMartin-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/archive.py @DavidHuber-NOAA

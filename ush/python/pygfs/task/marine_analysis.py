@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
+from datetime import datetime, timedelta
+import dateutil.parser as dparser
+from netCDF4 import Dataset
 from logging import getLogger
 import os
-import pygfs.utils.marine_da_utils as mdau
 from pygfs.jedi import Jedi
 from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler,
-                    to_timedelta, to_fv3time,
-                    parse_j2yaml,
+                    to_timedelta, to_fv3time, to_isotime,
+                    parse_j2yaml, parse_j2tmpl,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -60,6 +61,19 @@ class MarineAnalysis(Analysis):
             _rst_date = to_fv3time(self.task_config.current_cycle)
             _cice_rst_date = to_fv3time(self.task_config.current_cycle)
 
+        # Generate list of pseudo model states
+        dt_pseudo = 3
+        fcst_hour_list = list(range(6, 10, dt_pseudo))
+        _marine_pseudo_model_states = []
+        bkg_date = self.task_config.WINDOW_BEGIN
+        for fcst_hour in fcst_hour_list:
+            bkg_date = bkg_date + timedelta(hours=dt_pseudo)
+            _marine_pseudo_model_states.append({'date': to_isotime(bkg_date),
+                                                'basename': './bkg/',
+                                                'ocn_filename': f"ocean.bkg.f{str(fcst_hour).zfill(3)}.nc",
+                                                'ice_filename': f"ice.bkg.f{str(fcst_hour).zfill(3)}.nc",
+                                                'read_from_file': 1})
+
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -68,10 +82,7 @@ class MarineAnalysis(Analysis):
                 'berror_model': _berror_model,
                 'rst_date': _rst_date,
                 'cice_rst_date': _cice_rst_date,
-                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3)),
-                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
-                'marine_pseudo_model_states': mdau.gen_bkg_list(bkg_path='./bkg',
-                                                                window_begin=self.task_config.WINDOW_BEGIN)
+                'marine_pseudo_model_states': _marine_pseudo_model_states
             }
         ))
 
@@ -89,6 +100,7 @@ class MarineAnalysis(Analysis):
         This method will initialize the marine analysis.
         This includes:
         - staging input files from COM and create output directories
+        - staging observation files
         - preparing the namelists for deterministic MOM6 and analysis geometry
         - asserting that dates of the history files are correct
         - initializing all the JEDI applications required for the marine analysis
@@ -107,25 +119,32 @@ class MarineAnalysis(Analysis):
         logger.info(f"Staging files from COM and creating input/output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # Stage observation files
+        logger.info(f"Staging observations")
+        self.jedi_dict['var'].stage_obsdatain(self.task_config.COMIN_OBS)
+
         # prepare the deterministic MOM6 input.nml
         logger.info(f"Preparing deterministic MOM6 input namelist")
-        mdau.prep_input_nml(self.task_config)
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input.nml.j2'),
+                     self.task_config,
+                     output_file="mom_input.nml")
 
         # prepare the input.nml for the analysis geometry
         logger.info(f"Preparing analysis geometry input namelist")
-        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
-                            simple_geom=True, mom_input="./anl_geom/MOM_input")
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
+                     self.task_config,
+                     output_file="./anl_geom/mom_input.nml")
 
         # assert that dates of the history files are correct
-        mdau.test_hist_date('./INPUT/MOM.res.nc', self.task_config.WINDOW_BEGIN)
+        test_hist_date('./INPUT/MOM.res.nc', self.task_config.WINDOW_BEGIN)
         for state in self.task_config.marine_pseudo_model_states:
-            mdau.test_hist_date(state['basename'] + state['ocn_filename'],
-                                datetime.strptime(state['date'], '%Y-%m-%dT%H:%M:%SZ'))
+            test_hist_date(state['basename'] + state['ocn_filename'],
+                           datetime.strptime(state['date'], '%Y-%m-%dT%H:%M:%SZ'))
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['var'].initialize(self.task_config, clean_empty_obsspaces=True)
-        self.jedi_dict['soca_incpostproc'].initialize(self.task_config)
+        self.jedi_dict['var'].initialize(clean_empty_obsspaces=True)
+        self.jedi_dict['soca_incpostproc'].initialize()
 
         # This method is a bit of a hack that will be removed in the future when the anlstat
         # job fully replaces the SOCA obs_diag_stats application
@@ -157,7 +176,8 @@ class MarineAnalysis(Analysis):
         This method will finalize a global marine analysis.
         This includes:
         - Saving output files to COM
-        - Saving observation statistics to COM
+        - Archiving, compressing, and saving diag files in COM directory
+        - Saving (legacy) observation statistics to COM
 
         Parameters
         ----------
@@ -172,10 +192,15 @@ class MarineAnalysis(Analysis):
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
 
-        # Save obs diag statistics to COM (success is optional)
-        logger.info(f"Copy observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
+        self.jedi_dict['var'].save_obsdataout(self.task_config.COMOUT_OCEAN_ANALYSIS,
+                                              f"{self.task_config.APREFIX}marine_analysis.ioda_hofx")
+
+        # Save obs diag statistics to COM (this is for legacy obs monitoring)
+        logger.info(f"Copy (legacy) observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
         try:
-            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb(self.task_config, 'soca_diags_finalize')
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb_template(algorithm_in='soca_diags_finalize')
         except Exception as e:
             logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
         FileHandler(diags_list).sync()
@@ -214,3 +239,19 @@ class MarineAnalysis(Analysis):
         # Initialize the observation statistics
         logger.info(f"Initializing JEDI SOCA observation statistics application")
         self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
+
+
+@logit(logger)
+def test_hist_date(histfile: str, ref_date: datetime) -> None:
+    """
+    Check that the date in the MOM6 history file is the expected one for the cycle.
+    TODO: Implement the same for seaice
+    """
+
+    ncf = Dataset(histfile, 'r')
+    hist_date = dparser.parse(ncf.variables['time'].units, fuzzy=True) + timedelta(hours=int(ncf.variables['time'][0]))
+    ncf.close()
+    logger.info(f"*** history file date: {hist_date} expected date: {ref_date}")
+
+    if hist_date != ref_date:
+        raise ValueError(f"FATAL ERROR: Inconsistent bkg date, Expected {ref_date}, {histfile} contains {hist_date}")

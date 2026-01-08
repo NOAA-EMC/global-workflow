@@ -9,22 +9,40 @@ source "${EXPDIR}/config.resources" cleanup
 export CLEANUP_COM="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
-export RMOLDSTD=144
-export RMOLDEND=24
+# RUN-based cleanup variables
+# Keep all files newer than SELECTIVE_CLEANUP_MIN hours 
+# Selectively remove files between SELECTIVE_CLEANUP_MAX and SELECTIVE_CLEANUP_MIN hours old, based on exclude_string
+# Remove all GEMPAK files older than GEMPAK_CLEANUP hours if DO_GEMPAK is set to YES and only for RUN==gfs
+# Remove **all** files and directories older than max(SELECTIVE_CLEANUP_MAX, GEMPAK_CLEANUP, RTOFS_CLEANUP)
 
-if [[ "${DO_GEMPAK}" == "YES" && "${RUN}" == "gfs" ]]; then
-    export RMOLDSTD=346
-    export RMOLDEND=222
+# RTOFS-specific variables (runs every RUN)
+# Remove all RTOFS files older than RTOFS_CLEANUP hours
+
+export SELECTIVE_CLEANUP_MAX=144
+export SELECTIVE_CLEANUP_MIN=24
+export GEMPAK_CLEANUP=240
+export RTOFS_CLEANUP=24
+if [[ ${SELECTIVE_CLEANUP_MIN} -gt ${SELECTIVE_CLEANUP_MAX} ]]; then
+    echo "FATAL ERROR: Invalid selective cleanup times: "
+    echo "             SELECTIVE_CLEANUP_MIN=${SELECTIVE_CLEANUP_MIN} > SELECTIVE_CLEANUP_MAX=${SELECTIVE_CLEANUP_MAX}"
+    exit 1
+fi
+
+# GEMPAK_CLEANUP must not be less than SELECTIVE_CLEANUP_MIN, which acts as the starting point for cleanup
+if [[ "${DO_GEMPAK}" == "YES" && ${GEMPAK_CLEANUP} -lt ${SELECTIVE_CLEANUP_MIN} ]]; then
+    echo "FATAL ERROR: Invalid GEMPAK cleanup time: "
+    echo "             GEMPAK_CLEANUP=${GEMPAK_CLEANUP} < SELECTIVE_CLEANUP_MIN=${SELECTIVE_CLEANUP_MIN}"
+    exit 2
 fi
 
 # Specify the list of files to exclude from the first stage of cleanup
 # Because arrays cannot be exported, list is a single string of comma-
 # separated values. This string is split to form an array at runtime.
+export selective_exclude_string=""
 case ${RUN} in
-	gdas | gfs)	exclude_string="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
-	enkf*)      exclude_string="*f006.ens*" ;;
-	*)			exclude_string="" ;;
+    gdas | gfs)	selective_exclude_string+="*prepbufr*, *cnvstat.tar*, *analysis.atm.a*.nc" ;;
+    enkf*)      selective_exclude_string+="*f006.ens*" ;;
+    *)          selective_exclude_string="" ;;
 esac
-export exclude_string
 
 echo "END: config.cleanup"

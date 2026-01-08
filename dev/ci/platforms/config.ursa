@@ -67,3 +67,14 @@ export max_concurrent_pr=4
 
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
+
+#########################################################################
+# System-specific settings
+# Platform-specific paths and utilities for CI/CD operations
+#########################################################################
+
+# Utilities path for custom builds and role account tools
+export GFS_CI_UTIL_PATH="/scratch3/NCEPDEV/global/role.glopara/utils"
+
+# used for CI jobs requiring Rocoto with dry_run support
+export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/src/rocoto-1.3.7-dryrun_nodaemon/bin"

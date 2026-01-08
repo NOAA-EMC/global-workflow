@@ -41,6 +41,11 @@
 
 # Change characteristics
 <!-- Choose YES or NO from each of the following and delete the other -->
+- Is this change expected to change outputs (e.g. value changes to existing outputs, new files stored in COM, files removed from COM, filename changes, additions/subtractions to archives)? YES/NO (If YES, please indicate to which system(s))
+  - [ ] GFS
+  - [ ] GEFS
+  - [ ] SFS
+  - [ ] GCAFS
 - Is this a breaking change (a change in existing functionality)? YES/NO
 - Does this change require a documentation update? YES/NO
 - Does this change require an update to any of the following submodules? YES/NO (If YES, please add a link to any PRs that are pending.)
@@ -57,11 +62,15 @@
 # How has this been tested?
 <!-- Please list any test you conducted, including the machine.
 
+Include the output of `gw_cistat -r /path/to/RUNTESTS/directory` for the tests you ran.
+`gw_cistat` is available after sourcing the `gw_setup.sh` script in `dev/ush/`.
+
 Example:
 - Clone and build on WCOSS
 - Cycled test on Orion
 - Forecast-only on Hera
 -->
+
 
 # Checklist
 - [ ] Any dependent changes have been merged and published

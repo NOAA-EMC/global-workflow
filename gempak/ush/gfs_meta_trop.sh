@@ -28,24 +28,26 @@ device="nc | ${metaname}"
 #
 for domain in ATL PAC WPAC; do
     case ${domain} in
-    ATL)
-        garea="-6;-111;52;-14"
-        proj="MER/0.0;-49.5;0.0"
-        ;;
-    PAC)
-        garea="0;-140;45;-75"
-        proj="mer//3;3;0;1"
-        ;;
-    WPAC)
-        garea="0;90;45;180"
-        proj="mer//3;3;0;1"
-        ;;
-    *)
-        echo "FATAL ERROR: Unknown domain in ${BASH_SOURCE[0]}"
-        exit 100
+        ATL)
+            garea="-6;-111;52;-14"
+            proj="MER/0.0;-49.5;0.0"
+            ;;
+        PAC)
+            garea="0;-140;45;-75"
+            proj="mer//3;3;0;1"
+            ;;
+        WPAC)
+            garea="0;90;45;180"
+            proj="mer//3;3;0;1"
+            ;;
+        *)
+            echo "FATAL ERROR: Unknown domain in ${BASH_SOURCE[0]}"
+            exit 100
+            ;;
     esac
 
-    export pgm=gdplot2_nc;. prep_step
+    export pgm=gdplot2_nc
+    source prep_step
     "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-${MDL} | ${PDY:2}/${cyc}00
 GDATTIM = F00-F180-12
@@ -223,7 +225,8 @@ r
 
 exit
 EOF
-    export err=$?;err_chk
+    export err=$?
+    err_chk
 
 done
 
@@ -232,16 +235,16 @@ done
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
-    if [[ "${DBN_ALERT_TYPE}" == "GFS_METAFILE_LAST" ]] ; then
+    if [[ "${DBN_ALERT_TYPE}" == "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
