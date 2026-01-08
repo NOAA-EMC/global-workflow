@@ -213,7 +213,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.atm.a00${FHR}.nc"
         ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres_analysis.atm.a00${FHR}.nc"
 
-        # if we already have a ensemble resolution GSI analysis then just link to it
+        # if we already have a ensemble resolution GSI analysis then just copy it
         if [[ -f ${ATMANL_GSI_ENSRES} ]]; then
             cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
         else
