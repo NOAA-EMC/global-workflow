@@ -167,7 +167,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             err_exit "Failed to recenter the ensemble increments!"
         fi
 
-        # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
+        # If available, copy the ensemble mean guess.  Otherwise, compute ensemble mean guess
         if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
             cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
         else
