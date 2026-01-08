@@ -19,9 +19,7 @@ device="nc | gfs.meta.ak"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 fend=F216
 

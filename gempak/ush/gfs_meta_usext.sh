@@ -15,9 +15,7 @@ cpreq "${HOMEgfs}/gempak/fix/ak_sfstns.tbl" alaska.tbl
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 device="nc | mrf.meta"
 

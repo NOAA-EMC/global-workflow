@@ -20,9 +20,7 @@ device="nc | ${metaname}"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 vergrid="F-${MDL} | ${PDY:2}/${cyc}00"
@@ -52,10 +50,8 @@ for lookback in "${lookbacks[@]}"; do
 
     # Create symlink in DATA to sidestep gempak path limits
     HPCGFS="${RUN}.${init_time}"
-    if [[ ! -L "${HPCGFS}" ]]; then
-        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-        cpreq -R "${source_dir}" "${HPCGFS}"
-    fi
+    YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+    cpreq -R "${source_dir}" "${HPCGFS}"
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 

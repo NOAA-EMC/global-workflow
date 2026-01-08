@@ -19,9 +19,7 @@ device="nc | ecmwfver.meta"
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gdas.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"
 

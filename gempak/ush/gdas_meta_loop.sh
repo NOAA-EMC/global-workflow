@@ -12,9 +12,7 @@ device="nc | gdasloop.meta"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L "${COMIN}" ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 if [[ "${envir}" == "para" ]]; then
     export m_title="GDASP"
@@ -41,9 +39,7 @@ for ((fhr = 24; fhr <= 144; fhr += 24)); do
         #  Test with GDAS in PROD
         YMD=${day} HH=${cyc} GRID=1p00 declare_from_tmpl "COMIN_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
         export COMIN="${RUN}.${day}${cycle}"
-        if [[ ! -L "${COMIN}" ]]; then
-            cpreq -R "${COMIN_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
-        fi
+        cpreq -R "${COMIN_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
         gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
         "${GEMEXE}/gdplot2_nc" << EOF

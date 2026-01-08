@@ -12,9 +12,7 @@ device="nc | gdas.meta"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L "${COMIN}" ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 if [[ "${envir}" == "para" ]]; then
     export m_title="GDASP"

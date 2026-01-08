@@ -20,13 +20,9 @@ device="nc | ${metaname}"
 #
 # Link data into DATA to sidestep gempak path limits
 # TODO: Replace this
-#
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
-#
 # DEFINE YESTERDAY
 PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
 #
