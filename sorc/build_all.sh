@@ -279,10 +279,10 @@ if [[ "${compute_build}" != "YES" ]]; then
 else
 
     echo "Building on compute nodes as requested ..."
-    runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
     print_build_status
 
+    runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
     ${runcmd}
     rc=$?
     if [[ "${rc}" -ne 0 ]]; then
@@ -292,24 +292,31 @@ else
 
     builds_in_progress=true
     while [[ ${builds_in_progress} == true ]]; do
+
         sleep 1m
+
         ${runcmd}
-        sleep 10s
+
+        sleep 15s
+
         stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
         echo "${stat_out}" > rocotostat.out
         # Ignore 1st 2 lines and store each row of rocotostat output in an array
         mapfile -t stat_lines < <(tail -n +3 rocotostat.out)
 
+        # Loop through each line of the rocotostat output and update build_pids and build_status arrays
         for line in "${stat_lines[@]}"; do
             # Read each line into an array using read
             IFS=' ' read -r -a columns <<< "${line}"
 
-            # Get the name of the build in this row
+            # Get the name, jobid and jobstatus of the build in this row
             name=${columns[1]}
+            jobid=${columns[2]}
+            jobstatus=${columns[3]}
 
-            # Update build_pids and build_status arrays
-            build_pids["${name}"]="${columns[2]}"
-            build_status["${name}"]="${columns[3]}"
+            # Update build_pids and build_status arrays for the build_name
+            build_pids["${name}"]="${jobid}"
+            build_status["${name}"]="${jobstatus}"
         done
 
         echo -ne "\033[${nback}A"
