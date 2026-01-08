@@ -111,5 +111,7 @@ declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/model/chem/history'
 declare -rx COM_CHEM_ANALYSIS_TMPL=${COM_BASE}'/analysis/chem'
 declare -rx COM_CHEM_BMAT_TMPL=${COM_CHEM_ANALYSIS_TMPL}'/bmatrix'
 declare -rx COM_CHEM_ANLMON_TMPL=${COM_BASE}'/products/chem/anlmon'
+declare -rx COM_CHEM_INPUT_TMPL=${COM_BASE}'/model/chem/input'
+declare -rx COM_CHEM_RESTART_TMPL=${COM_BASE}'/model/chem/restart'
 
 declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/model/med/restart'

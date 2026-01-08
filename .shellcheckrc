@@ -17,3 +17,6 @@ disable=SC2174
 
 # Disable warning of functions in test statements
 disable=SC2310
+
+# Disable masking of return codes from chained commands.  Use `set -o pipefail` to trap them.
+disable=SC2312

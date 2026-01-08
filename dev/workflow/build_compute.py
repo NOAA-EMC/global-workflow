@@ -114,12 +114,17 @@ def get_build_specs(build_specs: Dict, host_spec: Dict) -> Dict:
 
         # Otherwise, take the blanket exceptions and apply to the job
         else:
-            if build_specs.build[key].cores > override.max_cores:
-                # Adjust the walltime based on the ratio of max_cores/build.walltime
-                in_walltime = to_timedelta(build_specs.build[key].walltime)
-                override_walltime = in_walltime * (build_specs.build[key].cores / override.max_cores)
-                build_specs.build[key].cores = override.max_cores
-                build_specs.build[key].walltime = timedelta_to_HMS(override_walltime)
+            if 'max_cores' in override:
+                if build_specs.build[key].cores > override.max_cores:
+                    # Adjust the walltime based on the ratio of max_cores/build.walltime
+                    in_walltime = to_timedelta(build_specs.build[key].walltime)
+                    override_walltime = in_walltime * (build_specs.build[key].cores / override.max_cores)
+                    build_specs.build[key].cores = override.max_cores
+                    build_specs.build[key].walltime = timedelta_to_HMS(override_walltime)
+
+            if 'max_memory' in override and 'memory' in build_specs.build[key]:
+                if build_specs.build[key].memory > override.max_memory:
+                    build_specs.build[key].memory = override.max_memory
 
             # Adjust build walltime by the walltime_ratio
             build_specs.build[key].walltime = timedelta_to_HMS(

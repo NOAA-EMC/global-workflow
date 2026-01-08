@@ -19,6 +19,5 @@ load("py-pyyaml")
 load("py-numpy")
 load(pathJoin("cmake", cmake_ver))
 try_load("globus-cli")
-load("gh")
 
 whatis("Description: GFS run setup environment")

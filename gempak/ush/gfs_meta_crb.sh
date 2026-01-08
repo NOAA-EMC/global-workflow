@@ -31,7 +31,8 @@ PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
 
 fend=F126
 
-export pgm=gdplot2_nc;. prep_step
+export pgm=gdplot2_nc
+source prep_step
 "${GEMEXE}/gdplot2_nc" << EOF
 GDFILE	= F-${MDL} | ${PDY:2}/${cyc}00
 GDATTIM	= F00-${fend}-06
@@ -246,10 +247,10 @@ ru
 
 exit
 EOF
-export err=$?;err_chk
+export err=$?
+err_chk
 
-
-if [[ ${cyc} == 00 ]] ; then
+if [[ ${cyc} == 00 ]]; then
     export HPCECMWF=ecmwf.${PDY}
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
@@ -270,7 +271,8 @@ if [[ ${cyc} == 00 ]] ; then
         gfsfhr=F$(printf "%02g" "${fhr}")
         ecmwffhr=F$(printf "%02g" $((fhr + 12)))
 
-        export pgm=gdplot2_nc;. prep_step
+        export pgm=gdplot2_nc
+        source prep_step
         "${GEMEXE}/gdplot2_nc" << EOF10
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
@@ -327,14 +329,16 @@ r
 
 ex
 EOF10
-        export err=$?;err_chk
+        export err=$?
+        err_chk
 
     done
     for fhr in 0 12 24 36 48 60 84 108 132; do
         gfsfhr=F$(printf "%02g" "${fhr}")
         ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
-        export pgm=gdplot2_nc;. prep_step
+        export pgm=gdplot2_nc
+        source prep_step
         "${GEMEXE}/gdplot2_nc" << EOF25
 DEVICE  = ${device}
 PANEL   = 0
@@ -389,7 +393,8 @@ r
 
 ex
 EOF25
-        export err=$?;err_chk
+        export err=$?
+        err_chk
 
     done
 fi
@@ -399,16 +404,16 @@ fi
 # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
 # FOR THIS CASE HERE.
 #####################################################
-if (( err != 0 )) || [[ ! -s "${metaname}" ]] &> /dev/null; then
+if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
-    exit $(( err + 100 ))
+    exit $((err + 100))
 fi
 
 mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
-if [[ "${SENDDBN}" == "YES" ]] ; then
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
-    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]] ; then
+    if [[ ${DBN_ALERT_TYPE} == "GFS_METAFILE_LAST" ]]; then
         DBN_ALERT_TYPE=GFS_METAFILE
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"

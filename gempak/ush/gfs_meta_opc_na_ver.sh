@@ -1,0 +1,174 @@
+#! /usr/bin/env bash
+#
+# Metafile Script : gfs_meta_opc_na_ver
+#
+# Set up Local Variables
+#
+
+source "${HOMEgfs}/ush/preamble.sh"
+
+mkdir -p -m 775 "${DATA}/OPC_NA_VER_F${fend}"
+cd "${DATA}/OPC_NA_VER_F${fend}" || exit 2
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
+#
+# Link data into DATA to sidestep gempak path limits
+# TODO: Replace this
+#
+export COMIN="${RUN}.${PDY}${cyc}"
+if [[ ! -L ${COMIN} ]]; then
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
+
+mdl=gfs
+MDL="GFS"
+metaname="gfsver_mpc_na_${cyc}.meta"
+device="nc | ${metaname}"
+
+# SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
+vergrid="F-${MDL} | ${PDY:2}/${cyc}00"
+fcsthr="f00"
+
+# SET WHAT RUNS TO COMPARE AGAINST BASED ON MODEL CYCLE TIME.
+# seq won't give us any splitting problems, ignore warnings
+# shellcheck disable=SC2207
+case ${cyc} in
+    00 | 12) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 96 12 120)) ;;
+    06 | 18) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 90 12 126)) ;;
+    *)
+        echo "FATAL ERROR: Invalid cycle ${cyc} passed to ${BASH_SOURCE[0]}"
+        exit 100
+        ;;
+esac
+
+#GENERATING THE METAFILES.
+MDL2="GFSHPC"
+for lookback in "${lookbacks[@]}"; do
+    init_time="$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${lookback} hours")"
+    init_PDY=${init_time:0:8}
+    init_cyc=${init_time:8:2}
+
+    if [[ "${init_time}" -le "${SDATE:-0}" ]]; then
+        echo "Skipping ver for ${init_time} because it is before the experiment began"
+        if [[ "${lookback}" -eq "${lookbacks[0]}" ]]; then
+            echo "First forecast time, no metafile produced"
+            exit 0
+        else
+            break
+        fi
+    fi
+
+    dgdattim="f$(printf "%03g" "${lookback}")"
+
+    # Create symlink in DATA to sidestep gempak path limits
+    HPCGFS="${RUN}.${init_time}"
+    if [[ ! -L ${HPCGFS} ]]; then
+        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+        ${NLN} "${source_dir}" "${HPCGFS}"
+    fi
+
+    grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
+
+    # 500 MB HEIGHT METAFILE
+    export pgm=gdplot2_nc
+    source prep_step
+
+    "${GEMEXE}/gdplot2_nc" << EOFplt
+PROJ     = MER
+GAREA    = 15.0;-100.0;70.0;20.0
+map      = 1//2
+clear    = yes
+text     = 1/22/////hw
+contur   = 2
+skip     = 0
+type     = c
+
+gdfile   = ${vergrid}
+gdattim  = ${fcsthr}
+device   = ${device}
+gdpfun   = sm5s(hght)
+glevel   = 500
+gvcord   = pres
+scale    = -1
+cint     = 6
+line     = 6/1/3
+title    = 6/-2/~ GFS 500 MB HGT|~500 HGT DIFF
+r
+
+gdfile   = ${grid}
+gdattim  = ${dgdattim}
+line     = 5/1/3
+contur   = 4
+title    = 5/-1/~ GFS 500 MB HGT
+clear    = no
+r
+
+gdfile   = ${vergrid}
+gdattim  = ${fcsthr}
+gdpfun   = sm5s(pmsl)
+glevel   = 0
+gvcord   = none
+scale    = 0
+cint     = 4
+line     = 6/1/3
+contur   = 2
+title    = 6/-2/~ GFS PMSL|~PMSL DIFF
+clear    = yes
+r
+
+gdfile   = ${grid}
+gdattim  = ${dgdattim}
+line     = 5/1/3
+contur   = 4
+title    = 5/-1/~ GFS PMSL
+clear    = no
+r
+
+gdfile   = ${vergrid}
+gdattim  = ${fcsthr}
+gdpfun   = mag(kntv(wnd))
+glevel   = 9950
+gvcord   = sgma
+scale    = 0
+cint     = 35;50;65
+line     = 6/1/3
+title    = 6/-2/~ GFS WIND ISOTACHS 30m|~WIND DIFF
+clear    = yes
+r
+
+gdfile   = ${grid}
+gdattim  = ${dgdattim}
+line     = 5/1/3
+contur   = 0
+title    = 5/-1/~ GFS WIND ISOTACHS 30m
+clear    = no
+r
+
+ex
+EOFplt
+
+    export err=$?
+    err_chk
+    if [[ "${err}" -ne 0 ]]; then
+        echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+        exit $((err + 100))
+    fi
+done
+
+#####################################################
+# GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
+# WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
+# FOR THIS CASE HERE.
+#####################################################
+if [[ ! -s "${metaname}" ]] &> /dev/null; then
+    echo "FATAL ERROR: Failed to create gempak meta file ${metaname}"
+    exit 100
+fi
+
+mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_na_mar"
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
+        "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_na_mar"
+fi
+
+exit

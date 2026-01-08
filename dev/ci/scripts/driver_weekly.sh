@@ -27,7 +27,7 @@ export REPO_URL="ssh://git@ssh.github.com:443/NOAA-EMC/global-workflow.git"
 ################################################################
 # Setup the relative paths to scripts and PS4 for better logging
 ################################################################
-ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../../.." >/dev/null 2>&1 && pwd )"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." > /dev/null 2>&1 && pwd)"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'
@@ -38,14 +38,14 @@ export PS4='+ $(basename ${BASH_SOURCE[0]})[${LINENO}]'
 
 source "${ROOT_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-  hera | orion | hercules | wcoss2 | gaea)
-    echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
-    ;;
-  *)
-    echo "Unsupported platform. Exiting with error."
-    exit 1
-    ;;
+    hera | orion | hercules | wcoss2 | gaea)
+        echo "Running Automated Testing on ${MACHINE_ID}"
+        source "${ROOT_DIR}/ci/platforms/config.${MACHINE_ID}"
+        ;;
+    *)
+        echo "Unsupported platform. Exiting with error."
+        exit 1
+        ;;
 esac
 
 ######################################################
@@ -110,9 +110,8 @@ PULL_REQUEST_LABELS=("CI/CD" "CI-Orion-Ready" "CI-Hera-Ready")
 "${GH}" pr ready --undo
 
 # Add labels to the pull request
-for label in "${PULL_REQUEST_LABELS[@]}"
-do
-  "${GH}" pr edit --add-label "${label}"
+for label in "${PULL_REQUEST_LABELS[@]}"; do
+    "${GH}" pr edit --add-label "${label}"
 done
 cd "${GFS_BASH_CI_ROOT}"
 rm -Rf "${develop_dir}"

@@ -33,9 +33,17 @@ declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LIN
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
-        # Exit on error and undefined variable
+        # Exit on error or undefined variable
         set -eu
+        # Exit on error in a pipeline (e.g. if and command in "cmd | cmd2" fails)
+        set -o pipefail
     fi
+}
+
+unset_strict() {
+    # Turn off strict mode
+    set +eu
+    set +o pipefail
 }
 
 set_trace() {
@@ -79,7 +87,7 @@ postamble() {
     #
 
     if [[ -v 'POSTAMBLE_CMD' ]]; then
-      ${POSTAMBLE_CMD}
+        ${POSTAMBLE_CMD}
     fi
 
     # Calculate the elapsed time
@@ -110,10 +118,10 @@ function err_exit() {
 
     msg1=${*:-Job ${jobid} failed}
     if [[ -n "${pgm}" ]]; then
-      msg1+=", ERROR IN ${pgm}"
+        msg1+=", ERROR IN ${pgm}"
     fi
     if [[ -n "${err}" ]]; then
-      msg1+=" RETURN CODE ${err}"
+        msg1+=" RETURN CODE ${err}"
     fi
 
     msg2="
@@ -133,38 +141,38 @@ function err_exit() {
 
     # list files in temporary working directory
     if [[ -n "${DATA}" ]]; then
-      >&2 echo "${DATA}"
-      >&2 ls -ltr "${DATA}"
+        >&2 echo "${DATA}"
+        >&2 ls -ltr "${DATA}"
     else
-      >&2 echo "WARNING: DATA variable not defined"
+        >&2 echo "WARNING: DATA variable not defined"
     fi
 
     # save standard output
     if [[ -n "${pgmout}" ]]; then
-      if [[ -s errfile ]]; then
-        echo "----- contents of errfile -----" >> "${pgmout}"
-        cat errfile >> "${pgmout}"
-      fi
-      >&2 cat "${pgmout}"
+        if [[ -s errfile ]]; then
+            echo "----- contents of errfile -----" >> "${pgmout}"
+            cat errfile >> "${pgmout}"
+        fi
+        >&2 cat "${pgmout}"
     elif [[ -s errfile ]]; then
-      >&2 cat errfile
+        >&2 cat errfile
     fi
 
     # Write to ecflow log:
     if [[ "${SENDECF}" == "YES" ]]; then
-      timeout 30 ecflow_client --msg "${ECF_NAME}: ${msg1}"
-      timeout 30 ssh "${ECF_HOST}" "echo \"${msg}2\" >> ${ECF_JOBOUT:?}"
+        timeout 30 ecflow_client --msg "${ECF_NAME}: ${msg1}"
+        timeout 30 ssh "${ECF_HOST}" "echo \"${msg}2\" >> ${ECF_JOBOUT:?}"
     fi
 
     # KILL THE JOB:
     if [[ "${SENDECF}" == "YES" ]]; then
-      ecflow_client --kill="${ECF_NAME:?}"
+        ecflow_client --kill="${ECF_NAME:?}"
     fi
 
     if [[ -n "${PBS_JOBID}" ]]; then
-      qdel "${PBS_JOBID}"
+        qdel "${PBS_JOBID}"
     elif [[ -n "${SLURM_JOB_ID}" ]]; then
-      scancel "${SLURM_JOB_ID}"
+        scancel "${SLURM_JOB_ID}"
     fi
 }
 
@@ -180,6 +188,7 @@ source "${HOMEgfs}/ush/bash_utils.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 export SHELLOPTS
 declare -xf set_strict
+declare -xf unset_strict
 declare -xf set_trace
 declare -xf postamble
 declare -xf err_exit

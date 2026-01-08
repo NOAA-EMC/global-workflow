@@ -42,14 +42,14 @@ function declare_from_tmpl() {
     while getopts "rx" option; do
         opts="${opts}${option}"
     done
-    shift $((OPTIND-1))
+    shift $((OPTIND - 1))
 
     for input in "$@"; do
         IFS=':' read -ra args <<< "${input}"
         local com_var="${args[0]}"
         local template
         local value
-        if (( ${#args[@]} > 1 )); then
+        if ((${#args[@]} > 1)); then
             template="${args[1]}"
         else
             template="${com_var}_TMPL"
@@ -99,7 +99,7 @@ function wait_for_file() {
     local sleep_interval=${2:-60}
     local max_tries=${3:-100}
 
-    for (( iter=0; iter<max_tries; iter++ )); do
+    for ((iter = 0; iter < max_tries; iter++)); do
         if [[ -r ${file_name} ]]; then
             set_trace
             return 0
