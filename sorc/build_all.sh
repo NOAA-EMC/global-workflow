@@ -32,6 +32,7 @@ build_db="build.db"
 build_lock_db="build_lock.db"
 HPC_ACCOUNT="UNDEFINED"
 compute_build="NO"
+max_cores=20 # Maximum number of cores to use for builds on head node
 
 OPTIND=1
 while getopts ":hA:vc" option; do
@@ -94,29 +95,21 @@ if [[ "${rc}" -ne 0 ]]; then
     exit 1
 fi
 
-# Catch errors manually from here out
-set +e
+# grep for <command> tags in the build.xml and collect the commands in an array
+mapfile -t commands < <(grep -oP '(?<=<command>).*(?=</command>)' "${build_xml}")
+# get the corresponding log file names from the build.xml in an array
+mapfile -t logs < <(grep -oP '(?<=<join><cyclestr>).*(?=</cyclestr></join>)' "${build_xml}")
 
-if [[ "${compute_build}" != "YES" ]]; then
+# Initialize associative arrays to track build status
+declare -A build_names build_status build_dirs build_commands build_logs build_cores build_pids
+for i in "${!logs[@]}"; do
 
-    echo "Building on head node as requested ..."
+    cmd="${commands[i]}"
+    log="${logs[i]}"
+    name=$(echo "${log}" | xargs -n1 basename | sed 's/\.log$//')
 
-    # Maximum number of cores to use for builds on head node
-    declare -r max_cores=20
-
-    # grep for <command> tags in the build.xml and collect the commands in an array
-    mapfile -t commands < <(grep -oP '(?<=<command>).*(?=</command>)' "${build_xml}")
-    # get the corresponding log file names from the build.xml in an array
-    mapfile -t logs < <(grep -oP '(?<=<join><cyclestr>).*(?=</cyclestr></join>)' "${build_xml}")
-
-    # Initialize associative arrays to track build status
-    declare -A build_names build_status build_dirs build_commands build_logs build_cores build_pids
-    for i in "${!logs[@]}"; do
-
-        cmd="${commands[i]}"
-        log="${logs[i]}"
-        name=$(echo "${log}" | xargs -n1 basename | sed 's/\.log$//')
-
+    # If building on head node, limit the number of cores used per build
+    if [[ ${compute_build} != "YES" ]]; then
         # Get the number of cores from the command (-j N).
         # If N is greater than max_cores, set it to max_cores and update the command accordingly.
         cores=$(echo "${cmd}" | grep -oP '(?<=-j )\d+')
@@ -124,23 +117,63 @@ if [[ "${compute_build}" != "YES" ]]; then
             cores=${max_cores}
             cmd="$(echo "${cmd}" | sed -E "s/-j [0-9]+/-j ${cores}/")"
         fi
+    fi
 
-        build_names["${name}"]="${name}"
-        build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
-        build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
-        build_logs["${name}"]="${log}"
-        build_cores["${name}"]="${cores}"
-        build_status["${name}"]="pending"
-        build_pids["${name}"]=""
+    build_names["${name}"]="${name}"
+    build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
+    build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
+    build_logs["${name}"]="${log}"
+    build_cores["${name}"]="${cores}"
+    build_status["${name}"]="PENDING"
+    build_pids["${name}"]=""
 
+done
+unset commands logs
+
+nbuilds=${#build_names[@]}
+nback=$((nbuilds + 4))
+
+print_build_status() {
+    echo "------------------------------------------------------------------------"
+    printf "| %-12s | %-30s | %-10s | %-9s |\n" "System" "Build Command" "PID" "Status"
+    echo "------------------------------------------------------------------------"
+    for name in "${build_names[@]}"; do
+        printf "| %-12s | %-30s | %-10s | %-9s |\n" "${name}" "${build_commands[${name}]}" "${build_pids[${name}]}" "${build_status[${name}]}"
     done
-    unset commands logs
+    echo "------------------------------------------------------------------------"
+}
+
+# Catch errors manually from here out
+set +e
+
+if [[ "${compute_build}" != "YES" ]]; then
+
+    echo "Building on head node as requested ..."
+
+    cleanup() {
+        for i in "${!build_pids[@]}"; do
+            pid="${build_pids[${i}]}"
+            name="${build_names[${i}]}"
+            if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
+                pkill -P "${pid}" # Kill any child processes
+            fi
+        done
+    }
+
+    trap cleanup EXIT
+    trap cleanup SIGINT
+    trap cleanup SIGTERM
+    trap cleanup SIGHUP
+    trap cleanup ERR
 
     # copy build_names into a new array to iterate over
     builds_to_process=("${!build_names[@]}")
 
     current_cores=0
     builds_in_progress=true
+
+    print_build_status
+
     while [[ ${builds_in_progress} == true ]]; do
 
         for name in "${builds_to_process[@]}"; do
@@ -162,9 +195,8 @@ if [[ "${compute_build}" != "YES" ]]; then
                     cd "${dir}" || exit 1
                     ${command} > "${log_file}" 2>&1 &
                     pid=$!
-                    echo "Build for ${name} started with PID ${pid}, using ${cores_needed} cores."
                     build_pids["${name}"]="${pid}"
-                    build_status["${name}"]="building"
+                    build_status["${name}"]="RUNNING"
                     # Update the current cores in use
                     current_cores=$((current_cores + cores_needed))
                 else
@@ -174,18 +206,14 @@ if [[ "${compute_build}" != "YES" ]]; then
 
             else
 
-                #echo "Checking status of build for ${name} with PID ${pid} ..."
                 if ! ps -p "${pid}" > /dev/null 2>&1; then
                     # Build has finished
                     wait "${pid}"
                     rc=$?
                     if [[ "${rc}" -ne 0 ]]; then
-                        echo "BUILD ERROR: Build for ${name} failed with exit code ${rc}."
-                        echo "See log file: ${build_logs[${name}]}"
-                        build_status["${name}"]="failed"
+                        build_status["${name}"]="FAILED"
                     else
-                        echo "BUILD SUCCESS: Build for ${name} completed successfully."
-                        build_status["${name}"]="completed"
+                        build_status["${name}"]="SUCCEEDED"
                     fi
                     # Free up the cores used by this build (regardless of success or failure)
                     current_cores=$((current_cores - build_cores[${name}]))
@@ -194,31 +222,43 @@ if [[ "${compute_build}" != "YES" ]]; then
             fi
 
             # If the build failed, do not submit any more builds
-            if [[ ${build_status[${name}]} == "failed" ]]; then
+            if [[ ${build_status[${name}]} == "FAILED" ]]; then
                 break
             fi
 
         done
 
+        echo -ne "\033[${nback}A"
+        print_build_status
+
         # Check for any failed builds, and abort all if any found
         abort_all_builds=false
         for name in "${build_names[@]}"; do
-            if [[ ${build_status[${name}]} == "failed" ]]; then
-                echo "Detected failed build: ${name}"
+            if [[ ${build_status[${name}]} == "FAILED" ]]; then
+                #echo "Detected failed build: ${name}"
                 abort_all_builds=true
             fi
         done
         if [[ ${abort_all_builds} == true ]]; then
-            echo "FATAL ERROR: One or more builds failed. Aborting all builds."
             # Terminate all running build processes
             for i in "${!build_pids[@]}"; do
                 pid="${build_pids[${i}]}"
                 name="${build_names[${i}]}"
                 if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
-                    echo "Terminating build for ${name} with PID ${pid} ..."
                     pkill -P "${pid}" # Kill any child processes
+                    build_status["${name}"]="ABORTED" # Mark as aborted
+                    current_cores=$((current_cores - build_cores[${name}])) # Free up cores
                 fi
             done
+            echo -ne "\033[${nback}A"
+            print_build_status
+            echo "FATAL ERROR: The following builds failed, see log files for details:"
+            for name in "${build_names[@]}"; do
+                if [[ ${build_status[${name}]} == "FAILED" ]]; then
+                    echo "${name}: ${build_logs[${name}]}"
+                fi
+            done
+            cleanup
             exit 1
         fi
 
@@ -226,13 +266,12 @@ if [[ "${compute_build}" != "YES" ]]; then
         builds_to_process=()
         builds_in_progress=false
         for name in "${!build_names[@]}"; do
-            if [[ ${build_status[${name}]} != "completed" ]]; then
+            if [[ ${build_status[${name}]} != "SUCCEEDED" ]]; then
                 builds_to_process+=("${name}")
                 builds_in_progress=true
             fi
         done
 
-        echo "Waiting for builds to complete. Current cores in use: ${current_cores}/${max_cores}"
         sleep 1m
 
     done
@@ -242,7 +281,8 @@ else
     echo "Building on compute nodes as requested ..."
     runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
 
-    finished=false
+    print_build_status
+
     ${runcmd}
     rc=$?
     if [[ "${rc}" -ne 0 ]]; then
@@ -250,48 +290,62 @@ else
         exit 1
     fi
 
-    echo "Monitoring builds on compute nodes"
-    while [[ "${finished}" == "false" ]]; do
+    builds_in_progress=true
+    while [[ ${builds_in_progress} == true ]]; do
         sleep 1m
         ${runcmd}
+        sleep 10s
+        stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
+        echo "${stat_out}" > rocotostat.out
+        # Ignore 1st 2 lines and store each row of rocotostat output in an array
+        mapfile -t stat_lines < <(tail -n +3 rocotostat.out)
 
-        state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")" || true
-        if [[ "${verbose_opt}" == "true" ]]; then
-            echo "Rocoto is in state ${state}"
-        else
-            echo -n "."
-        fi
+        for line in "${stat_lines[@]}"; do
+            # Read each line into an array using read
+            IFS=' ' read -r -a columns <<< "${line}"
 
-        if [[ "${state}" == "DONE" ]]; then
-            finished=true
-        elif [[ "${state}" == "RUNNING" ]]; then
-            finished=false
-        else
-            msg="FATAL ERROR: ${BASH_SOURCE[0]} rocoto failed with state '${state}'"
-            echo "${msg}"
-            err_file="${PWD}/logs/error.logs"
-            rm -f "${err_file}"
-            # Determine which build(s) failed
-            stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
-            echo "${stat_out}" > rocotostat.out
-            line_number=0
-            while read -r line; do
-                ((line_number += 1))
-                # Skip the first two lines (header)
-                if [[ ${line_number} -lt 3 ]]; then
-                    continue
+            # Get the name of the build in this row
+            name=${columns[1]}
+
+            # Update build_pids and build_status arrays
+            build_pids["${name}"]="${columns[2]}"
+            build_status["${name}"]="${columns[3]}"
+        done
+
+        echo -ne "\033[${nback}A"
+        print_build_status
+
+        # Count number of builds still in progress and check for failures
+        nsuccess=0
+        nfailed=0
+        for name in "${build_names[@]}"; do
+            job_state="${build_status[${name}]}"
+            if [[ "${job_state}" =~ "DEAD" || "${job_state}" =~ "UNKNOWN" ||
+                "${job_state}" =~ "UNAVAILABLE" || "${job_state}" =~ "FAIL" ]]; then
+                nfailed=$((nfailed + 1))
+            elif [[ "${job_state}" == "SUCCEEDED" ]]; then
+                nsuccess=$((nsuccess + 1))
+            fi
+        done
+
+        # If any builds failed, exit with error
+        if [[ ${nfailed} -gt 0 ]]; then
+            echo "FATAL ERROR: The following builds failed, see log files for details:"
+            for name in "${build_names[@]}"; do
+                job_state="${build_status[${name}]}"
+                if [[ "${job_state}" =~ "DEAD" || "${job_state}" =~ "UNKNOWN" ||
+                    "${job_state}" =~ "UNAVAILABLE" || "${job_state}" =~ "FAIL" ]]; then
+                    echo "${name}: ${build_logs[${name}]}"
                 fi
-
-                if [[ "${line}" =~ "DEAD" || "${line}" =~ "UNKNOWN" ||
-                    "${line}" =~ "UNAVAILABLE" || "${line}" =~ "FAIL" ]]; then
-                    job=$(echo "${line}" | awk '{ print $2 }')
-                    log_file="${PWD}/logs/${job}.log"
-                    echo "${log_file}" >> "${err_file}"
-                    echo "Rocoto reported that the build failed for ${job}"
-                fi
-            done < rocotostat.out
+            done
             exit 1
         fi
+
+        # If all builds succeeded, exit the loop
+        if [[ ${nsuccess} -eq ${nbuilds} ]]; then
+            builds_in_progress=false
+        fi
+
     done
 
 fi
