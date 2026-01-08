@@ -51,8 +51,11 @@ export CHGRESNCEXEC=${CHGRESNCEXEC:-"${EXECgfs}/enkf_chgres_recenter_nc.x"}
 export CHGRESINCEXEC=${CHGRESINCEXEC:-"${EXECgfs}/interp_inc.x"}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 CALCINCPY=${CALCINCPY:-"${USHgfs}/calcinc_gfs.py"}
-CALCANLPY=${CALCANLPY:-"${USHgfs}/calcanl_gfs.py"}
-
+if [[ "${RUN}" == "gcdas" ]]; then
+    CALCANLPY=${CALCANLPY:-"${USHgfs}/calcanl_gcafs.py"}
+else
+    CALCANLPY=${CALCANLPY:-"${USHgfs}/calcanl_gfs.py"}
+fi
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
 GAUSFCANLSH=${GAUSFCANLSH:-"${USHgfs}/gaussian_sfcanl.sh"}
 export GAUSFCANLEXE=${GAUSFCANLEXE:-"${EXECgfs}/gaussian_sfcanl.x"}
@@ -78,6 +81,9 @@ ATMANL=${ATMANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"}
 # Increment files
 ATMINC=${ATMINC:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"}
 DTFANL=${DTFANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"}
+if [[ "${RUN}" == "gcdas" ]]; then
+    AEROINC=${AEROINC:-"${COMIN_CHEM_ANALYSIS}/${APREFIX}aeroinc.nc"}
+fi
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -118,6 +124,11 @@ if [[ "${DO_CALC_ANALYSIS}" == "YES" ]]; then
     # link analysis and increment files
     ${NLN} "${ATMANL}" siganl
     ${NLN} "${ATMINC}" siginc.nc
+
+    if [[ "${RUN}" == "gcdas" ]]; then
+        ${NLN} "${AEROINC}" aeroinc.nc
+    fi
+
     if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
         ${NLN} "${ATMA03}" siga03
         ${NLN} "${ATMI03}" sigi03.nc
