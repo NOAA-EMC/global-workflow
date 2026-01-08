@@ -8,5 +8,4 @@ base:
   DO_BUFRSND: "NO"
   DO_GEMPAK: "NO"
   DO_AWIPS: "NO"
-ocn:
   MOM6_INTERP_ICS: "NO"
