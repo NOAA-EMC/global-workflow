@@ -196,7 +196,7 @@ class SFSTasks(Tasks):
                             'envars': atmos_post_envars,
                             'cycledef': self.run,
                             'dependency': dependencies,
-                            'command': f'{self.HOMEgfs}/dev/jobs/atmos_post.sh',
+                            'command': f'{self.HOMEgfs}/dev/job_cards/atmos_post.sh',
                             'job_name': f'{self.pslot}_{task_name}_@H',
                             'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                             'maxtries': '&MAXTRIES;'
@@ -231,7 +231,7 @@ class SFSTasks(Tasks):
                             'envars': ocn_post_envars,
                             'cycledef': self.run,
                             'dependency': dependencies,
-                            'command': f'{self.HOMEgfs}/dev/jobs/ocn_post.sh',
+                            'command': f'{self.HOMEgfs}/dev/job_cards/ocn_post.sh',
                             'job_name': f'{self.pslot}_{task_name}_@H',
                             'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                             'maxtries': '&MAXTRIES;'
@@ -266,7 +266,7 @@ class SFSTasks(Tasks):
                             'envars': ice_post_envars,
                             'cycledef': self.run,
                             'dependency': dependencies,
-                            'command': f'{self.HOMEgfs}/dev/jobs/ice_post.sh',
+                            'command': f'{self.HOMEgfs}/dev/job_cards/ice_post.sh',
                             'job_name': f'{self.pslot}_{task_name}_@H',
                             'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                             'maxtries': '&MAXTRIES;'
@@ -738,7 +738,7 @@ class SFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/jobs/globus_arch.sh',
+                     'command': f'{self.HOMEgfs}/dev/job_cards/globus_arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
