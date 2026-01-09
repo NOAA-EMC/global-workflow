@@ -13,11 +13,12 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-
+if [[ ! -L ${COMIN} ]]; then
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 mdl=gfs
 MDL="GFS"
 metaname="gfsver_mpc_np_${cyc}.meta"
@@ -59,9 +60,13 @@ for lookback in "${lookbacks[@]}"; do
     dgdattim="f$(printf "%03g" "${lookback}")"
 
     # Create symlink in DATA to sidestep gempak path limits
+    # TODO: Add only necessary files and remove unneeded ones to minimize data volume
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     HPCGFS="${RUN}.${init_time}"
-    YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
-    cpreq -R "${source_dir}" "${HPCGFS}"
+    if [[ ! -L "${HPCGFS}" ]]; then
+        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+        ${NLN} "${source_dir}" "${HPCGFS}"
+    fi
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 
