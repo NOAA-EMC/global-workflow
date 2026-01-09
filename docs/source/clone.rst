@@ -23,7 +23,7 @@ Clone the `global-workflow` and `cd` into the `sorc` directory:
 The `build_all.sh` script can be used to build all required components of the global workflow.
 `build_all.sh` allows for optional flags to modify the build behavior:
 
-   - ``-c``: Build on compute nodes.  The default behaviour is to build on the head node.
+   - ``-c``: Build on compute nodes.  The default behavior is to build on the head node.
    - ``-A HPC_ACCOUNT``: Specify the HPC account to be used when building on compute nodes.
    - ``-v``: Execute all build scripts with -v option to turn on verbose where supported
    - ``-h``: Print help message and exit
