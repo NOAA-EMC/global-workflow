@@ -83,7 +83,7 @@ supported_systems=("gfs" "gefs" "sfs" "gcafs" "gsi" "gdas" "all")
 declare -A system_builds
 system_builds=(
     ["gfs"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs"
-    ["gefs"]="ufs_gefs gfs_utils ufs_utils upp ww3_gefs"
+    ["gefs"]="ufs_gefs gfs_utils ufs_utils upp nexus ww3_gefs"
     ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
     ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp nexus gsi_utils"
     ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
