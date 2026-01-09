@@ -5,15 +5,15 @@ gdas_restarta:
     required:
         # Deterministic analysis increments
         {% if DO_JEDIATMVAR and not (ATMINC_GRID == 'gaussian') %}
-            {% for iaufhr in IAUFHRS %}
+            {% for iaufhr in iaufhrs_str %}
                 {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_increment.atm.i{{ "%03d" % iaufhr }}.tile{{ itile+1 }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
                 {% endfor %}
             {% endfor %}
         {% else %}
         # IAU increments
-            {% for iaufhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
+            {% for iaufhr in iaufhrs_str %}
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.atm.i{{ iaufhr }}.nc"
             {% endfor %}
         {% endif %}
 

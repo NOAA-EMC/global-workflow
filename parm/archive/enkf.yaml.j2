@@ -16,7 +16,7 @@ enkf:
         {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
         {% if not DO_JEDIATMENS %}
-            {% for grp in range(IAUFHRS | length) %}
+            {% for grp in range(iaufhrs_str | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
             {% endfor %}
         {% endif %}
@@ -106,13 +106,13 @@ enkf:
         # Ensemble mean analyses/increments
         # soil DA increments
         {% if DO_GSISOILDA %}
-            {% for fhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_increment.sfc.i{{ '%03d' % fhr }}.nc"
+            {% for fhr in iaufhrs_str %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_increment.sfc.i{{ fhr }}.nc"
             {% endfor %}
         {% endif %}
 
         # Atmospheric analyses/increment
-        {% for fhr in IAUFHRS %}
+        {% for fhr in iaufhrs_str %}
             {% if not DO_JEDIATMENS %}
                 {% if do_calc_increment %}
         # Store analyses instead of increments

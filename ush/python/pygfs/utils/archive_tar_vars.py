@@ -295,6 +295,10 @@ class ArchiveTarVars:
         # Assimilation frequency
         vars_out['assim_freq'] = str(assim_freq)
 
+        # Padded IAU forecast hours for templates
+        if 'IAUFHRS' in config_dict:
+            vars_out['iaufhrs_str'] = [f"{h:03d}" for h in config_dict['IAUFHRS']]
+
         # Add EnKF-specific variables if RUN contains 'enkf'
         if 'enkf' in config_dict.get('RUN', ''):
             vars_out.update(ArchiveTarVars._get_enkf_specific_cyc_vars(config_dict, current_cycle))
@@ -416,28 +420,24 @@ class ArchiveTarVars:
 
         # Archive timing booleans - increments (group a)
         # Logic: (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 AND is_gdas AND ARCH_CYC == cycle_HH
-        if sdate:
-            current_cycle_days = (current_cycle - sdate).days
-            enkf_vars['archive_increments'] = (
-                (current_cycle_days % arch_warmicfreq == 0) and
-                enkf_vars.get('is_gdas', False) and
-                (arch_cyc == int(current_cycle.strftime("%H")))
-            )
-        else:
-            enkf_vars['archive_increments'] = False
+        enkf_vars['archive_increments'] = False
+        current_cycle_days = (current_cycle - sdate).days
+        enkf_vars['archive_increments'] = (
+            (current_cycle_days % arch_warmicfreq == 0) and
+            enkf_vars.get('is_gdas', False) and
+            (arch_cyc == int(current_cycle.strftime("%H")))
+        )
 
         # Archive timing booleans - ICs (group b)
         # Logic: (ics_offset_cycle - SDATE).days % ARCH_WARMICFREQ == 0 AND is_gdas AND (ARCH_CYC - assim_freq) % 24 == cycle_HH
-        if sdate:
-            ics_offset_cycle = add_to_datetime(current_cycle, to_timedelta(f"+{assim_freq}H"))
-            ics_offset_days = (ics_offset_cycle - sdate).days
-            enkf_vars['archive_ics'] = (
-                (ics_offset_days % arch_warmicfreq == 0) and
-                enkf_vars.get('is_gdas', False) and
-                ((arch_cyc - assim_freq) % 24 == int(current_cycle.strftime("%H")))
-            )
-        else:
-            enkf_vars['archive_ics'] = False
+        enkf_vars['archive_ics'] = False
+        ics_offset_cycle = add_to_datetime(current_cycle, to_timedelta(f"+{assim_freq}H"))
+        ics_offset_days = (ics_offset_cycle - sdate).days
+        enkf_vars['archive_ics'] = (
+            (ics_offset_days % arch_warmicfreq == 0) and
+            enkf_vars.get('is_gdas', False) and
+            ((arch_cyc - assim_freq) % 24 == int(current_cycle.strftime("%H")))
+        )
 
         # Warm start flags (placeholders for future use)
         enkf_vars['save_warm_start_forecast'] = False

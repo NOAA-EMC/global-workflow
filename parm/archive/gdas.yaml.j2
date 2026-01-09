@@ -72,9 +72,9 @@ gdas:
         # Ensemble-resolution analysis
                 {% if DOIAU %}
         # Ensemble-resolution IAU analyses
-                    {% for fhr in IAUFHRS %}
+                    {% for fhr in iaufhrs_str %}
                        {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}ensres_analysis.atm.a{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}ensres_analysis.atm.a{{ fhr }}.nc"
                        {% endif %}
                     {% endfor %}
                 {% endif %}

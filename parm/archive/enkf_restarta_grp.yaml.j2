@@ -17,26 +17,26 @@ enkf_restarta_grp:
 
         # Member atmospheric increments or analysis data
         {% if DO_JEDIATMENS %}
-            {% for iaufhr in IAUFHRS %}
+            {% for iaufhr in iaufhrs_str %}
                 {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_jedi_increment.atm.i{{ '%03d' % iaufhr }}.tile{{ itile+1 }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
                 {% endfor %}
             {% endfor %}
         {% else %}
-            {% for iaufhr in IAUFHRS %}
+            {% for iaufhr in iaufhrs_str %}
                 {% if do_calc_increment %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}analysis.atm.a{{ '%03d' % iaufhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}analysis.atm.a{{ iaufhr }}.nc"
                 {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_increment.atm.i{{ '%03d' % iaufhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_increment.atm.i{{ iaufhr }}.nc"
                 {% endif %}
-            {% endfor %}  # iaufhr in IAUFHRS
+            {% endfor %}  # iaufhr in iaufhrs_str
         {% endif %}
 
         # soil DA increments
         {% if DO_GSISOILDA %}
-            {% for iaufhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}increment.sfc.i{{ '%03d' % iaufhr }}.nc"
-            {% endfor %}  # iaufhr in IAUFHRS
+            {% for iaufhr in iaufhrs_str %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}increment.sfc.i{{ iaufhr }}.nc"
+            {% endfor %}  # iaufhr in iaufhrs_str
             {% if DO_LAND_IAU %}   #sfc inc tiles needed for warm start
                 {% for itile in range(1,7) %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/increment.sfc.tile{{ itile }}.nc"
