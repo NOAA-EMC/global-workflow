@@ -229,6 +229,7 @@ if [[ "${compute_build}" != "YES" ]]; then
 
         done
 
+        # Move the cursor up nback lines before printing the build status again
         echo -ne "\033[${nback}A"
         print_build_status
 
