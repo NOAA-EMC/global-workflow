@@ -160,6 +160,7 @@ if [[ "${compute_build}" != "YES" ]]; then
         done
     }
 
+    # Call the cleanup function when exiting (normally, on error, or by interruption)
     trap cleanup EXIT
     trap cleanup SIGINT
     trap cleanup SIGTERM
