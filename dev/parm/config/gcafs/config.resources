@@ -680,7 +680,7 @@ case ${step} in
 
 
   "anal")
-    if [[ "${RUN}" = *gdas ]]; then
+    if [[ "${RUN}" = *gdas || "${RUN}" = gcdas ]]; then
       walltime="01:20:00"
       case ${CASE} in
         "C1152" | "C768")

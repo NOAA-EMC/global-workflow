@@ -18,7 +18,7 @@ export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requ
 
 export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=0
-if [[ -z "${FHMAX_GFS+x}" ]]; then
+if [[ -n "${FHMAX_GFS:-}" ]]; then
     export ARCH_GAUSSIAN_FHMAX=$(( FHMAX_GFS < 24 ? FHMAX_GFS : 24 ))
 fi
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS:-}

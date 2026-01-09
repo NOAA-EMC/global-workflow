@@ -51,14 +51,46 @@ class SnowEnsAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config['CASE_ENS'][1:])
+        _fail_on_missing = str(self.task_config.fail_on_missing_snowobs[0]).lower() == "true" \
+            if isinstance(self.task_config.fail_on_missing_snowobs, list) \
+            else bool(self.task_config.fail_on_missing_snowobs)
 
         # if 00z, do SCF preprocessing
-        _ims_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}imssnow96.asc')
+        _ims_file = os.path.join(
+            self.task_config.COMIN_OBS,
+            f'{self.task_config.OPREFIX}imssnow96.{self.task_config.ims_scf_obs_suffix}'
+        )
         logger.info(f"Checking for IMS file: {_ims_file}")
-        if self.task_config.cyc == 0 and os.path.exists(_ims_file):
-            _DO_IMS_SCF = True
+        _DO_IMS_SCF = False
+        if self.task_config.cyc == 0:
+            if os.path.exists(_ims_file):
+                _DO_IMS_SCF = True
+            else:
+                if _fail_on_missing:
+                    raise FileNotFoundError(
+                        f"IMS obs file required but not found: {_ims_file}"
+                    )
+                else:
+                    logger.warning(f"IMS obs file missing: {_ims_file}")
         else:
-            _DO_IMS_SCF = False
+            logger.info("Not 00z cycle — Skipping IMS preprocessing.")
+
+        # if 00z, do GHCN preprocessing
+        _ghcn_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}ghcn_snow.csv')
+        logger.info(f"Checking for GHCN csv file: {_ghcn_file}")
+        _DO_GHCN = False
+        if self.task_config.cyc == 0:
+            if os.path.exists(_ghcn_file):
+                _DO_GHCN = True
+            else:
+                if _fail_on_missing:
+                    raise FileNotFoundError(
+                        f"GHCN obs file required but not found: {_ghcn_file}"
+                    )
+                else:
+                    logger.warning(f"GHCN obs file missing: {_ghcn_file}")
+        else:
+            logger.info("Not 00z cycle — Skipping GHCN preprocessing.")
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -69,8 +101,10 @@ class SnowEnsAnalysis(Analysis):
                 'npz': self.task_config.LEVS - 1,
                 'CASE': self.task_config.CASE_ENS,
                 'snow_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
+                'snow_prepobs_path': os.path.join(self.task_config.DATA, 'prep'),
                 'ims_file': _ims_file,
                 'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
+                'DO_GHCN': _DO_GHCN,  # Boolean to decide if GHCN processing is done
             }
         ))
 
@@ -225,6 +259,71 @@ class SnowEnsAnalysis(Analysis):
         else:
             logger.info(f"Copy {output_file} successfully generated")
             FileHandler(prep_snocvr_snomad_config.netcdf).sync()
+
+    @logit(logger)
+    def prepare_GHCN(self) -> None:
+        """Prepare the GHCN data for a global snow analysis
+        This method will prepare GHCN data for a global snow analysis using JEDI.
+        This includes:
+        - creating GHCN snowdepth data in IODA format.
+        Parameters
+        ----------
+        Analysis: parent class for GDAS task
+        Returns
+        ----------
+        None
+        """
+
+        # Read and render the prep_ghcn.yaml.j2
+        logger.info(f"Reading {self.task_config.PREP_GHCN_YAML}")
+        prep_ghcn_config = parse_j2yaml(self.task_config.PREP_GHCN_YAML, self.task_config)
+        logger.debug(f"{self.task_config.PREP_GHCN_YAML}:\n{pformat(prep_ghcn_config)}")
+
+        # Define these locations in gdas/snow/prep/prep_ghcn.yaml.j2
+        logger.info("Copying GHCN obs to DATA")
+        FileHandler(prep_ghcn_config.stage).sync()
+
+        # Execute ioda converter to create the GHCN obs data in IODA format
+        logger.info("Create GHCN obs data in IODA format")
+
+        csv_file = f'{self.task_config.OPREFIX}ghcn_snow.csv'
+        station_file = f'ghcnd-stations.txt'
+        output_file = f'{self.task_config.OPREFIX}ghcn_snow.nc'
+        if os.path.exists(f"{os.path.join(self.task_config.DATA, output_file)}"):
+            rm_p(output_file)
+        if not os.path.isfile(csv_file):
+            logger.warning(f"WARNING: GHCN obs file not found.")
+            return
+
+        logger.info("Link GHCN2IODACONV into DATA/")
+        exe_src = self.task_config.GHCN2IODACONV
+        exe_dest = os.path.join(self.task_config.DATA, os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
+
+        exe = Executable(exe_dest)
+        exe.add_default_arg(["-i", f"{os.path.join(self.task_config.DATA, csv_file)}"])
+        exe.add_default_arg(["-o", f"{os.path.join(self.task_config.DATA, output_file)}"])
+        exe.add_default_arg(["-f", f"{os.path.join(self.task_config.DATA, station_file)}"])
+        exe.add_default_arg(["-d", f"{to_YMDH(self.task_config.current_cycle)}"])
+        try:
+            logger.debug(f"Executing {exe}")
+            exe()
+        except OSError:
+            logger.exception(f"Failed to execute {exe}")
+            raise
+        except Exception as err:
+            logger.exception(f"An error occured during execution of {exe}")
+            raise WorkflowException(f"An error occured during execution of {exe}") from err
+
+        # Ensure the IODA snow depth GHCN file is produced by the IODA converter
+        # If so, copy to DATA/prep/
+        if not os.path.isfile(f"{os.path.join(self.task_config.DATA, output_file)}"):
+            logger.warning(f"{output_file} not produced - continuing without it.")
+        else:
+            logger.info(f"Copy {output_file} successfully generated")
+            FileHandler(prep_ghcn_config.ghcn2ioda).sync()
 
     @logit(logger)
     def add_increments(self) -> None:

@@ -19,6 +19,28 @@ datasets:
                 {% for itile in range(1,7) %}
             - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
                 {% endfor %}
+            # Analysis Master GRIB2 data
+            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"
+            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2.idx"
+            
+            # Analysis GRIB2 (sub-sampled) data
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_a.0p50.analysis.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_a.0p50.analysis.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2"
+            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
+            # temporarily disable pres_b products archiving.
+            #- "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2"
+            #- "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2.idx"
+            #- "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p50.analysis.grib2"
+            #- "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p50.analysis.grib2.idx"
+            #- "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2"
+            #- "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
+
+            # Analysis netCDF (raw) data
+            - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
+            - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
             {% endif %}
             {% if DO_PREP_OBS_AERO %}
             - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
@@ -65,6 +87,7 @@ datasets:
             - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
             - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
             {% endfor %}
+
 # Archive the EXPDIR if requested
 {% if archive_expdir %}
 {% filter indent(width=4) %}

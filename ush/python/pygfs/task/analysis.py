@@ -3,7 +3,7 @@
 import os
 from logging import getLogger
 from typing import Any, Dict
-from wxflow import (AttrDict, Task,
+from wxflow import (AttrDict, Task, WorkflowException, Executable,
                     add_to_datetime, to_timedelta, to_isotime,
                     parse_j2yaml,
                     logit)
@@ -50,6 +50,12 @@ class Analysis(Task):
         else:
             _da_prefix = 'gdas'
 
+        # Map ocean resolution to number of vertical levels
+        _ocnres_to_nlev = {'500': 25,
+                           '100': 75,
+                           '050': 75,
+                           '025': 75}
+
         # Extend task_config with variables that are repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -63,9 +69,9 @@ class Analysis(Task):
                 'APREFIX_ENS': f"enkf{self.task_config.RUN.replace('enkf', '')}.t{self.task_config.cyc:02d}z.",
                 'GPREFIX': f"{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
                 'GPREFIX_ENS': f"enkf{_da_prefix}.t{self.task_config.previous_cycle.hour:02d}z.",
-                'OCNRES': f"{self.task_config.OCNRES:03d}",
                 'iau_times_iso': _iau_times_iso,
-                'snow_bkg_path': os.path.join('.', 'bkg/'),  # TODO: remove this line
+                'MOM6_LEVS': _ocnres_to_nlev[f"{self.task_config.OCNRES:03d}"],
+                'mom_domain_stack_size': 116640000,  # TODO: Make the stack size resolution dependent
             }
         ))
 
@@ -80,3 +86,23 @@ class Analysis(Task):
 
     def clean(self) -> None:
         super().clean()
+
+    @staticmethod
+    @logit(logger)
+    def run(exec_cmd: Executable) -> None:
+        """Run the executable command
+        This method will run the executable command
+        Parameters
+        ----------
+        exec_cmd: Executable
+            executable command to run
+        Returns
+        ----------
+        None
+        """
+
+        logger.info(f"Executing {exec_cmd}")
+        try:
+            exec_cmd()
+        except WorkflowException as e:
+            raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
