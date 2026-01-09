@@ -1,0 +1,16 @@
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = "inst.monthly*" %}
+{% for mem in range(0, NMEM_ENS + 1) %}
+{% set mem_char = 'mem%03d' | format(mem) %}
+{% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
+atmos_product_inst_monthly_{{ mem_char }}:
+    name: "ATMOS_PRODUCT_INST_MONTHLY_{{ mem_char }}"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/atmos_product_inst_monthly_{{ mem_char }}.tar"
+    required:
+        {% set COMOUT_ATMOS_GRIB = COM_ATMOS_GRIB_TMPL | replace_tmpl(tmpl_dict) %}
+        - "{{ COMOUT_ATMOS_GRIB | relpath(ROTDIR) }}/inst.monthly.{{ mem_char }}/{{ head }}.grb2"
+{% endfor %}
