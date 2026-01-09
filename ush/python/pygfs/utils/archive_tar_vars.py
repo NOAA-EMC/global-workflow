@@ -186,9 +186,10 @@ class ArchiveTarVars:
         # Common configuration keys (present in both exglobal_enkf_earc_tars.py and exglobal_archive_tars.py)
         config_keys = [
             # Basic configuration
-            'ATARDIR', 'current_cycle', 'RUN', 'PDY', 'PSLOT',
+            'ATARDIR', 'current_cycle', 'RUN', 'PDY', 'PSLOT', 'NET', 'MODE',
+            'PARMgfs', 'ROTDIR', 'SDATE',
             # Archive control
-            'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'PARMgfs', 'ARCDIR', 'SDATE', 'MODE',
+            'DO_ARCHCOM', 'ARCHCOM_TO', 'ARCDIR',
             # Data assimilation
             'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
             'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
@@ -196,8 +197,6 @@ class ArchiveTarVars:
             'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS',
             # Archive timing and control
             'ARCH_CYC', 'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
-            # Other
-            'NET',
         ]
 
         # Add system-specific keys based on RUN type
