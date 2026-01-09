@@ -315,6 +315,9 @@ EOF
     fi
     #============================================================================
     restart_interval=${restart_interval:-${FHMAX}}
+    if [[ ${restart_interval} -gt ${FHMAX} ]]; then
+        restart_interval=${FHMAX}
+    fi
     # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
     # Convert restart interval into an explicit list for CMEPS/CICE/MOM6/WW3
     # Note, this must be computed after determination IAU in forecast_det and fhrot.
