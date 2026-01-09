@@ -48,7 +48,7 @@ fi
 vt_init=$(${WGRIB2} "${firstfile}" -d 1 -vt)
 
 if (( ${?} > 0 )); then
-  echo "FATAL ERROR: WGRIB2 is not defined"
+  echo "FATAL ERROR: WGRIB2 is not loaded correctly"
   exit 1
 fi
 
@@ -136,7 +136,7 @@ do
   # shellcheck disable=SC2086
   ${GMERGE} - ${list} | ${WGRIB2} - -match "${dailyaccvars}" -merge_fcst 4 "${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
   if (( ${?} > 0 )); then
-    echo "FATAL ERROR: GMERGE is not defined"
+    echo "FATAL ERROR: GMERGE is not loaded correctly"
     exit 1
   fi
 

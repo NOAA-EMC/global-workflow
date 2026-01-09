@@ -37,7 +37,7 @@ for file in "${OUTDIR}/acc.daily.${MEMDIR}"/*; do
   filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
   ${WGRIB2} "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
   if (( ${?} > 0 )); then
-    echo "FATAL ERROR: WGRIB2 is not defined"
+    echo "FATAL ERROR: WGRIB2 is not loaded correctly"
     exit 1
   fi
 done

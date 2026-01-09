@@ -39,7 +39,7 @@ declare -a filevars=( "dlwrfsfc" "dswrfsfc" "ulwrfsfc" "uswrfsfc" "ulwrftoa" "lh
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
 vt_init="$(${WGRIB2} "${firstfile}" -d 1 -vt)"
 if (( ${?} > 0 )); then
-  echo "FATAL ERROR: WGRIB2 is not defined"
+  echo "FATAL ERROR: WGRIB2 is not loaded correctly"
   exit 1
 fi
 vt_date="${vt_init:7:10}"  
