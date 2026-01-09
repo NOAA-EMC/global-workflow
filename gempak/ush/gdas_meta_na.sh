@@ -9,10 +9,11 @@ device="nc | gdas.meta"
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Replace COMIN var with a proper name
 export COMIN="${RUN}.${PDY}${cyc}"
-cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+if [[ ! -L "${COMIN}" ]]; then
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 if [[ "${envir}" == "para" ]]; then
     export m_title="GDASP"
