@@ -746,8 +746,8 @@ class ArchiveTarVars:
 
             logger.info(f"Calculated offset_dt_fv3 for {tarball_type}: {to_fv3time(offset_dt)} (+6H)")
 
-        elif tarball_type in ['gdas_restarta', 'gfs_restarta', 'gdasocean_analysis', 'gfsocean_analysis']:
-            # Analysis time calculation
+        elif tarball_type in ['gdas_restarta', 'gfs_restarta']:
+            # Atmosphere restart analysis time calculation
             # If hybrid var with IAU: use -3H (beginning of IAU window)
             # Otherwise: use 0H (current cycle time)
             dohybvar = config_dict.get('DOHYBVAR', False)
@@ -765,6 +765,25 @@ class ArchiveTarVars:
 
             logger.info(f"Calculated anl_time for {tarball_type}: {to_YMD(anl_time)}.{anl_time.strftime('%H')}0000 "
                         f"(DOHYBVAR={dohybvar}, DOIAU={doiau}, offset={anl_offset})")
+
+        elif tarball_type in ['gdasocean_analysis', 'gfsocean_analysis']:
+            # Ocean/ice analysis time calculation
+            # If IAU: use -3H (beginning of IAU window)
+            # Otherwise: use 0H (current cycle time)
+            doiau = config_dict.get('DOIAU', False)
+
+            if doiau:
+                anl_offset = "-3H"
+            else:
+                anl_offset = "0H"
+
+            anl_time = add_to_datetime(current_cycle, to_timedelta(anl_offset))
+            # Return formatted strings for direct use in YAML
+            tarball_vars['anl_time_YMD'] = to_YMD(anl_time)
+            tarball_vars['anl_time_HH'] = anl_time.strftime("%H")
+
+            logger.info(f"Calculated anl_time for {tarball_type}: {to_YMD(anl_time)}.{anl_time.strftime('%H')}0000 "
+                        f"(DOIAU={doiau}, offset={anl_offset})")
 
         elif tarball_type == 'gdas_restartb':
             # Restart B has multiple time calculations
