@@ -275,7 +275,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     cd "${HOMEgfs}/ush" || exit 1
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/ghcn_snod2ioda.py" .
 fi
 
 #------------------------------
@@ -439,7 +439,6 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas* ./
-    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe" ./gdas_calcfIMS.x
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
 fi
 
