@@ -19,19 +19,23 @@ datasets:
 {% include "atmos_product_inst_mem_daily.yaml.j2" %}
 {% endfilter %}
 
+{% if FHMAX_GFS >= 720 %}
 {% filter indent(width=4) %}
 {% include "atmos_product_inst_mem_monthly.yaml.j2" %}
 {% endfilter %}
+{% endif %}
 
 {% filter indent(width=4) %}
 {% include "atmos_product_acc_mem_daily.yaml.j2" %}
 {% endfilter %}
 
+{% if FHMAX_GFS >= 720 %}
 {% filter indent(width=4) %}
 {% include "atmos_product_acc_mem_monthly.yaml.j2" %}
 {% endfilter %}
+{% endif %}
 
-{% if FHMAX_GFS > 720 %}
+{% if FHMAX_GFS >= 720 %}
 {% filter indent(width=4) %}
 {% include "ocean_product_mem_monthly.yaml.j2" %}
 {% endfilter %}
@@ -46,7 +50,7 @@ datasets:
 {% include "ocean_product_mem_6hravg.yaml.j2" %}
 {% endfilter %}
 
-{% if FHMAX_GFS > 720 %}
+{% if FHMAX_GFS >= 720 %}
 {% filter indent(width=4) %}
 {% include "ice_product_mem_monthly.yaml.j2" %}
 {% endfilter %}
