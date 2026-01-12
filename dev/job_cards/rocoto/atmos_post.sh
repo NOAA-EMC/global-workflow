@@ -13,6 +13,7 @@ source "${HOMEgfs}/dev/ush/load_modules.sh" run
 status=$?
 
 if [[ "${MACHINE_ID}" == "ursa" ]]; then
+    module unload stack-oneapi
     module use /scratch4/NCEPDEV/nems/Richard.Grubin/spack-stack/envs/ue-oneapi-2025.2.1-wgrib2-3.8.0/modules/Core
     module load stack-intel-oneapi-compilers/2025.2.1
     module load stack-intel-oneapi-mpi/2021.13
@@ -34,7 +35,7 @@ jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 ###############################################################
-"${HOMEgfs}/jobs/JGLOBAL_ATMOS_POST"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_POST"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

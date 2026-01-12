@@ -313,14 +313,17 @@ if [[ "${skip_mom6}" == "false" ]]; then
         sfs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_32L.nc"
           MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.4 
           ;;
         gfs|gefs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.2 
           ;;
         gdas|enkfgdas|enkfgfs)
           MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
           MOM6_DIAG_MISVAL="0.0"
+          export MOM6_GUST_CONST=0.2 
           ;;
         *)
           echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
@@ -378,14 +381,17 @@ if [[ "${skip_mom6}" == "false" ]]; then
         sfs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_32L.nc"
           MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.2 
           ;;
         gfs|gefs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.0 
           ;;
         gdas|enkfgdas|enkfgfs)
           MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
           MOM6_DIAG_MISVAL="0.0"
+          export MOM6_GUST_CONST=0.0 
           ;;
         *)
           echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
