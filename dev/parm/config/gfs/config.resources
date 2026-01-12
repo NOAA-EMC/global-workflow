@@ -202,7 +202,7 @@ case ${step} in
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( ntasks / threads_per_task ))
     NTASKS=${ntasks}
     memory="1GB"
     prepost=True
@@ -221,7 +221,7 @@ case ${step} in
     walltime="02:00:00"
     ntasks=1
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    tasks_per_node=$(( ntasks / threads_per_task ))
     NTASKS=${ntasks}
     if [[ "${RUN}" = *gfs ]]; then
       memory="2GB"
