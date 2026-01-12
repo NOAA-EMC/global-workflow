@@ -154,7 +154,7 @@ python setup_expt.py gfs forecast-only \
   --expdir /path/to/experiment
 
 # 3. Generate workflow XML
-python setup_xml.py /path/to/experiment
+python setup_xml.py /path/to/experiment rocoto
 ```
 
 ### Platform-Specific Development
@@ -164,7 +164,8 @@ WCOSS2    # Tier 1 - Full operational support
 Hercules  # Tier 1 - MSU, no TC Tracker  
 Hera      # Tier 2 - NOAA RDHPCS
 Orion     # Tier 2 - MSU, GSI runs slowly
-Gaea      # Cloud platforms via EPIC
+Gaea-C6   # Tier 1 - Fully supported platform capable of running retrospectives
+Ursa      # Tier 1 - Fully supported, but cannot run high resolution or GCAFS cases
 ```
 
 ## Key Architectural Patterns
