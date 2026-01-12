@@ -122,8 +122,8 @@ class AtmEnsAnalysis(Analysis):
         None
         """
 
-        # Initialize solver immediately before execution so that obs space files are staged
-        # for cleaning empty obs spaces
+        # Initialize solver immediately before execution so that obs space files are
+        # available for cleaning after running the observer
         if jedi_dict_key == 'atmensanlsol':
             self.jedi_dict['atmensanlsol'].initialize(clean_empty_obsspaces=True)
 
