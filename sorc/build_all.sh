@@ -155,7 +155,7 @@ if [[ "${compute_build}" != "YES" ]]; then
             pid="${build_pids[${i}]}"
             name="${build_names[${i}]}"
             if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
-                pkill -P "${pid}" # Kill any child processes
+                pkill -P "${pid}"                  # Kill any child processes
             fi
         done
     }
@@ -179,8 +179,8 @@ if [[ "${compute_build}" != "YES" ]]; then
 
         for name in "${builds_to_process[@]}"; do
 
-            # If the build is already completed, skip it
-            if [[ ${build_status[${name}]} == "completed" ]]; then
+            # If the build is already SUCCEEDED, skip it
+            if [[ ${build_status[${name}]} == "SUCCEEDED" ]]; then
                 continue
             fi
 
@@ -246,9 +246,9 @@ if [[ "${compute_build}" != "YES" ]]; then
             for i in "${!build_pids[@]}"; do
                 pid="${build_pids[${i}]}"
                 name="${build_names[${i}]}"
-                if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
-                    pkill -P "${pid}" # Kill any child processes
-                    build_status["${name}"]="ABORTED" # Mark as aborted
+                if kill -0 "${pid}" 2> /dev/null; then                      # Check if process still exists
+                    pkill -P "${pid}"                                       # Kill any child processes
+                    build_status["${name}"]="ABORTED"                       # Mark as aborted
                     current_cores=$((current_cores - build_cores[${name}])) # Free up cores
                 fi
             done
