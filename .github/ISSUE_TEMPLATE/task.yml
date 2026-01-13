@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        If your issue falls into one of the follow categories, please go back and use the appropriate template:
+        If your issue falls into one of the following categories, please go back and use the appropriate template:
         - Something is wrong or broken
         - A new feature request for software development
         - It is a request from NCO
