@@ -123,6 +123,36 @@ class RocotoXML(WorkflowSuite, ABC):
         if self._base["DO_ARCHCOM"] and self._base["ARCHCOM_TO"] == "globus_hpss":
             self._write_server_crontab()
 
+    def _get_cron_script_content(self, rocotorunstr: str, replyto: str) -> str:
+        """
+        Load and format the cron script template with experiment-specific values.
+
+        Parameters
+        ----------
+        rocotorunstr : str
+            The rocotorun command string
+        replyto : str
+            Email address for notifications
+
+        Returns
+        -------
+        str
+            Formatted bash script content
+        """
+        template_path = os.path.join(os.path.dirname(__file__), 'rocoto_cron_template.sh')
+
+        with open(template_path, 'r') as fh:
+            template_content = fh.read()
+
+        # Format the template with experiment-specific values
+        return template_content.format(
+            HOMEgfs=self.HOMEgfs,
+            rocotorunstr=rocotorunstr,
+            expdir=self.expdir,
+            pslot=self.pslot,
+            replyto=replyto
+        )
+
     def _write_xml(self, xml_file: str = None) -> None:
 
         if xml_file is None:
@@ -148,6 +178,10 @@ class RocotoXML(WorkflowSuite, ABC):
         cronintstr = f'*/{cronint} * * * *'
 
         replyto = os.environ.get('REPLYTO', "")
+        # Use fallback email if REPLYTO is not set
+        if not replyto:
+            user = os.environ.get('USER', 'user')
+            replyto = f"{user}@noaa.gov"
 
         crontab_strings = [
             '',
@@ -169,28 +203,34 @@ class RocotoXML(WorkflowSuite, ABC):
             crontab_strings.extend([
                 f'#SCRON --partition={partition}',
                 f'#SCRON --account={account}',
-                f'#SCRON --mail-user={replyto}',
                 f'#SCRON --job-name={self.pslot}_scron',
                 f'#SCRON --output={self.expdir}/logs/scron.log',
-                '#SCRON --time=00:10:00',
-                '#SCRON --dependency=singleton'
+                f'#SCRON --time=00:10:00',
+                f'#SCRON --dependency=singleton'
             ])
 
-            # Now write the script that actually runs rocotorun
+            # Now write the script that actually runs rocotorun and monitors for failures
             cron_cmd = f"{self.expdir}/{self.pslot}.scron.sh"
+            script_content = "#!/usr/bin/env bash\nset -x\n" + self._get_cron_script_content(rocotorunstr, replyto)
+
             with open(cron_cmd, "w") as script_fh:
-                script_fh.write(
-                    "#!/usr/bin/env bash\n" +
-                    "set -x\n" +
-                    f"source {self.HOMEgfs}/dev/ush/gw_setup.sh" + "\n" +
-                    rocotorunstr + "\n"
-                )
+                script_fh.write(script_content)
 
             # Make the script executable
             mode = os.stat(cron_cmd)
             os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
         else:
-            cron_cmd = rocotorunstr
+            # For regular crontab, create a wrapper script with monitoring
+            cron_cmd = f"{self.expdir}/{self.pslot}.cron.sh"
+            script_content = self._get_cron_script_content(rocotorunstr, replyto)
+
+            with open(cron_cmd, "w") as script_fh:
+                script_fh.write(script_content)
+
+            # Make the script executable
+            mode = os.stat(cron_cmd)
+            os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
+
             crontab_strings.extend([
                 'SHELL="/bin/bash"',
                 f'MAILTO="{replyto}"'
