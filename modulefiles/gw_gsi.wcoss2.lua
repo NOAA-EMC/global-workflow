@@ -18,6 +18,8 @@ load(pathJoin("hdf5-D", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("pnetcdf-D", (os.getenv("pnetcdf_ver") or "None")))
 load(pathJoin("netcdf-D", (os.getenv("netcdf_ver") or "None")))
 
+load(pathJoin("libjpeg", (os.getenv("libjpeg_ver") or "None")))
+load(pathJoin("grib_util", (os.getenv("grib_util_ver") or "None")))
 load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 load(pathJoin("ncdiag-A", (os.getenv("ncdiag_ver") or "None")))
 load(pathJoin("crtm", (os.getenv("crtm_ver") or "None")))

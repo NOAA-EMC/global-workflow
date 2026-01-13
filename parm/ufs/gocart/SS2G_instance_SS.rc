@@ -3,7 +3,7 @@
 #
 
 aerosol_radBands_optics_file: ExtData/optics/opticsBands_SS.v3_3.RRTMG.nc
-aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_SS.v3_3.nc
+aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_SS.v3_5.nc
 
 particle_radius_microns: 0.079 0.316 1.119 2.818 7.772
 
@@ -48,4 +48,6 @@ fwet_ice: 1.0 1.0 1.0 1.0 1.0
 fwet_snow: 1.0 1.0 1.0 1.0 1.0
 fwet_rain: 1.0 1.0 1.0 1.0 1.0
 
-
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: 'ufs'

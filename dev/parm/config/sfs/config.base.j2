@@ -322,4 +322,7 @@ export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, a
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
 
+# MOM6 IC setting needed for forecast and stage ics
+export MOM6_INTERP_ICS="{{ MOM6_INTERP_ICS }}"
+
 echo "END: config.base"

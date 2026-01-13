@@ -31,3 +31,7 @@ sigma: 2.0  2.0  2.0  2.0  2.0
 pressure_lid_in_hPa: 0.01
 
 rhFlag: 0
+
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: 'ufs'

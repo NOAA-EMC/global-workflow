@@ -18,9 +18,9 @@ if [[ "${PDY}${cyc}" -gt "${SDATE}" ]]; then
    fi
    export gdas_version
    if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
-       FETCH_YAML_TMPL_LIST="${PARMgfs}/fetch/${NET}_${APP}_gdas-anl_msu.yaml.j2,${PARMgfs}/fetch/${NET}_${APP}_gdas-dtfanl_msu.yaml.j2"
+       FETCH_YAML_TMPL_LIST="${PARMgfs}/fetch/${NET}_${APP}_gdas-anl_msu.yaml.j2,"
    else
-       FETCH_YAML_TMPL_LIST="${PARMgfs}/fetch/${NET}_${APP}_gdas-anl.yaml.j2,${PARMgfs}/fetch/${NET}_${APP}_gdas-dtfanl.yaml.j2"
+       FETCH_YAML_TMPL_LIST="${PARMgfs}/fetch/${NET}_${APP}_gdas-anl.yaml.j2,"
    fi
    export FETCH_YAML_TMPL_LIST
 else

@@ -21,14 +21,13 @@ base:
   USE_OCN_ENS_PERTURB_FILES: "NO"
   USE_ATM_ENS_PERTURB_FILES: "NO"
   DO_TEST_MODE: "NO"
+  MOM6_INTERP_ICS: "NO"
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
   reforecast: "NO"
   FHZERO: 6
   TYPE: "nh"
   MONO: "non-mono"
-ocn:
-  MOM6_INTERP_ICS: "NO"
 nsst:
   NST_SPINUP: 0
 # config.aero has just a system-specific path to add.

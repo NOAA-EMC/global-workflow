@@ -68,7 +68,7 @@ export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
     # Ensemble analysis and increment files
     export SFCANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"
-    export DTFANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc"
+    export DTFANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"
     export ATMANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"
     export ATMINC="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"
 
@@ -76,11 +76,11 @@ if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
     export GBIAS="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias.txt"
     export GBIASPC="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_pc.txt"
     export GBIASAIR="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_air.txt"
-    export GRADSTAT="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat.txt"
+    export GRADSTAT="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat.tar"
 else
     # Deterministic analysis and increment files
     export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
-    export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.dtf.a006.nc"
+    export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.dtf.i006.nc"
     export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
     export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
 

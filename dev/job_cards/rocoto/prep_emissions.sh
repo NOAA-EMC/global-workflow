@@ -12,6 +12,17 @@ export job="prep_emissions"
 export jobid="${job}.$$"
 
 ###############################################################
+# Source relevant configs
+configs="base aero prep_emissions"
+for config in ${configs}; do
+    source "${EXPDIR}/config.${config}"
+    status=$?
+    if [[ ${status} -ne 0 ]]; then
+        exit "${status}"
+    fi
+done
+
+###############################################################
 # Execute the JJOB
 "${HOMEgfs}/dev/jobs/JGLOBAL_PREP_EMISSIONS"
 status=$?

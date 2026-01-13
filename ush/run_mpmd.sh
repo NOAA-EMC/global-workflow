@@ -63,13 +63,12 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion,
     # Slurm requires a counter in front of each line in the script
     # Read the incoming cmdfile and create srun usable cmdfile
     nm=0
-    # shellcheck disable=SC2312
     while IFS= read -r line; do
         echo "${nm} ${line}" >> "${mpmd_cmdfile}"
         ((nm = nm + 1))
     done < "${cmdfile}"
 
-    set +e
+    unset_strict
     # shellcheck disable=SC2086
     ${launcher:-} ${mpmd_opt:-} -n ${nprocs} "${mpmd_cmdfile}"
     err=$?
@@ -81,7 +80,6 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
     # Read the incoming cmdfile and create mpiexec usable cmdfile
     nm=0
     echo "#!/bin/bash" >> "${mpmd_cmdfile}"
-    # shellcheck disable=SC2312
     while IFS= read -r line; do
         echo "${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
         ((nm = nm + 1))
