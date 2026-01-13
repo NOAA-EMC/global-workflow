@@ -41,6 +41,12 @@ if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
     export WGRIB2=wgrib2
 
 elif [[ "${MACHINE_ID}" == "ursa" ]]; then
+# use wgrib2/3.6.0 + exectuable gmerge
+#    source "${HOMEgfs}/dev/ush/load_modules.sh" run || exit 1
+#    export GMERGE=/scratch4/NCEPDEV/ovp/Karina.Asmar/wgrib2/aux_progs/gmerge
+#    export WGRIB2=wgrib2
+
+# use wgrib2/3.8.0 (which includes gmerge already)
     module use /scratch4/NCEPDEV/nems/Richard.Grubin/spack-stack/envs/ue-oneapi-2025.2.1-wgrib2-3.8.0/modules/Core
     module load stack-intel-oneapi-compilers/2025.2.1
     module load stack-intel-oneapi-mpi/2021.13
