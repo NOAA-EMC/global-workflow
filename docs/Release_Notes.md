@@ -1,4 +1,4 @@
-GFS V16.3.30 RELEASE NOTES
+GFS V16.3.31 RELEASE NOTES
 
 -------
 PRELUDE
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.30
-cd gfs.v16.3.30
-git clone -b EMC-v16.3.30 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.31
+cd gfs.v16.3.31
+git clone -b release/gfs.v16.3.31 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -51,47 +51,47 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.30` and `gfs_ver=v16.3.30`
+* in `versions/run.ver` change `version=v16.3.31` and `gfs_ver=v16.3.31`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.29.
+* This corrects the index in the exgdas_enkf_update.sh script for the satellite observation's namelist entry of abi_q19.
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.29.
+* No changes from GFS v16.3.30.
 
 MODULE CHANGES
 --------------
 
-* An extraneous ``module use`` was removed from ``build_fv3.sh``.  This module path was required when building GFS v16.3.25, but is no longer required.
+* No changes from GFS v16.3.30.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No significant changes from GFS v16.3.29.
+* No significant changes from GFS v16.3.30.
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.29.
+* No changes from GFS v16.3.30.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -104,23 +104,24 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.29
+* No changes from GFS v16.3.30
 
 PREPARED BY
 -----------
 David.Huber@noaa.gov
+Russ.Treadon@noaa.gov
