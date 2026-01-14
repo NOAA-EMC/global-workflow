@@ -67,9 +67,9 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
 
         cd ./testrun/varbc/
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
-             "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".tlapse.txt
-        /bin/cp -p satbias_"${instrument}".nc4  "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias.nc
-        /bin/mv  satbias_"${instrument}".nc4  "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
+            "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".tlapse.txt
+        /bin/cp -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias.nc
+        /bin/mv  satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
         cd "${DATA}"
         /bin/rm -rf satbias_converter.yaml
     done
@@ -83,7 +83,7 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
                 err_exit "Error copying operational anl bias correction files"
             fi
         done
-        # TODO: Temporary solution and need to process abias_air for JEDI when ready 
+        # TODO: Temporary solution and need to process abias_air for JEDI when ready
         tar -cvf "${ABIAS_AIR_JEDI_TAR}" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
         rm -rf "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
         tar -cvf "${ABIAS_SAT_JEDI_TAR}" ./*.nc ./*.txt
