@@ -2,9 +2,14 @@
 Start your run
 ==============
 
-Make sure a rocoto module is loaded: ``module load rocoto``
+Make sure a rocoto module is loaded. The easiest way to do this is ``source dev/ush/gw_setup.sh``.
 
-If needed check for available rocoto modules on machine: ``module avail rocoto`` or ``module spider rocoto``
+.. warning::
+   Sourcing gw_setup.sh will wipe your existing lmod environment
+
+.. note::
+   Bash shell is required to source gw_setup.sh
+
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Start your run from within your EXPDIR

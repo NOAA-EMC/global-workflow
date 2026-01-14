@@ -3,12 +3,11 @@
 import os
 import glob
 from logging import getLogger
-import pygfs.utils.marine_da_utils as mdau
 from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler, Executable,
                     add_to_datetime, to_timedelta, to_isotime,
                     chdir,
-                    parse_j2yaml, save_as_yaml,
+                    parse_j2yaml, parse_j2tmpl, save_as_yaml,
                     logit)
 
 from pygfs.jedi import Jedi
@@ -53,8 +52,6 @@ class MarineBMat(Analysis):
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'MOM6_LEVS': mdau.get_mom6_levels(str(self.task_config.OCNRES)),
-                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
             }
         ))
 
@@ -91,11 +88,14 @@ class MarineBMat(Analysis):
         FileHandler(self.task_config.data_in).sync()
 
         # prepare the deterministic MOM6 input.nml
-        mdau.prep_input_nml(self.task_config)
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input.nml.j2'),
+                     self.task_config,
+                     output_file="mom_input.nml")
 
         # prepare the input.nml for the analysis geometry
-        mdau.prep_input_nml(self.task_config, output_nml="./anl_geom/mom_input.nml",
-                            simple_geom=True, mom_input="./anl_geom/MOM_input")
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
+                     self.task_config,
+                     output_file="./anl_geom/mom_input.nml")
 
         # initialize vtscales python script
         vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb_template('soca_vtscales')
@@ -147,7 +147,7 @@ class MarineBMat(Analysis):
         exec_name = self.task_config.CALC_SCALE_EXEC
         exec_cmd.add_default_arg(exec_name)
         exec_cmd.add_default_arg('soca_vtscales.yaml')
-        mdau.run(exec_cmd)
+        self.run(exec_cmd)
 
         self.jedi_dict['soca_parameters_diffusion_vt'].execute()
 

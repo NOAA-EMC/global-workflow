@@ -3,6 +3,7 @@
 import os
 import glob
 import gsincdiag_to_ioda.proc_gsi_ncdiag as gsid
+import gsincdiag_to_ioda.combine_obsspace as gsios
 import gzip
 import tarfile
 from logging import getLogger
@@ -11,7 +12,6 @@ from typing import Optional, Dict, Any
 
 from wxflow import (AttrDict,
                     FileHandler,
-                    add_to_datetime, to_timedelta, to_YMDH,
                     parse_j2yaml,
                     logit)
 from pygfs.jedi import Jedi
@@ -198,16 +198,19 @@ class AnalysisStats(Analysis):
         FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
-            input_tar_basename = f"{self.task_config.APREFIX}{diag}"
+            input_tar_basename = f"{self.task_config.APREFIX}{diag}.tar"
             input_tar = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS,
-                                     f"{input_tar_basename}.tar")
+                                     input_tar_basename)
             dest = os.path.join(diag_dir_path, input_tar_basename)
             if os.path.exists(input_tar):
+                logger.info(f"{input_tar} exists. Preparing to copy it to {dest}")
                 diag_tar_copy_list.append([input_tar, dest])
+            else:
+                logger.warning(f"{input_tar} does not exist to copy. Skipping ...")
         FileHandler({'copy_opt': diag_tar_copy_list}).sync()
 
         # Untar and gunzip diag files
-        gsi_diag_tars = glob.glob(os.path.join(diag_dir_path, f"{self.task_config.APREFIX}*stat"))
+        gsi_diag_tars = glob.glob(os.path.join(diag_dir_path, f"{self.task_config.APREFIX}*stat.tar"))
         for diag_tar in gsi_diag_tars:
             logger.info(f"Untarring {diag_tar}")
             with tarfile.open(diag_tar, "r") as tar:
@@ -234,12 +237,14 @@ class AnalysisStats(Analysis):
         FileHandler({'copy_opt': copy_ges_diags}).sync()
 
         # Convert GSI diag files to ioda files using gsincdiag2ioda converter scripts
+        logger.info("Converting GSI guess diag files to IODA files")
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_ges_path, DiagDir=diag_dir_ges_path)
+        logger.info("Converting GSI analysis diag files to IODA files")
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_anl_path, DiagDir=diag_dir_anl_path)
 
         # now we need to combine the two sets of ioda files into one file
         # by adding certain groups from the anl file to the ges file
-        ges_ioda_files = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc4'))
+        ges_ioda_files = glob.glob(os.path.join(diag_ioda_dir_ges_path, '*nc'))
         for ges_ioda_file in ges_ioda_files:
             anl_ioda_file = ges_ioda_file.replace('_ges_', '_anl_').replace(diag_ioda_dir_ges_path, diag_ioda_dir_anl_path)
             if os.path.exists(anl_ioda_file):
@@ -250,21 +255,25 @@ class AnalysisStats(Analysis):
                 logger.warning(f"{anl_ioda_file} does not exist to combine with {ges_ioda_file}")
                 logger.warning("Skipping this file ...")
 
+        # now, for conventional data, we need to combine certain obspaces
+        logger.info("Combining conventional GSI IODA files by obspace")
+        conv_obsspaces = ['sondes', 'aircraft', 'sfcship', 'sfc']
+        for obspace in conv_obsspaces:
+            logger.info(f"Combining conventional GSI IODA files for obspace {obspace}")
+            FileList = glob.glob(os.path.join(output_dir_path, f"{obspace}_*_gsi_*.nc"))
+            timestamp = self.task_config.current_cycle.strftime('%Y%m%d%H')
+            combined_outfile = os.path.join(output_dir_path, f"{obspace}_gsi_{timestamp}.nc")
+            gsios.combine_obsspace(FileList, combined_outfile, False)
+
         # Tar up the ioda files
         iodastatzipfile = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda',
                                        f"{self.task_config.APREFIX}atmos_gsi_analysis.ioda_hofx.tar.gz")
         logger.info(f"Compressing GSI IODA files to {iodastatzipfile}")
         # get list of iodastat files to put in tarball
-        iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc4'))
+        iodastatfiles = glob.glob(os.path.join(output_dir_path, '*nc'))
         logger.info(f"Gathering {len(iodastatfiles)} GSI IODA files to {iodastatzipfile}")
         with tarfile.open(iodastatzipfile, "w|gz") as archive:
             for targetfile in iodastatfiles:
-                # gzip the file before adding to tar
-                with open(targetfile, 'rb') as f_in:
-                    with gzip.open(f"{targetfile}.gz", 'wb') as f_out:
-                        f_out.writelines(f_in)
-                os.remove(targetfile)
-                targetfile = f"{targetfile}.gz"
                 archive.add(targetfile, arcname=os.path.basename(targetfile))
         logger.info(f"Finished compressing GSI IODA files to {iodastatzipfile}")
         # copy to COMOUT

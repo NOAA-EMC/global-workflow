@@ -3,7 +3,7 @@ ocean:
         - "{{ COMOUT_OCEAN_RESTART_PREV }}"
     link_req:
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.MOM.res.nc", "{{ COMOUT_OCEAN_RESTART_PREV }}"]
-        {% if OCNRES == "025" %}
+        {% if OCNRES == "025" and not MOM6_INTERP_ICS %}
         {% for nn in range(1, 4) %}
         - ["{{ ICSDIR }}/{{ COMOUT_OCEAN_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.MOM.res_{{ nn }}.nc", "{{ COMOUT_OCEAN_RESTART_PREV }}"]
         {% endfor %}
