@@ -69,7 +69,7 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
             "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".tlapse.txt
         /bin/cp -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias.nc
-        /bin/mv  satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
+        /bin/mv satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
         cd "${DATA}"
         /bin/rm -rf satbias_converter.yaml
     done
