@@ -62,11 +62,7 @@ enkf_restarta_grp:
                 {% endif %}
             {% endif %}
 
-        # Conventional data
-            {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}cnvstat"
-            {% endif %}
-
+        # Ocean DA increments/analysis
             {% if DOHYBVAR_OCN %}
                 {% if DOIAU_ENKF %}
                     {% set rst_delta = "+3H" | to_timedelta %}

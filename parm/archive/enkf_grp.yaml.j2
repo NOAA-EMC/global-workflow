@@ -18,9 +18,6 @@ enkf_grp:
             {% endif %}
 
         # Store the individual member analysis data
-            {% if not lobsdiag_forenkf %}
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
-            {% endif %}
             {% if DO_JEDIATMENS %}
                 {% for iaufhr in IAUFHRS %}
                     {% for itile in range(6) %}
