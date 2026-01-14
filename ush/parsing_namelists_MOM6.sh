@@ -60,7 +60,6 @@ MOM6_namelists() {
         local PERT_EPBL="False"
     fi
     local MOM6_HFREEZE=20.0
-    local MOM6_HISTFREQ_N=${FHOUT_OCN:-6}
     # Ensure the template exists
     local template=${MOM6_INPUT_TEMPLATE:-"${PARMgfs}/ufs/MOM_input_${OCNRES}.IN"}
     if [[ ! -f "${template}" ]]; then
