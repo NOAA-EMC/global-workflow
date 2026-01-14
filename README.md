@@ -29,7 +29,7 @@ The Global Workflow currently supports the following machines at the indicated t
 | HPC                                     | Tier | Notes                                                                      |
 | --------------------------------------- |:----:|:--------------------------------------------------------------------------:|
 | WCOSS2<br>NCO                           | 1    |                                                                            |
-| Ursa<br>NOAA RDHPCS                     | 1    | GCAFS system not supported yet.                                            |
+| Ursa<br>NOAA RDHPCS                     | 1    |                                                                            |
 | Hercules<br>MSU                         | 1    |                                                                            |
 | Gaea C6<br>RDHPCS                       | 1    |                                                                            |
 | Hera<br>NOAA RDHPCS                     | 2    |                                                                            |
