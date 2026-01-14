@@ -65,7 +65,7 @@ if [[ ${DONST} == "YES" ]]; then
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
-if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+if [[ ${DOENKFONLY_ATM:-"NO"} == "YES" ]]; then
     # Ensemble analysis and increment files
     export SFCANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"
     export DTFANL="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"
