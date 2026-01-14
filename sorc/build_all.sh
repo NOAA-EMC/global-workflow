@@ -134,26 +134,33 @@ nbuilds=${#build_names[@]}
 nback=$((nbuilds + 4))
 
 print_build_status() {
-    echo "------------------------------------------------"
-    printf "| %-18s | %-10s | %-10s |\n" "System" "PID" "Status"
-    echo "------------------------------------------------"
+    local name
+    echo "-----------------------------------"
+    printf "| %-18s | %-10s |\n" "System" "Status"
+    echo "-----------------------------------"
     for name in "${build_names[@]}"; do
-        printf "| %-18s | %-10s | %-10s |\n" "${name}" "${build_pids[${name}]}" "${build_status[${name}]}"
+        printf "| %-18s | %-10s |\n" "${name}" "${build_status[${name}]}"
     done
-    echo "------------------------------------------------"
+    echo "-----------------------------------"
 }
+
+if [[ "${compute_build}" == "YES" ]]; then
+    echo "Building on compute nodes using account: ${HPC_ACCOUNT}"
+else
+    echo "Building on head node using up to ${max_cores} cores ..."
+fi
+
+print_build_status
 
 # Catch errors manually from here out
 set +e
 
 if [[ "${compute_build}" != "YES" ]]; then
 
-    echo "Building on head node as requested ..."
-
     cleanup() {
-        for i in "${!build_pids[@]}"; do
-            pid="${build_pids[${i}]}"
-            name="${build_names[${i}]}"
+        local pid name
+        for name in "${!build_pids[@]}"; do
+            pid=${build_pids[${name}]}
             if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
                 pkill -P "${pid}"                  # Kill any child processes
             fi
@@ -167,17 +174,18 @@ if [[ "${compute_build}" != "YES" ]]; then
     trap cleanup SIGHUP
     trap cleanup ERR
 
-    # copy build_names into a new array to iterate over
-    builds_to_process=("${!build_names[@]}")
-
     current_cores=0
     builds_in_progress=true
 
-    print_build_status
-
     while [[ ${builds_in_progress} == true ]]; do
 
-        for name in "${builds_to_process[@]}"; do
+        abort_all_builds=false
+
+        for name in "${build_names[@]}"; do
+
+            if [[ ${abort_all_builds} == true ]]; then
+                continue
+            fi
 
             # If the build is already SUCCEEDED, skip it
             if [[ ${build_status[${name}]} == "SUCCEEDED" ]]; then
@@ -185,7 +193,7 @@ if [[ "${compute_build}" != "YES" ]]; then
             fi
 
             # Check if the build is still running
-            pid="${build_pids[${name}]}"
+            pid=${build_pids[${name}]}
             if [[ -z "${pid}" ]]; then # No pid means build not started yet
                 cores_needed="${build_cores[${name}]}"
                 if ((current_cores + cores_needed <= max_cores)); then
@@ -195,8 +203,8 @@ if [[ "${compute_build}" != "YES" ]]; then
                     log_file="${build_logs[${name}]}"
                     cd "${dir}" || exit 1
                     ${command} > "${log_file}" 2>&1 &
-                    pid=$!
-                    build_pids["${name}"]="${pid}"
+                    _pid=$!
+                    build_pids["${name}"]="${_pid}"
                     build_status["${name}"]="RUNNING"
                     # Update the current cores in use
                     current_cores=$((current_cores + cores_needed))
@@ -209,9 +217,9 @@ if [[ "${compute_build}" != "YES" ]]; then
 
                 if ! ps -p "${pid}" > /dev/null 2>&1; then
                     # Build has finished
-                    wait "${pid}"
+                    wait ${pid}
                     rc=$?
-                    if [[ "${rc}" -ne 0 ]]; then
+                    if [[ ${rc} -ne 0 ]]; then
                         build_status["${name}"]="FAILED"
                     else
                         build_status["${name}"]="SUCCEEDED"
@@ -224,65 +232,45 @@ if [[ "${compute_build}" != "YES" ]]; then
 
             # If the build failed, do not submit any more builds
             if [[ ${build_status[${name}]} == "FAILED" ]]; then
-                break
+                abort_all_builds=true
             fi
 
         done
+
+        if [[ ${abort_all_builds} == true ]]; then
+            # Terminate all running build processes
+            cleanup
+            # Mark all running builds as aborted and free up their cores
+            for name in "${build_names[@]}"; do
+                if [[ ${build_status[${name}]} == "RUNNING" ]]; then
+                    build_status["${name}"]="ABORTED"
+                    current_cores=$((current_cores - build_cores[${name}]))
+                fi
+            done
+            builds_in_progress=false
+        else
+            builds_in_progress=true
+        fi
 
         # Move the cursor up nback lines before printing the build status again
         echo -ne "\033[${nback}A"
         print_build_status
 
-        # Check for any failed builds, and abort all if any found
-        abort_all_builds=false
-        for name in "${build_names[@]}"; do
-            if [[ ${build_status[${name}]} == "FAILED" ]]; then
-                #echo "Detected failed build: ${name}"
-                abort_all_builds=true
-            fi
-        done
-        if [[ ${abort_all_builds} == true ]]; then
-            # Terminate all running build processes
-            for i in "${!build_pids[@]}"; do
-                pid="${build_pids[${i}]}"
-                name="${build_names[${i}]}"
-                if kill -0 "${pid}" 2> /dev/null; then                      # Check if process still exists
-                    pkill -P "${pid}"                                       # Kill any child processes
-                    build_status["${name}"]="ABORTED"                       # Mark as aborted
-                    current_cores=$((current_cores - build_cores[${name}])) # Free up cores
-                fi
-            done
-            echo -ne "\033[${nback}A"
-            print_build_status
-            echo "FATAL ERROR: The following builds failed, see log files for details:"
-            for name in "${build_names[@]}"; do
-                if [[ ${build_status[${name}]} == "FAILED" ]]; then
-                    echo "${name}: ${build_logs[${name}]}"
-                fi
-            done
-            cleanup
-            exit 1
-        fi
-
-        # Remove completed builds from the list to process during the next iteration
-        builds_to_process=()
-        builds_in_progress=false
-        for name in "${!build_names[@]}"; do
-            if [[ ${build_status[${name}]} != "SUCCEEDED" ]]; then
-                builds_to_process+=("${name}")
-                builds_in_progress=true
-            fi
-        done
-
         sleep 1m
 
     done
 
+    if [[ ${abort_all_builds} == true ]]; then
+        echo "FATAL ERROR: The following builds failed, see log files for details:"
+        for name in "${build_names[@]}"; do
+            if [[ ${build_status[${name}]} == "FAILED" ]]; then
+                echo -e "\t${name}: ${build_logs[${name}]}"
+            fi
+        done
+        exit 1
+    fi
+
 else
-
-    echo "Building on compute nodes as requested ..."
-
-    print_build_status
 
     runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
     ${runcmd}
@@ -345,7 +333,7 @@ else
                 job_state="${build_status[${name}]}"
                 if [[ "${job_state}" =~ "DEAD" || "${job_state}" =~ "UNKNOWN" ||
                     "${job_state}" =~ "UNAVAILABLE" || "${job_state}" =~ "FAIL" ]]; then
-                    echo "${name}: ${build_logs[${name}]}"
+                    echo -e "\t${name}: ${build_logs[${name}]}"
                 fi
             done
             exit 1
