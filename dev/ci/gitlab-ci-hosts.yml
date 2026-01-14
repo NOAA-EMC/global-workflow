@@ -22,19 +22,19 @@
 
 # Template matrices for case lists
 .hera_cases_matrix: &hera_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufsgsi_hybatmDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S", "C96mx025_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufsgsi_hybatmDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
 
 .gaeac6_cases_matrix: &gaeac6_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S", "C96mx025_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C96mx100_S2S"]
 
 .orion_cases_matrix: &orion_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96_gcafs_cycled", "C96mx025_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96_gcafs_cycled"]
 
 .hercules_cases_matrix: &hercules_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96_gcafs_cycled", "C96mx025_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96_gcafs_cycled"]
 
 .ursa_cases_matrix: &ursa_cases
-  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufsgsi_hybatmDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96mx025_S2S"]
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufsgsi_hybatmDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S"]
 
 # Host: Hera - Standard Cases
 setup_experiments-hera:
@@ -277,7 +277,7 @@ setup_ctests-hera:
 
 setup_ctests-gaeac6:
   extends: .setup_ctests_template
-  stage: setup_tests 
+  stage: setup_tests
   tags:
     - gaeac6
   variables:
