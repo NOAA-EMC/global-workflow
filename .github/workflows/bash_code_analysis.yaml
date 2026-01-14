@@ -47,7 +47,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           filter_mode: nofilter
           level: any
-          reviewdog_flags: '-reporter=${{ steps.reporter.outputs.value }} -fail_level=any'
+          reviewdog_flags: '-reporter=${{ steps.reporter.outputs.value }} -fail-level=any'
           shfmt_flags: ''
 
   shellcheck:
