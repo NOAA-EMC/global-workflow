@@ -9,7 +9,7 @@ LOCKFILE={expdir}/.failed_jobs.lock
 ROCOTOSTAT=$(which rocotostat)
 
 if [[ -n "$ROCOTOSTAT" ]]; then
-    FAILED_JOBS=$($ROCOTOSTAT -d {expdir}/{pslot}.db -w {expdir}/{pslot}.xml -c all 2>/dev/null | grep -E 'DEAD|FAILED' | awk '{{print $1" "$2" "$4" (JobID: "$3")"}}' | sort -u)
+    FAILED_JOBS=$($ROCOTOSTAT -d {expdir}/{pslot}.db -w {expdir}/{pslot}.xml -c all 2>/dev/null | grep -E 'DEAD')
 
     if [[ -n "$FAILED_JOBS" ]]; then
         # Read previously reported failures
@@ -18,30 +18,47 @@ if [[ -n "$ROCOTOSTAT" ]]; then
             PREV_FAILED=$(cat "$LOCKFILE")
         fi
 
-        # Check if failures have changed
-        if [[ "$FAILED_JOBS" != "$PREV_FAILED" ]]; then
-            # Send email notification
+        # Check for NEW failures only (not just changes)
+        NEW_FAILURES=""
+        while IFS= read -r job; do
+            if [[ -n "$job" ]] && ! echo "$PREV_FAILED" | grep -qF "$job"; then
+                NEW_FAILURES="${{NEW_FAILURES}}${{job}}"$'\n'
+            fi
+        done <<< "$FAILED_JOBS"
+
+        # Send email only if there are NEW failures
+        if [[ -n "$NEW_FAILURES" ]]; then
             echo "The following jobs have failed in experiment {pslot}:" > /tmp/rocoto_fail_msg_$$.txt
             echo "" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "$FAILED_JOBS" | while read line; do echo "  - $line"; done >> /tmp/rocoto_fail_msg_$$.txt
-            echo "" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "Experiment directory: {expdir}" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "Database: {expdir}/{pslot}.db" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "XML: {expdir}/{pslot}.xml" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "Check logs with: rocotostat -d" >> /tmp/rocoto_fail_msg_$$.txt
-            echo "  {expdir}/{pslot}.db -w {expdir}/{pslot}.xml -c all" >> /tmp/rocoto_fail_msg_$$.txt
 
-            # Determine email address (use REPLYTO or fallback to USER@noaa.gov)
+            # Format each failed job with detailed information
+            while IFS= read -r line; do
+                if [[ -n "$line" ]]; then
+                    # Parse rocotostat output: Cycle Task JobID State Try MaxTries Duration
+                    read -r cycle task jobid state try maxtries duration <<< "$line"
+                    # Extract YYYYMMDDHH from cycle (first 10 characters)
+                    cycle_short=${{cycle:0:10}}
+                    # Get current timestamp
+                    timestamp=$(date -u '+%m/%d/%y %H:%M:%S UTC')
+
+                    # Format similar to user's example
+                    echo "$timestamp :: {pslot}.xml :: Cycle $cycle, Task $task, \
+                        jobid=$jobid, in state $state, ran for $duration seconds, \
+                        try=$try (of $maxtries)" >> /tmp/rocoto_fail_msg_$$.txt
+                    echo "Error log: {comroot}/{pslot}/logs/$cycle_short/$task.log" >> /tmp/rocoto_fail_msg_$$.txt
+                    echo "" >> /tmp/rocoto_fail_msg_$$.txt
+                fi
+            done <<< "$NEW_FAILURES"
+
             EMAIL="{replyto}"
             if command -v mail &> /dev/null && [[ -n "$EMAIL" ]]; then
                 cat /tmp/rocoto_fail_msg_$$.txt | mail -s "[{pslot}] Workflow Job Failures Detected" "$EMAIL"
             fi
             rm -f /tmp/rocoto_fail_msg_$$.txt
-
-            # Update lockfile with current failures
-            echo "$FAILED_JOBS" > "$LOCKFILE"
         fi
+
+        # Always update lockfile to reflect current failures
+        echo "$FAILED_JOBS" > "$LOCKFILE"
     else
         # No failures, remove lockfile if it exists
         [[ -f "$LOCKFILE" ]] && rm -f "$LOCKFILE"

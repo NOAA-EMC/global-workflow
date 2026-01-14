@@ -150,7 +150,8 @@ class RocotoXML(WorkflowSuite, ABC):
             rocotorunstr=rocotorunstr,
             expdir=self.expdir,
             pslot=self.pslot,
-            replyto=replyto
+            replyto=replyto,
+            comroot=self._base.get('COMROOT')
         )
 
     def _write_xml(self, xml_file: str = None) -> None:
@@ -222,15 +223,6 @@ class RocotoXML(WorkflowSuite, ABC):
         else:
             # For regular crontab, create a wrapper script with monitoring
             cron_cmd = f"{self.expdir}/{self.pslot}.cron.sh"
-            script_content = self._get_cron_script_content(rocotorunstr, replyto)
-
-            with open(cron_cmd, "w") as script_fh:
-                script_fh.write(script_content)
-
-            # Make the script executable
-            mode = os.stat(cron_cmd)
-            os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
-
             crontab_strings.extend([
                 'SHELL="/bin/bash"',
                 f'MAILTO="{replyto}"'
