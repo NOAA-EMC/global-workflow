@@ -596,7 +596,7 @@ The RAG system ingests documentation from multiple tiers:
 
 | Tier | Sources | Purpose |
 |------|---------|---------|
-| **Tier 1 Critical** | global-workflow RTD, UFS-Utils, EE2 Standards | Core workflow documentation |
+| **Tier 1 Critical** | global-workflow RTD, EE2 Standards | Core workflow documentation |
 | **Tier 2 Workflow** | Rocoto, ecFlow, wxflow, PyFlow | Workflow engine documentation |
 | **Tier 3 Models** | UFS Weather Model, JEDI, FV3 | Forecast model documentation |
 | **Tier 4 Build** | Spack, spack-stack, hpc-stack | Build system documentation |
