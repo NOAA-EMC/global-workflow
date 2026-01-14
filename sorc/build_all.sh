@@ -216,8 +216,8 @@ if [[ "${compute_build}" != "YES" ]]; then
             else
 
                 if ! ps -p "${pid}" > /dev/null 2>&1; then
-                    # Build has finished
-                    wait ${pid}
+                    # Build has finished, check its exit status
+                    wait "${pid}"
                     rc=$?
                     if [[ ${rc} -ne 0 ]]; then
                         build_status["${name}"]="FAILED"
