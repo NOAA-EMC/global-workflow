@@ -23,7 +23,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: hash
         with:
-          cond: ${{ github.event_name == 'pull_request' }}
+          cond: ${{ github.event_name == 'pull_request_target' }}
           if_true: ${{ github.event.pull_request.head.sha }}
           if_false: ''
 
@@ -37,7 +37,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: reporter
         with:
-          cond: ${{ github.event_name == 'pull_request' }}
+          cond: ${{ github.event_name == 'pull_request_target' }}
           if_true: 'github-pr-review'
           if_false: 'github-check'
 
@@ -64,7 +64,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: hash
         with:
-          cond: ${{ github.event_name == 'pull_request' }}
+          cond: ${{ github.event_name == 'pull_request_target' }}
           if_true: ${{ github.event.pull_request.head.sha }}
           if_false: ''
 
@@ -78,7 +78,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: reporter
         with:
-          cond: ${{ github.event_name == 'pull_request' }}
+          cond: ${{ github.event_name == 'pull_request_target' }}
           if_true: 'github-pr-review'
           if_false: 'github-check'
 
