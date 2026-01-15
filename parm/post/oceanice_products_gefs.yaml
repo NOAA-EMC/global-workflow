@@ -24,6 +24,7 @@ ocean:
   namelist:
     write_grib2: {{ write_ocean_grib2 }}
     write_netcdf: {{ write_ocean_netcdf }}
+    write_subset: True
     ftype: "ocean"
     maskvar: "temp"
     sinvar: "sin_rot"
@@ -69,6 +70,7 @@ ice:
   namelist:
     write_grib2: {{ write_ice_grib2 }}
     write_netcdf: {{ write_ice_netcdf }}
+    write_subset: True
     ftype: "ice"
     maskvar: "tmask"
     sinvar: ""
