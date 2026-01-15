@@ -20,7 +20,6 @@ if [[ ! -L ${COMIN} ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
-
 mdl=gfs
 MDL="GFS"
 metatype="mar_atl"
