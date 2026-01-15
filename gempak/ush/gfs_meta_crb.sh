@@ -255,7 +255,7 @@ if [[ ${cyc} == 00 ]]; then
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
     if [[ ! -L "${HPCECMWF}" ]]; then
-    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then
