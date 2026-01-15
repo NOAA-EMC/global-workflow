@@ -1,6 +1,6 @@
 [![Read The Docs Status](https://readthedocs.org/projects/global-workflow/badge/?badge=latest)](http://global-workflow.readthedocs.io/)
-[![shellnorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/linters.yaml)
-[![pynorms](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions/workflows/pynorms.yaml)
+[![bash code analysis](https://github.com/NOAA-EMC/global-workflow/workflows/bash_code_analysis/badge.svg?branch=develop&event=push)](https://github.com/NOAA-EMC/global-workflow/actions?query=workflow%3Abash_code_analysis+event%3Apush+branch%3Adevelop)
+[![python code analysis](https://github.com/NOAA-EMC/global-workflow/workflows/python_code_analysis/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions?query=workflow%3Apython_code_analysis+event%3Apush+branch%3Adevelop)
 ![Custom badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/emcbot/e35aa2904a54deae6bbb1fdc2d960c71/raw/wcoss2.json)
 
 ![Custom badge](https://gist.githubusercontent.com/emcbot/66059582886cb5c2485ff64bf24e7f93/raw/ursa_pipeline_badge.svg)
@@ -28,12 +28,12 @@ The Global Workflow currently supports the following machines at the indicated t
 
 | HPC                                     | Tier | Notes                                                                      |
 | --------------------------------------- |:----:|:--------------------------------------------------------------------------:|
-| WCOSS2<br>NCO                           | 1    | GEFS testing is not regularly performed.                                   |
-| Ursa<br>NOAA RDHPCS                     | 1    | METplus verification and vminmon GSI-monitor jobs and GCAFS system not supported yet. |
-| Hercules<br>MSU                         | 1    | Currently does not support the TC Tracker.                                 |
+| WCOSS2<br>NCO                           | 1    |                                                                            |
+| Ursa<br>NOAA RDHPCS                     | 1    |                                                                            |
+| Hercules<br>MSU                         | 1    |                                                                            |
 | Gaea C6<br>RDHPCS                       | 1    |                                                                            |
 | Hera<br>NOAA RDHPCS                     | 2    |                                                                            |
-| Orion<br>MSU                            | 2    | The GSI runs very slowly on Orion and the TC tracker is not supported.     |
+| Orion<br>MSU                            | 2    | The GSI runs very slowly.                                                  |
 | AWS, GCP, Azure <br>NOAA Parallel Works | 3    | Supported by EPIC.                                                         |
 
 <ins>**Tier Definitions**</ins>
