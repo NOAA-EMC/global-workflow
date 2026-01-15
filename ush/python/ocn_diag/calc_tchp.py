@@ -19,9 +19,12 @@ CP = 4000.0  # J/(kg*K) - an approximation (3990 for seawater, 4200 for freshwat
 def calc_tchp_profile(t_prof, z_coords):
     """Function to calculate TCHP for a single 1D vertical profile."""
 
-    # If surface is already < 26C, TCHP is nan
-    if t_prof[0] < 26:
+    # If on land, then TCHP is nan
+    if np.isnan(t_prof[0]):
         return np.nan
+    # If surface temp is already < 26C, then TCHP is 0.0
+    if t_prof[0] < 26:
+        return 0.0
 
     # Find D26 depth via linear interpolation
     # Profiles usually go surface (warm) to deep (cold)
