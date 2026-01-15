@@ -87,7 +87,7 @@ system_builds=(
     ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
     ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp nexus gsi_utils"
     ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
-    ["gdas"]="gdas gsi_monitor gsi_utils"
+    ["gdas"]="gdas gsi_utils"
     ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils nexus"
 )
 
