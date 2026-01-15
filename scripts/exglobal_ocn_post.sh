@@ -28,7 +28,7 @@ if [[ "${RUN}" == sfs ]]; then
       input_file="${DATAoutput}/MOM6_OUTPUT/temp_${vdate_mid_str}.nc"
       tmp_file="${DATAoutput}/MOM6_OUTPUT/tmp_${vdate_mid_str}.nc"
       output_native_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.t${cyc}z.native.${interval}hr_avg.f${fhr3}.nc"
-      output_1p00_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.t${cyc}z.1p00.${interval}hr_avg.f${fhr3}.nc"
+      output_1p00_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${interval}hr_avg.f${fhr3}.nc"
 
       if [[ -f ${tmp_file} ]]; then
       rm -f "${tmp_file}"
@@ -48,13 +48,20 @@ if [[ "${RUN}" == sfs ]]; then
       #edit long_name of potential temperature:
       ncatted -a long_name,temp,o,c,"Potential Temperature at 5m below sea level" "${output_1p00_file}"
 
-      #compress the data
-      xz "${output_1p00_file}"
-
       rm -f "${tmp_file}" "${output_native_file}"
 
       last_fhr=${fhr}
     done
+    # merge all fcst hours to one single file
+     temp5m_xzfile="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc.xz"
+     if [[ -f ${temp5m_xzfile} ]]; then
+        rm -f "${temp5m_xzfile}"
+     fi
+    merge_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc"
+    cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f*.nc" "${merge_file}"
+    # compress the final file
+    xz "${merge_file}"
+    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f"*".nc"
 fi
 
 #LINK FILE NAMES TO THE OUTPUT DAILY OCEAN REGULAR GRID (1p00,0p25) PRODUCT FILES FOR MONTHLY AVERAGING
@@ -128,8 +135,9 @@ fi
 #CALCULATE D20/TCHP/OHC FROM DAILY OCEAN REGULAR GRID PRODUCT FILES
 
 if [[ "${RUN}" == sfs ]]; then
-MOM6_OUTPUT_FH=($(seq -s ' ' "${FHOUT_OCN}" "${FHOUT_OCN}" "${FHMAX_GFS}"))
-for fhr in "${MOM6_OUTPUT_FH[@]}"; do
+  MOM6_OUTPUT_FH=($(seq -s ' ' "${FHOUT_OCN}" "${FHOUT_OCN}" "${FHMAX_GFS}"))
+  varslist=("SSH" "SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so")
+  for fhr in "${MOM6_OUTPUT_FH[@]}"; do
     fhr3=$(printf %03i "${fhr}")
     input_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.t00z.${grid}.f${fhr3}.nc"
     output_file_dt20c="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.dt20c.t00z.${grid}.f${fhr3}.nc"
@@ -147,14 +155,31 @@ for fhr in "${MOM6_OUTPUT_FH[@]}"; do
     python3 "${CALC_TCHP}" "${input_file}" "${output_file_tchp}"
     python3 "${CALC_OHC}" "${temp3d_file_300m}" "${output_file_ocnheat}"
 
-    rm -rf "${temp3d_file}" "${temp3d_file_300m}"
+    rm -f "${temp3d_file}" "${temp3d_file_300m}"
 
-    # compress the daily data
-    xz "${input_file}"
-    xz "${output_file_dt20c}"
-    xz "${output_file_tchp}"
-    xz "${output_file_ocnheat}"
+    for var in "${varslist[@]}"; do
+       output_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
+
+       if [[ -f ${output_file} ]]; then
+          rm -f "${output_file}"
+       fi
+
+       ncks -O -v "${var}" "${input_file}" "${output_file}"
     done
+       rm -f "${input_file}"
+  done
+   # merge each variable to one single file
+   newvarslist=("dt20c" "TCHP" "ocnheat" "SSH" "SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so") 
+  for var in "${newvarslist[@]}"; do
+      output_xzfile="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.daily.nc.xz"
+      if [[ -f ${output_xzfile} ]]; then
+          rm -f "${output_xzfile}"
+      fi
+      merge_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.daily.nc"
+      cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f*.nc" "${merge_file}"
+      xz "${merge_file}"
+      rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f"*".nc"
+  done
 fi
 
 ##############################################
