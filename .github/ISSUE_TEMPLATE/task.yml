@@ -1,0 +1,49 @@
+name: New Task
+description: A task to be completed (not development).
+type: "task"
+projects: ["NOAA-EMC/41"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If your issue falls into one of the following categories, please go back and use the appropriate template:
+        - Something is wrong or broken
+        - A new feature request for software development
+        - It is a request from NCO
+        - It is initiating a production update
+        - Files need to be updated in a directory managed by workflow CMs under "glopara"
+
+        Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) to make sure there is not an already open issue for this new feature.  If so, please update the existing issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What task needs to be completed?
+      description: |
+        Provide a concise description of the task that needs to be completed. Please be clear what parts of the problem are considered to be in-scope and out-of-scope.
+
+        Consider including:
+          * What are the requirements for the new task?
+          * Are there any links to related issues, discussions, or resources that provide additional context?
+          * If this is a task that needs to be completed on an HPC, identify the system and any relevant details.
+    validations:
+      required: true
+
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Definition of Done
+      description: |
+        A checklist of criteria to be satisfied before this task is considered complete.
+
+        Examples:
+          - A presentation is given and linked in this issue
+          - An issue is opened
+          - Redundant/old files are cleaned out
+      placeholder: |
+        - [ ] Criterion #1
+        - [ ] Criterion #2
+        - [ ] Criterion #3
+    validations:
+      required: false
