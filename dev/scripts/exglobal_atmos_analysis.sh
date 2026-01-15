@@ -894,11 +894,36 @@ fi
 # Diagnostic files
 # if requested, GSI diagnostic file directories for use later
 if [[ "${GENDIAG}" == "YES" ]]; then
-    tar -cvf gsidiags.tar dir.????
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to tar GSI diagnostic directories!"
-    fi
+
+    rm -f "${DATA}/tar_diagdir.sh"
+    cat > "${DATA}/tar_diagdir.sh" << EOF
+#!/bin/bash
+set -x
+dir_num=\$1
+tar -cvf dir.\${dir_num}.tar dir.\${dir_num}
+exit 0
+EOF
+    chmod 755 "${DATA}/tar_diagdir.sh"
+
+    rm -f "${DATA}/cmdfile"
+    for dir in dir.*; do
+        dir_num=$(echo "${dir}" | cut -d. -f2)
+        echo "${DATA}/tar_diagdir.sh ${dir_num}" >> "${DATA}/cmdfile"
+    done
+
+    split -l "${tasks_per_node}" ./cmdfile cmdfile_part_
+    cmdfile_parts=$(ls cmdfile_part_*)
+    for partfile in ${cmdfile_parts}; do
+        "${USHgfs}/run_mpmd.sh" "${partfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to tar one or more GSI diagnostic directories for ${partfile}!"
+        fi
+    done
+    rm -f cmdfile_part_*
+    # Combine all tar files into a single tar file
+    rm -f gsidiags.tar
+    tar --concatenate --file=gsidiags.tar dir.*.tar
     cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
 fi
 
