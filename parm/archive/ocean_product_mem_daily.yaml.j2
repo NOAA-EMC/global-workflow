@@ -1,5 +1,5 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = RUN ~ "*t" ~ cycle_HH ~ "z.1p00.f*" %}
+{% set head = RUN ~ "*t" ~ cycle_HH ~ "z.1p00.daily.nc.xz" %}
 {% for mem in range(0, NMEM_ENS + 1) %}
 {% set mem_char = 'mem%03d' | format(mem) %}
 {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
@@ -12,6 +12,6 @@ ocean_product_daily_{{ mem_char }}:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_product_daily_{{ mem_char }}.tar"
     required:
         {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_TMPL | replace_tmpl(tmpl_dict) %}
-        - "{{ COMIN_OCEAN_NETCDF | relpath(ROTDIR) }}/1p00/{{ head }}.*"
+        - "{{ COMIN_OCEAN_NETCDF | relpath(ROTDIR) }}/1p00/{{ head }}"
 {% endfor %}
        
