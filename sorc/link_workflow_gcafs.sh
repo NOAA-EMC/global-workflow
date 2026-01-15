@@ -86,14 +86,14 @@ esac
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
 
-# Link GDASapp python packages in ush/python
+# Link gcdasapp python packages in ush/python
 packages=("jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEgfs}/ush/python" || exit 1
     if [[ -s "${package}" ]]; then
         rm -f "${package}"
     fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gcdas.cd/sorc/${package}/src/${package}" .
 done
 
 # Link fix directories
@@ -173,34 +173,34 @@ if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
 fi
 
 #------------------------------
-#--add GDASApp fix directory
+#--add gcdasApp fix directory
 #------------------------------
-if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gcdas.cd" ]]; then
     cd "${HOMEgfs}/fix" || exit 1
-    mkdir -p gdas
-    cd gdas || exit 1
-    for gdas_sub in fv3jedi obs aero; do
-        if [[ -d "${gdas_sub}" ]]; then
-            rm -rf "${gdas_sub}"
+    mkdir -p gcdas
+    cd gcdas || exit 1
+    for gcdas_sub in fv3jedi obs aero; do
+        if [[ -d "${gcdas_sub}" ]]; then
+            rm -rf "${gcdas_sub}"
         fi
-        fix_ver="gdas_${gdas_sub}_ver"
-        ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
+        fix_ver="gcdas_${gcdas_sub}_ver"
+        ${LINK_OR_COPY} "${FIX_DIR}/gcdas/${gcdas_sub}/${!fix_ver}" "${gcdas_sub}"
     done
 fi
 
 #------------------------------
-#--add GDASApp parm directory
+#--add gcdasApp parm directory
 #------------------------------
-if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gcdas.cd" ]]; then
     cd "${HOMEgfs}/parm" || exit 1
-    mkdir -p gdas
-    cd gdas || exit 1
-    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
-    for comp in "${gdasapp_comps[@]}"; do
+    mkdir -p gcdas
+    cd gcdas || exit 1
+    declare -a gcdasapp_comps=("aero" "atm" "io" "ioda" "jcb-gcdas" "jcb-algorithms" "anlstat" "analcalc")
+    for comp in "${gcdasapp_comps[@]}"; do
         if [[ -d "${comp}" ]]; then
             rm -rf "${comp}"
         fi
-        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gcdas.cd/parm/${comp}" .
     done
 fi
 
@@ -229,10 +229,7 @@ mkdir -p "${HOMEgfs}/exec" || exit 1
 
 cd "${HOMEgfs}/exec" || exit 1
 
-for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
-    syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
-    mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x \
-    ensadd.x ensppf.x ensstat.x wave_stat.x tref_calc.x; do
+for utilexe in gaussian_sfcanl.x enkf_chgres_recenter_nc.x tref_calc.x; do
     if [[ -s "${utilexe}" ]]; then
         rm -f "${utilexe}"
     fi
@@ -255,7 +252,7 @@ if [[ -s "upp.x" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
+for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle; do
     if [[ -s "${ufs_utilsexe}" ]]; then
         rm -f "${ufs_utilsexe}"
     fi
@@ -264,9 +261,8 @@ done
 
 # GSI Utils
 if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd/install" ]]; then
-    for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-        getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
-        interp_inc.x recentersigp.x; do
+    for exe in calc_analysis.x calc_increment_ens_ncio.x \
+        interp_inc.x; do
         if [[ -s "${exe}" ]]; then
             rm -f "${exe}"
         fi
@@ -274,16 +270,16 @@ if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd/install" ]]; then
     done
 fi
 
-# GDASApp executables
-if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
-    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gcdas* ./
+# gcdasApp executables
+if [[ -d "${HOMEgfs}/sorc/gcdas.cd/install" ]]; then
+    cp -f "${HOMEgfs}/sorc/gcdas.cd/install/bin"/gcdas* ./
 fi
 
-# GDASApp libraries
-if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
+# gcdasApp libraries
+if [[ -d "${HOMEgfs}/sorc/gcdas.cd/install" ]]; then
     mkdir -p "${HOMEgfs}/lib" || exit 1
     cd "${HOMEgfs}/lib" || exit 1
-    cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
+    cp -af "${HOMEgfs}/sorc/gcdas.cd/install/lib/." ./
 fi
 
 # NEXUS executable
@@ -303,90 +299,21 @@ if [[ -d ufs_model.fd ]]; then
     ${LINK} ufs_model.fd/UFSATM/upp upp.fd
 fi
 
-if [[ -d gsi_enkf.fd ]]; then
-    if [[ -d gsi.fd ]]; then
-        rm -rf gsi.fd
-    fi
-    ${LINK} gsi_enkf.fd/src/gsi gsi.fd
-
-    if [[ -d enkf.fd ]]; then
-        rm -rf enkf.fd
-    fi
-    ${LINK} gsi_enkf.fd/src/enkf enkf.fd
-fi
-
 if [[ -d gsi_utils.fd ]]; then
     if [[ -d calc_analysis.fd ]]; then
         rm -rf calc_analysis.fd
     fi
     ${LINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd .
 
-    if [[ -d calc_increment_ens.fd ]]; then
-        rm -rf calc_increment_ens.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd .
-
     if [[ -d calc_increment_ens_ncio.fd ]]; then
         rm -rf calc_increment_ens_ncio.fd
     fi
     ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd .
 
-    if [[ -d getsfcensmeanp.fd ]]; then
-        rm -rf getsfcensmeanp.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd .
-
-    if [[ -d getsigensmeanp_smooth.fd ]]; then
-        rm -rf getsigensmeanp_smooth.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd .
-
-    if [[ -d getsigensstatp.fd ]]; then
-        rm -rf getsigensstatp.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd .
-
-    if [[ -d recentersigp.fd ]]; then
-        rm -rf recentersigp.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd .
-
     if [[ -d interp_inc.fd ]]; then
         rm -rf interp_inc.fd
     fi
     ${LINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd .
-fi
-
-if [[ -d gsi_monitor.fd ]]; then
-    if [[ -d oznmon_horiz.fd ]]; then
-        rm -rf oznmon_horiz.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd .
-
-    if [[ -d oznmon_time.fd ]]; then
-        rm -rf oznmon_time.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd .
-
-    if [[ -d radmon_angle.fd ]]; then
-        rm -rf radmon_angle.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd radmon_angle.fd
-
-    if [[ -d radmon_bcoef.fd ]]; then
-        rm -rf radmon_bcoef.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd radmon_bcoef.fd
-
-    if [[ -d radmon_bcor.fd ]]; then
-        rm -rf radmon_bcor.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd radmon_bcor.fd
-
-    if [[ -d radmon_time.fd ]]; then
-        rm -rf radmon_time.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd radmon_time.fd
 fi
 
 for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
@@ -397,22 +324,8 @@ for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
 done
 
 for prog in enkf_chgres_recenter_nc.fd \
-    fbwndgfs.fd \
     gaussian_sfcanl.fd \
-    gfs_bufr.fd \
-    mkgfsawps.fd \
-    overgridid.fd \
-    rdbfmsua.fd \
-    supvit.fd \
-    syndat_getjtbul.fd \
-    syndat_maksynrc.fd \
-    syndat_qctropcy.fd \
-    tave.fd \
-    tocsbufr.fd \
     tref_calc.fd \
-    vint.fd \
-    webtitle.fd \
-    ocnicepost.fd; do
     if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
     ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
 done
