@@ -28,10 +28,7 @@ if [[ -n "$ROCOTOSTAT" ]]; then
 
         # Send email only if there are NEW failures
         if [[ -n "$NEW_FAILURES" ]]; then
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
-            NOTIFYFILE="{expdir}/logs/NEW_FAILED_JOBS_${{TIMESTAMP}}.txt"
-            EMAILLOG="{expdir}/logs/scron_email.log"
 
             # Create logs directory if it doesn't exist
             mkdir -p "{expdir}/logs"
@@ -60,26 +57,9 @@ if [[ -n "$ROCOTOSTAT" ]]; then
 
             # Try to send email
             EMAIL="{replyto}"
-            EMAIL_SENT=false
-            if [[ -n "$EMAIL" ]]; then
-                if command -v mailx &> /dev/null; then
-                    cat "$MSGFILE" | mailx -s "[{pslot}] NEW Workflow Job Failures Detected" "$EMAIL" 2>&1 | tee -a "$EMAILLOG"
-                    [[ ${{PIPESTATUS[0]}} -eq 0 ]] && EMAIL_SENT=true
-                elif command -v mail &> /dev/null; then
-                    cat "$MSGFILE" | mail -s "[{pslot}] NEW Workflow Job Failures Detected" "$EMAIL" 2>&1 | tee -a "$EMAILLOG"
-                    [[ ${{PIPESTATUS[0]}} -eq 0 ]] && EMAIL_SENT=true
-                fi
-
-                if [[ "$EMAIL_SENT" == "true" ]]; then
-                    echo "[$(date)] Email notification sent to $EMAIL" >> "$EMAILLOG"
-                else
-                    echo "[$(date)] Failed to send email notification to $EMAIL" >> "$EMAILLOG"
-                fi
+            if [[ -n "$EMAIL" ]] && command -v mail &> /dev/null; then
+                cat "$MSGFILE" | mail -s "[{pslot}] NEW Workflow Job Failures Detected" "$EMAIL" 2>&1
             fi
-
-            # Always save notification file for manual checking
-            cp "$MSGFILE" "$NOTIFYFILE"
-            echo "[$(date)] NEW failed jobs notification saved to: $NOTIFYFILE" >> "$EMAILLOG"
 
             rm -f "$MSGFILE"
         fi
