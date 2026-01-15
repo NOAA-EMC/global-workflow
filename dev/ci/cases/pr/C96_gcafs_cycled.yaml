@@ -17,7 +17,6 @@ experiment:
 skip_ci_on_hosts:
   - gaeac5
   - awsepicglobalworkflow
-  - ursa
 
 workflow:
   engine: rocoto
