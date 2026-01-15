@@ -317,7 +317,7 @@ EOF
 
         HPCECMWF=ecmwf.${PDY}
         if [[ ! -L "${HPCECMWF}" ]]; then
-        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+            # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
         fi
         grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"
