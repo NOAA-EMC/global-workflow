@@ -37,7 +37,7 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
 if [[ ! -L "${HPCECMWF}" ]]; then
-# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
 fi
 if [[ ! -L "${HPCUKMET}" ]]; then
