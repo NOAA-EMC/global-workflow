@@ -29,7 +29,7 @@ done
 #
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
-# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
