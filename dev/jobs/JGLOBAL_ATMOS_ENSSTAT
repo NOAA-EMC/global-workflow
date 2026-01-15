@@ -1,0 +1,49 @@
+#! /usr/bin/env bash
+
+#
+# Caculate the mean, spread, and other probabilistic fields.
+#
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Construct COM variables from templates
+# Input directories loop over members, so this is done downstream
+
+for grid in '0p25' '0p50' '1p00'; do
+    prod_dir="COMOUT_ATMOS_GRIB_${grid}"
+    MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    mkdir -m 775 -p "${!prod_dir}"
+done
+
+###############################################################
+# Run exglobal script
+"${SCRgfs}/exglobal_atmos_ensstat.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

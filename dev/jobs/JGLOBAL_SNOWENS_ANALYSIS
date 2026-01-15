@@ -1,0 +1,76 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDUMP="gdas"
+export GDUMP
+CDUMP=${RUN/enkf/}
+export CDUMP
+
+export NMEM_ENS_MAX=${NMEM_ENS}
+if [[ "${RUN}" == "enkfgfs" ]]; then
+    NMEM_ENS=${NMEM_ENS_GFS}
+    export mem_offset=$((NMEM_ENS_GFS_OFFSET * cyc / assim_freq))
+else
+    export mem_offset=0
+fi
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Generate COM variables from templates
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL
+
+for imem in $(seq 1 "${NMEM_ENS}"); do
+    memchar="mem$(printf %03i "${imem}")"
+    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
+        COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+    mkdir -p "${COMOUT_SNOW_ANALYSIS}"
+done
+
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -x COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+
+mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snowens_analysis.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

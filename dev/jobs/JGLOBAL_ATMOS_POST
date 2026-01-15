@@ -1,0 +1,39 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_post" -c "base atmos_post"
+
+if ((10#${ENSMEM:-0} > 0)); then
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+else
+    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+fi
+
+# Create the directory to hold output from the model in stmp
+export DATAoutput="${DATAjob}/output"
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
+
+# Construct COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL \
+    COMOUT_ATMOS_GRIB:COM_ATMOS_GRIB_TMPL
+if [[ ! -d "${COMOUT_ATMOS_GRIB}" ]]; then mkdir -p "${COMOUT_ATMOS_GRIB}"; fi
+
+# Define current cycle
+export current_cycle="${PDY}${cyc}"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Run exglobal script
+"${SCRgfs}/exglobal_atmos_post.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+exit 0
