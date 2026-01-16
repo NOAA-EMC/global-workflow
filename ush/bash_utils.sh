@@ -110,9 +110,11 @@ function wait_for_file() {
     return 1
 }
 
-# Initialize stacks for tick-tock profiling
-_GW_TIMER_STACK=()
-_GW_LABEL_STACK=()
+# Initialize stacks for tick-tock profiling (initialize only once)
+if [[ -z ${_GW_TIMER_STACK+x} ]]; then
+    declare -xa _GW_TIMER_STACK=()
+    declare -xa _GW_LABEL_STACK=()
+fi
 
 # Function: tick [label]
 tick() {
@@ -124,7 +126,6 @@ tick() {
     #
     # Syntax:
     #   tick [label]
-    #
     #     label: Optional label to identify the timer instance [default: "Timer"]
     #
     set +x
@@ -142,31 +143,42 @@ tick() {
 # Function: tock
 tock() {
     #
-    # Stop timer for profiling
+    # Stop timer and print elapsed time in seconds
     #
-    # Stops a timer by calculating elapsed time since last tick and outputs the elapsed time in seconds
+    # Stops a timer by calculating elapsed time since last tick and outputs the elapsed time in seconds.
+    #   Accepts an optional label to check for the timer instance.
+    #   If the provided label does not match the one stored during tick, a warning is issued.
     #
     # Syntax:
-    #   tock
+    #   tock [label]
     #
     set +x
     local end_time
     end_time=$(date +%s%N)
 
     # Safety check
-    if [ ${#_GW_TIMER_STACK[@]} -eq 0 ]; then
+    if [[ ${#_GW_TIMER_STACK[@]} -eq 0 ]]; then
         echo "WARNING: 'tock' called without a matching 'tick'."
         set_trace
         return 1
     fi
 
-    local start_time label last_idx
+    local last_idx
     # Retrieve the last element index
     last_idx=$((${#_GW_TIMER_STACK[@]} - 1))
 
     # Get the start time and label
+    local start_time label
     start_time=${_GW_TIMER_STACK[${last_idx}]}
     label=${_GW_LABEL_STACK[${last_idx}]}
+
+    local label_input
+    label_input="${1:-}"
+    if [[ -n ${label_input} ]]; then
+        if [[ ${label_input} != "${label}" ]]; then
+            echo "WARNING: 'tock' label '${label_input}' does not match 'tick' label '${label}'."
+        fi
+    fi
 
     # Remove (pop) elements from stacks
     unset "_GW_TIMER_STACK[${last_idx}]"
