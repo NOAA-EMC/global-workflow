@@ -147,6 +147,17 @@ include:
 
       echo "Setting up build environment for ${machine^}..."
       echo "Using build directory ${GW_HOMEgfs}"
+
+      # Load custom Rocoto path if specified for user control of Rocoto version
+      # This allows testing with different Rocoto builds without changing system Rocoto
+      source "${GW_HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
+      if [[ -n "${GFS_CI_ROCOTO_PATH:-}" && -d "${GFS_CI_ROCOTO_PATH}" ]]; then
+        export PATH="${GFS_CI_ROCOTO_PATH}:${PATH}"
+        echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+      else
+        echo "GFS_CI_ROCOTO_PATH not set or directory not found, using system Rocoto"
+      fi
+
       git submodule status
       # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
       # It should be set when configuring the scheculed nightly pipeline

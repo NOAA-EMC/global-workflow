@@ -68,7 +68,7 @@ case ${step} in
 
   "esfc")
     export is_exclusive="True"
-    export tasks_per_node=40
+    export tasks_per_node=${max_tasks_per_node}
     ;;
 
   "upp")

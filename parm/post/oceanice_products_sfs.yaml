@@ -1,5 +1,5 @@
 ocnicepost:
-  executable: "ocnicepost.x"
+  executable: "ocnicepost.x" 
   namelist:
     debug: False
   fix_data:

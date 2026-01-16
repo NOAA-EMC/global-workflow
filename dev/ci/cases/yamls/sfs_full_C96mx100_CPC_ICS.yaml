@@ -3,7 +3,6 @@ defaults:
 base:
   FHMAX_GFS: 744
   FCST_BREAKPOINTS: ""
-ocn:
   MOM6_INTERP_ICS: "NO"
 nsst:
   NST_SPINUP: 1

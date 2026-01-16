@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGDAS_ENKF_ECEN_FV3JEDI"
+"${HOMEgfs}"/dev/jobs/JGLOBAL_ENKF_ECEN_FV3JEDI
 status=$?
 exit "${status}"

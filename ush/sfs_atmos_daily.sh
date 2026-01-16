@@ -83,7 +83,7 @@ else
 fi
 
 #### check for leap year
-itime=$(${WGRIB2} -t "${firstfile}"|head -1|cut -d= -f2)
+itime=$(${WGRIB2} -t -d 1 "${firstfile}"|head -1|cut -d= -f2)
 for i in {1..12}
 do
   yyyy=${itime:0:4}

@@ -1,16 +1,16 @@
 # Paths
-IODADIR: '/bucket/dump'
-DMPDIR: '/bucket/dump'
+IODADIR: '/lustre/dump_ur'
+DMPDIR: '/lustre/dump_ur'
 BASE_GIT: '/contrib/git'
-BASE_DATA: '/bucket/global-workflow-shared-data'
-BASE_IC: '/bucket/global-workflow-shared-data/ICSDIR'
+BASE_DATA: '/lustre/data'
+BASE_IC: '/lustre/data/ICSDIR'
 AERO_INPUTS_DIR: '/contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310'
 PACKAGEROOT: '' #TODO: This does not yet exist.
 HOMEDIR: '/contrib/${USER}'
 STMP: '/lustre/${USER}/stmp/'
 PTMP: '/lustre/${USER}/ptmp/'
 NOSCRUB: '${HOMEDIR}'
-COMINsyn: '/bucket/syndat'
+COMINsyn: '/lustre/syndat'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch

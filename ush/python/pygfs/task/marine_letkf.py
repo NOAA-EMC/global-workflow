@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import os
-import pygfs.utils.marine_da_utils as mdau
 from logging import getLogger
 from pygfs.task.analysis import Analysis
 from pygfs.jedi import Jedi
 from typing import Dict
 from wxflow import (AttrDict, Executable, FileHandler,
-                    parse_j2yaml, save_as_yaml,
+                    parse_j2yaml, parse_j2tmpl, save_as_yaml,
                     to_timedelta, to_YMDH,
                     logit)
 
@@ -51,7 +50,6 @@ class MarineLETKF(Analysis):
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'letkf_app': 'true',
                 'DIST_HALO_SIZE': 3500000,
-                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
             }
         ))
 
@@ -69,6 +67,7 @@ class MarineLETKF(Analysis):
         This method will initialize the marine analysis.
         This includes:
         - staging input files from COM and create output directories
+        - staging observation files
         - preparing the namelist for MOM6
         - initializing all the JEDI applications required for marine LETKF
 
@@ -84,14 +83,20 @@ class MarineLETKF(Analysis):
         logger.info(f"Staging files from COM and creating input/output directories")
         FileHandler(self.task_config.data_in).sync()
 
+        # Stage observation files
+        logger.info(f"Staging observations")
+        self.jedi_dict['letkf'].stage_obsdatain(self.task_config.COMIN_OBS)
+
         # prepare the ensemble MOM6 input.nml
         logger.info(f"Preparing ensemble MOM6 input namelist")
-        mdau.prep_input_nml(self.task_config)
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input.nml.j2'),
+                     self.task_config,
+                     output_file="mom_input.nml")
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['gridgen'].initialize(self.task_config)
-        self.jedi_dict['letkf'].initialize(self.task_config, clean_empty_obsspaces=True)
+        self.jedi_dict['gridgen'].initialize()
+        self.jedi_dict['letkf'].initialize(clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self) -> None:
@@ -116,6 +121,7 @@ class MarineLETKF(Analysis):
         This method will finalize a global marine analysis.
         This includes:
         - Saving output files to COM
+        - Archive, compress, and save diag files in COM directory
 
         Parameters:
         ------------
@@ -128,3 +134,8 @@ class MarineLETKF(Analysis):
         # Save files from COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
+
+        # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
+        self.jedi_dict['letkf'].save_obsdataout(self.task_config.COMOUT_OCEAN_LETKF,
+                                                f"{self.task_config.APREFIX}marine_analysis.ioda_hofx.ens_mean")

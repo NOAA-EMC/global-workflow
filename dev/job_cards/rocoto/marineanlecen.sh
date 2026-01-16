@@ -20,6 +20,6 @@ export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_MARINE_ANALYSIS_ECEN"
+"${HOMEgfs}"/dev/jobs/JGLOBAL_MARINE_ANALYSIS_ECEN
 status=$?
 exit "${status}"

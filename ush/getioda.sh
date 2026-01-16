@@ -10,20 +10,20 @@ DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
 # Exit if SOURCE_DIR does not exist
 if [[ ! -s "${SOURCE_DIR}" ]]; then
-   echo "FATAL ERROR: DUMP SOURCE_DIR=${SOURCE_DIR} does not exist"
-   exit 99
+    echo "FATAL ERROR: DUMP SOURCE_DIR=${SOURCE_DIR} does not exist"
+    exit 99
 fi
-   
+
 # Create TARGET_DIR if is does not exist
 if [[ ! -s "${TARGET_DIR}" ]]; then
-   mkdir -p "${TARGET_DIR}"
+    mkdir -p "${TARGET_DIR}"
 fi
 
 # Set file prefix
 prefix="${RUN}.t${HH}z."
 
 # loop through top level component directories (e.g. atmos, ocean, land, ice)
-for compdir in "${SOURCE_DIR}"/*/ ; do
+for compdir in "${SOURCE_DIR}"/*/; do
     compdir=${compdir%*/}
     compdir=${compdir##*/}
     # Skip if not a directory
@@ -42,7 +42,7 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     set -f
     # Create component directory in TARGET_DIR if it does not exist
     if [[ ! -s "${TARGET_DIR}/${compdir}" ]]; then
-       mkdir -p "${TARGET_DIR}/${compdir}"
+        mkdir -p "${TARGET_DIR}/${compdir}"
     fi
     # Link files from SOURCE_DIR to TARGET_DIR
     if [[ ! -d "${SOURCE_DIR}/${compdir}" ]]; then
@@ -54,11 +54,11 @@ for compdir in "${SOURCE_DIR}"/*/ ; do
     set +f
     shopt -s nullglob
     for source_file in "${SOURCE_DIR}/${compdir}/${prefix}"*; do
-         if [[ ! -e "${source_file}" ]]; then
-             continue
-         fi
-         targ_file=$(basename "${source_file}")
-         cpreq "${source_file}" "${TARGET_DIR}/${compdir}/${targ_file}"
+        if [[ ! -e "${source_file}" ]]; then
+            continue
+        fi
+        targ_file=$(basename "${source_file}")
+        cpreq "${source_file}" "${TARGET_DIR}/${compdir}/${targ_file}"
     done
     shopt -u nullglob
     set -f

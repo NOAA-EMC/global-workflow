@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGDAS_ENKF_DIAG"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ENKF_DIAG"
 status=$?
 
 exit "${status}"
