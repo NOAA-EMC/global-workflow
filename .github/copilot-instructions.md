@@ -10,57 +10,6 @@ Use GitHub MCP tools for gathering repository information repos outside of globa
 
 This document provides comprehensive guidance for AI agents working on the NOAA Global Workflow system - a complex weather forecasting framework supporting multiple operational and research workflows.
 
-## Essential Developer Workflows
-
-### Build System Commands
-```bash
-# Build all components (from sorc/)
-./build_all.sh                    # Default build
-./build_all.sh -d                 # Debug mode
-./build_all.sh -f                 # Fast build with -DFASTER=ON
-./build_all.sh -v                 # Verbose output
-./build_all.sh -k                 # Kill all builds if any fails
-
-# Build specific systems
-./build_all.sh gfs               # GFS forecast system
-./build_all.sh gefs              # GEFS ensemble system  
-./build_all.sh sfs               # Seasonal forecast system
-./build_all.sh gcafs             # Climate analysis system
-./build_all.sh gsi               # GSI data assimilation
-./build_all.sh gdas              # GDAS system
-./build_all.sh all               # All systems
-```
-
-### Experiment Setup Workflow
-```bash
-# 1. Environment setup (CRITICAL - must be done first)
-source ush/detect_machine.sh
-module use modulefiles
-module load module_gwsetup.${MACHINE_ID}
-source dev/workflow/gw_setup.sh
-
-# 2. Create experiment
-cd dev/workflow
-python setup_expt.py gfs forecast-only \
-  --pslot EXPERIMENT_NAME \
-  --configdir parm/config/gfs \
-  --comroot /path/to/data \
-  --expdir /path/to/experiment
-
-# 3. Generate workflow XML
-python setup_xml.py /path/to/experiment
-```
-
-### Platform-Specific Development
-```bash
-# Supported platforms (use detect_machine.sh)
-WCOSS2    # Tier 1 - Full operational support
-Hercules  # Tier 1 - MSU, no TC Tracker  
-Hera      # Tier 2 - NOAA RDHPCS
-Orion     # Tier 2 - MSU, GSI runs slowly
-Gaea      # Cloud platforms via EPIC
-```
-
 ## System Architecture Overview
 
 ### Core Components
@@ -165,6 +114,58 @@ dev/workflow/rocoto/       # Rocoto-specific implementations
 ush/                       # Utility scripts and environment setup
 ├── gw_setup.sh            # Main environment setup with PYTHONPATH configuration
 └── detect_machine.sh      # Machine detection and module loading
+```
+
+## Essential Developer Workflows
+
+### Build System Commands
+```bash
+# Build all components (from sorc/)
+./build_all.sh                    # Default build
+./build_all.sh -d                 # Debug mode
+./build_all.sh -f                 # Fast build with -DFASTER=ON
+./build_all.sh -v                 # Verbose output
+./build_all.sh -k                 # Kill all builds if any fails
+
+# Build specific systems
+./build_all.sh gfs               # GFS forecast system
+./build_all.sh gefs              # GEFS ensemble system  
+./build_all.sh sfs               # Seasonal forecast system
+./build_all.sh gcafs             # Climate analysis system
+./build_all.sh gsi               # GSI data assimilation
+./build_all.sh gdas              # GDAS system
+./build_all.sh all               # All systems
+```
+
+### Experiment Setup Workflow
+```bash
+# 1. Environment setup (CRITICAL - must be done first)
+source ush/detect_machine.sh
+module use modulefiles
+module load module_gwsetup.${MACHINE_ID}
+source dev/workflow/gw_setup.sh
+
+# 2. Create experiment
+cd dev/workflow
+python setup_expt.py gfs forecast-only \
+  --pslot EXPERIMENT_NAME \
+  --configdir parm/config/gfs \
+  --comroot /path/to/data \
+  --expdir /path/to/experiment
+
+# 3. Generate workflow XML
+python setup_xml.py /path/to/experiment rocoto
+```
+
+### Platform-Specific Development
+```bash
+# Supported platforms (use detect_machine.sh)
+WCOSS2    # Tier 1 - Full operational support
+Hercules  # Tier 1 - MSU, no TC Tracker  
+Hera      # Tier 2 - NOAA RDHPCS
+Orion     # Tier 2 - MSU, GSI runs slowly
+Gaea-C6   # Tier 1 - Fully supported platform capable of running retrospectives
+Ursa      # Tier 1 - Fully supported, but cannot run high resolution or GCAFS cases
 ```
 
 ## Key Architectural Patterns
@@ -430,74 +431,215 @@ def test_task_creation():
 3. Create modulefiles for environment setup
 4. Update environment configurations in `env/` directory
 
-## MCP/RAG Tool Integration
+## EIB MCP/RAG Server Integration (v3.6.2)
 
-### Available Global Workflow MCP Tools
-This repository includes a specialized Model Context Protocol (MCP) server with Retrieval-Augmented Generation (RAG) capabilities. These tools provide intelligent access to workflow documentation, operational guidance, and contextual analysis.
+The **EIB MCP-RAG Server** provides AI-assisted access to the Global Workflow system through the Model Context Protocol (MCP) with Retrieval-Augmented Generation (RAG) capabilities. This server is purpose-built to support NOAA's operational GFS, GEFS, and SFS forecasting infrastructure.
 
-#### When to Use MCP Tools
+### Architecture Overview
+
+```
+AI Clients (VS Code Copilot, LangFlow, Claude Desktop)
+                    │
+                    ▼ HTTP/MCP Protocol
+         ┌──────────────────────────┐
+         │  Docker MCP Gateway      │  Port 18888
+         │  (Streaming Transport)   │
+         └──────────────────────────┘
+                    │ spawns
+                    ▼
+         ┌──────────────────────────┐
+         │  MCP Server Container    │  34 tools
+         │  eib-mcp-rag:latest      │
+         └──────────────────────────┘
+                    │
+         ┌──────────┴──────────┐
+         ▼                     ▼
+    ChromaDB (8080)      Neo4j (7687)
+    Vector Embeddings    Code Graph DB
+```
+
+### Tool Categories & Separation of Concerns
+
+The MCP server implements **7 tool modules** with clear separation of concerns (SOC):
+
+---
+
+#### 1. Workflow Info Tools (3 tools - Static, No DB)
+**Module**: `WorkflowInfoTools.js`
+**Purpose**: File system-based access to workflow structure - NO database dependencies
+
+| Tool | Description |
+|------|-------------|
+| `get_workflow_structure` | System architecture overview (jobs, scripts, parm, ush, sorc, env, docs) |
+| `get_system_configs` | HPC platform configurations (HERA, HERCULES, ORION, WCOSS2, GAEA) |
+| `describe_component` | File system-based component descriptions (static analysis) |
+
+**When to use**: Quick lookups, understanding directory structure, platform configs
+
+---
+
+#### 2. Code Analysis Tools (4 tools - Neo4j Graph)
+**Module**: `CodeAnalysisTools.js`
+**Purpose**: Code structure analysis via graph database traversal
+
+| Tool | Description |
+|------|-------------|
+| `analyze_code_structure` | File/function/class analysis with dependency tree (depth 1-3) |
+| `find_dependencies` | Upstream imports and downstream importers (both directions) |
+| `trace_execution_path` | Call chain tracing from any function (max depth 5) |
+| `find_callers_callees` | Fan-in/fan-out analysis with complexity scoring |
+
+**When to use**: Understanding code relationships, refactoring impact, debugging call chains
+
+---
+
+#### 3. Semantic Search Tools (6 tools - ChromaDB Vectors + Graph Hybrid)
+**Module**: `SemanticSearchTools.js`
+**Purpose**: RAG-powered documentation and code search
+
+| Tool | Description |
+|------|-------------|
+| `search_documentation` | Hybrid semantic + graph search across ingested docs |
+| `find_related_files` | Find files with similar import dependencies |
+| `explain_with_context` | Multi-source RAG explanations (technical, operational, config) |
+| `get_knowledge_base_status` | Vector DB + Graph DB health and statistics |
+| `list_ingested_urls` | Show all documentation sources ingested into RAG |
+| `get_ingested_urls_array` | Structured URL array for programmatic access |
+
+**When to use**: Conceptual questions, finding relevant documentation, understanding unfamiliar components
+
+---
+
+#### 4. EE2 Compliance Tools (5 tools - Standards Validation)
+**Module**: `EE2ComplianceTools.js`
+**Purpose**: NOAA NWS EE2 (Enterprise Environmental 2) standards validation
+
+| Tool | Description |
+|------|-------------|
+| `search_ee2_standards` | Search EE2 compliance standards documentation |
+| `analyze_ee2_compliance` | Analyze code for EE2 compliance with recommendations |
+| `generate_compliance_report` | Generate compliance reports (summary, detailed, checklist) |
+| `scan_repository_compliance` | Full repository scan with Phase 2 SME-corrected patterns |
+| `extract_code_for_analysis` | Extract code snippets for LLM passthrough analysis |
+
+**When to use**: Pre-commit compliance checks, NCO production readiness, code reviews
+
+**Phase 2 Corrections Applied**:
+- `set -eu` is NOT required (80% false positive rate) - only `set -x` for debug logging
+- Uses `err_chk`/`err_exit` utilities instead of explicit exit statements
+- Evidence-based analysis with RST line references
+
+---
+
+#### 5. Operational Tools (3 tools - HPC Procedures)
+**Module**: `OperationalTools.js`
+**Purpose**: HPC operational guidance and workflow explanations
+
+| Tool | Description |
+|------|-------------|
+| `get_operational_guidance` | Platform-specific procedures with urgency levels (routine/urgent/emergency) |
+| `explain_workflow_component` | Graph-enriched component explanations |
+| `list_job_scripts` | Categorized job script inventory (analysis, forecast, post, archive) |
+
+**When to use**: HPC deployment questions, understanding job scripts, operational procedures
+
+---
+
+#### 6. GitHub Integration Tools (4 tools - Live Repository Access)
+**Module**: `GitHubTools.js`
+**Purpose**: Cross-repository analysis and issue tracking
+
+| Tool | Description |
+|------|-------------|
+| `search_issues` | Search NOAA-EMC GitHub issues (open/closed/all) |
+| `get_pull_requests` | PR information with diff context |
+| `analyze_workflow_dependencies` | Cross-repo dependency analysis (upstream/downstream/circular) |
+| `analyze_repository_structure` | Multi-repo structure comparison (global-workflow, GSI, UFS_UTILS) |
+
+**When to use**: Bug investigation, PR reviews, understanding cross-repo impacts
+
+---
+
+#### 7. SDD Workflow Tools (7 tools - Development Orchestration)
+**Module**: `SDDWorkflowTools.js`
+**Purpose**: Software Design Document (SDD) framework execution
+
+| Tool | Description |
+|------|-------------|
+| `list_sdd_workflows` | List available SDD workflows |
+| `get_sdd_workflow` | Get workflow phases, steps, and metadata |
+| `execute_sdd_workflow` | Execute workflow with dry-run option |
+| `get_sdd_execution_history` | View execution history |
+| `validate_sdd_compliance` | Validate code against SDD framework |
+| `get_sdd_framework_status` | Framework integration status and metrics |
+| `execute_sdd_workflow_supervised` | Human-in-loop execution with approval gates |
+
+**When to use**: Feature development following SDD methodology, multi-step workflows
+
+---
+
+#### 8. Utility Tools (2 tools - Server Management)
+**Built into**: `UnifiedMCPServer.js`
+
+| Tool | Description |
+|------|-------------|
+| `get_server_info` | MCP server info, tool counts, configuration |
+| `mcp_health_check` | Empirical health validation (heartbeat, collections, documents, queries) |
+
+**When to use**: Debugging MCP issues, verifying RAG system health
+
+---
+
+### RAG Knowledge Base Sources
+
+The RAG system ingests documentation from multiple tiers:
+
+| Tier | Sources | Purpose |
+|------|---------|---------|
+| **Tier 1 Critical** | global-workflow RTD, EE2 Standards | Core workflow documentation |
+| **Tier 2 Workflow** | Rocoto, ecFlow, wxflow, PyFlow | Workflow engine documentation |
+| **Tier 3 Models** | UFS Weather Model, JEDI, FV3 | Forecast model documentation |
+| **Tier 4 Build** | Spack, spack-stack, hpc-stack | Build system documentation |
+| **Tier 5 Standards** | Google Shell Style, PEP8, NumPy docstrings | Coding standards |
+
+### When to Use MCP Tools
+
 **USE MCP tools when:**
-- Researching unfamiliar workflow components or operational procedures
-- Need to search across documentation for specific concepts or patterns
-- Seeking operational guidance for HPC systems or deployment procedures
-- Analyzing dependencies or workflow relationships
-- Looking for code patterns similar to current implementation
-- Need contextual explanations that require deep domain knowledge
+- Searching for concepts across documentation (semantic search)
+- Analyzing code dependencies and call chains (graph traversal)
+- Checking EE2 compliance before committing code
+- Understanding HPC platform-specific procedures
+- Investigating GitHub issues related to a component
+- Following SDD development workflows
 
 **DON'T use MCP tools when:**
-- You have direct access to specific files and can read them efficiently
-- Task is simple file creation or editing without research needs
-- Information is already available in current context
-- RAG system components are not initialized (will return placeholder responses)
+- You already have the file open and can read it directly
+- Simple file edits that don't need context research
+- The question is answered in the current conversation context
 
-#### Available MCP Tools
+### Tool Availability by Connection Mode
 
-**Core Workflow Tools:**
-- `mcp_global-workfl_get_workflow_structure` - System architecture and component overview
-- `mcp_global-workfl_list_job_scripts` - Complete inventory of workflow job scripts
-- `mcp_global-workfl_get_system_configs` - HPC platform-specific configurations
-- `mcp_global-workfl_explain_workflow_component` - Deep component analysis and explanation
+| Mode | Available Tools | Notes |
+|------|-----------------|-------|
+| **VS Code Local** | All 34 tools | Direct stdio connection |
+| **Docker Gateway** | All 34 tools | HTTP via port 18888 |
+| **Remote (no container)** | Core workflow tools only | Use `content` parameter for file analysis |
 
-**RAG-Enhanced Intelligence Tools:**
-- `mcp_global-workfl_search_documentation` - Semantic search across all workflow documentation
-- `mcp_global-workfl_explain_with_context` - Contextual explanations using RAG knowledge base
-- `mcp_global-workfl_find_similar_code` - Vector-based code pattern matching and similarity search
-- `mcp_global-workfl_get_operational_guidance` - HPC operational procedures and best practices
-- `mcp_global-workfl_analyze_workflow_dependencies` - Graph-based dependency analysis and mapping
+### Content Abstraction for Remote Access
 
-**GitHub Ecosystem Tools (Live Repository Access):**
-- `github_search_repositories` - Search NOAA-EMC repositories with filtering
-- `github_get_repository_content` - Access files from any repository in real-time
-- `github_search_code` - Code pattern search across entire NOAA-EMC ecosystem
-- `github_get_issues` - GitHub issues for troubleshooting context
-- `github_cross_repo_analysis` - Advanced analysis across multiple repositories
+For remote MCP clients (e.g., LangFlow) without filesystem access, tools support content parameters:
 
-#### Proper Tool Usage Display
-When using MCP tools, acknowledge their usage to demonstrate intelligent tool selection:
+```javascript
+// Instead of filesystem path:
+analyze_ee2_compliance({ content: "#!/bin/bash\nset -x\n..." })
 
-```markdown
-**Research Approach:** Using `mcp_globalworkflo_search_documentation` to find relevant 
-examples and `mcp_globalworkflo_get_operational_guidance` for HPC-specific procedures.
+// Batch file analysis:
+scan_repository_compliance({ 
+  files: [
+    { name: "JGFS_FORECAST", content: "..." },
+    { name: "exgfs_fcst.sh", content: "..." }
+  ]
+})
 ```
-
-**Example Integration:**
-```markdown
-Let me research this using the MCP tools to ensure comprehensive coverage:
-
-[Tool usage and results]
-
-Based on the MCP analysis above, here's the recommended approach...
-```
-
-#### MCP Tool Development Context
-These tools are actively being developed and refined on the `MCP_node.js-RAG_development` branch. When the RAG components are not fully initialized, tools may return placeholder responses indicating the need for vector database setup or document ingestion.
-
-**MCP Server Location**: All MCP tools are implemented in `dev/ci/scripts/utils/Copilot/mcp_server_node/`:
-- `mcp-server-rag.js` - Main RAG-enhanced server with 9 workflow tools
-- `mcp-server-github-rag.js` - GitHub ecosystem integration with 14 total tools  
-- `start-mcp-server-node.sh` - Primary startup script
-- Configuration files: `mcp-config.env`, `package.json`, `package-rag.json`
-
-**Note for Development:** If you encounter placeholder responses from RAG-enhanced tools, this indicates the vector database needs initialization or document ingestion. The core workflow tools should always provide functional responses.
-
+---
 Remember: This is a production weather forecasting system. Changes must be thoroughly tested and should not disrupt operational workflows. Always follow the existing patterns and conventions when extending the system

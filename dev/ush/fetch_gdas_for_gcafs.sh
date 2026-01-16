@@ -37,27 +37,23 @@ PDY="${cycle_Y}${cycle_M}${cycle_D}"
 # HPSS path for the two tar files
 hpss_path_root="/NCEPPROD/hpssprod/runhistory/rh${cycle_Y}/${cycle_YM}/${PDY}"
 hpss_file_nc="com_gfs_${gdas_version}_gdas.${PDY}_${cyc}.gdas_nc.tar"
-hpss_file_restart="com_gfs_${gdas_version}_gdas.${PDY}_${cyc}.gdas_restart.tar"
 
 # get the names of the files to extract
 atmanl="./gdas.${PDY}/${cyc}/atmos/gdas.t${cyc}z.atmanl.nc"
-dtfanl="./gdas.${PDY}/${cyc}/atmos/gdas.t${cyc}z.dtfanl.nc"
+sfcanl="./gdas.${PDY}/${cyc}/atmos/gdas.t${cyc}z.sfcanl.nc"
 
 # Fetch the tar files from HPSS
 cd "${OUTPUT_DIR}/tmp"
 
-htar -xvf "${hpss_path_root}/${hpss_file_nc}" "${atmanl}"
-htar -xvf "${hpss_path_root}/${hpss_file_restart}" "${dtfanl}"
+htar -xvf "${hpss_path_root}/${hpss_file_nc}" "${atmanl}" "${sfcanl}"
 
 # create the output tar files
 echo "creating output tar files"
-tar cvf "${hpss_file_nc}" "${atmanl}"
-tar cvf "${hpss_file_restart}" "${dtfanl}"
+tar cvf "${hpss_file_nc}" "${atmanl}" "${sfcanl}"
 
 # Move the tar files to the output directory
 echo "moving tar files to ${OUTPUT_DIR}"
 mv "${hpss_file_nc}" "${OUTPUT_DIR}/"
-mv "${hpss_file_restart}" "${OUTPUT_DIR}/"
 
 # Clean up temporary directory
 rm -rf "${OUTPUT_DIR}/tmp"

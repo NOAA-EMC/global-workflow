@@ -275,7 +275,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     cd "${HOMEgfs}/ush" || exit 1
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/ghcn_snod2ioda.py" .
 fi
 
 #------------------------------
@@ -352,7 +352,7 @@ cd "${HOMEgfs}/exec" || exit 1
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
     syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
     mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x \
-    ensadd.x ensppf.x ensstat.x wave_stat.x; do
+    ensadd.x ensppf.x ensstat.x wave_stat.x tref_calc.x; do
     if [[ -s "${utilexe}" ]]; then
         rm -f "${utilexe}"
     fi
@@ -439,7 +439,6 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas* ./
-    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/calcfIMS.exe" ./gdas_calcfIMS.x
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
 fi
 
@@ -573,6 +572,7 @@ for prog in enkf_chgres_recenter_nc.fd \
     syndat_qctropcy.fd \
     tave.fd \
     tocsbufr.fd \
+    tref_calc.fd \
     vint.fd \
     webtitle.fd \
     ocnicepost.fd; do
