@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-  pull_request:
+  pull_request_target: # safe as long as code is not being run
 
   workflow_dispatch:
 
@@ -19,19 +19,35 @@ jobs:
       checks: write
 
     steps:
+      - name: determine hash
+        uses: haya14busa/action-cond@v1
+        id: hash
+        with:
+          cond: ${{ github.event_name == 'pull_request_target' }}
+          if_true: ${{ github.event.pull_request.head.sha }}
+          if_false: ''
+
       - name: checkout code
         uses: actions/checkout@v6
         with:
+          ref: ${{ steps.hash.outputs.value }}
           submodules: false
+
+      - name: determine reporter
+        uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request_target' }}
+          if_true: 'github-pr-review'
+          if_false: 'github-check'
 
       - name: shfmt scan
         uses: reviewdog/action-shfmt@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           filter_mode: nofilter
-          fail_level: any
           level: any
-          reviewdog_flags: '-reporter=github-pr-review'
+          reviewdog_flags: '-reporter=${{ steps.reporter.outputs.value }} -fail-level=any'
           shfmt_flags: ''
 
   shellcheck:
@@ -44,16 +60,33 @@ jobs:
       checks: write
 
     steps:
+      - name: determine hash
+        uses: haya14busa/action-cond@v1
+        id: hash
+        with:
+          cond: ${{ github.event_name == 'pull_request_target' }}
+          if_true: ${{ github.event.pull_request.head.sha }}
+          if_false: ''
+
       - name: checkout code
         uses: actions/checkout@v6
         with:
+          ref: ${{ steps.hash.outputs.value }}
           submodules: false
-      
+
+      - name: determine reporter
+        uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request_target' }}
+          if_true: 'github-pr-review'
+          if_false: 'github-check'
+
       - name: shellcheck scan
         uses: reviewdog/action-shellcheck@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
+          reporter: ${{ steps.reporter.outputs.value }}
           filter_mode: nofilter
           fail_level: any
           level: any

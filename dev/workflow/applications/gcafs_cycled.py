@@ -136,6 +136,7 @@ class GCAFSCycledAppConfig(AppConfig):
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
             configs += ['prep']
+            configs += ['analcalc']
 
         if options['do_anlstat']:
             configs += ['anlstat']
@@ -204,6 +205,8 @@ class GCAFSCycledAppConfig(AppConfig):
                     task_names[run] += ['aeroanlgenb']
                     task_names[run] += ['aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
                     task_names[run] += ['prep']
+                    task_names[run] += ['analcalc']
+                    task_names[run] += ['atmanlupp', 'atmanlprod']
 
                 if options['do_anlstat']:
                     task_names[run] += ['anlstat']

@@ -34,10 +34,6 @@ case ${step} in
     export memory="200GB"
     ;;
 
-  "arch_vrfy" | "arch_tars" | "earc_vrfy" | "earc_tars" | "getic")
-    declare -x "memory"="3GB"
-    ;;
-
   "eupd")
     case "${CASE}" in
       "C1152" | "C768" | "C384")

@@ -37,6 +37,10 @@ if __name__ == '__main__':
     if snow_ens_anl.task_config.DO_IMS_SCF:
         snow_ens_anl.execute('scf_to_ioda')
 
+    # Process GHCN (if applicable)
+    if snow_ens_anl.task_config.DO_GHCN:
+        snow_ens_anl.prepare_GHCN()
+
     # Execute JEDI snow analysis
     snow_ens_anl.execute('snowanlvar')
 

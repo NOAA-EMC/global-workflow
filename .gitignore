@@ -176,6 +176,7 @@ ush/global_cycle_driver.sh
 ush/gsi_satbias2ioda_all.sh
 ush/jediinc2fv3.py
 ush/imsfv3_scf2ioda.py
+ush/ghcn_snod2ioda.py
 ush/bufr_snocvr_snomad.py
 ush/atparse.bash
 ush/bufr2ioda_insitu*
