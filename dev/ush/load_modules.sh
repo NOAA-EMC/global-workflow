@@ -155,7 +155,20 @@ case "${MODULE_TYPE}" in
         export PYTHONPATH
         ;;
 
-    "run" | "gsi" | "verif" | "setup" | "upp")
+    "verif")
+        # EMC_verif-global modules -- use that submodule's module files
+        module use "${HOMEgfs}/sorc/verif-global.fd/modulefiles"
+        module load "emc_verif_global_${MACHINE_ID}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            echo "FATAL ERROR: Failed to load emc_verif_global_${MACHINE_ID}"
+            exit 1
+        fi
+        module list
+
+        ;;
+
+    "run" | "gsi" | "setup" | "upp")
 
         # Test that the version file exists
         if [[ ! -f "${HOMEgfs}/versions/run.ver" ]]; then
@@ -181,8 +194,8 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
-        # Source versions file (except for upp)
-        if [[ "${mod_type}" != "upp" ]]; then
+        # Source versions file (except for upp and verification)
+        if [[ "${mod_type}" != "upp" || "${mod_type}" != "verif" ]]; then
             source "${HOMEgfs}/versions/run.ver"
         fi
 
