@@ -906,35 +906,27 @@ exit 0
 EOF
     chmod 755 "${DATA}/tar_diagdir.sh"
 
-    tick "cmdfile"
     rm -f "${DATA}/cmdfile"
     for dir in dir.*; do
         dir_num=$(echo "${dir}" | cut -d. -f2)
         echo "${DATA}/tar_diagdir.sh ${dir_num}" >> "${DATA}/cmdfile"
     done
-    tock
 
     split -l "${tasks_per_node}" ./cmdfile cmdfile_part_
     cmdfile_parts=$(ls cmdfile_part_*)
     for partfile in ${cmdfile_parts}; do
-        tick "${partfile}"
         "${USHgfs}/run_mpmd.sh" "${partfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to tar one or more GSI diagnostic directories for ${partfile}!"
         fi
-        tock
     done
     rm -f cmdfile_part_*
     # Combine all tar files into a single tar file
     rm -f gsidiags.tar
-    tick "concat"
     tar --concatenate --file=gsidiags.tar dir.*.tar
-    tock
-    tick "cpfs"
     cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
-    tock
-    tock
+    tock # gendiag
 fi
 
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
