@@ -738,7 +738,7 @@ class SFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/job_cards/globus_arch.sh',
+                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/globus_arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'

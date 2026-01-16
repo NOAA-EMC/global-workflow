@@ -34,7 +34,7 @@ mkdir -m 755 -p "${OUTDIR}/inst.monthly.${MEMDIR}"
 
 # Lists of variables
 dailyinstvars="(:TMP|UGRD|VGRD):(2|5|10|30|50|100|200|250|300|500|600|700|850|925|1000) mb|HGT:(2|5|10|30|50|100|200|500|700|850|1000) mb|SPFH:(5|30|100|200|300|500|600|700|850|925|1000) mb|VVEL:500 mb|(STRM|VPOT):(200|850) mb|(PRES|HGT|:TMP|CNWAT|WEASD|PEVPR|ICETK|WILT|FLDCP|SUNSD|:LFTX|CAPE|LAND|ICEC|FDNSSTMP|CPOFP):surface|TMP:1 hybrid|(PVORT|:TMP):(450|550|650) K|(TSOIL|SOILW|SOILL):(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL|MSLET|PWAT|TOZNE" 
-dailyaccvars="(ACPCP|APCP|NCPCP|CPRAT|PRATE|LHTFL|SHTFL|GFLUX|SNOHF|UFLX|VFLX|WATR|DLWRF|DSWRF|ULWRF|USWRF|CDUVB|NDDSF|VDDSF|CSDLF|CSDSF|CSUSF):surface|TSNOWP:surface|TMAX|TMIN|MAXUW|MAXVW|(USWRF|ULWRF|DSWRF):top of atmosphere|TCDC:entire atmosphere"
+dailyaccvars="(ACPCP|APCP|NCPCP|CPRAT|PRATE|LHTFL|SHTFL|GFLUX|SNOHF|UFLX|VFLX|WATR|DLWRF|DSWRF|ULWRF|USWRF|CDUVB|NDDSF|VDDSF|CSDLF|CSDSF|CSUSF):surface|TSNOWP:surface|TMAX|TMIN|MAXUW|MAXVW|(USWRF|ULWRF|DSWRF):top of atmosphere|TCDC:entire atmosphere|WIND:10 m above ground"
 
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
 
@@ -83,7 +83,7 @@ else
 fi
 
 #### check for leap year
-itime=$(${WGRIB2} -t "${firstfile}"|head -1|cut -d= -f2)
+itime=$(${WGRIB2} -t -d 1 "${firstfile}"|head -1|cut -d= -f2)
 for i in {1..12}
 do
   yyyy=${itime:0:4}
