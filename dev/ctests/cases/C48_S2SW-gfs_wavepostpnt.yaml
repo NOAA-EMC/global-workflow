@@ -1,0 +1,57 @@
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# =============================================================================
+# C48_S2SW Wave Point Post-Processing Test Case
+# =============================================================================
+# This test validates the gfs_wavepostpnt task from the S2SW workflow.
+# Tests wave point output post-processing to spectral and bulletin formats.
+#
+# Workflow Context:
+# - Task: wavepostpnt (from wave post metatask)
+# - Job: JGLOBAL_WAVE_POST_PNT -> exgfs_wave_post_pnt.sh
+#
+# Source Logic: scripts/exgfs_wave_post_pnt.sh
+# - Reads NetCDF point output files from wave forecast
+# - Creates spectral output files (.spec suffix)
+# - Creates bulletin files (.bull suffix)
+# - Uses ww3_outp for point data extraction
+#
+# Configuration:
+# - DOSPC_WAV='YES' - Generate spectral post
+# - DOBLL_WAV='YES' - Generate bulletin post
+# - DOBNDPNT_WAV='NO' - Not boundary points (separate job)
+#
+# Input Files:
+# - mod_def files from waveinit/waveprep
+# - points.fNNN.nc files from wave forecast
+#
+# Output Files:
+# - Spectral files in COM_WAVE_STATION
+# - Bulletin files in COM_WAVE_STATION
+# =============================================================================
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/station
+
+    copy:
+        # Wave model definition file for point output grid (uglo_100km)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin]
+
+        # Wave point output NetCDF files from forecast (f000-f120, 121 files)
+        # FHMAX_WAV=120 by default, so we need all hourly point files
+{% for fhr in range(0, 121) %}
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f{{ '%03d'|format(fhr) }}.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f{{ '%03d'|format(fhr) }}.nc]
+{% endfor %}
+
+output_files:
+    cmpfiles:
+        # Wave station output files (spectral and bulletin tarballs)
+        # Output goes to products/wave/station/ (not model/wave/station/)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.spec.tar.gz, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.spec.tar.gz]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.bull.tar, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.bull.tar]

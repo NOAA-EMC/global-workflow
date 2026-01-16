@@ -146,6 +146,37 @@ AddJJOBTest(
   TEST_DATE "2021032312"
 )
 
+# ------------------------------------------------------------------------- #
+# Wave Component Tests (Phase 25 - CTest S2SW Wave Expansion)
+# ------------------------------------------------------------------------- #
+# These tests validate wave-specific jobs from the S2SW coupled workflow.
+# See GitHub Issue: NOAA-EMC/global-workflow#4318
+# ------------------------------------------------------------------------- #
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_waveinit"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostpnt"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostsbs_f000-f002"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostbndpnt"
+  TEST_DATE "2021032312"
+)
+
 AddJJOBTest(
   CASE "C48_S2SWA_gefs"
   JOB "gefs_fcst_mem001_seg0"
