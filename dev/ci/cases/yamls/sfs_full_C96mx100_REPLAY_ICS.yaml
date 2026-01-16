@@ -3,5 +3,4 @@ defaults:
 base:
   FHMAX_GFS: 1464 
   FCST_BREAKPOINTS: "720"
-ocn:
   MOM6_INTERP_ICS: "YES"
