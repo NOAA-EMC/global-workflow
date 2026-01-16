@@ -139,7 +139,7 @@ class RocotoXML(WorkflowSuite, ABC):
         str
             Formatted bash script content
         """
-        template_path = os.path.join(os.path.dirname(__file__), 'rocoto_cron_template.sh')
+        template_path = os.path.join(os.path.dirname(__file__), 'rocoto_scron_template.sh')
 
         with open(template_path, 'r') as fh:
             template_content = fh.read()
