@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 source {HOMEgfs}/dev/ush/gw_setup.sh
-
+# Set platform variable if hostname contains 'gaea'
+if [[ "$(hostname -s)" == *gaea* ]]; then
+    platform="gaea"
+else
+    platform="unknown"
+fi
 # Run rocotorun
 {rocotorunstr}
 
@@ -29,8 +34,7 @@ if [[ -n "$ROCOTOSTAT" ]]; then
         # Send email only if there are NEW failures
         if [[ -n "$NEW_FAILURES" ]]; then
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
-
-            echo "The following jobs have failed in experiment {pslot}:" > "$MSGFILE"
+            echo "The following jobs have failed in experiment {pslot} on $platform:" > "$MSGFILE"
             echo "" >> "$MSGFILE"
 
             # Format each failed job with detailed information
@@ -52,8 +56,12 @@ if [[ -n "$ROCOTOSTAT" ]]; then
 
             # Try to send email
             EMAIL="{replyto}"
+            hostname_domain=$(hostname -d)
+            FROM_EMAIL="no-reply@${{hostname_domain}}"
             if [[ -n "$EMAIL" ]] && command -v mail &> /dev/null; then
-                cat "$MSGFILE" | mail -s "[{pslot}] Workflow Job Failures Detected" "$EMAIL" 2>&1
+                # On Gaea, the mail utility requires the -v (verbose) flag to ensure delivery.
+                # To avoid receiving verbose output as an actual email, a spoofed 'from' address is used for notifications.
+                cat "$MSGFILE" | mail -r "${{FROM_EMAIL}}" -v -s "[{pslot}] Workflow Job Failures Detected" "${{EMAIL}}" 2>&1
             fi
 
             rm -f "$MSGFILE"
