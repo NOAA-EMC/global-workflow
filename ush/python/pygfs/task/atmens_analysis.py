@@ -88,7 +88,6 @@ class AtmEnsAnalysis(Analysis):
         # initialize JEDI applications
         logger.info(f"Initializing JEDI LETKF observer application")
         self.jedi_dict['atmensanlobs'].initialize(clean_empty_obsspaces=True)
-        self.jedi_dict['atmensanlsol'].initialize()
         self.jedi_dict['atmensanlfv3inc'].initialize()
 
     @logit(logger)
@@ -122,6 +121,11 @@ class AtmEnsAnalysis(Analysis):
         ----------
         None
         """
+
+        # Initialize solver immediately before execution so that obs space files are
+        # available for cleaning after running the observer
+        if jedi_dict_key == 'atmensanlsol':
+            self.jedi_dict['atmensanlsol'].initialize(clean_empty_obsspaces=True)
 
         self.jedi_dict[jedi_dict_key].execute()
 

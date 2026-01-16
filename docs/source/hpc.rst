@@ -97,7 +97,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 1
      - X
      - X
-     -
+     - x
      - X
      - X
      - X
