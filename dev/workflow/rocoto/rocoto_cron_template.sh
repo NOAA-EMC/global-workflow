@@ -30,10 +30,7 @@ if [[ -n "$ROCOTOSTAT" ]]; then
         if [[ -n "$NEW_FAILURES" ]]; then
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
 
-            # Create logs directory if it doesn't exist
-            mkdir -p "{expdir}/logs"
-
-            echo "The following NEW jobs have failed in experiment {pslot}:" > "$MSGFILE"
+            echo "The following jobs have failed in experiment {pslot}:" > "$MSGFILE"
             echo "" >> "$MSGFILE"
 
             # Format each failed job with detailed information
@@ -47,9 +44,7 @@ if [[ -n "$ROCOTOSTAT" ]]; then
                     timestamp=$(date -u '+%m/%d/%y %H:%M:%S UTC')
 
                     # Format similar to user's example
-                    echo "$timestamp :: {pslot}.xml :: Cycle $cycle, Task $task, \
-                        jobid=$jobid, in state $state, ran for $duration seconds, \
-                        try=$try (of $maxtries)" >> "$MSGFILE"
+                    echo "$timestamp :: {pslot}.xml :: Cycle $cycle, Task $task, jobid=$jobid, in state $state, ran for $duration seconds, try=$try (of $maxtries)" >> "$MSGFILE"
                     echo "Error log: {comroot}/{pslot}/logs/$cycle_short/$task.log" >> "$MSGFILE"
                     echo "" >> "$MSGFILE"
                 fi
@@ -58,7 +53,7 @@ if [[ -n "$ROCOTOSTAT" ]]; then
             # Try to send email
             EMAIL="{replyto}"
             if [[ -n "$EMAIL" ]] && command -v mail &> /dev/null; then
-                cat "$MSGFILE" | mail -s "[{pslot}] NEW Workflow Job Failures Detected" "$EMAIL" 2>&1
+                cat "$MSGFILE" | mail -s "[{pslot}] Workflow Job Failures Detected" "$EMAIL" 2>&1
             fi
 
             rm -f "$MSGFILE"
