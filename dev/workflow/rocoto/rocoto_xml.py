@@ -145,14 +145,13 @@ class RocotoXML(WorkflowSuite, ABC):
             template_content = fh.read()
 
         # Format the template with experiment-specific values
-        return template_content.format(
-            HOMEgfs=self.HOMEgfs,
-            rocotorunstr=rocotorunstr,
-            expdir=self.expdir,
-            pslot=self.pslot,
-            replyto=replyto,
-            comroot=self._base.get('COMROOT')
-        )
+        template_content = template_content.replace('@HOMEgfs@', self.HOMEgfs)
+        template_content = template_content.replace('@rocotorunstr@', rocotorunstr)
+        template_content = template_content.replace('@expdir@', self.expdir)
+        template_content = template_content.replace('@pslot@', self.pslot)
+        template_content = template_content.replace('@replyto@', replyto)
+        template_content = template_content.replace('@comroot@', self._base.get('COMROOT'))
+        return template_content
 
     def _write_xml(self, xml_file: str = None) -> None:
 
