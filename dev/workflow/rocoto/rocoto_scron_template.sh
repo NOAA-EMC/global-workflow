@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source {HOMEgfs}/dev/ush/gw_setup.sh
+source "{HOMEgfs}/dev/ush/gw_setup.sh"
 # Set platform variable if hostname contains 'gaea'
 if [[ "$(hostname -s)" == *gaea* ]]; then
     platform="gaea"
@@ -10,11 +10,11 @@ fi
 {rocotorunstr}
 
 # Monitor for failed jobs using rocotostat
-LOCKFILE={expdir}/.failed_jobs.lock
+LOCKFILE="{expdir}/.failed_jobs.lock"
 ROCOTOSTAT=$(which rocotostat)
 
 if [[ -n "$ROCOTOSTAT" ]]; then
-    FAILED_JOBS=$($ROCOTOSTAT -d {expdir}/{pslot}.db -w {expdir}/{pslot}.xml -c all 2>/dev/null | grep -E 'DEAD')
+    FAILED_JOBS=$($ROCOTOSTAT -d "{expdir}/{pslot}.db" -w "{expdir}/{pslot}.xml" -c all 2>/dev/null | grep -E 'DEAD')
 
     if [[ -n "$FAILED_JOBS" ]]; then
         # Read previously reported failures
@@ -27,13 +27,14 @@ if [[ -n "$ROCOTOSTAT" ]]; then
         NEW_FAILURES=""
         while IFS= read -r job; do
             if [[ -n "$job" ]] && ! echo "$PREV_FAILED" | grep -qF "$job"; then
-                NEW_FAILURES="${{NEW_FAILURES}}${{job}}"$'\n'
+                NEW_FAILURES="${NEW_FAILURES}${job}"$'\n'
             fi
         done <<< "$FAILED_JOBS"
 
         # Send email only if there are NEW failures
         if [[ -n "$NEW_FAILURES" ]]; then
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
+            # shellcheck disable=SC1083
             echo "The following jobs have failed in experiment {pslot} on $platform:" > "$MSGFILE"
             echo "" >> "$MSGFILE"
 
@@ -43,13 +44,15 @@ if [[ -n "$ROCOTOSTAT" ]]; then
                     # Parse rocotostat output: Cycle Task JobID State Try MaxTries Duration
                     read -r cycle task jobid state try maxtries duration <<< "$line"
                     # Extract YYYYMMDDHH from cycle (first 10 characters)
-                    cycle_short=${{cycle:0:10}}
+                    cycle_short=${cycle:0:10}
                     # Get current timestamp
                     timestamp=$(date -u '+%m/%d/%y %H:%M:%S UTC')
 
                     # Format similar to user's example
+                    # shellcheck disable=SC1083
                     echo "$timestamp :: {pslot}.xml :: Cycle $cycle, Task $task, jobid=$jobid, in state $state, ran for $duration seconds, try=$try (of $maxtries)" >> "$MSGFILE"
-                    echo "Error log: {comroot}/{pslot}/logs/$cycle_short/$task.log" >> "$MSGFILE"
+                    # shellcheck disable=SC1083
+                    echo "Check log: {comroot}/{pslot}/logs/$cycle_short/$task.log" >> "$MSGFILE"
                     echo "" >> "$MSGFILE"
                 fi
             done <<< "$NEW_FAILURES"
@@ -57,11 +60,12 @@ if [[ -n "$ROCOTOSTAT" ]]; then
             # Try to send email
             EMAIL="{replyto}"
             hostname_domain=$(hostname -d)
-            FROM_EMAIL="no-reply@${{hostname_domain}}"
+            FROM_EMAIL="no-reply@${hostname_domain}"
             if [[ -n "$EMAIL" ]] && command -v mail &> /dev/null; then
                 # On Gaea, the mail utility requires the -v (verbose) flag to ensure delivery.
                 # To avoid receiving verbose output as an actual email, a spoofed 'from' address is used for notifications.
-                cat "$MSGFILE" | mail -r "${{FROM_EMAIL}}" -v -s "[{pslot}] Workflow Job Failures Detected" "${{EMAIL}}" 2>&1
+                # shellcheck disable=SC1083
+                cat "$MSGFILE" | mail -r "${FROM_EMAIL}" -v -s "[{pslot}] Workflow Job Failures Detected" "${EMAIL}" 2>&1
             fi
 
             rm -f "$MSGFILE"
