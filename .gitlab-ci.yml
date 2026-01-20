@@ -194,6 +194,11 @@ include:
         Machine="${machine^}"
         echo "Job failed, performing cleanup actions for ${Machine}"
 
+        # TODO We need to add local python env to support PyGitHub not being in Spack-Stack 1.9
+        # this should be part of the spack environment setup in Spack-Stack 2.x
+        PYTHONPATH=${PYTHONPATH}:$HOME/.local/lib/python3.11/site-packages
+        echo "Updated PYTHONPATH: $PYTHONPATH"       
+
         # Re-setup GH if needed
         export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
         if [ ! -x "${GH}" ]; then
