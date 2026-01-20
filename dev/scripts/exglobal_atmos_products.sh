@@ -38,7 +38,7 @@ fi
 IFS=':' read -ra grids <<< "${grid_string}"
 
 # Files needed by ${USHgfs}/interp_atmos_master.sh
-MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr33}.grib2"
+MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
 
 for ((nset = 1; nset <= downset; nset++)); do
 
