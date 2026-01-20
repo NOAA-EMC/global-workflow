@@ -37,8 +37,9 @@ input_files:
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history
 
     copy:
-        # Wave model definition files - only the native grid (uglo_100km)
-        # Output grids are generated during post-processing, not inputs
+        # Wave model definition files - native grid (uglo_100km) plus all
+        # interpolation target grids from waveinterpGRD (7 regional grids)
+        # Script loops: for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin]
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin]
