@@ -14,14 +14,6 @@ enkf_restarta_grp:
              {% set COMIN_ICE_RESTART_MEM = COMIN_ICE_RESTART_MEM_list[imem] %}
              {% set COMIN_MED_RESTART_MEM = COMIN_MED_RESTART_MEM_list[imem] %}
 
-        # Store bias data
-            {% if not lobsdiag_forenkf %}
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias.txt"
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_air.txt"
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_int.txt"
-        - "{{ COMIN_ATMOS_RESTART_MEM | relpath(ROTDIR) }}/{{ head }}abias_pc.txt"
-            {% endif %}
-
         # Member surface analysis data
             {% if DOIAU_ENKF %}
                 {% set anl_delta = "-3H" | to_timedelta %}
