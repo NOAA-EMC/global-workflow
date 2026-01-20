@@ -25,20 +25,20 @@ for grid in '1p00'; do
     GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
-# TODO: If none of these are on, why are we running this job?
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
-    # Override the -e in VERIF_GLOBALSH's shebang and un-export SHELLOPTS
-    # TODO: clean up the verif-global script so it does not raise false-positive errors
     unset_strict
     export -n SHELLOPTS
-    bash -x "${VERIF_GLOBALSH}"
+    "${VERIF_GLOBALSH}"
     err=$?
     set_strict
     if [[ ${err} -ne 0 ]]; then
         exit "${err}"
     fi
+else
+    export err=1
+    err_exit "FATAL ERROR: No verification steps are enabled. Please check your configuration."
 fi
 
 if [[ ${KEEPDATA:-"NO"} == "NO" ]]; then
-    rm -rf "${DATAROOT}" # TODO: This should be $DATA
+    rm -rf "${DATA}"
 fi
