@@ -7,8 +7,8 @@ else
     platform="unknown"
 fi
 # Run rocotorun
-rocotorun_cmd="{rocotorunstr}"
-$rocotorun_cmd
+# Template variable {rocotorunstr} will be substituted by the Python template system
+bash -c "{rocotorunstr}"
 
 # Monitor for failed jobs using rocotostat
 LOCKFILE="{expdir}/.failed_jobs.lock"
