@@ -7,7 +7,8 @@ else
     platform="unknown"
 fi
 # Run rocotorun
-{rocotorunstr}
+rocotorun_cmd="{rocotorunstr}"
+$rocotorun_cmd
 
 # Monitor for failed jobs using rocotostat
 LOCKFILE="{expdir}/.failed_jobs.lock"
@@ -34,7 +35,6 @@ if [[ -n "$ROCOTOSTAT" ]]; then
         # Send email only if there are NEW failures
         if [[ -n "$NEW_FAILURES" ]]; then
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
-            # shellcheck disable=SC1083
             echo "The following jobs have failed in experiment {pslot} on $platform:" > "$MSGFILE"
             echo "" >> "$MSGFILE"
 
@@ -49,9 +49,7 @@ if [[ -n "$ROCOTOSTAT" ]]; then
                     timestamp=$(date -u '+%m/%d/%y %H:%M:%S UTC')
 
                     # Format similar to user's example
-                    # shellcheck disable=SC1083
                     echo "$timestamp :: {pslot}.xml :: Cycle $cycle, Task $task, jobid=$jobid, in state $state, ran for $duration seconds, try=$try (of $maxtries)" >> "$MSGFILE"
-                    # shellcheck disable=SC1083
                     echo "Check log: {comroot}/{pslot}/logs/$cycle_short/$task.log" >> "$MSGFILE"
                     echo "" >> "$MSGFILE"
                 fi
@@ -64,7 +62,6 @@ if [[ -n "$ROCOTOSTAT" ]]; then
             if [[ -n "$EMAIL" ]] && command -v mail &> /dev/null; then
                 # On Gaea, the mail utility requires the -v (verbose) flag to ensure delivery.
                 # To avoid receiving verbose output as an actual email, a spoofed 'from' address is used for notifications.
-                # shellcheck disable=SC1083
                 cat "$MSGFILE" | mail -r "${FROM_EMAIL}" -v -s "[{pslot}] Workflow Job Failures Detected" "${EMAIL}" 2>&1
             fi
 
