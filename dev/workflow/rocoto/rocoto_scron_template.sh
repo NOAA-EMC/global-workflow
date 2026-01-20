@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 source "@HOMEgfs@/dev/ush/gw_setup.sh"
 # Set platform variable if hostname contains 'gaea'
 if [[ "$(hostname -s)" == *gaea* ]]; then

@@ -211,7 +211,7 @@ class RocotoXML(WorkflowSuite, ABC):
 
             # Now write the script that actually runs rocotorun and monitors for failures
             cron_cmd = f"{self.expdir}/{self.pslot}.scron.sh"
-            script_content = "#!/usr/bin/env bash\nset -x\n" + self._get_scron_script_content(rocotorunstr, replyto)
+            script_content = self._get_scron_script_content(rocotorunstr, replyto)
 
             with open(cron_cmd, "w") as script_fh:
                 script_fh.write(script_content)
