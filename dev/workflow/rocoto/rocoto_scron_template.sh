@@ -14,7 +14,7 @@ LOCKFILE="{expdir}/.failed_jobs.lock"
 ROCOTOSTAT=$(which rocotostat)
 
 if [[ -n "$ROCOTOSTAT" ]]; then
-    FAILED_JOBS=$($ROCOTOSTAT -d "{expdir}/{pslot}.db" -w "{expdir}/{pslot}.xml" -c all 2>/dev/null | grep -E 'DEAD')
+    FAILED_JOBS=$($ROCOTOSTAT -d "{expdir}/{pslot}.db" -w "{expdir}/{pslot}.xml" -c all 2> /dev/null | grep -E 'DEAD')
 
     if [[ -n "$FAILED_JOBS" ]]; then
         # Read previously reported failures
