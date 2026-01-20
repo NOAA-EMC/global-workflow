@@ -88,7 +88,7 @@ The commonly run tests are written in YAML format and can be found in the ``dev/
 where:
 
     * ``-A`` is used to specify the HPC (slurm or PBS) account to use
-    * ``-b`` indicates that the workflow should be built fresh
+    * ``-b|B`` indicates that the workflow should be built fresh (`-B` uses compute nodes for the build)
     * ``-GESC`` specifies that all of the GFS, GEFS, SFS, GCAFS cases should be run (this also influences the build flags to use)
     * ``-c`` tells the tool to append the rocotorun commands for each experiment to your crontab
 

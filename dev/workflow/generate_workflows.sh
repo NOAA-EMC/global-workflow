@@ -17,7 +17,10 @@ function _usage() {
        directory up from this script's residing directory.
 
     -b Run build_all.sh with default flags
-       (build the UFS, UPP, UFS_Utils, and GFS-utils only)
+       (build the UFS, UPP, UFS_Utils, and GFS-utils only on login nodes)
+
+    -B Run build_all.sh -c with default flags [-c triggers build on compute nodes]
+       (build the UFS, UPP, UFS_Utils, and GFS-utils only on compute nodes)
 
     -u Update submodules before building and/or generating experiments.
 
@@ -84,6 +87,7 @@ set -eu
 HOMEgfs=""
 _specified_home=false
 _build=false
+_compute_build=false
 _build_flags=""
 _update_submods=false
 declare -a _yaml_list=("C48_ATM")
@@ -110,7 +114,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-    while getopts ":H:bDuy:Y:GESCA:ce:t:vVdh" option; do
+    while getopts ":H:bBDuy:Y:GESCA:ce:t:vVdh" option; do
         case "${option}" in
             H)
                 HOMEgfs="${OPTARG}"
@@ -121,6 +125,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
                 fi
                 ;;
             b) _build=true ;;
+            B) _build=true && _compute_build=true ;;
             D) _auto_del=true ;;
             u) _update_submods=true ;;
             y) # Start over with an empty _yaml_list
@@ -442,8 +447,11 @@ fi
 if [[ "${_build}" == "true" ]]; then
     printf "Building via build_all.sh %s\n\n" "${_build_flags}"
     # Let the output of build_all.sh go to stdout regardless of verbose options
+    if [[ "${_compute_build}" == true ]]; then
+        _compute_build_flag="-c -A ${HPC_ACCOUNT}"
+    fi
     #shellcheck disable=SC2086,SC2248
-    ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
+    ${HOMEgfs}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
 fi
 
 # Link the workflow silently unless there's an error
