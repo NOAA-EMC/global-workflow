@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 source "@HOMEgfs@/dev/ush/gw_setup.sh"
 # Set platform variable if hostname contains 'gaea'
 if [[ "$(hostname -s)" == *gaea* ]]; then
@@ -7,7 +6,6 @@ else
     platform="unknown"
 fi
 # Run rocotorun
-# Template variable @rocotorunstr@ will be substituted by the Python template system
 bash -c "@rocotorunstr@"
 
 # Monitor for failed jobs using rocotostat
