@@ -22,7 +22,7 @@ def main():
             'PSLOT', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'PARMgfs',
             'ARCDIR', 'SDATE', 'MODE', 'ENSGRP', 'NMEM_EARCGRP',
             'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
-            'DO_ATMENS_SPLIT_OBSSOL', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
+            'DO_JEDIATMENS_SPLIT_OBSSOL', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
             'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF', 'ENKF_SPREAD',
             'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
             'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET', 'DOIAU', 'DO_CA',

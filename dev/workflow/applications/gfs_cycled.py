@@ -76,7 +76,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             if run_options[run]['do_hybvar']:
-                run_options[run]['do_atmens_split_obssol'] = base.get('DO_ATMENS_SPLIT_OBSSOL', True)
+                run_options[run]['do_jediatmens_split_obssol'] = base.get('DO_JEDIATMENS_SPLIT_OBSSOL', True)
 
             run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
             run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
@@ -384,7 +384,7 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['stage_ic']
                 if options['do_jediatmens']:
                     task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
-                    if options['do_atmens_split_obssol']:
+                    if options['do_jediatmens_split_obssol']:
                         task_names[run] += ['atmensanlobs', 'atmensanlsol']
                     else:
                         task_names[run] += ['atmensanlletkf']
