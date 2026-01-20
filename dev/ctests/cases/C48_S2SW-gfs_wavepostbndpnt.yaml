@@ -11,20 +11,24 @@
 #
 # Workflow Context:
 # - Task: wavepostbndpnt (wave boundary point post-processing)
-# - Job: JGLOBAL_WAVE_POST_BNDPNT -> exgfs_wave_prdgen_bulls.sh
+# - Job: JGLOBAL_WAVE_POST_BNDPNT -> exgfs_wave_post_pnt.sh
 #
-# Source Logic: scripts/exgfs_wave_prdgen_bulls.sh
+# Source Logic: scripts/exgfs_wave_post_pnt.sh
 # - Produces ibp (interpolated boundary point) spectral files
-# - Creates ibpbull (bulletins) and ibpcbull (combined bulletins)
+# - Uses ww3_outp for boundary point data extraction
+#
+# Configuration:
+# - DOSPC_WAV='YES' - Generate spectral post
+# - DOBLL_WAV='NO' - No bulletin post (separate job: wavepostbndpntbll)
+# - DOBNDPNT_WAV='YES' - Process boundary points
 #
 # Input Files:
 # - mod_def files from waveinit/waveprep
 # - points.fNNN.nc files from wave model point output
 #
 # Output Files:
-# - ibp.tar - interpolated boundary point spectra
-# - ibpbull.tar - boundary point bulletins
-# - ibpcbull.tar - combined boundary point bulletins
+# - ibp.tar - interpolated boundary point spectra (DOSPC_WAV=YES)
+# - Note: ibpbull.tar and ibpcbull.tar created by wavepostbndpntbll task
 # =============================================================================
 
 input_files:
