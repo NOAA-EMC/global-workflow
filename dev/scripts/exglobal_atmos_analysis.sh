@@ -58,9 +58,9 @@ CRIS_CADS=${CRIS_CADS:-".false."}
 
 # Diagnostic files options
 if [[ "${RUN}" == "enkfgdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
-    lobsdiag_forenkf=".true."
+    enkf_jacobian=".true."
 else
-    lobsdiag_forenkf=".false."
+    enkf_jacobian=".false."
 fi
 
 # IAU
@@ -733,7 +733,7 @@ cat > gsiparm.anl << EOF
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
   cwoption=3,imp_physics=${imp_physics},lupp=${lupp},cnvw_option=${cnvw_option},cao_check=${cao_check},
   netcdf_diag=.true.,binary_diag=.false.,
-  lobsdiag_forenkf=${lobsdiag_forenkf},
+  lobsdiag_forenkf=${enkf_jacobian},
   write_fv3_incr=${write_fv3_increment},
   nhr_anal=${IAUFHRS},
   ta2tb=${ta2tb},optconv=${optconv},
