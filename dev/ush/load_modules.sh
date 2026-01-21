@@ -195,7 +195,7 @@ case "${MODULE_TYPE}" in
         fi
 
         # Source versions file (except for upp and verification)
-        if [[ "${mod_type}" != "upp" || "${mod_type}" != "verif" ]]; then
+        if [[ "${mod_type}" != "upp" && "${mod_type}" != "verif" ]]; then
             source "${HOMEgfs}/versions/run.ver"
         fi
 
