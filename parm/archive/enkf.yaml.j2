@@ -7,9 +7,7 @@ enkf:
             {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
             {% endfor %}
-            {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
-            {% set ngrps = fhrs | length %}
-            {% for grp in range(0, ngrps) %}
+            {% for grp in range(0, enkf_epos_ngrps) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % grp }}.log"
             {% endfor %}
             {% if not DO_JEDIATMENS %}
@@ -18,7 +16,7 @@ enkf:
         {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
         {% if not DO_JEDIATMENS %}
-            {% for grp in range(IAUFHRS | length) %}
+            {% for grp in range(iaufhrs_str | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
             {% endfor %}
         {% endif %}
@@ -49,7 +47,7 @@ enkf:
             {% if DOHYBVAR %}
                 {% if DOIAU %}
                     {% for fhr in range(3, fhmax + 1, 3) %}
-        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head |replace('enkf','')}}ensres.atm.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY }}/{{ head |replace('enkf','')}}ensres.atm.f{{ '%03d' % fhr }}.nc"
                     {% endfor %}
                 {% endif %}
             {% endif %}
@@ -58,10 +56,10 @@ enkf:
         # Ensemble mean and spread
         {% if is_gdas %}
             {% for fhr in range(3, fhmax + 1, 3) %}
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean.atm.f{{ '%03d' % fhr }}.nc"
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean.sfc.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT }}/{{ head }}ensmean.atm.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT }}/{{ head }}ensmean.sfc.f{{ '%03d' % fhr }}.nc"
                 {% if ENKF_SPREAD %}
-        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensspread.atm.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY_ENSSTAT }}/{{ head }}ensspread.atm.f{{ '%03d' % fhr }}.nc"
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -91,40 +89,40 @@ enkf:
             {% endif %}
         {% endif %}
         {% for file in da_stat_files %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}{{ file }}"
         {% endfor %}
         {% for file in da_conf_files %}
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}{{ file }}"
+        - "{{ COMIN_CONF }}/{{ head }}{{ file }}"
         {% endfor %}
 
         {% if DO_JEDISNOWDA %}
-        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar.gz"
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar.gz"
             {% for itile in range(1,7) %}
         # Snow analysis is 3dvar
-        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.snow_increment.sfc_data.tile{{ itile }}.nc"
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.snow_increment.sfc_data.tile{{ itile }}.nc"
             {% endfor %}
         {% endif %}
 
         # Ensemble mean analyses/increments
         # soil DA increments
         {% if DO_GSISOILDA %}
-            {% for fhr in IAUFHRS %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_increment.sfc.i{{ '%03d' % fhr }}.nc"
+            {% for fhr in iaufhrs_str %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_increment.sfc.i{{ fhr }}.nc"
             {% endfor %}
         {% endif %}
 
         # Atmospheric analyses/increment
-        {% for fhr in IAUFHRS %}
+        {% for fhr in iaufhrs_str %}
             {% if not DO_JEDIATMENS %}
                 {% if do_calc_increment %}
         # Store analyses instead of increments
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_analysis.atm.a{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_analysis.atm.a{{ fhr }}.nc"
                 {% else %}
         # Store increments
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}ensmean_increment.atm.i{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_increment.atm.i{{ fhr }}.nc"
                 {% endif %}
             {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}csg_ensmean_jedi_analysis.atm.a{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT }}/{{ head }}csg_ensmean_jedi_analysis.atm.a{{ fhr }}.nc"
             {% endif %}
 
         {% endfor %}
@@ -132,6 +130,6 @@ enkf:
         # End of analysis mean increments/analyses
 
         {% if DOHYBVAR_OCN %}
-        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}bg_ensvar.nc"
-        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}bg_ensvar.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
         {% endif %}

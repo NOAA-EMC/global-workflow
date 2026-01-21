@@ -3,5 +3,5 @@ ocean_native:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_native_subset.tar"
     required:
         {% for fhr in range(FHOUT_OCN_GFS, FHMAX_GFS + FHOUT_OCN_GFS, FHOUT_OCN_GFS) %}
-        - "{{ COMIN_OCEAN_NETCDF | relpath(ROTDIR) }}/native/{{ RUN }}.t{{ cycle_HH }}z.native.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_OCEAN_NETCDF }}/native/{{ RUN }}.t{{ cycle_HH }}z.native.f{{ '%03d' % fhr }}.nc"
         {% endfor %}
