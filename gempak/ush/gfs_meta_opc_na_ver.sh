@@ -16,7 +16,9 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-cpreq -R "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+if [[ ! -L ${COMIN} ]]; then
+    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
+fi
 
 mdl=gfs
 MDL="GFS"
