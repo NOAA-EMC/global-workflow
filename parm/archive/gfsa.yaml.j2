@@ -12,73 +12,73 @@ gfsa:
         {% endfor %}
 
         # UFS configuration
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.input.nml"
+        - "{{ COMIN_CONF }}/ufs.input.nml"
         {% if DO_OCN %}
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/MOM_parameter_doc.all"
+        - "{{ COMIN_CONF }}/MOM_parameter_doc.all"
         {% endif %}
 
         {% if MODE == "cycled" %}
         # Analysis GRIB2 (gridded) data
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
 
         {% if DO_VMINMON %}
         # Minimization monitor
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.costs.txt"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.cost_terms.txt"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.gnorms.ieee_d"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.reduction.ieee_d"
+        - "{{ COMIN_ATMOS_MINMON }}/gnorm_data.txt"
         {% endif %}
 
         # State data
         {% if DO_JEDIATMVAR %}
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.atm.yaml"
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.fv3.atm.yaml"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.atm.yaml"
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.fv3.atm.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}gsistat.txt"
         {% endif %}
         {% if DO_AERO_ANL %}
-        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
         {% endif %}
         {% if DO_JEDIOCNVAR %}
-        - "{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
         {% endif %}
         {% if DO_PREP_OBS_AERO %}
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
+        - "{{ COMIN_OBS }}/{{ head }}aeroobs"
+        - "{{ COMIN_OBS }}/{{ head }}aerorawobs"
         {% endif %}
 
         # Snow analysis data
         {% if DO_JEDISNOWDA %}
             {% for itile in range(1,7) %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ current_cycle | to_fv3time }}.snow_increment.sfc_data.tile{{ itile }}.nc"
+        - "{{ COMIN_SNOW_ANALYSIS }}/{{ cycle_fv3time }}.snow_increment.sfc_data.tile{{ itile }}.nc"
             {% endfor %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.tar.gz"
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
+        - "{{ COMIN_SNOW_ANALYSIS }}/{{ head }}snow_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_CONF }}/{{ head }}snowanlvar.yaml"
         {% endif %}
 
         # BUFR inputs
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
+        - "{{ COMIN_OBS }}/{{ head }}nsstbufr"
+        - "{{ COMIN_OBS }}/{{ head }}prepbufr"
+        - "{{ COMIN_OBS }}/{{ head }}prepbufr.acft_profiles"
         {% endif %}  # Full cycle
 
         # Forecast GRIB2 products
         {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2.idx"
-        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}log.f{{ '%03d' % fhr }}.txt"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2.idx"
+        - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}log.f{{ '%03d' % fhr }}.txt"
         {% endfor %}
 
     optional:
         # Cyclone tracking data; only present if there's something to track.
-        - "{{ COMIN_ATMOS_TRACK | relpath(ROTDIR) }}/avno.t{{ cycle_HH }}z.cyclone.trackatcfunix"
-        - "{{ COMIN_ATMOS_TRACK | relpath(ROTDIR) }}/avnop.t{{ cycle_HH }}z.cyclone.trackatcfunix"
-        - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_TRACK }}/avno.t{{ cycle_HH }}z.cyclone.trackatcfunix"
+        - "{{ COMIN_ATMOS_TRACK }}/avnop.t{{ cycle_HH }}z.cyclone.trackatcfunix"
+        - "{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_GENESIS }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_GENESIS }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_GENESIS }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"

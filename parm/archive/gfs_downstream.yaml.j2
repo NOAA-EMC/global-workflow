@@ -4,11 +4,11 @@ gfs_downstream:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_downstream.tar"
     required:
         {% if DO_GEMPAK and DO_BUFRSND %}
-        - "{{ COMIN_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.sfc.bufr"
-        - "{{ COMIN_ATMOS_GEMPAK | relpath(ROTDIR) }}/gfs_{{ cycle_YMDH }}.soundings.bufr"
+        - "{{ COMIN_ATMOS_GEMPAK }}/gfs_{{ cycle_YMDH }}.sfc.bufr"
+        - "{{ COMIN_ATMOS_GEMPAK }}/gfs_{{ cycle_YMDH }}.soundings.bufr"
         {% endif %}
         {% for i in range(1, NUM_SND_COLLECTIVES) %}
-        - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/gfs_collective{{ i }}.fil"
+        - "{{ COMIN_ATMOS_BUFR }}/gfs_collective{{ i }}.fil"
         {% endfor %}
-        - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/bufr.??????.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_BUFR | relpath(ROTDIR) }}/gfs.t{{ cycle_HH }}z.soundings.tar.gz"
+        - "{{ COMIN_ATMOS_BUFR }}/bufr.??????.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_BUFR }}/gfs.t{{ cycle_HH }}z.soundings.tar.gz"
