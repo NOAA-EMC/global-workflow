@@ -244,7 +244,7 @@ function build() {
         echo "Creating logs folder"
         mkdir -p "${logs_dir}" || exit 1
     fi
-    "${HOMEgfs_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
+    "${HOMEgfs_}/sorc/build_all.sh" -c -A "${HPC_ACCOUNT}" all
 
 }
 

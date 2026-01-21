@@ -3,43 +3,38 @@ gdasocean_analysis:
     name: "GDASOCEAN_ANALYSIS"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gdasocean_analysis.tar"
     required:
-        {% if DOIAU %}
-        {% set anl_delta = "-3H" | to_timedelta %}
-        {% else %}
-        {% set anl_delta = "0H" | to_timedelta %}
-        {% endif %}
-        {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
+        {# anl_time_YMD and anl_time_HH are pre-calculated in Python: -3H if DOIAU, 0H otherwise #}
         # analysis and analysis increments
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}mom6_increment.i006.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ anl_time | to_YMD }}.{{ anl_time | strftime("%H") }}0000.analysis.cice_model.res.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc'
-        - '{{ COMIN_ICE_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}jedi_increment.i006.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}mom6_increment.i006.nc'
+        - '{{ COMIN_ICE_ANALYSIS }}/{{ anl_time_YMD }}.{{ anl_time_HH }}0000.analysis.cice_model.res.nc'
+        - '{{ COMIN_ICE_ANALYSIS }}/{{ head }}jedi_analysis.a006.nc'
+        - '{{ COMIN_ICE_ANALYSIS }}/{{ head }}jedi_increment.i006.nc'
 
         # static background error
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
-        - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}bkgerr_parametric_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX }}/{{ head }}bkgerr_parametric_stddev.nc'
 
         # ensemble background error
         {% if NMEM_ENS > 2 %}
-        - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}recentering_error.nc'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensb.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_ensweights.yaml'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}recentering_error.nc'
+        - '{{ COMIN_CONF }}/{{ head }}soca_ensb.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}soca_ensweights.yaml'
         {% endif %}
 
         # runtime configs
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_setcorscales.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_chgres.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_diagb.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}gridgen.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_vtscales.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}bmat_fields_metadata.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/var.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}soca_setcorscales.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}soca_chgres.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}soca_diagb.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}gridgen.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}soca_vtscales.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}bmat_fields_metadata.yaml'
+        - '{{ COMIN_CONF }}/var.yaml'
         # soca_parameters_diffusion_vt, and soca_parameters_diffusion_hz when present
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}soca_parameters_diffusion_??.yaml'
-        - '{{ COMIN_CONF | relpath(ROTDIR) }}/soca_incpostproc.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}soca_parameters_diffusion_??.yaml'
+        - '{{ COMIN_CONF }}/soca_incpostproc.yaml'
     optional:
         # obs space diags
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/{{ head }}ocn.*.stats.csv'
-        - '{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/diags/*.nc'
+        - '{{ COMIN_OCEAN_ANALYSIS }}/diags/{{ head }}ocn.*.stats.csv'
+        - '{{ COMIN_OCEAN_ANALYSIS }}/diags/*.nc'
