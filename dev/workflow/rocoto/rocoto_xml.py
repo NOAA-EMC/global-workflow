@@ -8,7 +8,7 @@ from typing import Dict
 from applications.applications import AppConfig
 from workflow_suite import WorkflowSuite
 from rocoto.workflow_tasks import get_wf_tasks
-from wxflow import which, mkdir
+from wxflow import which, mkdir, parse_j2tmpl
 import rocoto.rocoto as rocoto
 from abc import ABC, abstractmethod
 from logging import getLogger
@@ -139,18 +139,18 @@ class RocotoXML(WorkflowSuite, ABC):
         str
             Formatted bash script content
         """
-        template_path = os.path.join(os.path.dirname(__file__), 'rocoto_scron_template.sh')
-
-        with open(template_path, 'r') as fh:
-            template_content = fh.read()
+        template_path = os.path.join(os.path.dirname(__file__), 'rocoto_scron.sh.j2')
 
         # Format the template with experiment-specific values
-        template_content = template_content.replace('@HOMEgfs@', self.HOMEgfs)
-        template_content = template_content.replace('@rocotorunstr@', rocotorunstr)
-        template_content = template_content.replace('@expdir@', self.expdir)
-        template_content = template_content.replace('@pslot@', self.pslot)
-        template_content = template_content.replace('@replyto@', replyto)
-        template_content = template_content.replace('@comroot@', self._base.get('COMROOT'))
+        context = {
+            'HOMEgfs': self.HOMEgfs,
+            'rocotorunstr': rocotorunstr,
+            'expdir': self.expdir,
+            'pslot': self.pslot,
+            'replyto': replyto,
+            'comroot': self._base.get('COMROOT')
+        }
+        template_content = parse_j2tmpl(template_path, context)
         return template_content
 
     def _write_xml(self, xml_file: str = None) -> None:

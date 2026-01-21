@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-source "@HOMEgfs@/dev/ush/gw_setup.sh"
+source "{{ HOMEgfs }}/dev/ush/gw_setup.sh"
 # Set platform variable if hostname contains 'gaea'
 if [[ "$(hostname -s)" == *gaea* ]]; then
     platform="gaea"
@@ -7,14 +7,14 @@ else
     platform="unknown"
 fi
 # Run rocotorun
-bash -c "@rocotorunstr@"
+bash -c "{{ rocotorunstr }}"
 
 # Monitor for failed jobs using rocotostat
-LOCKFILE="@expdir@/.failed_jobs.lock"
+LOCKFILE="{{ expdir }}/.failed_jobs.lock"
 ROCOTOSTAT=$(command -v rocotostat)
 
 if [[ -n "${ROCOTOSTAT}" ]]; then
-    FAILED_JOBS=$(${ROCOTOSTAT} -d "@expdir@/@pslot@.db" -w "@expdir@/@pslot@.xml" -c all 2> /dev/null | grep -E 'DEAD')
+    FAILED_JOBS=$(${ROCOTOSTAT} -d "{{ expdir }}/{{ pslot }}.db" -w "{{ expdir }}/{{ pslot }}.xml" -c all 2> /dev/null | grep -E 'DEAD')
 
     if [[ -n "${FAILED_JOBS}" ]]; then
         # Read previously reported failures
@@ -35,7 +35,7 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
         if [[ -n "${NEW_FAILURES}" ]]; then
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
             {
-                echo "The following jobs have failed in experiment @pslot@ on ${platform}:"
+                echo "The following jobs have failed in experiment {{ pslot }} on ${platform}:"
                 echo ""
 
                 # Format each failed job with detailed information
@@ -49,21 +49,21 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
                         timestamp=$(date -u '+%m/%d/%y %H:%M:%S UTC')
 
                         # Format similar to user's example
-                        echo "${timestamp} :: @pslot@.xml :: Cycle ${cycle}, Task ${task}, jobid=${jobid}, in state ${state}, ran for ${duration} seconds, try=${try} (of ${maxtries})"
-                        echo "Check log: @comroot@/@pslot@/logs/${cycle_short}/${task}.log"
+                        echo "${timestamp} :: {{ pslot }}.xml :: Cycle ${cycle}, Task ${task}, jobid=${jobid}, in state ${state}, ran for ${duration} seconds, try=${try} (of ${maxtries})"
+                        echo "Check log: {{ comroot }}/{{ pslot }}/logs/${cycle_short}/${task}.log"
                         echo ""
                     fi
                 done <<< "${NEW_FAILURES}"
             } > "${MSGFILE}"
 
             # Try to send email
-            EMAIL="@replyto@"
+            EMAIL="{{ replyto }}"
             hostname_domain=$(hostname -d)
             FROM_EMAIL="no-reply@${hostname_domain}"
             if [[ -n "${EMAIL}" ]] && command -v mail &> /dev/null; then
                 # On Gaea, the mail utility requires the -v (verbose) flag to ensure delivery.
                 # To avoid receiving verbose output as an actual email, a spoofed 'from' address is used for notifications.
-                mail -r "${FROM_EMAIL}" -v -s "[@pslot@] Workflow Job Failures Detected" "${EMAIL}" < "${MSGFILE}" 2>&1
+                mail -r "${FROM_EMAIL}" -v -s "[{{ pslot }}] Workflow Job Failures Detected" "${EMAIL}" < "${MSGFILE}" 2>&1
             fi
 
             rm -f "${MSGFILE}"
