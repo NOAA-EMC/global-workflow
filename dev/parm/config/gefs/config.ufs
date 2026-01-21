@@ -366,7 +366,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS=""
       ;;
     "025")
-      ntasks_mom6=220
+      ntasks_mom6=320
       OCNTIM=1800
       NX_GLB=1440
       NY_GLB=1080
@@ -449,7 +449,7 @@ if [[ "${skip_cice6}" == "false" ]]; then
       ;;
     "025")
       if [[ "${fv3_res}" ==  "C192" ]]; then
-        ntasks_cice6=90
+        ntasks_cice6=96
       else
         ntasks_cice6=120
       fi
