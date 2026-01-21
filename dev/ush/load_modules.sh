@@ -157,6 +157,9 @@ case "${MODULE_TYPE}" in
 
     "verif")
         # EMC_verif-global modules -- use that submodule's module files
+        if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+            source "${HOMEgfs}/sorc/verif-global.fd/versions/run.ver"
+        fi
         module use "${HOMEgfs}/sorc/verif-global.fd/modulefiles"
         module load "emc_verif_global_${MACHINE_ID}"
         export err=$?
