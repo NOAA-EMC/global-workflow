@@ -156,7 +156,7 @@ do
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | ${WGRIB2} - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
   rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
-  if [ $yy_init == $yy_final ]; then
+  if (( $yy_init == $yy_final )) && ((  $mm_final=$($mm_init+1) )); then
     break
   fi  
 done
