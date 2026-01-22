@@ -509,15 +509,17 @@ export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
-   export DO_FIT2OBS="NO"     # Run fit to observations package
-   export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
-   export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
-   export DO_VMINMON="NO"     # GSI minimization monitoring
-   export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
+    export DO_FIT2OBS="NO"     # Run fit to observations package
+    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
+    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
+    export DO_VMINMON="NO"     # GSI minimization monitoring
+    export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
 else
-   if [[ ${DO_AERO_ANL} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES" ]]; then
-     export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
-   fi
+  if [[ ${DO_AERO_ANL} = "YES" || ${DO_JEDIOCNVAR} = "YES" || ${DO_JEDISNOWDA} = "YES" ]]; then
+    export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
+  else
+    export DO_ANLSTAT="NO"
+  fi
 fi
 
 # TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
