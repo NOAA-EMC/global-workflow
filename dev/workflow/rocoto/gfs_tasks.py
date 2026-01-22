@@ -298,7 +298,8 @@ class GFSTasks(Tasks):
         if self.options['do_jediatmvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+            analysis_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_ANALYSIS_TMPL'])
+            dep_dict = {'type': 'data', 'data': f'{analysis_path}/{self.run}.t@Hz.gsi_analysis_status.log'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
@@ -334,7 +335,8 @@ class GFSTasks(Tasks):
         if self.options['do_jediatmvar'] and not self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlfinal'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+            analysis_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_ANALYSIS_TMPL'])
+            dep_dict = {'type': 'data', 'data': f'{analysis_path}/{self.run}.t@Hz.gsi_analysis_status.log'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1847,7 +1849,8 @@ class GFSTasks(Tasks):
 
     def vminmon(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
+        analysis_path = self._template_to_rocoto_cycstring(self._base['COM_ATMOS_ANALYSIS_TMPL'])
+        dep_dict = {'type': 'data', 'data': f'{analysis_path}/{self.run}.t@Hz.gsi_analysis_status.log'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 

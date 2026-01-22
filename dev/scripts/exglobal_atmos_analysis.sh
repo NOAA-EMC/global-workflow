@@ -891,6 +891,8 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
 fi
 
+echo "${rCDUMP} ${PDY}${cyc} GSI done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsi_analysis_status.log"
+
 # Diagnostic files
 # if requested, GSI diagnostic file directories for use later
 if [[ "${GENDIAG}" == "YES" ]]; then
