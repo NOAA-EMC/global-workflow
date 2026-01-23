@@ -177,7 +177,6 @@ class RocotoXML(WorkflowSuite, ABC):
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
-        # Get email from rocoto_config first, then try git config, then fallback
         replyto = os.environ.get('REPLYTO', None)
         crontab_strings = [
             '',
