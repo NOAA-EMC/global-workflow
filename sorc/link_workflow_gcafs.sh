@@ -325,7 +325,7 @@ done
 
 for prog in enkf_chgres_recenter_nc.fd \
     gaussian_sfcanl.fd \
-    tref_calc.fd \
+    tref_calc.fd; do
     if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
     ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
 done
