@@ -588,6 +588,11 @@ for _case in "${_yaml_list[@]}"; do
             grep "^#SCRON" "${cron_file}"
             grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
         } >> tests.cron
+
+        # Override EMAIL variable in <experiment>.scron.sh file if -e flag was used
+        if [[ "${_set_email}" == "true" ]]; then
+            sed -i "s|^[[:space:]]*EMAIL=.*|EMAIL=\"${_email}\"|" "${scron_sh_file}"
+        fi
     else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
     fi

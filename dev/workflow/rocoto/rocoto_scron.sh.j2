@@ -1,11 +1,6 @@
 #! /usr/bin/env bash
 source "{{ HOMEgfs }}/dev/ush/gw_setup.sh"
-# Set platform variable if hostname contains 'gaea'
-if [[ "${MACHINE_ID:-}" == gaeac6 ]]; then
-    platform="gaea"
-else
-    platform="unknown"
-fi
+
 # Run rocotorun
 bash -c "{{ rocotorunstr }}"
 
@@ -35,7 +30,7 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
         if [[ -n "${NEW_FAILURES}" ]]; then
             MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
             {
-                echo "The following jobs have failed in experiment {{ pslot }} on ${platform}:"
+                echo "The following jobs have failed in experiment {{ pslot }} on ${MACHINE_ID}:"
                 echo ""
 
                 # Format each failed job with detailed information

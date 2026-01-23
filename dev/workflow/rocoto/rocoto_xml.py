@@ -2,6 +2,7 @@
 
 import os
 import stat
+import subprocess
 from datetime import datetime
 from collections import OrderedDict
 from typing import Dict
@@ -153,6 +154,42 @@ class RocotoXML(WorkflowSuite, ABC):
         template_content = parse_j2tmpl(template_path, context)
         return template_content
 
+    def _get_email_from_git_config(self) -> str:
+        """
+        Get email from git config, trying local first then global.
+
+        Returns
+        -------
+        str
+            Email address from git config, or empty string if not found
+        """
+        try:
+            # Try local git config first
+            result = subprocess.run(
+                ['git', 'config', '--get', 'user.email'],
+                capture_output=True,
+                text=True,
+                check=False,
+                cwd=self.HOMEgfs
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                return result.stdout.strip()
+
+            # Fall back to global git config
+            result = subprocess.run(
+                ['git', 'config', '--global', '--get', 'user.email'],
+                capture_output=True,
+                text=True,
+                check=False
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                return result.stdout.strip()
+
+        except Exception as e:
+            logger.warning(f"Failed to get email from git config: {e}")
+
+        return ""
+
     def _write_xml(self, xml_file: str = None) -> None:
 
         if xml_file is None:
@@ -177,11 +214,10 @@ class RocotoXML(WorkflowSuite, ABC):
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
-        replyto = os.environ.get('REPLYTO', "")
-        # Use fallback email if REPLYTO is not set
+        # Get email from rocoto_config first, then try git config, then fallback
+        replyto = self.rocoto_config.get('REPLYTO', '')
         if not replyto:
-            user = os.environ.get('USER', 'user')
-            replyto = f"{user}@noaa.gov"
+            replyto = self._get_email_from_git_config()
 
         crontab_strings = [
             '',

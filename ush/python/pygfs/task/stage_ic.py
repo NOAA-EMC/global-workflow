@@ -39,7 +39,7 @@ class Stage(Task):
             Dictionary with base configuration values
         """
         base_keys = [
-            'RUN', 'MODE', 'EXP_WARM_START', 'NMEM_ENS',
+            'RUN', 'EXP_WARM_START', 'NMEM_ENS',
             'assim_freq', 'current_cycle', 'previous_cycle',
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'ATMINC_GRID',
