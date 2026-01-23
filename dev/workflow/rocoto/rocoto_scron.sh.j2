@@ -55,7 +55,7 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
             EMAIL="{{ replyto }}"
             hostname_domain=$(hostname -d)
             FROM_EMAIL="no-reply@${hostname_domain}"
-            if [[ -n "${EMAIL}" ]] && command -v mail &> /dev/null; then
+            if [[ "${EMAIL}" != "None" ]] && command -v mail &> /dev/null; then
                 # On Gaea, the mail utility requires the -v (verbose) flag to ensure delivery.
                 # To avoid receiving verbose output as an actual email, a spoofed 'from' address is used for notifications.
                 mail -r "${FROM_EMAIL}" -v -s "[{{ pslot }}] Workflow Job Failures Detected" "${EMAIL}" < "${MSGFILE}" 2>&1
