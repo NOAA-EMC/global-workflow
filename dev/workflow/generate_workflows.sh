@@ -593,7 +593,7 @@ for _case in "${_yaml_list[@]}"; do
             grep "^#SCRON" "${cron_file}"
             grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
         } >> tests.cron
-        else
+    else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
     fi
 done

@@ -2,7 +2,6 @@
 
 import os
 import stat
-import subprocess
 from datetime import datetime
 from collections import OrderedDict
 from typing import Dict
