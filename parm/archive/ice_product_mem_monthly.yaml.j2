@@ -12,6 +12,6 @@ ice_product_monthly_{{ mem_char }}:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_product_monthly_{{ mem_char }}.tar"
     required:
         {% set COMIN_ICE_NETCDF = COM_ICE_NETCDF_TMPL | replace_tmpl(tmpl_dict) %}
-        - "{{ COMIN_ICE_NETCDF | relpath(ROTDIR) }}/native/{{ head }}*"
+        - "{{ COMIN_ICE_NETCDF | relpath(ROTDIR) }}/native/{{ head }}*.nc"
 {% endfor %}
        

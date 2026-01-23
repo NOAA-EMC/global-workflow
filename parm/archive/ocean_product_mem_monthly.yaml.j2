@@ -12,6 +12,5 @@ ocean_product_monthly_{{ mem_char }}:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ocean_product_monthly_{{ mem_char }}.tar"
     required:
         {% set COMIN_OCEAN_NETCDF = COM_OCEAN_NETCDF_TMPL | replace_tmpl(tmpl_dict) %}
-        - "{{ COMIN_OCEAN_NETCDF | relpath(ROTDIR) }}/1p00/{{ head }}*xz"
+        - "{{ COMIN_OCEAN_NETCDF | relpath(ROTDIR) }}/1p00/{{ head }}*.nc"
 {% endfor %}
-       

@@ -30,20 +30,54 @@ mkdir -m 755 -p "${OUTDIR}/inst.monthly.${MEMDIR}"
 monthlyinstvars="(:TMP|UGRD|VGRD|STRM|VPOT):(200|850) mb|HGT:(200|500|700|850) mb|(:TMP|WEASD|CPOFP|LAND):surface|SOILW:(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL"
 monthlyaccvars="(ACPCP|APCP|NCPCP|PRATE|LHTFL|SHTFL|UFLX|VFLX|CDUVB|DLWRF|USWRF|WATR):surface|TSNOWP:surface|TMAX|TMIN|ULWRF:top of atmosphere"
 
+# check if the final month is a full month or a partial month
+# do not generate monthly mean for partial months
+if [[ -s "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f1002.grib2 ]]; then
+  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f????.grib2 | sort -V | tail -1)
+else
+  lastfile=$(find "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f???.grib2 | sort -V | tail -1)
+fi
+
+# get dates and times of last file
+lastftimemsg=$(${WGRIB2} "${lastfile}" -d 1 -ftime2)
+
+if (( ${?} > 0 )); then
+  echo "FATAL ERROR: WGRIB2 is not loaded correctly"
+  exit 1
+fi
+
+lastftime="${lastftimemsg% hour fcst}"
+lastfhr=${lastftime:4:4}
+vt_final=$(${WGRIB2} "${lastfile}" -d 1 -vt)
+mm_final=${vt_final:11:2}
+dd_final=${vt_final:13:2}
+yy_final=${vt_final:7:4}
+
+
+# if the last file vt date  does not end on day 01, it is a partial month
+if (( dd_final == 01 )); then
+  accfilelist=$(ls -v "${OUTDIR}/acc.daily.${MEMDIR}")
+  insfilelist=$(ls -v "{OUTDIR}/inst.daily.${MEMDIR}")
+else
+  accfilelist=$(ls -v "${OUTDIR}/acc.daily.${MEMDIR}" | head -n -1)
+  instfilelist=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}" | head -n -1)
+fi
+
+
 # loop through the daily files and get the monthly means
 
-for file in "${OUTDIR}/acc.daily.${MEMDIR}"/*; do
+for file in $accfilelist; do
   filename=${file##*/}
   filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  ${WGRIB2} "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
+  ${WGRIB2} "${OUTDIR}/acc.daily.${MEMDIR}/${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
   if (( ${?} > 0 )); then
     echo "FATAL ERROR: WGRIB2 is not loaded correctly"
     exit 1
   fi
 done
 
-for file in "${OUTDIR}/inst.daily.${MEMDIR}"/*; do
+for file in $instfilelist; do
   filename=${file##*/}
   filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  ${WGRIB2} "${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
+  ${WGRIB2} "$OUTDIR/inst.daily.${MEMDIR}/${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
 done

@@ -39,9 +39,11 @@ if [[ "${RUN}" == sfs ]]; then
         f_name=$( basename "${f}" )
         cdo mergetime "${DATAoutput}/CICE_OUTPUT/iceh_24h_${f_name:9:4}_${f_name:14:2}_??_12.nc" "${DATAoutput}/CICE_OUTPUT/iceh_24h_${f_name:9:4}_${f_name:14:2}_merge.nc"
         ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h_${f_name:9:4}_${f_name:14:2}_merge.nc" "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
-       rm -f "${DATAoutput}/CICE_OUTPUT/iceh_24h_${f_name:9:4}_${f_name:14:2}_merge.nc"
-       # Compress the monthly data
-       xz "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
+        rm -f "${DATAoutput}/CICE_OUTPUT/iceh_24h_${f_name:9:4}_${f_name:14:2}_merge.nc"
+        # Compress the monthly data
+        ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h_${f_name:9:4}_${f_name:14:2}_merge.nc" 
+        "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
+        #xz "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${f_name:9:4}-${f_name:14:2}.nc"
        done
     fi
 
