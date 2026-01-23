@@ -187,6 +187,11 @@ function send_email() {
     echo "${_body}" | mail -s "${_subject}" "${_email}"
 }
 
+# Export REPLYTO if email was provided via -e flag and is not empty
+if [[ "${_set_email}" == "true" && -n "${_email}" ]]; then
+    export REPLYTO="${_email}"
+fi
+
 function delete_dir() {
     local dir_to_rm="${1:-}"
     if [[ -z "${dir_to_rm}" ]]; then
@@ -588,12 +593,7 @@ for _case in "${_yaml_list[@]}"; do
             grep "^#SCRON" "${cron_file}"
             grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
         } >> tests.cron
-
-        # Override EMAIL variable in <experiment>.scron.sh file if -e flag was used
-        if [[ "${_set_email}" == "true" ]]; then
-            sed -i "s|^[[:space:]]*EMAIL=.*|EMAIL=\"${_email}\"|" "${scron_sh_file}"
-        fi
-    else
+        else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
     fi
 done
