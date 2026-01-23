@@ -215,7 +215,7 @@ class RocotoXML(WorkflowSuite, ABC):
         cronintstr = f'*/{cronint} * * * *'
 
         # Get email from rocoto_config first, then try git config, then fallback
-        replyto = self.rocoto_config.get('REPLYTO', None)
+        replyto = os.environ.get('REPLYTO', None)
         if not replyto:
             replyto = self._get_email_from_git_config()
 
