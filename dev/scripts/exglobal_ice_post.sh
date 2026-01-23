@@ -83,7 +83,8 @@ if [[ "${RUN}" == sfs ]]; then
      ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc" "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
      rm -f "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"
      # Compress the monthly data
-     xz "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
+     output_month_file="${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
+     nccopy -k 4 -d 5 "${output_month_file}" "${output_month_file}.tmp" && mv "${output_month_file}.tmp" "${output_month_file}"
    done
 
    export err=$?
