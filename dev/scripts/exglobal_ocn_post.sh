@@ -90,45 +90,86 @@ if [[ "${RUN}" == sfs ]]; then
        echo "Forecast length is ${FHMAX_GFS} hours, shorter than one month, please run at least 744 hours"
        exit 0
     else
+       # Obain the information of the last fcst file
        last_fh_output="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.t${cyc}z.1p00.f${FHMAX_GFS}.nc"
+       (( interval = 24 ))
+       (( midpoint = FHMAX_GFS - interval/2 ))
+       last_fhr_vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
     fi
-    if [[ -f ${last_fh_output} ]]; then
-       file_list="${DATAoutput}/MOM6_OUTPUT/ocn_24h_????_??_28_12.nc"
-       file_list_mon="$( ls ${file_list} )"
-       for f in ${file_list_mon}; do
-         f_name=$( basename "${f}" )
-         cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${f_name:8:4}_${f_name:13:2}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${f_name:8:4}_${f_name:13:2}_merge.nc"
-         cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${f_name:8:4}_${f_name:13:2}_merge.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.ocean.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-
-         levels="1,3,5,7,9,15,25,35,45,55,65,75,85,95,105,115,125,135,145,155,165,175,185,195,205,215,225.8694,241.0626,266.5239,300"
-         in_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.ocean.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-         temp3d_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp3d.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-         temp3d_file_300m="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp3d.300m.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-         out_file_dt20c="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.dt20c.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-         out_file_tchp="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.TCHP.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-         out_file_ocnheat="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.ocnheat.t${current_cycle}.${grid}.monthly_avg.${f_name:8:4}-${f_name:13:2}.nc"
-
-         ncks -v temp "${in_file}" "${temp3d_file}"
-         cdo intlevel,"$levels" "${temp3d_file}" "${temp3d_file_300m}"
-
-         python3 "${CALC_D20}" "${in_file}" "${out_file_dt20c}"
-         python3 "${CALC_TCHP}" "${in_file}" "${out_file_tchp}"
-         python3 "${CALC_OHC}" "${temp3d_file_300m}" "${out_file_ocnheat}"
-
-         rm -f "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${f_name:8:4}_${f_name:13:2}_merge.nc"
-         rm -f "${temp3d_file}" "${temp3d_file_300m}"
-          # Compress the monthly mean data
-         xz "${in_file}"
-         xz "${out_file_dt20c}"
-         xz "${out_file_tchp}"
-         xz "${out_file_ocnheat}"
-       done
+    # Extract the Year/Month/Day from YYYYMMDD format:
+    yyyy=${last_fhr_vdate_mid:0:4}
+    mm=${last_fhr_vdate_mid:4:2}
+    dd=${last_fhr_vdate_mid:6:2}
+    # Check leap or non-year for the last month of the year:
+    if (( (${yyyy} % 4 == 0 && ${yyyy} % 100 != 0) || (${yyyy} % 400 == 0) )); then
+      leap_yr="true"
+    else
+      leap_yr="false"
     fi
+    # Full Month CHeck: if the last month is a partial month or a full month?
+    # Check days for leap or non-leap February
+    if [[ "${mm}" == "02" && "${leap_yr}" == "true" && "${dd}" == "29" ]]; then
+       full_month="true"
+    elif [[ "${mm}" == "02" && "${leap_yr}" == "false" && "${dd}" == "28" ]]; then
+       full_month="true"
+    # Check for 31-day months
+    elif [[ "${mm}" =~ ^(01|03|05|07|08|10|12)$ && "${dd}" == "31" ]]; then
+       full_month="true"
+    # Check for 30-day months
+    elif [[ "${mm}" =~ ^(04|06|09|11)$ && "${dd}" == "30" ]]; then
+       full_month="true"
+    else
+       full_month="false"
+    fi
+
+   # Expand the wildcard directly into an array (Avoids 'ls' issues)
+   file_list_mon=( "${DATAoutput}"/MOM6_OUTPUT/ocn_24h_????_??_01_12.nc )
+   if [[ -f "${last_fh_output}" ]] && [[ "${full_month}" == "true" ]]; then
+     # Keep the full list if it's a complete month
+     file_list_mon=( "${file_list_mon[@]}" )
+   else
+    # Check if array has elements before slicing to avoid errors
+     if (( ${#file_list_mon[@]} > 0 )); then
+    # Skip the last element using array slicing
+      file_list_mon=( "${file_list_mon[@]::${#file_list_mon[@]}-1}" )
+     fi
+   fi
+   # Start to process monthly averaging based on the above file_list_month 
+   for f in "${file_list_mon[@]}"; do
+      f_name=$( basename "${f}" )
+      YR="${f_name:8:4}"
+      MN="${f_name:13:2}"
+      cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${YR}_${MN}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${YR}_${MN}_merge.nc"
+      cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${YR}_${MN}_merge.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.ocean.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+
+      levels="1,3,5,7,9,15,25,35,45,55,65,75,85,95,105,115,125,135,145,155,165,175,185,195,205,215,225.8694,241.0626,266.5239,300"
+      in_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.ocean.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+      temp3d_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp3d.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+      temp3d_file_300m="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp3d.300m.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+      out_file_dt20c="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.dt20c.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+      out_file_tchp="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.TCHP.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+      out_file_ocnheat="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.ocnheat.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
+
+      ncks -v temp "${in_file}" "${temp3d_file}"
+      cdo intlevel,"$levels" "${temp3d_file}" "${temp3d_file_300m}"
+
+      python3 "${CALC_D20}" "${in_file}" "${out_file_dt20c}"
+      python3 "${CALC_TCHP}" "${in_file}" "${out_file_tchp}"
+      python3 "${CALC_OHC}" "${temp3d_file_300m}" "${out_file_ocnheat}"
+
+      rm -f "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${YR}_${MN}_merge.nc"
+      rm -f "${temp3d_file}" "${temp3d_file_300m}"
+      # Compress the monthly mean data
+      xz "${in_file}"
+      xz "${out_file_dt20c}"
+      xz "${out_file_tchp}"
+      xz "${out_file_ocnheat}"
+    done
 
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        echo "FATAL ERROR: Failed to generate monthly mean ocean product files"
-        exit "${err}"
+      echo "FATAL ERROR: Failed to generate monthly mean ocean product files"
+      exit "${err}"
     fi
 fi
 
@@ -158,15 +199,14 @@ if [[ "${RUN}" == sfs ]]; then
     rm -f "${temp3d_file}" "${temp3d_file_300m}"
 
     for var in "${varslist[@]}"; do
-       output_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
+      output_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
 
-       if [[ -f ${output_file} ]]; then
+      if [[ -f ${output_file} ]]; then
           rm -f "${output_file}"
-       fi
+      fi
 
-       ncks -O -v "${var}" "${input_file}" "${output_file}"
+      ncks -O -v "${var}" "${input_file}" "${output_file}"
     done
-       rm -f "${input_file}"
   done
    # merge each variable to one single file
    newvarslist=("dt20c" "TCHP" "ocnheat" "SSH" "SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so") 
@@ -180,6 +220,15 @@ if [[ "${RUN}" == sfs ]]; then
       xz "${merge_file}"
       rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f"*".nc"
   done
+fi
+
+# remove the original product files if all derived products are successfully generated
+status=$?
+if [[ ${status} -ne 0 ]]; then
+ echo "Error detected (status ${status}). Skipping the original remapped ocean file removal."
+ exit "${status}"
+else
+rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.t00z.${grid}.f"*".nc"
 fi
 
 ##############################################

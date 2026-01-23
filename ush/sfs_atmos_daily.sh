@@ -28,9 +28,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 OUTDIR="${COMOUT_ATMOS_GRIB}"
 mkdir -m 755 -p "${OUTDIR}"
 mkdir -m 755 -p "${OUTDIR}/acc.daily.${MEMDIR}"
-mkdir -m 755 -p "${OUTDIR}/acc.monthly.${MEMDIR}"
 mkdir -m 755 -p "${OUTDIR}/inst.daily.${MEMDIR}"
-mkdir -m 755 -p "${OUTDIR}/inst.monthly.${MEMDIR}"
 
 # Lists of variables
 dailyinstvars="(:TMP|UGRD|VGRD):(2|5|10|30|50|100|200|250|300|500|600|700|850|925|1000) mb|HGT:(2|5|10|30|50|100|200|500|700|850|1000) mb|SPFH:(5|30|100|200|300|500|600|700|850|925|1000) mb|VVEL:500 mb|(STRM|VPOT):(200|850) mb|(PRES|HGT|:TMP|CNWAT|WEASD|PEVPR|ICETK|WILT|FLDCP|SUNSD|:LFTX|CAPE|LAND|ICEC|FDNSSTMP|CPOFP):surface|TMP:1 hybrid|(PVORT|:TMP):(450|550|650) K|(TSOIL|SOILW|SOILL):(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL|MSLET|PWAT|TOZNE" 
@@ -156,15 +154,19 @@ do
   # shellcheck disable=SC2086
   ${GMERGE} - ${list_daily} | ${WGRIB2} - -grib "${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
   rm "${OUTDIR}"/inst.daily."${MEMDIR}"/daily*.grb
-  if (( $yy_init == $yy_final )) && ((  $mm_final=$($mm_init+1) )); then
+
+  ### for tests of a month or less, break the loop
+  if (( yy_init == yy_final )) && \
+     ( (( end_idx == start_idx )) || \
+     (( end_idx == start_idx + 1 && dd_final == 01 )) ); then
     break
-  fi  
+  fi
 done
 
 ### This second loop needs to be done if the end month is earlier
 ### than the start month or the same (e.g., full year run)
 ### also making sure it is not the same month and year (just one month data)
-if (( start_idx==end_idx )) || (( end_idx < start_idx )) && (( $yy_init != $yy_final )); then
+if (( start_idx==end_idx )) || (( end_idx < start_idx )) && (( yy_init != yy_final )); then
 
 # loop from start of calendar year to valid date month
 for (( i=0; i<end_idx+1; i++ ))
