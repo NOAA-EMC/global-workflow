@@ -30,11 +30,6 @@ while getopts ":ho-:" option; do
             echo "-o option received, configuring for NCO"
             RUN_ENVIR="nco"
             ;;
-        -)
-            if [[ "${OPTARG}" == "nest" ]]; then
-                LINK_NEST=ON
-            fi
-            ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
             usage
@@ -132,9 +127,7 @@ cd "${HOMEgfs}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
 
-for dir in gcafs; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
-done
+${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/gcafs" .
 
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
     optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
