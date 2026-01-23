@@ -93,7 +93,7 @@ for package in "${packages[@]}"; do
     if [[ -s "${package}" ]]; then
         rm -f "${package}"
     fi
-    ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
 
 # Link fix directories
@@ -439,7 +439,6 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas* ./
-    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
 fi
 
 # GDASApp libraries

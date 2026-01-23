@@ -1,0 +1,149 @@
+#PBS -S /bin/bash
+#PBS -N %RUN%_aerosol_analysis_variational_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=9:mpiprocs=48:ompthreads=1:ncpus=48
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gcafs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gcafs%
+export RUN=%RUN%
+
+############################################################
+# Load modules
+############################################################
+#TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
+export LMOD_TMOD_FIND_FIRST=yes
+# TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgfs}/sorc/gdas.cd/build/lib"
+# TODO: Remove LD_LIBRARY_PATH line as soon as permanent solution is available
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.29/ofi/intel/2022.1/lib"
+
+module use /apps/ops/test/spack-stack-nco-1.9/modulefiles/Core
+
+module load stack-oneapi/2024.2.1
+module load stack-cray-mpich/8.1.29
+module load stack-python/3.11.7
+module load cmake/3.27.9
+module load craype/2.7.17
+module load cray-pals/1.3.2
+
+module load git/2.47.0
+module load git-lfs/3.5.1
+
+module load zstd/1.5.6
+module load pigz/2.8
+module load tar/1.34
+module load gettext/0.22.5
+module load curl/8.10.1
+module load hdf5/1.14.3
+module load parallel-netcdf/1.12.3
+module load netcdf-c/4.9.2
+module load nccmp/1.9.0.1
+module load netcdf-fortran/4.6.1
+module load nco/5.2.4
+module load parallelio/2.6.2
+module load wget/1.21.1
+module load boost/1.84.0
+module load ecbuild/3.7.2
+module load eccodes/2.33.0
+module load eigen/3.4.0
+module load openblas/0.3.24
+module load eckit/1.28.3
+module load fckit/0.13.2
+module load fms/2024.02
+module load python-venv/1.0
+module load py-pyyaml/6.0.2
+module load intel-oneapi-runtime/2024.2.1
+module load glibc/2.31
+module load esmf/8.8.0
+module load atlas/0.40.0
+module load sp/2.5.0
+module load ip/5.1.0
+module load gsl-lite/0.37.0
+module load libjpeg/2.1.0
+module load krb5/1.21.1-1
+module load libtirpc/1.3.3
+module load hdf/4.2.15
+module load jedi-cmake/1.4.0
+module load libpng/1.6.37
+module load libxt/1.3.0
+module load libxmu/1.2.1
+module load libxpm/3.5.17
+module load libxaw/1.0.16
+module load udunits/2.2.28
+module load ncview/2.1.9
+module load netcdf-cxx4/4.3.1
+module load json/3.11.3
+#module load crtm/v2.4_jedi
+module load prod_util/2.0.14
+module load grib-util/1.4.0
+
+module load py-numpy/1.26.4
+module load bufr/12.1.0
+
+module load py-markupsafe/2.1.3
+module load py-jinja2/3.1.4
+module load py-cftime/1.0.3.4
+module load py-certifi/2023.7.22
+module load py-netcdf4/1.7.1.post2
+module load py-pybind11/2.13.5
+module load py-setuptools/63.4.3
+module load py-pycodestyle/2.11.0
+module load py-pyyaml/6.0.2
+module load py-scipy/1.14.1
+
+module load py-setuptools/63.4.3
+module load py-tzdata/2023.3
+module load py-pytz/2023.3
+module load py-six/1.16.0
+module load py-python-dateutil/2.8.2
+module load py-pandas/2.2.3
+module load py-packaging/24.1
+module load py-xarray/2024.7.0
+module load py-f90nml/1.4.3
+module load py-pip/23.1.2
+module load py-click/8.1.7
+module load py-wheel/0.41.2
+
+ncdump=$(command -v ncdump)
+NETCDF=$(echo "${ncdump}" | cut -d " " -f 3)
+export NETCDF
+
+module list
+
+#############################################################
+# environment settings
+#############################################################
+export cyc=%CYC%
+export cycle=t%CYC%z
+
+if [[ -d "${HOMEgcafs}/sorc/wxflow/src" ]]; then
+  PYTHONPATH="${HOMEgcafs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+fi
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgcafs}/ush/python"
+export PYTHONPATH
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgcafs}/jobs/JGCDAS_AERO_ANALYSIS_VARIATIONAL
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end
