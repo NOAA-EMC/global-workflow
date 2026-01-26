@@ -589,9 +589,9 @@ for _case in "${_yaml_list[@]}"; do
 
     if [[ "${_use_scron}" == true ]]; then
         {
-            grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+            grep "^####" "${cron_file}"
             grep "^#SCRON" "${cron_file}"
-            grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+            grep "${scron_sh_file}" "${cron_file}"
         } >> tests.cron
     else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
@@ -639,10 +639,12 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     ${_crontab_cmd} final.cron
 else
+    echo -e 'Add to your .bashrc: \033[0;32mexport REPLYTO="your_email"\033[0m for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e "your_email"\033[0m option'
     _message="Add the following to your crontab or scrontab to start running:"
     _cron_tests=$(cat tests.cron)
     _message="${_message}"$'\n'"${_cron_tests}"
     echo "${_message}"
+    echo
     if [[ "${_set_email}" == true ]]; then
         final_message="${final_message:-}"$'\n'"${_message}"
     fi
