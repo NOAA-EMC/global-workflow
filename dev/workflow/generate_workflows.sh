@@ -637,7 +637,7 @@ if [[ "${_update_cron}" == "true" ]]; then
     sed -i '/MAILTO==/d' tests.cron 2> /dev/null || true
 
     # Extract MAILTO line from the crontab file and put at top of final.cron
-    mailto_line=$(grep "MAILTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2>/dev/null || echo "")
+    mailto_line=$(grep "MAILTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null || echo "")
     if [[ -n "${mailto_line}" ]]; then
         echo "${mailto_line}" > final.cron
     fi
