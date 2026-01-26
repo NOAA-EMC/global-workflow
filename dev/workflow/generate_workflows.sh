@@ -602,7 +602,9 @@ echo
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
     printf "Updating the existing crontab\n\n"
-    echo -e "Note: Add \033[0;32mexport MAILTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
+    if [[ "${_set_email}" == "false" ]]; then
+        echo -e "Note: Add \033[0;32mexport MAILTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
+    fi
     rm -f existing.cron final.cron "${_verbose_flag}"
     touch existing.cron final.cron
     echo
@@ -627,25 +629,21 @@ if [[ "${_update_cron}" == "true" ]]; then
             # Add MAILTO comment at the appropriate position (after empty line, before PSLOT)
             sed -i "2i #################### MAILTO==${_email} ####################" tests.cron
         else
-            # For regular crontab, use MAILTO
-            sed -i '/^MAILTO/d' existing.cron
-            sed -i "1i MAILTO=\"${_email}\"" existing.cron
+            # For regular crontab, update MAILTO line in tests.cron
+            sed -i '/MAILTO==/d' tests.cron
+            # Add MAILTO comment at the appropriate position
+            sed -i "1i #################### MAILTO==${_email} ####################" tests.cron
         fi
     fi
 
-    # For scrontab: ensure MAILTO is at the top of final.cron
-    if [[ "${_use_scron}" == true ]]; then
-        # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
-        sed -i '/MAILTO==/d' existing.cron 2>/dev/null || true
-        sed -i '/MAILTO==/d' tests.cron 2>/dev/null || true
+    # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
+    sed -i '/MAILTO==/d' existing.cron 2>/dev/null || true
+    sed -i '/MAILTO==/d' tests.cron 2>/dev/null || true
 
-        # Extract MAILTO line from the crontab file
-        mailto_line=$(grep "MAILTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2>/dev/null || echo "")
-
-        # Build final.cron with MAILTO at the top
-        if [[ -n "${mailto_line}" ]]; then
-            echo "${mailto_line}" > final.cron
-        fi
+    # Extract MAILTO line from the crontab file and put at top of final.cron
+    mailto_line=$(grep "MAILTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2>/dev/null || echo "")
+    if [[ -n "${mailto_line}" ]]; then
+        echo "${mailto_line}" > final.cron
     fi
 
     cat existing.cron tests.cron >> final.cron
