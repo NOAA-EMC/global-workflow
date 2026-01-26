@@ -278,6 +278,15 @@ def setup_gcafs_for_nco():
     for file_path in all_copied_files:
         num_replacements = replace_gfs_with_gcafs(file_path)
         print(f"Modified {file_path}: {num_replacements} replacements made.")
+    
+    # Go through the ush directory and replace FOOgfs with FOOgcafs in all files
+    ush_dir = os.path.join(global_workflow_dir, 'ush')
+    for root, _, files in os.walk(ush_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            num_replacements = replace_gfs_with_gcafs(file_path)
+            if num_replacements > 0:
+                print(f"Modified {file_path}: {num_replacements} replacements made.")
 
 
 if __name__ == "__main__":
