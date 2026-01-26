@@ -599,6 +599,21 @@ for _case in "${_yaml_list[@]}"; do
 done
 echo
 
+# Add email to tests.cron if provided via -e flag
+if [[ "${_set_email}" == "true" ]]; then
+    # Remove any existing MAILTO lines from tests.cron
+    sed -i '/MAILTO==/d' tests.cron 2>/dev/null || true
+
+    # Add MAILTO comment at the appropriate position
+    if [[ "${_use_scron}" == true ]]; then
+        # For scrontab, add after empty line (line 2)
+        sed -i "2i #################### MAILTO==${_email} ####################" tests.cron
+    else
+        # For regular crontab, add at the top
+        sed -i "1i #################### MAILTO==${_email} ####################" tests.cron
+    fi
+fi
+
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
     printf "Updating the existing crontab\n\n"
@@ -615,25 +630,6 @@ if [[ "${_update_cron}" == "true" ]]; then
         echo "#######################"
         cat existing.cron
         echo "#######################"
-    fi
-
-    if [[ "${_set_email}" == "true" ]]; then
-        # Replace or add email in the crontab
-        if [[ "${_verbose}" == "true" ]]; then
-            printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
-        fi
-
-        if [[ "${_use_scron}" == true ]]; then
-            # For scrontab, update MAILTO line in tests.cron
-            sed -i '/MAILTO==/d' tests.cron
-            # Add MAILTO comment at the appropriate position (after empty line, before PSLOT)
-            sed -i "2i #################### MAILTO==${_email} ####################" tests.cron
-        else
-            # For regular crontab, update MAILTO line in tests.cron
-            sed -i '/MAILTO==/d' tests.cron
-            # Add MAILTO comment at the appropriate position
-            sed -i "1i #################### MAILTO==${_email} ####################" tests.cron
-        fi
     fi
 
     # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
