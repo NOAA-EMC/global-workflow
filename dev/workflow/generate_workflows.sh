@@ -633,8 +633,8 @@ if [[ "${_update_cron}" == "true" ]]; then
     fi
 
     # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
-    sed -i '/MAILTO==/d' existing.cron 2>/dev/null || true
-    sed -i '/MAILTO==/d' tests.cron 2>/dev/null || true
+    sed -i '/MAILTO==/d' existing.cron 2> /dev/null || true
+    sed -i '/MAILTO==/d' tests.cron 2> /dev/null || true
 
     # Extract MAILTO line from the crontab file and put at top of final.cron
     mailto_line=$(grep "MAILTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2>/dev/null || echo "")
