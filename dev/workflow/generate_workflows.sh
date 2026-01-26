@@ -616,15 +616,28 @@ if [[ "${_update_cron}" == "true" ]]; then
     fi
 
     if [[ "${_set_email}" == "true" ]]; then
-        # Replace the existing email in the crontab
+        # Replace or add email in the crontab
         if [[ "${_verbose}" == "true" ]]; then
             printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
         fi
 
         if [[ "${_use_scron}" == true ]]; then
-            sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
+            echo -e 'Add to your .bashrc: \033[0;32mexport REPLYTO="your_email"\033[0m for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e "your_email"\033[0m option'
+            # Check if --mail-user exists and is not empty
+            if grep -q "mail-user" tests.cron && ! grep -q 'mail-user=""' tests.cron && ! grep -q "mail-user=''" tests.cron; then
+                sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
+            else
+                # Add mail-user after the dependency line
+                sed -i "/^#SCRON --dependency/a #SCRON --mail-user=\"${_email}\"" tests.cron
+            fi
         else
-            sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
+            # Check if MAILTO exists and is not empty
+            if grep -q "^MAILTO" existing.cron && ! grep -q '^MAILTO=""' existing.cron && ! grep -q "^MAILTO=''" existing.cron; then
+                sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
+            else
+                # Add MAILTO at the beginning of existing.cron
+                sed -i "1i MAILTO=\"${_email}\"" existing.cron
+            fi
         fi
     fi
 

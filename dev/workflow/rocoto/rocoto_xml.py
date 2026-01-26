@@ -161,6 +161,29 @@ class RocotoXML(WorkflowSuite, ABC):
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)
 
+    def _get_email_from_scrontab(self) -> str:
+        """
+        Retrieve email address from existing scrontab if configured.
+
+        Returns
+        -------
+        str or None
+            Email address from --mail-user directive, or None if not found
+        """
+        try:
+            scrontab_cmd = which('scrontab')
+            if scrontab_cmd:
+                result = scrontab_cmd('-l', output=str, error=str)
+                for line in result.split('\n'):
+                    if '--mail-user=' in line:
+                        # Extract email from #SCRON --mail-user="email@example.com"
+                        match = line.split('--mail-user=')
+                        if len(match) > 1:
+                            return match[1].strip().strip('"').strip("'")
+        except Exception:
+            pass  # If scrontab -l fails, just continue without it
+        return None
+
     def _write_crontab(self, crontab_file: str = None, cronint: int = 5) -> None:
         """
         Create crontab to execute rocotorun every cronint (5) minutes
@@ -178,6 +201,11 @@ class RocotoXML(WorkflowSuite, ABC):
         cronintstr = f'*/{cronint} * * * *'
 
         replyto = os.environ.get('REPLYTO', None)
+
+        # If replyto not set via environment, try to get it from existing scrontab
+        if not replyto and self.use_scrontab:
+            replyto = self._get_email_from_scrontab()
+
         crontab_strings = [
             '',
             f'#################### {self.pslot} ####################'
@@ -201,7 +229,8 @@ class RocotoXML(WorkflowSuite, ABC):
                 f'#SCRON --job-name={self.pslot}_scron',
                 f'#SCRON --output={self.expdir}/logs/scron.log',
                 f'#SCRON --time=00:10:00',
-                f'#SCRON --dependency=singleton'
+                f'#SCRON --dependency=singleton',
+                f'#SCRON --mail-user={replyto}',
             ])
 
             # Now write the script that actually runs rocotorun and monitors for failures
