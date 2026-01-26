@@ -76,26 +76,32 @@ function(AddJJOBTest)
   set(CASE_PATH ${HOMEgfs}/dev/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
+  # Labels use binomial nomenclature: CASE-JOB (e.g., C48_S2SW-gfs_fcst_seg0)
+  # The hyphen acts as a natural delimiter for regex matching:
+  #   ctest -L "C48_S2SW-"  → runs all C48_S2SW tests (won't match C48_S2SWA_gefs)
+  #   ctest -L "C48_S2SW-gfs_fcst_seg0"  → runs specific job tests
+  set(TEST_LABELS "${TEST_NAME}")
+
   add_test(NAME test_${TEST_NAME}_setup
     COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML} ${ARG_TEST_DATE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${TEST_LABELS}")
 
   add_test(NAME test_${TEST_NAME}_stage
       COMMAND ./stage.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${TEST_LABELS}")
 
   add_test(NAME test_${TEST_NAME}_execute
       COMMAND ./execute.sh ${TEST_NAME} ${ARG_JOB} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${TEST_LABELS}")
 
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
       COMMAND ./validate.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${TEST_LABELS}")
 endfunction()
 
 AddJJOBTest(

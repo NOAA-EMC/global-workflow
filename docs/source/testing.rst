@@ -381,11 +381,21 @@ Running Tests
 
 .. code-block:: bash
 
-    # Run all C48_ATM tests
-    ctest -L C48_ATM
+    # Run all C48_ATM tests (trailing hyphen prevents partial matches)
+    ctest -L "C48_ATM-"
     
-    # Run all C48_S2SW tests
-    ctest -L C48_S2SW
+    # Run all C48_S2SW tests (excludes C48_S2SWA_gefs tests)
+    ctest -L "C48_S2SW-"
+    
+    # Run all C48_S2SWA_gefs ensemble tests
+    ctest -L "C48_S2SWA_gefs-"
+
+.. note::
+
+    The trailing hyphen in the label pattern is important! Labels use binomial 
+    nomenclature (``CASE-JOB``), and the hyphen acts as a natural delimiter.
+    Without it, ``ctest -L C48_S2SW`` would also match ``C48_S2SWA_gefs`` tests
+    due to CTest's regex-based label matching.
 
 **Run Specific Test with Verbose Output**:
 

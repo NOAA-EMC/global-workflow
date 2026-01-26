@@ -50,17 +50,17 @@ input_files:
         - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin]
 
         # Wave gridded binary output files from forecast (f000-f002 for this segment)
-{% for fhr in range(0, 3) %}
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f{{ '%03d'|format(fhr) }}.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f{{ '%03d'|format(fhr) }}.bin]
-{% endfor %}
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f000.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f000.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f001.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f001.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f002.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f002.bin]
 
 output_files:
     cmpfiles:
         # GRIB2 output files for global 0.16 degree grid (f000-f002)
-{% for fhr in range(0, 3) %}
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f{{ '%03d'|format(fhr) }}.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f{{ '%03d'|format(fhr) }}.grib2]
-{% endfor %}
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f000.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f000.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f001.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f001.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f002.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f002.grib2]
         # GRIB2 output files for global 0.50 degree grid (f000-f002)
-{% for fhr in range(0, 3) %}
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f{{ '%03d'|format(fhr) }}.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f{{ '%03d'|format(fhr) }}.grib2]
-{% endfor %}
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f000.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f000.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f001.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f001.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f002.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f002.grib2]
