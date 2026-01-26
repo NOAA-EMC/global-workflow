@@ -123,7 +123,7 @@ class RocotoXML(WorkflowSuite, ABC):
         if self._base["DO_ARCHCOM"] and self._base["ARCHCOM_TO"] == "globus_hpss":
             self._write_server_crontab()
 
-    def _get_scron_script_content(self, rocotorunstr: str, replyto: str) -> str:
+    def _get_scron_script_content(self, rocotorunstr: str, mailto: str) -> str:
         """
         Load and format the cron script template with experiment-specific values.
 
@@ -131,7 +131,7 @@ class RocotoXML(WorkflowSuite, ABC):
         ----------
         rocotorunstr : str
             The rocotorun command string
-        replyto : str
+        mailto : str
             Email address for notifications
 
         Returns
@@ -147,7 +147,7 @@ class RocotoXML(WorkflowSuite, ABC):
             'rocotorunstr': rocotorunstr,
             'expdir': self.expdir,
             'pslot': self.pslot,
-            'replyto': replyto,
+            'mailto': mailto,
             'comroot': self._base.get('COMROOT')
         }
         template_content = parse_j2tmpl(template_path, context)
@@ -161,33 +161,34 @@ class RocotoXML(WorkflowSuite, ABC):
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)
 
-    def _get_email_from_scrontab(self) -> str:
+    def _get_email_from_crontab(self) -> str:
         """
-        Retrieve email address from existing scrontab if configured.
+        Retrieve email address from existing crontab/scrontab if configured.
 
         Returns
         -------
         str or None
-            Email address from REPLYTO variable, or None if not found
+            Email address from MAILTO variable, or None if not found
         """
         try:
-            scrontab_cmd = which('scrontab')
-            if scrontab_cmd:
-                result = scrontab_cmd('-l', output=str, error=str)
+            crontab_cmd = which('scrontab') if self.use_scrontab else which('crontab')
+            if crontab_cmd:
+                result = crontab_cmd('-l', output=str, error=str)
                 for line in result.split('\n'):
-                    if 'REPLYTO==' in line:
-                        # Extract email from ## REPLYTO==email@example.com ##
-                        match = line.split('REPLYTO==')
+                    if 'MAILTO==' in line:
+                        # Extract email from ## MAILTO==email@example.com ##
+                        match = line.split('MAILTO==')
                         if len(match) > 1:
                             return match[1].split('#')[0].strip().strip('"').strip("'")
         except Exception:
-            pass  # If scrontab -l fails, just continue without it
+            pass  # If crontab -l fails, just continue without it
         return None
 
     @staticmethod
-    def _format_crontab_comment_line(text: str, total_length: int = 65) -> str:
+    def _format_crontab_comment_line(text: str = '', total_length: int = 65) -> str:
         """
         Format a centered comment line with hash padding.
+        If text is empty, returns a line of 65 hashes.
 
         Parameters
         ----------
@@ -206,6 +207,8 @@ class RocotoXML(WorkflowSuite, ABC):
         >>> _format_crontab_comment_line('PSLOT==C48_ATM')
         '######################## PSLOT==C48_ATM #########################'
         """
+        if not text:
+            return '#' * total_length
         text_with_spaces = f' {text} '
         remaining = total_length - len(text_with_spaces)
         left_padding = remaining // 2
@@ -228,25 +231,24 @@ class RocotoXML(WorkflowSuite, ABC):
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
-        replyto = os.environ.get('REPLYTO', None)
+        mailto = os.environ.get('MAILTO', None)
 
-        # If replyto not set via environment, try to get it from existing scrontab
-        if not replyto and self.use_scrontab:
-            replyto = self._get_email_from_scrontab()
+        # If mailto not set via environment, try to get it from existing crontab/scrontab
+        if not mailto:
+            mailto = self._get_email_from_crontab()
 
         crontab_strings = ['']
 
-        # Add REPLYTO comment if email is available (before PSLOT line) for scrontab
-        if replyto and self.use_scrontab:
-            replyto_line = self._format_crontab_comment_line(f'REPLYTO=={replyto}')
-            crontab_strings.append(replyto_line)
-
-        # Add PSLOT line with same format (65 chars total)
-        pslot_line = self._format_crontab_comment_line(f'{self.pslot}')
-        crontab_strings.append(pslot_line)
-
         # Construct the crontab or scrontab
         if self.use_scrontab:
+            # Add MAILTO comment if email is available (before PSLOT line) for scrontab
+            if mailto:
+                mailto_line = self._format_crontab_comment_line(f'MAILTO=={mailto}')
+                crontab_strings.append(mailto_line)
+
+            # Add PSLOT line with same format (65 chars total)
+            pslot_line = self._format_crontab_comment_line(f'{self.pslot}')
+            crontab_strings.append(pslot_line)
 
             # If we are running scrontab, check if the rocotorc file has the right entries
             self._check_rocotorc()
@@ -269,22 +271,31 @@ class RocotoXML(WorkflowSuite, ABC):
             # Now write the script that actually runs rocotorun and monitors for failures
             cron_cmd = f"{self.expdir}/{self.pslot}.scron.sh"
             with open(cron_cmd, "w") as script_fh:
-                script_fh.write(self._get_scron_script_content(rocotorunstr, replyto))
+                script_fh.write(self._get_scron_script_content(rocotorunstr, mailto))
 
             # Make the script executable
             mode = os.stat(cron_cmd)
             os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
         else:
-            # For regular crontab, create a wrapper script with monitoring
+            # For regular crontab
+            if mailto:
+                mailto_line = self._format_crontab_comment_line(f'MAILTO=="{mailto}"')
+                crontab_strings.append(mailto_line)
+
+            # Add PSLOT line with same format (65 chars total)
+            pslot_line = self._format_crontab_comment_line(f'{self.pslot}')
+            crontab_strings.append(pslot_line)
+
+            # Add actual MAILTO variable for crontab to use
+            if mailto:
+                crontab_strings.append(f'MAILTO="{mailto}"')
+
+            # Create a wrapper script with monitoring
             cron_cmd = f"{self.expdir}/{self.pslot}.cron.sh"
-            crontab_strings.extend([
-                'SHELL="/bin/bash"',
-                f'MAILTO="{replyto}"'
-            ])
 
         crontab_strings.extend([
             f'{cronintstr} {cron_cmd}',
-            '#################################################################',
+            self._format_crontab_comment_line(),
             ''
         ])
 
@@ -315,14 +326,14 @@ class RocotoXML(WorkflowSuite, ABC):
                 f"Check that SERVER_NAME, SERVER_HOME, and SERVER_USERNAME are defined in {expdir}/config.globus"
             )
 
-        replyto = os.environ.get('REPLYTO', "")
+        mailto = os.environ.get('MAILTO', "")
 
         crontab_file = os.path.join(expdir, f"{pslot}.{server}.crontab")
 
         init_script = f"{server_home}/init_xfer_{pslot}.sh"
         strings = ['',
                    f'#################### {pslot} ####################',
-                   f'MAILTO="{replyto}"',
+                   f'MAILTO="{mailto}"',
                    f'*/{cronint} * * * * [[ -f {init_script} ]] && chmod +x {init_script} && {init_script} || true',
                    ""
                    ]

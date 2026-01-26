@@ -187,9 +187,9 @@ function send_email() {
     echo "${_body}" | mail -s "${_subject}" "${_email}"
 }
 
-# Export REPLYTO if email was provided via -e flag and is not empty
+# Export MAILTO if email was provided via -e flag and is not empty
 if [[ "${_set_email}" == "true" && -n "${_email}" ]]; then
-    export REPLYTO="${_email}"
+    export MAILTO="${_email}"
 fi
 
 function delete_dir() {
@@ -536,9 +536,9 @@ for _case in "${_yaml_list[@]}"; do
     _pslot="${_case}${_tag}"
     _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
     if [[ "${_verbose}" == true ]]; then
-        pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
+        pslot=${_pslot} RUNTESTS=${_runtests} MAILTO="${MAILTO:-}" ${_create_exp_cmd}
     else
-        if ! pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
+        if ! pslot=${_pslot} RUNTESTS=${_runtests} MAILTO="${MAILTO:-}" ${_create_exp_cmd} 2> stderr 1> stdout; then
             _output=$(cat stdout stderr)
             _message="The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
             _message="${_message}"$'\n'"${_output}"
@@ -602,13 +602,10 @@ echo
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
     printf "Updating the existing crontab\n\n"
-    if [[ "${_use_scron}" == true ]]; then
-        echo -e "Note: Add \033[0;32mexport REPLYTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
-    fi
-    echo
+    echo -e "Note: Add \033[0;32mexport MAILTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
     rm -f existing.cron final.cron "${_verbose_flag}"
     touch existing.cron final.cron
-
+    echo
     ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
 
     if [[ "${_debug}" == "true" ]]; then
@@ -625,10 +622,10 @@ if [[ "${_update_cron}" == "true" ]]; then
         fi
 
         if [[ "${_use_scron}" == true ]]; then
-            # For scrontab, update REPLYTO line in tests.cron
-            sed -i '/REPLYTO==/d' tests.cron
-            # Add REPLYTO comment at the appropriate position (after empty line, before PSLOT)
-            sed -i "2i #################### REPLYTO==${_email} ####################" tests.cron
+            # For scrontab, update MAILTO line in tests.cron
+            sed -i '/MAILTO==/d' tests.cron
+            # Add MAILTO comment at the appropriate position (after empty line, before PSLOT)
+            sed -i "2i #################### MAILTO==${_email} ####################" tests.cron
         else
             # For regular crontab, use MAILTO
             sed -i '/^MAILTO/d' existing.cron
@@ -636,18 +633,18 @@ if [[ "${_update_cron}" == "true" ]]; then
         fi
     fi
 
-    # For scrontab: ensure REPLYTO is at the top of final.cron
+    # For scrontab: ensure MAILTO is at the top of final.cron
     if [[ "${_use_scron}" == true ]]; then
-        # Remove REPLYTO lines from both existing.cron and tests.cron to prevent duplicates
-        sed -i '/REPLYTO==/d' existing.cron 2> /dev/null || true
-        sed -i '/REPLYTO==/d' tests.cron 2> /dev/null || true
+        # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
+        sed -i '/MAILTO==/d' existing.cron 2>/dev/null || true
+        sed -i '/MAILTO==/d' tests.cron 2>/dev/null || true
 
-        # Extract REPLYTO line from the crontab file
-        replyto_line=$(grep "REPLYTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null || echo "")
+        # Extract MAILTO line from the crontab file
+        mailto_line=$(grep "MAILTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2>/dev/null || echo "")
 
-        # Build final.cron with REPLYTO at the top
-        if [[ -n "${replyto_line}" ]]; then
-            echo "${replyto_line}" > final.cron
+        # Build final.cron with MAILTO at the top
+        if [[ -n "${mailto_line}" ]]; then
+            echo "${mailto_line}" > final.cron
         fi
     fi
 
@@ -662,9 +659,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     ${_crontab_cmd} final.cron
 else
-    if [[ "${_use_scron}" == true ]]; then
-        echo -e "Note: Add \033[0;32mexport REPLYTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
-    fi
+    echo -e "Note: Add \033[0;32mexport MAILTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
     _message="Add the following to your crontab or scrontab to start running:"
     _cron_tests=$(cat tests.cron)
     _message="${_message}"$'\n'"${_cron_tests}"
