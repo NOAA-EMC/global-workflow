@@ -639,8 +639,8 @@ if [[ "${_update_cron}" == "true" ]]; then
     # For scrontab: ensure REPLYTO is at the top of final.cron
     if [[ "${_use_scron}" == true ]]; then
         # Remove REPLYTO lines from both existing.cron and tests.cron to prevent duplicates
-        sed -i '/REPLYTO==/d' existing.cron 2>/dev/null || true
-        sed -i '/REPLYTO==/d' tests.cron 2>/dev/null || true
+        sed -i '/REPLYTO==/d' existing.cron 2> /dev/null || true
+        sed -i '/REPLYTO==/d' tests.cron 2> /dev/null || true
 
         # Extract REPLYTO line from the crontab file
         replyto_line=$(grep "REPLYTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null || echo "")
