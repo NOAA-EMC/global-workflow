@@ -599,19 +599,32 @@ for _case in "${_yaml_list[@]}"; do
 done
 echo
 
+# Function to format crontab comment lines with consistent width
+_format_crontab_comment_line() {
+    local text="${1:-}"
+    local total_length=65
+    
+    if [[ -z "${text}" ]]; then
+        printf '%*s' "${total_length}" | tr ' ' '#'
+    else
+        local text_with_spaces=" ${text} "
+        local text_len=${#text_with_spaces}
+        local remaining=$((total_length - text_len))
+        local left_padding=$((remaining / 2))
+        local right_padding=$((remaining - left_padding))
+        printf '%*s%s%*s' "${left_padding}" '' "${text_with_spaces}" "${right_padding}" '' | tr ' ' '#'
+    fi
+    echo
+}
+
 # Add email to tests.cron if provided via -e flag
 if [[ "${_set_email}" == "true" ]]; then
     # Remove any existing MAILTO lines from tests.cron
-    sed -i '/MAILTO==/d' tests.cron 2> /dev/null || true
-
-    # Add MAILTO comment at the appropriate position
-    if [[ "${_use_scron}" == true ]]; then
-        # For scrontab, add after empty line (line 2)
-        sed -i "2i #################### MAILTO==${_email} ####################" tests.cron
-    else
-        # For regular crontab, add at the top
-        sed -i "1i #################### MAILTO==${_email} ####################" tests.cron
-    fi
+    sed -i '/MAILTO/d' tests.cron 2>/dev/null || true
+    
+    # Format and add MAILTO as the first line with consistent width
+    mailto_formatted=$(_format_crontab_comment_line "MAILTO==${_email}")
+    sed -i "1i ${mailto_formatted}" tests.cron
 fi
 
 # Update the cron
