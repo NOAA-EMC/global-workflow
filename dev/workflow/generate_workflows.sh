@@ -639,7 +639,9 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     ${_crontab_cmd} final.cron
 else
-    echo -e 'Add to your .bashrc: \033[0;32mexport REPLYTO="your_email"\033[0m for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e "your_email"\033[0m option'
+    if [[ "${_use_scron}" == true ]]; then
+        echo -e 'Add to your .bashrc: \033[0;32mexport REPLYTO="your_email"\033[0m for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e "your_email"\033[0m option'
+    fi
     _message="Add the following to your crontab or scrontab to start running:"
     _cron_tests=$(cat tests.cron)
     _message="${_message}"$'\n'"${_cron_tests}"
