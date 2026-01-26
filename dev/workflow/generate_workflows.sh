@@ -602,7 +602,7 @@ echo
 # Add email to tests.cron if provided via -e flag
 if [[ "${_set_email}" == "true" ]]; then
     # Remove any existing MAILTO lines from tests.cron
-    sed -i '/MAILTO==/d' tests.cron 2>/dev/null || true
+    sed -i '/MAILTO==/d' tests.cron 2> /dev/null || true
 
     # Add MAILTO comment at the appropriate position
     if [[ "${_use_scron}" == true ]]; then
