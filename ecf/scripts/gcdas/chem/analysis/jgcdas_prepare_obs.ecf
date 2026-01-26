@@ -36,9 +36,9 @@ module load craype/2.7.17
 module load cray-pals/1.3.2
 module load prod_util/2.0.14
 
-ncdump=$(command -v ncdump)
-NETCDF=$(echo "${ncdump}" | cut -d " " -f 3)
-export NETCDF
+#ncdump=$(command -v ncdump)
+#NETCDF=$(echo "${ncdump}" | cut -d " " -f 3)
+#export NETCDF
 
 module list
 
