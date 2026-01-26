@@ -291,12 +291,16 @@ def setup_gcafs_for_nco():
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
     
     # Go through the dev/ush and dev/workflow directories and replace FOOgfs with FOOgcafs in all scripts
-    for subdir in ['dev/ush', 'dev/workflow']:
+    # and YAMLs in dev/ci/cases
+    for subdir in ['dev/ush', 'dev/workflow', 'dev/ci/cases']:
         dir_path = os.path.join(global_workflow_dir, subdir)
         for root, _, files in os.walk(dir_path):
             for file in files:
-                # Only process .sh and .py files
-                if file.endswith(('.sh', '.py')):
+                # Skip the current script to avoid self-modification
+                if file == 'setup_gcafs_for_nco.py':
+                    continue
+                # Only process .sh and .py scripts and YAML files
+                if file.endswith(('.sh', '.py', '.yaml')):
                     file_path = os.path.join(root, file)
                     num_replacements = replace_gfs_with_gcafs(file_path)
                     if num_replacements > 0:
