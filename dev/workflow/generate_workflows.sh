@@ -634,7 +634,7 @@ if [[ "${_update_cron}" == "true" ]]; then
             fi
         else
             # Check if MAILTO exists and is not empty
-            if grep -q "^MAILTO" existing.cron && ! grep -q '^MAILTO=""' existing.cron && ! grep -q "^MAILTO=''" existing.cron; then
+            if grep -q "^MAILTO" existing.cron; then
                 sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
             else
                 # Add MAILTO at the beginning of existing.cron
