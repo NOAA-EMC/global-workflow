@@ -603,7 +603,7 @@ echo
 if [[ "${_update_cron}" == "true" ]]; then
     printf "Updating the existing crontab\n\n"
     if [[ "${_use_scron}" == true ]]; then
-    echo -e "Note: Add \033[0;32mexport REPLYTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
+        echo -e "Note: Add \033[0;32mexport REPLYTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
     fi
     echo
     rm -f existing.cron final.cron "${_verbose_flag}"
