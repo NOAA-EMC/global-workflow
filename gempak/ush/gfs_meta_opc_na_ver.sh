@@ -61,6 +61,8 @@ for lookback in "${lookbacks[@]}"; do
     dgdattim="f$(printf "%03g" "${lookback}")"
 
     # Create symlink in DATA to sidestep gempak path limits
+    # TODO: Add only necessary files and remove unneeded ones to minimize data volume
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     HPCGFS="${RUN}.${init_time}"
     if [[ ! -L ${HPCGFS} ]]; then
         YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
