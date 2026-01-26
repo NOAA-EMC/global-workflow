@@ -18,6 +18,7 @@ if (( $# != 1 )); then
     echo "snowanl esnowanl"
     echo "prep_emissions"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
+    echo "prepareobs"
     echo "offlineanl"
     echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
@@ -362,6 +363,15 @@ case ${step} in
     threads_per_task=2
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
+
+  "prepareobs")
+    ntasks=80
+    walltime="00:20:00"
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="3072M"
+    ;;
+
 
   "aeroanlinit")
     # below lines are for creating JEDI YAML
