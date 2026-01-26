@@ -8,7 +8,7 @@ suite gcafs_v1
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development'
     edit ENVIR 'prod'
-    edit EXPDIR '%PACKAGEHOME%/dev/parm/config/gcafs'
+    edit EXPDIR '%PACKAGEHOME%/parm/config/gcafs'
     family 00
       edit CYC '00'
       family gcafs
