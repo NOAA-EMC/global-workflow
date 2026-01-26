@@ -168,21 +168,49 @@ class RocotoXML(WorkflowSuite, ABC):
         Returns
         -------
         str or None
-            Email address from --mail-user directive, or None if not found
+            Email address from REPLYTO variable, or None if not found
         """
         try:
             scrontab_cmd = which('scrontab')
             if scrontab_cmd:
                 result = scrontab_cmd('-l', output=str, error=str)
                 for line in result.split('\n'):
-                    if '--mail-user=' in line:
-                        # Extract email from #SCRON --mail-user="email@example.com"
-                        match = line.split('--mail-user=')
+                    if 'REPLYTO==' in line:
+                        # Extract email from ## REPLYTO==email@example.com ##
+                        match = line.split('REPLYTO==')
                         if len(match) > 1:
-                            return match[1].strip().strip('"').strip("'")
+                            return match[1].split('#')[0].strip().strip('"').strip("'")
         except Exception:
             pass  # If scrontab -l fails, just continue without it
         return None
+
+    @staticmethod
+    def _format_crontab_comment_line(text: str, total_length: int = 65) -> str:
+        """
+        Format a centered comment line with hash padding.
+
+        Parameters
+        ----------
+        text : str
+            The text to center in the comment line
+        total_length : int, optional
+            Total length of the formatted line (default: 65)
+
+        Returns
+        -------
+        str
+            Formatted comment line with hash padding
+
+        Examples
+        --------
+        >>> _format_crontab_comment_line('PSLOT==C48_ATM')
+        '######################## PSLOT==C48_ATM #########################'
+        """
+        text_with_spaces = f' {text} '
+        remaining = total_length - len(text_with_spaces)
+        left_padding = remaining // 2
+        right_padding = remaining - left_padding
+        return f"{'#' * left_padding}{text_with_spaces}{'#' * right_padding}"
 
     def _write_crontab(self, crontab_file: str = None, cronint: int = 5) -> None:
         """
@@ -206,10 +234,16 @@ class RocotoXML(WorkflowSuite, ABC):
         if not replyto and self.use_scrontab:
             replyto = self._get_email_from_scrontab()
 
-        crontab_strings = [
-            '',
-            f'#################### {self.pslot} ####################'
-        ]
+        crontab_strings = ['']
+
+        # Add REPLYTO comment if email is available (before PSLOT line) for scrontab
+        if replyto and self.use_scrontab:
+            replyto_line = self._format_crontab_comment_line(f'REPLYTO=={replyto}')
+            crontab_strings.append(replyto_line)
+
+        # Add PSLOT line with same format (65 chars total)
+        pslot_line = self._format_crontab_comment_line(f'{self.pslot}')
+        crontab_strings.append(pslot_line)
 
         # Construct the crontab or scrontab
         if self.use_scrontab:
@@ -230,7 +264,6 @@ class RocotoXML(WorkflowSuite, ABC):
                 f'#SCRON --output={self.expdir}/logs/scron.log',
                 f'#SCRON --time=00:10:00',
                 f'#SCRON --dependency=singleton',
-                f'#SCRON --mail-user={replyto}',
             ])
 
             # Now write the script that actually runs rocotorun and monitors for failures
