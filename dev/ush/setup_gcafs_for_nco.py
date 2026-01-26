@@ -289,6 +289,17 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
+    
+    # Go through the dev/parm/config/gcafs directory and replace FOOgfs with FOOgcafs in all config files
+    config_gcafs_dir = os.path.join(global_workflow_dir, 'dev', 'parm', 'config', 'gcafs')
+    for root, _, files in os.walk(config_gcafs_dir):
+        for file in files:
+            # Only process config files
+            if file.startswith('config.'):
+                file_path = os.path.join(root, file)
+                num_replacements = replace_gfs_with_gcafs(file_path)
+                if num_replacements > 0:
+                    print(f"Modified {file_path}: {num_replacements} replacements made.")
 
 
 if __name__ == "__main__":
