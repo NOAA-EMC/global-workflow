@@ -22,8 +22,10 @@ device="nc | ukmetver_12.meta"
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="gdas.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
+if [[ ! -L "${COMIN}" ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 vergrid="F-GDAS | ${PDY:2}/0600"
@@ -55,6 +57,7 @@ for area in ${areas}; do
         cyclenum=${stime:6}
 
         if [[ ! -L "ukmet.20${sdatenum}" ]]; then
+            # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
         fi
         gdfile="ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"

@@ -296,6 +296,7 @@ EOF
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
+            # TODO: remove deadlinks and refer https://github.com/NOAA-EMC/global-workflow/issues/4405
             ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
             ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
             ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
@@ -844,6 +845,7 @@ GOCART_rc() {
 
     # link directory containing GOCART input dataset, if provided
     if [[ -n "${AERO_INPUTS_DIR}" ]]; then
+        #TODO: add only necessary files and remove unneeded ones to minimize data volume
         ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
         status=$?
         if [[ ${status} -ne 0 ]]; then
