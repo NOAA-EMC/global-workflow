@@ -205,14 +205,14 @@ CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle${XC}}
 FHOUR=${FHOUR:-00}
 
 CRES=${CASE:1}
-JCAP_CASE=$((2*CRES-2))
-LONB_CASE=$((4*CRES))
-LATB_CASE=$((2*CRES))
+JCAP_CASE=$((2 * CRES - 2))
+LONB_CASE=$((4 * CRES))
+LATB_CASE=$((2 * CRES))
 DELTSFC=${DELTSFC:-0}
 
 LSOIL=${LSOIL:-4}
 LSOIL_INCR=${LSOIL_INCR:-2}
-FSMCL2=${FSMCL2:-60}
+FSMCL2=${FSMCL2:-99999.}
 FSLPL=${FSLPL:-99999.}
 FSOTL=${FSOTL:-99999.}
 FVETL=${FVETL:-99999.}
@@ -225,10 +225,10 @@ DONST=${DONST:-"NO"}
 DO_SFCCYCLE=${DO_SFCCYCLE:-.true.}
 GCYCLE_DO_SOILINCR=${GCYCLE_DO_SOILINCR:-.false.}
 GCYCLE_DO_SNOWINCR=${GCYCLE_DO_SNOWINCR:-.false.}
-if [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]] || [[ "${GCYCLE_DO_SNOWINCR}" == ".true." ]] ; then
-        DO_LANDINCR=".true."
+if [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]] || [[ "${GCYCLE_DO_SNOWINCR}" == ".true." ]]; then
+    DO_LANDINCR=".true."
 else
-        DO_LANDINCR=".false."
+    DO_LANDINCR=".false."
 fi
 GCYCLE_INTERP_LANDINCR=${GCYCLE_INTERP_LANDINCR:-.false.}
 zsea1=${zsea1:-0}
@@ -278,10 +278,10 @@ ln -fs "${FNSALC}" salclm
 export PGM=${CYCLEXEC}
 export pgm=${PGM}
 
-iy=${PDY:0:4}
-im=${PDY:4:2}
-id=${PDY:6:2}
-ih=${cyc}
+iy=${gcycle_date:0:4}
+im=${gcycle_date:4:2}
+id=${gcycle_date:6:2}
+ih=${gcycle_date:8:2}
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CY:-${CYCLETHREAD:-1}}
 
@@ -330,7 +330,6 @@ cat << EOF > fort.36
  /
 EOF
 
-
 cat << EOF > fort.37
  &NAMSFCD
   NST_FILE="${NST_FILE}",
@@ -341,7 +340,7 @@ cat << EOF > fort.37
  /
 EOF
 
-${APRUNCY} "${CYCLEXEC}" 1>"${PGMOUT}" 2>"${PGMERR}"
+${APRUNCY} "${CYCLEXEC}" 1>> "${PGMOUT}" 2>> "${PGMERR}"
 
 export err=$?
 

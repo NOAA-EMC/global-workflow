@@ -113,9 +113,7 @@ if [[ ! -f "${FNSNOA}" || ! -f "${FNSNOG}" ]]; then
     export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
 else
     # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-    # shellcheck disable=SC2312
     snoa_count=$("${WGRIB}" -4yr "${FNSNOA}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')
-    # shellcheck disable=SC2312
     snog_count=$("${WGRIB}" -4yr "${FNSNOG}" 2> /dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}')
     if [[ ${snoa_count} -le ${snog_count} ]]; then
         export FNSNOA=" "
@@ -127,7 +125,7 @@ else
 fi
 
 if [[ "${DONST}" == "YES" ]]; then
-    export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.dtf.a006.nc}
+    export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}increment.dtf.i006.nc}
 else
     export NST_FILE="NULL"
 fi
@@ -159,7 +157,7 @@ export MAX_TASKS_CY=${NMEM_ENS}
 
 if [[ "${DOIAU}" == "YES" ]]; then
     # Update surface restarts at beginning of window when IAU is ON
-    # For now assume/hold analysis.dtf.nc is valid at beginning of window.
+    # For now assume/hold increment.dtf.nc is valid at beginning of window.
 
     for n in $(seq 1 "${ntiles}"); do
 
@@ -211,6 +209,8 @@ if [[ "${DOIAU}" == "YES" ]]; then
             fi
 
         done # ensembles
+
+        export gcycle_date="${bPDY}${bcyc}"
 
         "${CYCLESH}" && true
         export err=$?
@@ -287,6 +287,8 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
                     "${DATA}/soil_xainc.${cmem}"
             fi
         done
+
+        export gcycle_date="${PDY}${cyc}"
 
         "${CYCLESH}" && true
         export err=$?

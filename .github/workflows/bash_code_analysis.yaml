@@ -3,12 +3,9 @@ on:
   push:
     branches:
       - develop
-  pull_request:
+  pull_request_target: # safe as long as code is not being run
 
   workflow_dispatch:
-
-permissions:
-  contents: read
 
 jobs:
 
@@ -17,84 +14,90 @@ jobs:
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # to get PR metadata
+      pull-requests: write  # to get PR metadata
       security-events: write
+      checks: write
 
     steps:
-      - name: Checkout code
+      - name: determine hash
+        uses: haya14busa/action-cond@v1
+        id: hash
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: ${{ github.event.pull_request.head.sha }}
+          if_false: ''
+
+      - name: checkout code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          ref: ${{ steps.hash.outputs.value }}
+          submodules: false
 
-      # Switch to this action once whole repo is shfmt compliant
-      # - name: shfmt scan
-      #   uses: reviewdog/action-shfmt@v1
-      #   with:
-      #     filter_mode: nofilter
-      #     level: warning
+      - name: determine reporter
+        uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: 'github-pr-review'
+          if_false: 'github-check'
 
-      - name: Install shfmt
-        uses: mfinelli/setup-shfmt@v4
       - name: shfmt scan
-        run: shfmt -d dev/jobs dev/job_cards dev/scripts
+        uses: reviewdog/action-shfmt@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          filter_mode: nofilter
+          level: any
+          reviewdog_flags: '-reporter=${{ steps.reporter.outputs.value }} -fail-level=any'
+          shfmt_flags: ''
 
   shellcheck:
     runs-on: ubuntu-22.04
 
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # to get PR metadata
+      pull-requests: write  # to get PR metadata
       security-events: write
+      checks: write
 
     steps:
-      - name: Checkout code
+      - name: determine hash
+        uses: haya14busa/action-cond@v1
+        id: hash
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: ${{ github.event.pull_request.head.sha }}
+          if_false: ''
+
+      - name: checkout code
         uses: actions/checkout@v6
         with:
+          ref: ${{ steps.hash.outputs.value }}
           submodules: false
-      
-      - name: Shellcheck Scan
+
+      - name: determine reporter
+        uses: haya14busa/action-cond@v1
+        id: reporter
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: 'github-pr-review'
+          if_false: 'github-check'
+
+      - name: shellcheck scan
         uses: reviewdog/action-shellcheck@v1
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: ${{ steps.reporter.outputs.value }}
           filter_mode: nofilter
-          level: warning
-          path: |
-            dev/jobs
-            jobs
-            scripts
+          fail_level: any
+          level: any
           pattern: |
             config.*
-            J*
+            JG*
             *.env
             *.sh
             *.bash
-
-  differential_shellcheck:
-    # Run again on just changes until whole repo is compliant
-    runs-on: ubuntu-22.04
-
-    permissions:
-      contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # to get PR metadata
-      security-events: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          submodules: false
-      
-      - name: Shellcheck Scan
-        uses: reviewdog/action-shellcheck@v1
-        with:
-          filter_mode: added
-          level: warning
+          exclude: |
+            */.git/*
+            */*.yml
+            */*.yaml
           check_all_files_with_shebangs: true
-          pattern: |
-            config.*
-            J*
-            *.env
-            *.sh
-            *.bash
-
-
-

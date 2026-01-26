@@ -5,7 +5,7 @@
 #   SCRIPT:  month_name.sh
 #
 #   This script returns the name/abreviation of a month
-#   in a small text file, month_name.txt.  It also echos the 
+#   in a small text file, month_name.txt.  It also echos the
 #   name/abreviation to stdout.  The form of the returned
 #   name/abreviation is specified by the script arguments.
 #
@@ -17,7 +17,7 @@
 #     -----------     ------    ----------------------------
 #
 #        6/06          Mon                Jun
-#        8/08          Month              August               
+#        8/08          Month              August
 #        9/09          MON                SEP
 #         11           MONTH              NOVEMBER
 #
@@ -26,7 +26,7 @@
 #          by either of the following methods:
 #
 #          MM=`cat month_name.txt`  after executing month_name.sh
-#                            - OR - 
+#                            - OR -
 #          MM=`month_name.sh 5 MON`  (for example)
 #
 #
@@ -36,77 +36,100 @@
 #
 ####################################################################
 
-  typeset -Z2 month_num
+typeset -Z2 month_num
 
+month_num=$1
+month_spec=$2
 
-  month_num=$1
-  month_spec=$2
+case ${month_num} in
 
-  case ${month_num} in
+    01)
+        Mon=Jan
+        Month=January
+        ;;
 
-    01) Mon=Jan 
-        Month=January   ;;
+    02)
+        Mon=Feb
+        Month=February
+        ;;
 
-    02) Mon=Feb
-        Month=February  ;;
+    03)
+        Mon=Mar
+        Month=March
+        ;;
 
-    03) Mon=Mar
-        Month=March     ;;
+    04)
+        Mon=Apr
+        Month=April
+        ;;
 
-    04) Mon=Apr
-        Month=April     ;;
+    05)
+        Mon=May
+        Month=May
+        ;;
 
-    05) Mon=May
-        Month=May       ;;
+    06)
+        Mon=Jun
+        Month=June
+        ;;
 
-    06) Mon=Jun
-        Month=June      ;;
+    07)
+        Mon=Jul
+        Month=July
+        ;;
 
-    07) Mon=Jul
-        Month=July      ;;
+    08)
+        Mon=Aug
+        Month=August
+        ;;
 
-    08) Mon=Aug
-        Month=August    ;;
+    09)
+        Mon=Sep
+        Month=September
+        ;;
 
-    09) Mon=Sep
-        Month=September ;;
+    10)
+        Mon=Oct
+        Month=October
+        ;;
 
-    10) Mon=Oct
-        Month=October   ;;
+    11)
+        Mon=Nov
+        Month=November
+        ;;
 
-    11) Mon=Nov
-        Month=November  ;;
-
-    12) Mon=Dec
-        Month=December  ;;
+    12)
+        Mon=Dec
+        Month=December
+        ;;
 
     *)
         echo "FATAL ERROR input month number (${month_num}) is invalid"
         exit 2
+        ;;
 
-  esac
+esac
 
-
-  if [[ "${month_spec}" == "Mon" ]]; then
+if [[ "${month_spec}" == "Mon" ]]; then
 
     echo "${Mon}"
     echo "${Mon}" > month_name.txt
 
-  elif [[ "${month_spec}" == "Month" ]]; then
+elif [[ "${month_spec}" == "Month" ]]; then
 
     echo "${Month}"
     echo "${Month}" > month_name.txt
 
-  elif [[ "${month_spec}" == "MON" ]]; then
+elif [[ "${month_spec}" == "MON" ]]; then
 
     MON="${Mon^^}"
     echo "${MON}"
     echo "${MON}" > month_name.txt
 
-  elif [[ "${month_spec}" == "MONTH" ]]; then
+elif [[ "${month_spec}" == "MONTH" ]]; then
 
     MONTH="${Month^^}"
     echo "${MONTH}"
     echo "${MONTH}" > month_name.txt
 
-  fi
+fi

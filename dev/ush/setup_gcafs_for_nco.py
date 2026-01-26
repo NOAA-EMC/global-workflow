@@ -65,8 +65,20 @@ def replace_gfs_with_gcafs(input_file):
     return replacement_count
 
 
-def setup_gcafs_for_nco():
-    # first, copy jobs from dev to the global workflow directory
+def copy_job_files(global_workflow_dir):
+    """
+    Copy job files from dev/jobs to jobs directory with appropriate renaming.
+    
+    Parameters
+    ----------
+    global_workflow_dir : str
+        Path to the global workflow directory
+        
+    Returns
+    -------
+    list
+        List of tuples containing (src_path, dest_path) for copied files
+    """
     gcafs_jobs = {
         "JGCAFS_FORECAST": "JGLOBAL_FORECAST",
         "JGCAFS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
@@ -103,8 +115,24 @@ def setup_gcafs_for_nco():
     }
     # Execute the file operations
     FileHandler(job_file_handler).sync()
+    
+    return job_file_copy_list
 
-    # Next, copy ex-scripts from dev/scripts to the global workflow directory
+
+def copy_script_files(global_workflow_dir):
+    """
+    Copy script files from dev/scripts to scripts directory with appropriate renaming.
+    
+    Parameters
+    ----------
+    global_workflow_dir : str
+        Path to the global workflow directory
+        
+    Returns
+    -------
+    list
+        List of tuples containing (src_path, dest_path) for copied files
+    """
     gcafs_ex_scripts = {
         "exgcafs_forecast.sh": "exglobal_forecast.sh",
         "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.py",
@@ -145,14 +173,112 @@ def setup_gcafs_for_nco():
     }
     # Execute the file operations for scripts
     FileHandler(ex_script_file_handler).sync()
+    
+    return ex_script_file_copy_list
+
+
+def remove_unused_executables(global_workflow_dir):
+    """
+    Remove unused executables from the exec directory.
+    
+    Parameters
+    ----------
+    global_workflow_dir : str
+        Path to the global workflow directory
+        
+    Returns
+    -------
+    list
+        List of files that were successfully removed
+    """
+    unused_executables = [
+        "gdas_apply_incr.x",
+        "gdas_fv3jedi_correction_increment.x",
+        "gdas_fv3jedi_ensemble_add_increment.x",
+        "gdas_fv3jedi_fv3inc.x",
+        "gdas_fv3jedi_land_ensrecenter.x",
+        "gdas_fv3jedi_scf_to_ioda.x",
+        "gdas_ioda_mean.x",
+        "gdas_soca_anpproc.x",
+        "gdas_soca_diagb.x",
+        "gdas_soca_diagnostics.x",
+        "gdas_soca_ens_handler.x",
+        "gdas_soca_error_covariance_toolbox.x",
+        "gdas_soca_gridgen.x",
+        "gdas_soca_hybridweights.x",
+        "gdas_soca_incr_handler.x",
+        "gdas_soca_obsstats.x",
+        "gdas_soca_setcorscales.x",
+        "gdas_soca_to_fv3.x",
+        "emcsfc_snow2mdl",
+        "emcsfc_ice_blend",
+        "calc_increment_ens.x",
+        "ensadd.x",
+        "ensppf.x",
+        "ensstat.x",
+        "fbwndgfs.x",
+        "fregrid",
+        "getsfcensmeanp.x",
+        "getsigensmeanp_smooth.x",
+        "getsigensstatp.x",
+        "gfs_bufr.x",
+        "mkgfsawps.x",
+        "ocnicepost.x",
+        "overgridid.x",
+        "oznmon_horiz.x",
+        "oznmon_time.x",
+        "radmon_angle.x",
+        "radmon_bcoef.x",
+        "radmon_bcor.x",
+        "rdbfmsua.x",
+        "radmon_time.x",
+        "recentersigp.x",
+        "regridStates.x",
+        "supvit.x",
+        "syndat_getjtbul.x",
+        "syndat_maksynrc.x",
+        "syndat_qctropcy.x",
+        "tave.x",
+        "tocsbufr.x",
+        "vint.x",
+        "wave_stat.x",
+        "webtitle.x"
+    ]
+    
+    exec_dir = os.path.join(global_workflow_dir, 'exec')
+    removed_files = []
+    
+    for executable in unused_executables:
+        executable_path = os.path.join(exec_dir, executable)
+        if os.path.exists(executable_path):
+            try:
+                os.remove(executable_path)
+                removed_files.append(executable)
+                print(f"Removed unused executable: {executable}")
+            except OSError as e:
+                print(f"Error removing {executable}: {e}")
+        else:
+            print(f"Executable not found (already removed?): {executable}")
+    
+    return removed_files
+
+
+def setup_gcafs_for_nco():
+    # first, copy jobs from dev to the global workflow directory
+    job_file_copy_list = copy_job_files(global_workflow_dir)
+
+    # Next, copy ex-scripts from dev/scripts to the global workflow directory
+    ex_script_file_copy_list = copy_script_files(global_workflow_dir)
+
+    # Remove unused executables from the exec directory
+    removed_files = remove_unused_executables(global_workflow_dir)
 
     # Go through the copied job and ex-script files and replace FOOgfs with FOOgcafs
     all_copied_files = [dest for _, dest in job_file_copy_list + ex_script_file_copy_list]
     for file_path in all_copied_files:
         num_replacements = replace_gfs_with_gcafs(file_path)
         print(f"Modified {file_path}: {num_replacements} replacements made.")
-    
-    
-    
+
+
 if __name__ == "__main__":
     setup_gcafs_for_nco()

@@ -74,11 +74,9 @@ if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" 
     fi
 fi
 # exception handling to ensure no dead link
-# shellcheck disable=SC2312
 if [[ $(find "${COMOUT_OBS}" -xtype l | wc -l) -ge 1 ]]; then
     exit 9
 fi
-# shellcheck disable=SC2312
 if [[ $(find "${COMINobsproc_PREV}" -xtype l | wc -l) -ge 1 ]]; then
     exit 9
 fi
@@ -155,9 +153,10 @@ export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
-    set +eu
+    unset_strict
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
+    set_strict
     if [[ ${err} -ne 0 ]]; then
         err_exit "JOBSPROC_GLOBAL_PREP job failed, ABORT!"
     fi

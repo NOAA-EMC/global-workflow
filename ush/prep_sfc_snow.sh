@@ -44,7 +44,7 @@
 #
 #########################################################################
 
-source "${USHgfs}/atparse.bash"  # include function atparse for parsing @[XYZ] templated files
+source "${USHgfs}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
 #------------------------------------------------------------------------
 # The snow2mdl executable and namelist
@@ -84,7 +84,7 @@ CLIMO_QC=${CLIMO_QC:-"${FIXgfs}/am/emcsfc_snow_cover_climo.grib2"}
 #------------------------------------------------------------------------
 
 MODEL_SNOW_FILE=${MODEL_SNOW_FILE:-"snogrb_model"}
-OUTPUT_GRIB2=${OUTPUT_GRIB2:-".false."}  # grib 1 when false.
+OUTPUT_GRIB2=${OUTPUT_GRIB2:-".false."} # grib 1 when false.
 
 #------------------------------------------------------------------------
 # Do a quick check of the ims data to ensure it exists and is not corrupt.
@@ -92,10 +92,10 @@ OUTPUT_GRIB2=${OUTPUT_GRIB2:-".false."}  # grib 1 when false.
 #------------------------------------------------------------------------
 
 if [[ -f ${IMS_FILE} ]]; then
-  cpreq "${IMS_FILE}" "${DATA}/imssnow96.grib2"
+    cpreq "${IMS_FILE}" "${DATA}/imssnow96.grib2"
 else
-  echo "WARNING: Missing IMS data. Will not run ${SNOW2MDLEXEC}."
-  exit 7
+    echo "WARNING: Missing IMS data. Will not run ${SNOW2MDLEXEC}."
+    exit 7
 fi
 
 #------------------------------------------------------------------------
@@ -106,11 +106,11 @@ fi
 ${WGRIB2} -d 1 "imssnow96.grib2"
 err=$?
 if [[ ${err} -ne 0 ]]; then
-  echo "WARNING: Corrupt IMS data. Will not run ${SNOW2MDLEXEC}."
-  exit 9
+    echo "WARNING: Corrupt IMS data. Will not run ${SNOW2MDLEXEC}."
+    exit 9
 else
-  tempdate=$(${WGRIB2} -t "imssnow96.grib2" | head -1) || true
-  IMSDATE=${tempdate#*d=}
+    tempdate=$(${WGRIB2} -t "imssnow96.grib2" | head -1) || true
+    IMSDATE=${tempdate#*d=}
 fi
 
 #------------------------------------------------------------------------
@@ -119,24 +119,24 @@ fi
 #------------------------------------------------------------------------
 
 if [[ ! -f ${AFWA_GLOBAL_FILE} ]]; then
-  echo "WARNING: Missing AFWS data. Will not run ${SNOW2MDLEXEC}."
-  exit 3
+    echo "WARNING: Missing AFWS data. Will not run ${SNOW2MDLEXEC}."
+    exit 3
 else
-  cpreq "${AFWA_GLOBAL_FILE}" "${DATA}/snow.usaf.grib2"
-  ${WGRIB2} -d 1 "snow.usaf.grib2"
-  err=$?
-  if [[ ${err} -ne 0 ]]; then
-    echo "WARNING: Corrupt AFWS data. Will not run ${SNOW2MDLEXEC}."
-    exit "${err}"
-  else
-    tempdate=$(${WGRIB2} -d 1 -t "snow.usaf.grib2")
-    AFWADATE=${tempdate#*d=}
-    two_days_ago=$(date --utc -d "${IMSDATE:0:8} ${IMSDATE:8:2} - 48 hours" +%Y%m%d%H)
-    if [[ ${AFWADATE} -lt ${two_days_ago} ]]; then
-      echo "WARNING: Found old AFWA data. Will not run ${SNOW2MDLEXEC}."
-      exit 4
+    cpreq "${AFWA_GLOBAL_FILE}" "${DATA}/snow.usaf.grib2"
+    ${WGRIB2} -d 1 "snow.usaf.grib2"
+    err=$?
+    if [[ ${err} -ne 0 ]]; then
+        echo "WARNING: Corrupt AFWS data. Will not run ${SNOW2MDLEXEC}."
+        exit "${err}"
+    else
+        tempdate=$(${WGRIB2} -d 1 -t "snow.usaf.grib2")
+        AFWADATE=${tempdate#*d=}
+        two_days_ago=$(date --utc -d "${IMSDATE:0:8} ${IMSDATE:8:2} - 48 hours" +%Y%m%d%H)
+        if [[ ${AFWADATE} -lt ${two_days_ago} ]]; then
+            echo "WARNING: Found old AFWA data. Will not run ${SNOW2MDLEXEC}."
+            exit 4
+        fi
     fi
-  fi
 fi
 
 #------------------------------------------------------------------------
@@ -145,12 +145,12 @@ fi
 export IMSYEAR=${IMSDATE:0:4}
 export IMSMONTH=${IMSDATE:4:2}
 export IMSDAY=${IMSDATE:6:2}
-export IMSHOUR=0   # emc convention is to use 00Z.
+export IMSHOUR=0 # emc convention is to use 00Z.
 
 # Render the namelist template
 if [[ ! -f "${SNOW2MDLNMLTMPL}" ]]; then
-  echo "FATAL ERROR: template '${SNOW2MDLNMLTMPL}' does not exist, ABORT!"
-  exit 1
+    echo "FATAL ERROR: template '${SNOW2MDLNMLTMPL}' does not exist, ABORT!"
+    exit 1
 fi
 rm -f ./fort.41
 atparse < "${SNOW2MDLNMLTMPL}" >> "./fort.41"
@@ -166,12 +166,12 @@ source prep_step
 err=$?
 
 if [[ ${err} -ne 0 ]]; then
-  echo "WARNING: ${pgm} completed abnormally."
-  exit "${err}"
+    echo "WARNING: ${pgm} completed abnormally."
+    exit "${err}"
 else
-  echo "${pgm} completed normally."
-  cpfs "${MODEL_SNOW_FILE}" "${COMOUT_OBS}"
-  rm -f "${MODEL_SNOW_FILE}"
+    echo "${pgm} completed normally."
+    cpfs "${MODEL_SNOW_FILE}" "${COMOUT_OBS}"
+    rm -f "${MODEL_SNOW_FILE}"
 fi
 
 rm -f ./fort.41

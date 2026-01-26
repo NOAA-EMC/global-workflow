@@ -1,0 +1,7 @@
+:AOTK:entire atmosphere:
+:ASYSFK:entire atmosphere:
+:SSALBK:entire atmosphere:
+:COLMD:entire atmosphere:
+:PMTC:1 hybrid level:
+:PMTF:1 hybrid level:
+:SCTAOTK:entire atmosphere:

@@ -148,8 +148,6 @@ source "${EXPDIR}/config.com"
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
-export REDOUT="1>"
-export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
 export SENDSDM=${SENDSDM:-"NO"}
@@ -383,6 +381,8 @@ export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
 export DO_CALC_INCREMENT="NO"
+export USE_BUILD_GSINFO="NO"
+export BUILD_GSINFO_DIR="${PARMgfs}/gsinfo"
 
 # Early-cycle EnKF parameters
 export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"
