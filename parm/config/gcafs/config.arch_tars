@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+
+########## config.arch_tars ##########
+# Archive specific
+
+echo "BEGIN: config.arch_tars"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" arch_tars
+
+export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
+export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
+export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
+export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
+export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
+export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
+
+export ARCH_GAUSSIAN="YES"
+export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS:-}
+export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS:-}
+
+# If we are running globus archiving, create tarballs in a temporary location
+if [[ "${ARCHCOM_TO}" == "globus_hpss" ]]; then
+    export ATARDIR="${DATAROOT}/archive_rotdir/${RUN}"
+    export ARCHCOM_TO="local"
+fi
+
+echo "END: config.arch_tars"

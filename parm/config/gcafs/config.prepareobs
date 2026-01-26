@@ -1,0 +1,9 @@
+#!/bin/bash -x
+
+########## config.prepareobs ##########
+
+echo "BEGIN: config.prepareobs"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" prepareobs
+echo "END: config.prepareobs"

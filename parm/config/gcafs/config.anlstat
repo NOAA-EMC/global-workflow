@@ -1,0 +1,13 @@
+#!/bin/bash -x
+
+########## config.anlstat ##########
+# Analysis Stat
+
+echo "BEGIN: config.anlstat"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" anlstat
+
+export TASK_CONFIG_YAML="${PARMgcafs}/gdas/anlstat/anlstat_config.yaml.j2"
+
+echo "END: config.anlstat"

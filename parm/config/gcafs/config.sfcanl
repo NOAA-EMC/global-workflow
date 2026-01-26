@@ -1,0 +1,36 @@
+#! /usr/bin/env bash
+
+########## config.sfcanl ##########
+# GFS surface analysis specific
+
+echo "BEGIN: config.sfcanl"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" sfcanl
+
+# Run global_cycle in coupled mode
+if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
+   export COUPLED=".true."
+fi
+
+# Turn off NST in JEDIATMVAR
+if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
+   export DONST="NO"
+fi
+
+if [[ "${RUN/enkf}" == "gfs" ]]; then  
+    echo "turning off gsi soilda for gfs run"
+    DO_GSISOILDA="NO"
+fi
+
+if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+    if [[ ${DO_LAND_IAU} = ".true." ]]; then
+        export GCYCLE_DO_SOILINCR=".false."
+    else
+        export GCYCLE_DO_SOILINCR=".true."
+    fi
+    export GCYCLE_INTERP_LANDINCR=".false."
+    export REGRID_EXEC="${HOMEgcafs}/exec/regridStates.x"
+fi
+
+echo "END: config.sfcanl"

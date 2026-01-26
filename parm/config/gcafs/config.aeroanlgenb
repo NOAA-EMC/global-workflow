@@ -1,0 +1,30 @@
+#!/bin/bash -x
+
+########## config.aeroanlgenb ##########
+# Aerosol Variance specific
+
+echo "BEGIN: config.aeroanlgenb"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" aeroanlgenb
+
+export TASK_CONFIG_YAML="${PARMgcafs}/gdas/aero/aero_bmat_config.yaml.j2"
+export OBS_LIST_YAML="${PARMgcafs}/gdas/aero/aero_obs_list.yaml.j2"
+
+export aero_diffusion_iter=200
+export aero_diffusion_horiz_len=300e3
+export aero_diffusion_fixed_val=20.0
+export npx_clim_b=97
+export npy_clim_b=97
+export aero_diagb_weight=1.0
+export aero_staticb_rescaling_factor=2.0
+export aero_diagb_n_halo=4
+export aero_diagb_n_neighbors=16
+aero_diagb_smooth_horiz_iter=0
+export aero_diagb_smooth_vert_iter=0
+if [[ "${CASE_ANL}" == "C384" ]]; then
+  aero_diagb_smooth_horiz_iter=200
+fi
+export aero_diagb_smooth_horiz_iter
+
+echo "END: config.aeroanlgenb"

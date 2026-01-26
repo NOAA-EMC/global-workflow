@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.offlineanl ##########
+# Offline analysis specific
+
+echo "BEGIN: config.offlineanl"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" offlineanl
+
+echo "END: config.offlineanl"
