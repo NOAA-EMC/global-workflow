@@ -643,7 +643,7 @@ if [[ "${_update_cron}" == "true" ]]; then
         sed -i '/REPLYTO==/d' tests.cron 2>/dev/null || true
 
         # Extract REPLYTO line from the crontab file
-        replyto_line=$(grep "REPLYTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2>/dev/null || echo "")
+        replyto_line=$(grep "REPLYTO==" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null || echo "")
 
         # Build final.cron with REPLYTO at the top
         if [[ -n "${replyto_line}" ]]; then
