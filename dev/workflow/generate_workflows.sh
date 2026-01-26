@@ -656,7 +656,7 @@ if [[ "${_update_cron}" == "true" ]]; then
     ${_crontab_cmd} final.cron
 else
     # Only show the note if MAILTO is not already in tests.cron (i.e., not provided via -e)
-    if ! grep -q "MAILTO==" tests.cron 2>/dev/null; then
+    if ! grep -q "MAILTO==" tests.cron 2> /dev/null; then
         echo -e "Note: Add \033[0;32mexport MAILTO=\"your_email\"\033[0m to your .bashrc for job failure notifications. Or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m option"
     fi
     _message="Add the following to your crontab or scrontab to start running:"
