@@ -660,10 +660,10 @@ else
     if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
         # Check existing crontab for MAILTO (not empty)
         _crontab_content=$(${_crontab_cmd} -l 2> /dev/null || true)
-        if ! echo "${_crontab_content}" | grep -q "^MAILTO=" || \
-           echo "${_crontab_content}" | grep -q "^MAILTO=$" || \
-           echo "${_crontab_content}" | grep -q "^MAILTO=\"\"$" || \
-           echo "${_crontab_content}" | grep -q "^MAILTO=''$"; then
+        if ! echo "${_crontab_content}" | grep -q "^MAILTO=" ||
+            echo "${_crontab_content}" | grep -q "^MAILTO=$" ||
+            echo "${_crontab_content}" | grep -q "^MAILTO=\"\"$" ||
+            echo "${_crontab_content}" | grep -q "^MAILTO=''$"; then
             echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
         fi
     fi
