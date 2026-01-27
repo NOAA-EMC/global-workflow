@@ -82,6 +82,7 @@ EOF
 }
 
 set -eu
+shopt -s inherit_errexit
 
 # Set default options
 HOMEgfs=""
