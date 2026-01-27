@@ -82,7 +82,6 @@ EOF
 }
 
 set -eu
-shopt -s inherit_errexit
 
 # Set default options
 HOMEgfs=""
@@ -600,25 +599,6 @@ for _case in "${_yaml_list[@]}"; do
     fi
 done
 echo
-
-# Function to format crontab comment lines with consistent width
-_format_crontab_comment_line() {
-    set -e
-    local text="${1:-}"
-    local total_length=65
-
-    if [[ -z "${text}" ]]; then
-        printf '%*s' "${total_length}" '' | tr ' ' '#'
-    else
-        local text_with_spaces=" ${text} "
-        local text_len=${#text_with_spaces}
-        local remaining=$((total_length - text_len))
-        local left_padding=$((remaining / 2))
-        local right_padding=$((remaining - left_padding))
-        printf '%*s%s%*s' "${left_padding}" '' "${text_with_spaces}" "${right_padding}" '' | tr ' ' '#'
-    fi
-    echo
-}
 
 # Add email to tests.cron if provided via -e flag (crontab only)
 if [[ "${_set_email}" == "true" && "${_use_scron}" == false ]]; then
