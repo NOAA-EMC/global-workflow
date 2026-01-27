@@ -7,7 +7,7 @@ suite gcafs_v1
     edit QUEUE_ARCH 'dev_transfer'
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development'
-    edit ENVIR 'prod'
+    edit ENVIR 'para'
     edit EXPDIR '%PACKAGEHOME%/parm/config/gcafs'
     edit COMROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/com'
     edit DATAROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/dataroot'
