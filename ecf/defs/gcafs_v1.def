@@ -11,6 +11,8 @@ suite gcafs_v1
     edit EXPDIR '%PACKAGEHOME%/parm/config/gcafs'
     edit COMROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/com'
     edit DATAROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/dataroot'
+    edit ECF_INCLUDE '/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/git/release/gcafs.v1.0.0/ecf/include'
+    edit PDY '20260127'
     family 00
       edit CYC '00'
       family gcafs
