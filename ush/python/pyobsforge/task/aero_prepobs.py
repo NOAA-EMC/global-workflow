@@ -92,7 +92,7 @@ class AerosolObsPrep(Task):
                               self.task_config['PSLOT'],
                               f"{self.task_config['RUN']}.{yyyymmdd}",
                               f"{self.task_config['cyc']:02d}",
-                              'chem')
+                              'obs', 'chem')
 
         # Loop through the observation types
         obs_types = ['viirs']

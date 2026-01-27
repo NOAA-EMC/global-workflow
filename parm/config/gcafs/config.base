@@ -28,7 +28,7 @@ export CLUSTERS_DTN="${CLUSTERS_SERVICE}"
 export HPSS_PROJECT="emc-global"
 
 # Directories relative to installation areas:
-export HOMEgcafs="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/global-workflow"
+#export HOMEgcafs="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/global-workflow"
 export EXECgcafs="${HOMEgcafs}/exec"
 export FIXgcafs="${HOMEgcafs}/fix"
 export PARMgcafs="${HOMEgcafs}/parm"
@@ -48,7 +48,7 @@ export FIXgdas="${FIXgcafs}/gdas"
 
 # GLOBAL static environment parameters
 export PACKAGEROOT="${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}"    # TODO: set via prod_envir in Ops
-export COMROOT="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/COMROOT"    # TODO: set via prod_envir in Ops
+#export COMROOT="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/COMROOT"    # TODO: set via prod_envir in Ops
 export COMINsyn="/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
 export DMPDIR="/lfs/h2/emc/dump/noscrub/dump"
 export IODADIR="/lfs/h2/emc/dump/noscrub/dump_ioda"
