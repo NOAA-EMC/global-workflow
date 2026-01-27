@@ -2,14 +2,6 @@ enkf_restarta_grp:
     name: "ENKF_RESTARTA_GRP"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_restarta_grp{{ ENSGRP }}.tar"
     required:
-        # Store bias data
-        {% if not lobsdiag_forenkf %}
-        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ head }}abias.txt"
-        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ head }}abias_air.txt"
-        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ head }}abias_int.txt"
-        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ head }}abias_pc.txt"
-        {% endif %}
-
         # Member surface analysis data
         {% for itile in range(1, 7) %}
         - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ anl_YMD }}.{{ anl_HH }}0000.sfcanl_data.tile{{ itile }}.nc"
@@ -44,11 +36,7 @@ enkf_restarta_grp:
             {% endif %}
         {% endif %}
 
-        # Conventional data
-        {% if not lobsdiag_forenkf and not DO_JEDIATMENS %}
-        - "{{ COMIN_ATMOS_RESTART_MEM }}/{{ head }}cnvstat"
-        {% endif %}
-
+        # Ocean DA increments/analysis
         {% if DOHYBVAR_OCN %}
         - "{{ COMIN_MED_RESTART_MEM }}/{{ cycle_YMD }}.{{ rst_HH_restarta }}0000.ufs.cpld.cpl.r.nc"
         - "{{ COMIN_OCEAN_ANALYSIS_MEM }}/{{ head }}mom6_increment.i006.nc"

@@ -112,6 +112,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
             COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
+        # TODO: remove deadlinks and refer https://github.com/NOAA-EMC/global-workflow/issues/4405
         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
             ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.a00${FHR}.nc" "./atmanl_${memchar}"
@@ -166,9 +167,9 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             err_exit "Failed to recenter the ensemble increments!"
         fi
 
-        # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
+        # If available, copy the ensemble mean guess.  Otherwise, compute ensemble mean guess
         if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
-            ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
+            cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
         else
             DATAPATH="./"
             ATMGESNAME="atmges"
@@ -212,12 +213,12 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.atm.a00${FHR}.nc"
         ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres_analysis.atm.a00${FHR}.nc"
 
-        # if we already have a ensemble resolution GSI analysis then just link to it
+        # if we already have a ensemble resolution GSI analysis then just copy it
         if [[ -f ${ATMANL_GSI_ENSRES} ]]; then
-            ${NLN} "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
+            cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
         else
-            ${NLN} "${ATMANL_GSI}" atmanl_gsi
-            ${NLN} "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
+            cpreq "${ATMANL_GSI}" atmanl_gsi
+            cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
             SIGLEVEL="${SIGLEVEL:-"${FIXgfs}/am/global_hyblev.l${LEVS}.txt"}"
             ${NLN} "${CHGRESNC}" chgres.x
             chgresnml=chgres_nc_gauss.nml

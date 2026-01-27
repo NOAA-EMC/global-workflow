@@ -13,8 +13,8 @@ device="nc | mrfhi.meta"
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"

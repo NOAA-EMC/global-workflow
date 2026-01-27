@@ -110,7 +110,7 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
         #======================================================================
         GRIBIN="${RUN}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
-        ${NLN} "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
+        cpreq "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
 
         # 1.d Input template files
         parmfile="${PARMgfs}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
