@@ -18,6 +18,51 @@ current_dir_path = os.path.dirname(os.path.abspath(__file__))
 # which is assumed to be two directories up from the current file
 global_workflow_dir = os.path.abspath(os.path.join(current_dir_path, "../.."))
 
+gcafs_ex_scripts = {
+    "exgcafs_forecast.sh": "exglobal_forecast.sh",
+    "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.py",
+    "exgcafs_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
+    "exgcafs_atmos_products.sh": "exglobal_atmos_products.sh",
+}
+gcdas_ex_scripts = {
+    "exgcdas_forecast.sh": "exglobal_forecast.sh",
+    "exgcdas_prep_emissions.sh": "exglobal_prep_emissions.py",
+    "exgcdas_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
+    "exgcdas_atmos_products.sh": "exglobal_atmos_products.sh",
+    "exgcdas_atmos_initialize.py": "exglobal_offline_atmos_analysis.py",
+    "exgcdas_surface_initialize.sh": "exglobal_atmos_sfcanl.sh",
+    "exgcdas_aero_analysis_initialize.py": "exglobal_aero_analysis_initialize.py",
+    "exgcdas_aero_analysis_variational.py": "exglobal_aero_analysis_variational.py",
+    "exgcdas_aero_analysis_finalize.py": "exglobal_aero_analysis_finalize.py",
+    "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_analysis_calc.sh",
+    "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
+    "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
+    "exgcdas_prepare_obs.py": "exgcdas_prepare_obs.py",
+    # need to add something here for the post job once Yaping's PR is in ?
+}
+
+gcafs_jobs = {
+    "JGCAFS_FORECAST": "JGLOBAL_FORECAST",
+    "JGCAFS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
+    "JGCAFS_ATMOS_POST_MANAGER": "JGLOBAL_ATMOS_POST_MANAGER",
+    "JGCAFS_ATMOS_PRODUCTS": "JGLOBAL_ATMOS_PRODUCTS",
+}
+gcdas_jobs = {
+    "JGCDAS_FORECAST": "JGLOBAL_FORECAST",
+    "JGCDAS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
+    "JGCDAS_ATMOS_POST_MANAGER": "JGLOBAL_ATMOS_POST_MANAGER",
+    "JGCDAS_ATMOS_PRODUCTS": "JGLOBAL_ATMOS_PRODUCTS",
+    "JGCDAS_ATMOS_INITIALIZE": "JGLOBAL_OFFLINE_ATMOS_ANALYSIS",
+    "JGCDAS_SURFACE_INITIALIZE": "JGLOBAL_ATMOS_SFCANL",
+    "JGCDAS_AERO_ANALYSIS_INITIALIZE": "JGLOBAL_AERO_ANALYSIS_INITIALIZE",
+    "JGCDAS_AERO_ANALYSIS_VARIATIONAL": "JGLOBAL_AERO_ANALYSIS_VARIATIONAL",
+    "JGCDAS_AERO_ANALYSIS_FINALIZE": "JGLOBAL_AERO_ANALYSIS_FINALIZE",
+    "JGCDAS_AERO_ANALYSIS_CALC": "JGLOBAL_ATMOS_ANALYSIS_CALC",
+    "JGCDAS_AERO_ANALYSIS_STATS": "JGLOBAL_ANALYSIS_STATS",
+    "JGCDAS_AERO_ANALYSIS_GENERATE_BMATRIX": "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX",
+    "JGCDAS_PREPARE_OBS": "JGCDAS_PREPARE_OBS",
+    # need to add something here for the post job once Yaping's PR is in
+}
 
 def replace_gfs_with_gcafs(input_file):
     """
@@ -79,28 +124,6 @@ def copy_job_files(global_workflow_dir):
     list
         List of tuples containing (src_path, dest_path) for copied files
     """
-    gcafs_jobs = {
-        "JGCAFS_FORECAST": "JGLOBAL_FORECAST",
-        "JGCAFS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
-        "JGCAFS_ATMOS_POST_MANAGER": "JGLOBAL_ATMOS_POST_MANAGER",
-        "JGCAFS_ATMOS_PRODUCTS": "JGLOBAL_ATMOS_PRODUCTS",
-    }
-    gcdas_jobs = {
-        "JGCDAS_FORECAST": "JGLOBAL_FORECAST",
-        "JGCDAS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
-        "JGCDAS_ATMOS_POST_MANAGER": "JGLOBAL_ATMOS_POST_MANAGER",
-        "JGCDAS_ATMOS_PRODUCTS": "JGLOBAL_ATMOS_PRODUCTS",
-        "JGCDAS_ATMOS_INITIALIZE": "JGLOBAL_OFFLINE_ATMOS_ANALYSIS",
-        "JGCDAS_SURFACE_INITIALIZE": "JGLOBAL_ATMOS_SFCANL",
-        "JGCDAS_AERO_ANALYSIS_INITIALIZE": "JGLOBAL_AERO_ANALYSIS_INITIALIZE",
-        "JGCDAS_AERO_ANALYSIS_VARIATIONAL": "JGLOBAL_AERO_ANALYSIS_VARIATIONAL",
-        "JGCDAS_AERO_ANALYSIS_FINALIZE": "JGLOBAL_AERO_ANALYSIS_FINALIZE",
-        "JGCDAS_AERO_ANALYSIS_CALC": "JGLOBAL_ATMOS_ANALYSIS_CALC",
-        "JGCDAS_AERO_ANALYSIS_STATS": "JGLOBAL_ANALYSIS_STATS",
-        "JGCDAS_AERO_ANALYSIS_GENERATE_BMATRIX": "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX",
-        # JGCDAS_PREPARE_OBS is taken from ObsForge for v1, not in global-workflow, do this manually!!
-        # need to add something here for the post job once Yaping's PR is in
-    }
 
     job_file_copy_list = []
     for dest_job, src_job in {**gcafs_jobs, **gcdas_jobs}.items():
@@ -133,28 +156,6 @@ def copy_script_files(global_workflow_dir):
     list
         List of tuples containing (src_path, dest_path) for copied files
     """
-    gcafs_ex_scripts = {
-        "exgcafs_forecast.sh": "exglobal_forecast.sh",
-        "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.py",
-        "exgcafs_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
-        "exgcafs_atmos_products.sh": "exglobal_atmos_products.sh",
-    }
-    gcdas_ex_scripts = {
-        "exgcdas_forecast.sh": "exglobal_forecast.sh",
-        "exgcdas_prep_emissions.sh": "exglobal_prep_emissions.py",
-        "exgcdas_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
-        "exgcdas_atmos_products.sh": "exglobal_atmos_products.sh",
-        "exgcdas_atmos_initialize.py": "exglobal_offline_atmos_analysis.py",
-        "exgcdas_surface_initialize.sh": "exglobal_atmos_sfcanl.sh",
-        "exgcdas_aero_analysis_initialize.py": "exglobal_aero_analysis_initialize.py",
-        "exgcdas_aero_analysis_variational.py": "exglobal_aero_analysis_variational.py",
-        "exgcdas_aero_analysis_finalize.py": "exglobal_aero_analysis_finalize.py",
-        "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_analysis_calc.sh",
-        "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
-        "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
-        "exgcdas_prepare_obs.py": "exgcdas_prepare_obs.py",
-        # need to add something here for the post job once Yaping's PR is in ?
-    }
 
     # if the scripts directory exists as a symlink, remove it first
     scripts_dir = os.path.join(global_workflow_dir, 'scripts')
@@ -278,7 +279,37 @@ def setup_gcafs_for_nco():
     for file_path in all_copied_files:
         num_replacements = replace_gfs_with_gcafs(file_path)
         print(f"Modified {file_path}: {num_replacements} replacements made.")
-    
+
+    # Go through the copied job files and replace the scripts they call as appropriate
+    jobs_dir = os.path.join(global_workflow_dir, 'jobs')
+    for job_name in list(gcafs_jobs.keys()) + list(gcdas_jobs.keys()):
+        job_file_path = os.path.join(jobs_dir, job_name)
+        if os.path.exists(job_file_path):
+            # Determine which script mapping to use based on job name
+            if job_name.startswith('JGCAFS_'):
+                script_mapping = gcafs_ex_scripts
+            elif job_name.startswith('JGCDAS_'):
+                script_mapping = gcdas_ex_scripts
+            else:
+                continue
+            
+            # Read the job file content
+            with open(job_file_path, 'r') as f:
+                content = f.read()
+            
+            # Replace script calls based on the mapping
+            modified = False
+            for new_script, old_script in script_mapping.items():
+                if old_script in content:
+                    content = content.replace(old_script, new_script)
+                    modified = True
+                    print(f"In {job_name}: Replaced {old_script} with {new_script}")
+            
+            # Write back the modified content if changes were made
+            if modified:
+                with open(job_file_path, 'w') as f:
+                    f.write(content)
+
     # Go through the ush directory and replace FOOgfs with FOOgcafs in all scripts
     ush_dir = os.path.join(global_workflow_dir, 'ush')
     for root, _, files in os.walk(ush_dir):
@@ -330,7 +361,7 @@ def setup_gcafs_for_nco():
                 print(f"Skipping: {file_path}")
 
     # Go through sorc/gcdas.fd/parm directory and replace FOOgfs with FOOgcafs in all files
-    gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gcdas.fd', 'parm')
+    gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gcdas.cd', 'parm')
     for root, _, files in os.walk(gcdas_parm_dir):
         for file in files:
             file_path = os.path.join(root, file)

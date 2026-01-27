@@ -127,9 +127,10 @@ export SDATE="2021122012"
 export EDATE="2021122100"
 export EXP_WARM_START=".false."
 export assim_freq="6" # Assimilation frequency in hours
-export PSLOT="C384_gcafs_cycled"
-export EXPDIR="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/EXPDIR/${PSLOT}"
-export ROTDIR="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/COMROOT/${PSLOT}"
+export PSLOT=""
+#export EXPDIR="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/EXPDIR/${PSLOT}"
+#export ROTDIR="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/COMROOT/${PSLOT}"
+export ROTDIR=${COMROOT}
 export DUMP_SUFFIX=""
 if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
