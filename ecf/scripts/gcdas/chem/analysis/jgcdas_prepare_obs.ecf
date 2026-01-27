@@ -36,9 +36,21 @@ module load craype/2.7.17
 module load cray-pals/1.3.2
 module load prod_util/2.0.14
 
+module load hdf5/1.14.3
+module load parallel-netcdf/1.12.3
+module load netcdf-c/4.9.2
+module load boost/1.84.0
+module load eigen/3.4.0
+module load openblas/0.3.24
+module load eckit/1.28.3
+module load fckit/0.13.2
+module load intel-oneapi-runtime/2024.2.1
+module load udunits/2.2.28
+module load netcdf-cxx4/4.3.1
+
 #TODO load python virtual env
 module load python-venv/1.0
-module load py-pyyaml/6.0.2
+module load py-pyyaml/6.0.2git 
 module load py-numpy/1.26.4
 module load py-markupsafe/2.1.3
 module load py-jinja2/3.1.4
