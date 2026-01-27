@@ -316,6 +316,24 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
+    
+    # Go through parm/ directory and replace FOOgfs with FOOgcafs in all files
+    parm_dir = os.path.join(global_workflow_dir, 'parm')
+    for root, _, files in os.walk(parm_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            num_replacements = replace_gfs_with_gcafs(file_path)
+            if num_replacements > 0:
+                print(f"Modified {file_path}: {num_replacements} replacements made.")
+
+    # Go through sorc/gcdas.fd/parm directory and replace FOOgfs with FOOgcafs in all files
+    gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gcdas.fd', 'parm')
+    for root, _, files in os.walk(gcdas_parm_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            num_replacements = replace_gfs_with_gcafs(file_path)
+            if num_replacements > 0:
+                print(f"Modified {file_path}: {num_replacements} replacements made.")
 
 
 if __name__ == "__main__":
