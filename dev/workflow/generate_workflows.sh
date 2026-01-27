@@ -620,10 +620,10 @@ if [[ "${_update_cron}" == "true" ]]; then
     # Show warning only if MAILTO is not set as env variable and not present in existing crontab
     if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
         _exp_crontab="${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
-        if ! grep -q "^MAILTO=" "${_exp_crontab}" 2> /dev/null || \
-           grep -q "^MAILTO=$" "${_exp_crontab}" 2> /dev/null || \
-           grep -q "^MAILTO=\"\"$" "${_exp_crontab}" 2> /dev/null || \
-           grep -q "^MAILTO=''$" "${_exp_crontab}" 2> /dev/null; then
+        if ! grep -q "^MAILTO=" "${_exp_crontab}" 2> /dev/null ||
+            grep -q "^MAILTO=$" "${_exp_crontab}" 2> /dev/null ||
+            grep -q "^MAILTO=\"\"$" "${_exp_crontab}" 2> /dev/null ||
+            grep -q "^MAILTO=''$" "${_exp_crontab}" 2> /dev/null; then
             echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
         fi
     fi
