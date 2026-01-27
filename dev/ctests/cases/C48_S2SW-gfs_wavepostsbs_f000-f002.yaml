@@ -1,0 +1,66 @@
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# =============================================================================
+# C48_S2SW Wave Post Side-by-Side Test Case (f000-f002 segment)
+# =============================================================================
+# This test validates the gfs_wavepostsbs_f000-f002 task from the S2SW workflow.
+# Tests wave gridded post-processing for forecast hours 0, 1, and 2.
+#
+# Workflow Context:
+# - Task: wavepostsbs_f000-f002 (from gfs_wavepostsbs metatask)
+# - Job: JGLOBAL_WAVE_POST_SBS -> exgfs_wave_post_gridded_sbs.sh
+#
+# Source Logic: scripts/exgfs_wave_post_gridded_sbs.sh
+# - Reads binary gridded output from wave forecast (uglo_100km.fNNN.bin)
+# - Creates GRIB2 files for multiple output grids
+# - Performs grid interpolation if configured
+#
+# Configuration:
+# - DOGRB_WAV='YES' - Generate GRIB2 files
+# - DOGRI_WAV='NO' - Grid interpolation (optional)
+# - waveGRD, wavepostGRD, waveinterpGRD - Grid specifications
+#
+# Input Files:
+# - mod_def files from waveinit/waveprep
+# - uglo_100km.f000-f002.bin files from wave forecast
+#
+# Output Files:
+# - GRIB2 files in products/wave/gridded/{grid}/ for f000-f002
+# =============================================================================
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history
+
+    copy:
+        # Wave model definition files - native grid (uglo_100km) plus all
+        # interpolation target grids from waveinterpGRD (7 regional grids)
+        # Script loops: for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.at_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.at_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.ep_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.ep_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.wc_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.wc_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin]
+
+        # Wave gridded binary output files from forecast (f000-f002 for this segment)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f000.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f000.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f001.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f001.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f002.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.uglo_100km.f002.bin]
+
+output_files:
+    cmpfiles:
+        # GRIB2 output files for global 0.16 degree grid (f000-f002)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f000.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f000.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f001.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f001.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f002.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p16/gfs.t{{ cyc }}z.global.0p16.f002.grib2]
+        # GRIB2 output files for global 0.50 degree grid (f000-f002)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f000.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f000.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f001.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f001.grib2]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f002.grib2, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/gridded/global.0p50/gfs.t{{ cyc }}z.global.0p50.f002.grib2]
