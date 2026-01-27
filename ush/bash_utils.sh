@@ -136,14 +136,22 @@ function dataroot_com_path() {
     #   pCOMOUT_ATMOS_ANALYSIS=$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")
     #   echo "New COM path in DATAROOT: ${pCOMOUT_ATMOS_ANALYSIS}"
     #
-    local original_com_path=${1:?"dataroot_com_path() requires an original COM path"}
+
+    if [[ $# -ne 1 ]]; then
+        echo "FATAL ERROR in dataroot_com_path: Incorrect number of arguments!"
+        echo "Usage: dataroot_com_path original_com_path"
+        exit 2
+    fi
+
+    local original_com_path=${1}
 
     if [[ -z "${ROTDIR:-}" || -z "${DATAROOT:-}" ]]; then
         echo "FATAL ERROR in dataroot_com_path: ROTDIR and DATAROOT must be defined!"
         exit 2
     fi
 
-    local relative_path=$(realpath --relative-to="${ROTDIR}" "${original_com_path}")
+    local relative_path
+    relative_path=$(realpath --relative-to="${ROTDIR}" "${original_com_path}")
     local new_com_path="${DATAROOT}/${relative_path}"
 
     echo "${new_com_path}"
