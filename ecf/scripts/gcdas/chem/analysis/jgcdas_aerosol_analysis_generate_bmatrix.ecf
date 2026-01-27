@@ -89,7 +89,6 @@ module load gsl-lite/0.37.0
 module load libjpeg/2.1.0
 module load udunits/2.2.28
 module load netcdf-cxx4/4.3.1
-module load json/3.11.3
 
 ncdump=$(command -v ncdump)
 NETCDF=$(echo "${ncdump}" | cut -d " " -f 3)
