@@ -21,19 +21,16 @@ enkf:
             {% endfor %}
         {% endif %}
 
-        {% if lobsdiag_forenkf %}
-           {% if DO_JEDIATMENS %}
+        {% if DO_JEDIATMENS %}
+           {% if DO_JEDIATMENS_SPLIT_OBSSOL %}
               {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
            {% else %}
-              {% set steps = ["eobs", "ediag", "eupd"] %}
+              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
            {% endif %}
         {% else %}
-           {% if DO_JEDIATMENS %}
-              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
-           {% else %}
-              {% set steps = ["eobs", "eupd"] %}
-           {% endif %}
+           {% set steps = ["eobs", "ediag", "eupd"] %}
         {% endif %}
+
         {% if DOHYBVAR_OCN %}
           {% set steps = steps + ["marineanlecen"] %}
         {% endif %}
@@ -73,7 +70,7 @@ enkf:
                                     "radstat_ensmean.tar"] %}
             {% set da_conf_files = [] %}
         {% else %}
-            {% if lobsdiag_forenkf %}
+            {% if DO_JEDIATMENS_SPLIT_OBSSOL %}
                 {% set da_stat_files = [] %}
                 {% set da_conf_files = ["atmensanlobs.yaml",
                                         "atmensanlsol.yaml",
