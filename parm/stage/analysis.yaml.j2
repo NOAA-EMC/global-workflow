@@ -35,7 +35,9 @@ analysis:
                     {% endif %}
 
                     {% for ftype in ftypes %}
+                        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                        {% endif %}
                     {% endfor %}
 
                 {% endfor %}
