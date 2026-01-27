@@ -605,7 +605,7 @@ _format_crontab_comment_line() {
     local total_length=65
 
     if [[ -z "${text}" ]]; then
-        printf '%*s' "${total_length}" | tr ' ' '#'
+        printf '%*s' "${total_length}" '' | tr ' ' '#'
     else
         local text_with_spaces=" ${text} "
         local text_len=${#text_with_spaces}
