@@ -620,20 +620,14 @@ _format_crontab_comment_line() {
     echo
 }
 
-# Add email to tests.cron if provided via -e flag
-if [[ "${_set_email}" == "true" ]]; then
+# Add email to tests.cron if provided via -e flag (crontab only)
+# Note: scrontab doesn't use MAILTO from the crontab file; email is handled in the wrapper script
+if [[ "${_set_email}" == "true" && "${_use_scron}" == false ]]; then
     # Remove any existing MAILTO lines from tests.cron
     sed -i '/MAILTO=/d' tests.cron 2> /dev/null || true
 
-    # Add MAILTO as the first line - format depends on whether using scrontab
-    if [[ "${_use_scron}" == true ]]; then
-        # For scrontab, use formatted comment line
-        mailto_formatted=$(_format_crontab_comment_line "MAILTO=${_email}")
-        sed -i "1i ${mailto_formatted}" tests.cron
-    else
-        # For regular crontab, use plain directive
-        sed -i "1i MAILTO=${_email}" tests.cron
-    fi
+    # Add MAILTO as the first line for regular crontab
+    sed -i "1i MAILTO=${_email}" tests.cron
 fi
 
 # Update the cron
