@@ -41,11 +41,14 @@ cmake -DHPC_ACCOUNT=myaccount \
 # Run all tests
 ctest
 
-# Run tests for a specific configuration case
-ctest -L C48_ATM
+# Run tests for a specific configuration case (trailing hyphen prevents partial matches)
+ctest -L "C48_ATM-"
+
+# Run all C48_S2SW tests (excludes C48_S2SWA_gefs tests)
+ctest -L "C48_S2SW-"
 
 # Run test for a specific JJOB
-cest -L C48_ATM-gfs_atmos_prod_f000-f002
+ctest -L "C48_ATM-gfs_atmos_prod_f000-f002"
 
 # Run a specific test with verbose output
 ctest -R test_C48_ATM-gfs_fcst_seg0_execute -V
@@ -56,6 +59,10 @@ ctest -j 4
 # Show test list without running
 ctest -N
 ```
+
+> **Note**: The trailing hyphen in `-L "C48_ATM-"` is important! Labels use binomial
+> nomenclature (`CASE-JOB`), and the hyphen acts as a natural delimiter. Without it,
+> `ctest -L C48_S2SW` would also match `C48_S2SWA_gefs` tests due to CTest's regex matching.
 
 ### Common CTest Options
 
