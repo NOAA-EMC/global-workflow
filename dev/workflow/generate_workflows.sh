@@ -621,7 +621,6 @@ _format_crontab_comment_line() {
 }
 
 # Add email to tests.cron if provided via -e flag (crontab only)
-# Note: scrontab doesn't use MAILTO from the crontab file; email is handled in the wrapper script
 if [[ "${_set_email}" == "true" && "${_use_scron}" == false ]]; then
     # Remove any existing MAILTO lines from tests.cron
     sed -i '/MAILTO=/d' tests.cron 2> /dev/null || true
