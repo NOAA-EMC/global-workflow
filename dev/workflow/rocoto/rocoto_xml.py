@@ -175,10 +175,13 @@ class RocotoXML(WorkflowSuite, ABC):
             if crontab_cmd:
                 result = crontab_cmd('-l', output=str, error=str)
                 for line in result.split('\n'):
-                    if 'MAILTO==' in line:
-                        # Extract email from ## MAILTO==email@example.com ##
-                        match = line.split('MAILTO==')
+                    if 'MAILTO=' in line:
+                        # Extract email from either:
+                        # - scrontab: #### MAILTO=email ####
+                        # - crontab: MAILTO=email
+                        match = line.split('MAILTO=')
                         if len(match) > 1:
+                            # Remove any trailing hash marks, quotes, and whitespace
                             return match[1].split('#')[0].strip().strip('"').strip("'")
         except Exception:
             pass  # If crontab -l fails, just continue without it
@@ -241,9 +244,9 @@ class RocotoXML(WorkflowSuite, ABC):
 
         # Construct the crontab or scrontab
         if self.use_scrontab:
-            # Add MAILTO comment if email is available (before PSLOT line) for scrontab
+            # Add MAILTO as formatted comment line for scrontab
             if mailto:
-                mailto_line = self._format_crontab_comment_line(f'MAILTO=={mailto}')
+                mailto_line = self._format_crontab_comment_line(f'MAILTO={mailto}')
                 crontab_strings.append(mailto_line)
 
             # Add PSLOT line with same format (65 chars total)
@@ -278,17 +281,13 @@ class RocotoXML(WorkflowSuite, ABC):
             os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
         else:
             # For regular crontab
-            if mailto:
-                mailto_line = self._format_crontab_comment_line(f'MAILTO=="{mailto}"')
-                crontab_strings.append(mailto_line)
-
             # Add PSLOT line with same format (65 chars total)
             pslot_line = self._format_crontab_comment_line(f'{self.pslot}')
             crontab_strings.append(pslot_line)
 
-            # Add actual MAILTO variable for crontab to use
+            # Add MAILTO directive for crontab to use
             if mailto:
-                crontab_strings.append(f'MAILTO="{mailto}"')
+                crontab_strings.append(f'MAILTO={mailto}')
 
             # Create a wrapper script with monitoring
             cron_cmd = f"{self.expdir}/{self.pslot}.cron.sh"

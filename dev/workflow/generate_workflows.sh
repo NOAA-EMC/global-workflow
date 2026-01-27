@@ -589,7 +589,8 @@ for _case in "${_yaml_list[@]}"; do
 
     if [[ "${_use_scron}" == true ]]; then
         {
-            grep "^####" "${cron_file}"
+            # Skip MAILTO lines (will be added once at the top later)
+            grep "^####" "${cron_file}" | grep -v "MAILTO="
             grep "^#SCRON" "${cron_file}"
             grep "${scron_sh_file}" "${cron_file}"
         } >> tests.cron
@@ -620,10 +621,17 @@ _format_crontab_comment_line() {
 # Add email to tests.cron if provided via -e flag
 if [[ "${_set_email}" == "true" ]]; then
     # Remove any existing MAILTO lines from tests.cron
-    sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
+    sed -i '/MAILTO=/d' tests.cron 2> /dev/null || true
 
-    # Add MAILTO as the first line
-    sed -i "1i MAILTO=${_email}" tests.cron
+    # Add MAILTO as the first line - format depends on whether using scrontab
+    if [[ "${_use_scron}" == true ]]; then
+        # For scrontab, use formatted comment line
+        mailto_formatted=$(_format_crontab_comment_line "MAILTO=${_email}")
+        sed -i "1i ${mailto_formatted}" tests.cron
+    else
+        # For regular crontab, use plain directive
+        sed -i "1i MAILTO=${_email}" tests.cron
+    fi
 fi
 
 # Update the cron
@@ -636,7 +644,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     # Show warning only if MAILTO is not set as env variable and not present in existing.cron
     if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
-        if ! grep -q "^MAILTO=" existing.cron 2> /dev/null; then
+        if ! grep -q "MAILTO=" existing.cron 2> /dev/null; then
             echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
         fi
     fi
@@ -649,11 +657,11 @@ if [[ "${_update_cron}" == "true" ]]; then
     fi
 
     # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
-    sed -i '/^MAILTO=/d' existing.cron 2> /dev/null || true
-    sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
+    sed -i '/MAILTO=/d' existing.cron 2> /dev/null || true
+    sed -i '/MAILTO=/d' tests.cron 2> /dev/null || true
 
     # Extract MAILTO line from the crontab file and put at top of final.cron
-    mailto_line=$(grep "^MAILTO=" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null || echo "")
+    mailto_line=$(grep "MAILTO=" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null | head -1 || echo "")
     if [[ -n "${mailto_line}" ]]; then
         echo "${mailto_line}" > final.cron
     fi
@@ -671,7 +679,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 else
     # Show warning only if MAILTO is not set as env variable and not present in tests.cron
     if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
-        if ! grep -q "^MAILTO=" tests.cron 2> /dev/null; then
+        if ! grep -q "MAILTO=" tests.cron 2> /dev/null; then
             echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
         fi
     fi
