@@ -602,6 +602,7 @@ echo
 
 # Function to format crontab comment lines with consistent width
 _format_crontab_comment_line() {
+    set -e
     local text="${1:-}"
     local total_length=65
 
