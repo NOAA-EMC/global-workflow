@@ -620,7 +620,7 @@ _format_crontab_comment_line() {
 # Add email to tests.cron if provided via -e flag
 if [[ "${_set_email}" == "true" ]]; then
     # Remove any existing MAILTO lines from tests.cron
-    sed -i '/^MAILTO=/d' tests.cron 2>/dev/null || true
+    sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
 
     # Add MAILTO as the first line
     sed -i "1i MAILTO=${_email}" tests.cron
