@@ -617,9 +617,10 @@ if [[ "${_update_cron}" == "true" ]]; then
     echo
     ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
 
-    # Show warning only if MAILTO is not set as env variable and not present in existing.cron
+    # Show warning only if MAILTO is not set as env variable and not present in existing.cron or generated crontab
     if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
-        if ! grep -q "MAILTO=" existing.cron 2> /dev/null; then
+        # Check both existing crontab and the generated crontab file for MAILTO
+        if ! grep -q "^MAILTO=" existing.cron 2> /dev/null && ! grep -q "^MAILTO=" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null; then
             echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
         fi
     fi
@@ -652,9 +653,10 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     ${_crontab_cmd} final.cron
 else
-    # Show warning only if MAILTO is not set as env variable and not present in tests.cron
+    # Show warning only if MAILTO is not set as env variable and not present in existing.cron or generated tests.cron
     if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
-        if ! grep -q "MAILTO=" tests.cron 2> /dev/null; then
+        # Check both existing crontab and the merged tests.cron file for MAILTO
+        if ! grep -q "^MAILTO=" existing.cron 2> /dev/null && ! grep -q "^MAILTO=" tests.cron 2> /dev/null; then
             echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
         fi
     fi
