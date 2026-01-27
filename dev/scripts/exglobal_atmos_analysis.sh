@@ -198,7 +198,6 @@ RUN_SELECT=${RUN_SELECT:-"NO"}
 USE_SELECT=${USE_SELECT:-"NO"}
 USE_RADSTAT=${USE_RADSTAT:-"YES"}
 SELECT_OBS=${SELECT_OBS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}obsinput.tar}
-GENDIAG=${GENDIAG:-"YES"}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -882,6 +881,25 @@ if [[ "${SENDDBN}" == "YES" ]]; then
     fi
 fi
 
+if [[ "${GENDIAGS}" == "YES" ]]; then
+    # Move the gsidiags dir.* directories to pCOMOUT_ATMOS_ANALYSIS for diagnostic jobs
+    gsidiags_dir="${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"
+    # First, check that the directories exist
+    count_dirs=$(find . -maxdepth 1 -type d -name 'dir.????' | wc -l)
+    if [[ ${count_dirs:-0} -gt 0 ]]; then
+        mkdir -p "${gsidiags_dir}"
+        for dir in dir.????; do
+            mv "${dir}" "${gsidiags_dir}/"
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "Failed to move ${dir} to ${gsidiags_dir}/"
+            fi
+        done
+    else
+        echo "WARNING: No gsidiags dir.* directories found to move."
+    fi
+fi
+
 ################################################################################
 # Postprocessing
 cd "${DATA}" || exit 1
@@ -893,17 +911,6 @@ cd "${DATA}" || exit 1
 ##############################################################
 if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
-fi
-
-# Diagnostic files
-# if requested, GSI diagnostic file directories for use later
-if [[ "${GENDIAG}" == "YES" ]]; then
-    tar -cvf gsidiags.tar dir.????
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to tar GSI diagnostic directories!"
-    fi
-    cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
 fi
 
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"

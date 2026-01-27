@@ -39,7 +39,7 @@ rm -f "${RADSTAT}" "${PCPSTAT}" "${CNVSTAT}" "${OZNSTAT}"
 
 # Obs diag
 GENDIAG=${GENDIAG:-"YES"}
-GSIDIAG=${GSIDIAG:-"${COMIN_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"}
+GSIDIAGDIR=${GSIDIAGDIR:-"${pCOMIN_ATMOS_ANALYSIS}/gsidiags"}
 USE_BUILD_GSINFO=${USE_BUILD_GSINFO:-"NO"}
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 if [[ "${DIAG_COMPRESS:-}" == "YES" ]]; then
@@ -56,13 +56,13 @@ if [[ "${GENDIAG}" != "YES" ]]; then
 fi
 
 ################################################################################
-# Copy gsidiags.tar file from COMIN to DATA and untar
-cpreq "${GSIDIAG}" ./gsidiags.tar
-tar -xvf gsidiags.tar
-export err=$?
-if [[ ${err} -ne 0 ]]; then
-    err_exit "Unable to unpack gsidiags.tar file!"
+# Link to the gsidiags directory if it is populated
+count_dirs=$(find "${GSIDIAGDIR}" -maxdepth 1 -type d -name "dir.*" | wc -l)
+if [[ ${count_dirs} -eq 0 ]]; then
+    export err=1
+    err_exit "No gsidiags directories found in ${GSIDIAGDIR}"
 fi
+${NLN} -sf "${GSIDIAGDIR}" .
 
 # Set up lists and variables for various types of diagnostic files.
 ntype=3
