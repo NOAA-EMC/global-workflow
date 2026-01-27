@@ -3,5 +3,5 @@ ice_native:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_native_subset.tar"
     required:
         {% for fhr in range(FHOUT_ICE_GFS, FHMAX_GFS + FHOUT_ICE_GFS, FHOUT_ICE_GFS) %}
-        - "{{ COMIN_ICE_NETCDF | relpath(ROTDIR) }}/native/{{ RUN }}.t{{ cycle_HH }}z.native.f{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ICE_NETCDF }}/native/{{ RUN }}.t{{ cycle_HH }}z.native.f{{ '%03d' % fhr }}.nc"
         {% endfor %}

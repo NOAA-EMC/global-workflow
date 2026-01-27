@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Entry point for setting up a compute-node build with node exclusion support.
+Entry point for setting up a builds of global-workflow programs
 """
 
 import os
@@ -20,11 +20,11 @@ HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
 def input_args(*argv):
     """
-    Method to collect user arguments for `compute_build.py`
+    Method to collect user arguments for `setup_buildxml.py`
     """
 
     description = """
-        Setup files and directories to start a compute build.
+        Setup buildXML to compile global-workflow programs.
     """
 
     parser = ArgumentParser(description=description,
