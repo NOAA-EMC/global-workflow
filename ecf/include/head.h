@@ -53,6 +53,12 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed 's/:$//')"
   set -x
   . ${ECF_ROOT}/versions/run.ver
+  if [[ ! " ops.prod ops.para " =~ " $(whoami) " ]]; then
+    echo "Allow over-riding defaults for developers"
+    if [ -n "%COMROOT:%" ]; then export COMROOT=${COMROOT:-%COMROOT:%}; fi
+    if [ -n "%DATAROOT:%" ]; then export DATAROOT=${DATAROOT:-%DATAROOT:%}; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT=${DCOMROOT:-%DCOMROOT:%}; fi
+  fi
   set +x
   module load prod_util/${prod_util_ver}
   module load prod_envir/${prod_envir_ver}

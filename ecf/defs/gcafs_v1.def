@@ -9,6 +9,8 @@ suite gcafs_v1
     edit MACHINE_SITE 'development'
     edit ENVIR 'prod'
     edit EXPDIR '%PACKAGEHOME%/parm/config/gcafs'
+    edit COMROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/com'
+    edit DATAROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/dataroot'
     family 00
       edit CYC '00'
       family gcafs
