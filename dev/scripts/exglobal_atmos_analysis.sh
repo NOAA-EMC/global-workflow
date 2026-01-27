@@ -57,7 +57,11 @@ IASI_CADS=${IASI_CADS:-".false."}
 CRIS_CADS=${CRIS_CADS:-".false."}
 
 # Diagnostic files options
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+if [[ "${RUN}" == "enkfgdas" ]] || [[ "${RUN}" == "enkfgfs" ]]; then
+    lobsdiag_forenkf=".true."
+else
+    lobsdiag_forenkf=".false."
+fi
 
 # IAU
 DOIAU=${DOIAU:-"NO"}
