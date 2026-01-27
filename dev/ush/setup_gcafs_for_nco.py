@@ -152,8 +152,8 @@ def copy_script_files(global_workflow_dir):
         "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_analysis_calc.sh",
         "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
         "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
-        # exgcdas_prepare_obs is taken from ObsForge for v1, not in global-workflow, do this manually!!
-        # need to add something here for the post job once Yaping's PR is in
+        "exgcdas_prepare_obs.py": "exgcdas_prepare_obs.py",
+        # need to add something here for the post job once Yaping's PR is in ?
     }
 
     # if the scripts directory exists as a symlink, remove it first
@@ -169,7 +169,7 @@ def copy_script_files(global_workflow_dir):
     # Create a FileHandler dictionary for scripts
     ex_script_file_handler = {
         'mkdir': [os.path.join(global_workflow_dir, 'scripts')],
-        'copy': ex_script_file_copy_list,
+        'copy_opt': ex_script_file_copy_list,
     }
     # Execute the file operations for scripts
     FileHandler(ex_script_file_handler).sync()
