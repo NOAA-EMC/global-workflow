@@ -289,8 +289,8 @@ class RocotoXML(WorkflowSuite, ABC):
             if mailto:
                 crontab_strings.append(f'MAILTO={mailto}')
 
-            # Create a wrapper script with monitoring
-            cron_cmd = f"{self.expdir}/{self.pslot}.cron.sh"
+            # For regular crontab, run rocotorun directly
+            cron_cmd = rocotorunstr
 
         crontab_strings.extend([
             f'{cronintstr} {cron_cmd}',
