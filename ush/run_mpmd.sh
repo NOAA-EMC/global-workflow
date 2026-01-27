@@ -110,9 +110,9 @@ if [[ ${err} -eq 0 ]]; then
     out_files=$(find . -name 'mpmd.*.out')
     for file in ${out_files}; do
         {
-        echo "BEGIN OUTPUT FROM ${file}"
-        cat "${file}"
-        echo "END OUTPUT FROM ${file}"
+            echo "BEGIN OUTPUT FROM ${file}"
+            cat "${file}"
+            echo "END OUTPUT FROM ${file}"
         } >> mpmd.out
         rm -f "${file}"
     done
