@@ -290,7 +290,7 @@ class RocotoXML(WorkflowSuite, ABC):
 
             # Add MAILTO directive for crontab to use
             if mailto:
-                crontab_strings.append(f'MAILTO={mailto}')
+                crontab_strings.append(f'MAILTO="{mailto}"')
             else:
                 crontab_strings.append('MAILTO=""')
 
