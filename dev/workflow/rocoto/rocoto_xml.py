@@ -285,9 +285,14 @@ class RocotoXML(WorkflowSuite, ABC):
             pslot_line = self._format_crontab_comment_line(f'{self.pslot}')
             crontab_strings.append(pslot_line)
 
+            # Add SHELL directive
+            crontab_strings.append('SHELL="/bin/bash"')
+
             # Add MAILTO directive for crontab to use
             if mailto:
                 crontab_strings.append(f'MAILTO={mailto}')
+            else:
+                crontab_strings.append('MAILTO=""')
 
             # For regular crontab, run rocotorun directly
             cron_cmd = rocotorunstr
