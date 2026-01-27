@@ -36,7 +36,9 @@ function declare_from_tmpl() {
     #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     #           COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
     #
-    if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then set +x; fi
+    if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then
+        set +x
+    fi
     local opts="-g"
     local OPTIND=1
     while getopts "rx" option; do
@@ -110,7 +112,45 @@ function wait_for_file() {
     return 1
 }
 
+# This utility is to be used to create a COM structure in the DATAROOT
+# It will replace the root path (up to $ROTDIR) with $DATAROOT
+# Use realpath --relative-to to get the relative path from $ROTDIR to the target file
+# and then prepend $DATAROOT to that path to get the new target path
+function dataroot_com_path() {
+    #
+    # Generate a COM path in the DATAROOT based on an existing COM path.
+    #
+    # This function takes an existing COM path and generates a corresponding
+    # path in the DATAROOT by replacing the root directory with DATAROOT.
+    #
+    # Syntax:
+    #   dataroot_com_path original_com_path
+    #
+    #   original_com_path: The original COM path to be transformed.
+    #
+    # Example:
+    #   # Declare COMOUT_ATMOS_ANALYSIS using template
+    #   YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    #       COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    #   # Get the DATAROOT version of the COM path
+    #   pCOMOUT_ATMOS_ANALYSIS=$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")
+    #   echo "New COM path in DATAROOT: ${pCOMOUT_ATMOS_ANALYSIS}"
+    #
+    local original_com_path=${1:?"dataroot_com_path() requires an original COM path"}
+
+    if [[ -z "${ROTDIR:-}" || -z "${DATAROOT:-}" ]]; then
+        echo "FATAL ERROR in dataroot_com_path: ROTDIR and DATAROOT must be defined!"
+        exit 2
+    fi
+
+    local relative_path=$(realpath --relative-to="${ROTDIR}" "${original_com_path}")
+    local new_com_path="${DATAROOT}/${relative_path}"
+
+    echo "${new_com_path}"
+}
+
 # shellcheck disable=
 
 declare -xf declare_from_tmpl
 declare -xf wait_for_file
+declare -xf dataroot_com_path
