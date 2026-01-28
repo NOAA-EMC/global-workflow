@@ -881,7 +881,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
     fi
 fi
 
-if [[ "${GENDIAGS}" == "YES" ]]; then
+if [[ "${GENDIAG}" == "YES" ]]; then
     # Move the gsidiags dir.* directories to pCOMOUT_ATMOS_ANALYSIS for diagnostic jobs
     gsidiags_dir="${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"
     # First, check that the directories exist
