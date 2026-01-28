@@ -24,7 +24,7 @@ gdasocean_analysis:
         {% endif %}
        
         # extra marine ensemble statistics (off by default) 
-        {% if ARCH_MARINE_ENS %}
+        {% if ARCH_MARINE_ENS and NMEM_ENS > 2 %}
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}ens_weights.nc'
         - '{{ COMIN_OCEAN_BMATRIX | relpath(ROTDIR) }}/{{ head }}bkgerr_ens_stddev.nc'
         - '{{ COMIN_ICE_BMATRIX | relpath(ROTDIR) }}/{{ head }}ens_weights.nc'
