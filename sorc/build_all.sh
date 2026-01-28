@@ -1,64 +1,46 @@
-#! /usr/bin/env bash
-#shellcheck disable=SC2317
+#!/usr/bin/env bash
 
-set +x
-#------------------------------------
-# Exception handling is now included.
-#
-# USER DEFINED STUFF:
-#
-#------------------------------------
-
-#------------------------------------
-# END USER DEFINED STUFF
-#------------------------------------
 function _usage() {
     cat << EOF
-Builds all of the global-workflow components by calling the individual build scripts in parallel.
+Builds all of the global-workflow components on compute nodes.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [gefs] [sfs] [gcafs] [gsi] [gdas] [all]
-  -a UFS_app:
-    Build a specific UFS app instead of the default.  This will be applied to all UFS (GFS, GEFS, SFS, GCAFS) builds.
-  -d:
-    Build in debug mode
-  -f:
-    Build the UFS model(s) using the -DFASTER=ON option.
+Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT -c [gfs gefs sfs gcafs gsi gdas all]
   -h:
     Print this help message and exit
-  -k:
-    Kill all builds if any build fails
   -v:
-    Execute all build scripts with -v option to turn on verbose where supported
-  -p:
-    Valid only for WCOSS2; enable parallel restart I/O when compiling the UFS
+    Verbose mode
+  -A:
+    HPC account to use for the compute-node builds [REQUIRED when building on compute nodes]
+  -c Build on compute nodes (DEFAULT: NO)
 
-  Specified systems (gfs, gefs, sfs, gcafs, gsi, gdas) are non-exclusive, so they can be built together.
+  Input arguments are the system(s) to build.
+  Valid options are
+    "gfs", "gefs", "sfs", "gcafs", "gsi", "gdas", or "all".
+    (default is "gfs")
 EOF
     exit 1
 }
+# This script launches compute-node builds of selected submodules
+# Two positional arguments are accepted:
 
-# shellcheck disable=SC2155
-readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
-cd "${HOMEgfs}/sorc" || exit 1
+set -eu
 
-_build_ufs_opt=""
-_build_debug=""
-_verbose_opt=""
-_build_job_max=20
-_quick_kill="NO"
-_ufs_exec="-e gfs_model.x"
-# Reset option counter in case this script is sourced
+rocoto_verbose_opt=""
+verbose="NO"
+build_xml="build.xml"
+build_db="build.db"
+build_lock_db="build_lock.db"
+HPC_ACCOUNT="UNDEFINED"
+compute_build="NO"
+max_cores=20 # Maximum number of cores to use for builds on head node
+
 OPTIND=1
-while getopts ":a:dfhkpv" option; do
+while getopts ":hA:vc" option; do
     case "${option}" in
-        a) _build_ufs_opt+="-a ${OPTARG} " ;;
-        f) _build_ufs_opt+="-f " ;;
-        d) _build_debug="-d" ;;
         h) _usage ;;
-        k) _quick_kill="YES" ;;
-        # TODO: Remove this option when UFS#2716 is fixed
-        p) _build_ufs_opt+="-p " ;;
-        v) _verbose_opt="-v" ;;
+        A) HPC_ACCOUNT="${OPTARG}" ;;
+        c) compute_build="YES" ;;
+        v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
             _usage
@@ -71,268 +53,312 @@ while getopts ":a:dfhkpv" option; do
 done
 shift $((OPTIND - 1))
 
-# If no build system was specified, build for gfs forecast-only
+# Set build system to gfs if not specified
 if [[ $# -eq 0 ]]; then
-    selected_systems="gfs"
+    systems="gfs"
 else
-    selected_systems="$*"
+    systems=$*
 fi
 
-supported_systems=("gfs" "gefs" "sfs" "gcafs" "gsi" "gdas" "all")
-
-declare -A system_builds
-system_builds=(
-    ["gfs"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs"
-    ["gefs"]="ufs_gefs gfs_utils ufs_utils upp ww3_gefs"
-    ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
-    ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp nexus gsi_utils"
-    ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
-    ["gdas"]="gdas gsi_monitor gsi_utils"
-    ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils nexus"
-)
-
-logs_dir="${HOMEgfs}/sorc/logs"
-if [[ ! -d "${logs_dir}" ]]; then
-    echo "Creating logs folder"
-    mkdir -p "${logs_dir}" || exit 1
+if [[ "${compute_build}" == "YES" && "${HPC_ACCOUNT}" == "UNDEFINED" ]]; then
+    echo "FATAL ERROR: -A <HPC_ACCOUNT> is required when building on compute nodes, ABORT!"
+    _usage
 fi
 
-# Jobs per build ("min max")
-declare -A build_jobs build_opts build_scripts
-build_jobs=(
-    ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["ufs_gcafs"]=8 ["gdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
-    ["ww3_gfs"]=1 ["ww3_gefs"]=1 ["gsi_utils"]=1 ["gsi_monitor"]=1 ["gfs_utils"]=1 ["upp"]=1 ["nexus"]=1
-)
+if [[ "${verbose}" == "YES" ]]; then
+    set -x
+fi
 
-# Establish build options for each job
-_gfs_exec="gfs_model.x"
-_gefs_exec="gefs_model.x"
-_sfs_exec="sfs_model.x"
-_gcafs_exec="gcafs_model.x"
-build_opts=(
-    ["ufs_gfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gfs_exec}"
-    ["ufs_gefs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -w -e ${_gefs_exec}"
-    ["ufs_sfs"]="${wave_opt} ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -y -e ${_sfs_exec}"
-    ["ufs_gcafs"]="-a ATMAERO ${_build_ufs_opt} ${_verbose_opt} ${_build_debug} -e ${_gcafs_exec}"
-    ["upp"]="${_build_debug}"
-    ["ww3_gfs"]="${_verbose_opt} ${_build_debug}"
-    ["ww3_gefs"]="-w ${_verbose_opt} ${_build_debug}"
-    ["gdas"]="${_verbose_opt} ${_build_debug}"
-    ["ufs_utils"]="${_verbose_opt} ${_build_debug}"
-    ["gfs_utils"]="${_verbose_opt} ${_build_debug}"
-    ["gsi_utils"]="${_verbose_opt} ${_build_debug}"
-    ["gsi_enkf"]="${_verbose_opt} ${_build_debug}"
-    ["gsi_monitor"]="${_verbose_opt} ${_build_debug}"
-    ["nexus"]="${_verbose_opt} ${_build_debug}"
-)
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+# Needs to be exported for gw_setup.sh
+export HOMEgfs
 
-# Set the build script name for each build
-build_scripts=(
-    ["ufs_gfs"]="build_ufs.sh"
-    ["ufs_gefs"]="build_ufs.sh"
-    ["ufs_sfs"]="build_ufs.sh"
-    ["ufs_gcafs"]="build_ufs.sh"
-    ["gdas"]="build_gdas.sh"
-    ["gsi_enkf"]="build_gsi_enkf.sh"
-    ["gfs_utils"]="build_gfs_utils.sh"
-    ["ufs_utils"]="build_ufs_utils.sh"
-    ["ww3_gfs"]="build_ww3prepost.sh"
-    ["ww3_gefs"]="build_ww3prepost.sh"
-    ["gsi_utils"]="build_gsi_utils.sh"
-    ["gsi_monitor"]="build_gsi_monitor.sh"
-    ["gfs_utils"]="build_gfs_utils.sh"
-    ["upp"]="build_upp.sh"
-    ["nexus"]="build_nexus.sh"
-)
+echo "Sourcing global-workflow modules ..."
+source "${HOMEgfs}/dev/ush/gw_setup.sh"
 
-# Check the requested systems to make sure we can build them
-declare -A builds
-system_count=0
-for system in ${selected_systems}; do
-    # shellcheck disable=SC2076
-    if [[ " ${supported_systems[*]} " =~ " ${system} " ]]; then
-        ((system_count += 1))
-        for build in ${system_builds["${system}"]}; do
-            builds["${build}"]="yes"
-        done
-    else
-        echo "Unsupported build system: ${system}"
-        _usage
-    fi
-done
+# Un-export after gw_setup.sh
+export -n HOMEgfs
 
-#------------------------------------
-# GET MACHINE
-#------------------------------------
-export COMPILER="intel"
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
-if [[ -z "${MACHINE_ID}" ]]; then
-    echo "FATAL: Unable to determine target machine"
+cd "${HOMEgfs}/sorc" || exit 1
+mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
+
+# Delete the rocoto XML and database if they exist
+rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
+
+echo "Generating build.xml for building global-workflow programs ..."
+yaml="${HOMEgfs}/sorc/build_opts.yaml"
+"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
+rc=$?
+if [[ "${rc}" -ne 0 ]]; then
+    echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
     exit 1
 fi
 
-# Create the log directory
-mkdir -p "${HOMEgfs}/sorc/logs"
+# grep for <command> tags in the build.xml and collect the commands in an array
+mapfile -t commands < <(grep -oP '(?<=<command>).*(?=</command>)' "${build_xml}")
+# get the corresponding log file names from the build.xml in an array
+mapfile -t logs < <(grep -oP '(?<=<join><cyclestr>).*(?=</cyclestr></join>)' "${build_xml}")
 
-#------------------------------------
-# SOURCE BUILD VERSION FILES
-#------------------------------------
-# TODO: Commented out until components aligned for build
-#source ../versions/build.ver
+# Initialize associative arrays to track build status
+declare -A build_names build_status build_dirs build_commands build_logs build_cores build_pids
+for i in "${!logs[@]}"; do
 
-#------------------------------------
-# Exception Handling Init
-#------------------------------------
-# Disable shellcheck warning about single quotes not being substituted.
-# shellcheck disable=SC2016
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $errs = 0 ]]'}
-# shellcheck disable=
-errs=0
+    cmd="${commands[i]}"
+    log="${logs[i]}"
+    name=$(echo "${log}" | xargs -n1 basename | sed 's/\.log$//')
 
-#------------------------------------
-# Check which builds to do and assign # of build jobs
-#------------------------------------
-
-echo "Building ${build_list}"
-
-procs_in_use=0
-declare -A build_ids
-
-check_builds() {
-    for chk_build in "${!builds[@]}"; do
-        # Check if the build is complete and if so what the status was
-        if [[ -n "${build_ids[${chk_build}]+0}" ]]; then
-            if ! ps -p "${build_ids[${chk_build}]}" > /dev/null; then
-                wait "${build_ids[${chk_build}]}"
-                build_stat=$?
-                if [[ ${build_stat} != 0 ]]; then
-                    echo "build_${chk_build}.sh failed!  Exiting!"
-                    echo "Check logs/build_${chk_build}.log for details."
-                    echo "logs/build_${chk_build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
-                    for kill_build in "${!builds[@]}"; do
-                        if [[ -n "${build_ids[${kill_build}]+0}" ]]; then
-                            pkill -P "${build_ids[${kill_build}]}"
-                        fi
-                    done
-                    return "${build_stat}"
-                fi
-            fi
-        fi
-    done
-    return 0
-}
-
-# Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
-# shellcheck disable=SC2329
-function cleanup() {
-    echo "Exiting build script. Terminating subprocesses..."
-    for pid in "${build_ids[@]}"; do
-        if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
-            kill "${pid}"
-        fi
-    done
-    exit 0
-}
-
-trap cleanup ERR
-trap cleanup INT
-trap cleanup TERM
-
-builds_started=0
-# Now start looping through all of the jobs until everything is done
-while [[ ${builds_started} -lt ${#builds[@]} ]]; do
-    for build in "${!builds[@]}"; do
-        # Has the job started?
-        if [[ -n "${build_jobs[${build}]+0}" && -z "${build_ids[${build}]+0}" ]]; then
-            # Do we have enough processors to run it?
-            if [[ ${_build_job_max} -ge $((build_jobs[build] + procs_in_use)) ]]; then
-                # double-quoting build_opts here will not work since it is a string of options
-                #shellcheck disable=SC2086
-                "./${build_scripts[${build}]}" ${build_opts[${build}]:-} -j "${build_jobs[${build}]}" > \
-                    "${logs_dir}/build_${build}.log" 2>&1 &
-                build_ids["${build}"]=$!
-                echo "Starting build_${build}.sh"
-                procs_in_use=$((procs_in_use + build_jobs[${build}]))
-            fi
-        fi
-    done
-
-    # Check if all builds have completed
-    # Also recalculate how many processors are in use to account for completed builds
-    builds_started=0
-    procs_in_use=0
-    for build in "${!builds[@]}"; do
-        # Has the build started?
-        if [[ -n "${build_ids[${build}]+0}" ]]; then
-            builds_started=$((builds_started + 1))
-            # Calculate how many processors are in use
-            # Is the build still running?
-            if ps -p "${build_ids[${build}]}" > /dev/null; then
-                procs_in_use=$((procs_in_use + build_jobs["${build}"]))
-            fi
-        fi
-    done
-
-    # If requested, check if any build has failed and exit if so
-    if [[ "${_quick_kill}" == "YES" ]]; then
-        check_builds
-        build_stat=$?
-        if ((build_stat != 0)); then
-            exit "${build_stat}"
+    # If building on head node, limit the number of cores used per build
+    if [[ ${compute_build} != "YES" ]]; then
+        # Get the number of cores from the command (-j N).
+        # If N is greater than max_cores, set it to max_cores and update the command accordingly.
+        cores=$(echo "${cmd}" | grep -oP '(?<=-j )\d+')
+        if [[ ${cores} -gt ${max_cores} ]]; then
+            cores=${max_cores}
+            cmd="$(echo "${cmd}" | sed -E "s/-j [0-9]+/-j ${cores}/")"
         fi
     fi
 
-    sleep 5s
+    build_names["${name}"]="${name}"
+    build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
+    build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
+    build_logs["${name}"]="${log}"
+    build_cores["${name}"]="${cores}"
+    build_status["${name}"]="PENDING"
+    build_pids["${name}"]=""
+
 done
+unset commands logs
 
-# Wait for all jobs to complete and check return statuses
-while [[ "${#builds[@]}" -gt 0 ]]; do
+nbuilds=${#build_names[@]}
+nback=$((nbuilds + 4))
 
-    # If requested, check if any build has failed and exit if so
-    if [[ "${_quick_kill}" == "YES" ]]; then
-        check_builds
-        build_stat=$?
-        if [[ ${build_stat} != 0 ]]; then
-            exit "${build_stat}"
-        fi
-    fi
-
-    for build in "${!builds[@]}"; do
-        # Test if each job is complete and if so, notify and remove from the array
-        if [[ -n "${build_ids[${build}]+0}" ]]; then
-            if ! ps -p "${build_ids[${build}]}" > /dev/null; then
-                wait "${build_ids[${build}]}"
-                build_stat=$?
-                errs=$((errs + build_stat))
-                if [[ ${build_stat} == 0 ]]; then
-                    echo "${build_scripts[${build}]} completed successfully!"
-                else
-                    echo "${build_scripts[${build}]} failed with status ${build_stat}!"
-                fi
-
-                # Remove the completed build from the list of PIDs
-                unset 'build_ids[${build}]'
-                unset 'builds[${build}]'
-            fi
-        fi
+print_build_status() {
+    local name
+    echo "-----------------------------------"
+    printf "| %-18s | %-10s |\n" "System" "Status"
+    echo "-----------------------------------"
+    for name in "${build_names[@]}"; do
+        printf "| %-18s | %-10s |\n" "${name}" "${build_status[${name}]}"
     done
+    echo "-----------------------------------"
+}
 
-    sleep 5s
-done
-
-#------------------------------------
-# Exception Handling
-#------------------------------------
-if ((errs != 0)); then
-    cat << EOF
-BUILD ERROR: One or more components failed to build
-  Check the associated build log(s) for details.
-EOF
-    ${ERRSCRIPT} || exit "${errs}"
+if [[ "${compute_build}" == "YES" ]]; then
+    echo "Building on compute nodes using account: ${HPC_ACCOUNT}"
+else
+    echo "Building on head node using up to ${max_cores} cores ..."
 fi
 
-echo
-echo " .... Build system finished .... "
+print_build_status
+
+# Catch errors manually from here out
+set +e
+
+if [[ "${compute_build}" != "YES" ]]; then
+
+    cleanup() {
+        local pid name
+        for name in "${!build_pids[@]}"; do
+            pid=${build_pids[${name}]}
+            if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
+                pkill -P "${pid}"                  # Kill any child processes
+            fi
+        done
+    }
+
+    # Call the cleanup function when exiting (normally, on error, or by interruption)
+    trap cleanup EXIT
+    trap cleanup SIGINT
+    trap cleanup SIGTERM
+    trap cleanup SIGHUP
+    trap cleanup ERR
+
+    current_cores=0
+    builds_in_progress=true
+
+    while [[ ${builds_in_progress} == true ]]; do
+
+        abort_all_builds=false
+
+        for name in "${build_names[@]}"; do
+
+            if [[ ${abort_all_builds} == true ]]; then
+                continue
+            fi
+
+            # If the build is already SUCCEEDED, skip it
+            if [[ ${build_status[${name}]} == "SUCCEEDED" ]]; then
+                continue
+            fi
+
+            # Check if the build is still running
+            pid=${build_pids[${name}]}
+            if [[ -z "${pid}" ]]; then # No pid means build not started yet
+                cores_needed="${build_cores[${name}]}"
+                if ((current_cores + cores_needed <= max_cores)); then
+                    # Launch the build command in the background and redirect output to log file
+                    dir="${build_dirs[${name}]}"
+                    command="${build_commands[${name}]}"
+                    log_file="${build_logs[${name}]}"
+                    cd "${dir}" || exit 1
+                    ${command} > "${log_file}" 2>&1 &
+                    _pid=$!
+                    build_pids["${name}"]="${_pid}"
+                    build_status["${name}"]="RUNNING"
+                    # Update the current cores in use
+                    current_cores=$((current_cores + cores_needed))
+                else
+                    # Not enough cores available, skip to next build
+                    continue
+                fi
+
+            else
+
+                if ! ps -p "${pid}" > /dev/null 2>&1; then
+                    # Build has finished, check its exit status
+                    wait "${pid}"
+                    rc=$?
+                    if [[ ${rc} -ne 0 ]]; then
+                        build_status["${name}"]="FAILED"
+                    else
+                        build_status["${name}"]="SUCCEEDED"
+                    fi
+                    # Free up the cores used by this build (regardless of success or failure)
+                    current_cores=$((current_cores - build_cores[${name}]))
+                fi
+
+            fi
+
+            # If the build failed, do not submit any more builds
+            if [[ ${build_status[${name}]} == "FAILED" ]]; then
+                abort_all_builds=true
+            fi
+
+        done
+
+        if [[ ${abort_all_builds} == true ]]; then
+            # Terminate all running build processes
+            cleanup
+            # Mark all running builds as aborted and free up their cores
+            for name in "${build_names[@]}"; do
+                if [[ ${build_status[${name}]} == "RUNNING" ]]; then
+                    build_status["${name}"]="ABORTED"
+                    current_cores=$((current_cores - build_cores[${name}]))
+                fi
+            done
+            builds_in_progress=false
+        else
+            # Check if any builds are still in progress or all have succeeded
+            all_succeeded=true
+            for name in "${build_names[@]}"; do
+                if [[ ${build_status[${name}]} != "SUCCEEDED" ]]; then
+                    all_succeeded=false
+                fi
+            done
+            if [[ ${all_succeeded} == true ]]; then
+                builds_in_progress=false
+            else
+                builds_in_progress=true
+            fi
+        fi
+
+        # Move the cursor up nback lines before printing the build status again
+        echo -ne "\033[${nback}A"
+        print_build_status
+
+        sleep 1m
+
+    done
+
+    if [[ ${abort_all_builds} == true ]]; then
+        echo "FATAL ERROR: The following builds failed, see log files for details:"
+        for name in "${build_names[@]}"; do
+            if [[ ${build_status[${name}]} == "FAILED" ]]; then
+                echo -e "\t${name}: ${build_logs[${name}]}"
+            fi
+        done
+        exit 1
+    fi
+
+else
+
+    runcmd="rocotorun -w ${build_xml} -d ${build_db} ${rocoto_verbose_opt}"
+    ${runcmd}
+    rc=$?
+    if [[ "${rc}" -ne 0 ]]; then
+        echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to run rocoto on the first attempt!"
+        exit 1
+    fi
+
+    builds_in_progress=true
+    while [[ ${builds_in_progress} == true ]]; do
+
+        sleep 1m
+
+        ${runcmd}
+
+        sleep 15s
+
+        stat_out="$(rocotostat -w "${build_xml}" -d "${build_db}")"
+        echo "${stat_out}" > rocotostat.out
+        # Ignore 1st 2 lines and store each row of rocotostat output in an array
+        mapfile -t stat_lines < <(tail -n +3 rocotostat.out)
+        rm -f rocotostat.out
+
+        # Loop through each line of the rocotostat output and update build_pids and build_status arrays
+        for line in "${stat_lines[@]}"; do
+            # Read each line into an array using read
+            IFS=' ' read -r -a columns <<< "${line}"
+
+            # Get the name, jobid and jobstatus of the build in this row
+            name=${columns[1]}
+            jobid=${columns[2]}
+            jobstatus=${columns[3]}
+
+            # Update build_pids and build_status arrays for the build_name
+            build_pids["${name}"]="${jobid}"
+            build_status["${name}"]="${jobstatus}"
+        done
+
+        echo -ne "\033[${nback}A"
+        print_build_status
+
+        # Count number of builds still in progress and check for failures
+        nsuccess=0
+        nfailed=0
+        for name in "${build_names[@]}"; do
+            job_state="${build_status[${name}]}"
+            if [[ "${job_state}" =~ "DEAD" || "${job_state}" =~ "UNKNOWN" ||
+                "${job_state}" =~ "UNAVAILABLE" || "${job_state}" =~ "FAIL" ]]; then
+                nfailed=$((nfailed + 1))
+            elif [[ "${job_state}" == "SUCCEEDED" ]]; then
+                nsuccess=$((nsuccess + 1))
+            fi
+        done
+
+        # If any builds failed, exit with error
+        if [[ ${nfailed} -gt 0 ]]; then
+            echo "FATAL ERROR: The following builds failed, see log files for details:"
+            for name in "${build_names[@]}"; do
+                job_state="${build_status[${name}]}"
+                if [[ "${job_state}" =~ "DEAD" || "${job_state}" =~ "UNKNOWN" ||
+                    "${job_state}" =~ "UNAVAILABLE" || "${job_state}" =~ "FAIL" ]]; then
+                    echo -e "\t${name}: ${build_logs[${name}]}"
+                fi
+            done
+            exit 1
+        fi
+
+        # If all builds succeeded, exit the loop
+        if [[ ${nsuccess} -eq ${nbuilds} ]]; then
+            builds_in_progress=false
+        fi
+
+    done
+
+fi
+
+echo "All builds completed successfully!"
 
 exit 0

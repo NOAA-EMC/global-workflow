@@ -5,27 +5,27 @@ gfs_netcdfa:
     required:
         {% if DO_JEDIATMVAR %}
            {% if ATMINC_GRID == 'gaussian' %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.sfc.a006.nc"
            {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.atm.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.sfc.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_analysis.sfc.a006.nc"
            {% endif %}
         {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.sfc.a006.nc"
         {% endif %}
-        {% for iaufhr in IAUFHRS %}
+        {% for iaufhr in iaufhrs_str %}
             {% if DO_JEDIATMVAR and not (ATMINC_GRID == 'gaussian') %}
                 {% for itile in range(6) %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_increment.atm.i{{ "%03d" % iaufhr }}.tile{{ itile+1 }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
                 {% endfor %}
             {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.atm.i{{ "%03d" % iaufhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.atm.i{{ iaufhr }}.nc"
             {% endif %}
         {% endfor %}
     optional:
         {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.dtf.i006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}increment.done.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.dtf.i006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.done.txt"
         {% endif %}

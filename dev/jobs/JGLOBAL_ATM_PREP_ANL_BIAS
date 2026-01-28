@@ -37,16 +37,19 @@ SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECgfs}/satbias2ioda.x}
 SATBIAS2IODAY=${HOMEgfs}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
 OUTPUT=${DATA}/output
 
-if [[ ! -d "${COMOUT_ATMOS_ANALYSIS_PREV}" ]]; then mkdir -p "${COMOUT_ATMOS_ANALYSIS_PREV}"; fi
-if [[ ! -d "${OUTPUT}" ]]; then mkdir -p "${OUTPUT}"; fi
+mkdir -p "${COMOUT_ATMOS_ANALYSIS_PREV}"
+mkdir -p "${OUTPUT}"
 
 if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     # JEDI run
-    cd "${DATA}" || exit
-    if [[ ! -d "testrun/varbc" ]]; then mkdir -p "testrun/varbc"; fi
-    /bin/ln -sf "${ABIAS_SAT}" "./satbias_in"
-    /bin/ln -sf "${ABIASPC_SAT}" "./satbias_pc"
-    grep -i "NaN" satbias_in && echo "Stop. There are NaN in ${ABIAS}." && exit 1
+    cd "${DATA}" || exit 1
+    mkdir -p "testrun/varbc"
+    ln -sf "${ABIAS_SAT}" "./satbias_in"
+    ln -sf "${ABIASPC_SAT}" "./satbias_pc"
+    if grep -i "NaN" satbias_in > /dev/null 2>&1; then
+        export err=1
+        err_chk "FATAL ERROR There are NaN in satbias_in."
+    fi
 
     # Get instruments from satbias_in
     obsclass=$(grep "_" satbias_in | awk '{print $2}' | uniq)
@@ -54,57 +57,57 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     # Loop over instruments. Covert GSI abias to JEDI format
     for instrument in ${obsclass}; do
         echo "${instrument}"
-        /bin/cp -f "${SATBIAS2IODAY}" satbias_converter.yaml
+        cp -f "${SATBIAS2IODAY}" satbias_converter.yaml
         sed -i -e "s/INSTRUMENT/${instrument}/g" satbias_converter.yaml
 
         ${SATBIAS2IODAX} satbias_converter.yaml
 
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit "satbias2iodas.x failed for ${instrument}, ABORT!"
+            err_exit "FATAL ERROR satbias2iodas.x failed for ${instrument}, ABORT!"
         fi
 
-        /bin/rm -f testrun/varbc/*nc
-        /bin/rm -f testrun/varbc/*txt
+        rm -f testrun/varbc/*nc
+        rm -f testrun/varbc/*txt
 
         cd ./testrun/varbc/
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
             "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".tlapse.txt
-        /bin/cp -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias.nc
-        /bin/mv satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
+        cpreq -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias.nc
+        mv satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
         cd "${DATA}"
-        /bin/rm -rf satbias_converter.yaml
+        rm -f satbias_converter.yaml
     done
 
     if [[ ${err} -eq 0 ]]; then
         cd "${OUTPUT}" || exit
         for file in ${BIASFILES}; do
             cpreq "${BIASDIR}/${file}" "./enkf${file}.txt"
-            err=$?
+            export err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "Error copying operational anl bias correction files"
             fi
         done
         # TODO: Temporary solution and need to process abias_air for JEDI when ready
         tar -cvf "${ABIAS_AIR_JEDI_TAR}" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
-        rm -rf "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
+        rm -f "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
         tar -cvf "${ABIAS_SAT_JEDI_TAR}" ./*.nc ./*.txt
-        err=$?
+        export err=$?
     fi
 
 else
     # GSI run
     for file in ${BIASFILES}; do
         cpreq "${BIASDIR}/${file}" "${COMOUT_ATMOS_ANALYSIS_PREV}/enkf${file}.txt"
-        err=$?
+        export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit "Error copying operational anl bias correction files"
+            err_exit "FATAL ERROR copying operational anl bias correction files"
         fi
     done
 fi
 
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Error executing ${EXSCRIPT}"
+    err_exit "FATAL ERROR executing ${EXSCRIPT}"
 fi
 set_trace
 
