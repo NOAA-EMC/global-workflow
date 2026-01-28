@@ -134,11 +134,12 @@ def replace_gdas_with_gcdas_in_exe_src(input_file):
     
     # Replace gdas with gcdas in exe_src contexts
     # This will match patterns like:
-    # exe_src: gdas_something
-    # exe_src: !ENV ${PARMgcafs}/gdas_something
+    #   exe_src: gdas_something
+    #   exe_src: !ENV ${PARMgcafs}/gdas_something
+    # Even when indented with whitespace
     import re
-    # Match exe_src followed by gdas in various contexts
-    pattern = r'(exe_src:\s*(?:!ENV\s+[^\n]*?)?\bgdas)'
+    # Match optional leading whitespace, then exe_src followed by gdas in various contexts
+    pattern = r'(\s*exe_src:\s*(?:!ENV\s+[^\n]*?)?\bgdas)'
     
     replacement_count = 0
     def replace_func(match):
