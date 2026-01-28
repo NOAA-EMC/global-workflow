@@ -62,7 +62,7 @@ if [[ ${count_dirs} -eq 0 ]]; then
     export err=1
     err_exit "No gsidiags directories found in ${GSIDIAGDIR}"
 fi
-${NLN} -sf "${GSIDIAGDIR}" .
+${NLN} "${GSIDIAGDIR}/"dir.* .
 
 # Set up lists and variables for various types of diagnostic files.
 ntype=3
