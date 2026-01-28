@@ -187,7 +187,6 @@ function send_email() {
     echo "${_body}" | mail -s "${_subject}" "${_email}"
 }
 
-
 # Function to notify user about REPLYTO for scrontab workflows
 function mail_warning() {
     if [[ "${_use_scron}" == true && "${_set_email}" == false && -z "${REPLYTO:-}" ]]; then
@@ -643,19 +642,17 @@ if [[ "${_update_cron}" == "true" ]]; then
     sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
 
     if [[ "${_set_email}" == "true" ]]; then
-        # Replace the existing email in the crontab
+        # For scrontab, REPLYTO is already exported earlier; for crontab, set MAILTO
         if [[ "${_verbose}" == "true" ]]; then
             printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
         fi
 
-        if [[ "${_use_scron}" == true ]]; then
-            sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
-        else
+        if [[ "${_use_scron}" == false ]]; then
             # For regular crontab, set MAILTO at the top of final.cron
             echo "MAILTO=\"${_email}\"" > final.cron
         fi
     else
-        # Preserve existing MAILTO if present with non-empty value, otherwise use REPLYTO if set, otherwise set to empty (only for regular crontab)
+        # Preserve existing MAILTO if present with non-empty value (only for regular crontab)
         if [[ "${_use_scron}" == false ]]; then
             # Check if there was a MAILTO with a non-empty value in the original crontab
             # Extract the email value from MAILTO="email" or MAILTO=email
