@@ -113,8 +113,8 @@ function wait_for_file() {
 }
 
 # This utility is to be used to create a COM structure in the DATAROOT
-# It will replace the root path (up to $ROTDIR) with $DATAROOT
-# Use realpath --relative-to to get the relative path from $ROTDIR to the target file
+# It will replace the root path (up to $COMROOT) with $DATAROOT
+# Use realpath --relative-to to get the relative path from $COMROOT to the target file
 # and then prepend $DATAROOT to that path to get the new target path
 function dataroot_com_path() {
     #
@@ -145,13 +145,13 @@ function dataroot_com_path() {
 
     local original_com_path=${1}
 
-    if [[ -z "${ROTDIR:-}" || -z "${DATAROOT:-}" ]]; then
-        echo "FATAL ERROR in dataroot_com_path: ROTDIR and DATAROOT must be defined!"
+    if [[ -z "${COMROOT:-}" || -z "${DATAROOT:-}" ]]; then
+        echo "FATAL ERROR in dataroot_com_path: COMROOT and DATAROOT must be defined!"
         exit 2
     fi
 
     local relative_path
-    relative_path=$(realpath --relative-to="${ROTDIR}" "${original_com_path}")
+    relative_path=$(realpath --relative-to="${COMROOT}" "${original_com_path}")
     local new_com_path="${DATAROOT}/${relative_path}"
 
     echo "${new_com_path}"
