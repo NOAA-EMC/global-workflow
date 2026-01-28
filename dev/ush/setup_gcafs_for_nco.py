@@ -110,6 +110,52 @@ def replace_gfs_with_gcafs(input_file):
     return replacement_count
 
 
+def replace_gdas_with_gcdas_in_exe_src(input_file):
+    """
+    Replace all instances of 'gdas' with 'gcdas' in exe_src fields in the given input file.
+    This specifically targets patterns like: exe_src: gdas_something or exe_src: !ENV ${PARMgcafs}/gdas_something
+    
+    Parameters
+    ----------
+    input_file : str
+        Path to the file to modify
+    
+    Returns
+    -------
+    int
+        Number of replacements made
+    """
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"File not found: {input_file}")
+    
+    # Read the file content
+    with open(input_file, 'r') as f:
+        content = f.read()
+    
+    # Replace gdas with gcdas in exe_src contexts
+    # This will match patterns like:
+    # exe_src: gdas_something
+    # exe_src: !ENV ${PARMgcafs}/gdas_something
+    import re
+    # Match exe_src followed by gdas in various contexts
+    pattern = r'(exe_src:\s*(?:!ENV\s+[^\n]*?)?\bgdas)'
+    
+    replacement_count = 0
+    def replace_func(match):
+        nonlocal replacement_count
+        replacement_count += 1
+        matched_text = match.group(0)
+        return matched_text.replace('gdas', 'gcdas')
+    
+    modified_content = re.sub(pattern, replace_func, content)
+    
+    # Write the modified content back to the file
+    with open(input_file, 'w') as f:
+        f.write(modified_content)
+    
+    return replacement_count
+
+
 def copy_job_files(global_workflow_dir):
     """
     Copy job files from dev/jobs to jobs directory with appropriate renaming.
@@ -360,7 +406,7 @@ def setup_gcafs_for_nco():
             except:
                 print(f"Skipping: {file_path}")
 
-    # Go through sorc/gcdas.fd/parm directory and replace FOOgfs with FOOgcafs in all files
+    # Go through sorc/gcdas.cd/parm directory and replace FOOgcafs with FOOgcafs in all files
     gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gcdas.cd', 'parm')
     for root, _, files in os.walk(gcdas_parm_dir):
         for file in files:
@@ -368,7 +414,18 @@ def setup_gcafs_for_nco():
             try:
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
-                    print(f"Modified {file_path}: {num_replacements} replacements made.")
+                    print(f"Modified {file_path}: {num_replacements} replacements made (gcafs).")
+            except:
+                print(f"Skipping: {file_path}")
+    
+    # Go through sorc/gcdas.cd/parm directory and replace gdas with gcdas in exe_src fields
+    for root, _, files in os.walk(gcdas_parm_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                num_replacements = replace_gdas_with_gcdas_in_exe_src(file_path)
+                if num_replacements > 0:
+                    print(f"Modified {file_path}: {num_replacements} exe_src replacements made (gcdas).")
             except:
                 print(f"Skipping: {file_path}")
 
