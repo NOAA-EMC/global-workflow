@@ -92,9 +92,9 @@ if [[ -z ${filename} ]]; then
 fi
 
 #------------------------------------------------------------------
-${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f${fhr}.${atmfm}" "sigf${fhr}"
-${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr}.${atmfm}" "flxf${fhr}"
-${NLN} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr_p}.${atmfm}" "flxf${fhr_p}"
+cpreq "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f${fhr}.${atmfm}" "sigf${fhr}"
+cpreq "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr}.${atmfm}" "flxf${fhr}"
+cpreq "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr_p}.${atmfm}" "flxf${fhr_p}"
 
 #  define input BUFR table file.
 ${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1

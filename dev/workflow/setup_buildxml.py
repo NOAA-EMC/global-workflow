@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Entry point for setting up a compute-node build
+Entry point for setting up a builds of global-workflow programs
 """
 
 import os
@@ -20,11 +20,11 @@ HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
 def input_args(*argv):
     """
-    Method to collect user arguments for `compute_build.py`
+    Method to collect user arguments for `setup_buildxml.py`
     """
 
     description = """
-        Setup files and directories to start a compute build.
+        Setup buildXML to compile global-workflow programs.
     """
 
     parser = ArgumentParser(description=description,
@@ -99,12 +99,20 @@ def get_build_specs(build_specs: Dict, host_spec: Dict) -> Dict:
         Overridden build specifications
     """
 
+    # Initialize exclude_nodes from the top-level of the YAML if present
+    build_specs.exclude_nodes = build_specs.get("exclude_nodes", None)
+
     # Get host overrides, if present
     if build_specs.get("host_override", None) is None or build_specs.host_override.get(host_spec.machine, None) is None:
         # Nothing to override, return with original build_specs
         return build_specs
 
     override = build_specs.host_override[host_spec.machine]
+
+    # Check for host-specific node exclusions
+    if "exclude_nodes" in override:
+        build_specs.exclude_nodes = override.exclude_nodes
+
     override_build = override.get("build", {})
     for key in build_specs.build:
         # Override the specific build specs if the key and spec is present in the
@@ -189,6 +197,16 @@ def main(*argv):
     # Retrieve build specificatiosn from user provided yaml
     user_yaml_dict = AttrDict(parse_yaml(user_inputs.yaml))
     build_specs = get_build_specs(user_yaml_dict, host_specs)
+
+    # Apply node exclusions to the native scheduler flags
+    if build_specs.exclude_nodes:
+        if host_specs.scheduler == 'slurm':
+            host_specs.native += f" --exclude={build_specs.exclude_nodes}"
+        elif host_specs.scheduler == 'pbspro':
+            # PBS logic: -l host!=node1 -l host!=node2 ...
+            nodes = build_specs.exclude_nodes.split(',')
+            pbs_exclude = " ".join([f"-l host!={n.strip()}" for n in nodes])
+            host_specs.native += f" {pbs_exclude}"
 
     systems = user_inputs.systems.split() if "all" not in user_inputs.systems else ["all"]
 

@@ -20,7 +20,15 @@ Clone the `global-workflow` and `cd` into the `sorc` directory:
 
 .. _build_examples:
 
-The build_all.sh script can be used to build all required components of the global workflow.  The accepted arguments is a list of systems to be built.  This includes builds for GFS, GEFS, and SFS forecast-only experiments, GSI and GDASApp-based DA for cycled GFS experiments.  See `feature availability <hpc.html#feature-availability-by-hpc>`__ to see which system(s) are available on each supported system.
+The `build_all.sh` script can be used to build all required components of the global workflow.
+`build_all.sh` allows for optional flags to modify the build behavior:
+
+   - ``-c``: Build on compute nodes.  The default behavior is to build on the head node.
+   - ``-A HPC_ACCOUNT``: Specify the HPC account to be used when building on compute nodes.
+   - ``-v``: Execute all build scripts with -v option to turn on verbose where supported
+   - ``-h``: Print help message and exit
+
+The accepted arguments is a list of systems to be built.  This includes builds for GFS, GEFS, and SFS forecast-only experiments, GSI and GDASApp-based DA for cycled GFS experiments.  See `feature availability <hpc.html#feature-availability-by-hpc>`__ to see which system(s) are available on each supported system.
 
 ::
 
@@ -125,17 +133,19 @@ Under the ``/sorc`` folder is a script to build all components called ``build_al
 
 ::
 
-   ./build_all.sh [-a UFS_app][-k][-h][-v] [list of system(s) to build]
-  -a UFS_app:
-    Build a specific UFS app instead of the default
-  -k:
-    Kill all builds immediately if one fails
+  ./build_all.sh [-c][-A HPC_ACCOUNT][-h][-v] [list of system(s) to build]
+  -c:
+    Build on compute nodes.  The default behaviour is to build on the head node.
+  -A HPC_ACCOUNT:
+    Specify the HPC account to be used when building on compute nodes.
   -h:
     Print this help message and exit
   -v:
     Execute all build scripts with -v option to turn on verbose where supported
 
-  Lastly, pass to build_all.sh a list of systems to build.  This includes `gfs`, `gefs`, `sfs`, `gcafs`, `gsi`, `gdas`, and `all`.
+Lastly, pass to `build_all.sh` a list of systems to build.  This includes `gfs`, `gefs`, `sfs`, `gcafs`, `gsi`, `gdas`, and `all`.
+
+To configure the build with specific flags or options for the various components, you can update the respective build command in the `build_opts.yaml` file.
 
 For examples of how to use this script, see :ref:`build examples <build_examples>`.
 

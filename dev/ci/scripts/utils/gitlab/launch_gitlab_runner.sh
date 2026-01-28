@@ -94,7 +94,7 @@ if [[ "${1}" == "register" ]]; then
     # --builds-dir: Directory where builds will be stored (from config.MACHINE_ID)
     # --custom_build_dir-enabled: Enable custom build directories
     # --request-concurrency: Number of concurrent requests that can be handled
-    ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_BUILDS_DIR}" --custom_build_dir-enabled true --request-concurrency 24
+    ./gitlab-runner register -n -t "${GITLAB_RUNNER_TOKEN}" --url "${GITLAB_URL}" --executor shell --shell bash --builds-dir "${GITLAB_BUILDS_DIR}" --custom_build_dir-enabled=true --request-concurrency 24
 
     # Set the concurrent job limit in the GitLab runner config file
     sed -i 's/concurrent.*/concurrent = 24/' ~/.gitlab-runner/config.toml

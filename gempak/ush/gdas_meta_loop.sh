@@ -9,8 +9,8 @@ device="nc | gdasloop.meta"
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L "${COMIN}" ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
@@ -40,6 +40,8 @@ for ((fhr = 24; fhr <= 144; fhr += 24)); do
     for cycle in ${cycles}; do
         #  Test with GDAS in PROD
         YMD=${day} HH=${cyc} GRID=1p00 declare_from_tmpl "COMIN_ATMOS_GEMPAK_1p00_past:COM_ATMOS_GEMPAK_TMPL"
+        # TODO: Add only necessary files and remove unneeded ones to minimize data volume
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         export COMIN="${RUN}.${day}${cycle}"
         if [[ ! -L "${COMIN}" ]]; then
             ${NLN} "${COMIN_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
