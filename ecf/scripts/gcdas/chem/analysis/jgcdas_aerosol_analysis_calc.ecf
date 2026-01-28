@@ -45,6 +45,7 @@ export FHRGRP=%FHRGRP%
 export FHRLST=%FHRLST%
 export cyc=%CYC%
 export cycle=t%CYC%z
+export EXPDIR=%EXPDIR%
 export USE_CFP=YES
 export g2tmpl_ver=v${g2tmpl_ver}
 
