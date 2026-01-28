@@ -76,26 +76,31 @@ function(AddJJOBTest)
   set(CASE_PATH ${HOMEgfs}/dev/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
+  # Labels use binomial nomenclature: CASE-JOB (e.g., C48_S2SW-gfs_fcst_seg0)
+  # The hyphen acts as a natural delimiter for regex matching:
+  #   ctest -L "C48_S2SW-"  → runs all C48_S2SW tests (won't match C48_S2SWA_gefs)
+  #   ctest -L "C48_S2SW-gfs_fcst_seg0"  → runs specific job tests
+
   add_test(NAME test_${TEST_NAME}_setup
     COMMAND ./setup.sh ${TEST_NAME} ${CASE_YAML} ${ARG_TEST_DATE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_setup PROPERTIES LABELS "${TEST_NAME}")
 
   add_test(NAME test_${TEST_NAME}_stage
       COMMAND ./stage.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_stage PROPERTIES DEPENDS test_${TEST_NAME}_setup LABELS "${TEST_NAME}")
 
   add_test(NAME test_${TEST_NAME}_execute
       COMMAND ./execute.sh ${TEST_NAME} ${ARG_JOB} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_execute PROPERTIES DEPENDS test_${TEST_NAME}_stage LABELS "${TEST_NAME}")
 
   # TODO - This is a stub for the validation step
   add_test(NAME test_${TEST_NAME}_validate
       COMMAND ./validate.sh ${ARG_CASE} ${TEST_NAME} ${ARG_TEST_DATE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
-  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${ARG_CASE}-${ARG_JOB}")
+  set_tests_properties(test_${TEST_NAME}_validate PROPERTIES DEPENDS test_${TEST_NAME}_execute LABELS "${TEST_NAME}")
 endfunction()
 
 AddJJOBTest(
@@ -130,6 +135,12 @@ AddJJOBTest(
 
 AddJJOBTest(
   CASE "C48_S2SW"
+  JOB "gfs_stage_ic"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
   JOB "gfs_fcst_seg0"
   TEST_DATE "2021032312"
 )
@@ -143,6 +154,43 @@ AddJJOBTest(
 AddJJOBTest(
   CASE "C48_S2SW"
   JOB "gfs_ocean_prod_f006"
+  TEST_DATE "2021032312"
+)
+
+# ------------------------------------------------------------------------- #
+# Wave Component Tests (Phase 25 - CTest S2SW Wave Expansion)
+# ------------------------------------------------------------------------- #
+# These tests validate wave-specific jobs from the S2SW coupled workflow.
+# See GitHub Issue: NOAA-EMC/global-workflow#4318
+# ------------------------------------------------------------------------- #
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_waveinit"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostpnt"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostsbs_f000-f002"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostbndpnt"
+  TEST_DATE "2021032312"
+)
+
+AddJJOBTest(
+  CASE "C48_S2SW"
+  JOB "gfs_wavepostbndpntbll"
   TEST_DATE "2021032312"
 )
 

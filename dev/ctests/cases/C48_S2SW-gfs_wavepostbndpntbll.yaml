@@ -1,0 +1,56 @@
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set PDY = TEST_DATE | to_YMD %}
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+# =============================================================================
+# C48_S2SW Wave Post Boundary Point Bulletin Test Case
+# =============================================================================
+# This test validates the gfs_wavepostbndpntbll task from the S2SW workflow.
+# Tests wave boundary point bulletin generation (WMO bulletins).
+#
+# Workflow Context:
+# - Task: wavepostbndpntbll (wave boundary point bulletin generation)
+# - Job: JGLOBAL_WAVE_POST_BNDPNTBLL -> exgfs_wave_post_pnt.sh
+#
+# Source Logic: scripts/exgfs_wave_post_pnt.sh
+# - DOBNDPNT_WAV='YES' - Process boundary points
+# - DOBLL_WAV='YES' - Generate bulletins
+# - DOSPC_WAV='NO' - No spectral output
+#
+# Input Files:
+# - mod_def files from waveinit/waveprep
+# - points.fNNN.nc files from wave model point output (f000-f120)
+#
+# Output Files:
+# - ibpbull.tar - interpolated boundary point bulletins
+# - ibpcbull.tar - combined/compressed boundary point bulletins
+# =============================================================================
+
+input_files:
+    mkdir:
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history
+
+    copy:
+        # Wave model definition files (8 grids)
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.at_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.at_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.ep_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.ep_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.wc_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.wc_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin]
+
+        # Wave point output files - hourly from f000-f120 (all 121 hours)
+{% for fhr in range(0, 121) %}
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f{{ '%03d'|format(fhr) }}.nc, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f{{ '%03d'|format(fhr) }}.nc]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f{{ '%03d'|format(fhr) }}.log, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history/gfs.t{{ cyc }}z.points.f{{ '%03d'|format(fhr) }}.log]
+{% endfor %}
+
+output_files:
+    cmpfiles:
+        # Interpolated boundary point bulletin archives
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.ibpbull.tar, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.ibpbull.tar]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.ibpcbull.tar, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/products/wave/station/gfs.t{{ cyc }}z.ibpcbull.tar]
