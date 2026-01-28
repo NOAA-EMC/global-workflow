@@ -53,14 +53,10 @@ if [[ "${RUN}" == sfs ]]; then
       last_fhr=${fhr}
     done
     # merge all fcst hours to one single file
-     temp5m_xzfile="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc.xz"
-     if [[ -f ${temp5m_xzfile} ]]; then
-        rm -f "${temp5m_xzfile}"
-     fi
     merge_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc"
     cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f*.nc" "${merge_file}"
     # compress the final file
-    xz "${merge_file}"
+    nccopy -k 4 -d 5 "${merge_file}" "${merge_file}.tmp" && mv "${merge_file}.tmp" "${merge_file}"
     rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f"*".nc"
 fi
 
@@ -160,10 +156,10 @@ if [[ "${RUN}" == sfs ]]; then
       rm -f "${DATAoutput}/MOM6_OUTPUT/ocn_24h_${YR}_${MN}_merge.nc"
       rm -f "${temp3d_file}" "${temp3d_file_300m}"
       # Compress the monthly mean data
-      xz "${in_file}"
-      xz "${out_file_dt20c}"
-      xz "${out_file_tchp}"
-      xz "${out_file_ocnheat}"
+      nccopy -k 4 -d 5 "${in_file}" "${in_file}.tmp" && mv "${in_file}.tmp" "${in_file}"
+      nccopy -k 4 -d 5 "${out_file_dt20c}" "${out_file_dt20c}.tmp" && mv "${out_file_dt20c}.tmp" "${out_file_dt20c}"
+      nccopy -k 4 -d 5 "${out_file_tchp}" "${out_file_tchp}.tmp" && mv "${out_file_tchp}.tmp" "${out_file_tchp}"
+      nccopy -k 4 -d 5 "${out_file_ocnheat}" "${out_file_ocnheat}.tmp" && mv "${out_file_ocnheat}.tmp" "${out_file_ocnheat}"
     done
 
     export err=$?
@@ -211,13 +207,9 @@ if [[ "${RUN}" == sfs ]]; then
    # merge each variable to one single file
    newvarslist=("dt20c" "TCHP" "ocnheat" "SSH" "SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so") 
   for var in "${newvarslist[@]}"; do
-      output_xzfile="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.daily.nc.xz"
-      if [[ -f ${output_xzfile} ]]; then
-          rm -f "${output_xzfile}"
-      fi
       merge_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.daily.nc"
       cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f*.nc" "${merge_file}"
-      xz "${merge_file}"
+      nccopy -k 4 -d 5 "${merge_file}" "${merge_file}.tmp" && mv "${merge_file}.tmp" "${merge_file}"
       rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f"*".nc"
   done
 fi

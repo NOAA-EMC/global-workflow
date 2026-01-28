@@ -20,5 +20,5 @@ workflow:
   rocoto:
     maxtries: 2
     cyclethrottle: 3
-    taskthrottle: 250
+    taskthrottle: 50
     verbosity: 2
