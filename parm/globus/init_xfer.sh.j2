@@ -53,7 +53,7 @@ current_time_s=$(date -d "${run_time}" '+%s')
 diff_d=$(( (current_time_s - last_runtime_s) / 86400 ))
 
 if [[ ${diff_d} -gt 3 ]]; then
-    # If the user added their email to MAILTO, they will get this message
+    # If the user added their email to REPLYTO, they will get this message
     echo "WARNING the {{SERVER_NAME}} service for {{PSLOT}} has not run in > 3 days!"
     echo "Turning off the crontab for {{PSLOT}}!!"
     scriptpath="$( realpath "${0}" )"
