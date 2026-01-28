@@ -140,6 +140,17 @@ if [[ "${LINK_NEST:-OFF}" == "ON" ]]; then
     done
 fi
 
+#------------------------------
+#--link source code directories needed by subsequent steps
+#------------------------------
+cd "${HOMEgfs}/sorc" || exit 8
+if [[ -d ufs_model.fd ]]; then
+    if [[ -d upp.fd ]]; then
+        rm -rf upp.fd
+    fi
+    ${LINK} ufs_model.fd/UFSATM/upp upp.fd
+fi
+
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
@@ -148,18 +159,24 @@ cd "${HOMEgfs}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
-${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
-${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
+if [[ -d "${HOMEgfs}/sorc/upp.fd" ]]; then
+    [[ -f "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" ]] && \
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
+    [[ -f "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" ]] && \
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
 
-for dir in gfs gcafs gefs sfs; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
-done
+    for dir in gfs gcafs gefs sfs; do
+        [[ -d "${HOMEgfs}/sorc/upp.fd/parm/${dir}" ]] && \
+            ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/${dir}" .
+    done
 
-for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
-    optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
-    optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat; do
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
-done
+    for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
+        optics_luts_SALT.dat optics_luts_SALT_nasa.dat optics_luts_SOOT.dat optics_luts_SOOT_nasa.dat \
+        optics_luts_SUSO.dat optics_luts_SUSO_nasa.dat optics_luts_WASO.dat optics_luts_WASO_nasa.dat; do
+        [[ -f "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" ]] && \
+            ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/fix/chem/${file}" .
+    done
+fi
 
 for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
@@ -394,7 +411,9 @@ done
 if [[ -s "upp.x" ]]; then
     rm -f upp.x
 fi
-${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
+if [[ -f "${HOMEgfs}/sorc/upp.fd/exec/upp.x" ]]; then
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
+fi
 
 for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
     if [[ -s "${ufs_utilsexe}" ]]; then
@@ -459,12 +478,6 @@ fi
 #--link source code directories
 #------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
-if [[ -d ufs_model.fd ]]; then
-    if [[ -d upp.fd ]]; then
-        rm -rf upp.fd
-    fi
-    ${LINK} ufs_model.fd/UFSATM/upp upp.fd
-fi
 
 if [[ -d gsi_enkf.fd ]]; then
     if [[ -d gsi.fd ]]; then
