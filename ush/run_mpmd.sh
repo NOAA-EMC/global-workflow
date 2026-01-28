@@ -19,6 +19,9 @@
 #           launcher: Command to launch the MPMD job. Default is empty.
 #                     Supported launchers are 'srun' and 'mpiexec'.
 #           mpmd_opt: Additional options to pass to the launcher. Default is empty.
+#                     Example:
+#                            srun: "--multi-prog --output=mpmd.%j.%t.out"
+#                         mpiexec: "--cpu-bind verbose,core cfp"
 #
 # Input:
 #           cmdfile: File containing commands to execute in MPMD/serial mode
@@ -50,12 +53,14 @@ nprocs=$(wc -l < "${cmdfile}")
 
 # Local MPMD file containing instructions to run in CFP
 mpmd_cmdfile="${DATA:-}/mpmd_cmdfile"
-if [[ -s "${mpmd_cmdfile}" ]]; then rm -f "${mpmd_cmdfile}"; fi
+if [[ -s "${mpmd_cmdfile}" ]]; then
+    rm -f "${mpmd_cmdfile}"
+fi
 
 cat << EOF
-  INFO: Executing MPMD job, STDOUT redirected for each process separately
-  INFO: On failure, logs for each job will be available in ${DATA}/mpmd.proc_num.out
-  INFO: The proc_num corresponds to the line in '${mpmd_cmdfile}'
+INFO: Executing MPMD job, STDOUT and STDERR redirected for each process separately
+INFO: On failure, logs for each job will be available in ${DATA}/mpmd.proc_num.out
+INFO: The proc_num corresponds to the line in '${mpmd_cmdfile}'
 EOF
 
 if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion, etc.
@@ -81,7 +86,7 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
     nm=0
     echo "#!/bin/bash" >> "${mpmd_cmdfile}"
     while IFS= read -r line; do
-        echo "${line} > mpmd.${nm}.out" >> "${mpmd_cmdfile}"
+        echo "${line} > mpmd.${nm}.out 2>&1" >> "${mpmd_cmdfile}"
         ((nm = nm + 1))
     done < "${cmdfile}"
     chmod 755 "${mpmd_cmdfile}"
@@ -90,10 +95,12 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
     ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
     err=$?
 
-else
+else # Unsupported or empty launcher, run in serial mode
 
-    echo "FATAL ERROR: CFP is not usable with launcher: '${launcher:-}'"
-    err=1
+    echo "WARNING: CFP is not usable with launcher: '${launcher:-}', using serial mode instead"
+    chmod 755 "${cmdfile}"
+    bash +x "${cmdfile}" > mpmd.out 2>&1
+    err=$?
 
 fi
 
@@ -102,7 +109,11 @@ if [[ ${err} -eq 0 ]]; then
     rm -f "${mpmd_cmdfile}"
     out_files=$(find . -name 'mpmd.*.out')
     for file in ${out_files}; do
-        cat "${file}" >> mpmd.out
+        {
+            echo "BEGIN OUTPUT FROM ${file}"
+            cat "${file}"
+            echo "END OUTPUT FROM ${file}"
+        } >> mpmd.out
         rm -f "${file}"
     done
     cat mpmd.out
