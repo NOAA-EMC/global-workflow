@@ -158,7 +158,7 @@ function dataroot_com_path() {
     echo "${new_com_path}"
     set_trace
 }
-#
+
 # Initialize stacks for tick-tock profiling (initialize only once)
 if [[ -z ${_GW_TIMER_STACK+x} ]]; then
     declare -xa _GW_TIMER_STACK=()
