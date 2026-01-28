@@ -881,6 +881,21 @@ if [[ "${SENDDBN}" == "YES" ]]; then
     fi
 fi
 
+################################################################################
+# Postprocessing
+cd "${DATA}" || exit 1
+
+##############################################################
+# Add this statement to release the forecast job once the
+# atmopsheric analysis and updated surface RESTARTS are
+# available.  Do not release forecast when RUN=enkf
+##############################################################
+if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
+    ecflow_client --event release_fcst
+fi
+
+echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
+
 if [[ "${GENDIAG}" == "YES" ]]; then
     # Move the gsidiags dir.* directories to pCOMOUT_ATMOS_ANALYSIS for diagnostic jobs
     gsidiags_dir="${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"
@@ -899,21 +914,6 @@ if [[ "${GENDIAG}" == "YES" ]]; then
         echo "WARNING: No gsidiags dir.* directories found to move."
     fi
 fi
-
-################################################################################
-# Postprocessing
-cd "${DATA}" || exit 1
-
-##############################################################
-# Add this statement to release the forecast job once the
-# atmopsheric analysis and updated surface RESTARTS are
-# available.  Do not release forecast when RUN=enkf
-##############################################################
-if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
-    ecflow_client --event release_fcst
-fi
-
-echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
 
 ################################################################################
 
