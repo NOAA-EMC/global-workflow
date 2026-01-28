@@ -55,29 +55,48 @@ yy_final=${vt_final:7:4}
 
 
 # if the last file vt date  does not end on day 01, it is a partial month
+accfilelist=( "${OUTDIR}/acc.daily.${MEMDIR}"/* )
+insfilelist=( "${OUTDIR}/inst.daily.${MEMDIR}"/* )
 if (( dd_final == 01 )); then
-  accfilelist=$(ls -v "${OUTDIR}/acc.daily.${MEMDIR}")
-  insfilelist=$(ls -v "{OUTDIR}/inst.daily.${MEMDIR}")
+   accfilelist=( "${accfilelist[@]}" )
+   insfilelist=( "${insfilelist[@]}" )
 else
-  accfilelist=$(ls -v "${OUTDIR}/acc.daily.${MEMDIR}" | head -n -1)
-  instfilelist=$(ls -v "${OUTDIR}/inst.daily.${MEMDIR}" | head -n -1)
+   if (( ${#accfilelist[@]} > 0 )); then
+    # Skip the last element using array slicing
+      accfilelist=( "${accfilelist[@]::${#accfilelist[@]}-1}" )
+   else
+      accfilelist=()
+   fi
+   if (( ${#insfilelist[@]} > 0 )); then
+    # Skip the last element using array slicing
+      insfilelist=( "${insfilelist[@]::${#insfilelist[@]}-1}" )
+   else
+      insfilelist=()
+   fi
 fi
-
 
 # loop through the daily files and get the monthly means
 
-for file in $accfilelist; do
-  filename=${file##*/}
-  filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  ${WGRIB2} "${OUTDIR}/acc.daily.${MEMDIR}/${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
-  if (( ${?} > 0 )); then
-    echo "FATAL ERROR: WGRIB2 is not loaded correctly"
-    exit 1
-  fi
-done
+if (( ${#accfilelist[@]} > 0 )); then
+   for file in "${accfilelist[@]}"; do
+      filename=${file##*/}
+      filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
+      ${WGRIB2} "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
+      if (( ${?} > 0 )); then
+         echo "FATAL ERROR: WGRIB2 is not loaded correctly"
+         exit 1
+      fi
+   done
+else
+   echo "No monthly mean accumulated product files are generated because the fcst period is not within one full month"
+fi
 
-for file in $instfilelist; do
-  filename=${file##*/}
-  filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  ${WGRIB2} "$OUTDIR/inst.daily.${MEMDIR}/${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
-done
+if (( ${#insfilelist[@]} > 0 )); then
+   for file in "${insfilelist[@]}"; do
+      filename=${file##*/}
+      filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
+      ${WGRIB2} "${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
+   done
+else
+   echo "No monthly mean instantaneous atmos product files are generated because the fcst period is not within one full month"
+fi

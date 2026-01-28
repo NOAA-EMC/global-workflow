@@ -45,7 +45,6 @@ if [[ "${RUN}" == sfs ]]; then
           echo "FATAL ERROR: Failed to generate monthly mean grib2 files"
           exit "${err}"
        fi
-    #fi
  fi
 
 ##############################################
