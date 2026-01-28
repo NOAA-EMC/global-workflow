@@ -52,7 +52,7 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
             } > "${MSGFILE}"
 
             # Try to send email
-            EMAIL="{{ mailto }}"
+            EMAIL="{{ replyto }}"
             hostname_domain=$(hostname -d)
             FROM_EMAIL="no-reply@${hostname_domain}"
             if [[ "${EMAIL}" != "None" ]] && command -v mail &> /dev/null; then

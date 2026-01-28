@@ -187,9 +187,17 @@ function send_email() {
     echo "${_body}" | mail -s "${_subject}" "${_email}"
 }
 
-# Export MAILTO if email was provided via -e flag and is not empty
+
+# Function to notify user about REPLYTO for scrontab workflows
+function mail_warning() {
+    if [[ "${_use_scron}" == true && "${_set_email}" == false && -z "${REPLYTO:-}" ]]; then
+        echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport REPLYTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
+    fi
+}
+
+# Export REPLYTO if email was provided via -e flag and is not empty
 if [[ "${_set_email}" == "true" && -n "${_email}" ]]; then
-    export MAILTO="${_email}"
+    export REPLYTO="${_email}"
 fi
 
 function delete_dir() {
@@ -536,9 +544,9 @@ for _case in "${_yaml_list[@]}"; do
     _pslot="${_case}${_tag}"
     _create_exp_cmd="./create_experiment.py -y ${_yaml_dir}/${_case}.yaml --overwrite"
     if [[ "${_verbose}" == true ]]; then
-        pslot=${_pslot} RUNTESTS=${_runtests} MAILTO="${MAILTO:-}" ${_create_exp_cmd}
+        pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd}
     else
-        if ! pslot=${_pslot} RUNTESTS=${_runtests} MAILTO="${MAILTO:-}" ${_create_exp_cmd} 2> stderr 1> stdout; then
+        if ! pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
             _output=$(cat stdout stderr)
             _message="The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
             _message="${_message}"$'\n'"${_output}"
@@ -589,8 +597,7 @@ for _case in "${_yaml_list[@]}"; do
 
     if [[ "${_use_scron}" == true ]]; then
         {
-            # Skip MAILTO lines (will be added once at the top later)
-            grep "^####" "${cron_file}" | grep -v "MAILTO="
+            grep "^####" "${cron_file}"
             grep "^#SCRON" "${cron_file}"
             grep "${scron_sh_file}" "${cron_file}"
         } >> tests.cron
@@ -600,29 +607,26 @@ for _case in "${_yaml_list[@]}"; do
 done
 echo
 
-# Add email to tests.cron if provided via -e flag (crontab only)
-if [[ "${_set_email}" == "true" && "${_use_scron}" == false ]]; then
-    # Remove any existing MAILTO lines from tests.cron
-    sed -i '/MAILTO=/d' tests.cron 2> /dev/null || true
-
-    # Add MAILTO as the first line for regular crontab
-    sed -i "1i MAILTO=${_email}" tests.cron
+# Add MAILTO to tests.cron for regular crontab
+if [[ "${_use_scron}" == false ]]; then
+    if [[ "${_set_email}" == "true" ]]; then
+        # Use email from -e flag
+        sed -i "1i MAILTO=\"${_email}\"" tests.cron
+    else
+        # Use empty MAILTO
+        sed -i "1i MAILTO=\"\"" tests.cron
+    fi
 fi
 
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
     printf "Updating the existing crontab\n\n"
+    echo
+    mail_warning
     rm -f existing.cron final.cron "${_verbose_flag}"
     touch existing.cron final.cron
-    echo
-    ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
 
-    # Show warning only if MAILTO is not set as env variable and not present in existing crontab
-    if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
-        if ! grep -Eq "^MAILTO=['\"]?.+['\"]?$" existing.cron 2> /dev/null; then
-            echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
-        fi
-    fi
+    ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
 
     if [[ "${_debug}" == "true" ]]; then
         echo "Existing crontab: "
@@ -631,14 +635,43 @@ if [[ "${_update_cron}" == "true" ]]; then
         echo "#######################"
     fi
 
-    # Remove MAILTO lines from both existing.cron and tests.cron to prevent duplicates
-    sed -i '/MAILTO=/d' existing.cron 2> /dev/null || true
-    sed -i '/MAILTO=/d' tests.cron 2> /dev/null || true
+    # Save existing MAILTO before removing it
+    existing_mailto=$(grep "^MAILTO=" existing.cron 2> /dev/null | head -1 || echo "")
 
-    # Extract MAILTO line from the crontab file and put at top of final.cron
-    mailto_line=$(grep "MAILTO=" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" 2> /dev/null | head -1 || echo "")
-    if [[ -n "${mailto_line}" ]]; then
-        echo "${mailto_line}" > final.cron
+    # Remove ALL MAILTO lines from existing.cron and tests.cron to prevent duplicates
+    sed -i '/^MAILTO=/d' existing.cron 2> /dev/null || true
+    sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
+
+    if [[ "${_set_email}" == "true" ]]; then
+        # Replace the existing email in the crontab
+        if [[ "${_verbose}" == "true" ]]; then
+            printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
+        fi
+
+        if [[ "${_use_scron}" == true ]]; then
+            sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
+        else
+            # For regular crontab, set MAILTO at the top of final.cron
+            echo "MAILTO=\"${_email}\"" > final.cron
+        fi
+    else
+        # Preserve existing MAILTO if present with non-empty value, otherwise use REPLYTO if set, otherwise set to empty (only for regular crontab)
+        if [[ "${_use_scron}" == false ]]; then
+            # Check if there was a MAILTO with a non-empty value in the original crontab
+            # Extract the email value from MAILTO="email" or MAILTO=email
+            if [[ -n "${existing_mailto}" ]]; then
+                # Extract email value between quotes or after =
+                existing_email=$(echo "${existing_mailto}" | sed -n 's/^MAILTO=["'\'']*\([^"'\'']*\)["'\'']*$/\1/p')
+            else
+                existing_email=""
+            fi
+
+            if [[ -n "${existing_email}" ]]; then
+                echo "${existing_mailto}" > final.cron
+            else
+                echo "MAILTO=\"\"" > final.cron
+            fi
+        fi
     fi
 
     cat existing.cron tests.cron >> final.cron
@@ -652,14 +685,7 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     ${_crontab_cmd} final.cron
 else
-    # Show warning only if MAILTO is not set as env variable and not present in existing crontab
-    if [[ "${_set_email}" == "false" && -z "${MAILTO:-}" ]]; then
-        # Check existing crontab for MAILTO (not empty)
-        _crontab_content=$(${_crontab_cmd} -l 2> /dev/null || true)
-        if ! echo "${_crontab_content}" | grep -Eq "^MAILTO=['\"]?.+['\"]?$"; then
-            echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport MAILTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
-        fi
-    fi
+    mail_warning
     _message="Add the following to your crontab or scrontab to start running:"
     _cron_tests=$(cat tests.cron)
     _message="${_message}"$'\n'"${_cron_tests}"
