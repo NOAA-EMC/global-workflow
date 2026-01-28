@@ -64,27 +64,39 @@ else
    if (( ${#accfilelist[@]} > 0 )); then
     # Skip the last element using array slicing
       accfilelist=( "${accfilelist[@]::${#accfilelist[@]}-1}" )
+   else
+      accfilelist=()
    fi
    if (( ${#insfilelist[@]} > 0 )); then
     # Skip the last element using array slicing
       insfilelist=( "${insfilelist[@]::${#insfilelist[@]}-1}" )
-    fi
+   else
+      insfilelist=()
+   fi
 fi
 
 # loop through the daily files and get the monthly means
 
-for file in "${accfilelist[@]}"; do
-  filename=${file##*/}
-  filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  ${WGRIB2} "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
-  if (( ${?} > 0 )); then
-    echo "FATAL ERROR: WGRIB2 is not loaded correctly"
-    exit 1
-  fi
-done
+if (( ${#accfilelist[@]} > 0 )); then
+   for file in "${accfilelist[@]}"; do
+      filename=${file##*/}
+      filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
+      ${WGRIB2} "${file}" -match "${monthlyaccvars}" -fcst_ave 24hr "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
+      if (( ${?} > 0 )); then
+         echo "FATAL ERROR: WGRIB2 is not loaded correctly"
+         exit 1
+      fi
+   done
+else
+   echo "No monthly mean accumulated product files are generated because the fcst period is not within one full month"
+fi
 
-for file in "${insfilelist[@]}"; do
-  filename=${file##*/}
-  filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
-  ${WGRIB2} "${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
-done
+if (( ${#insfilelist[@]} > 0 )); then
+   for file in "${insfilelist[@]}"; do
+      filename=${file##*/}
+      filesuffix=$(echo "${filename}" | cut -d '.' -f 4-10)
+      ${WGRIB2} "${file}" -match "${monthlyinstvars}" -fcst_ave 24hr "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
+   done
+else
+   echo "No monthly mean instantaneous atmos product files are generated because the fcst period is not within one full month"
+fi
