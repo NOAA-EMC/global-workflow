@@ -140,10 +140,9 @@ if [[ "${LINK_NEST:-OFF}" == "ON" ]]; then
     done
 fi
 
-#------------------------------
-#--link source code directories
-#------------------------------
-# These must be created BEFORE any files within them are referenced
+#---------------------------------------
+#--link sorc/upp.fd before referencing files within it
+#---------------------------------------
 cd "${HOMEgfs}/sorc" || exit 8
 if [[ -d ufs_model.fd ]]; then
     if [[ -d upp.fd ]]; then
@@ -151,120 +150,6 @@ if [[ -d ufs_model.fd ]]; then
     fi
     ${LINK} ufs_model.fd/UFSATM/upp upp.fd
 fi
-
-if [[ -d gsi_enkf.fd ]]; then
-    if [[ -d gsi.fd ]]; then
-        rm -rf gsi.fd
-    fi
-    ${LINK} gsi_enkf.fd/src/gsi gsi.fd
-
-    if [[ -d enkf.fd ]]; then
-        rm -rf enkf.fd
-    fi
-    ${LINK} gsi_enkf.fd/src/enkf enkf.fd
-fi
-
-if [[ -d gsi_utils.fd ]]; then
-    if [[ -d calc_analysis.fd ]]; then
-        rm -rf calc_analysis.fd
-    fi
-    ${LINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd .
-
-    if [[ -d calc_increment_ens.fd ]]; then
-        rm -rf calc_increment_ens.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd .
-
-    if [[ -d calc_increment_ens_ncio.fd ]]; then
-        rm -rf calc_increment_ens_ncio.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd .
-
-    if [[ -d getsfcensmeanp.fd ]]; then
-        rm -rf getsfcensmeanp.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd .
-
-    if [[ -d getsigensmeanp_smooth.fd ]]; then
-        rm -rf getsigensmeanp_smooth.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd .
-
-    if [[ -d getsigensstatp.fd ]]; then
-        rm -rf getsigensstatp.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd .
-
-    if [[ -d recentersigp.fd ]]; then
-        rm -rf recentersigp.fd
-    fi
-    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd .
-
-    if [[ -d interp_inc.fd ]]; then
-        rm -rf interp_inc.fd
-    fi
-    ${LINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd .
-fi
-
-if [[ -d gsi_monitor.fd ]]; then
-    if [[ -d oznmon_horiz.fd ]]; then
-        rm -rf oznmon_horiz.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd .
-
-    if [[ -d oznmon_time.fd ]]; then
-        rm -rf oznmon_time.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd .
-
-    if [[ -d radmon_angle.fd ]]; then
-        rm -rf radmon_angle.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd radmon_angle.fd
-
-    if [[ -d radmon_bcoef.fd ]]; then
-        rm -rf radmon_bcoef.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd radmon_bcoef.fd
-
-    if [[ -d radmon_bcor.fd ]]; then
-        rm -rf radmon_bcor.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd radmon_bcor.fd
-
-    if [[ -d radmon_time.fd ]]; then
-        rm -rf radmon_time.fd
-    fi
-    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd radmon_time.fd
-fi
-
-for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
-    if [[ -d "${prog}" ]]; then
-        rm -rf "${prog}"
-    fi
-    ${LINK} "ufs_utils.fd/sorc/${prog}" "${prog}"
-done
-
-for prog in enkf_chgres_recenter_nc.fd \
-    fbwndgfs.fd \
-    gaussian_sfcanl.fd \
-    gfs_bufr.fd \
-    mkgfsawps.fd \
-    overgridid.fd \
-    rdbfmsua.fd \
-    supvit.fd \
-    syndat_getjtbul.fd \
-    syndat_maksynrc.fd \
-    syndat_qctropcy.fd \
-    tave.fd \
-    tocsbufr.fd \
-    tref_calc.fd \
-    vint.fd \
-    webtitle.fd \
-    ocnicepost.fd; do
-    if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
-    ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
-done
 
 #---------------------------------------
 #--add files from external repositories
@@ -580,5 +465,124 @@ if [[ -d "${HOMEgfs}/sorc/nexus.fd/build/bin" ]]; then
     cd "${HOMEgfs}/exec" || exit 1
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/nexus.fd/build/bin/nexus" nexus.x
 fi
+
+#------------------------------
+#--link source code directories
+#------------------------------
+cd "${HOMEgfs}/sorc" || exit 8
+
+if [[ -d gsi_enkf.fd ]]; then
+    if [[ -d gsi.fd ]]; then
+        rm -rf gsi.fd
+    fi
+    ${LINK} gsi_enkf.fd/src/gsi gsi.fd
+
+    if [[ -d enkf.fd ]]; then
+        rm -rf enkf.fd
+    fi
+    ${LINK} gsi_enkf.fd/src/enkf enkf.fd
+fi
+
+if [[ -d gsi_utils.fd ]]; then
+    if [[ -d calc_analysis.fd ]]; then
+        rm -rf calc_analysis.fd
+    fi
+    ${LINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd .
+
+    if [[ -d calc_increment_ens.fd ]]; then
+        rm -rf calc_increment_ens.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens.fd .
+
+    if [[ -d calc_increment_ens_ncio.fd ]]; then
+        rm -rf calc_increment_ens_ncio.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/calc_increment_ens_ncio.fd .
+
+    if [[ -d getsfcensmeanp.fd ]]; then
+        rm -rf getsfcensmeanp.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsfcensmeanp.fd .
+
+    if [[ -d getsigensmeanp_smooth.fd ]]; then
+        rm -rf getsigensmeanp_smooth.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensmeanp_smooth.fd .
+
+    if [[ -d getsigensstatp.fd ]]; then
+        rm -rf getsigensstatp.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/getsigensstatp.fd .
+
+    if [[ -d recentersigp.fd ]]; then
+        rm -rf recentersigp.fd
+    fi
+    ${LINK} gsi_utils.fd/src/EnKF/gfs/src/recentersigp.fd .
+
+    if [[ -d interp_inc.fd ]]; then
+        rm -rf interp_inc.fd
+    fi
+    ${LINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd .
+fi
+
+if [[ -d gsi_monitor.fd ]]; then
+    if [[ -d oznmon_horiz.fd ]]; then
+        rm -rf oznmon_horiz.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd .
+
+    if [[ -d oznmon_time.fd ]]; then
+        rm -rf oznmon_time.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd .
+
+    if [[ -d radmon_angle.fd ]]; then
+        rm -rf radmon_angle.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd radmon_angle.fd
+
+    if [[ -d radmon_bcoef.fd ]]; then
+        rm -rf radmon_bcoef.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd radmon_bcoef.fd
+
+    if [[ -d radmon_bcor.fd ]]; then
+        rm -rf radmon_bcor.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd radmon_bcor.fd
+
+    if [[ -d radmon_time.fd ]]; then
+        rm -rf radmon_time.fd
+    fi
+    ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd radmon_time.fd
+fi
+
+for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
+    if [[ -d "${prog}" ]]; then
+        rm -rf "${prog}"
+    fi
+    ${LINK} "ufs_utils.fd/sorc/${prog}" "${prog}"
+done
+
+for prog in enkf_chgres_recenter_nc.fd \
+    fbwndgfs.fd \
+    gaussian_sfcanl.fd \
+    gfs_bufr.fd \
+    mkgfsawps.fd \
+    overgridid.fd \
+    rdbfmsua.fd \
+    supvit.fd \
+    syndat_getjtbul.fd \
+    syndat_maksynrc.fd \
+    syndat_qctropcy.fd \
+    tave.fd \
+    tocsbufr.fd \
+    tref_calc.fd \
+    vint.fd \
+    webtitle.fd \
+    ocnicepost.fd; do
+    if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
+    ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
+done
 
 exit 0
