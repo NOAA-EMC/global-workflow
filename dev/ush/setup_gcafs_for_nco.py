@@ -20,13 +20,13 @@ global_workflow_dir = os.path.abspath(os.path.join(current_dir_path, "../.."))
 
 gcafs_ex_scripts = {
     "exgcafs_forecast.sh": "exglobal_forecast.sh",
-    "exgcafs_prep_emissions.sh": "exglobal_prep_emissions.py",
+    "exgcafs_prep_emissions.py": "exglobal_prep_emissions.py",
     "exgcafs_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
     "exgcafs_atmos_products.sh": "exglobal_atmos_products.sh",
 }
 gcdas_ex_scripts = {
     "exgcdas_forecast.sh": "exglobal_forecast.sh",
-    "exgcdas_prep_emissions.sh": "exglobal_prep_emissions.py",
+    "exgcdas_prep_emissions.py": "exglobal_prep_emissions.py",
     "exgcdas_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
     "exgcdas_atmos_products.sh": "exglobal_atmos_products.sh",
     "exgcdas_atmos_initialize.py": "exglobal_offline_atmos_analysis.py",
