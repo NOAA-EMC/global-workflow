@@ -101,6 +101,9 @@ fi
 PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgcafs}/ush/python"
 export PYTHONPATH
 
+#TODO fix below line properly
+export CRTM_FIX="/lfs/h2/emc/da/noscrub/emc.da/GDASApp/fix/crtm/2.4.0"
+
 ############################################################
 # CALL executable job script here
 ############################################################
