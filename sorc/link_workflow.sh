@@ -143,16 +143,13 @@ fi
 #---------------------------------------
 #--link sorc/upp.fd before referencing files within it
 #---------------------------------------
-(
-    cd "${HOMEgfs}/sorc" || exit 8
-    if [[ -d ufs_model.fd ]]; then
-        if [[ -d upp.fd ]]; then
-            rm -rf upp.fd
-        fi
-        ${LINK} ufs_model.fd/UFSATM/upp upp.fd
+cd "${HOMEgfs}/sorc" || exit 8
+if [[ -d ufs_model.fd ]]; then
+    if [[ -d upp.fd ]]; then
+        rm -rf upp.fd
     fi
-)
-
+    ${LINK} ufs_model.fd/UFSATM/upp upp.fd
+fi
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
