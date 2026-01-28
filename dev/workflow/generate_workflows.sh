@@ -611,6 +611,9 @@ if [[ "${_use_scron}" == false ]]; then
     if [[ "${_set_email}" == "true" ]]; then
         # Use email from -e flag
         sed -i "1i MAILTO=\"${_email}\"" tests.cron
+    elif [[ -n "${REPLYTO:-}" ]]; then
+        # Use REPLYTO environment variable
+        sed -i "1i MAILTO=\"${REPLYTO}\"" tests.cron
     else
         # Use empty MAILTO
         sed -i "1i MAILTO=\"\"" tests.cron
@@ -665,6 +668,8 @@ if [[ "${_update_cron}" == "true" ]]; then
 
             if [[ -n "${existing_email}" ]]; then
                 echo "${existing_mailto}" > final.cron
+            elif [[ -n "${REPLYTO:-}" ]]; then
+                echo "MAILTO=\"${REPLYTO}\"" > final.cron
             else
                 echo "MAILTO=\"\"" > final.cron
             fi
