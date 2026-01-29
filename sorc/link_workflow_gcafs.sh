@@ -81,14 +81,14 @@ esac
 # Source fix version file
 source "${HOMEgfs}/versions/fix.ver"
 
-# Link gcdasapp python packages in ush/python
+# Link gdasapp python packages in ush/python
 packages=("jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEgfs}/ush/python" || exit 1
     if [[ -s "${package}" ]]; then
         rm -f "${package}"
     fi
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gcdas.cd/sorc/${package}/src/${package}" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
 
 # Link fix directories
@@ -166,34 +166,34 @@ if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
 fi
 
 #------------------------------
-#--add gcdasApp fix directory
+#--add gdasApp fix directory
 #------------------------------
-if [[ -d "${HOMEgfs}/sorc/gcdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     cd "${HOMEgfs}/fix" || exit 1
-    mkdir -p gcdas
-    cd gcdas || exit 1
-    for gcdas_sub in fv3jedi obs aero; do
-        if [[ -d "${gcdas_sub}" ]]; then
-            rm -rf "${gcdas_sub}"
+    mkdir -p gdas
+    cd gdas || exit 1
+    for gdas_sub in fv3jedi obs aero; do
+        if [[ -d "${gdas_sub}" ]]; then
+            rm -rf "${gdas_sub}"
         fi
-        fix_ver="gcdas_${gcdas_sub}_ver"
-        ${LINK_OR_COPY} "${FIX_DIR}/gcdas/${gcdas_sub}/${!fix_ver}" "${gcdas_sub}"
+        fix_ver="gdas_${gdas_sub}_ver"
+        ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
 fi
 
 #------------------------------
-#--add gcdasApp parm directory
+#--add gdasApp parm directory
 #------------------------------
-if [[ -d "${HOMEgfs}/sorc/gcdas.cd" ]]; then
+if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     cd "${HOMEgfs}/parm" || exit 1
-    mkdir -p gcdas
-    cd gcdas || exit 1
-    declare -a gcdasapp_comps=("aero" "atm" "io" "ioda" "jcb-gcdas" "jcb-algorithms" "anlstat" "analcalc")
-    for comp in "${gcdasapp_comps[@]}"; do
+    mkdir -p gdas
+    cd gdas || exit 1
+    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+    for comp in "${gdasapp_comps[@]}"; do
         if [[ -d "${comp}" ]]; then
             rm -rf "${comp}"
         fi
-        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gcdas.cd/parm/${comp}" .
+        ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/parm/${comp}" .
     done
 fi
 
@@ -263,16 +263,16 @@ if [[ -d "${HOMEgfs}/sorc/gsi_utils.fd/install" ]]; then
     done
 fi
 
-# gcdasApp executables
-if [[ -d "${HOMEgfs}/sorc/gcdas.cd/install" ]]; then
-    cp -f "${HOMEgfs}/sorc/gcdas.cd/install/bin"/gcdas* ./
+# gdasApp executables
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
+    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas* ./
 fi
 
-# gcdasApp libraries
-if [[ -d "${HOMEgfs}/sorc/gcdas.cd/install" ]]; then
+# gdasApp libraries
+if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
     mkdir -p "${HOMEgfs}/lib" || exit 1
     cd "${HOMEgfs}/lib" || exit 1
-    cp -af "${HOMEgfs}/sorc/gcdas.cd/install/lib/." ./
+    cp -af "${HOMEgfs}/sorc/gdas.cd/install/lib/." ./
 fi
 
 # NEXUS executable
