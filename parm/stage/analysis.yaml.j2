@@ -7,6 +7,19 @@ analysis:
 
     link_req:
         {# -------------------------------------------------------------------- #}
+        {# GSI Soil Analysis (Land DA)                                          #}
+        {# -------------------------------------------------------------------- #}
+        {% if DO_GSISOILDA %}
+            {# Land IAU Increments (Tiled) #}
+            {% if DO_LAND_IAU %}
+                {% for itile in range(1,7) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+    link_opt:
+        {# -------------------------------------------------------------------- #}
         {# JEDI Atmospheric Variational Data Assimilation                       #}
         {# -------------------------------------------------------------------- #}
         {% if DO_JEDIATMVAR %}
@@ -32,35 +45,6 @@ analysis:
                             {% set ftypes = ["recentered_jedi_increment.atm.i006" ] %}
                         {% endif %}
                     {% endif %}
-
-                {% endfor %}
-
-            {% endif %}
-
-        {% endif %}
-
-        {# -------------------------------------------------------------------- #}
-        {# GSI Soil Analysis (Land DA)                                          #}
-        {# -------------------------------------------------------------------- #}
-        {% if DO_GSISOILDA %}
-            {# Land IAU Increments (Tiled) #}
-            {% if DO_LAND_IAU %}
-                {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-                {% endfor %}
-            {% endif %}
-        {% endif %}
-
-    link_opt:
-        {# -------------------------------------------------------------------- #}
-        {# JEDI Atmospheric Variational Data Assimilation                       #}
-        {# -------------------------------------------------------------------- #}
-        {% if DO_JEDIATMVAR %}
-
-            {# Cubed Sphere Grid Configuration #}
-            {% if ATMINC_GRID == "cubed_sphere_grid" %}
-
-                {% for itile in range(ntiles) %}
 
                     {% for ftype in ftypes %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
