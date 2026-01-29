@@ -18,10 +18,6 @@ analysis:
             {% endif %}
         {% endif %}
 
-    link_opt:
-        {# -------------------------------------------------------------------- #}
-        {# JEDI Atmospheric Variational Data Assimilation                       #}
-        {# -------------------------------------------------------------------- #}
         {% if DO_JEDIATMVAR %}
 
             {# Cubed Sphere Grid Configuration #}
@@ -45,6 +41,21 @@ analysis:
                             {% set ftypes = ["recentered_jedi_increment.atm.i006" ] %}
                         {% endif %}
                     {% endif %}
+
+                {% endfor %}
+
+            {% endif %}
+
+    link_opt:
+        {# -------------------------------------------------------------------- #}
+        {# JEDI Atmospheric Variational Data Assimilation                       #}
+        {# -------------------------------------------------------------------- #}
+        {% if DO_JEDIATMVAR %}
+
+            {# Cubed Sphere Grid Configuration #}
+            {% if ATMINC_GRID == "cubed_sphere_grid" %}
+
+                {% for itile in range(ntiles) %}
 
                     {% for ftype in ftypes %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
