@@ -1,7 +1,5 @@
-{% if path_exists(ICSDIR ~ "/" ~ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".ufs.cpld.cpl.r.nc") %}
 ocean_mediator:
     mkdir:
         - "{{ COMOUT_MED_RESTART_PREV }}"
-    link_req:
+    link_opt:
         - ["{{ ICSDIR }}/{{ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.ufs.cpld.cpl.r.nc", "{{ COMOUT_MED_RESTART_PREV }}"]
-{% endif %} # path exists
