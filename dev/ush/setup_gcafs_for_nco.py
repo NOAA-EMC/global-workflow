@@ -90,9 +90,9 @@ def replace_gfs_with_gcafs(input_file):
     # This will match patterns like: HOMEgfs, USHgfs, PARMgfs, etc.
     # Does NOT match standalone "gfs" or quoted "gfs"
     import re
-    # Match word characters followed by "gfs" at word boundary, but ensure prefix has at least 3 chars
-    # This ensures we match variable names like HOMEgfs but not just "gfs" or "Xgfs"
-    pattern = r'(\w{3,})gfs\b'
+    # Match word characters followed by "gfs" at word boundary, but ensure the character
+    # immediately before "gfs" is a capital letter (e.g., HOMEgfs, not pygfs)
+    pattern = r'(\w*[A-Z])gfs\b'
     
     replacement_count = 0
     def replace_func(match):
