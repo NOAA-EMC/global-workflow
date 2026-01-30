@@ -113,24 +113,7 @@ class AerosolObsPrep(Task):
         FileHandler({'mkdir': [comout]}).sync()
         FileHandler({'copy': src_dst_obs_list}).sync()
 
-        # create a summary stats file to tell external processes the obs are ready
+        # create a file to tell external processes the obs are ready
         ready_file = pathlib.Path(os.path.join(comout, f"{self.task_config['OPREFIX']}obsforge_aod_status.log"))
-        summary_dict = {
-            'time window': {
-                'begin': self.task_config.window_begin.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                'end': self.task_config.window_end.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                'bound to include': 'begin',
-            },
-            'input directory': str(comout),
-            'output file': str(ready_file),
-        }
-        save_as_yaml(summary_dict, os.path.join(self.task_config.DATA, "stats.yaml"))
-        exec_cmd = Executable(os.path.join(self.task_config.HOMEgcafs, "exec", "ioda-dump.x"))
-        exec_cmd.add_default_arg(os.path.join(self.task_config.DATA, "stats.yaml"))
-        try:
-            logger.info(f"Creating summary file {ready_file}")
-            exec_cmd()
-        except Exception as e:
-            logger.warning(f"Failed to create summary file {ready_file}: {e}")
-            logger.warning("Creating an empty ready file instead")
-            ready_file.touch()
+        logger.warning("Creating an empty ready file")
+        ready_file.touch()
