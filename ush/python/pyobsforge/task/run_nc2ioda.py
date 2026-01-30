@@ -24,7 +24,7 @@ def run_nc2ioda(task_config: dict, obs_space: str, context: dict) -> int:
     save_as_yaml(yaml_config, nc2ioda_yaml)
 
     # Run the ioda converter
-    nc2ioda_exe = join(task_config['HOMEgcafs'], 'exec', 'gcdas_obsprovider2ioda.x')
+    nc2ioda_exe = join(task_config['HOMEgcafs'], 'exec', 'gdas_obsprovider2ioda.x')
     try:
         result = subprocess.run([nc2ioda_exe, nc2ioda_yaml],
                                 cwd=task_config['DATA'],
