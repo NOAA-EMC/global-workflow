@@ -28,6 +28,7 @@ RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL
 MEMDIR='ensstat' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+# shellcheck disable=SC2153
 declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${COMOUT_ATMOS_ANALYSIS}"
 
 RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -r \
