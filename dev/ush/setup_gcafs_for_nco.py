@@ -90,9 +90,9 @@ def replace_gfs_with_gcafs(input_file):
     # This will match patterns like: HOMEgfs, USHgfs, PARMgfs, etc.
     # Does NOT match standalone "gfs" or quoted "gfs"
     import re
-    # Match word characters followed by "gfs" at word boundary, but ensure prefix has at least 2 chars
+    # Match word characters followed by "gfs" at word boundary, but ensure prefix has at least 3 chars
     # This ensures we match variable names like HOMEgfs but not just "gfs" or "Xgfs"
-    pattern = r'(\w{2,})gfs\b'
+    pattern = r'(\w{3,})gfs\b'
     
     replacement_count = 0
     def replace_func(match):
@@ -100,53 +100,6 @@ def replace_gfs_with_gcafs(input_file):
         replacement_count += 1
         prefix = match.group(1)
         return f"{prefix}gcafs"
-    
-    modified_content = re.sub(pattern, replace_func, content)
-    
-    # Write the modified content back to the file
-    with open(input_file, 'w') as f:
-        f.write(modified_content)
-    
-    return replacement_count
-
-
-def replace_gdas_with_gcdas_in_exe_src(input_file):
-    """
-    Replace all instances of 'gdas' with 'gcdas' in exe_src fields in the given input file.
-    This specifically targets patterns like: exe_src: gdas_something or exe_src: !ENV ${PARMgcafs}/gdas_something
-    
-    Parameters
-    ----------
-    input_file : str
-        Path to the file to modify
-    
-    Returns
-    -------
-    int
-        Number of replacements made
-    """
-    if not os.path.exists(input_file):
-        raise FileNotFoundError(f"File not found: {input_file}")
-    
-    # Read the file content
-    with open(input_file, 'r') as f:
-        content = f.read()
-    
-    # Replace gdas with gcdas in exe_src contexts
-    # This will match patterns like:
-    #   exe_src: gdas_something
-    #   exe_src: !ENV ${PARMgcafs}/gdas_something
-    # Even when indented with whitespace
-    import re
-    # Match optional leading whitespace, then exe_src followed by gdas in various contexts
-    pattern = r'(\s*exe_src:\s*(?:!ENV\s+[^\n]*?)?\bgdas)'
-    
-    replacement_count = 0
-    def replace_func(match):
-        nonlocal replacement_count
-        replacement_count += 1
-        matched_text = match.group(0)
-        return matched_text.replace('gdas', 'gcdas')
     
     modified_content = re.sub(pattern, replace_func, content)
     
@@ -239,74 +192,43 @@ def remove_unused_executables(global_workflow_dir):
     list
         List of files that were successfully removed
     """
-    unused_executables = [
-        "gdas_apply_incr.x",
-        "gdas_fv3jedi_correction_increment.x",
-        "gdas_fv3jedi_ensemble_add_increment.x",
-        "gdas_fv3jedi_fv3inc.x",
-        "gdas_fv3jedi_land_ensrecenter.x",
-        "gdas_fv3jedi_scf_to_ioda.x",
-        "gdas_ioda_mean.x",
-        "gdas_soca_anpproc.x",
-        "gdas_soca_diagb.x",
-        "gdas_soca_diagnostics.x",
-        "gdas_soca_ens_handler.x",
-        "gdas_soca_error_covariance_toolbox.x",
-        "gdas_soca_gridgen.x",
-        "gdas_soca_hybridweights.x",
-        "gdas_soca_incr_handler.x",
-        "gdas_soca_obsstats.x",
-        "gdas_soca_setcorscales.x",
-        "gdas_soca_to_fv3.x",
-        "emcsfc_snow2mdl",
-        "emcsfc_ice_blend",
-        "calc_increment_ens.x",
-        "ensadd.x",
-        "ensppf.x",
-        "ensstat.x",
-        "fbwndgfs.x",
-        "fregrid",
-        "getsfcensmeanp.x",
-        "getsigensmeanp_smooth.x",
-        "getsigensstatp.x",
-        "gfs_bufr.x",
-        "mkgfsawps.x",
-        "ocnicepost.x",
-        "overgridid.x",
-        "oznmon_horiz.x",
-        "oznmon_time.x",
-        "radmon_angle.x",
-        "radmon_bcoef.x",
-        "radmon_bcor.x",
-        "rdbfmsua.x",
-        "radmon_time.x",
-        "recentersigp.x",
-        "regridStates.x",
-        "supvit.x",
-        "syndat_getjtbul.x",
-        "syndat_maksynrc.x",
-        "syndat_qctropcy.x",
-        "tave.x",
-        "tocsbufr.x",
-        "vint.x",
-        "wave_stat.x",
-        "webtitle.x"
+    desired_executables = [
+        "calc_analysis.x",
+        "calc_increment_ens_ncio.x",
+        "enkf_chgres_recenter_nc.x",
+        "gaussian_sfcanl.x",
+        "gcafs_model.x",
+        "gdas_fv3jedi_chem_diagb.x",
+        "gdas_fv3jedi_error_covariance_toolbox.x",
+        "gdas_ioda-stats.x",
+        "gdas_obsprovider2ioda.x",
+        "gdas.x",
+        "global_cycle",
+        "interp_inc.x",
+        "nexus.x",
+        "tref_calc.x",
+        "upp.x"
     ]
     
     exec_dir = os.path.join(global_workflow_dir, 'exec')
     removed_files = []
     
-    for executable in unused_executables:
-        executable_path = os.path.join(exec_dir, executable)
-        if os.path.exists(executable_path):
-            try:
-                os.remove(executable_path)
-                removed_files.append(executable)
-                print(f"Removed unused executable: {executable}")
-            except OSError as e:
-                print(f"Error removing {executable}: {e}")
-        else:
-            print(f"Executable not found (already removed?): {executable}")
+    # Get all files in exec_dir
+    if os.path.exists(exec_dir):
+        all_files = [f for f in os.listdir(exec_dir) if os.path.isfile(os.path.join(exec_dir, f))]
+        
+        # Remove all files except those in desired_executables
+        for filename in all_files:
+            if filename not in desired_executables:
+                file_path = os.path.join(exec_dir, filename)
+                try:
+                    os.remove(file_path)
+                    removed_files.append(filename)
+                    print(f"Removed unused executable: {filename}")
+                except OSError as e:
+                    print(f"Error removing {filename}: {e}")
+    else:
+        print(f"Exec directory not found: {exec_dir}")
     
     return removed_files
 
@@ -407,8 +329,8 @@ def setup_gcafs_for_nco():
             except:
                 print(f"Skipping: {file_path}")
 
-    # Go through sorc/gcdas.cd/parm directory and replace FOOgcafs with FOOgcafs in all files
-    gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gcdas.cd', 'parm')
+    # Go through sorc/gdas.cd/parm directory and replace FOOgcafs with FOOgcafs in all files
+    gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gdas.cd', 'parm')
     for root, _, files in os.walk(gcdas_parm_dir):
         for file in files:
             file_path = os.path.join(root, file)
@@ -416,17 +338,6 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made (gcafs).")
-            except:
-                print(f"Skipping: {file_path}")
-    
-    # Go through sorc/gcdas.cd/parm directory and replace gdas with gcdas in exe_src fields
-    for root, _, files in os.walk(gcdas_parm_dir):
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                num_replacements = replace_gdas_with_gcdas_in_exe_src(file_path)
-                if num_replacements > 0:
-                    print(f"Modified {file_path}: {num_replacements} exe_src replacements made (gcdas).")
             except:
                 print(f"Skipping: {file_path}")
 
