@@ -695,6 +695,11 @@ MOM6_predet() {
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
 
+    # check if ocean_geometry.nc in DATAoutput/MOM6_OUTPUT exists and its size, if size is zero, then delete it manually
+    if [[ -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc" && ! -s "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc" ]]; then
+        rm -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc"
+    fi
+
     # Link the output and restart directories to the DATA directory
     ${NLN} "${DATAoutput}/MOM6_OUTPUT" "${DATA}/MOM6_OUTPUT"
     ${NLN} "${DATArestart}/MOM6_RESTART" "${DATA}/MOM6_RESTART"
