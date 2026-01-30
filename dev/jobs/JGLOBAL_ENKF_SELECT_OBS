@@ -48,6 +48,14 @@ if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
 fi
 
+export GENDIAG="${GENDIAG:-YES}"
+
+# Create a DATAROOT directory variable for the gsidiags if GENDIAG is YES
+if [[ "${GENDIAG}" == "YES" ]]; then
+    pCOMOUT_ATMOS_ANALYSIS="$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")"
+    export pCOMOUT_ATMOS_ANALYSIS
+fi
+
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 set_strict

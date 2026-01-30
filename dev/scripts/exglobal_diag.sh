@@ -55,6 +55,12 @@ if [[ "${GENDIAG}" != "YES" ]]; then
     exit 0
 fi
 
+# Check that the gsidiags directory exists
+if [[ ! -d "${GSIDIAGDIR}" ]]; then
+    export err=1
+    err_exit "gsidiags directory ${GSIDIAGDIR} does not exist"
+fi
+
 ################################################################################
 # Link to the gsidiags directory if it is populated
 count_dirs=$(find "${GSIDIAGDIR}" -maxdepth 1 -type d -name "dir.*" | wc -l)
@@ -62,6 +68,15 @@ if [[ ${count_dirs} -eq 0 ]]; then
     export err=1
     err_exit "No gsidiags directories found in ${GSIDIAGDIR}"
 fi
+
+# Continue if there is at least one file to process
+# Note -quit stops find after the first match
+count_files=$(find "${GSIDIAGDIR}"/dir.* -maxdepth 1 -type f -quit -printf '.' | wc -c)
+if [[ ${count_files} -eq 0 ]]; then
+    echo "WARNING: No diagnostic files found to process!"
+    exit 0
+fi
+
 ${NLN} "${GSIDIAGDIR}/"dir.* .
 
 # Set up lists and variables for various types of diagnostic files.
