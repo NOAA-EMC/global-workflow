@@ -41,7 +41,8 @@ case ${step} in
   "eupd")
     case "${CASE}" in
       "C1152" | "C768" | "C384")
-	if [[ "${RUN}" = *gdas ]]; then
+       walltime="00:55:00"
+       if [[ "${RUN}" = *gdas ]]; then
           export ntasks=315
         elif [[ "${RUN}" = *gfs ]]; then
           export ntasks=135
@@ -58,7 +59,8 @@ case ${step} in
     case "${CASE}" in
       "C1152" | "C768" | "C384")
         export tasks_per_node=50
-        ;;
+        export walltime="00:15:00"
+	;;
       *)
         export tasks_per_node=40
         ;;
