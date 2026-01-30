@@ -20,9 +20,12 @@ export APREFIX_IN="gdas.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
-RUN="gdas" DUMP="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBSPROC:COM_OBSPROC_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+# CRM: This is a hack for running from the prod COMROOT
+# RUN="gdas" DUMP="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+#     COMIN_OBSPROC:COM_OBSPROC_TMPL \
+#     COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+export COMIN_OBSPROC=/lfs/h1/ops/prod/com/obsproc/v1.2/gdas.${PDY}/${cyc}/atmos/
+export COMIN_ATMOS_ANALYSIS=/lfs/h1/ops/prod/com/gfs/v16.3/gdas.${PDY}/${cyc}/atmos/
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_OBS:COM_OBS_TMPL \

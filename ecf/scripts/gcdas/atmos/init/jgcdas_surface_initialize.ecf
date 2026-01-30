@@ -73,7 +73,7 @@ export PYTHONPATH
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgcafs}/jobs/JGLOBAL_ATMOS_SFCANL
+${HOMEgcafs}/jobs/JGCDAS_SURFACE_INITIALIZE
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
