@@ -120,7 +120,7 @@ def copy_job_files(global_workflow_dir):
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
- 
+
     Returns
     -------
     list
@@ -318,7 +318,7 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
-    
+
     # Go through parm/ directory and replace FOOgfs with FOOgcafs in all files
     parm_dir = os.path.join(global_workflow_dir, 'parm')
     for root, _, files in os.walk(parm_dir):
@@ -328,7 +328,7 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
-            except: # noqa
+            except:  # noqa
                 print(f"Skipping: {file_path}")
 
     # Go through sorc/gdas.cd/parm directory and replace FOOgcafs with FOOgcafs in all files
@@ -340,7 +340,7 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made (gcafs).")
-            except: # noqa
+            except:  # noqa
                 print(f"Skipping: {file_path}")
 
 
