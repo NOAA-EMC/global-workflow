@@ -766,7 +766,8 @@ class Archive(Task):
             # Not the right cycle hour
             return False
 
-        days_since_sdate = (arch_dict.current_cycle - SDATE).days
+        ics_offset_cycle = add_to_datetime(arch_dict.current_cycle, to_timedelta(f"+{assim_freq}H"))
+        days_since_sdate = (ics_offset_cycle - SDATE).days
         if arch_dict.ARCH_FCSTICFREQ > 0 and days_since_sdate % arch_dict.ARCH_FCSTICFREQ == 0:
             # We are on the right cycle hour and the right day
             return True
