@@ -64,16 +64,17 @@ gcdas_jobs = {
     # need to add something here for the post job once Yaping's PR is in
 }
 
+
 def replace_gfs_with_gcafs(input_file):
     """
     Replace all instances of FOOgfs with FOOgcafs in the given input file.
     This matches patterns like HOMEgfs -> HOMEgcafs, USHgfs -> USHgcafs, etc.
-    
+
     Parameters
     ----------
     input_file : str
         Path to the file to modify
-    
+
     Returns
     -------
     int
@@ -81,11 +82,11 @@ def replace_gfs_with_gcafs(input_file):
     """
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"File not found: {input_file}")
-    
+
     # Read the file content
     with open(input_file, 'r') as f:
         content = f.read()
-    
+
     # Count and replace all instances of FOOgfs with FOOgcafs
     # This will match patterns like: HOMEgfs, USHgfs, PARMgfs, etc.
     # Does NOT match standalone "gfs" or quoted "gfs"
@@ -93,32 +94,33 @@ def replace_gfs_with_gcafs(input_file):
     # Match word characters followed by "gfs" at word boundary, but ensure the character
     # immediately before "gfs" is a capital letter (e.g., HOMEgfs, not pygfs)
     pattern = r'(\w*[A-Z])gfs\b'
-    
+
     replacement_count = 0
+
     def replace_func(match):
         nonlocal replacement_count
         replacement_count += 1
         prefix = match.group(1)
         return f"{prefix}gcafs"
-    
+
     modified_content = re.sub(pattern, replace_func, content)
-    
+
     # Write the modified content back to the file
     with open(input_file, 'w') as f:
         f.write(modified_content)
-    
+
     return replacement_count
 
 
 def copy_job_files(global_workflow_dir):
     """
     Copy job files from dev/jobs to jobs directory with appropriate renaming.
-    
+
     Parameters
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
-        
+ 
     Returns
     -------
     list
@@ -138,19 +140,19 @@ def copy_job_files(global_workflow_dir):
     }
     # Execute the file operations
     FileHandler(job_file_handler).sync()
-    
+
     return job_file_copy_list
 
 
 def copy_script_files(global_workflow_dir):
     """
     Copy script files from dev/scripts to scripts directory with appropriate renaming.
-    
+
     Parameters
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
-        
+
     Returns
     -------
     list
@@ -174,19 +176,19 @@ def copy_script_files(global_workflow_dir):
     }
     # Execute the file operations for scripts
     FileHandler(ex_script_file_handler).sync()
-    
+
     return ex_script_file_copy_list
 
 
 def remove_unused_executables(global_workflow_dir):
     """
     Remove unused executables from the exec directory.
-    
+
     Parameters
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
-        
+
     Returns
     -------
     list
@@ -209,14 +211,14 @@ def remove_unused_executables(global_workflow_dir):
         "tref_calc.x",
         "upp.x"
     ]
-    
+
     exec_dir = os.path.join(global_workflow_dir, 'exec')
     removed_files = []
-    
+
     # Get all files in exec_dir
     if os.path.exists(exec_dir):
         all_files = [f for f in os.listdir(exec_dir) if os.path.isfile(os.path.join(exec_dir, f))]
-        
+
         # Remove all files except those in desired_executables
         for filename in all_files:
             if filename not in desired_executables:
@@ -229,7 +231,7 @@ def remove_unused_executables(global_workflow_dir):
                     print(f"Error removing {filename}: {e}")
     else:
         print(f"Exec directory not found: {exec_dir}")
-    
+
     return removed_files
 
 
@@ -261,11 +263,11 @@ def setup_gcafs_for_nco():
                 script_mapping = gcdas_ex_scripts
             else:
                 continue
-            
+
             # Read the job file content
             with open(job_file_path, 'r') as f:
                 content = f.read()
-            
+
             # Replace script calls based on the mapping
             modified = False
             for new_script, old_script in script_mapping.items():
@@ -273,7 +275,7 @@ def setup_gcafs_for_nco():
                     content = content.replace(old_script, new_script)
                     modified = True
                     print(f"In {job_name}: Replaced {old_script} with {new_script}")
-            
+
             # Write back the modified content if changes were made
             if modified:
                 with open(job_file_path, 'w') as f:
@@ -289,7 +291,7 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
-    
+
     # Go through the dev/ush and dev/workflow directories and replace FOOgfs with FOOgcafs in all scripts
     # and YAMLs in dev/ci/cases
     for subdir in ['dev/ush', 'dev/workflow', 'dev/ci/cases']:
@@ -326,7 +328,7 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made.")
-            except:
+            except: # noqa
                 print(f"Skipping: {file_path}")
 
     # Go through sorc/gdas.cd/parm directory and replace FOOgcafs with FOOgcafs in all files
@@ -338,7 +340,7 @@ def setup_gcafs_for_nco():
                 num_replacements = replace_gfs_with_gcafs(file_path)
                 if num_replacements > 0:
                     print(f"Modified {file_path}: {num_replacements} replacements made (gcafs).")
-            except:
+            except: # noqa
                 print(f"Skipping: {file_path}")
 
 
