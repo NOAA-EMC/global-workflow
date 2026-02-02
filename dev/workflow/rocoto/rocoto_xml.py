@@ -214,7 +214,7 @@ class RocotoXML(WorkflowSuite, ABC):
             os.chmod(cron_cmd, mode.st_mode | stat.S_IEXEC)
         else:
             # For regular crontab, create a wrapper script with monitoring
-            cron_cmd = f"{self.expdir}/{self.pslot}.cron.sh"
+            cron_cmd = rocotorunstr
             crontab_strings.extend([
                 'SHELL="/bin/bash"',
                 f'MAILTO="{replyto}"'
