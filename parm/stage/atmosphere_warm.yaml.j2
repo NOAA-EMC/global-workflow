@@ -19,7 +19,7 @@ atmosphere_warm:
         {% endfor %} # ntile
 
         {% for ntile in range(1, ntiles + 1) %}
-            {% if ENSMEM > 0 %}
+            {% if member > 0 %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_RESTART | relpath(ROTDIR) }}/{{ m_prefix }}.sfcanl_data.tile{{ ntile }}.nc", "{{ COMOUT_ATMOS_RESTART }}"]
             {% endif %}
         {% endfor %} # ntile
