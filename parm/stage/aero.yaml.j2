@@ -2,7 +2,7 @@ aero:
     mkdir:
         - "{{ COMOUT_CHEM_ANALYSIS }}"
 
-    link_opt:
+    link_req:
     {% if DO_AERO_ANL %}
         - ["{{ ICSDIR }}/{{ COMOUT_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.aero_varbc_params.tar",
            "{{ COMOUT_CHEM_ANALYSIS }}"]

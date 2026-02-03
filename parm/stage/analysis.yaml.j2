@@ -64,14 +64,18 @@ analysis:
             {% if DOIAU or DOIAU_ENKF %}
                 {% for ftype in ["increment.atm.i003.nc", "increment.atm.i009.nc",
                                  "recentered_increment.atm.i003.nc", "recentered_increment.atm.i009.nc"] %}
+                {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endif %}
                 {% endfor %}
             {% endif %}
             {# All GSI Analysis Files #}
             {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt",
                              "increment.atm.i006.nc", "radstat.tar",
                              "recentered_increment.atm.i006.nc", "rad_varbc_params.tar"] %}
+                {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endif %}
             {% endfor %}
 
         {% endif %}
@@ -81,8 +85,9 @@ analysis:
         {# -------------------------------------------------------------------- #}
         {% if DO_GSISOILDA %}
         {# Surface Increments #}
+        {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z.increment.sfc.i006.nc") %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.increment.sfc.i006.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-
+        {% endif %}
             {# Land IAU Increments (Tiled) #}
             {% if DO_LAND_IAU %}
                 {# Surface Increments #}
