@@ -77,10 +77,10 @@ export AERO_EMIS_FIRE_VERSION="004"
 # On WCOSS2, points to DCOM (Data Communication) root for operational runs; empty for testing.
 # Processed by scripts like exglobal_prep_emissions.py to generate input files for GOCART.
 #---------------------------------------------------------------------------------------------------
-export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = false
+export AERO_EMIS_FIRE_HIST=0 # Use historical fire emissions | 1 = true 0 = false
 
 #---------------------------------------------------------------------------------------------------
-export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
+export FIRE_EMIS_NRT_DIR="${DCOMROOT}" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
 export FIRE_EMIS_DIR="${HOMEgcafs}/fix/chem/Emission_data/fires_data/GBBEPx/v4" # Directory containing historical fire emissions
 
 
