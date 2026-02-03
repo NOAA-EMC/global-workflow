@@ -9,7 +9,8 @@ from typing import Any, Dict, List
 
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
-                    strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml)
+                    strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml,
+                    add_to_datetime)
 
 git_filename = "git_info.log"
 logger = getLogger(__name__.split('.')[-1])
