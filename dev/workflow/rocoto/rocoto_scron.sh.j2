@@ -1,0 +1,73 @@
+#! /usr/bin/env bash
+source "{{ HOMEgfs }}/dev/ush/gw_setup.sh"
+
+# Run rocotorun
+bash -c "{{ rocotorunstr }}"
+
+# Monitor for failed jobs using rocotostat
+LOCKFILE="{{ expdir }}/.failed_jobs.lock"
+ROCOTOSTAT=$(command -v rocotostat)
+
+if [[ -n "${ROCOTOSTAT}" ]]; then
+    FAILED_JOBS=$(${ROCOTOSTAT} -d "{{ expdir }}/{{ pslot }}.db" -w "{{ expdir }}/{{ pslot }}.xml" -c all 2> /dev/null | grep -E 'DEAD')
+
+    if [[ -n "${FAILED_JOBS}" ]]; then
+        # Read previously reported failures
+        PREV_FAILED=""
+        if [[ -f "${LOCKFILE}" ]]; then
+            PREV_FAILED=$(cat "${LOCKFILE}")
+        fi
+
+        # Check for NEW failures only (not just changes)
+        NEW_FAILURES=""
+        while IFS= read -r job; do
+            if [[ -n "${job}" ]] && ! echo "${PREV_FAILED}" | grep -qF "${job}"; then
+                NEW_FAILURES="${NEW_FAILURES}${job}"$'\n'
+            fi
+        done <<< "${FAILED_JOBS}"
+
+        # Send email only if there are NEW failures
+        if [[ -n "${NEW_FAILURES}" ]]; then
+            MSGFILE="/tmp/rocoto_fail_msg_$$.txt"
+            {
+                echo "The following jobs have failed in experiment {{ pslot }} on ${MACHINE_ID}:"
+                echo ""
+
+                # Format each failed job with detailed information
+                while IFS= read -r line; do
+                    if [[ -n "${line}" ]]; then
+                        # Parse rocotostat output: Cycle Task JobID State Try MaxTries Duration
+                        read -r cycle task jobid state try maxtries duration <<< "${line}"
+                        # Extract YYYYMMDDHH from cycle (first 10 characters)
+                        cycle_short=${cycle:0:10}
+                        # Get current timestamp
+                        timestamp=$(date -u '+%m/%d/%y %H:%M:%S UTC')
+
+                        # Format similar to user's example
+                        echo "${timestamp} :: {{ pslot }}.xml :: Cycle ${cycle}, Task ${task}, jobid=${jobid}, in state ${state}, ran for ${duration} seconds, try=${try} (of ${maxtries})"
+                        echo "Check log: {{ comroot }}/{{ pslot }}/logs/${cycle_short}/${task}.log"
+                        echo ""
+                    fi
+                done <<< "${NEW_FAILURES}"
+            } > "${MSGFILE}"
+
+            # Try to send email
+            EMAIL="{{ replyto }}"
+            hostname_domain=$(hostname -d)
+            FROM_EMAIL="no-reply@${hostname_domain}"
+            if [[ "${EMAIL}" != "None" ]] && command -v mail &> /dev/null; then
+                # On Gaea, the mail utility requires the -v (verbose) flag to ensure delivery.
+                # To avoid receiving verbose output as an actual email, a spoofed 'from' address is used for notifications.
+                mail -r "${FROM_EMAIL}" -v -s "[{{ pslot }}] Workflow Job Failures Detected" "${EMAIL}" < "${MSGFILE}" 2>&1
+            fi
+
+            rm -f "${MSGFILE}"
+        fi
+
+        # Always update lockfile to reflect current failures
+        echo "${FAILED_JOBS}" > "${LOCKFILE}"
+    else
+        # No failures, remove lockfile if it exists
+        [[ -f "${LOCKFILE}" ]] && rm -f "${LOCKFILE}"
+    fi
+fi
