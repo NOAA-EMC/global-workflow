@@ -1,7 +1,6 @@
 {# ============================================================================ #}
 {# Analysis Staging Configuration                                             #}
 {# ============================================================================ #}
-{% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR)) %}
 analysis:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
@@ -55,11 +54,14 @@ analysis:
                 {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "rad_varbc_params.tar"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                 {% endfor %}
+
+        {% endif %}
+
         {# -------------------------------------------------------------------- #}
         {# GSI Data Assimilation (Non-JEDI)                                     #}
         {# -------------------------------------------------------------------- #}
-        {% else %}
-            {% if DO_IAU or DOIAU_ENKF %}
+        {% if not DO_JEDIATMVAR %}
+            {% if DOIAU or DOIAU_ENKF %}
                 {% for ftype in ["increment.atm.i003.nc", "increment.atm.i009.nc",
                                  "recentered_increment.atm.i003.nc", "recentered_increment.atm.i009.nc"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
@@ -78,19 +80,18 @@ analysis:
         {# GSI Soil Analysis (Land DA)                                          #}
         {# -------------------------------------------------------------------- #}
         {% if DO_GSISOILDA %}
-
-            {# Surface Increments #}
-            {% for ftype in ["increment.sfc.i003.nc", "increment.sfc.i006.nc", "increment.sfc.i009.nc"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-            {% endfor %}
+        {# Surface Increments #}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.increment.sfc.i006.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
 
             {# Land IAU Increments (Tiled) #}
             {% if DO_LAND_IAU %}
+                {# Surface Increments #}
+                {% for ftype in ["increment.sfc.i003.nc", "increment.sfc.i009.nc"] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endfor %}
                 {% for itile in range(1,7) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                 {% endfor %}
             {% endif %}
 
         {% endif %}
-
-{% endif %}

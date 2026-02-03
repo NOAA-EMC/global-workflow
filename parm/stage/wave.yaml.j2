@@ -5,7 +5,5 @@ wave:
     {% if DO_WAVE %}
         {% set ww3_file = ICSDIR ~ "/" ~ COMOUT_WAVE_RESTART_PREV | relpath(ROTDIR) ~ "/" ~ m_prefix ~ ".restart.ww3" %}
         - ["{{ ww3_file }}.nc" , "{{ COMOUT_WAVE_RESTART_PREV }}/{{ m_prefix }}.restart.ww3.nc"]
-        {% if WW3_restart_from_binary %}
         - ["{{ ww3_file }}" , "{{ COMOUT_WAVE_RESTART_PREV }}/{{ m_prefix }}.restart.ww3"]
-        {% endif %}
     {% endif %}
