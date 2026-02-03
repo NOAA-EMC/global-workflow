@@ -8,7 +8,8 @@ from logging import getLogger
 from typing import List
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
                     chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
-                    strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml)
+                    strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml,
+                    add_to_datetime)
 
 git_filename = "git_info.log"
 logger = getLogger(__name__.split('.')[-1])
@@ -761,6 +762,7 @@ class Archive(Task):
         cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
         arch_cyc = arch_dict.ARCH_CYC
         SDATE = arch_dict.SDATE
+        assim_freq = to_timedelta(f"+{arch_dict.assim_freq}H")
 
         if cycle_HH != arch_cyc:
             # Not the right cycle hour
