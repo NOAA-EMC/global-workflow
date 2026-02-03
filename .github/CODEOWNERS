@@ -3,7 +3,7 @@
 
 # global-workflow default owners (not a complete list)
 # Owners of everything that isn't explicitly set further below
-* @DavidHuber-NOAA @aerorahul TravisElless-NOAA
+* @DavidHuber-NOAA @aerorahul @TravisElless-NOAA
 
 # Specific directory owners
 # dev/
