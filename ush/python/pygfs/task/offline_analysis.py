@@ -85,9 +85,9 @@ class OfflineAnalysis(Task):
                                        f"{self.task_config.GPREFIX}sfc.f006.nc")
         files_to_copy.append([sfcfcst_file_in, os.path.join(self.task_config.DATA, "sfcges_mem001")])
         # TODO: Re-stage all of the inputs on HPSS to match EE2-compliant filenames
-        anl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}atmanl.nc")
+        anl_file_in = os.path.join(self.task_config.COMINgfs_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}atmanl.nc")
         files_to_copy.append([anl_file_in, os.path.join(self.task_config.DATA, "atmanl.input.nc")])
-        sfcanl_file_in = os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}sfcanl.nc")
+        sfcanl_file_in = os.path.join(self.task_config.COMINgfs_ATMOS_ANALYSIS.replace('analysis', ''), f"{self.task_config.APREFIX_IN}sfcanl.nc")
         files_to_copy.append([sfcanl_file_in, os.path.join(self.task_config.DATA, "sfcanl.input.nc")])
         FileHandler({'copy': files_to_copy}).sync()
 
@@ -254,9 +254,9 @@ class OfflineAnalysis(Task):
         transfer_files = []
         transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
+        transfer_files.append([os.path.join(self.task_config.COMINgfs_ATMOS_ANALYSIS, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}seaice.5min.blend.grb")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_ATMOS_ANALYSIS, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
+        transfer_files.append([os.path.join(self.task_config.COMINgfs_ATMOS_ANALYSIS, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}snogrb_t1534.3072.1536")])
         # TODO: Re-stage the inputs for the GCDAS offline analysis on HPSS following EE2-compliant filenames, then update this line
         transfer_files.append([

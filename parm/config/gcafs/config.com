@@ -40,11 +40,13 @@ if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_OBSFORGE_TMPL=$(compath.py "${envir}/obsforge/${obsforge_ver}")'/${RUN}.${YMD}/${HH}/'
     COM_RTOFS_TMPL=$(compath.py "${envir}/rtofs/${rtofs_ver}")
     COM_TCVITAL_TMPL=$(compath.py "${envir}/gfs/${gfs_ver}")'/${RUN}.${YMD}/${HH}/atmos'
+    COM_GFS_TMPL=$(compath.py "${envir}/gfs/${gfs_ver}")'/${RUN}.${YMD}/${HH}'
 else
     COM_OBSPROC_TMPL='${DMPDIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
     COM_OBSFORGE_TMPL='${IODADIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}'
     COM_RTOFS_TMPL='${DMPDIR}'
     COM_TCVITAL_TMPL='${DMPDIR}/${RUN}.${YMD}/${HH}/atmos'
+    COM_GFS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 fi
 declare -rx COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL COM_OBSFORGE_TMPL
