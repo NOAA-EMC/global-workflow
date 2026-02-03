@@ -12,11 +12,12 @@ atmosphere_warm_RT:
             {% set file = increment_mem_path ~ ftype %}
         - ["{{ file }}", "{{ increment_destination_path }}"]
         {% endfor %}
-    link_opt:
+
         {% set file = restart_mem_path ~ 'coupler.res' %}
         - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
         {% set file = restart_mem_path ~ 'fv_core.res.nc' %}
         - ["{{ file }}", "{{ COMOUT_ATMOS_RESTART_PREV }}"]
+
         {% set ntiles = 6 %}
         {% for ftype in ["fv_core.res", "fv_srf_wnd.res", "phy_data", "sfc_data"] %}
             # Include restart tile files (e.g., .tile1 to .tile6)

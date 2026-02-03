@@ -1,5 +1,7 @@
 ocean_mediator:
     mkdir:
         - "{{ COMOUT_MED_RESTART_PREV }}"
-    link_opt:
+    link_req:
+    {% if DO_OCN && EXP_WARM_START %}
         - ["{{ ICSDIR }}/{{ COMOUT_MED_RESTART_PREV | relpath(ROTDIR) }}/{{ m_prefix }}.ufs.cpld.cpl.r.nc", "{{ COMOUT_MED_RESTART_PREV }}"]
+    {% endif %}

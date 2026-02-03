@@ -10,9 +10,15 @@ ocean_RT:
     # Include increment files
         {% set file = increment_mem_path %}
         - ["{{ file }}", "{{ COMOUT_OCEAN_ANALYSIS }}"]
-    link_opt:
-        {% for ftype in ["MOM.res.nc", "MOM.res_1.nc", "MOM.res_2.nc", "MOM.res_3.nc"] %}
-        # Include base file for restart files
-        {% set file = restart_mem_path ~ ftype %}
+
+        {% if DO_OCN %}
+            {% set file = restart_mem_path ~ 'MOM.res.nc' %}
         - ["{{ file }}", "{{ COMOUT_OCEAN_RESTART_PREV }}"]
-        {% endfor %}
+            {% if OCNRES > 25 %}
+                {% for ftype in ["MOM.res_1.nc", "MOM.res_2.nc", "MOM.res_3.nc"] %}
+            # Include base file for restart files
+                    {% set file = restart_mem_path ~ ftype %}
+        - ["{{ file }}", "{{ COMOUT_OCEAN_RESTART_PREV }}"]
+                {% endfor %}
+            {% endif %}
+        {% endif %}

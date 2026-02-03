@@ -1,28 +1,16 @@
 {# ============================================================================ #}
 {# Analysis Staging Configuration                                             #}
 {# ============================================================================ #}
+{% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR)) %}
 analysis:
     mkdir:
         - "{{ COMOUT_ATMOS_ANALYSIS }}"
 
     link_req:
         {# -------------------------------------------------------------------- #}
-        {# GSI Soil Analysis (Land DA)                                          #}
-        {# -------------------------------------------------------------------- #}
-        {% if DO_GSISOILDA %}
-            {# Land IAU Increments (Tiled) #}
-            {% if DO_LAND_IAU %}
-                {% for itile in range(1,7) %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-                {% endfor %}
-            {% endif %}
-        {% endif %}
-
-    link_opt:
-        {# -------------------------------------------------------------------- #}
         {# JEDI Atmospheric Variational Data Assimilation                       #}
         {# -------------------------------------------------------------------- #}
-        {% if DO_JEDIATMVAR %}
+        {% if DO_JEDIATMVAR or DO_JEDIATMENS %}
 
             {# Cubed Sphere Grid Configuration #}
             {% if ATMINC_GRID == "cubed_sphere_grid" %}
@@ -71,11 +59,16 @@ analysis:
         {# GSI Data Assimilation (Non-JEDI)                                     #}
         {# -------------------------------------------------------------------- #}
         {% else %}
-
+            {% if DO_IAU or DOIAU_ENKF %}
+                {% for ftype in ["increment.atm.i003.nc", "increment.atm.i009.nc",
+                                 "recentered_increment.atm.i003.nc", "recentered_increment.atm.i009.nc"] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endfor %}
+            {% endif %}
             {# All GSI Analysis Files #}
             {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt",
-                             "increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc", "radstat.tar",
-                             "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc", "rad_varbc_params.tar"] %}
+                             "increment.atm.i006.nc", "radstat.tar",
+                             "recentered_increment.atm.i006.nc", "rad_varbc_params.tar"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
             {% endfor %}
 
@@ -91,4 +84,13 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
             {% endfor %}
 
+            {# Land IAU Increments (Tiled) #}
+            {% if DO_LAND_IAU %}
+                {% for itile in range(1,7) %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/increment.sfc.tile{{ itile }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                {% endfor %}
+            {% endif %}
+
         {% endif %}
+
+{% endif %}
