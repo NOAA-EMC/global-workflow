@@ -3,6 +3,7 @@ applyTo: "**"
 excludeAgent: "code-review"
 ---
 
+_Note:_ The YAML front matter in this file uses the GitHub Copilot instructions schema; `excludeAgent: "code-review"` ensures these instructions are not applied to the Copilot Code Review agent. See the official schema documentation at https://aka.ms/github-copilot-instructions-schema.
 ## EIB MCP/RAG Server Integration (v3.6.2)
 
 The **EIB MCP-RAG Server** provides AI-assisted access to the Global Workflow system through the Model Context Protocol (MCP) with Retrieval-Augmented Generation (RAG) capabilities. This server is purpose-built to support NOAA's operational GFS, GEFS, and SFS forecasting infrastructure.
