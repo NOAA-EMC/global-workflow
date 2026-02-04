@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_tars earc_groups"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_tars earc_groups"
 
 ##############################################
 # Set variables used in the script
@@ -25,7 +25,7 @@ mkdir -p "${COMIN_CONF}"
 # Calls an external bash command; do not fail on unassigned/error
 export -n SHELLOPTS
 unset_strict
-"${SCRgfs}/exglobal_enkf_earc_tars.py"
+"${SCRglobal}/exglobal_enkf_earc_tars.py"
 export err=$?
 set_strict
 if [[ ${err} -ne 0 ]]; then

@@ -39,7 +39,7 @@ export FHR3=%FHR3%
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC
+${HOMEglobal}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

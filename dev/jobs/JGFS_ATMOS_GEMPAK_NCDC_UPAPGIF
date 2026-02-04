@@ -3,7 +3,7 @@
 ############################################
 # GFS GEMPAK NCDC PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_gif" -c "base gempak"
 
 export MP_PULSE=0
 export MP_TIMEOUT=2000
@@ -42,7 +42,7 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh"
+"${SCRglobal}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

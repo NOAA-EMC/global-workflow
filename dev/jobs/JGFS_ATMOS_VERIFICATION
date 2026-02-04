@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "metp" -c "base metp"
 
 ###############################################################
 ## Abstract:
 ## Inline METplus verification and diagnostics driver script
-## HOMEgfs   : /full/path/to/workflow
+## HOMEglobal   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## PDY    : current date (YYYYMMDD)
 ## RUN    : cycle name (gdas / gfs)

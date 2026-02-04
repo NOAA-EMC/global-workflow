@@ -58,7 +58,7 @@ EOF
 cat input.nml
 
 # Run ensstat
-"${EXECgfs}/ensstat.x" < input.nml
+"${EXECglobal}/ensstat.x" < input.nml
 
 export err=$?
 if [[ "${err}" -ne 0 ]]; then

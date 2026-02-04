@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_groups"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_groups"
 
 ##############################################
 # Set variables used in the script
@@ -13,7 +13,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 ###############################################################
 
 export -n SHELLOPTS
-${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_earc.py}
+${GLOBALGLOBUSARCHSH:-${SCRglobal}/exglobal_globus_earc.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

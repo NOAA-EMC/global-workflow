@@ -5,7 +5,7 @@
 ############################################
 # GFS FBWIND PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
 
 export COMPONENT="atmos"
 
@@ -21,7 +21,7 @@ fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_fbwind.sh" && true
+"${SCRglobal}/exgfs_atmos_fbwind.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

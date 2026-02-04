@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -13,7 +13,7 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"C
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_oceanice_products.py" && true
+"${SCRglobal}/exglobal_oceanice_products.py" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

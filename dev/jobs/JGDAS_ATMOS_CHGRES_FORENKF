@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
 
 ##############################################
 # Set variables used in the script
@@ -23,7 +23,7 @@ MEMDIR="mem001" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 
 ###############################################################
 # Run relevant script
-${CHGRESFCSTSH:-${SCRgfs}/exgdas_atmos_chgres_forenkf.sh} && true
+${CHGRESFCSTSH:-${SCRglobal}/exgdas_atmos_chgres_forenkf.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

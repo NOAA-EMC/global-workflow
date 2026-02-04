@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "upp" -c "base upp"
 
 ##############################################
 # Set variables used in the exglobal script
@@ -20,7 +20,7 @@ mkdir -p "${COMOUT_ATMOS_MASTER}"
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/exglobal_atmos_upp.py" && true
+"${SCRglobal}/exglobal_atmos_upp.py" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

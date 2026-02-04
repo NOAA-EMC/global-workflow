@@ -1,7 +1,7 @@
 def Machine = 'none'
 def machine = 'none'
 def CUSTOM_WORKSPACE = 'none'
-def HOMEgfs = 'none'
+def HOMEglobal = 'none'
 def HOMEgfs_dev = 'none'
 def CI_CASES = ''
 def GH = 'none'
@@ -90,7 +90,7 @@ pipeline {
                         properties([parameters([[$class: 'NodeParameterDefinition', allowedSlaves: ['built-in', 'hercules-emc', 'hera-emc', 'ursa-emc', 'orion-emc', 'gaeaC5', 'gaeaC6-emc'], defaultSlaves: ['built-in'], name: '', nodeEligibility: [$class: 'AllNodeEligibility'], triggerIfResult: 'allCases']])])
                         GH = sh(script: "which gh || echo '~/bin/gh'", returnStdout: true).trim()
                         CUSTOM_WORKSPACE = "${WORKSPACE}"
-                        HOMEgfs = "${CUSTOM_WORKSPACE}/global-workflow"
+                        HOMEglobal = "${CUSTOM_WORKSPACE}/global-workflow"
                         HOMEgfs_dev = "${CUSTOM_WORKSPACE}/global-workflow/dev"
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/global-workflow; mkdir -p ${CUSTOM_WORKSPACE}/global-workflow")
                         sh(script: "rm -Rf ${CUSTOM_WORKSPACE}/RUNTESTS; mkdir -p ${CUSTOM_WORKSPACE}/RUNTESTS")
@@ -106,17 +106,17 @@ pipeline {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     script {
-                        ws(HOMEgfs) {
-                            echo "Checking out the code on ${Machine} using scm in ${HOMEgfs}"
+                        ws(HOMEglobal) {
+                            echo "Checking out the code on ${Machine} using scm in ${HOMEglobal}"
                             try {
                                 checkout scm
                             } catch (Exception e) {
-                                echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}, try again ..."
+                                echo "Failed to checkout the code on ${Machine} using scm in ${HOMEglobal}, try again ..."
                                 sleep time: 45, unit: 'SECONDS'
                                 try {
                                     checkout scm
                                 } catch (Exception ee) {
-                                    echo "Failed to checkout the code on ${Machine} using scm in ${HOMEgfs}: ${ee.getMessage()}"
+                                    echo "Failed to checkout the code on ${Machine} using scm in ${HOMEglobal}: ${ee.getMessage()}"
                                     if (env.CHANGE_ID) {
                                         sh(script: """${GH} pr comment ${env.CHANGE_ID} --repo ${repo_url} --body "Checkout **Failed** on ${Machine} in Build# ${env.BUILD_NUMBER}: ${ee.getMessage()}" """)
                                     }
@@ -127,7 +127,7 @@ pipeline {
                             def gist_url = ""
                             def error_logs = ""
                             def error_logs_message = ""
-                            dir("${HOMEgfs}/sorc") {
+                            dir("${HOMEglobal}/sorc") {
                                 try {
                                     sh(script: "${HOMEgfs_dev}/ci/scripts/utils/ci_utils.sh build") // build the global-workflow executables
                                 } catch (Exception error_build) {
@@ -140,8 +140,8 @@ pipeline {
                                             if (fileExists("${line}") && readFile("${line}").length() > 0 ){
                                                 try {
                                                     archiveArtifacts artifacts: "${line}", fingerprint: true
-                                                    error_logs = error_logs + "${HOMEgfs}/sorc/${line} "
-                                                    error_logs_message = error_logs_message + "${HOMEgfs}/sorc/${line}\n"
+                                                    error_logs = error_logs + "${HOMEglobal}/sorc/${line} "
+                                                    error_logs_message = error_logs_message + "${HOMEglobal}/sorc/${line}\n"
                                                 }
                                                 catch (Exception error_arch) { echo "Failed to archive error log ${line}: ${error_arch.getMessage()}" }
                                             }
@@ -193,7 +193,7 @@ pipeline {
             agent { label NodeName[machine].toLowerCase() }
             steps {
                 script {
-                  ws(HOMEgfs) {
+                  ws(HOMEglobal) {
                     def parallelStages = CI_CASES.collectEntries { caseName ->
                         ["${caseName}": {
                             stage("Create ${caseName}") {

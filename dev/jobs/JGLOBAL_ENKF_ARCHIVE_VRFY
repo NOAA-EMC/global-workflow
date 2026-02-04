@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
 
 ##############################################
 # Set variables used in the script
@@ -14,7 +14,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 # Run archive script
 ###############################################################
 
-"${SCRgfs}/exglobal_enkf_earc_vrfy.py"
+"${SCRglobal}/exglobal_enkf_earc_vrfy.py"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

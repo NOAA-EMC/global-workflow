@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlinit"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlinit"
 
 ##############################################
 # Set variables used in the script
@@ -27,7 +27,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMINITPY:-${SCRgfs}/exglobal_atm_analysis_initialize.py}
+EXSCRIPT=${GDASATMINITPY:-${SCRglobal}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

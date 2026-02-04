@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atmensanlinit"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atmensanlinit"
 
 ##############################################
 # Set variables used in the script
@@ -25,7 +25,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSINITPY:-${SCRgfs}/exglobal_atmens_analysis_initialize.py}
+EXSCRIPT=${GDASATMENSINITPY:-${SCRglobal}/exglobal_atmens_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

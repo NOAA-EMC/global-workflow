@@ -22,9 +22,9 @@
 # Derived base variables
 
 # Dependent Scripts and Executables
-CYCLESH=${CYCLESH:-"${USHgfs}/global_cycle.sh"}
-REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
-export CYCLEXEC=${CYCLEXEC:-"${EXECgfs}/global_cycle"}
+CYCLESH=${CYCLESH:-"${USHglobal}/global_cycle.sh"}
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
+export CYCLEXEC=${CYCLEXEC:-"${EXECglobal}/global_cycle"}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 
@@ -103,8 +103,8 @@ export MAX_TASKS_CY="${ntiles}"
 
 # Copy fix files required by global_cycle to DATA just once
 for ((nn = 1; nn <= ntiles; nn++)); do
-    cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
-    cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
+    cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
+    cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
 done
 
 # Copy the NSST analysis file for global_cycle
