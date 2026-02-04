@@ -107,6 +107,8 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_enkfonly_atm']:
             configs += ['fetch', 'prepatmanlbias']
+            if options['do_archcom']:
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_prep_sfc']:
             configs += ['prep_sfc']
