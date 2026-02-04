@@ -71,7 +71,7 @@ fi
 
 # Continue if there is at least one file to process
 # Note -quit stops find after the first match
-count_files=$(find "${GSIDIAGDIR}"/dir.* -maxdepth 1 -type f -quit -printf '.' | wc -c)
+count_files=$(find "${GSIDIAGDIR}"/dir.* -maxdepth 1 -type f -printf '.' -quit | wc -c)
 if [[ ${count_files} -eq 0 ]]; then
     echo "WARNING: No diagnostic files found to process!"
     exit 0
