@@ -762,7 +762,7 @@ class Archive(Task):
         cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
         arch_cyc = arch_dict.ARCH_CYC
         SDATE = arch_dict.SDATE
-        assim_freq = to_timedelta(f"+{arch_dict.assim_freq}H")
+        assim_freq = arch_dict.assim_freq
 
         if cycle_HH != arch_cyc:
             # Not the right cycle hour
