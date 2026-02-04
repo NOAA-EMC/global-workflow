@@ -357,9 +357,6 @@ export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
 
-# Use Jacobians in eupd and thereby remove need to run eomg
-export lobsdiag_forenkf=".true."
-
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"
 #   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
@@ -372,6 +369,7 @@ export imp_physics=8
 # DA engine
 export DO_JEDIATMVAR="{{ DO_JEDIATMVAR }}"
 export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
+export DO_JEDIATMENS_SPLIT_OBSSOL="{{ DO_JEDIATMENS_SPLIT_OBSSOL }}" #Only used if DO_JEDIATMENS is "YES"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"

@@ -159,7 +159,7 @@ class ArchiveTarVars:
         - Basic: ATARDIR, current_cycle, IAUFHRS, RUN, PDY, PSLOT
         - Archive control: DO_ARCHCOM, ARCHCOM_TO, ROTDIR, PARMgfs, ARCDIR, SDATE, MODE
         - Ensemble: ENSGRP, NMEM_EARCGRP, NMEM_ENS, NMEM_ENS_GFS
-        - EnKF operations: DO_CALC_INCREMENT_ENKF_GFS, DO_JEDIATMENS, lobsdiag_forenkf
+        - EnKF operations: DO_CALC_INCREMENT_ENKF_GFS, DO_JEDIATMENS, DO_JEDIATMENS_SPLIT_OBSSOL
         - Forecast: FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS, FHMAX_ENKF, FHOUT_ENKF
         - EnKF settings: ENKF_SPREAD, DOIAU_ENKF, IAU_OFFSET, IAUFHRS_ENKF
         - Restart: restart_interval_enkfgdas, restart_interval_enkfgfs
@@ -206,7 +206,7 @@ class ArchiveTarVars:
                 # Ensemble configuration
                 'ENSGRP', 'NMEM_EARCGRP', 'NMEM_ENS_GFS',
                 # EnKF-specific operations
-                'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS', 'lobsdiag_forenkf', 'DO_CALC_INCREMENT',
+                'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS', 'DO_JEDIATMENS_SPLIT_OBSSOL', 'DO_CALC_INCREMENT',
                 # EnKF forecast configuration
                 'FHMIN_ENKF', 'FHMAX_ENKF_GFS', 'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF',
                 # EnKF settings

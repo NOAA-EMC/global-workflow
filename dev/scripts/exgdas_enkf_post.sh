@@ -66,6 +66,7 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
         COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
+    # TODO: remove deadlinks and refer https://github.com/NOAA-EMC/global-workflow/issues/4405
     for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         fhrchar=$(printf %03i "${fhr}")
         ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.f${fhrchar}.nc" "sfcf${fhrchar}_${memchar}"
@@ -82,6 +83,7 @@ fi
 
 for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     fhrchar=$(printf %03i "${fhr}")
+    # TODO: remove deadlinks and refer https://github.com/NOAA-EMC/global-workflow/issues/4405
     ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc" "sfcf${fhrchar}.ensmean"
     ${NLN} "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.atm.f${fhrchar}.nc" "atmf${fhrchar}.ensmean"
     if [[ "${SMOOTH_ENKF}" == "YES" ]]; then

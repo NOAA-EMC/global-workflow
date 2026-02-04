@@ -137,7 +137,7 @@ while [[ ${fhr} -le ${FHMAX_WAV_PNT} ]]; do
     FH3=$(printf %03i "${fhr}")
     pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
     if [[ -f "${pfile}" ]]; then
-        ${NLN} "${pfile}" "./${ymdhms}.out_pnt.ww3.nc"
+        cpreq "${pfile}" "./${ymdhms}.out_pnt.ww3.nc"
     else
         export err=7
         err_exit "NO RAW POINT OUTPUT FILE ${ymdhms}.out_pnt.ww3.nc"

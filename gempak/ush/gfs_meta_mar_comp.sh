@@ -19,9 +19,7 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
     YMD=${PDY} HH=${cycle} GRID="1p00" declare_from_tmpl gempak_dir:COM_ATMOS_GEMPAK_TMPL
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         file_out="${COMIN}/$(basename "${file_in}")"
-        if [[ ! -L "${file_out}" ]]; then
-            ${NLN} "${file_in}" "${file_out}"
-        fi
+        cpreq "${file_in}" "${file_out}"
     done
 done
 
@@ -31,6 +29,7 @@ done
 #
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
@@ -75,6 +74,8 @@ for garea in NAtl NPac; do
         fi
 
         # Create symlink in DATA to sidestep gempak path limits
+        # TODO: Add only necessary files and remove unneeded ones to minimize data volume
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         HPCGFS="${RUN}.${init_time}"
         if [[ ! -L ${HPCGFS} ]]; then
             YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
@@ -226,6 +227,7 @@ EOF
 
         export HPCUKMET="ukmet.${ukmet_PDY}"
         if [[ ! -L "${HPCUKMET}" ]]; then
+            # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         fi
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
@@ -315,6 +317,7 @@ EOF
 
         HPCECMWF=ecmwf.${PDY}
         if [[ ! -L "${HPCECMWF}" ]]; then
+            # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
             ${NLN} "${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak" "${HPCECMWF}"
         fi
         grid2="${HPCECMWF}/ecmwf_glob_${ecmwf_date}"
