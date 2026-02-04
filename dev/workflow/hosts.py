@@ -84,7 +84,6 @@ class Host:
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
             self.machine = 'WCOSS2'
-        elif os.path.exists('/gpfs/f5'):
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
         elif container is not None:
