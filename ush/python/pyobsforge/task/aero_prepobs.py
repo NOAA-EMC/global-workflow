@@ -53,7 +53,7 @@ class AerosolObsPrep(Task):
         """
         """
         for platform in self.task_config.platforms:
-            loggeer.info(f"========= platform: {platform}")
+            logger.info(f"========= platform: {platform}")
             input_files = self.jrr_aod_db.get_valid_files(window_begin=self.task_config.window_begin,
                                                           window_end=self.task_config.window_end,
                                                           dst_dir='jrr_aod',
