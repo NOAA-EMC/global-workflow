@@ -46,7 +46,8 @@ else
     COM_OBSFORGE_TMPL='${IODADIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}'
     COM_RTOFS_TMPL='${DMPDIR}'
     COM_TCVITAL_TMPL='${DMPDIR}/${RUN}.${YMD}/${HH}/atmos'
-    COM_GFS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
+    #COM_GFS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
+    COM_GFS_TMPL='/lfs/h1/ops/prod/com/gfs/v16.3/${RUN}.${YMD}/${HH}'
 fi
 declare -rx COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL COM_OBSFORGE_TMPL
