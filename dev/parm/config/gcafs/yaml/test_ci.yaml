@@ -1,4 +1,4 @@
 defaults:
-  !INC {{ PARMgfs }}/config/gcafs/yaml/defaults.yaml
+  !INC {{ PARMglobal }}/config/gcafs/yaml/defaults.yaml
 base:
   ACCOUNT: "nems"

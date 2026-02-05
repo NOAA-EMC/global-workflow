@@ -699,7 +699,7 @@ class Archive(Task):
         # Get commonly used variables
         arch_hashes = arch_dict.ARCH_HASHES
         arch_diffs = arch_dict.ARCH_DIFFS
-        homegfs = arch_dict.HOMEglobal
+        homeglobal = arch_dict.HOMEglobal
         expdir = arch_dict.EXPDIR
 
         # Find the git command
@@ -709,7 +709,7 @@ class Archive(Task):
 
         output = ""
         # Navigate to HOMEglobal to run the git commands
-        with chdir(homegfs):
+        with chdir(homeglobal):
 
             # Are we running git to get hashes?
             if arch_hashes:

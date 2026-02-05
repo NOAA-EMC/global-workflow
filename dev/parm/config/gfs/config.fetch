@@ -14,6 +14,6 @@ else
    ic_type="warm"
 fi
 
-export FETCH_YAML_TMPL="${PARMgfs}/fetch/${NET}_${APP}_${ic_type}_${MODE}.yaml.j2"
+export FETCH_YAML_TMPL="${PARMglobal}/fetch/${NET}_${APP}_${ic_type}_${MODE}.yaml.j2"
 
 echo "END: config.fetch"

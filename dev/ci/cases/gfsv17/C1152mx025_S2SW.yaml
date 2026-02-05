@@ -14,7 +14,7 @@ experiment:
   idate: 2024111506
   edate: 2025011600
   icsdir: /lfs/h2/emc/ptmp/emc.global/RETRO_GFSv17/IC/v2
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/s2sw.yaml
 
 workflow:
   engine: rocoto

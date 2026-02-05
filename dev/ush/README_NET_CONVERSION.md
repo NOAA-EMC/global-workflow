@@ -7,12 +7,12 @@ These scripts facilitate the conversion between development and operational vari
 ## Variable Mapping
 
 Development (global-workflow) → Operational (NCO):
-- `HOMEglobal` → `HOME${NET}` (e.g., `HOMEgfs`)
-- `PARMglobal` → `PARM${NET}` (e.g., `PARMgfs`)
-- `USHglobal` → `USH${NET}` (e.g., `USHgfs`)
-- `SCRglobal` → `SCR${NET}` (e.g., `SCRgfs`)
-- `EXECglobal` → `EXEC${NET}` (e.g., `EXECgfs`)
-- `FIXglobal` → `FIX${NET}` (e.g., `FIXgfs`)
+- `HOMEglobal` → `HOME${NET}` (e.g., `HOMEglobal`)
+- `PARMglobal` → `PARM${NET}` (e.g., `PARMglobal`)
+- `USHglobal` → `USH${NET}` (e.g., `USHglobal`)
+- `SCRglobal` → `SCR${NET}` (e.g., `SCRglobal`)
+- `EXECglobal` → `EXEC${NET}` (e.g., `EXECglobal`)
+- `FIXglobal` → `FIX${NET}` (e.g., `FIXglobal`)
 
 ## Scripts
 
