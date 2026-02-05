@@ -1,0 +1,36 @@
+#! /usr/bin/env bash
+
+########## config.atmos_products ##########
+# atmosphere grib2 products specific
+
+echo "BEGIN: config.atmos_products"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" atmos_products
+
+## Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+if [[ "${RUN:-}" == "gcdas" ]]; then
+  export downset=2
+  export FHOUT_PGBS=${FHOUT:-1}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
+  export FLXGF="NO"  # Create interpolated sflux.1p00 file
+  export WGNE="NO"  # WGNE products are created for first FHMAX_WGNE forecast hours
+  export FHMAX_WGNE=0
+elif [[ "${RUN:-}" == "gcafs" ]]; then
+  export downset=2
+  export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
+  export FLXGF="NO"  # Create interpolated sflux.1p00 file
+  export WGNE="NO"  # WGNE products are created for first FHMAX_WGNE forecast hours
+  export FHMAX_WGNE=180
+fi
+
+# paramlist files for the different forecast hours and downsets
+export paramlista="${PARMgcafs}/product/gcafs.fFFF.paramlist.a.txt"
+export paramlista_anl="${PARMgcafs}/product/gcafs.anl.paramlist.a.txt"
+export paramlista_f000="${PARMgcafs}/product/gcafs.f000.paramlist.a.txt"
+export paramlistb="${PARMgcafs}/product/gcafs.fFFF.paramlist.b.txt"
+export paramlistb_anl="${PARMgcafs}/product/gcafs.anl.paramlist.b.txt"
+export paramlistb_f000="${PARMgcafs}/product/gcafs.f000.paramlist.b.txt"
+
+echo "END: config.atmos_products"

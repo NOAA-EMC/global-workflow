@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+
+source "${HOMEgcafs}/ush/preamble.sh"
+source "${HOMEgcafs}/ush/jjob_header.sh" -e "prepareobs" -c "base prepareobs"
+
+##############################################
+# Set variables used in the script
+##############################################
+export COMOUT_OBS="${COMROOT}/${RUN}.${PDY}/${cyc}/obs/chem"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${DUMPAODPY:-${HOMEgcafs}/scripts/exgcdas_prepare_obs.py}
+${EXSCRIPT}
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

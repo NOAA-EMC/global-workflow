@@ -62,6 +62,7 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
+export EXPDIR=%EXPDIR%
 
 if [[ -d "${HOMEgcafs}/sorc/wxflow/src" ]]; then
   PYTHONPATH="${HOMEgcafs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"

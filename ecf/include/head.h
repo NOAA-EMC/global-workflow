@@ -1,3 +1,4 @@
+echo "HELLO CRM"
 date
 hostname
 set -xe  # print commands as they are executed and enable signal trapping
@@ -59,6 +60,12 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   echo "Listing modules from head.h:"
   module list
   set -x
+  if [[ ! " ops.prod ops.para " =~ " $(whoami) " ]]; then
+    echo "Allow over-riding defaults for developers"
+    if [ -n "%COMROOT:%" ]; then export COMROOT="%COMROOT:%"; fi
+    if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT="%DCOMROOT:%"; fi
+  fi
 fi
 
 timeout 300 ecflow_client --init=${ECF_RID}

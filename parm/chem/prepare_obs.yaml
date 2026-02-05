@@ -1,0 +1,9 @@
+aoddump:
+  provider: VIIRSAOD
+  platforms: ['npp', 'j01', 'n21'] # note j01==n20
+  binning_stride: 33
+  binning_min_number_of_obs: 32
+  binning_cressman_radius: 25
+  thinning_threshold: 0
+  channel: 4
+  preqc: 0

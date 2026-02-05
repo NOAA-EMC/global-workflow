@@ -16,7 +16,7 @@ function _usage() {
     cat << EOF
 Builds all of the global-workflow components by calling the individual build scripts in parallel.
 
-Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [gefs] [sfs] [gcafs] [gsi] [gcdas] [all]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [gefs] [sfs] [gcafs] [gsi] [gdas] [all]
   -a UFS_app:
     Build a specific UFS app instead of the default.  This will be applied to all UFS (GFS, GEFS, SFS, GCAFS) builds.
   -d:
@@ -32,7 +32,7 @@ Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-d][-f][-h][-v] [gfs] [ge
   -p:
     Valid only for WCOSS2; enable parallel restart I/O when compiling the UFS
 
-  Specified systems (gfs, gefs, sfs, gcafs, gsi, gcdas) are non-exclusive, so they can be built together.
+  Specified systems (gfs, gefs, sfs, gcafs, gsi, gdas) are non-exclusive, so they can be built together.
 EOF
     exit 1
 }
@@ -78,7 +78,7 @@ else
     selected_systems="$*"
 fi
 
-supported_systems=("gfs" "gefs" "sfs" "gcafs" "gsi" "gcdas" "all")
+supported_systems=("gfs" "gefs" "sfs" "gcafs" "gsi" "gdas" "all")
 
 declare -A system_builds
 system_builds=(
@@ -87,8 +87,8 @@ system_builds=(
     ["sfs"]="ufs_sfs gfs_utils ufs_utils upp ww3_gefs"
     ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp nexus gsi_utils"
     ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
-    ["gcdas"]="gcdas gsi_utils"
-    ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gcdas gsi_enkf gsi_monitor gsi_utils nexus"
+    ["gdas"]="gdas gsi_utils"
+    ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils nexus"
 )
 
 logs_dir="${HOMEgfs}/sorc/logs"
@@ -100,7 +100,7 @@ fi
 # Jobs per build ("min max")
 declare -A build_jobs build_opts build_scripts
 build_jobs=(
-    ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["ufs_gcafs"]=8 ["gcdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
+    ["ufs_gfs"]=8 ["ufs_gefs"]=8 ["ufs_sfs"]=8 ["ufs_gcafs"]=8 ["gdas"]=8 ["gsi_enkf"]=2 ["gfs_utils"]=1 ["ufs_utils"]=1
     ["ww3_gfs"]=1 ["ww3_gefs"]=1 ["gsi_utils"]=1 ["gsi_monitor"]=1 ["gfs_utils"]=1 ["upp"]=1 ["nexus"]=1
 )
 
@@ -117,7 +117,7 @@ build_opts=(
     ["upp"]="${_build_debug}"
     ["ww3_gfs"]="${_verbose_opt} ${_build_debug}"
     ["ww3_gefs"]="-w ${_verbose_opt} ${_build_debug}"
-    ["gcdas"]="${_verbose_opt} ${_build_debug}"
+    ["gdas"]="${_verbose_opt} ${_build_debug}"
     ["ufs_utils"]="${_verbose_opt} ${_build_debug}"
     ["gfs_utils"]="${_verbose_opt} ${_build_debug}"
     ["gsi_utils"]="${_verbose_opt} ${_build_debug}"
@@ -132,7 +132,7 @@ build_scripts=(
     ["ufs_gefs"]="build_ufs.sh"
     ["ufs_sfs"]="build_ufs.sh"
     ["ufs_gcafs"]="build_ufs.sh"
-    ["gcdas"]="build_gcdas.sh"
+    ["gdas"]="build_gdas.sh"
     ["gsi_enkf"]="build_gsi_enkf.sh"
     ["gfs_utils"]="build_gfs_utils.sh"
     ["ufs_utils"]="build_ufs_utils.sh"
@@ -223,7 +223,7 @@ check_builds() {
     return 0
 }
 
-# Cleanup function to kill the gcdasApp build on ctrl-c or non-clean exit
+# Cleanup function to kill the gdasApp build on ctrl-c or non-clean exit
 # shellcheck disable=SC2329
 function cleanup() {
     echo "Exiting build script. Terminating subprocesses..."

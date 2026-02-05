@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+########## config.prep_emissions ##########
+# aerosol emissions preprocessing specific
+
+echo "BEGIN: config.prep_emissions"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" prep_emissions
+
+source "${EXPDIR}/config.aero"
+
+echo "END: config.prep_emissions"
