@@ -91,7 +91,7 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
 yaml="${HOMEgfs}/sorc/build_opts.yaml"
-#shellcheck disable=SC2086
+# shellcheck disable=SC2086,SC2248
 "${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
