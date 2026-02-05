@@ -12,6 +12,7 @@ Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT -c [gfs gefs sfs gcafs gsi gdas
   -A:
     HPC account to use for the compute-node builds [REQUIRED when building on compute nodes]
   -c Build on compute nodes (DEFAULT: NO)
+  -d Build in debug mode (DEFAULT: NO)
 
   Input arguments are the system(s) to build.
   Valid options are
@@ -32,14 +33,16 @@ build_db="build.db"
 build_lock_db="build_lock.db"
 HPC_ACCOUNT="UNDEFINED"
 compute_build="NO"
+debug_opt=""
 max_cores=20 # Maximum number of cores to use for builds on head node
 
 OPTIND=1
-while getopts ":hA:vc" option; do
+while getopts ":hA:vcd" option; do
     case "${option}" in
         h) _usage ;;
         A) HPC_ACCOUNT="${OPTARG}" ;;
         c) compute_build="YES" ;;
+        d) debug_opt=" -d" ;;
         v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -119,9 +122,12 @@ for i in "${!logs[@]}"; do
         fi
     fi
 
+    cmdstr="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
+    cmdstr="${cmdstr} ${debug_opt}"
+
     build_names["${name}"]="${name}"
     build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
-    build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
+    build_commands["${name}"]="${cmdstr}"
     build_logs["${name}"]="${log}"
     build_cores["${name}"]="${cores}"
     build_status["${name}"]="PENDING"
