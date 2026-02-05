@@ -209,9 +209,20 @@ EOF
                         increment_file_on_native_grid=".false."
                     fi
                 else
-                    inc_files=("increment.atm.i006.nc")
-                    res_latlon_dynamics="increment.atm.i006.nc"
-                    increment_file_on_native_grid=".false."
+		    if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
+			inc_files=("increment.atm.i006.nc")
+			res_latlon_dynamics="increment.atm.i006.nc"
+			increment_file_on_native_grid=".false."
+		    else
+			increment_file_on_native_grid=".true."
+			if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
+                            inc_files=("csg_jedi_increment.atm.i006.tile1.nc" "csg_jedi_increment.atm.i006.tile2.nc" "csg_jedi_increment.atm.i006.tile3.nc" "csg_jedi_increment.atm.i006.tile4.nc" "csg_jedi_increment.atm.i006.tile5.nc" "csg_jedi_increment.atm.i006.tile6.nc")
+                            res_latlon_dynamics="csg_jedi_increment.atm.i006"
+			else
+                            inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
+                            res_latlon_dynamics="jedi_increment.atm.i006"
+			fi
+		    fi
                 fi
                 if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
                     # Control member has no perturbation

@@ -12,7 +12,7 @@ enkf_restarta_grp:
             {% for iaufhr in iaufhrs_str %}
                 {% for itile in range(6) %}
                     {% if DOENKFONLY_ATM %}
-        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}_jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}csg_jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
                     {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
                     {% endif %}

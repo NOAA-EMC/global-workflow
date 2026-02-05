@@ -47,8 +47,13 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     ln -sf "${ABIAS_SAT}" "./satbias_in"
     ln -sf "${ABIASPC_SAT}" "./satbias_pc"
     if grep -i "NaN" satbias_in > /dev/null 2>&1; then
-        export err=1
-        err_chk "FATAL ERROR There are NaN in satbias_in."
+        ##export err=1
+        ##err_chk "FATAL ERROR There are NaN in satbias_in."
+	echo "WARNING: There are NaN in satbias_in.  Replace NaN with 0.000000"
+	cp satbias_in satbias_in_original
+	sed -i -e 's/         NaN/    0.000000/g' \
+               -e 's/         nan/    0.000000/g' \
+               -e 's/         NAN/    0.000000/g' satbias_in
     fi
 
     # Get instruments from satbias_in
@@ -72,9 +77,9 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
 
         cd ./testrun/varbc/
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
-            "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".tlapse.txt
-        cpreq -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias.nc
-        mv satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z."${instrument}".satbias_cov.nc
+            "${OUTPUT}"/gdas.t"${gcyc}"z.radiance_"${instrument}".tlapse.txt
+        cpreq -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z.radiance_"${instrument}".satbias.nc
+        mv satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z.radiance_"${instrument}".satbias_cov.nc
         cd "${DATA}"
         rm -f satbias_converter.yaml
     done

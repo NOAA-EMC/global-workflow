@@ -397,6 +397,9 @@ export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"
 export NMEM_ENS_GFS_OFFSET="{{ NMEM_ENS_GFS_OFFSET }}"
 export DO_CALC_INCREMENT_ENKF_GFS="NO"
 export DOENKFONLY_ATM="{{ DOENKFONLY_ATM }}"
+if [[ "${DOENKFONLY_ATM}" = "YES" && "${DO_JEDIATMENS}" = "YES" ]]; then
+    export DO_HISTORY_FILE_ON_NATIVE_GRID="YES"
+fi
 
 # EnKF output frequency
 if [[ "${DOHYBVAR}" = "YES" ]]; then
