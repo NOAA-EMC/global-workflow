@@ -42,7 +42,7 @@ while getopts ":hA:vcd" option; do
         h) _usage ;;
         A) HPC_ACCOUNT="${OPTARG}" ;;
         c) compute_build="YES" ;;
-        d) debug_opt=" --debug" ;;
+        d) debug_opt="--debug" ;;
         v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -91,6 +91,7 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
 yaml="${HOMEgfs}/sorc/build_opts.yaml"
+#shellcheck disable=SC2086
 "${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
