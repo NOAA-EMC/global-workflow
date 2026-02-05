@@ -49,11 +49,11 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
     if grep -i "NaN" satbias_in > /dev/null 2>&1; then
         ##export err=1
         ##err_chk "FATAL ERROR There are NaN in satbias_in."
-	echo "WARNING: There are NaN in satbias_in.  Replace NaN with 0.000000"
-	cp satbias_in satbias_in_original
-	sed -i -e 's/         NaN/    0.000000/g' \
-               -e 's/         nan/    0.000000/g' \
-               -e 's/         NAN/    0.000000/g' satbias_in
+        echo "WARNING: There are NaN in satbias_in.  Replace NaN with 0.000000"
+        cp satbias_in satbias_in_original
+        sed -i -e 's/         NaN/    0.000000/g' \
+            -e 's/         nan/    0.000000/g' \
+            -e 's/         NAN/    0.000000/g' satbias_in
     fi
 
     # Get instruments from satbias_in
