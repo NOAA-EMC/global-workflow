@@ -42,7 +42,7 @@ while getopts ":hA:vcd" option; do
         h) _usage ;;
         A) HPC_ACCOUNT="${OPTARG}" ;;
         c) compute_build="YES" ;;
-        d) debug_opt=" -d" ;;
+        d) debug_opt=" --debug" ;;
         v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -91,7 +91,7 @@ rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
 yaml="${HOMEgfs}/sorc/build_opts.yaml"
-"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
+"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
@@ -122,12 +122,9 @@ for i in "${!logs[@]}"; do
         fi
     fi
 
-    cmdstr="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
-    cmdstr="${cmdstr} ${debug_opt}"
-
     build_names["${name}"]="${name}"
     build_dirs["${name}"]="$(echo "${cmd}" | awk -F';' '{ print $1 }' | sed 's/cd //')"
-    build_commands["${name}"]="${cmdstr}"
+    build_commands["${name}"]="$(echo "${cmd}" | awk -F';' '{ $1=""; print $0 }' | sed 's/^[[:space:]]*//')"
     build_logs["${name}"]="${log}"
     build_cores["${name}"]="${cores}"
     build_status["${name}"]="PENDING"
