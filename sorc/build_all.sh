@@ -90,9 +90,9 @@ mkdir -p "${HOMEglobal}/sorc/logs" || exit 1
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
-yaml="${HOMEgfs}/sorc/build_opts.yaml"
+yaml="${HOMEglobal}/sorc/build_opts.yaml"
 # shellcheck disable=SC2086,SC2248
-"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
+"${HOMEglobal}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
