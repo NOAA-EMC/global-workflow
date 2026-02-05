@@ -34,7 +34,7 @@ def input_args(*argv):
     parser.add_argument('--yaml', help='Input YAML file',
                         type=str, required=False, default='build_opts.yaml')
     parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gcafs, gsi, gdas, or all)', required=False, default='gfs')
-    parser.add_argument('--debug', help='Build in debug mode', required=False, store_action=True)
+    parser.add_argument('--debug', help='Build in debug mode', required=False, action='store_true')
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 
