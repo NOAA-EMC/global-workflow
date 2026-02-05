@@ -12,6 +12,7 @@ Usage: ${BASH_SOURCE[0]} [-h][-v] -A HPC_ACCOUNT -c [gfs gefs sfs gcafs gsi gdas
   -A:
     HPC account to use for the compute-node builds [REQUIRED when building on compute nodes]
   -c Build on compute nodes (DEFAULT: NO)
+  -d Build in debug mode (DEFAULT: NO)
 
   Input arguments are the system(s) to build.
   Valid options are
@@ -32,14 +33,16 @@ build_db="build.db"
 build_lock_db="build_lock.db"
 HPC_ACCOUNT="UNDEFINED"
 compute_build="NO"
+debug_opt=""
 max_cores=20 # Maximum number of cores to use for builds on head node
 
 OPTIND=1
-while getopts ":hA:vc" option; do
+while getopts ":hA:vcd" option; do
     case "${option}" in
         h) _usage ;;
         A) HPC_ACCOUNT="${OPTARG}" ;;
         c) compute_build="YES" ;;
+        d) debug_opt="--debug" ;;
         v) verbose="YES" && rocoto_verbose_opt="-v10" ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -87,8 +90,9 @@ mkdir -p "${HOMEglobal}/sorc/logs" || exit 1
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
-yaml="${HOMEglobal}/sorc/build_opts.yaml"
-"${HOMEglobal}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
+yaml="${HOMEgfs}/sorc/build_opts.yaml"
+# shellcheck disable=SC2086,SC2248
+"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
