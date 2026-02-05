@@ -2521,8 +2521,9 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
                 deps_half.append(rocoto.add_dependency(dep_dict))
                 if not self.options['do_jediatmvar']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
-                    deps_half.append(rocoto.add_dependency(dep_dict))
+                    if not self.options['do_enkfonly_atm']:
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
+                        deps_half.append(rocoto.add_dependency(dep_dict))
 
         else:
             if self.app_config.mode in ['cycled']:
