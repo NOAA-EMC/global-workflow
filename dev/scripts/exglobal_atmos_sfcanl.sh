@@ -113,8 +113,8 @@ done
 if [[ "${DONST}" == "YES" ]]; then
     export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc}
     if [[ -s "${NST_FILE}" ]]; then
-        cpreq "${NST_FILE}" "${DATA}/dtfanl"
-        export NST_FILE="dtfanl"
+        cpreq "${NST_FILE}" "${DATA}/dtfinc"
+        export NST_FILE="dtfinc"
     else
         export NST_FILE="NULL"
     fi
