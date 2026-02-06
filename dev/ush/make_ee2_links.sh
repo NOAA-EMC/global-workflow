@@ -111,8 +111,8 @@ for dir in "${gdas_list[@]}" "${gfs_list[@]}" "${gcdas_list[@]}" "${gcafs_list[@
             if [[ -f "${system_prefix}.t${cyc}z.cnvstat" ]]; then
                 link_file "${system_prefix}.t${cyc}z.cnvstat" "${system_prefix}.t${cyc}z.cnvstat.tar"
             fi
-            if [[ -f "${system_prefix}.t${cyc}z.dtfanl.nc" ]]; then
-                link_file "${system_prefix}.t${cyc}z.dtfanl.nc" "${system_prefix}.t${cyc}z.increment.dtf.i006.nc"
+            if [[ -f "${system_prefix}.t${cyc}z.dtfinc.nc" ]]; then
+                link_file "${system_prefix}.t${cyc}z.dtfinc.nc" "${system_prefix}.t${cyc}z.increment.dtf.i006.nc"
             fi
             if [[ -f "${system_prefix}.t${cyc}z.gsistat" ]]; then
                 link_file "${system_prefix}.t${cyc}z.gsistat" "${system_prefix}.t${cyc}z.gsistat.txt"

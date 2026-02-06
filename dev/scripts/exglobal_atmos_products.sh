@@ -40,6 +40,9 @@ IFS=':' read -ra grids <<< "${grid_string}"
 # Files needed by ${USHgfs}/interp_atmos_master.sh
 MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
 
+# Create an index file for the master
+${WGRIB2} -s "${MASTER_FILE}" > "${MASTER_FILE}.idx"
+
 for ((nset = 1; nset <= downset; nset++)); do
 
     echo "INFO: Begin processing nset = ${nset}"
