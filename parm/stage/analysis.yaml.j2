@@ -9,10 +9,10 @@ analysis:
         {# -------------------------------------------------------------------- #}
         {# JEDI Atmospheric Variational Data Assimilation                       #}
         {# -------------------------------------------------------------------- #}
-        {% if (DO_JEDIATMVAR or DO_JEDIATMENS) and EXP_WARM_START %}
 
-            {# Cubed Sphere Grid Configuration #}
-            {% if ATMINC_GRID == "cubed_sphere_grid" %}
+        {# Cubed Sphere Grid Configuration #}
+        {% if ATMINC_GRID == "cubed_sphere_grid" %}
+            {% if (DO_JEDIATMVAR or DO_JEDIATMENS) and EXP_WARM_START %}
 
                 {% for itile in range(ntiles) %}
 
@@ -37,28 +37,36 @@ analysis:
                     {% endfor %}
 
                 {% endfor %}
-
-        {% endif %}
+            {% endif %}
 
         {# Non-Cubed Sphere Grid Configuration #}
-        {% if not ATMINC_GRID == "cubed_sphere_grid" %}
+        {% else %}
+
             {% if DO_JEDIATMVAR %}
+
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+
             {% else %}
+
                 {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                 {% endfor %}
+
                 {% if EXP_WARM_START %}
+
+                    {% for ftype in ["increment.atm.i006.nc", "recentered_increment.atm.i006.nc"] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                    {% endfor %}
+
                     {% if DOIAU %}
                         {% for ftype in ["increment.atm.i003.nc", "increment.atm.i009.nc", "recentered_increment.atm.i003.nc", "recentered_increment.atm.i009.nc"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                         {% endfor %}
                     {% endif %}
-                    {% for ftype in ["increment.atm.i006.nc", "recentered_increment.atm.i006.nc"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-                    {% endfor %}
+
+                {% endif %}
+
             {% endif %}
-        {% endif %}
         {# -------------------------------------------------------------------- #}
         {# GSI Data Assimilation (Non-JEDI)                                     #}
         {# -------------------------------------------------------------------- #}
