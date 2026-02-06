@@ -12,6 +12,7 @@ analysis:
 
         {# Cubed Sphere Grid Configuration #}
         {% if ATMINC_GRID == "cubed_sphere_grid" %}
+
             {% if (DO_JEDIATMVAR or DO_JEDIATMENS) and EXP_WARM_START %}
 
                 {% for itile in range(ntiles) %}
