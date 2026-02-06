@@ -95,7 +95,7 @@ elif [[ -d /work ]]; then
     else
         MACHINE_ID=orion
     fi
-elif [[ -d /gpfs/f5 ]]; then
+elif [[ -d /gpfs/f6 ]]; then
     # We are on GAEAC6.
     MACHINE_ID=gaeac6
 elif [[ -d /data/prod ]]; then
