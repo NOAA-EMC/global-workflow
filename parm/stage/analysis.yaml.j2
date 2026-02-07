@@ -49,9 +49,9 @@ analysis:
         {% else %}
 
             {% if DO_JEDIATMVAR %}
-
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar", "{{ COMOUT_ATMOS_ANALYSIS }}"]
 
+        {# Data Assimilation (Non-JEDI) #}
             {% else %}
 
                 {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt"] %}
@@ -73,33 +73,32 @@ analysis:
                 {% endif %}
 
             {% endif %}
+
+        {% endif %}
         {# -------------------------------------------------------------------- #}
         {# GSI Data Assimilation (Non-JEDI)                                     #}
         {# -------------------------------------------------------------------- #}
-        {% if DO_JEDIATMVAR %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.rad_varbc_params.tar", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-
-        {% else %}
+        {% if not DO_JEDIATMVAR %}
 
             {# GSI Analysis Files #}
-            {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "radstat.tar"] %}
-        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
-            {% endfor %}
-
-            {% if EXP_WARM_START %}
-                {% for ftype in ["increment.atm.i006.nc", "recentered_increment.atm.i006.nc"] %}
+                {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "radstat.tar"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                 {% endfor %}
 
-                {% if DOIAU or DOIAU_ENKF %}
-                    {% for ftype in ["increment.atm.i003.nc", "increment.atm.i009.nc",
-                                     "recentered_increment.atm.i003.nc", "recentered_increment.atm.i009.nc"] %}
+                {% if EXP_WARM_START %}
+                    {% for ftype in ["increment.atm.i006.nc", "recentered_increment.atm.i006.nc"] %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                     {% endfor %}
 
-                {% endif %}
+                    {% if DOIAU or DOIAU_ENKF %}
+                        {% for ftype in ["increment.atm.i003.nc", "increment.atm.i009.nc",
+                                        "recentered_increment.atm.i003.nc", "recentered_increment.atm.i009.nc"] %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                        {% endfor %}
 
-            {% endif %}
+                    {% endif %}
+
+                {% endif %}
 
         {% endif %}
 
@@ -118,6 +117,8 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                     {% endfor %}
                 {% endif %}
+
+            {% endif %}
 
             {# Land IAU Increments (Tiled) #}
             {% if DO_LAND_IAU %}
