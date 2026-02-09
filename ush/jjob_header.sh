@@ -92,7 +92,9 @@ export pgm=${pgm:-}
 # Run setpdy and initialize PDY variables
 ##############################################
 export cycle="t${cyc}z"
+unset_strict
 setpdy.sh || true
+set_strict
 source ./PDY || true
 
 #############################
