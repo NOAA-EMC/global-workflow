@@ -137,5 +137,5 @@ class MarineLETKF(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['letkf'].save_obsdataout(self.task_config.COMOUT_OCEAN_LETKF,
+        self.jedi_dict['letkf'].save_obsdataout(self.task_config.COMOUT_OCEAN_ANALYSIS,
                                                 f"{self.task_config.APREFIX}marine_analysis.ioda_hofx.ens_mean")

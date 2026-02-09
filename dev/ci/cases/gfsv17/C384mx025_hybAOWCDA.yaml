@@ -11,9 +11,9 @@ experiment:
   start: warm
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2021063018
-  edate: 2021070306
-  icsdir: 
+  idate: 2025101000
+  edate: 2025103118
+  icsdir: /scratch4/NCEPDEV/global/John.Steffen/hpss_arch/cp4.03-parallel-hybrid/rst/
   yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marinehyb.yaml
 
 workflow:

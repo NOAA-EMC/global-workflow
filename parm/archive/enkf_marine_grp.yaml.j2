@@ -13,7 +13,7 @@ enkf_marine_grp:
 
         # Store the individual member analysis data
         {% if DOLETKF_OCN %}
-        - "{{ COMIN_OCEAN_LETKF_MEM }}/{{ head }}jedi_analysis.a006.nc"
-        - "{{ COMIN_ICE_LETKF_MEM }}/{{ head }}jedi_analysis.a006.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_MEM }}/{{ head }}jedi_analysis.a006.nc"
+        - "{{ COMIN_ICE_ANALYSIS_MEM }}/{{ head }}jedi_analysis.a006.nc"
         - "{{ COMIN_CONF }}/soca_letkf.yaml"
         {% endif %}

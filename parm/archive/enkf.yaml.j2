@@ -129,4 +129,17 @@ enkf:
         {% if DOHYBVAR_OCN %}
         - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
         - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
+        {% if DOLETKF_OCN %}
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head |replace('enkf','')}}marine_analysis.ioda_hofx.ens_mean.tar.gz"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_prior.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_prior.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_post.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_post.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_incr.nc" 
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_prior.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_prior.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_post.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_post.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_incr.nc"
+        {% endif %}
         {% endif %}
