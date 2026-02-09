@@ -670,6 +670,17 @@ if [[ "${USE_SELECT}" == "YES" ]]; then
     fi
 fi
 
+# If diags are to be generated, create the gsi.* directories in GSIDIAGDIR and link them here.
+# This will allow the GSI to write directly to the GSIDIAGDIR.
+if [[ "${GENDIAG}" == "YES" ]]; then
+    # The number of directories is controlled by the number of tasks (one each)
+    for task in $(seq 1 "${NTASKS_GSI}"); do
+        dir="dir.$(printf %04d "${task}")"
+        mkdir -p "${GSIDIAGDIR}/${dir}"
+        ${NLN} "${GSIDIAGDIR}/${dir}" "./${dir}"
+    done
+fi
+
 ##############################################################
 # If requested, copy and de-tar guess radstat file
 if [[ "${USE_RADSTAT}" == "YES" ]]; then
@@ -906,30 +917,6 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
 fi
 
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
-
-if [[ "${GENDIAG}" == "YES" ]]; then
-    # Move the gsidiags dir.* directories to pCOMOUT_ATMOS_ANALYSIS for diagnostic jobs
-    # First, check that the directories exist (we need at least one, so stop after the first match)
-    count_dirs=$(find . -maxdepth 1 -type d -name 'dir.????' -printf "." -quit | wc -c)
-    if [[ ${count_dirs:-0} -gt 0 ]]; then
-        mkdir -p "${GSIDIAGDIR}"
-        err=$?
-
-        if [[ ! -d "${GSIDIAGDIR}" || ${err} -ne 0 ]]; then
-            err_exit "Failed to create gsidiags directory at ${GSIDIAGDIR}"
-        fi
-
-        for dir in dir.????; do
-            mv "${dir}" "${GSIDIAGDIR}/"
-            export err=$?
-            if [[ ${err} -ne 0 ]]; then
-                err_exit "Failed to move ${dir} to ${GSIDIAGDIR}/"
-            fi
-        done
-    else
-        echo "WARNING: No gsidiags dir.* directories found to move."
-    fi
-fi
 
 ################################################################################
 
