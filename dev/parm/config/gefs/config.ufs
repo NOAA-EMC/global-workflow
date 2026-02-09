@@ -366,7 +366,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS=""
       ;;
     "025")
-      ntasks_mom6=320
+      ntasks_mom6=400
       OCNTIM=1800
       NX_GLB=1440
       NY_GLB=1080
