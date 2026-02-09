@@ -199,7 +199,6 @@ if [[ "${DOIAU}" == "YES" ]]; then
             if [[ ${TILE_NUM} -eq 1 ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
- 
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/sfc_data_cycle.${cmem}"
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
