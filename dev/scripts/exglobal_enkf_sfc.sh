@@ -242,7 +242,6 @@ if [[ "${DOIAU}" == "YES" ]]; then
 
 fi
 
-
 if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
     for n in $(seq 1 "${ntiles}"); do
 
