@@ -199,9 +199,9 @@ if [[ "${DOIAU}" == "YES" ]]; then
             if [[ ${TILE_NUM} -eq 1 ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
+ 
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
-                "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
+                "${DATA}/sfc_data_cycle.${cmem}"
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
             cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
@@ -235,13 +235,14 @@ if [[ "${DOIAU}" == "YES" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
 
-            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/sfc_data_cycle.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
         done # ensembles
 
     done
 
 fi
+
 
 if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
     for n in $(seq 1 "${ntiles}"); do
@@ -321,7 +322,6 @@ fi
 ################################################################################
 
 ################################################################################
-# Postprocessing
-cd "${pwd}" || exit 1
 
 exit "${err}"
+
