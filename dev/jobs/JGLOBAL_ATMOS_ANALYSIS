@@ -36,6 +36,7 @@ RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
     COMIN_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
 
+# shellcheck disable=SC2153
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f006.nc"
@@ -43,6 +44,14 @@ if [[ ! -f "${ATMGES}" ]]; then
 
     export err=1
     err_exit "FILE MISSING: ATMGES == ${ATMGES}"
+fi
+
+export GENDIAG="${GENDIAG:-YES}"
+
+# Create a DATAROOT directory variable for the gsidiags if GENDIAG is YES
+if [[ "${GENDIAG}" == "YES" ]]; then
+    pCOMOUT_ATMOS_ANALYSIS="$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")"
+    export pCOMOUT_ATMOS_ANALYSIS
 fi
 
 # Get LEVS
