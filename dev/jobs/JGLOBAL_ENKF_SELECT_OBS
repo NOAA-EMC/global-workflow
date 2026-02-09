@@ -28,6 +28,7 @@ RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_OBS:COM_OBS_TMPL
 MEMDIR='ensstat' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+# shellcheck disable=SC2153
 declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${COMOUT_ATMOS_ANALYSIS}"
 
 RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -r \
@@ -40,12 +41,21 @@ MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
 RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -r \
     COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
 
+# shellcheck disable=SC2153
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
 export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}${GSUFFIX}atm.f006.nc"
 if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     export err=1
     err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
+fi
+
+export GENDIAG="${GENDIAG:-YES}"
+
+# Create a DATAROOT directory variable for the gsidiags if GENDIAG is YES
+if [[ "${GENDIAG}" == "YES" ]]; then
+    pCOMOUT_ATMOS_ANALYSIS="$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")"
+    export pCOMOUT_ATMOS_ANALYSIS
 fi
 
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true

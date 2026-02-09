@@ -413,6 +413,16 @@ else
     echo "not using correlated obs error"
 fi
 
+# If GENDIAG is selected, verify that pCOMOUT_ATMOS_ANALYSIS is set
+if [[ "${GENDIAG}" == "YES" ]]; then
+    if [[ -z "${pCOMOUT_ATMOS_ANALYSIS}" ]]; then
+        export err=1
+        err_exit "pCOMOUT_ATMOS_ANALYSIS must be set when GENDIAG=YES"
+    fi
+    # Make the gsidiags directory to house the GSI diagnostic data
+    GSIDIAGDIR=${GSIDIAGDIR:-"${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"}
+fi
+
 ##############################################################
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
@@ -895,18 +905,31 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
 fi
 
-# Diagnostic files
-# if requested, GSI diagnostic file directories for use later
-if [[ "${GENDIAG}" == "YES" ]]; then
-    tar -cvf gsidiags.tar dir.????
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to tar GSI diagnostic directories!"
-    fi
-    cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
-fi
-
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
+
+if [[ "${GENDIAG}" == "YES" ]]; then
+    # Move the gsidiags dir.* directories to pCOMOUT_ATMOS_ANALYSIS for diagnostic jobs
+    # First, check that the directories exist (we need at least one, so stop after the first match)
+    count_dirs=$(find . -maxdepth 1 -type d -name 'dir.????' -printf "." -quit | wc -c)
+    if [[ ${count_dirs:-0} -gt 0 ]]; then
+        mkdir -p "${GSIDIAGDIR}"
+        err=$?
+
+        if [[ ! -d "${GSIDIAGDIR}" || ${err} -ne 0 ]]; then
+            err_exit "Failed to create gsidiags directory at ${GSIDIAGDIR}"
+        fi
+
+        for dir in dir.????; do
+            mv "${dir}" "${GSIDIAGDIR}/"
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "Failed to move ${dir} to ${GSIDIAGDIR}/"
+            fi
+        done
+    else
+        echo "WARNING: No gsidiags dir.* directories found to move."
+    fi
+fi
 
 ################################################################################
 
