@@ -11,7 +11,7 @@ source "${EXPDIR}/config.resources" prep
 export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC
-export PROCESS_TROPCY=${{PROCESS_TROPCY}}
+export PROCESS_TROPCY={{PROCESS_TROPCY}}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
