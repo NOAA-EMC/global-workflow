@@ -20,9 +20,9 @@ analysis:
                     {# Deterministic Member (member == -1) #}
                     {% if member == -1 %}
                         {% if DOIAU %}
-                            {% set ftypes = ["csg_jedi_increment.atm.i003", "csg_jedi_increment.atm.i006", "csg_jedi_increment.atm.i009" ] %}
+                            {% set ftypes = ["jedi_increment.atm.i003", "jedi_increment.atm.i006", "jedi_increment.atm.i009" ] %}
                         {% else %}
-                            {% set ftypes = ["csg_jedi_increment.atm.i006" ] %}
+                            {% set ftypes = ["jedi_increment.atm.i006" ] %}
                         {% endif %}
 
                     {# Ensemble Members (member != -1) #}
@@ -80,9 +80,9 @@ analysis:
                     {% endif %}
                 {% else %}
                     {% if DOIAU_ENKF %}
-                        {% set ftypes = ["csg_jedi_increment.atm.i003", "csg_jedi_increment.atm.i006", "csg_jedi_increment.atm.i009" ] %}
+                        {% set ftypes = ["jedi_increment.atm.i003", "jedi_increment.atm.i006", "jedi_increment.atm.i009" ] %}
                     {% else %}
-                        {% set ftypes = ["csg_jedi_increment.atm.i006" ] %}
+                        {% set ftypes = ["jedi_increment.atm.i006" ] %}
                     {% endif %}
                 {% endif %}
 
