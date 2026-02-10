@@ -131,7 +131,7 @@ declare -A patterns=(
 # If target is a single file, process it directly
 if [[ -f "${TARGET_PATH}" ]]; then
     # Pre-check: Skip if ANY NET-specific variable already exists
-    if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${TARGET_PATH}" 2>/dev/null; then
+    if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${TARGET_PATH}" 2> /dev/null; then
         echo -e "${YELLOW}⚠ File already has NET-specific variables - skipped${NC}"
         exit 0
     fi
