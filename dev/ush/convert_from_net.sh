@@ -46,7 +46,7 @@ file_list=$(find "${TARGET_DIR}" \
 for file in ${file_list}; do
     if [[ -f "${file}" ]]; then
         for pattern in "${!patterns[@]}"; do
-            replacement="${patterns[$pattern]}"
+            replacement="${patterns[${pattern}]}"
             sed -i "s/\b${pattern}\b/${replacement}/g" "${file}"
         done
         echo "Processed: ${file}"
