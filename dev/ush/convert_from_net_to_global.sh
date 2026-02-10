@@ -202,7 +202,7 @@ for current_net in "${NET_LIST[@]}"; do
 
                 # Check if any global pattern already exists in file
                 for global_pattern in "${global_patterns[@]}"; do
-                    if grep -q "\\b${global_pattern}\\b" "${file}" 2>/dev/null; then
+                    if grep -q "\\b${global_pattern}\\b" "${file}" 2> /dev/null; then
                         should_skip=true
                         break
                     fi
