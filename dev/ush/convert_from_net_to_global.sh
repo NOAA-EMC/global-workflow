@@ -25,13 +25,13 @@ NC='\033[0m' # No Color
 
 # Cleanup function for temporary files
 cleanup() {
-  local exit_code=$?
-  if [[ -f "/tmp/convert_files_$$.txt" ]]; then
-    rm -f "/tmp/convert_files_$$.txt"
-  fi
-  if [[ ${exit_code} -ne 0 ]]; then
-    echo -e "${RED}Error: Script failed with exit code ${exit_code}${NC}" >&2
-  fi
+    local exit_code=$?
+    if [[ -f "/tmp/convert_files_$$.txt" ]]; then
+        rm -f "/tmp/convert_files_$$.txt"
+    fi
+    if [[ ${exit_code} -ne 0 ]]; then
+        echo -e "${RED}Error: Script failed with exit code ${exit_code}${NC}" >&2
+    fi
 }
 
 # Set trap to ensure cleanup on exit
@@ -123,9 +123,9 @@ for current_net in "${NET_LIST[@]}"; do
     if [[ -f "${TARGET_PATH}" ]]; then
         file_modified=false
         for pattern in "${!patterns[@]}"; do
-            replacement="${patterns[$pattern]}"
+            replacement="${patterns[${pattern}]}"
             # Unconditional replacement - convert all occurrences
-            if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2>/dev/null; then
+            if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2> /dev/null; then
                 if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${TARGET_PATH}"; then
                     echo -e "${RED}ERROR: Failed to process ${TARGET_PATH}${NC}" >&2
                     exit 1
@@ -166,7 +166,6 @@ for current_net in "${NET_LIST[@]}"; do
         # Complete find command to get files
         find_cmd+=" -type f -print"
 
-
         # Execute find and get file list
         if ! eval "${find_cmd}" > /tmp/convert_files_$$.txt; then
             echo -e "${RED}ERROR: Failed to find files in ${TARGET_PATH}${NC}" >&2
@@ -203,7 +202,7 @@ for current_net in "${NET_LIST[@]}"; do
 
                 # Check if any global pattern already exists in file
                 for global_pattern in "${global_patterns[@]}"; do
-                    if grep -q "\\b${global_pattern}\\b" "${file}" 2>/dev/null; then
+                    if grep -q "\\b${global_pattern}\\b" "${file}" 2> /dev/null; then
                         should_skip=true
                         break
                     fi
@@ -218,8 +217,8 @@ for current_net in "${NET_LIST[@]}"; do
                 file_modified=false
                 file_failed=false
                 for pattern in "${!patterns[@]}"; do
-                    replacement="${patterns[$pattern]}"
-                    if grep -q "\\b${pattern}\\b" "${file}" 2>/dev/null; then
+                    replacement="${patterns[${pattern}]}"
+                    if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
                         if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
                             echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
                             failed_files=$((failed_files + 1))

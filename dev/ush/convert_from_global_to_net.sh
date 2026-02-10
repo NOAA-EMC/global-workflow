@@ -24,13 +24,13 @@ NC='\033[0m' # No Color
 
 # Cleanup function for temporary files
 cleanup() {
-  local exit_code=$?
-  if [[ -f "/tmp/convert_files_$$.txt" ]]; then
-    rm -f "/tmp/convert_files_$$.txt"
-  fi
-  if [[ ${exit_code} -ne 0 ]]; then
-    echo -e "${RED}Error: Script failed with exit code ${exit_code}${NC}" >&2
-  fi
+    local exit_code=$?
+    if [[ -f "/tmp/convert_files_$$.txt" ]]; then
+        rm -f "/tmp/convert_files_$$.txt"
+    fi
+    if [[ ${exit_code} -ne 0 ]]; then
+        echo -e "${RED}Error: Script failed with exit code ${exit_code}${NC}" >&2
+    fi
 }
 
 # Set trap to ensure cleanup on exit
@@ -131,15 +131,15 @@ declare -A patterns=(
 # If target is a single file, process it directly
 if [[ -f "${TARGET_PATH}" ]]; then
     # Pre-check: Skip if ANY NET-specific variable already exists
-    if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${TARGET_PATH}" 2>/dev/null; then
+    if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${TARGET_PATH}" 2> /dev/null; then
         echo -e "${YELLOW}⚠ File already has NET-specific variables - skipped${NC}"
         exit 0
     fi
 
     file_modified=false
     for pattern in "${!patterns[@]}"; do
-        replacement="${patterns[$pattern]}"
-        if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2>/dev/null; then
+        replacement="${patterns[${pattern}]}"
+        if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2> /dev/null; then
             if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${TARGET_PATH}"; then
                 echo -e "${RED}ERROR: Failed to process ${TARGET_PATH}${NC}" >&2
                 exit 1
@@ -155,24 +155,24 @@ if [[ -f "${TARGET_PATH}" ]]; then
     fi
 else
     # Build find command with exclusions for directory
-        # Build find command with excluded directories (properly handle subdirectories)
-        if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
-            exclude_args=""
-            for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
-                exclude_args+="-name \"$(basename ${exclude_dir})\" -o "
-            done
-            exclude_args="${exclude_args% -o }"
-            eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
-        else
-            find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
-        fi
+    # Build find command with excluded directories (properly handle subdirectories)
+    if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
+        exclude_args=""
+        for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
+            exclude_args+="-name \"$(basename "${exclude_dir}")\" -o "
+        done
+        exclude_args="${exclude_args% -o }"
+        eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
+    else
+        find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
+    fi
 
-        file_count=$(wc -l < /tmp/convert_files_$$.txt)
-        if [[ ${file_count} -eq 0 ]]; then
-            echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
-            rm -f /tmp/convert_files_$$.txt
-            continue
-        fi
+    file_count=$(wc -l < /tmp/convert_files_$$.txt)
+    if [[ ${file_count} -eq 0 ]]; then
+        echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+        rm -f /tmp/convert_files_$$.txt
+        continue
+    fi
 
     # Count files to process
     echo -e "${BLUE}Processing ${file_count} files...${NC}"
@@ -183,7 +183,7 @@ else
     while IFS= read -r file; do
         if [[ -f "${file}" ]]; then
             # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
-            if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2>/dev/null; then
+            if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2> /dev/null; then
                 skipped_files=$((skipped_files + 1))
                 return
             fi
@@ -192,8 +192,8 @@ else
             file_modified=false
             file_failed=false
             for pattern in "${!patterns[@]}"; do
-                replacement="${patterns[$pattern]}"
-                if grep -q "\\b${pattern}\\b" "${file}" 2>/dev/null; then
+                replacement="${patterns[${pattern}]}"
+                if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
                     if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
                         echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
                         failed_files=$((failed_files + 1))
