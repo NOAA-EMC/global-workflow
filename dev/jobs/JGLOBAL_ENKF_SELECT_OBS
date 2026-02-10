@@ -51,7 +51,7 @@ if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
 fi
 
 export GENDIAG="${GENDIAG:-YES}"
-￼
+
 # Create a DATAROOT directory variable for the gsidiags if GENDIAG is YES
 if [[ "${GENDIAG}" == "YES" ]]; then
     # shellcheck disable=SC2311
