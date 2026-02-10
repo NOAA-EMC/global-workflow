@@ -56,7 +56,7 @@ if [[ "${GENDIAG}" != "YES" ]]; then
 fi
 
 # Check that the gsidiags directory exists
-￼
+
 if [[ ! -d "${GSIDIAGDIR}" ]]; then
     export err=1
     err_exit "gsidiags directory ${GSIDIAGDIR} does not exist"
