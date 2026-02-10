@@ -74,7 +74,6 @@ case "${machine}" in
     "hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
     "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
     "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
-    "gaeac5") FIX_DIR="/gpfs/f5/ufs-ard/world-shared/global/glopara/data/fix" ;;
     "gaeac6") FIX_DIR="/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix" ;;
     "noaacloud") FIX_DIR="/lustre/fix" ;;
     *)
