@@ -185,7 +185,7 @@ else
             # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
             if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2>/dev/null; then
                 skipped_files=$((skipped_files + 1))
-                continue
+                return
             fi
 
             # Proceed with conversion only if no NET-specific vars found
