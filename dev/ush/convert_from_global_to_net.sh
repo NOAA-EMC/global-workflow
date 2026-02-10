@@ -24,13 +24,13 @@ NC='\033[0m' # No Color
 
 # Cleanup function for temporary files
 cleanup() {
-  local exit_code=$?
-  if [[ -f "/tmp/convert_files_$$.txt" ]]; then
-    rm -f "/tmp/convert_files_$$.txt"
-  fi
-  if [[ ${exit_code} -ne 0 ]]; then
-    echo -e "${RED}Error: Script failed with exit code ${exit_code}${NC}" >&2
-  fi
+    local exit_code=$?
+    if [[ -f "/tmp/convert_files_$$.txt" ]]; then
+        rm -f "/tmp/convert_files_$$.txt"
+    fi
+    if [[ ${exit_code} -ne 0 ]]; then
+        echo -e "${RED}Error: Script failed with exit code ${exit_code}${NC}" >&2
+    fi
 }
 
 # Set trap to ensure cleanup on exit
