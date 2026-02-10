@@ -167,12 +167,12 @@ else
         find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
     fi
 
-        file_count=$(wc -l < /tmp/convert_files_$$.txt)
-        if [[ ${file_count} -eq 0 ]]; then
-            echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
-            rm -f /tmp/convert_files_$$.txt
-            continue
-        fi
+    file_count=$(wc -l < /tmp/convert_files_$$.txt)
+    if [[ ${file_count} -eq 0 ]]; then
+        echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+        rm -f /tmp/convert_files_$$.txt
+        continue
+    fi
 
     # Count files to process
     echo -e "${BLUE}Processing ${file_count} files...${NC}"
