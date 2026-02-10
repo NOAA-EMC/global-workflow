@@ -159,7 +159,7 @@ else
     if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
         exclude_args=""
         for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
-            exclude_args+="-name \"$(basename ${exclude_dir})\" -o "
+            exclude_args+="-name \"$(basename "${exclude_dir}")\" -o "
         done
         exclude_args="${exclude_args% -o }"
         eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
