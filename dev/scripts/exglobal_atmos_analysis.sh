@@ -914,7 +914,7 @@ echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}
 if [[ "${GENDIAG}" == "YES" ]]; then
     # Move the gsidiags dir.* directories to pCOMOUT_ATMOS_ANALYSIS for diagnostic jobs
     # First, check that the directories exist (we need at least one, so stop after the first match)
-    # shellcheck ignore=SC2312
+    # shellcheck disable=SC2312
     count_dirs=$(find . -maxdepth 1 -type d -name 'dir.????' -printf "." -quit | wc -c)
     if [[ ${count_dirs:-0} -gt 0 ]]; then
         mkdir -p "${GSIDIAGDIR}"
