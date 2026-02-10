@@ -94,9 +94,9 @@ fi
 # Display processing header
 echo -e "${CYAN}=========================================${NC}"
 if [[ "${NET}" == "all" ]]; then
-    echo -e "${YELLOW}Processing: Converting NET-specific variables to ${RED}global${NC}${YELLOW}-workflow variables for: ${GREEN}${NET_LIST[*]}${NC}"
+    echo -e "${YELLOW}Processing: Converting NET-specific variables to ${GREEN}global${NC}${YELLOW}-workflow variables from: ${RED}${NET_LIST[*]}${NC}"
 else
-    echo -e "${YELLOW}Processing: Converting ${GREEN}${NET}${NC}${YELLOW}-specific variables to ${RED}global${NC}${YELLOW}-workflow variables${NC}"
+    echo -e "${YELLOW}Processing: Converting ${RED}${NET}${NC}${YELLOW}-specific variables to ${GREEN}global${NC}${YELLOW}-workflow variables${NC}"
 fi
 echo -e "${BLUE}Target: ${TARGET_PATH}${NC}"
 if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
@@ -107,7 +107,7 @@ echo -e "${CYAN}=========================================${NC}"
 # Process each NET value
 for current_net in "${NET_LIST[@]}"; do
     echo ""
-    echo -e "${YELLOW}Converting for: ${GREEN}${current_net}${NC} ${YELLOW}→${NC} ${RED}global${NC}"
+    echo -e "${YELLOW}Converting for: ${RED}${current_net}${NC} ${YELLOW}→${NC} ${GREEN}global${NC}"
 
     # List of patterns to convert (reverse of convert_from_global_to_net.sh)
     declare -A patterns=(
@@ -136,31 +136,36 @@ for current_net in "${NET_LIST[@]}"; do
         if ${file_modified}; then
             echo -e "${GREEN}✓ Processed 1 file for NET=${current_net}${NC}"
         else
-            echo -e "${YELLOW}⚠ No patterns found for NET=${current_net}${NC}"
+            echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
         fi
     else
         # Build find command with exclusions for directory
         find_cmd="find \"${TARGET_PATH}\""
 
-        # Add excluded directories to find command
-        for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
-            # Remove leading ./ if present
-            exclude_dir="${exclude_dir#./}"
+        # Build exclusion list for directories
+        if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
+            find_cmd+=" -type d \\("
+            first=true
+            for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
+                # Remove leading ./ if present
+                exclude_dir="${exclude_dir#./}"
 
-            # Check if path is absolute (starts with /)
-            if [[ "${exclude_dir:0:1}" == "/" ]]; then
-                # Use absolute path as-is
-                find_cmd+=" -path \"${exclude_dir}\" -prune -o"
-            else
-                # Treat as relative to TARGET_PATH
-                find_cmd+=" -path \"${TARGET_PATH}/${exclude_dir}\" -prune -o"
-            fi
-        done
+                # Extract just the directory name (last component of path)
+                dir_name=$(basename "${exclude_dir}")
 
-        # Complete find command - commented out file type filtering to process all files
-        # Uncomment the line below and comment out the next line to filter by file type:
-        # find_cmd+=" -type f \\( -name \"*.sh\" -o -name \"*.bash\" -o -name \"*.py\" -o -name \"*.env\" -o -name \"*.config\" -o -name \"*.ecf\" -o -name \"J*\" -o -name \"ex*\" \\) -print"
+                if ${first}; then
+                    find_cmd+=" -name \"${dir_name}\""
+                    first=false
+                else
+                    find_cmd+=" -o -name \"${dir_name}\""
+                fi
+            done
+            find_cmd+=" \\) -prune -o"
+        fi
+
+        # Complete find command to get files
         find_cmd+=" -type f -print"
+
 
         # Execute find and get file list
         if ! eval "${find_cmd}" > /tmp/convert_files_$$.txt; then
@@ -172,7 +177,7 @@ for current_net in "${NET_LIST[@]}"; do
         file_count=$(wc -l < /tmp/convert_files_$$.txt)
 
         if [[ ${file_count} -eq 0 ]]; then
-            echo -e "${YELLOW}Warning: No files found to process${NC}"
+            echo -e "${YELLOW}No files to convert${NC}"
             continue
         fi
 
@@ -234,12 +239,13 @@ for current_net in "${NET_LIST[@]}"; do
         # Clean up
         rm -f /tmp/convert_files_$$.txt
 
-        if [[ ${failed_files} -gt 0 ]]; then
-            echo -e "${YELLOW}⚠ Processed $((file_count - failed_files - skipped_files))/${file_count} files (${failed_files} failed, ${skipped_files} skipped - already converted) for NET=${current_net}${NC}"
-        elif [[ ${skipped_files} -gt 0 ]]; then
-            echo -e "${GREEN}✓ Processed $((file_count - skipped_files))/${file_count} files (${skipped_files} already converted) for NET=${current_net}${NC}"
+        files_converted=$((file_count - failed_files - skipped_files))
+        if [[ ${files_converted} -eq 0 ]]; then
+            echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+        elif [[ ${failed_files} -gt 0 ]]; then
+            echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${current_net}${NC}"
         else
-            echo -e "${GREEN}✓ Processed ${file_count} files for NET=${current_net}${NC}"
+            echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${current_net}${NC}"
         fi
     fi
 

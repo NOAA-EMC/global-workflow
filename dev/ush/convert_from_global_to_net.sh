@@ -151,44 +151,30 @@ if [[ -f "${TARGET_PATH}" ]]; then
     if ${file_modified}; then
         echo -e "${GREEN}✓ Processed 1 file for NET=${NET}${NC}"
     else
-        echo -e "${YELLOW}⚠ No patterns found for NET=${NET}${NC}"
+        echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
     fi
 else
     # Build find command with exclusions for directory
-    find_cmd="find \"${TARGET_PATH}\""
-
-    # Add excluded directories to find command
-    for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
-        # Remove leading ./ if present
-        exclude_dir="${exclude_dir#./}"
-
-        # Check if path is absolute (starts with /)
-        if [[ "${exclude_dir:0:1}" == "/" ]]; then
-            # Use absolute path as-is
-            find_cmd+=" -path \"${exclude_dir}\" -prune -o"
+        # Build find command with excluded directories (properly handle subdirectories)
+        if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
+            exclude_args=""
+            for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
+                exclude_args+="-name \"$(basename ${exclude_dir})\" -o "
+            done
+            exclude_args="${exclude_args% -o }"
+            eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
         else
-            # Treat as relative to TARGET_PATH
-            find_cmd+=" -path \"${TARGET_PATH}/${exclude_dir}\" -prune -o"
+            find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
         fi
-    done
 
-    # Complete find command
-    find_cmd+=" -type f -print"
-
-    # Execute find and get file list
-    if ! eval "${find_cmd}" > /tmp/convert_files_$$.txt; then
-        echo -e "${RED}ERROR: Failed to find files in ${TARGET_PATH}${NC}" >&2
-        exit 1
-    fi
+        file_count=$(wc -l < /tmp/convert_files_$$.txt)
+        if [[ ${file_count} -eq 0 ]]; then
+            echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+            rm -f /tmp/convert_files_$$.txt
+            continue
+        fi
 
     # Count files to process
-    file_count=$(wc -l < /tmp/convert_files_$$.txt)
-
-    if [[ ${file_count} -eq 0 ]]; then
-        echo -e "${YELLOW}Warning: No files found to process${NC}"
-        exit 0
-    fi
-
     echo -e "${BLUE}Processing ${file_count} files...${NC}"
 
     # Perform the replacements
@@ -227,15 +213,15 @@ else
     # Clean up
     rm -f /tmp/convert_files_$$.txt
 
-    if [[ ${failed_files} -gt 0 ]]; then
-        echo -e "${YELLOW}⚠ Processed $((file_count - failed_files - skipped_files))/${file_count} files (${failed_files} failed, ${skipped_files} skipped - has NET vars) for NET=${NET}${NC}"
-    elif [[ ${skipped_files} -gt 0 ]]; then
-        echo -e "${GREEN}✓ Processed $((file_count - skipped_files))/${file_count} files (${skipped_files} skipped - has NET vars) for NET=${NET}${NC}"
+    files_converted=$((file_count - failed_files - skipped_files))
+    if [[ ${files_converted} -eq 0 ]]; then
+        echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
+    elif [[ ${failed_files} -gt 0 ]]; then
+        echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${NET}${NC}"
     else
-        echo -e "${GREEN}✓ Processed ${file_count} files for NET=${NET}${NC}"
+        echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${NET}${NC}"
     fi
 fi
-
 echo -e "${GREEN}Completed!${NC}"
 
 echo ""
