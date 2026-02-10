@@ -51,10 +51,6 @@ case ${machine} in
               max_tasks_per_node=192
               mem_node_max="360GB"
     ;;
-  "GAEAC5")
-              max_tasks_per_node=128
-              mem_node_max="251GB"
-    ;;
   "GAEAC6")
               max_tasks_per_node=192
               mem_node_max="384GB"
