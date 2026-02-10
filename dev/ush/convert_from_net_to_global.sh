@@ -123,7 +123,7 @@ for current_net in "${NET_LIST[@]}"; do
     if [[ -f "${TARGET_PATH}" ]]; then
         file_modified=false
         for pattern in "${!patterns[@]}"; do
-            replacement="${patterns[$pattern]}"
+            replacement="${patterns[${pattern}]}"
             # Unconditional replacement - convert all occurrences
             if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2> /dev/null; then
                 if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${TARGET_PATH}"; then
