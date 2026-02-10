@@ -139,7 +139,7 @@ if [[ -f "${TARGET_PATH}" ]]; then
     file_modified=false
     for pattern in "${!patterns[@]}"; do
         replacement="${patterns[$pattern]}"
-        if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2>/dev/null; then
+        if grep -q "\\b${pattern}\\b" "${TARGET_PATH}" 2> /dev/null; then
             if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${TARGET_PATH}"; then
                 echo -e "${RED}ERROR: Failed to process ${TARGET_PATH}${NC}" >&2
                 exit 1
