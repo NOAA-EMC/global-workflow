@@ -155,17 +155,17 @@ if [[ -f "${TARGET_PATH}" ]]; then
     fi
 else
     # Build find command with exclusions for directory
-        # Build find command with excluded directories (properly handle subdirectories)
-        if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
-            exclude_args=""
-            for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
-                exclude_args+="-name \"$(basename ${exclude_dir})\" -o "
-            done
-            exclude_args="${exclude_args% -o }"
-            eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
-        else
-            find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
-        fi
+    # Build find command with excluded directories (properly handle subdirectories)
+    if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
+        exclude_args=""
+        for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
+            exclude_args+="-name \"$(basename ${exclude_dir})\" -o "
+        done
+        exclude_args="${exclude_args% -o }"
+        eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
+    else
+        find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
+    fi
 
         file_count=$(wc -l < /tmp/convert_files_$$.txt)
         if [[ ${file_count} -eq 0 ]]; then
