@@ -102,6 +102,14 @@ if [[ "${RUN}" == sfs ]]; then
      exit "${err}"
    fi
 fi
+
+# remove ice history files when the derived ice products are all successfully generated.
+status=$?
+if [[ ${status} -eq 0 ]]; then
+   echo "Ice post success! Remove the original ice history files:"
+   rm -f "${COMOUT_ICE_HISTORY}/sfs."*".nc"
+fi
+
 ##############################################
 # End JOB SPECIFIC work
 ##############################################

@@ -244,11 +244,12 @@ fi
 # remove the original product files if all derived products are successfully generated
 status=$?
 if [[ ${status} -ne 0 ]]; then
-   echo "Error detected (status ${status}). Keep the original remapped ocean files."
+   echo "Error detected (status ${status}). Keep the original history and remapped ocean files."
    exit "${status}"
 else
    echo "Ocean post success! Remove the original remapped ocean files:"
    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.t00z.${grid}.f"*".nc"
+   rm -f "${COMOUT_OCEAN_HISTORY}/sfs."*".nc"
 fi
 
 ##############################################

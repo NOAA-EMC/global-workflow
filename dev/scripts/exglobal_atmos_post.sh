@@ -47,6 +47,13 @@ if [[ "${RUN}" == sfs ]]; then
        fi
  fi
 
+# Remove the original atmos master files if all atmos products are successfully generated.
+status=$?
+if [[ ${status} -eq 0 ]]; then
+   echo "All atmospheric products are successfully generated!"
+   rm -f "${COMIN_ATMOS_MASTER}/sfs"*"grib2"
+fi
+
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
