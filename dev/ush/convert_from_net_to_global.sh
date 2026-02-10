@@ -166,7 +166,6 @@ for current_net in "${NET_LIST[@]}"; do
         # Complete find command to get files
         find_cmd+=" -type f -print"
 
-
         # Execute find and get file list
         if ! eval "${find_cmd}" > /tmp/convert_files_$$.txt; then
             echo -e "${RED}ERROR: Failed to find files in ${TARGET_PATH}${NC}" >&2
