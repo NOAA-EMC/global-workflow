@@ -217,7 +217,7 @@ for current_net in "${NET_LIST[@]}"; do
                 file_modified=false
                 file_failed=false
                 for pattern in "${!patterns[@]}"; do
-                    replacement="${patterns[$pattern]}"
+                    replacement="${patterns[${pattern}]}"
                     if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
                         if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
                             echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
