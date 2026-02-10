@@ -21,7 +21,6 @@ experiment:
 # Add this to run the stage ic job 'icsdir: /lfs/h2/emc/ens/noscrub/eric.sinsky/RETRO_ICS'
 skip_ci_on_hosts:
   - gaeac6
-  - gaeac5
   - hercules
   - wcoss2
   - hera

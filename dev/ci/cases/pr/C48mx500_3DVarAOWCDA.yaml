@@ -16,7 +16,6 @@ experiment:
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/soca_gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
-  - gaeac5
   - orion
   - awsepicglobalworkflow
 

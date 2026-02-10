@@ -17,7 +17,6 @@ experiment:
 
 skip_ci_on_hosts:
   - orion
-  - gaeac5
   - hercules
   - awsepicglobalworkflow
 
