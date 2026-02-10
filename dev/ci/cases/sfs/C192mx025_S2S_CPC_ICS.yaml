@@ -12,7 +12,7 @@ experiment:
   nens: 10
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'TOPICDIR' | getenv }}/CPC/C192mx025
+  icsdir: {{ 'TOPICDIR' | getenv }}/CPC_land/C192mx025
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full_C192mx025_CPC_ICS.yaml
 
 workflow:
