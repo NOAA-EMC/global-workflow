@@ -906,7 +906,7 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
 fi
 
-# shellcheck ingore=SC2312
+# shellcheck disable=SC2312
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
 
 # Diagnostic files

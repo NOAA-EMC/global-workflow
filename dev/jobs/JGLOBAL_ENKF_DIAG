@@ -30,7 +30,7 @@ MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 
 # Create a DATAROOT directory variable where the gsidiags live
-# shellcheck disable=SC2153
+# shellcheck disable=SC2153,SC2311
 pCOMIN_ATMOS_ANALYSIS="$(dataroot_com_path "${COMIN_ATMOS_ANALYSIS}")"
 export pCOMIN_ATMOS_ANALYSIS
 
