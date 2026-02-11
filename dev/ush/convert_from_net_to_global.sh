@@ -73,10 +73,10 @@ exclude_items=(
 # Build grep exclusion pattern (includes all items)
 exclude_pattern=""
 for item in "${exclude_items[@]}"; do
-  if [[ -n "${exclude_pattern}" ]]; then
-    exclude_pattern="${exclude_pattern}|"
-  fi
-  exclude_pattern="${exclude_pattern}${item}"
+    if [[ -n "${exclude_pattern}" ]]; then
+        exclude_pattern="${exclude_pattern}|"
+    fi
+    exclude_pattern="${exclude_pattern}${item}"
 done
 
 # Display what we're excluding (filter out conversion scripts from display)
