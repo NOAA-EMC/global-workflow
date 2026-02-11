@@ -88,7 +88,7 @@ for item in "${exclude_items[@]}"; do
 done
 
 if [[ ${#display_exclude[@]} -gt 0 ]]; then
-  echo "Excluding directories: ${display_exclude[*]}"
+    echo "Excluding directories: ${display_exclude[*]}"
 fi
 
 # Parse remaining arguments
