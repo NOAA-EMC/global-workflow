@@ -3,7 +3,7 @@ host_override:  # over-ride options for host
   GAEAC6:
     max_cores: 8
     walltime_ratio: 1.5  # Uniformly adjust the wallclock by this factor (builds are slower on head nodes)
-    exclude_nodes: "gaea61,gaea65,gaea67"
+#    exclude_nodes: "gaea61"  # Use this field to black-list out any malfunctioning nodes.
     build:
       gdas:
         cores: 8
