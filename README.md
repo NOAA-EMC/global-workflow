@@ -1,3 +1,4 @@
+[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/NOAA-EMC/global-workflow)
 [![Read The Docs Status](https://readthedocs.org/projects/global-workflow/badge/?badge=latest)](http://global-workflow.readthedocs.io/)
 [![bash code analysis](https://github.com/NOAA-EMC/global-workflow/workflows/bash_code_analysis/badge.svg?branch=develop&event=push)](https://github.com/NOAA-EMC/global-workflow/actions?query=workflow%3Abash_code_analysis+event%3Apush+branch%3Adevelop)
 [![python code analysis](https://github.com/NOAA-EMC/global-workflow/workflows/python_code_analysis/badge.svg)](https://github.com/NOAA-EMC/global-workflow/actions?query=workflow%3Apython_code_analysis+event%3Apush+branch%3Adevelop)
