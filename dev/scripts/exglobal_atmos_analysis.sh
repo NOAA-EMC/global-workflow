@@ -178,7 +178,6 @@ GRADSTAT=${GRADSTAT:-${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat.tar}
 # Analysis files
 export APREFIX=${APREFIX:-""}
 SFCANL=${SFCANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc}
-DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.dtf.a006.nc}
 ATMANL=${ATMANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc}
 ABIAS=${ABIAS:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt}
 ABIASPC=${ABIASPC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.txt}
@@ -188,6 +187,7 @@ GSISTAT=${GSISTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.txt}
 
 # Increment files
 ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc}
+DTFINC=${DTFINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc}
 
 # Obs diag
 RUN_SELECT=${RUN_SELECT:-"NO"}
@@ -639,7 +639,7 @@ ${NLN} "${ABIASPC}" satbias_pc.out
 ${NLN} "${ABIASAIR}" aircftbias_out
 
 if [[ "${DONST}" == "YES" ]]; then
-    ${NLN} "${DTFANL}" dtfanl
+    ${NLN} "${DTFINC}" dtfanl
 fi
 
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
