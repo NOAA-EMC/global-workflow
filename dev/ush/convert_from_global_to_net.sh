@@ -208,33 +208,31 @@ else
     # Perform the replacements
     failed_files=0
     skipped_files=0
-    # shellcheck disable=SC2162
     while IFS= read -r file; do
         if [[ -f "${file}" ]]; then
             # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
             if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2> /dev/null; then
                 skipped_files=$((skipped_files + 1))
-                continue
-            fi
-
-            # Proceed with conversion only if no NET-specific vars found
-            file_modified=false
-            file_failed=false
-            for pattern in "${!patterns[@]}"; do
-                replacement="${patterns[${pattern}]}"
-                if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
-                    if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
-                        echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
-                        failed_files=$((failed_files + 1))
-                        file_failed=true
-                        break
+            else
+                # Proceed with conversion only if no NET-specific vars found
+                file_modified=false
+                file_failed=false
+                for pattern in "${!patterns[@]}"; do
+                    replacement="${patterns[${pattern}]}"
+                    if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
+                        if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
+                            echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
+                            failed_files=$((failed_files + 1))
+                            file_failed=true
+                            break
+                        fi
+                        file_modified=true
                     fi
-                    file_modified=true
-                fi
-            done
+                done
 
-            if ! ${file_modified} && ! ${file_failed}; then
-                skipped_files=$((skipped_files + 1))
+                if ! ${file_modified} && ! ${file_failed}; then
+                    skipped_files=$((skipped_files + 1))
+                fi
             fi
         fi
     done < /tmp/convert_files_$$.txt
