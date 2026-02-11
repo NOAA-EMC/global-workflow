@@ -196,57 +196,57 @@ else
     fi
 
     file_count=$(wc -l < /tmp/convert_files_$$.txt)
+
     if [[ ${file_count} -eq 0 ]]; then
-        echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+        echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
         rm -f /tmp/convert_files_$$.txt
-        continue
-    fi
+    else
+        # Count files to process
+        echo -e "${BLUE}Processing ${file_count} files...${NC}"
 
-    # Count files to process
-    echo -e "${BLUE}Processing ${file_count} files...${NC}"
-
-    # Perform the replacements
-    failed_files=0
-    skipped_files=0
-    while IFS= read -r file; do
-        if [[ -f "${file}" ]]; then
-            # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
-            if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2> /dev/null; then
-                skipped_files=$((skipped_files + 1))
-            else
-                # Proceed with conversion only if no NET-specific vars found
-                file_modified=false
-                file_failed=false
-                for pattern in "${!patterns[@]}"; do
-                    replacement="${patterns[${pattern}]}"
-                    if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
-                        if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
-                            echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
-                            failed_files=$((failed_files + 1))
-                            file_failed=true
-                            break
-                        fi
-                        file_modified=true
-                    fi
-                done
-
-                if ! ${file_modified} && ! ${file_failed}; then
+        # Perform the replacements
+        failed_files=0
+        skipped_files=0
+        while IFS= read -r file; do
+            if [[ -f "${file}" ]]; then
+                # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
+                if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2> /dev/null; then
                     skipped_files=$((skipped_files + 1))
+                else
+                    # Proceed with conversion only if no NET-specific vars found
+                    file_modified=false
+                    file_failed=false
+                    for pattern in "${!patterns[@]}"; do
+                        replacement="${patterns[${pattern}]}"
+                        if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
+                            if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
+                                echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
+                                failed_files=$((failed_files + 1))
+                                file_failed=true
+                                break
+                            fi
+                            file_modified=true
+                        fi
+                    done
+
+                    if ! ${file_modified} && ! ${file_failed}; then
+                        skipped_files=$((skipped_files + 1))
+                    fi
                 fi
             fi
+        done < /tmp/convert_files_$$.txt
+
+        # Clean up
+        rm -f /tmp/convert_files_$$.txt
+
+        files_converted=$((file_count - failed_files - skipped_files))
+        if [[ ${files_converted} -eq 0 ]]; then
+            echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
+        elif [[ ${failed_files} -gt 0 ]]; then
+            echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${NET}${NC}"
+        else
+            echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${NET}${NC}"
         fi
-    done < /tmp/convert_files_$$.txt
-
-    # Clean up
-    rm -f /tmp/convert_files_$$.txt
-
-    files_converted=$((file_count - failed_files - skipped_files))
-    if [[ ${files_converted} -eq 0 ]]; then
-        echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
-    elif [[ ${failed_files} -gt 0 ]]; then
-        echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${NET}${NC}"
-    else
-        echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${NET}${NC}"
     fi
 fi
 echo -e "${GREEN}Completed!${NC}"
