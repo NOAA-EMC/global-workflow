@@ -1,6 +1,6 @@
 #!/bin/bash
 # convert_from_global_to_net.sh
-# Script to convert HOMEglobal, PARMglobal, etc. to HOME${NET}, PARM${NET}, etc.
+# Script to convert HOMEgfs, PARMgfs, etc. to HOME${NET}, PARM${NET}, etc.
 # for operational deployment
 #
 # Usage: convert_from_global_to_net.sh <NET_value> <target_path> [--exclude dir1 dir2 dir3 ...]
@@ -106,6 +106,34 @@ if [[ ! -e "${TARGET_PATH}" ]]; then
     exit 1
 fi
 
+# List of directories and files to exclude from processing
+exclude_items=(
+  "sorc"
+  "dev/ush/convert_from_net_to_global.sh"
+  "dev/ush/convert_from_global_to_net.sh"
+)
+
+# Build grep exclusion pattern (includes all items)
+exclude_pattern=""
+for item in "${exclude_items[@]}"; do
+  if [[ -n "${exclude_pattern}" ]]; then
+    exclude_pattern="${exclude_pattern}|"
+  fi
+  exclude_pattern="${exclude_pattern}${item}"
+done
+
+# Display what we're excluding (filter out conversion scripts from display)
+display_exclude=()
+for item in "${exclude_items[@]}"; do
+  if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
+    display_exclude+=("${item}")
+  fi
+done
+
+if [[ ${#display_exclude[@]} -gt 0 ]]; then
+  echo "Excluding directories: ${display_exclude[*]}"
+fi
+
 # Display processing header
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${YELLOW}Processing: Converting ${RED}global${NC}${YELLOW}-workflow variables to ${GREEN}${NET}${NC}${YELLOW}-specific variables${NC}"
@@ -120,12 +148,12 @@ echo -e "${YELLOW}Converting for: ${RED}global${NC} ${YELLOW}→${NC} ${GREEN}${
 
 # List of patterns to convert
 declare -A patterns=(
-    ["HOMEglobal"]="HOME${NET}"
-    ["PARMglobal"]="PARM${NET}"
-    ["USHglobal"]="USH${NET}"
-    ["SCRglobal"]="SCR${NET}"
-    ["EXECglobal"]="EXEC${NET}"
-    ["FIXglobal"]="FIX${NET}"
+    ["HOMEgfs"]="HOME${NET}"
+    ["PARMgfs"]="PARM${NET}"
+    ["USHgfs"]="USH${NET}"
+    ["SCRgfs"]="SCR${NET}"
+    ["EXECgfs"]="EXEC${NET}"
+    ["FIXgfs"]="FIX${NET}"
 )
 
 # If target is a single file, process it directly

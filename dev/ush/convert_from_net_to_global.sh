@@ -1,6 +1,6 @@
 #!/bin/bash
 # convert_from_net_to_global.sh
-# Script to convert HOME${NET}, PARM${NET}, etc. back to HOMEglobal, PARMglobal, etc.
+# Script to convert HOME${NET}, PARM${NET}, etc. back to HOMEgfs, PARMgfs, etc.
 # for development
 #
 # Usage: convert_from_net_to_global.sh <NET_value> <target_path> [--exclude dir1 dir2 dir3 ...]
@@ -62,6 +62,34 @@ fi
 TARGET_PATH=""
 # Default exclusions: Always exclude the conversion scripts themselves
 EXCLUDE_DIRS=("dev/ush/convert_from_net_to_global.sh" "dev/ush/convert_from_global_to_net.sh")
+
+# List of directories and files to exclude from processing
+exclude_items=(
+  "sorc"
+  "dev/ush/convert_from_net_to_global.sh"
+  "dev/ush/convert_from_global_to_net.sh"
+)
+
+# Build grep exclusion pattern (includes all items)
+exclude_pattern=""
+for item in "${exclude_items[@]}"; do
+  if [[ -n "${exclude_pattern}" ]]; then
+    exclude_pattern="${exclude_pattern}|"
+  fi
+  exclude_pattern="${exclude_pattern}${item}"
+done
+
+# Display what we're excluding (filter out conversion scripts from display)
+display_exclude=()
+for item in "${exclude_items[@]}"; do
+  if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
+    display_exclude+=("${item}")
+  fi
+done
+
+if [[ ${#display_exclude[@]} -gt 0 ]]; then
+  echo "Excluding directories: ${display_exclude[*]}"
+fi
 
 # Parse remaining arguments
 while [[ $# -gt 0 ]]; do
