@@ -65,30 +65,30 @@ EXCLUDE_DIRS=("dev/ush/convert_from_net_to_global.sh" "dev/ush/convert_from_glob
 
 # List of directories and files to exclude from processing
 exclude_items=(
-    "sorc"
-    "dev/ush/convert_from_net_to_global.sh"
-    "dev/ush/convert_from_global_to_net.sh"
+  "sorc"
+  "dev/ush/convert_from_net_to_global.sh"
+  "dev/ush/convert_from_global_to_net.sh"
 )
 
 # Build grep exclusion pattern (includes all items)
 exclude_pattern=""
 for item in "${exclude_items[@]}"; do
-    if [[ -n "${exclude_pattern}" ]]; then
-        exclude_pattern="${exclude_pattern}|"
-    fi
-    exclude_pattern="${exclude_pattern}${item}"
+  if [[ -n "${exclude_pattern}" ]]; then
+    exclude_pattern="${exclude_pattern}|"
+  fi
+  exclude_pattern="${exclude_pattern}${item}"
 done
 
 # Display what we're excluding (filter out conversion scripts from display)
 display_exclude=()
 for item in "${exclude_items[@]}"; do
-    if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
-        display_exclude+=("${item}")
-    fi
+  if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
+    display_exclude+=("${item}")
+  fi
 done
 
 if [[ ${#display_exclude[@]} -gt 0 ]]; then
-    echo "Excluding directories: ${display_exclude[*]}"
+  echo "Excluding directories: ${display_exclude[*]}"
 fi
 
 # Parse remaining arguments
@@ -206,74 +206,73 @@ for current_net in "${NET_LIST[@]}"; do
 
         if [[ ${file_count} -eq 0 ]]; then
             echo -e "${YELLOW}No files to convert${NC}"
-            continue
-        fi
+        else
+            echo -e "${BLUE}Processing ${file_count} files...${NC}"
 
-        echo -e "${BLUE}Processing ${file_count} files...${NC}"
+            # Perform the replacements
+            failed_files=0
+            skipped_files=0
+            while IFS= read -r file; do
+                if [[ -f "${file}" ]]; then
+                    # Pre-check: Skip file if ANY global variable already exists
+                    should_skip=false
 
-        # Perform the replacements
-        failed_files=0
-        skipped_files=0
-        while IFS= read -r file; do
-            if [[ -f "${file}" ]]; then
-                # Pre-check: Skip file if ANY global variable already exists
-                should_skip=false
+                    # Build list of global patterns to check for
+                    declare -a global_patterns=(
+                        "HOMEglobal"
+                        "PARMglobal"
+                        "USHglobal"
+                        "SCRglobal"
+                        "EXECglobal"
+                        "FIXglobal"
+                    )
 
-                # Build list of global patterns to check for
-                declare -a global_patterns=(
-                    "HOMEglobal"
-                    "PARMglobal"
-                    "USHglobal"
-                    "SCRglobal"
-                    "EXECglobal"
-                    "FIXglobal"
-                )
-
-                # Check if any global pattern already exists in file
-                for global_pattern in "${global_patterns[@]}"; do
-                    if grep -q "\\b${global_pattern}\\b" "${file}" 2> /dev/null; then
-                        should_skip=true
-                        break
-                    fi
-                done
-
-                if ${should_skip}; then
-                    skipped_files=$((skipped_files + 1))
-                    continue
-                fi
-
-                # Proceed with conversion only if no global vars found
-                file_modified=false
-                file_failed=false
-                for pattern in "${!patterns[@]}"; do
-                    replacement="${patterns[${pattern}]}"
-                    if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
-                        if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
-                            echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
-                            failed_files=$((failed_files + 1))
-                            file_failed=true
+                    # Check if any global pattern already exists in file
+                    for global_pattern in "${global_patterns[@]}"; do
+                        if grep -q "\\b${global_pattern}\\b" "${file}" 2> /dev/null; then
+                            should_skip=true
                             break
                         fi
-                        file_modified=true
+                    done
+
+                    if ${should_skip}; then
+                        skipped_files=$((skipped_files + 1))
+                        continue
                     fi
-                done
 
-                if ! ${file_modified} && ! ${file_failed}; then
-                    skipped_files=$((skipped_files + 1))
+                    # Proceed with conversion only if no global vars found
+                    file_modified=false
+                    file_failed=false
+                    for pattern in "${!patterns[@]}"; do
+                        replacement="${patterns[${pattern}]}"
+                        if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
+                            if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
+                                echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
+                                failed_files=$((failed_files + 1))
+                                file_failed=true
+                                break
+                            fi
+                            file_modified=true
+                        fi
+                    done
+
+                    if ! ${file_modified} && ! ${file_failed}; then
+                        skipped_files=$((skipped_files + 1))
+                    fi
                 fi
+            done < /tmp/convert_files_$$.txt
+
+            # Clean up
+            rm -f /tmp/convert_files_$$.txt
+
+            files_converted=$((file_count - failed_files - skipped_files))
+            if [[ ${files_converted} -eq 0 ]]; then
+                echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+            elif [[ ${failed_files} -gt 0 ]]; then
+                echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${current_net}${NC}"
+            else
+                echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${current_net}${NC}"
             fi
-        done < /tmp/convert_files_$$.txt
-
-        # Clean up
-        rm -f /tmp/convert_files_$$.txt
-
-        files_converted=$((file_count - failed_files - skipped_files))
-        if [[ ${files_converted} -eq 0 ]]; then
-            echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
-        elif [[ ${failed_files} -gt 0 ]]; then
-            echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${current_net}${NC}"
-        else
-            echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${current_net}${NC}"
         fi
     fi
 
