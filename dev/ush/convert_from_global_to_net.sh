@@ -1,6 +1,6 @@
 #!/bin/bash
 # convert_from_global_to_net.sh
-# Script to convert HOMEgfs, PARMgfs, etc. to HOME${NET}, PARM${NET}, etc.
+# Script to convert HOMEglobal, PARMglobal, etc. to HOME${NET}, PARM${NET}, etc.
 # for operational deployment
 #
 # Usage: convert_from_global_to_net.sh <NET_value> <target_path> [--exclude dir1 dir2 dir3 ...]
@@ -148,12 +148,12 @@ echo -e "${YELLOW}Converting for: ${RED}global${NC} ${YELLOW}→${NC} ${GREEN}${
 
 # List of patterns to convert
 declare -A patterns=(
-    ["HOMEgfs"]="HOME${NET}"
-    ["PARMgfs"]="PARM${NET}"
-    ["USHgfs"]="USH${NET}"
-    ["SCRgfs"]="SCR${NET}"
-    ["EXECgfs"]="EXEC${NET}"
-    ["FIXgfs"]="FIX${NET}"
+    ["HOMEglobal"]="HOME${NET}"
+    ["PARMglobal"]="PARM${NET}"
+    ["USHglobal"]="USH${NET}"
+    ["SCRglobal"]="SCR${NET}"
+    ["EXECglobal"]="EXEC${NET}"
+    ["FIXglobal"]="FIX${NET}"
 )
 
 # If target is a single file, process it directly

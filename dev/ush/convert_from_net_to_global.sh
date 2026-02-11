@@ -128,8 +128,8 @@ else
     echo -e "${YELLOW}Processing: Converting ${RED}${NET}${NC}${YELLOW}-specific variables to ${GREEN}global${NC}${YELLOW}-workflow variables${NC}"
 fi
 echo -e "${BLUE}Target: ${TARGET_PATH}${NC}"
-if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
-    echo -e "${BLUE}Excluding directories: ${EXCLUDE_DIRS[*]}${NC}"
+if [[ ${#display_exclude[@]} -gt 0 ]]; then
+    echo -e "${BLUE}Excluding directories: ${display_exclude[*]}${NC}"
 fi
 echo -e "${CYAN}=========================================${NC}"
 
