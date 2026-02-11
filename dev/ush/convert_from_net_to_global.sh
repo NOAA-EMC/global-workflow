@@ -212,6 +212,7 @@ for current_net in "${NET_LIST[@]}"; do
             # Perform the replacements
             failed_files=0
             skipped_files=0
+            # shellcheck disable=SC2162
             while IFS= read -r file; do
                 if [[ -f "${file}" ]]; then
                     # Pre-check: Skip file if ANY global variable already exists

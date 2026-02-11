@@ -208,6 +208,7 @@ else
     # Perform the replacements
     failed_files=0
     skipped_files=0
+    # shellcheck disable=SC2162
     while IFS= read -r file; do
         if [[ -f "${file}" ]]; then
             # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
