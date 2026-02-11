@@ -60,7 +60,8 @@ fi
 
 # Initialize target path
 TARGET_PATH=""
-EXCLUDE_DIRS=()
+# Default exclusions: Always exclude the conversion scripts themselves
+EXCLUDE_DIRS=("dev/ush/convert_from_net_to_global.sh" "dev/ush/convert_from_global_to_net.sh")
 
 # Parse remaining arguments
 while [[ $# -gt 0 ]]; do
