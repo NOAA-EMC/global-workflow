@@ -125,9 +125,9 @@ done
 # Display what we're excluding (filter out conversion scripts from display)
 display_exclude=()
 for item in "${exclude_items[@]}"; do
-  if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
-    display_exclude+=("${item}")
-  fi
+    if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
+        display_exclude+=("${item}")
+    fi
 done
 
 if [[ ${#display_exclude[@]} -gt 0 ]]; then
