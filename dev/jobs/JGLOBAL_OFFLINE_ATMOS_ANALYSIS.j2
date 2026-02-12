@@ -1,11 +1,20 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.offlineanl"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -20,16 +29,19 @@ export APREFIX_IN="gdas.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
-RUN="gdas" DUMP="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBSPROC:COM_OBSPROC_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+export RUN_TMPL="gdas"
+export DUMP_TMPL="gdas"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OBS:COM_OBS_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_OBSPROC="{{ COM_OBSPROC_TMPL }}"
+export COMIN_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMOUT_OBS="{{ COM_OBS_TMPL }}"
+export COMOUT_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
 
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+export YMD=${gPDY}
+export HH=${gcyc}
+export COMIN_ATMOS_HISTORY_PREV="{{ COM_ATMOS_HISTORY_TMPL }}"
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -p "${COMOUT_OBS}"

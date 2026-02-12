@@ -1,20 +1,37 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_products"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.atmos_products"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMIN_ATMOS_HISTORY="{{ COM_ATMOS_HISTORY_TMPL }}"
+export COMIN_ATMOS_MASTER="{{ COM_ATMOS_MASTER_TMPL }}"
 
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    export GRID=${grid}
+    export YMD=${PDY}
+    export HH=${cyc}
+    export ${prod_dir}="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
     mkdir -m 775 -p "${!prod_dir}"
 done
 

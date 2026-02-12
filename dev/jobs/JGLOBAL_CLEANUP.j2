@@ -1,6 +1,19 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.cleanup"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
 
 "${SCRgfs}/exglobal_cleanup.sh" && true
 export err=$?

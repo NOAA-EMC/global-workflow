@@ -6,11 +6,21 @@ export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.marineanlletkf"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -29,19 +39,29 @@ else
     export mem_offset=0
 fi
 
-RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+export RUN="${GDUMP}"
+export YMD=${gPDY}
+export HH=${gcyc}
+export COMIN_OCEAN_HISTORY_PREV="{{ COM_OCEAN_HISTORY_TMPL }}"
+export COMIN_ICE_HISTORY_PREV="{{ COM_ICE_HISTORY_TMPL }}"
 
-RUN="${GDUMP}" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
+export RUN="${GDUMP}"
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_OBS="{{ COM_OBS_TMPL }}"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
-    COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_OCEAN_LETKF="{{ COM_OCEAN_LETKF_TMPL }}"
+export COMOUT_ICE_LETKF="{{ COM_ICE_LETKF_TMPL }}"
 
-YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
-    COMOUT_CONF:COM_CONF_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export MEMDIR="ensstat"
+export COMOUT_CONF="{{ COM_CONF_TMPL }}"
+
+export RUN="${RUN}"
+export MEMDIR="${MEMDIR}"
 
 if [[ ! -d "${COMOUT_OCEAN_LETKF}" ]]; then mkdir -p "${COMOUT_OCEAN_LETKF}"; fi
 if [[ ! -d "${COMOUT_ICE_LETKF}" ]]; then mkdir -p "${COMOUT_ICE_LETKF}"; fi

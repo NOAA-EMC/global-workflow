@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 # shellcheck disable=SC2153  # PDY is always set in environment
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.gen_control_ic"
 
 # Initial conditions are from previous GFS cycle, but valid at the end of the cycle
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -11,8 +14,11 @@ export BDATE
 # Define COM directories
 # TODO: uncomment when testing for realtime
 #COMINgfs=$(compath.py "${envir}/gfs/${gfs_ver}")
-MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
+export MEMDIR="mem000"
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_INPUT_MEM="{{ COM_ATMOS_INPUT_TMPL }}"
+export MEMDIR=""
 ###############################################################
 # Create COMOUT_ATMOS_INPUT_MEM
 mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"

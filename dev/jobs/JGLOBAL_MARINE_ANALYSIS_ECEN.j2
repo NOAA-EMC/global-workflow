@@ -4,11 +4,21 @@ export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.marineanlecen"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -16,18 +26,25 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+export RUN="${GDUMP}"
+export YMD=${gPDY}
+export HH=${gcyc}
+export COMIN_OCEAN_HISTORY_PREV="{{ COM_OCEAN_HISTORY_TMPL }}"
+export COMIN_ICE_HISTORY_PREV="{{ COM_ICE_HISTORY_TMPL }}"
 
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
+export YMD=${gPDY}
+export HH=${gcyc}
+export COMIN_OCEAN_HISTORY_ENS_PREV="{{ COM_OCEAN_HISTORY_TMPL }}"
+export COMIN_ICE_HISTORY_ENS_PREV="{{ COM_ICE_HISTORY_TMPL }}"
 
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-    COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
-    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
+export RUN="${GDUMP}"
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_OCEAN_ANALYSIS="{{ COM_OCEAN_ANALYSIS_TMPL }}"
+export COMIN_ICE_RESTART="{{ COM_ICE_RESTART_TMPL }}"
+export COMOUT_ICE_ANALYSIS="{{ COM_ICE_ANALYSIS_TMPL }}"
+
+export RUN="${RUN}"
 
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "enkfgfs" ]]; then

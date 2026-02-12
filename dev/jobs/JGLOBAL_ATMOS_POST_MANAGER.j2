@@ -2,7 +2,20 @@
 
 # TODO (#1227) This job is not used in the rocoto suite
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "post"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.post"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
 
 ####################################
 # Specify NET and RUN Name and model
@@ -15,7 +28,9 @@ export RUN=${RUN:-gfs}
 ###########################
 export EXT_FCST=NO
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_HISTORY="{{ COM_ATMOS_HISTORY_TMPL }}"
 
 ########################################################
 # Execute the script.

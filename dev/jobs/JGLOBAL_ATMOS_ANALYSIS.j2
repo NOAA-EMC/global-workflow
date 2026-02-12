@@ -1,10 +1,20 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "anal"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.anal"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
 export rCDUMP=${RUN/enkf/}
 export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
@@ -25,16 +35,18 @@ export APREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_OBS="{{ COM_OBS_TMPL }}"
+export COMOUT_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+YMD=${gPDY} HH=${gcyc} RUN=${GDUMP}
+export COMIN_ATMOS_ANALYSIS_PREV="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMIN_ATMOS_HISTORY_PREV="{{ COM_ATMOS_HISTORY_TMPL }}"
 
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc}
+export COMIN_ATMOS_HISTORY_ENS_PREV="{{ COM_ATMOS_HISTORY_TMPL }}"
+export RUN=${RUN} YMD=${PDY} HH=${cyc} MEMDIR=""
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 

@@ -1,31 +1,40 @@
 #! /usr/bin/env bash
 
 export WIPE_DATA="NO"
-export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroanlfinal"
+export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.atmanl"
+source "${EXPDIR}/config.atmanlfinal"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL \
-    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMOUT_CONF="{{ COM_CONF_TMPL }}"
 
-mkdir -m 755 -p "${COMOUT_CHEM_ANALYSIS}"
-mkdir -m 755 -p "${COMOUT_ATMOS_RESTART}"
-mkdir -m 755 -p "${COMOUT_CONF}"
+mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
+mkdir -m 775 -p "${COMOUT_CONF}"
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROFINALPY:-${SCRgfs}/exglobal_aero_analysis_finalize.py}
+EXSCRIPT=${GDASATMFINALPY:-${SCRgfs}/exglobal_atm_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -48,9 +57,11 @@ fi
 ##########################################
 cd "${DATAROOT}" && true
 export err=$?
+set +x
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "${DATAROOT} does not exist, ABORT!"
 fi
+set_trace
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

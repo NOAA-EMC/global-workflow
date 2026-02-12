@@ -1,26 +1,34 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
+#
+# Caculate the mean, spread, and other probabilistic fields.
+#
 
-##############################################
-# Set variables used in the exglobal script
-##############################################
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.atmos_ensstat"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
-mkdir -p "${COMOUT_ATMOS_MASTER}"
+# Input directories loop over members, so this is done downstream
+
+for grid in '0p25' '0p50' '1p00'; do
+    prod_dir="COMOUT_ATMOS_GRIB_${grid}"
+    export MEMDIR="ensstat"
+    export GRID=${grid}
+    export YMD=${PDY}
+    export HH=${cyc}
+    export ${prod_dir}="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+    mkdir -m 775 -p "${!prod_dir}"
+done
 
 ###############################################################
-# Run relevant exglobal script
-
-"${SCRgfs}/exglobal_atmos_upp.py" && true
+# Run exglobal script
+"${SCRgfs}/exglobal_atmos_ensstat.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
