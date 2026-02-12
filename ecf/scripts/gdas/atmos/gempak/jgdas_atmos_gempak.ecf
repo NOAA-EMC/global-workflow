@@ -43,7 +43,7 @@ export FHR3=%FHR3%
 ############################################################
 export model=gdas
 
-${HOMEglobal}/jobs/JGDAS_ATMOS_GEMPAK
+${HOMEgfs}/jobs/JGDAS_ATMOS_GEMPAK
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

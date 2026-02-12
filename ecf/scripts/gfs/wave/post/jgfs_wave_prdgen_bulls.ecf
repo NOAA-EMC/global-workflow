@@ -36,7 +36,7 @@ export cycle=t%CYC%z
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEglobal}/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
+${HOMEgfs}/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

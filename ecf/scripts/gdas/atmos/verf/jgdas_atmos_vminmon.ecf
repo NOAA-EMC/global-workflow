@@ -38,7 +38,7 @@ export VERBOSE=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEglobal/jobs/JGDAS_ATMOS_VMINMON
+$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

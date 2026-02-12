@@ -44,7 +44,7 @@ export OMP_NUM_THREADS=1
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEglobal}/jobs/JGFS_ATMOS_POSTSND
+${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
