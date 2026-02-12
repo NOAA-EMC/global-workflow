@@ -6,16 +6,6 @@ source "${EXPDIR}/config.base"
 source "${EXPDIR}/config.wave"
 source "${EXPDIR}/config.waveawipsgridded"
 
-##############################################
-# Set variables used in the script
-##############################################
-export machine="{{ MACHINE }}"
-export HOMEgfs="{{ HOMEgfs }}"
-export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
-export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
-export ICSDIR="{{ ICSDIR }}"
-export PSLOT="{{ PSLOT }}"
-
 source "${USHgfs}/wave_domain_grid.sh"
 
 ###################################

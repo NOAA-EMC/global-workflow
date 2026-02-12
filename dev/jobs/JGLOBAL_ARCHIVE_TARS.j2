@@ -9,15 +9,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     source "${USHgfs}/wave_domain_grid.sh"
 fi
 
-##############################################
-# Set variables used in the script
-##############################################
-export machine="{{ MACHINE }}"
-export HOMEgfs="{{ HOMEgfs }}"
-export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
-export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
-export ICSDIR="{{ ICSDIR }}"
-export PSLOT="{{ PSLOT }}"
+
 
 export YMD=${PDY}
 export HH=${cyc}

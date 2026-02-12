@@ -7,15 +7,7 @@ source "${EXPDIR}/config.base"
 source "${EXPDIR}/config.atmanl"
 source "${EXPDIR}/config.atmanlinit"
 
-##############################################
-# Set variables used in the script
-##############################################
-export machine="{{ MACHINE }}"
-export HOMEgfs="{{ HOMEgfs }}"
-export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
-export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
-export ICSDIR="{{ ICSDIR }}"
-export PSLOT="{{ PSLOT }}"
+
 
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
