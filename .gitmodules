@@ -7,10 +7,10 @@
   url = https://github.com/NOAA-EMC/wxflow
 [submodule "sorc/gfs_utils.fd"]
   path = sorc/gfs_utils.fd
-  url = https://github.com/NOAA-EMC/gfs-utils
+  url = https://github.com/AntonMFernando-NOAA/gfs-utils
 [submodule "sorc/ufs_utils.fd"]
   path = sorc/ufs_utils.fd
-  url = https://github.com/ufs-community/UFS_UTILS.git
+  url = https://github.com/AntonMFernando-NOAA/UFS_UTILS
 [submodule "sorc/verif-global.fd"]
   path = sorc/verif-global.fd
   url = https://github.com/NOAA-EMC/EMC_verif-global.git
@@ -19,7 +19,7 @@
   url = https://github.com/NOAA-EMC/GSI.git
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
-  url = https://github.com/NOAA-EMC/GDASApp.git
+  url = https://github.com/AntonMFernando-NOAA/GDASApp
   ignore = dirty
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
