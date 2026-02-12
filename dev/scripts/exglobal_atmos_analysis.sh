@@ -677,7 +677,7 @@ fi
 if [[ "${GENDIAG}" == "YES" ]]; then
     # The number of directories is controlled by the number of tasks
     # (one each + 1, though the last will contain no data)
-    for task in $(seq 0 ${ntasks}); do
+    for task in $(seq 0 "${ntasks}"); do
         dir="dir.$(printf %04d "${task}")"
         mkdir -p "${GSIDIAGDIR}/${dir}"
         ${NLN} "${GSIDIAGDIR}/${dir}" "./${dir}"
