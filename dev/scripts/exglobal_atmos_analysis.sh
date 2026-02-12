@@ -675,8 +675,9 @@ fi
 # If diags are to be generated, create the gsi.* directories in GSIDIAGDIR and link them here.
 # This will allow the GSI to write directly to the GSIDIAGDIR.
 if [[ "${GENDIAG}" == "YES" ]]; then
-    # The number of directories is controlled by the number of tasks (one each)
-    for task in $(seq 0 $((ntasks - 1))); do
+    # The number of directories is controlled by the number of tasks
+    # (one each + 1, though the last will contain no data)
+    for task in $(seq 0 ${ntasks}); do
         dir="dir.$(printf %04d "${task}")"
         mkdir -p "${GSIDIAGDIR}/${dir}"
         ${NLN} "${GSIDIAGDIR}/${dir}" "./${dir}"
