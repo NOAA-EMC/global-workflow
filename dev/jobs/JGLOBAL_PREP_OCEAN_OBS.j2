@@ -1,0 +1,54 @@
+#!/bin/bash
+cat ${HOMEglobal}/ush/jjob_header.sh
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.marineanl"
+source "${EXPDIR}/config.prepoceanobs"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_OBS="{{ COM_OBS_TMPL }}"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASPREPOCNOBSPY:-${SCRgfs}/exglobal_prep_ocean_obs.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Handle the temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

@@ -1,0 +1,76 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.anal"
+source "${EXPDIR}/config.eobs"
+source "${EXPDIR}/config.analdiag"
+source "${EXPDIR}/config.ediag"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# shellcheck disable=SC2153
+#GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+#export gPDY=${GDATE:0:8}
+#export gcyc=${GDATE:8:2}
+#export GDUMP="gdas"
+#export GDUMP_ENS="enkf${GDUMP}"
+
+export CASE=${CASE_ENS}
+
+export APREFIX="${RUN}.t${cyc}z."
+
+export MEMDIR="ensstat"
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMOUT_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+
+export CNVSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}cnvstat_ensmean.tar"
+export OZNSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}oznstat_ensmean.tar"
+export RADSTAT="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}radstat_ensmean.tar"
+
+export DIAG_SUFFIX="_ensmean"
+export DIAG_COMPRESS="NO"
+
+###############################################################
+# Run relevant script
+
+${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

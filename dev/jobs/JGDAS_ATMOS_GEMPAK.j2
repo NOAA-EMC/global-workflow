@@ -1,0 +1,85 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.gempak"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+export GRIB=${GRIB:-pgrb2f}
+export EXT=""
+export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
+
+##############################################
+# Define COM directories
+##############################################
+export GRID=0p25
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_GRIB_0p25="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+
+export GRID=1p00
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_GRIB_1p00="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+
+export GRID=0p25
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_GEMPAK_0p25="{{ COM_ATMOS_GEMPAK_TMPL }}"
+if [[ ! -d "${COMOUT_ATMOS_GEMPAK_0p25}" ]]; then
+    mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_0p25}"
+fi
+
+export GRID=1p00
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_GEMPAK_1p00="{{ COM_ATMOS_GEMPAK_TMPL }}"
+if [[ ! -d "${COMOUT_ATMOS_GEMPAK_1p00}" ]]; then
+    mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_1p00}"
+fi
+
+########################################################
+# Execute the script for one degree grib
+########################################################
+
+"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
+
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+########################################################
+# Execute the script for quater-degree grib
+########################################################
+
+"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
+
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi

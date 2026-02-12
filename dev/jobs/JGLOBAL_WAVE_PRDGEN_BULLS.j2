@@ -1,0 +1,46 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveawipsbulls"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+###################################
+# Set COM Paths
+###################################
+
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_WAVE_STATION="{{ COM_WAVE_STATION_TMPL }}"
+export COMOUT_WAVE_WMO="{{ COM_WAVE_WMO_TMPL }}"
+
+mkdir -p "${COMOUT_WAVE_WMO}"
+
+###################################
+# Execute the Script
+
+"${SCRgfs}/exgfs_wave_prdgen_bulls.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+###################################
+# Remove temp directories
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

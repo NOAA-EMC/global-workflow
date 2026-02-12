@@ -3,7 +3,7 @@
 if ((10#${ENSMEM:-0} > 0)); then
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs"
+    cat ${HOMEglobal}/ush/jjob_header.sh
 
     source "${EXPDIR}/config.base"
     source "${EXPDIR}/config.fcst"
@@ -11,7 +11,7 @@ if ((10#${ENSMEM:-0} > 0)); then
 else
     export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst"
+    cat ${HOMEglobal}/ush/jjob_header.sh
 
     source "${EXPDIR}/config.base"
     source "${EXPDIR}/config.fcst"
@@ -20,12 +20,6 @@ fi
 ##############################################
 # Set variables used in the script
 ##############################################
-export machine="{{ MACHINE }}"
-export HOMEgfs="{{ HOMEgfs }}"
-export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
-export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
-export ICSDIR="{{ ICSDIR }}"
-export PSLOT="{{ PSLOT }}"
 
 # Create the directory to hold restarts and output from the model in stmp
 export DATArestart="${DATAjob}/restart"
@@ -181,7 +175,7 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
 
     # Determine if this is the last segment
     commas="${FCST_SEGMENTS//[^,]/}"
-    n_segs=${#commas}
+    n_segs={{ '${#' }}commas}
     if ((n_segs - 1 == ${FCST_SEGMENT:-0})); then
         # Only delete temporary restarts if it is the last segment
         rm -rf "${DATArestart}"

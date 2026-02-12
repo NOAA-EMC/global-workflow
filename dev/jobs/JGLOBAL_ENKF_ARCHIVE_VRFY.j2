@@ -1,0 +1,59 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.earc_vrfy"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+export MEMDIR="ensstat"
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_ANALYSIS_ENSSTAT="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMIN_ATMOS_HISTORY_ENSSTAT="{{ COM_ATMOS_HISTORY_TMPL }}"
+export COMIN_SNOW_ANALYSIS_ENSSTAT="{{ COM_SNOW_ANALYSIS_TMPL }}"
+
+###############################################################
+# Run archive script
+###############################################################
+
+"${SCRgfs}/exglobal_enkf_earc_vrfy.py"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
+
+###############################################################
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

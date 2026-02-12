@@ -1,0 +1,81 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.extractvars"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+source "${USHgfs}/wave_domain_grid.sh"
+
+# Set COM Paths
+export YMD=${PDY}
+export HH=${cyc}
+
+export GRID='0p25'
+export COMIN_ATMOS_GRIB_0p25="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+mkdir -p "${COMIN_ATMOS_GRIB_0p25}"
+
+export GRID='0p50'
+export COMIN_ATMOS_GRIB_0p50="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+mkdir -p "${COMIN_ATMOS_GRIB_0p50}"
+
+export GRID='1p00'
+export COMIN_ATMOS_GRIB_1p00="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+mkdir -p "${COMIN_ATMOS_GRIB_1p00}"
+
+export COMIN_OCEAN_HISTORY="{{ COM_OCEAN_HISTORY_TMPL }}"
+export COMIN_OCEAN_GRIB="{{ COM_OCEAN_GRIB_TMPL }}"
+export COMIN_OCEAN_NETCDF="{{ COM_OCEAN_NETCDF_TMPL }}"
+export COMIN_ICE_HISTORY="{{ COM_ICE_HISTORY_TMPL }}"
+export COMIN_ICE_GRIB="{{ COM_ICE_GRIB_TMPL }}"
+export COMIN_ICE_NETCDF="{{ COM_ICE_NETCDF_TMPL }}"
+export COMIN_WAVE_GRID="{{ COM_WAVE_GRID_TMPL }}"
+
+process_grdID "${waveGRD}"
+export GRDRESNAME=${grdNAME}
+export COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}="{{ COM_WAVE_GRID_RES_TMPL }}"
+
+export RUN=${RUN}
+export YMD=${PDY}
+export HH=${cyc}
+
+if [[ "${DO_ATM}" == "YES" ]]; then
+    mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"
+    mkdir -p "${ARC_RFCST_PROD_ATMOS_F3D}"
+fi
+if [[ "${DO_OCN}" == "YES" ]]; then
+    mkdir -p "${ARC_RFCST_PROD_OCN}"
+fi
+if [[ "${DO_ICE}" == "YES" ]]; then
+    mkdir -p "${ARC_RFCST_PROD_ICE}"
+fi
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    mkdir -p "${ARC_RFCST_PROD_WAV}"
+fi
+
+# Execute the Script
+"${SCRgfs}/exglobal_extractvars.sh"
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

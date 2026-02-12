@@ -1,0 +1,60 @@
+#! /usr/bin/env bash
+
+# TODO (#1221) This job is not part of the rocoto suite
+
+############################################
+# GFS FBWIND PRODUCT GENERATION
+############################################
+cat ${HOMEglobal}/ush/jjob_header.sh
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.fbwind"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+
+export GRID="0p25"
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_GRIB_0p25="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT="{{ COM_ATMOS_WMO_TMPL }}"
+if [[ ! -d "${COMOUT}" ]]; then
+    mkdir -m 775 -p "${COMOUT}"
+fi
+
+########################################################
+# Execute the script.
+"${SCRgfs}/exgfs_atmos_fbwind.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi

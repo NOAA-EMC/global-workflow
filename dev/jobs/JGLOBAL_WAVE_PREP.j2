@@ -1,0 +1,53 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveprep"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+# Set rtofs PDY
+# shellcheck disable=SC2153
+export RPDY=${PDY}
+
+export MP_PULSE=0
+
+# CDO required for processing RTOFS currents
+export CDO=${CDO_ROOT}/bin/cdo
+
+# Set COM Paths
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_OBS="{{ COM_OBS_TMPL }}"
+export COMIN_WAVE_PREP="{{ COM_WAVE_PREP_TMPL }}"
+export COMOUT_WAVE_PREP="{{ COM_WAVE_PREP_TMPL }}"
+export COMINrtofs="{{ COM_RTOFS_TMPL }}"
+if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
+
+# Execute the Script
+"${SCRgfs}/exgfs_wave_prep.sh" && true
+
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

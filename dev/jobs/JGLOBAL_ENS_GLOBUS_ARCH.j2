@@ -1,0 +1,56 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.globus"
+source "${EXPDIR}/config.earc_groups"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+export MEMDIR="ensstat"
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_CONF="{{ COM_CONF_TMPL }}"
+
+export RUN=${RUN}
+export YMD=${PDY}
+export HH=${cyc}
+
+###############################################################
+# Run globus script
+###############################################################
+
+export -n SHELLOPTS
+${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_earc.py}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+[[ ${KEEPDATA} == "NO" ]] && rm -rf "${DATA}"
+
+exit 0

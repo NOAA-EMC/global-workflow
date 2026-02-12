@@ -1,0 +1,70 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.postsnd"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+########################################
+# Runs GFS BUFR SOUNDINGS
+########################################
+
+##############################
+# Define COM Directories
+##############################
+
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_HISTORY="{{ COM_ATMOS_HISTORY_TMPL }}"
+export COMIN_ATMOS_BUFR="{{ COM_ATMOS_BUFR_TMPL }}"
+export COMOUT_ATMOS_BUFR="{{ COM_ATMOS_BUFR_TMPL }}"
+export COMOUT_ATMOS_WMO="{{ COM_ATMOS_WMO_TMPL }}"
+export COMOUT_ATMOS_GEMPAK="{{ COM_ATMOS_GEMPAK_TMPL }}"
+
+if [[ ! -d "${COMOUT_ATMOS_BUFR}" ]]; then
+    mkdir -p "${COMOUT_ATMOS_BUFR}"
+fi
+if [[ ! -d "${COMOUT_ATMOS_GEMPAK}" ]]; then
+    mkdir -p "${COMOUT_ATMOS_GEMPAK}"
+fi
+if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
+    mkdir -p "${COMOUT_ATMOS_WMO}"
+fi
+
+########################################################
+# Execute the script.
+"${SCRgfs}/exgfs_atmos_postsnd.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

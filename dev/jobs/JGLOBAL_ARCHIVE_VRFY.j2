@@ -1,0 +1,76 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.arch_vrfy"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_ANALYSIS="{{ COM_ATMOS_ANALYSIS_TMPL }}"
+export COMIN_ATMOS_GENESIS="{{ COM_ATMOS_GENESIS_TMPL }}"
+export COMIN_ATMOS_HISTORY="{{ COM_ATMOS_HISTORY_TMPL }}"
+export COMIN_ATMOS_TRACK="{{ COM_ATMOS_TRACK_TMPL }}"
+export COMIN_CHEM_ANALYSIS="{{ COM_CHEM_ANALYSIS_TMPL }}"
+export COMIN_SNOW_ANALYSIS="{{ COM_SNOW_ANALYSIS_TMPL }}"
+export COMIN_OBS="{{ COM_OBS_TMPL }}"
+export COMOUT_ATMOS_TRACK="{{ COM_ATMOS_TRACK_TMPL }}"
+
+for grid in "0p25" "0p50" "1p00"; do
+    export YMD=${PDY}
+    export HH=${cyc}
+    export GRID=${grid}
+    export COMIN_ATMOS_GRIB_${grid}="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+done
+
+# GEFS-specific: Ensemble statistics path
+if [[ "${RUN}" == "gefs" ]]; then
+    export MEMDIR="ensstat"
+    export YMD=${PDY}
+    export HH=${cyc}
+    export GRID="1p00"
+    export COMIN_ATMOS_ENSSTAT_1p00="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+fi
+
+###############################################################
+# Run archive script
+###############################################################
+
+${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
+err=$?
+if [[ ${err} -ne 0 ]]; then
+    exit "${err}"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

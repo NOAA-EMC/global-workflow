@@ -1,0 +1,63 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.genesis_fsu"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+##############################################
+# Define COM and Data directories
+##############################################
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_GENESIS="{{ COM_ATMOS_GENESIS_TMPL }}"
+export YMD=${PDY}
+export HH=${cyc}
+export GRID="0p25"
+export COMIN_ATMOS_GRIB_0p25="{{ COM_ATMOS_GRIB_GRID_TMPL }}"
+
+# The following variables are used by the tracker scripts which are outside
+#   of global-workflow and therefore can't be standardized at this time
+export COMIN=${COMIN_ATMOS_GRIB_0p25}
+export gfsdir=${COMIN_ATMOS_GRIB_0p25}
+export COMINgfs=${COMIN_ATMOS_GRIB_0p25}
+export COMOUT=${COMOUT_ATMOS_GENESIS}
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+
+##############################################
+# Run relevant script
+##############################################
+
+#############################################################
+# Execute the script
+"${SCRIPTens_tracker}/exgfs_fsu_genesis.sh"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

@@ -1,0 +1,90 @@
+#! /usr/bin/env bash
+
+# TODO (#1222) This job is not part of the rocoto suite
+
+############################################
+# GFS GEMPAK META PRODUCT GENERATION
+############################################
+cat ${HOMEglobal}/ush/jjob_header.sh
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.gempak"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+###############################################
+# Set MP variables
+###############################################
+export LAUNCH_MODE=MPI
+export OMP_NUM_THREADS=1
+export MP_LABELIO=yes
+export MP_PULSE=0
+export MP_DEBUG_NOTIMEOUT=yes
+
+cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+
+#############################################
+#set the fcst hrs for all the cycles
+#############################################
+export fhbeg=0
+export fhend=384
+export fhinc=12
+
+if [[ "${fhend}" -gt "${FHMAX_GFS}" ]]; then
+    export fhend="${FHMAX_GFS}"
+fi
+
+export COMPONENT="atmos"
+
+##############################################
+# Set up model and cycle specific variables
+##############################################
+export DBN_ALERT_TYPE=GFS_METAFILE
+
+##############################################
+# Define COM directories
+##############################################
+export COMINukmet=${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}
+export COMINecmwf=${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}
+export COMINnam=${COMINnam:-$(compath.py "${envir}/nam/${nam_ver}")/nam}
+
+export GRID=1p00
+export YMD=${PDY}
+export HH=${cyc}
+export COMIN_ATMOS_GEMPAK_1p00="{{ COM_ATMOS_GEMPAK_TMPL }}"
+
+export GRID="meta"
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_ATMOS_GEMPAK_META="{{ COM_ATMOS_GEMPAK_TMPL }}"
+mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
+
+########################################################
+# Execute the script.
+"${SCRgfs}/exgfs_atmos_gempak_meta.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi

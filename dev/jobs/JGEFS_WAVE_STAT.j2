@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+
+cat ${HOMEglobal}/ush/jjob_header.sh
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.wave_stat"
+
+##############################################
+# Set variables used in the script
+##############################################
+export machine="{{ MACHINE }}"
+export HOMEgfs="{{ HOMEgfs }}"
+export EXPDIR="{{ EXPDIR }}/{{ PSLOT }}"
+export ROTDIR="{{ COMROOT }}/{{ PSLOT }}"
+export ICSDIR="{{ ICSDIR }}"
+export PSLOT="{{ PSLOT }}"
+
+source "${USHgfs}/wave_domain_grid.sh"
+
+# Set COM Paths
+
+for grid in ${wavepostGRD}; do
+    process_grdID "${grid}"
+    prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
+    export MEMDIR="ensstat"
+    export GRID=${grid}
+    export YMD=${PDY}
+    export HH=${cyc}
+    export "${prod_dir_grid}"="{{ COM_WAVE_GRID_TMPL }}"
+    if [[ ! -d "${!prod_dir_grid}" ]]; then
+        mkdir -m 775 -p "${!prod_dir_grid}"
+    fi
+done
+export MEMDIR="ensstat"
+export YMD=${PDY}
+export HH=${cyc}
+export COMOUT_WAVE_STATION_ENS="{{ COM_WAVE_STATION_TMPL }}"
+if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
+    mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
+fi
+
+# Execute the Script
+#"${SCRgfs}/exgefs_wave_stat.sh"
+export err=$?
+err_chk
+##########################################
+## Remove the Temporary working directory
+###########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
