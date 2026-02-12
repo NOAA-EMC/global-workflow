@@ -421,6 +421,8 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     fi
     # Make the gsidiags directory to house the GSI diagnostic data
     GSIDIAGDIR=${GSIDIAGDIR:-"${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"}
+    rm -rf "${GSIDIAGDIR}"
+    mkdir -p "${GSIDIAGDIR}"
 fi
 
 ##############################################################
@@ -674,7 +676,7 @@ fi
 # This will allow the GSI to write directly to the GSIDIAGDIR.
 if [[ "${GENDIAG}" == "YES" ]]; then
     # The number of directories is controlled by the number of tasks (one each)
-    for task in $(seq 1 "${NTASKS_GSI}"); do
+    for task in $(seq 0 $((ntasks - 1))); do
         dir="dir.$(printf %04d "${task}")"
         mkdir -p "${GSIDIAGDIR}/${dir}"
         ${NLN} "${GSIDIAGDIR}/${dir}" "./${dir}"
