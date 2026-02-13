@@ -74,7 +74,7 @@ done
 # Copy to other members if needed
 if [[ "${NET}" == "gefs" && ${NMEM_ENS} -gt 0 ]]; then
     for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
-        declare -x COMOUT_WAVE_PREP_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem001/model/wave/prep"
+        declare -x COMOUT_WAVE_PREP_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem${mem}/model/wave/prep"
         mkdir -p "${COMOUT_WAVE_PREP_MEM}"
         for grdID in "${grdALL[@]}"; do
             cpfs "${COMOUT_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "${COMOUT_WAVE_PREP_MEM}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
