@@ -31,7 +31,7 @@ declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atm
 for grid in gif upper_air; do
     _GRID="${grid^^}"
     gempak_dir="COMOUT_ATMOS_GEMPAK_${_GRID}"
-    declare -rx ${gempak_dir}=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/${grid}
+    declare -rx "${gempak_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/${grid}"
     if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
 done
 

@@ -6,7 +6,7 @@ source "${USHgfs}/wave_domain_grid.sh"
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMIN_ATMOS_GRIB_${grid}"
-    declare -rx ${prod_dir}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
+    declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
     mkdir -p "${!prod_dir}"
 done
 
@@ -19,7 +19,7 @@ declare -rx COMIN_ICE_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf
 declare -rx COMIN_WAVE_GRID="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded"
 
 process_grdID "${waveGRD}"
-declare -rx COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}"
+declare -rx "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}"
 
 if [[ "${DO_ATM}" == "YES" ]]; then
     mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"
