@@ -70,7 +70,6 @@ if [[ ! -f "${jjob}" ]]; then
     exit 1
 fi
 
-
 # Source the config.com to get the TMPL variables
 source "${config_com}" > /dev/null
 # Source the bash_utils.sh to get the declare_from_tmpl function
@@ -87,7 +86,7 @@ while IFS= read -r line; do
     export RUN='${RUN}'
     if [[ "${line}" =~ declare_from_tmpl ]]; then
         # Use awk to get the number of leading spaces
-        COUNT=$(awk '{print match($0, /[^ ]|$/)-1}' <<<"$line")
+        COUNT=$(awk '{print match($0, /[^ ]|$/)-1}' <<< "$line")
         spaces=""
         for i in $(seq 1 $COUNT); do
             spaces="${spaces} "
