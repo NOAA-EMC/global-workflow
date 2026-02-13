@@ -8,14 +8,12 @@ source "${USHgfs}/wave_domain_grid.sh"
 for grid in ${wavepostGRD}; do
     process_grdID "${grid}"
     prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
-    MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        "${prod_dir_grid}:COM_WAVE_GRID_TMPL"
+    MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir_grid}:COM_WAVE_GRID_TMPL"
     if [[ ! -d "${!prod_dir_grid}" ]]; then
         mkdir -m 775 -p "${!prod_dir_grid}"
     fi
 done
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
 if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
     mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
 fi

@@ -9,12 +9,11 @@ fi
 ##############################################
 # Set variables used in the script
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_ANLMON:COM_ATMOS_ANLMON_TMPL \
-    COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
-    COMIN_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL \
-    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL \
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_ANLMON:COM_ATMOS_ANLMON_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL \
     COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
     COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL \
     COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL \
@@ -55,8 +54,7 @@ YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
 for grid in "0p25" "0p50" "1p00"; do
-    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
 done
 
 ###############################################################
@@ -66,8 +64,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
         for grdID in ${wavepostGRD} ${waveinterpGRD}; do
             process_grdID "${grdID}"
-            YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-                "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+            YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
             grids_arr+=("${GRDREGION}.${GRDRES}")
         done
         export WAVE_OUT_GRIDS="${grids_arr[*]}"

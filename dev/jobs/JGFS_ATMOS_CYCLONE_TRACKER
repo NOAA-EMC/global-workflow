@@ -7,11 +7,9 @@ export COMPONENT="atmos"
 ##############################################
 # Define COM and Data directories
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
-    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
-YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx \
-    COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
+YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
 
 if [[ ! -d "${COMOUT_ATMOS_TRACK}" ]]; then mkdir -p "${COMOUT_ATMOS_TRACK}"; fi
 

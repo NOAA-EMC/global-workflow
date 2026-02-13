@@ -12,11 +12,10 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMINrtofs:COM_RTOFS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINrtofs:COM_RTOFS_TMPL
 if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
 # Execute the Script

@@ -131,11 +131,9 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     gmemchar="mem"$(printf "%03i" "${smem}")
     memchar="mem"$(printf "%03i" "${imem}")
 
-    MEMDIR=${gmemchar} RUN=${GDUMP} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -x \
-        COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
+    MEMDIR=${gmemchar} RUN=${GDUMP} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -x COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
-    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
-        COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
 
     mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
 

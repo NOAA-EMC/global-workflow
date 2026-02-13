@@ -23,22 +23,18 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${rCDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
+RUN=${rCDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
 if [[ "${RUN}" == "gcdas" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
+    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
 fi
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OBS_PREV:COM_OBS_TMPL \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_OBS_PREV:COM_OBS_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f006.nc"
 if [[ ! -f "${ATMGES}" ]]; then

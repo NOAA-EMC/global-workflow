@@ -37,17 +37,14 @@ fi
 ##############################################
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
 
-RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
+RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL
+RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-    COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
 
 mkdir -p "${COMOUT_OCEAN_BMATRIX}"
 mkdir -p "${COMOUT_ICE_BMATRIX}"

@@ -12,12 +12,9 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMINobsproc:COM_OBSPROC_TMPL
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMINobsproc_PREV:COM_OBSPROC_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OBS:COM_OBS_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMINobsproc:COM_OBSPROC_TMPL
+YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMINobsproc_PREV:COM_OBSPROC_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
 
 mkdir -p "${COMOUT_OBS}"
 

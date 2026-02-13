@@ -7,17 +7,15 @@ source "${USHgfs}/wave_domain_grid.sh"
 # Set COM Paths
 ###################################
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
-    COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
 
 mkdir -p "${COMOUT_WAVE_WMO}"
 
 if [[ -n "${GEMPAK_GRIDS}" ]]; then
     for grdID in ${GEMPAK_GRIDS}; do
         process_grdID "${grdID}"
-        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-            "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
     done
 else
     echo "GEMPAK_GRIDS are empty. No grids to process."
