@@ -7,9 +7,21 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_
 ##############################################
 
 # Construct COM variables from templates
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMIN_${COMPONENT^^}_HISTORY":"COM_${COMPONENT^^}_HISTORY_TMPL
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_${COMPONENT^^}_GRIB":"COM_${COMPONENT^^}_GRIB_TMPL
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_${COMPONENT^^}_NETCDF":"COM_${COMPONENT^^}_NETCDF_TMPL
+if [[ -z "${COMPONENT:-}" ]]; then
+    export err=1
+    err_exit "COMPONENT variable is not set."
+elif [[ "${COMPONENT}" == "ice" ]]; then
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_ICE_GRIB:COM_ICE_GRIB_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_ICE_NETCDF:COM_ICE_NETCDF_TMPL
+elif [[ "${COMPONENT}" == "ocean" ]]; then
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL
+    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL
+else
+    export err=1
+    err_exit "COMPONENT variable '${COMPONENT}' is invalid. Must be 'ice' or 'ocean'."
+fi
 
 ###############################################################
 # Run exglobal script
