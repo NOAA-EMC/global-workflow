@@ -1,37 +1,6 @@
 #! /usr/bin/env bash
 
 # The purpose of this script is to read a target config.com and apply the ush/bash_utils.sh declare_from_tmpl function to generate the COM variable.
-# For reference, here is the declare_from_tmpl function from bash_utils.sh:
-# function declare_from_tmpl() {
-#
-#    local opts="-g"
-#    local OPTIND=1
-#    while getopts "rx" option; do
-#        opts="${opts}${option}"
-#    done
-#    shift $((OPTIND - 1))
-
-#    for input in "$@"; do
-#        IFS=':' read -ra args <<< "${input}"
-#        local com_var="${args[0]}"
-#        local template
-#        local value
-#        if ((${#args[@]} > 1)); then
-#            template="${args[1]}"
-#        else
-#            template="${com_var}_TMPL"
-#        fi
-#        if [[ ! -v "${template}" ]]; then
-#            echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
-#            exit 2
-#        fi
-#        value=$(echo "${!template}" | envsubst)
-#        # shellcheck disable=SC2086
-#        declare ${opts} "${com_var}"="${value}"
-#        # shellcheck disable=
-#        echo "declare_from_tmpl :: ${com_var}=${value}"
-#    done
-#
 #
 # Here are two cases of COM variable generation in the current workflow:
 # YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL
