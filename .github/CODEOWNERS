@@ -15,6 +15,7 @@ dev/ctests/ @TerrenceMcGuinness-NOAA @aerorahul
 # Specific file owners
 # dev side scripts
 dev/ush/compare_f90nml.py @aerorahul
+dev/ush/de_template_com.sh @DavidHuber-NOAA
 
 # Specific workflow scripts
 dev/workflow/generate_workflows.sh @DavidHuber-NOAA
