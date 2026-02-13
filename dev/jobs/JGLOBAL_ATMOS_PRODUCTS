@@ -13,7 +13,7 @@ declare -rx COMIN_ATMOS_MASTER="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/maste
 
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    declare -rx ${prod_dir}=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}
+    declare -rx ${prod_dir}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
     mkdir -m 775 -p "${!prod_dir}"
 done
 

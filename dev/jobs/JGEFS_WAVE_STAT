@@ -8,7 +8,7 @@ source "${USHgfs}/wave_domain_grid.sh"
 for grid in ${wavepostGRD}; do
     process_grdID "${grid}"
     prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
-    declare -rx ${prod_dir_grid}=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/gridded
+    declare -rx ${prod_dir_grid}="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/gridded"
     if [[ ! -d "${!prod_dir_grid}" ]]; then
         mkdir -m 775 -p "${!prod_dir_grid}"
     fi

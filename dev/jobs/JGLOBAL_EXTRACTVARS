@@ -6,7 +6,7 @@ source "${USHgfs}/wave_domain_grid.sh"
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMIN_ATMOS_GRIB_${grid}"
-    declare -rx ${prod_dir}=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}
+    declare -rx ${prod_dir}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
     mkdir -p "${!prod_dir}"
 done
 
