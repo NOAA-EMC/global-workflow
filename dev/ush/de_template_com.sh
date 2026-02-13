@@ -76,6 +76,7 @@ source "${config_com}" > /dev/null
 source "${bash_utils}" > /dev/null
 
 # Set static variable for use in templates
+# shellcheck disable=SC2016
 export ROTDIR='${ROTDIR}'
 
 # Replace the declare_from_tmpl calls in the jjob with the generated COM variable declarations and replace them in the jjob
@@ -83,12 +84,13 @@ line_num=0
 while IFS= read -r line; do
     line_num=$((line_num + 1))
     # Intialize RUN. This can be overridden by the prefix assignments.
+    # shellcheck disable=SC2016
     export RUN='${RUN}'
     if [[ "${line}" =~ declare_from_tmpl ]]; then
         # Use awk to get the number of leading spaces
         COUNT=$(awk '{print match($0, /[^ ]|$/)-1}' <<< "$line")
         spaces=""
-        for i in $(seq 1 $COUNT); do
+        for i in $(seq 1 "${COUNT}"); do
             spaces="${spaces} "
         done
         # Extract the prefix assignments to declare_from_tmpl
@@ -97,28 +99,28 @@ while IFS= read -r line; do
         IFS=' ' read -ra prefix_args <<< "${prefix}"
         # Convert these into literal variable assignments (e.g. YMD='${PDY}' HH='${cyc}')
         for i in "${!prefix_args[@]}"; do
-            prefix_args[$i]=$(echo "${prefix_args[$i]}" | sed -E 's/(.*)="*([a-zA-Z0-9_{}$]+)"*/\1='\''\2'\''/')
+            prefix_args[$i]=$(echo "${prefix_args[${i}]}" | sed -E 's/(.*)="*([a-zA-Z0-9_{}$]+)"*/\1='\''\2'\''/')
         done
         # Extract the arguments to declare_from_tmpl
         args=$(echo "${line}" | sed -E 's/.*declare_from_tmpl (.*)/\1/')
         # Extract the flags to declare_from_tmpl (e.g. -rx)
-        flags=$(echo "${args}" | egrep -o -- '-[a-zA-Z]+')
+        flags=$(echo "${args}" | grep -E -o -- '-[a-zA-Z]+')
         # Generate the COM variable declaration using declare_from_tmpl
         # The prefix arguments need to be in the form of VAR='${var}' (i.e. we want the template to render a literal string with the variable names, not their values)
         # Use prefix_args to form these prefix assignments and pass them to declare_from_tmpl
         # Valid prefix args are DUMP, YMD, HH, GRDRESNAME, MEMDIR, RUN, and GRID
         for var in DUMP YMD HH GRDRESNAME MEMDIR RUN GRID; do
-            for arg in ${prefix_args[@]}; do
+            for arg in "${prefix_args[@]}"; do
                 if [[ "${arg}" =~ ${var} ]]; then
                     # Get what the variable is assigned to
                     assignment=$(echo "${arg}" | sed -E "s/${var}='(.*)'/\1/")
-                    declare -x ${var}="${assignment}"
+                    declare -x "${var}"="${assignment}"
                 fi
             done
         done
 
         # Now render the template
-        COM=$(declare_from_tmpl -rx ${args} | sed 's/declare_from_tmpl :: \(.*\)=\(.*\)/\1=\2/')
+        COM=$(declare_from_tmpl -rx "${args}" | sed 's/declare_from_tmpl :: \(.*\)=\(.*\)/\1=\2/')
         # Remove duplicate // in the COM path if it exists (e.g. if MEMDIR is empty, we don't want a double slash in the path)
         COM=$(echo "${COM}" | sed 's/\/\//\//g')
         # Prepend with declare ${flags} if flags are present
