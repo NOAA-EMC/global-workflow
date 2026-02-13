@@ -13,7 +13,7 @@ mkdir -p "${COMOUT_WAVE_GRID}"
 if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
     for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         process_grdID "${grdID}"
-        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL
         out_dir_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
         out_dir=${!out_dir_varname}
         mkdir -p "${out_dir}"
