@@ -423,6 +423,26 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 set -u
 machine=${MACHINE_ID}
+
+# Render J-jobs from dev/jobs/*.j2 to jobs/
+# We use the GFS config by default, or GCAFS if requested
+_render_config_dir="${HOMEgfs}/dev/parm/config/gfs"
+if [[ "${_run_all_gcafs}" == "true" ]]; then
+    _render_config_dir="${HOMEgfs}/dev/parm/config/gcafs"
+fi
+
+echo "Rendering J-jobs from dev/jobs/*.j2 to jobs/ using ${_render_config_dir}"
+for _j2_template in "${HOMEgfs}/dev/jobs"/*.j2; do
+    if [[ -f "${_j2_template}" ]]; then
+        python3 "${HOMEgfs}/dev/workflow/render_jjob.py" \
+            "${_j2_template}" \
+            --config-dir "${_render_config_dir}" \
+            --configs "config.base,config.com" \
+            --outdir "${HOMEgfs}/jobs" \
+            --machine "${machine^^}" > /dev/null
+    fi
+done
+
 platform_config="${HOMEgfs}/dev/ci/platforms/config.${machine}"
 if [[ -f "${platform_config}" ]]; then
     source "${HOMEgfs}/dev/ci/platforms/config.${machine}"

@@ -10,25 +10,29 @@ This includes:
 - Removing unused files where appropriate
 """
 import os
-from wxflow import FileHandler
+import sys
+from wxflow import FileHandler, Logger
 
 # Get the absolute path of the directory containing this file
 current_dir_path = os.path.dirname(os.path.abspath(__file__))
 # Get the absolute path of the global-workflow directory
-# which is assumed to be two directories up from the current file
 global_workflow_dir = os.path.abspath(os.path.join(current_dir_path, "../.."))
+
+# Add global-workflow to sys.path to import render_jjob
+sys.path.append(global_workflow_dir)
+from dev.workflow.render_jjob import render_template
 
 
 def replace_gfs_with_gcafs(input_file):
     """
     Replace all instances of FOOgfs with FOOgcafs in the given input file.
     This matches patterns like HOMEgfs -> HOMEgcafs, USHgfs -> USHgcafs, etc.
-    
+
     Parameters
     ----------
     input_file : str
         Path to the file to modify
-    
+
     Returns
     -------
     int
@@ -36,11 +40,11 @@ def replace_gfs_with_gcafs(input_file):
     """
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"File not found: {input_file}")
-    
+
     # Read the file content
     with open(input_file, 'r') as f:
         content = f.read()
-    
+
     # Count and replace all instances of FOOgfs with FOOgcafs
     # This will match patterns like: HOMEgfs, USHgfs, PARMgfs, etc.
     # Does NOT match standalone "gfs" or quoted "gfs"
@@ -48,36 +52,36 @@ def replace_gfs_with_gcafs(input_file):
     # Match word characters followed by "gfs" at word boundary, but ensure prefix has at least 2 chars
     # This ensures we match variable names like HOMEgfs but not just "gfs" or "Xgfs"
     pattern = r'(\w{2,})gfs\b'
-    
+
     replacement_count = 0
     def replace_func(match):
         nonlocal replacement_count
         replacement_count += 1
         prefix = match.group(1)
         return f"{prefix}gcafs"
-    
+
     modified_content = re.sub(pattern, replace_func, content)
-    
+
     # Write the modified content back to the file
     with open(input_file, 'w') as f:
         f.write(modified_content)
-    
+
     return replacement_count
 
 
 def copy_job_files(global_workflow_dir):
     """
-    Copy job files from dev/jobs to jobs directory with appropriate renaming.
-    
+    Copy job files from dev/jobs to jobs directory with appropriate renaming and rendering.
+
     Parameters
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
-        
+
     Returns
     -------
     list
-        List of tuples containing (src_path, dest_path) for copied files
+        List of tuples containing (src_path, dest_path) for rendered files
     """
     gcafs_jobs = {
         "JGCAFS_FORECAST": "JGLOBAL_FORECAST",
@@ -98,36 +102,50 @@ def copy_job_files(global_workflow_dir):
         "JGCDAS_AERO_ANALYSIS_CALC": "JGLOBAL_ATMOS_ANALYSIS_CALC",
         "JGCDAS_AERO_ANALYSIS_STATS": "JGLOBAL_ANALYSIS_STATS",
         "JGCDAS_AERO_ANALYSIS_GENERATE_BMATRIX": "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX",
-        # JGCDAS_PREPARE_OBS is taken from ObsForge for v1, not in global-workflow, do this manually!!
-        # need to add something here for the post job once Yaping's PR is in
     }
 
-    job_file_copy_list = []
+    logger = Logger(level="INFO", colored_log=True)
+    config_dir = os.path.join(global_workflow_dir, 'dev', 'parm', 'config', 'gcafs')
+    config_names = ['config.base', 'config.com']
+    output_dir = os.path.join(global_workflow_dir, 'jobs')
+
+    # if the jobs directory exists as a symlink (common in dev), remove it first
+    if os.path.islink(output_dir):
+        os.unlink(output_dir)
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    job_file_render_list = []
     for dest_job, src_job in {**gcafs_jobs, **gcdas_jobs}.items():
-        src_job_path = os.path.join(global_workflow_dir, 'dev', 'jobs', src_job)
-        dest_job_path = os.path.join(global_workflow_dir, 'jobs', dest_job)
-        job_file_copy_list.append((src_job_path, dest_job_path))
+        src_job_path = os.path.join(global_workflow_dir, 'dev', 'jobs', src_job + '.j2')
+        dest_job_path = os.path.join(output_dir, dest_job)
 
-    # Create a FileHandler dictionary
-    job_file_handler = {
-        'mkdir': [os.path.join(global_workflow_dir, 'jobs')],
-        'copy': job_file_copy_list,
-    }
-    # Execute the file operations
-    FileHandler(job_file_handler).sync()
-    
-    return job_file_copy_list
+        print(f"Rendering {src_job}.j2 to {dest_job}")
+        success = render_template(
+            src_job_path,
+            config_dir,
+            config_names,
+            output_dir,
+            output_name=dest_job,
+            logger=logger
+        )
+        if success:
+            job_file_render_list.append((src_job_path, dest_job_path))
+        else:
+            print(f"ERROR: Failed to render {src_job_path}")
+
+    return job_file_render_list
 
 
 def copy_script_files(global_workflow_dir):
     """
     Copy script files from dev/scripts to scripts directory with appropriate renaming.
-    
+
     Parameters
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
-        
+
     Returns
     -------
     list
@@ -173,19 +191,19 @@ def copy_script_files(global_workflow_dir):
     }
     # Execute the file operations for scripts
     FileHandler(ex_script_file_handler).sync()
-    
+
     return ex_script_file_copy_list
 
 
 def remove_unused_executables(global_workflow_dir):
     """
     Remove unused executables from the exec directory.
-    
+
     Parameters
     ----------
     global_workflow_dir : str
         Path to the global workflow directory
-        
+
     Returns
     -------
     list
@@ -244,10 +262,10 @@ def remove_unused_executables(global_workflow_dir):
         "wave_stat.x",
         "webtitle.x"
     ]
-    
+
     exec_dir = os.path.join(global_workflow_dir, 'exec')
     removed_files = []
-    
+
     for executable in unused_executables:
         executable_path = os.path.join(exec_dir, executable)
         if os.path.exists(executable_path):
@@ -259,7 +277,7 @@ def remove_unused_executables(global_workflow_dir):
                 print(f"Error removing {executable}: {e}")
         else:
             print(f"Executable not found (already removed?): {executable}")
-    
+
     return removed_files
 
 
@@ -278,7 +296,7 @@ def setup_gcafs_for_nco():
     for file_path in all_copied_files:
         num_replacements = replace_gfs_with_gcafs(file_path)
         print(f"Modified {file_path}: {num_replacements} replacements made.")
-    
-    
+
+
 if __name__ == "__main__":
     setup_gcafs_for_nco()
