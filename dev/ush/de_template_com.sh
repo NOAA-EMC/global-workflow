@@ -70,10 +70,11 @@ if [[ ! -f "${jjob}" ]]; then
     exit 1
 fi
 
+
 # Source the config.com to get the TMPL variables
-source "${config_com}"
+source "${config_com}" > /dev/null
 # Source the bash_utils.sh to get the declare_from_tmpl function
-source "${bash_utils}"
+source "${bash_utils}" > /dev/null
 
 # Set static variable for use in templates
 export ROTDIR='${ROTDIR}'
