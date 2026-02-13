@@ -20,13 +20,13 @@ export APREFIX_IN="gdas.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
-declare -rx COMIN_OBSPROC=/gdas.${PDY}/${cyc}/atmos
-declare -rx COMIN_ATMOS_ANALYSIS=${ROTDIR}/gdas.${PDY}/${cyc}/analysis/atmos
+declare -rx COMIN_OBSPROC="/gdas.${PDY}/${cyc}/atmos"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/gdas.${PDY}/${cyc}/analysis/atmos"
 
-declare -rx COMOUT_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}/obs
-declare -rx COMOUT_ATMOS_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 
-declare -rx COMIN_ATMOS_HISTORY_PREV=${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/history
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/history"
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -p "${COMOUT_OBS}"

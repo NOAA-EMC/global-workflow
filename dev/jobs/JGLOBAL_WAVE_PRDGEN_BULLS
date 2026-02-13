@@ -6,8 +6,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawi
 # Set COM Paths
 ###################################
 
-declare -rx COMIN_WAVE_STATION=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station
-declare -rx COMOUT_WAVE_WMO=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/wmo
+declare -rx COMIN_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
+declare -rx COMOUT_WAVE_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/wmo"
 
 mkdir -p "${COMOUT_WAVE_WMO}"
 

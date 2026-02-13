@@ -30,15 +30,15 @@ export DBN_ALERT_TYPE=GDAS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-declare -rx COMIN_ATMOS_GEMPAK_1p00=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00
+declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
 
-declare -rx COMOUT_ATMOS_GEMPAK_META=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/meta
+declare -rx COMOUT_ATMOS_GEMPAK_META="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/meta"
 if [[ ! -d "${COMOUT_ATMOS_GEMPAK_META}" ]]; then
     mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 fi
 
 if ((cyc % 12 == 0)); then
-    declare -rx COMOUT_ATMOS_GEMPAK_GIF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/gif
+    declare -rx COMOUT_ATMOS_GEMPAK_GIF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/gif"
     if [[ ! -d "${COMOUT_ATMOS_GEMPAK_GIF}" ]]; then
         mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_GIF}"
     fi

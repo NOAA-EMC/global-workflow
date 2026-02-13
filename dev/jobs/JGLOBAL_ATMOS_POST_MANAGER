@@ -15,7 +15,7 @@ export RUN=${RUN:-gfs}
 ###########################
 export EXT_FCST=NO
 
-declare -rx COMIN_ATMOS_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
 
 ########################################################
 # Execute the script.

@@ -12,9 +12,9 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths
-declare -rx COMIN_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}/obs
-declare -rx COMIN_WAVE_PREP=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep
-declare -rx COMOUT_WAVE_PREP=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
+declare -rx COMOUT_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
 declare -rx COMINrtofs=
 if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 

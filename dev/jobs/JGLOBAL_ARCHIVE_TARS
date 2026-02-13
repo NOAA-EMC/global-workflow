@@ -9,52 +9,52 @@ fi
 ##############################################
 # Set variables used in the script
 ##############################################
-declare -rx COMIN_ATMOS_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos
-declare -rx COMIN_ATMOS_ANLMON=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/anlmon
-declare -rx COMIN_ATMOS_BUFR=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr
-declare -rx COMIN_ATMOS_GEMPAK=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/
-declare -rx COMIN_ATMOS_GENESIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/genesis_vital
-declare -rx COMIN_ATMOS_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history
-declare -rx COMIN_ATMOS_INPUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/input
-declare -rx COMIN_ATMOS_MASTER=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/master
-declare -rx COMIN_ATMOS_RESTART=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart
-declare -rx COMIN_ATMOS_TRACK=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/tracks
-declare -rx COMIN_ATMOS_WMO=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo
-declare -rx COMIN_CHEM_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/chem/history
-declare -rx COMIN_CHEM_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem
-declare -rx COMIN_MED_RESTART=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/med/restart
-declare -rx COMIN_SNOW_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow
-declare -rx COMIN_SNOW_ANLMON=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/snow/anlmon
-declare -rx COMIN_ICE_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice
-declare -rx COMIN_ICE_BMATRIX=${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice
-declare -rx COMIN_ICE_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history
-declare -rx COMIN_ICE_INPUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/input
-declare -rx COMIN_ICE_RESTART=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/restart
-declare -rx COMIN_ICE_GRIB=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2
-declare -rx COMIN_ICE_NETCDF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf
-declare -rx COMIN_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}/obs
-declare -rx COMIN_TOP=${ROTDIR}/${RUN}.${PDY}/${cyc}
-declare -rx COMIN_OCEAN_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history
-declare -rx COMIN_OCEAN_RESTART=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/restart
-declare -rx COMIN_OCEAN_GRIB=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2
-declare -rx COMIN_OCEAN_NETCDF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf
-declare -rx COMIN_OCEAN_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean
-declare -rx COMIN_OCEAN_BMATRIX=${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean
-declare -rx COMIN_WAVE_GRID=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded
-declare -rx COMIN_WAVE_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/history
-declare -rx COMIN_WAVE_STATION=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station
-declare -rx COMIN_WAVE_RESTART=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/restart
-declare -rx COMIN_ATMOS_OZNMON=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/oznmon
-declare -rx COMIN_ATMOS_RADMON=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/radmon
-declare -rx COMIN_ATMOS_MINMON=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/minmon
-declare -rx COMIN_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/conf
-declare -rx COMOUT_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/conf
-declare -rx COMOUT_ATMOS_TRACK=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/tracks
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_ANLMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/anlmon"
+declare -rx COMIN_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
+declare -rx COMIN_ATMOS_GEMPAK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/"
+declare -rx COMIN_ATMOS_GENESIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/genesis_vital"
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMIN_ATMOS_INPUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/input"
+declare -rx COMIN_ATMOS_MASTER="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/master"
+declare -rx COMIN_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
+declare -rx COMIN_ATMOS_TRACK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/tracks"
+declare -rx COMIN_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+declare -rx COMIN_CHEM_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/chem/history"
+declare -rx COMIN_CHEM_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem"
+declare -rx COMIN_MED_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/med/restart"
+declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
+declare -rx COMIN_SNOW_ANLMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/snow/anlmon"
+declare -rx COMIN_ICE_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice"
+declare -rx COMIN_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
+declare -rx COMIN_ICE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"
+declare -rx COMIN_ICE_INPUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/input"
+declare -rx COMIN_ICE_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/restart"
+declare -rx COMIN_ICE_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2"
+declare -rx COMIN_ICE_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf"
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_TOP="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+declare -rx COMIN_OCEAN_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"
+declare -rx COMIN_OCEAN_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/restart"
+declare -rx COMIN_OCEAN_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2"
+declare -rx COMIN_OCEAN_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf"
+declare -rx COMIN_OCEAN_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean"
+declare -rx COMIN_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean"
+declare -rx COMIN_WAVE_GRID="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded"
+declare -rx COMIN_WAVE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/history"
+declare -rx COMIN_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
+declare -rx COMIN_WAVE_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/restart"
+declare -rx COMIN_ATMOS_OZNMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/oznmon"
+declare -rx COMIN_ATMOS_RADMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/radmon"
+declare -rx COMIN_ATMOS_MINMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/minmon"
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMOUT_ATMOS_TRACK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/tracks"
 
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 
 for grid in "0p25" "0p50" "1p00"; do
-    declare -rx COMIN_ATMOS_GRIB_${grid}=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}
+    declare -rx COMIN_ATMOS_GRIB_${grid}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
 done
 
 ###############################################################
@@ -64,7 +64,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
         for grdID in ${wavepostGRD} ${waveinterpGRD}; do
             process_grdID "${grdID}"
-            declare -rx COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}
+            declare -rx COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}"
             grids_arr+=("${GRDREGION}.${GRDRES}")
         done
         export WAVE_OUT_GRIDS="${grids_arr[*]}"

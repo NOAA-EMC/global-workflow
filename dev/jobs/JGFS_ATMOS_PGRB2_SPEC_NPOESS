@@ -13,9 +13,9 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 # Define COM directories
 ##############################################
 
-declare -rx COMIN_ATMOS_MASTER=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/master
-declare -rx COMOUT_ATMOS_GOES=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim
-declare -rx COMIN_ATMOS_GRIB_0p50=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p50
+declare -rx COMIN_ATMOS_MASTER="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/master"
+declare -rx COMOUT_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
+declare -rx COMIN_ATMOS_GRIB_0p50="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p50"
 
 mkdir -m 775 -p "${COMOUT_ATMOS_GOES}"
 

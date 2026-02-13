@@ -24,11 +24,11 @@ export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-declare -rx COMIN_ATMOS_ANALYSIS_DET=${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos
+declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
 
-declare -rx COMOUT_ATMOS_ANALYSIS_STAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos
+declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-declare -rx COMIN_ATMOS_HISTORY_STAT_PREV=${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history
+declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
 ###############################################################
 # Run relevant script

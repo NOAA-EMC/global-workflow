@@ -5,7 +5,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_arch" -c "base globus"
 ##############################################
 # Set variables used in the script
 ##############################################
-declare -rx COMIN_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/conf
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 ###############################################################
 # Run globus script

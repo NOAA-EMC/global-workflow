@@ -5,7 +5,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_gro
 ##############################################
 # Set variables used in the script
 ##############################################
-declare -rx COMIN_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
 ###############################################################
 # Run globus script

@@ -16,11 +16,11 @@ export GDUMP="enkfgdas" # EnKF ensemble always uses RUN=enkfgdas for prior membe
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${GDATE:8:2}z."
 
-declare -rx COMIN_ATMOS_ANALYSIS_STAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos
+declare -rx COMIN_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-declare -rx COMOUT_ATMOS_ANALYSIS_STAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos
+declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-declare -rx COMIN_ATMOS_HISTORY_STAT_PREV=${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDATE:8:2}/ensstat/model/atmos/history
+declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDATE:8:2}/ensstat/model/atmos/history"
 
 ###############################################################
 # Run relevant script

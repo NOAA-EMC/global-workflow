@@ -10,8 +10,8 @@ export COMPONENT="atmos"
 # Define COM directories
 ##############################################
 
-declare -rx COMOUT_ATMOS_WMO=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo
-declare -rx COMIN_ATMOS_GRIB_0p25=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25
+declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 
 if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
     mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"

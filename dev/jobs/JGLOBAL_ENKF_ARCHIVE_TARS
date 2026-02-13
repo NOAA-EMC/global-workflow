@@ -5,14 +5,14 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_ta
 ##############################################
 # Set variables used in the script
 ##############################################
-declare -rx COMIN_ATMOS_ANALYSIS_ENSSTAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos
-declare -rx COMIN_ATMOS_HISTORY_ENSSTAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history
-declare -rx COMIN_ICE_ANALYSIS_ENSSTAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/ice
-declare -rx COMIN_OCEAN_ANALYSIS_ENSSTAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/ocean
-declare -rx COMIN_SNOW_ANALYSIS_ENSSTAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/snow
-declare -rx COMIN_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf
+declare -rx COMIN_ATMOS_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMIN_ATMOS_HISTORY_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history"
+declare -rx COMIN_ICE_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/ice"
+declare -rx COMIN_OCEAN_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/ocean"
+declare -rx COMIN_SNOW_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/snow"
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
-declare -rx COMIN_ATMOS_HISTORY=${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
 
 mkdir -p "${COMIN_CONF}"
 

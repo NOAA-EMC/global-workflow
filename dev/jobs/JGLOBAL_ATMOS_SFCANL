@@ -15,16 +15,16 @@ if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
     BKG_RUN="gcdas"
 fi
 
-declare -rx COMIN_OBS_PREV=${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/obs
-declare -rx COMIN_ATMOS_RESTART_PREV=${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/obs"
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart"
 
-declare -rx COMIN_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}/obs
-declare -rx COMIN_ATMOS_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos
-declare -rx COMIN_SNOW_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
 
-declare -rx COMOUT_ATMOS_RESTART=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart
+declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
 
-declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT=${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos
+declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
 
 mkdir -p "${COMOUT_ATMOS_RESTART}"
 

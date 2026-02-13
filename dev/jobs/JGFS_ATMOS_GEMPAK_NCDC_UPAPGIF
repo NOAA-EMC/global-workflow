@@ -24,8 +24,8 @@ export COMPONENT="atmos"
 ##############################################
 # Define COM directories
 ##############################################
-declare -rx COMIN_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}/obs
-declare -rx COMIN_ATMOS_GEMPAK_1p00=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
 
 # Declare COMOUT_ATMOS_GEMPAK_GIF and COMOUT_ATMOS_GEMPAK_UPPER_AIR
 for grid in gif upper_air; do
@@ -35,7 +35,7 @@ for grid in gif upper_air; do
     if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
 done
 
-declare -rx COMOUT_ATMOS_WMO=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo
+declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
 if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"; fi
 
 export pgmout=OUTPUT.$$

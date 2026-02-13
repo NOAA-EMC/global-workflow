@@ -13,7 +13,7 @@ for grid in ${wavepostGRD}; do
         mkdir -m 775 -p "${!prod_dir_grid}"
     fi
 done
-declare -rx COMOUT_WAVE_STATION_ENS=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/station
+declare -rx COMOUT_WAVE_STATION_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/station"
 if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
     mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
 fi

@@ -10,16 +10,16 @@ for grid in '0p25' '0p50' '1p00'; do
     mkdir -p "${!prod_dir}"
 done
 
-declare -rx COMIN_OCEAN_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history
-declare -rx COMIN_OCEAN_GRIB=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2
-declare -rx COMIN_OCEAN_NETCDF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf
-declare -rx COMIN_ICE_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history
-declare -rx COMIN_ICE_GRIB=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2
-declare -rx COMIN_ICE_NETCDF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf
-declare -rx COMIN_WAVE_GRID=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded
+declare -rx COMIN_OCEAN_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"
+declare -rx COMIN_OCEAN_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2"
+declare -rx COMIN_OCEAN_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf"
+declare -rx COMIN_ICE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"
+declare -rx COMIN_ICE_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2"
+declare -rx COMIN_ICE_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf"
+declare -rx COMIN_WAVE_GRID="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded"
 
 process_grdID "${waveGRD}"
-declare -rx COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}
+declare -rx COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}"
 
 if [[ "${DO_ATM}" == "YES" ]]; then
     mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"

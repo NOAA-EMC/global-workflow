@@ -13,8 +13,8 @@ vcyc=${CDATE:8:2}
 
 # These are used by fit2obs, so we can't change them to the standard COM variable names
 # shellcheck disable=SC2153
-declare -rx COMIN_ANALYSIS=${ROTDIR}/${RUN}.${vday}/${vcyc}/analysis/atmos
-declare -rx COMIN_OBS=${ROTDIR}/${RUN/enkf/}.${vday}/${vcyc}/obs
+declare -rx COMIN_ANALYSIS="${ROTDIR}/${RUN}.${vday}/${vcyc}/analysis/atmos"
+declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${vday}/${vcyc}/obs"
 
 export COM_VRFYARCH=${COM_VRFYARCH:-${ROTDIR}/vrfyarch}
 

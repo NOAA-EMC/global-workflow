@@ -13,8 +13,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfi
 ##############################################
 
 # Generate COM variables from templates
-declare -rx COMOUT_ATMOS_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos
-declare -rx COMOUT_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/conf
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -m 775 -p "${COMOUT_CONF}"

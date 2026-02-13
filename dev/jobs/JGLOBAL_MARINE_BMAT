@@ -38,15 +38,15 @@ fi
 ##############################################
 
 # Generate COM variables from templates
-declare -rx COMIN_OCEAN_HISTORY_PREV=${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history
-declare -rx COMIN_ICE_HISTORY_PREV=${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history
+declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-declare -rx COMIN_OCEAN_HISTORY_ENS_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ocean/history
-declare -rx COMIN_ICE_HISTORY_ENS_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ice/history
+declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ice/history"
 
-declare -rx COMOUT_OCEAN_BMATRIX=${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean
-declare -rx COMOUT_ICE_BMATRIX=${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice
-declare -rx COMOUT_CONF=${ROTDIR}/${RUN}.${PDY}/${cyc}/conf
+declare -rx COMOUT_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean"
+declare -rx COMOUT_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 mkdir -m 775 -p "${COMOUT_OCEAN_BMATRIX}"
 mkdir -m 775 -p "${COMOUT_ICE_BMATRIX}"

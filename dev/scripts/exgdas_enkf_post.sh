@@ -74,7 +74,7 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
 done
 
 # Forecast ensemble mean and smoothed files
-declare -rx COMOUT_ATMOS_HISTORY_STAT=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history
+declare -rx COMOUT_ATMOS_HISTORY_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history"
 if [[ ! -d "${COMOUT_ATMOS_HISTORY_STAT}" ]]; then
     mkdir -p "${COMOUT_ATMOS_HISTORY_STAT}"
 fi

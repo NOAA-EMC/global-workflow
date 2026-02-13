@@ -5,7 +5,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 export MP_PULSE=0
 
 # Set COM Paths
-declare -rx COMOUT_WAVE_PREP=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep
+declare -rx COMOUT_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
 
 if [[ ! -d "${COMOUT_WAVE_PREP}" ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
 
