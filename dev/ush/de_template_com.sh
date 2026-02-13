@@ -69,7 +69,8 @@ while IFS= read -r line; do
         IFS=' ' read -ra prefix_args <<< "${prefix}"
         # Convert these into literal variable assignments (e.g. YMD='${PDY}' HH='${cyc}')
         for i in "${!prefix_args[@]}"; do
-            prefix_args[$i]=$(echo "${prefix_args[$i]}" | sed -E 's/(.*)="*([a-zA-Z0-9_{}$]+)"*/\1='\''\2'\''/')
+            # shellcheck disable=SC2004
+            prefix_args[${i}]=$(echo "${prefix_args[${i}]}" | sed -E 's/(.*)="*([a-zA-Z0-9_{}$]+)"*/\1='\''\2'\''/')
         done
         # Extract the arguments to declare_from_tmpl
         args=$(echo "${line}" | sed -E 's/.*declare_from_tmpl (.*)/\1/')
@@ -90,6 +91,7 @@ while IFS= read -r line; do
         done
 
         # Now render the template
+        # shellcheck disable=SC2086
         COM=$(declare_from_tmpl -rx ${args} | sed 's/declare_from_tmpl :: \(.*\)=\(.*\)/\1=\2/')
         # Remove duplicate // in the COM path if it exists (e.g. if MEMDIR is empty, we don't want a double slash in the path)
         COM=$(echo "${COM}" | sed 's/\/\//\//g')
