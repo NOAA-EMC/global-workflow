@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC2016
 
 # The purpose of this script is to read a target config.com and apply the ush/bash_utils.sh declare_from_tmpl function to generate the COM variable.
 #
@@ -45,15 +46,15 @@ source "${config_com}" > /dev/null
 source "${bash_utils}" > /dev/null
 
 # Set static variable for use in templates
-# shellcheck disable=SC2016
 export ROTDIR='${ROTDIR}'
+export DMPDIR='${DMPDIR}'
+export IODADIR='${IODADIR}'
 
 # Replace the declare_from_tmpl calls in the jjob with the generated COM variable declarations and replace them in the jjob
 line_num=0
 while IFS= read -r line; do
     line_num=$((line_num + 1))
     # Intialize RUN. This can be overridden by the prefix assignments.
-    # shellcheck disable=SC2016
     export RUN='${RUN}'
     if [[ "${line}" =~ declare_from_tmpl ]]; then
         # Use awk to get the number of leading spaces
@@ -68,7 +69,7 @@ while IFS= read -r line; do
         IFS=' ' read -ra prefix_args <<< "${prefix}"
         # Convert these into literal variable assignments (e.g. YMD='${PDY}' HH='${cyc}')
         for i in "${!prefix_args[@]}"; do
-            prefix_args[i]=$(echo "${prefix_args[${i}]}" | sed -E 's/(.*)="*([a-zA-Z0-9_{}$]+)"*/\1='\''\2'\''/')
+            prefix_args[$i]=$(echo "${prefix_args[$i]}" | sed -E 's/(.*)="*([a-zA-Z0-9_{}$]+)"*/\1='\''\2'\''/')
         done
         # Extract the arguments to declare_from_tmpl
         args=$(echo "${line}" | sed -E 's/.*declare_from_tmpl (.*)/\1/')
@@ -89,7 +90,7 @@ while IFS= read -r line; do
         done
 
         # Now render the template
-        COM=$(declare_from_tmpl -rx "${args}" | sed 's/declare_from_tmpl :: \(.*\)=\(.*\)/\1=\2/')
+        COM=$(declare_from_tmpl -rx ${args} | sed 's/declare_from_tmpl :: \(.*\)=\(.*\)/\1=\2/')
         # Remove duplicate // in the COM path if it exists (e.g. if MEMDIR is empty, we don't want a double slash in the path)
         COM=$(echo "${COM}" | sed 's/\/\//\//g')
         # Prepend with declare ${flags} if flags are present
