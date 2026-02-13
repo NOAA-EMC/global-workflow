@@ -23,19 +23,19 @@ export APREFIX="${RUN}.t${cyc}z."
 #export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 #GPREFIX_DET="${GDUMP}.t${gcyc}z."
 
-#RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_OBS=${ROTDIR}/#${RUN/enkf/}.${PDY}/${cyc}/obs
+declare -rx COMIN_ATMOS_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos
+declare -rx COMOUT_ATMOS_ANALYSIS=${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos
 
 # Create a DATAROOT directory variable where the gsidiags live
 # shellcheck disable=SC2153
 pCOMIN_ATMOS_ANALYSIS="$(dataroot_com_path "${COMIN_ATMOS_ANALYSIS}")"
 export pCOMIN_ATMOS_ANALYSIS
 
-#RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_OBS_PREV:COM_OBS_TMPL
-#RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_ANALYSIS_DET_PREV:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_OBS_PREV=${ROTDIR}/#${GDUMP}.${gPDY}/${gcyc}/obs
+declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV=${ROTDIR}/#${GDUMP}.${gPDY}/${gcyc}/analysis/atmos
 
-#MEMDIR="ensstat" RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/#ensstat/model/atmos/history
 
 #export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}ensmean.atm.f006.nc"
 #if [[ ! -f "${ATMGES_ENSMEAN}" ]]; then

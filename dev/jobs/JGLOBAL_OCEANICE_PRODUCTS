@@ -11,13 +11,13 @@ if [[ -z "${COMPONENT:-}" ]]; then
     export err=1
     err_exit "COMPONENT variable is not set."
 elif [[ "${COMPONENT}" == "ice" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_ICE_GRIB:COM_ICE_GRIB_TMPL
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_ICE_NETCDF:COM_ICE_NETCDF_TMPL
+    declare -rx COMIN_ICE_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history
+    declare -rx COMOUT_ICE_GRIB=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2
+    declare -rx COMOUT_ICE_NETCDF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf
 elif [[ "${COMPONENT}" == "ocean" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx COMOUT_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL
+    declare -rx COMIN_OCEAN_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history
+    declare -rx COMOUT_OCEAN_GRIB=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2
+    declare -rx COMOUT_OCEAN_NETCDF=${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf
 else
     export err=1
     err_exit "COMPONENT variable '${COMPONENT}' is invalid. Must be 'ice' or 'ocean'."
