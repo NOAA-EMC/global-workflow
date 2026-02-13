@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+#shellcheck disable=SC2155
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_sfc" -c "base prep_sfc"
 
