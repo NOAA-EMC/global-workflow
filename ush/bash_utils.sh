@@ -66,7 +66,10 @@ function declare_from_tmpl() {
         # shellcheck disable=
         echo "declare_from_tmpl :: ${com_var}=${value}"
     done
-    set_trace
+    # Check if the function set_trace is declared and execute it if so
+    if declare -f set_trace > /dev/null; then
+        set_trace
+    fi
 }
 
 function wait_for_file() {
