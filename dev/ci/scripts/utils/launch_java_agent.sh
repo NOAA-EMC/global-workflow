@@ -79,7 +79,7 @@ host=$(hostname)
 
 source "${HOMEgfs_}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
-    hera | orion | hercules | wcoss2 | gaeac5 | gaeac6)
+    hera | orion | hercules | wcoss2 | gaeac6)
         echo "Launch Jenkins Java Controler on ${MACHINE_ID}"
         ;;
     noaacloud)
