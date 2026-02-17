@@ -752,7 +752,7 @@ class Archive(Task):
     def _arch_warm_start_increments(self, arch_dict: AttrDict) -> bool:
         """
         This method determines if warm restart increments are to be archived based on the
-        configuration settings ARCH_CYC (integer cycle number to archive on) and
+        configuration settings ARCH_CYC (integer or list of cycle numbers) and
         ARCH_FCSTICFREQ (integer frequency in days) and the current cycle.
         """
 
@@ -760,16 +760,22 @@ class Archive(Task):
 
         # Get the current cycle and the ARCH_CYC
         cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
-        arch_cyc = arch_dict.ARCH_CYC
-        SDATE = arch_dict.SDATE
-        assim_freq = arch_dict.assim_freq
 
-        if cycle_HH != arch_cyc:
+        # Standardize ARCH_CYC into a list to handle both int and list inputs
+        raw_arch_cyc = arch_dict.ARCH_CYC
+        arch_cyc = [raw_arch_cyc] if isinstance(raw_arch_cyc, int) else raw_arch_cyc
+
+        # Check if the current hour is in the list of valid cycle hours
+        if cycle_HH not in arch_cyc:
             # Not the right cycle hour
             return False
 
+        # Calculate the offset date for increments and check day frequency
+        SDATE = arch_dict.SDATE
+        assim_freq = arch_dict.assim_freq
         ics_offset_cycle = add_to_datetime(arch_dict.current_cycle, to_timedelta(f"+{assim_freq}H"))
         days_since_sdate = (ics_offset_cycle - SDATE).days
+
         if arch_dict.ARCH_FCSTICFREQ > 0 and days_since_sdate % arch_dict.ARCH_FCSTICFREQ == 0:
             # We are on the right cycle hour and the right day
             return True
@@ -780,7 +786,7 @@ class Archive(Task):
     def _arch_warm_restart_ics(self, arch_dict: AttrDict) -> bool:
         """
         This method determines if warm ICs are to be archived based on the
-        configuration settings ARCH_CYC (integer cycle number to archive on) and
+        configuration settings ARCH_CYC (integer or list of cycle numbers) and
         ARCH_WARMICFREQ (integer frequency in days) and the current cycle.
         """
 
@@ -790,18 +796,23 @@ class Archive(Task):
         SDATE = arch_dict.SDATE
         RUN = arch_dict.RUN
         assim_freq = int(arch_dict.assim_freq)
-        arch_cyc_val = int(arch_dict.ARCH_CYC)
+
+        # Standardize ARCH_CYC into a list to handle both int and list inputs
+        raw_arch_cyc = arch_dict.ARCH_CYC
+        arch_cyc_list = [raw_arch_cyc] if isinstance(raw_arch_cyc, int) else raw_arch_cyc
 
         # The GDAS and EnKFGDAS ICs always lag the forecast increments by assim_freq hours
         if "gdas" in RUN:
-            arch_cyc = (arch_cyc_val - assim_freq) % 24
+            valid_arch_cycs = [(c - assim_freq) % 24 for c in arch_cyc_list]
         else:
-            arch_cyc = arch_cyc_val
+            valid_arch_cycs = arch_cyc_list
 
-        if cycle_HH != arch_cyc:
+        # Check if current hour matches any valid cycle hour
+        if cycle_HH not in valid_arch_cycs:
             # Not the right cycle hour
             return False
 
+        # Check the day frequency
         days_since_sdate = (arch_dict.current_cycle - SDATE).days
         if arch_dict.ARCH_WARMICFREQ > 0 and days_since_sdate % arch_dict.ARCH_WARMICFREQ == 0:
             # We are on the right cycle hour and the right day
