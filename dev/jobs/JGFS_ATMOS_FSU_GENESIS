@@ -2,10 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
 
-# Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
-export PYTHONPATH
-
 ##############################################
 # Define COM and Data directories
 ##############################################

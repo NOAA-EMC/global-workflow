@@ -2,10 +2,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "tracker" -c "base tracker"
 
-# Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
-export PYTHONPATH
-
 export COMPONENT="atmos"
 
 ##############################################

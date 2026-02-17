@@ -2,10 +2,6 @@
 # shellcheck disable=SC2153  # PDY is always set in environment
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
 
-# Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
-export PYTHONPATH
-
 # Initial conditions are from previous GFS cycle, but valid at the end of the cycle
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 # shellcheck disable=SC2155

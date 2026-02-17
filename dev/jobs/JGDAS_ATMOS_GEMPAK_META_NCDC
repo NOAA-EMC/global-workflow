@@ -6,10 +6,6 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
-# Setup Python path for pygfs (GEMPAK jobs don't need wxflow)
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
-export PYTHONPATH
-
 # Now set up GEMPAK/NTRANS environment
 
 # datatype.tbl specifies the paths and filenames of files

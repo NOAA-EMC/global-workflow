@@ -5,10 +5,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis" -c "base genesis"
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
-# Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
-export PYTHONPATH
-
 export cmodel=${RUN}
 
 ##############################################
