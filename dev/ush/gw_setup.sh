@@ -27,6 +27,10 @@ if [[ "${err}" -ne 0 ]]; then
     exit 1
 fi
 
+# Set up the PYTHONPATH to include ush/python
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Source rocoto helper functions for use in the global-workflow
 source "${HOMEgfs}/dev/ush/rocoto_helpers.sh"
 
