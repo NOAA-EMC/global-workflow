@@ -11,7 +11,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl at
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

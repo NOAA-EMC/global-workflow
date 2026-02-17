@@ -12,7 +12,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_fv3jedi" -c "base analcalc_f
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
