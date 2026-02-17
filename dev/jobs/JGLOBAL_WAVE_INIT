@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveinit"
 
 export MP_PULSE=0
 

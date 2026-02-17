@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.snowanl"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.snowanl"
 
 ##############################################
 # Set variables used in the script

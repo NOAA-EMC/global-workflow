@@ -1,7 +1,11 @@
 #! /usr/bin/env bash
 
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atmensanlinit"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.atmensanl"
+source "${EXPDIR}/config.atmensanlinit"
 
 ##############################################
 # Set variables used in the script

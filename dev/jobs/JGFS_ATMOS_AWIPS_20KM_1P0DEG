@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "awips"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.awips"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 

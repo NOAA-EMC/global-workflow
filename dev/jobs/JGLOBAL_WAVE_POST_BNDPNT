@@ -1,6 +1,11 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpnt" -c "base wave wavepostsbs wavepostbndpnt"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpnt"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.wavepostsbs"
+source "${EXPDIR}/config.wavepostbndpnt"
 
 export MP_PULSE=0
 

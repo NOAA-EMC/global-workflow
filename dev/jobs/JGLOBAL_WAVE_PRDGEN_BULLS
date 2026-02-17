@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveawipsbulls"
 
 ###################################
 # Set COM Paths

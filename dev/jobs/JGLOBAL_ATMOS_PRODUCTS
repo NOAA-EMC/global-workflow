@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_products"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.atmos_products"
 
 ##############################################
 # Begin JOB SPECIFIC work

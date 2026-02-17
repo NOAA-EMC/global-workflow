@@ -2,7 +2,11 @@
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlsol" -c "base atmensanl atmensanlsol"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlsol"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.atmensanl"
+source "${EXPDIR}/config.atmensanlsol"
 
 ##############################################
 # Set variables used in the script

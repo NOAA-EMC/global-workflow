@@ -1,6 +1,11 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpntbll" -c "base wave wavepostsbs wavepostbndpntbll"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpntbll"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.wavepostsbs"
+source "${EXPDIR}/config.wavepostbndpntbll"
 
 export COMPONENT="wave"
 

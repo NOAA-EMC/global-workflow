@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ediag" -c "base anal eobs analdiag ediag"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ediag"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.anal"
+source "${EXPDIR}/config.eobs"
+source "${EXPDIR}/config.analdiag"
+source "${EXPDIR}/config.ediag"
 
 ##############################################
 # Set variables used in the script

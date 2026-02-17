@@ -2,7 +2,10 @@
 
 # TODO (#1227) This job is not used in the rocoto suite
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "post"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.post"
 
 ####################################
 # Specify NET and RUN Name and model

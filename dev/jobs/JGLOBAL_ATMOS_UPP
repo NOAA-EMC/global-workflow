@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "upp" -c "base upp"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "upp"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.upp"
 
 ##############################################
 # Set variables used in the exglobal script

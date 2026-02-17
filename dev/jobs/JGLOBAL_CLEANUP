@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.cleanup"
 
 "${SCRgfs}/exglobal_cleanup.sh" && true
 export err=$?

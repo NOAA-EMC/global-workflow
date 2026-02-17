@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.extractvars"
 source "${USHgfs}/wave_domain_grid.sh"
 
 # Set COM Paths

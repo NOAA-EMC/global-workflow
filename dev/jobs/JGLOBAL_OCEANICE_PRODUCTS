@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.oceanice_products"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.oceanice_products"
 
 ##############################################
 # Begin JOB SPECIFIC work

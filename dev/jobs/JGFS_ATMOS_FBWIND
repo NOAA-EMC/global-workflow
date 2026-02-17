@@ -5,7 +5,10 @@
 ############################################
 # GFS FBWIND PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fbwind"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.fbwind"
 
 export COMPONENT="atmos"
 

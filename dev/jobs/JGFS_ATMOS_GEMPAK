@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.gempak"
 
 ############################################
 # Set up model and cycle specific variables

@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.wavegempak"
 source "${USHgfs}/wave_domain_grid.sh"
 
 ###################################

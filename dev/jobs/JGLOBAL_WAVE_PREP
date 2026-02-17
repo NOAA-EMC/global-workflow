@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveprep"
 
 # Set rtofs PDY
 # shellcheck disable=SC2153

@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat_pnt" -c "base wave wave_stat_pnt"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat_pnt"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.wave_stat_pnt"
 
 # Set COM Paths
 

@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.anal"
+source "${EXPDIR}/config.eobs"
 
 ##############################################
 # Set variables used in the script

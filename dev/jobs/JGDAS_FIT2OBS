@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.fit2obs"
 
 ##############################################
 # Set variables used in the script

@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.postsnd"
 
 ########################################
 # Runs GFS BUFR SOUNDINGS

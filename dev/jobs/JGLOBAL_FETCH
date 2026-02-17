@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.fetch"
 
 # Execute fetching
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers

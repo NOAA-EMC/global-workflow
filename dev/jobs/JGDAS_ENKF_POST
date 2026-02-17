@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "epos" -c "base epos"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "epos"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.epos"
 
 ##############################################
 # Set variables used in the script

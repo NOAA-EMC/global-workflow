@@ -4,7 +4,10 @@ export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.marineanlecen"
 
 ##############################################
 # Set variables used in the script

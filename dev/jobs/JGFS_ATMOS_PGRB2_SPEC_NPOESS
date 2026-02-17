@@ -5,7 +5,10 @@
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.npoess"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 

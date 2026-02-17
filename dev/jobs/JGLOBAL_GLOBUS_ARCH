@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_arch" -c "base globus"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_arch"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.globus"
 
 ##############################################
 # Set variables used in the script

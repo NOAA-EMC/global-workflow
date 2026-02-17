@@ -6,7 +6,13 @@ export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.marineanlletkf"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.marineanlletkf"
 
 ##############################################
 # Set variables used in the script

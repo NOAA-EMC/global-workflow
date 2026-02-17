@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.anal"
+source "${EXPDIR}/config.eupd"
 
 ##############################################
 # Set variables used in the script

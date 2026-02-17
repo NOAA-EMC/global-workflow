@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.arch_vrfy"
 
 ##############################################
 # Set variables used in the script

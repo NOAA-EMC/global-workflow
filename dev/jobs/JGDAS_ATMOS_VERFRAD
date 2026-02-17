@@ -3,7 +3,10 @@
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.verfrad"
 
 #############################################
 #  determine PDY and cyc for previous cycle

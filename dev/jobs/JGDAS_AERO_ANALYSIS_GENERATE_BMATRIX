@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlgenb"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.aeroanl"
+source "${EXPDIR}/config.aeroanlgenb"
 
 ##############################################
 # Set variables used in the script

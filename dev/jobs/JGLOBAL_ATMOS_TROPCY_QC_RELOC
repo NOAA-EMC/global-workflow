@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prep"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.prep"
 
 ##############################################
 # Begin JOB SPECIFIC work

@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.sfcanl"
 
 ##############################################
 # Begin JOB SPECIFIC work

@@ -1,7 +1,15 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsgridded" -c "base wave waveawipsgridded"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsgridded"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveawipsgridded"
 source "${USHgfs}/wave_domain_grid.sh"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.wave"
+source "${EXPDIR}/config.waveprdgengridded"
 
 ###################################
 # Set COM Paths

@@ -3,7 +3,10 @@
 #############################################################
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "verfozn"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.verfozn"
 
 #############################################
 #  determine PDY and cyc for previous cycle

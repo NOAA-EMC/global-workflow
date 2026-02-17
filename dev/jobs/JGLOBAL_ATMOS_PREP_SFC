@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_sfc" -c "base prep_sfc"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_sfc"
+
+source "${EXPDIR}/config.base"
+source "${EXPDIR}/config.prep_sfc"
 
 ##############################################
 # Set date and cycle
