@@ -177,7 +177,12 @@ case "${MODULE_TYPE}" in
         if [[ ! -f "${HOMEgfs}/versions/run.ver" ]]; then
             echo "FATAL ERROR: ${HOMEgfs}/versions/run.ver does not exist!"
             echo "HINT: Run link_workflow.sh first."
-            exit 1
+            # Exit with 0 if loading setup modules (so the user's terminal doesn't close), else with 1
+            if [[ "${MODULE_TYPE}" == "setup" ]]; then
+                exit 0
+            else
+                exit 1
+            fi
         fi
 
         # Load our modules:
