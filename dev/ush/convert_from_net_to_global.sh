@@ -65,7 +65,6 @@ EXCLUDE_DIRS=("dev/ush/convert_from_net_to_global.sh" "dev/ush/convert_from_glob
 
 # List of directories and files to exclude from processing
 exclude_items=(
-    "sorc"
     "dev/ush/convert_from_net_to_global.sh"
     "dev/ush/convert_from_global_to_net.sh"
 )
