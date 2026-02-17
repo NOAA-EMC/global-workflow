@@ -191,7 +191,7 @@ GSISTAT=${GSISTAT:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsistat.txt}
 
 # Increment files
 ATMINC=${ATMINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc}
-DTFANL=${DTFANL:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc}
+DTFINC=${DTFINC:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc}
 
 # Obs diag
 RUN_SELECT=${RUN_SELECT:-"NO"}
@@ -411,6 +411,18 @@ if [[ "${USE_CORRELATED_OBERRS}" == "YES" ]]; then
 
 else
     echo "not using correlated obs error"
+fi
+
+# If GENDIAG is selected, verify that pCOMOUT_ATMOS_ANALYSIS is set
+if [[ "${GENDIAG}" == "YES" ]]; then
+    if [[ -z "${pCOMOUT_ATMOS_ANALYSIS}" ]]; then
+        export err=1
+        err_exit "pCOMOUT_ATMOS_ANALYSIS must be set when GENDIAG=YES"
+    fi
+    # Make the gsidiags directory to house the GSI diagnostic data
+    GSIDIAGDIR=${GSIDIAGDIR:-"${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"}
+    rm -rf "${GSIDIAGDIR}"
+    mkdir -p "${GSIDIAGDIR}"
 fi
 
 ##############################################################
@@ -640,7 +652,7 @@ ${NLN} "${ABIASPC}" satbias_pc.out
 ${NLN} "${ABIASAIR}" aircftbias_out
 
 if [[ "${DONST}" == "YES" ]]; then
-    ${NLN} "${DTFANL}" dtfanl
+    ${NLN} "${DTFINC}" dtfanl
 fi
 
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
@@ -658,6 +670,18 @@ if [[ "${USE_SELECT}" == "YES" ]]; then
             ${NLN} "${filetop}" "${fileloc}"
         done
     fi
+fi
+
+# If diags are to be generated, create the gsi.* directories in GSIDIAGDIR and link them here.
+# This will allow the GSI to write directly to the GSIDIAGDIR.
+if [[ "${GENDIAG}" == "YES" ]]; then
+    # The number of directories is controlled by the number of tasks
+    # (one each + 1, though the last will contain no data)
+    for task in $(seq 0 "${ntasks}"); do
+        dir="dir.$(printf %04d "${task}")"
+        mkdir -p "${GSIDIAGDIR}/${dir}"
+        ${NLN} "${GSIDIAGDIR}/${dir}" "./${dir}"
+    done
 fi
 
 ##############################################################
@@ -893,17 +917,6 @@ cd "${DATA}" || exit 1
 ##############################################################
 if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
-fi
-
-# Diagnostic files
-# if requested, GSI diagnostic file directories for use later
-if [[ "${GENDIAG}" == "YES" ]]; then
-    tar -cvf gsidiags.tar dir.????
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to tar GSI diagnostic directories!"
-    fi
-    cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
 fi
 
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"

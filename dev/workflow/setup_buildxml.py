@@ -34,6 +34,7 @@ def input_args(*argv):
     parser.add_argument('--yaml', help='Input YAML file',
                         type=str, required=False, default='build_opts.yaml')
     parser.add_argument('--systems', help='System(s) to build (options: gfs, gefs, sfs, gcafs, gsi, gdas, or all)', required=False, default='gfs')
+    parser.add_argument('--debug', help='Build in debug mode', required=False, action='store_true')
 
     inputs = parser.parse_args(list(*argv) if len(argv) else None)
 
@@ -64,6 +65,8 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.cycledef = "build"
     task_dict.maxtries = 1
     task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command} -j {task_spec.cores}"
+    if host_spec.debug:
+        task_dict.command = f"{task_dict.command} -d"
     task_dict.job_name = task_name
     task_dict.log = f"{HOMEgfs}/sorc/logs/{task_name}.log"
 
@@ -189,10 +192,11 @@ def main(*argv):
 
     user_inputs = input_args(*argv)
 
-    # Gather host specs and place the user supplied account
-    # into the host_specs dict
+    # Gather host specs and place the user supplied options such as
+    # account and debug into the host_specs dict
     host_specs = get_host_specs(Host())
     host_specs.account = user_inputs.account
+    host_specs.debug = user_inputs.debug
 
     # Retrieve build specificatiosn from user provided yaml
     user_yaml_dict = AttrDict(parse_yaml(user_inputs.yaml))
