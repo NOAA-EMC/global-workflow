@@ -77,9 +77,9 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
 
         cd ./testrun/varbc/
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
-            "${OUTPUT}"/gdas.t"${gcyc}"z.radiance_"${instrument}".tlapse.txt
-        cpreq -p satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z.radiance_"${instrument}".satbias.nc
-        mv satbias_"${instrument}".nc4 "${OUTPUT}"/gdas.t"${gcyc}"z.radiance_"${instrument}".satbias_cov.nc
+            "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.tlapse.txt"
+        cpreq -p "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.satbias.nc"
+        mv "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.satbias_cov.nc"
         cd "${DATA}"
         rm -f satbias_converter.yaml
     done
