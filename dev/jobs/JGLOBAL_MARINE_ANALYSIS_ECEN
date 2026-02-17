@@ -9,6 +9,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for wxflow and pygfs
+if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+fi
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+export PYTHONPATH
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")

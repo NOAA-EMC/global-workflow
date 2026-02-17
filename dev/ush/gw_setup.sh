@@ -27,12 +27,6 @@ if [[ "${err}" -ne 0 ]]; then
     exit 1
 fi
 
-# Set up the PYTHONPATH to include wxflow from HOMEgfs
-if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
-    export PYTHONPATH
-fi
-
 # Source rocoto helper functions for use in the global-workflow
 source "${HOMEgfs}/dev/ush/rocoto_helpers.sh"
 

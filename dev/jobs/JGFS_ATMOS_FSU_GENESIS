@@ -2,6 +2,13 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
 
+# Setup Python path for wxflow and pygfs
+if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+fi
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+export PYTHONPATH
+
 ##############################################
 # Define COM and Data directories
 ##############################################

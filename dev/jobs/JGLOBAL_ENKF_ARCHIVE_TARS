@@ -5,6 +5,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_ta
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for wxflow and pygfs
+if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+fi
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+export PYTHONPATH
+
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
     COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \

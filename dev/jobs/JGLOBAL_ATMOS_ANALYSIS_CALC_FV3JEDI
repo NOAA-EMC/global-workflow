@@ -8,6 +8,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc_fv3jedi" -c "base analcalc_f
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for wxflow and pygfs
+if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+fi
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+export PYTHONPATH
+
 
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
