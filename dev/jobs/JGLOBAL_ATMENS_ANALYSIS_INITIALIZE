@@ -6,11 +6,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atm
 ##############################################
 # Set variables used in the script
 ##############################################
-# Setup Python path for wxflow and pygfs
-if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
-fi
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # shellcheck disable=SC2153
