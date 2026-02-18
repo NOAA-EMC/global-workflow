@@ -6,6 +6,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work

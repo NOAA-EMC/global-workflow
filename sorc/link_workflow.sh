@@ -95,6 +95,15 @@ for package in "${packages[@]}"; do
     ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
 
+# Link wxflow to ush/python
+cd "${HOMEgfs}/ush/python" || exit 1
+if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+    if [[ -s "wxflow" ]]; then
+        rm -f "wxflow"
+    fi
+    ${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
+fi
+
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
     mkdir -p "${HOMEgfs}/fix" || exit 1
