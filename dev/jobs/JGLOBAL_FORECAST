@@ -33,53 +33,64 @@ declare -rx GDATE
 declare -rx gPDY="${GDATE:0:8}"
 declare -rx gcyc="${GDATE:8:2}"
 
-# Construct COM variables from templates (see config.com)
-declare -rx COMIN_ATMOS_INPUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/input"
-declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
-declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
-declare -rx COMIN_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
-declare -rx COMOUT_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
-declare -rx COMOUT_ATMOS_MASTER="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/master"
+# Construct COM variables
+if ((10#${ENSMEM:-0} > 0)); then
+    # Turn ensmem into 3-digit format with leading zeros
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
+else
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMIN_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}"
+fi
 
-declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
+declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
+declare -rx COMOUT_CONF="${COMOUT}/conf"
+declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
+declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"
+declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
+declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
+
+declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_PREV}/model/atmos/restart"
 
 # GCAFS/GCDAS uses an offline atmospheric analysis
 if [[ "${RUN}" =~ "gcafs" ]] || [[ "${RUN}" =~ "gcdas" ]]; then
     declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/analysis/atmos"
 else
     # other runs use their own atmospheric analysis
-    declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+    declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
 fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    declare -rx COMIN_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
-    declare -rx COMOUT_WAVE_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/restart"
-    declare -rx COMOUT_WAVE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/history"
-    declare -rx COMIN_WAVE_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/model/wave/restart"
+    declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
+    declare -rx COMOUT_WAVE_RESTART="${COMOUT}/model/wave/restart"
+    declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
+    declare -rx COMIN_WAVE_RESTART_PREV="${COMIN_PREV}/model/wave/restart"
 fi
 
 if [[ "${DO_OCN}" == "YES" ]]; then
-    declare -rx COMIN_OCEAN_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean"
-    declare -rx COMIN_OCEAN_INPUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/input"
-    declare -rx COMOUT_MED_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/med/restart"
-    declare -rx COMOUT_OCEAN_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/restart"
-    declare -rx COMOUT_OCEAN_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"
-    declare -rx COMIN_OCEAN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/model/ocean/restart"
-    declare -rx COMIN_MED_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/model/med/restart"
+    declare -rx COMIN_OCEAN_ANALYSIS="${COMIN}/analysis/ocean"
+    declare -rx COMIN_OCEAN_INPUT="${COMIN}/model/ocean/input"
+    declare -rx COMOUT_MED_RESTART="${COMOUT}/model/med/restart"
+    declare -rx COMOUT_OCEAN_RESTART="${COMOUT}/model/ocean/restart"
+    declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+    declare -rx COMIN_OCEAN_RESTART_PREV="${COMIN_PREV}/model/ocean/restart"
+    declare -rx COMIN_MED_RESTART_PREV="${COMIN_PREV}/model/med/restart"
 fi
 
 if [[ "${DO_ICE}" == "YES" ]]; then
-    declare -rx COMIN_ICE_INPUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/input"
-    declare -rx COMIN_ICE_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice"
-    declare -rx COMOUT_ICE_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/restart"
-    declare -rx COMOUT_ICE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"
-    declare -rx COMIN_ICE_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/model/ice/restart"
+    declare -rx COMIN_ICE_INPUT="${COMIN}/model/ice/input"
+    declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
+    declare -rx COMOUT_ICE_RESTART="${COMOUT}/model/ice/restart"
+    declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+    declare -rx COMIN_ICE_RESTART_PREV="${COMIN_PREV}/model/ice/restart"
 fi
 
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-    declare -rx COMOUT_CHEM_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/chem/history"
+    declare -rx COMOUT_CHEM_HISTORY="${COMOUT}/model/chem/history"
     declare -rx COMIN_TRACER_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/model/atmos/restart"
-    declare -rx COMIN_CHEM_INPUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/chem/input"
+    declare -rx COMIN_CHEM_INPUT="${COMIN}/model/chem/input"
 fi
 
 ###############################################################
