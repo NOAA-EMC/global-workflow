@@ -5,6 +5,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esnowanl" -c "base esnowanl"
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDUMP="gdas"

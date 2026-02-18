@@ -2,6 +2,10 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
 
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 ##############################################
 # Set variables used in the script
 ##############################################

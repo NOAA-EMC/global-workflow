@@ -5,6 +5,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anlstat" -c "base anlstat"
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work

@@ -6,6 +6,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlini
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
