@@ -801,14 +801,15 @@ class Archive(Task):
         raw_arch_cyc = arch_dict.ARCH_CYC
         arch_cyc_list = [raw_arch_cyc] if isinstance(raw_arch_cyc, int) else raw_arch_cyc
 
-        # The GDAS and EnKFGDAS ICs always lag the forecast increments by assim_freq hours
+        # Calculate the target cycles, adjusting for GDAS lag if necessary
         if "gdas" in RUN:
-            valid_arch_cycs = [(c - assim_freq) % 24 for c in arch_cyc_list]
+            # Apply the (x - freq) % 24 logic to every element in the list
+            arch_cyc_to_check = [(c - assim_freq) % 24 for c in arch_cyc_list]
         else:
-            valid_arch_cycs = arch_cyc_list
+            arch_cyc_to_check = arch_cyc_list
 
-        # Check if current hour matches any valid cycle hour
-        if cycle_HH not in valid_arch_cycs:
+        # Now check if the current hour is in our list of valid hours
+        if cycle_HH not in arch_cyc_to_check:
             # Not the right cycle hour
             return False
 
