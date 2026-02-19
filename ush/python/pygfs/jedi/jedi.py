@@ -16,7 +16,8 @@ from wxflow import (AttrDict, FileHandler, Task, Executable,
 logger = getLogger(__name__.split('.')[-1])
 
 required_jedi_keys = ['jedi_app_name', 'rundir', 'exe_src', 'mpi_cmd', 'jcb_base_yaml']
-optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml', 'obs_list_yaml', 'bias_files_yaml']
+optional_jedi_keys = ['jedi_args', 'jcb_algo', 'jcb_algo_yaml', 
+                      'obs_list_yaml', 'bias_files_yaml', 'test_ref_yaml']
 
 
 class Jedi:
@@ -97,6 +98,10 @@ class Jedi:
         # Set observations list in JCB config if obs_list_yaml specified
         if self.jedi_config.obs_list_yaml is not None:
             self.jcb_config['observations'] = parse_j2yaml(self.jedi_config.obs_list_yaml, task_config)['observations']
+
+        # Include test reference YAML in JCB config if test_ref_yaml specified
+        if self.task_config.DO_TEST_MODE and self.jedi_config.test_ref_yaml is not None:
+            self.jcb_config = {**self.jcb_config, **parse_j2yaml(self.jedi_config.test_ref_yaml, task_config)}
 
         # Set object attributes
         # ---------------------
