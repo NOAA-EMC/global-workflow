@@ -10,18 +10,28 @@ export PYTHONPATH
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Construct COM variables from templates
+# Construct COM variables
+if [[ ${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03d" "${ENSMEM}")
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/model"
 if [[ -z "${COMPONENT:-}" ]]; then
     export err=1
     err_exit "COMPONENT variable is not set."
 elif [[ "${COMPONENT}" == "ice" ]]; then
-    declare -rx COMIN_ICE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"
-    declare -rx COMOUT_ICE_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2"
-    declare -rx COMOUT_ICE_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf"
+    declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
+    declare -rx COMOUT_ICE_GRIB="${COMOUT}/products/ice/grib2"
+    declare -rx COMOUT_ICE_NETCDF="${COMOUT}/products/ice/netcdf"
 elif [[ "${COMPONENT}" == "ocean" ]]; then
-    declare -rx COMIN_OCEAN_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"
-    declare -rx COMOUT_OCEAN_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2"
-    declare -rx COMOUT_OCEAN_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf"
+    declare -rx COMIN_OCEAN_HISTORY="${COMIN}/model/ocean/history"
+    declare -rx COMOUT_OCEAN_GRIB="${COMOUT}/products/ocean/grib2"
+    declare -rx COMOUT_OCEAN_NETCDF="${COMOUT}/products/ocean/netcdf"
 else
     export err=1
     err_exit "COMPONENT variable '${COMPONENT}' is invalid. Must be 'ice' or 'ocean'."
