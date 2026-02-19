@@ -34,7 +34,7 @@ declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 for imem in $(seq 1 "${NMEM_ENS}"); do
     # Make the member COM directories. These will be declared in the script as we cycle through members.
     memchar="mem$(printf %03i "${imem}")"
-    declare -rx prod_dir="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos"
+    prod_dir="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos"
     mkdir -p "${prod_dir}"
 done
 
