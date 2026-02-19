@@ -25,11 +25,11 @@ export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    declare -rx COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
-    declare -rx COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${gPDY}/${gcyc}/atmos"
+    declare -rx COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"
+    declare -rx COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${gPDY}/${gcyc}/atmos"
 else
-    declare -rx COMINobsproc="${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos"
-    declare -rx COMINobsproc_PREV="${DMPDIR}/${RUN}.${gPDY}/${gcyc}/atmos"
+    declare -rx COMINobsproc="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
+    declare -rx COMINobsproc_PREV="${DMPDIR}/gdas.${gPDY}/${gcyc}/atmos"
 fi
 
 declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/gdas.${PDY}/${cyc}/analysis/atmos"
