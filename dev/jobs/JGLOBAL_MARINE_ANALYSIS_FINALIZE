@@ -8,6 +8,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlfinal" -c "base marineanl ma
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work
