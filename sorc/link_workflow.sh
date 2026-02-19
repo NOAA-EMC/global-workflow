@@ -96,12 +96,12 @@ for package in "${packages[@]}"; do
 done
 
 # Link wxflow to ush/python
-cd "${HOMEgfs}/ush/python" || exit 1
-if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+cd "${HOMEglobal}/ush/python" || exit 1
+if [[ -d "${HOMEglobal}/sorc/wxflow/src/wxflow" ]]; then
     if [[ -s "wxflow" ]]; then
         rm -f "wxflow"
     fi
-    ${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
+    ${LINK} "${HOMEglobal}/sorc/wxflow/src/wxflow" .
 fi
 
 # Link fix directories
