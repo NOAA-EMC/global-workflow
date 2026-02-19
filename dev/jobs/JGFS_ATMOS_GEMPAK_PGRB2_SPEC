@@ -9,7 +9,7 @@ export EXT=""
 # Define COM directories
 ##############################################
 # shellcheck disable=SC2153
-declare -rx COMOUT_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
+declare -rx COMIN_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
 # shellcheck disable=SC2153
 declare -rx COMOUT_ATMOS_GEMPAK_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/0p25"
 if [[ ! -d "${COMOUT_ATMOS_GEMPAK_0p25}" ]]; then
