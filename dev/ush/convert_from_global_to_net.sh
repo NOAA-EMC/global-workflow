@@ -1,16 +1,15 @@
 #!/bin/bash
 # convert_from_global_to_net.sh
 # Script to convert HOMEglobal, PARMglobal, etc. to HOME${NET}, PARM${NET}, etc.
-# for operational deployment
+# for operations/development
 #
 # Usage: convert_from_global_to_net.sh <NET_value> <target_path> [--exclude dir1 dir2 dir3 ...]
-#
-# NET_value can be: gfs, gefs, sfs, or gcafs (NOT 'all' - use specific NET)
+# NET_value can be: gfs, gefs, sfs, gcafs
 # target_path can be a file or directory
 #
-# Example: convert_from_global_to_net.sh gfs /path/to/deployment --exclude sorc dev parm/archive
+# Example: convert_from_global_to_net.sh gfs /path/to/development --exclude sorc dev parm/archive
 #
-# This script performs selective search/replace for deployment variables
+# This script performs selective search/replace to convert global variables to NET-specific ones
 
 set -eu
 
@@ -40,42 +39,27 @@ trap cleanup EXIT ERR
 if [[ $# -lt 2 ]]; then
     echo "ERROR: NET value and target path required"
     echo "Usage: $0 <NET_value> <target_path> [--exclude dir1 dir2 dir3 ...]"
-    echo "NET_value must be one of: gfs, gefs, sfs, gcafs"
+    echo "NET_value can be: gfs, gefs, sfs, gcafs"
     exit 1
 fi
 
 NET="$1"
 shift
 
-# Define all possible NET values for validation
-ALL_NET_VALUES=("gefs" "gfs" "gcafs" "sfs")
-
-# Validate NET value - must be specific, NOT 'all'
-if [[ "${NET}" == "all" ]]; then
-    echo -e "${RED}ERROR: 'all' is not supported for convert_from_global_to_net.sh${NC}" >&2
-    echo -e "${YELLOW}You must specify a single NET value: gfs, gefs, sfs, or gcafs${NC}" >&2
-    echo -e "${YELLOW}Use convert_from_net_to_global.sh with 'all' to revert changes${NC}" >&2
-    exit 1
-fi
-
-# Validate NET is one of the allowed values
-valid_net=false
-for net_val in "${ALL_NET_VALUES[@]}"; do
-    if [[ "${NET}" == "${net_val}" ]]; then
-        valid_net=true
-        break
-    fi
-done
-
-if ! ${valid_net}; then
-    echo -e "${RED}ERROR: Invalid NET value '${NET}'${NC}" >&2
-    echo -e "${YELLOW}Must be one of: ${ALL_NET_VALUES[*]}${NC}" >&2
-    exit 1
-fi
+# Validate NET value
+case "${NET}" in
+    gfs|gefs|sfs|gcafs)
+        ;;
+    *)
+        echo "ERROR: Invalid NET value '${NET}'. Must be one of: gfs, gefs, sfs, gcafs"
+        exit 1
+        ;;
+esac
 
 # Initialize target path
 TARGET_PATH=""
-EXCLUDE_DIRS=()
+# Default exclusions: Always exclude the conversion scripts themselves
+EXCLUDE_DIRS=("dev/ush/convert_from_net_to_global.sh" "dev/ush/convert_from_global_to_net.sh")
 
 # Parse remaining arguments
 while [[ $# -gt 0 ]]; do
@@ -106,44 +90,24 @@ if [[ ! -e "${TARGET_PATH}" ]]; then
     exit 1
 fi
 
-# List of directories and files to exclude from processing
-exclude_items=(
-    "dev/ush/convert_from_net_to_global.sh"
-    "dev/ush/convert_from_global_to_net.sh"
-)
-
-# Build grep exclusion pattern (includes all items)
-exclude_pattern=""
-for item in "${exclude_items[@]}"; do
-    if [[ -n "${exclude_pattern}" ]]; then
-        exclude_pattern="${exclude_pattern}|"
-    fi
-    exclude_pattern="${exclude_pattern}${item}"
-done
-
-# Display what we're excluding (filter out conversion scripts from display)
+# Build display exclude list (filter out conversion scripts)
 display_exclude=()
-for item in "${exclude_items[@]}"; do
+for item in "${EXCLUDE_DIRS[@]}"; do
     if [[ "${item}" != "dev/ush/convert_from_net_to_global.sh" && "${item}" != "dev/ush/convert_from_global_to_net.sh" ]]; then
         display_exclude+=("${item}")
     fi
 done
 
-if [[ ${#display_exclude[@]} -gt 0 ]]; then
-    echo "Excluding directories: ${display_exclude[*]}"
-fi
-
 # Display processing header
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}Processing: Converting ${RED}global${NC}${YELLOW}-workflow variables to ${GREEN}${NET}${NC}${YELLOW}-specific variables${NC}"
+echo -e "${YELLOW}Processing: Converting ${GREEN}global${NC}${YELLOW}-workflow variables to ${RED}${NET}${NC}${YELLOW}-specific variables${NC}"
 echo -e "${BLUE}Target: ${TARGET_PATH}${NC}"
-if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
-    echo -e "${BLUE}Excluding directories: ${EXCLUDE_DIRS[*]}${NC}"
+if [[ ${#display_exclude[@]} -gt 0 ]]; then
+    echo -e "${BLUE}Excluding directories: ${display_exclude[*]}${NC}"
 fi
 echo -e "${CYAN}=========================================${NC}"
-
 echo ""
-echo -e "${YELLOW}Converting for: ${RED}global${NC} ${YELLOW}→${NC} ${GREEN}${NET}${NC}"
+echo -e "${YELLOW}Converting: ${GREEN}global${NC} ${YELLOW}→${NC} ${RED}${NET}${NC}"
 
 # List of patterns to convert
 declare -A patterns=(
@@ -157,12 +121,6 @@ declare -A patterns=(
 
 # If target is a single file, process it directly
 if [[ -f "${TARGET_PATH}" ]]; then
-    # Pre-check: Skip if ANY NET-specific variable already exists
-    if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${TARGET_PATH}" 2> /dev/null; then
-        echo -e "${YELLOW}⚠ File already has NET-specific variables - skipped${NC}"
-        exit 0
-    fi
-
     file_modified=false
     for pattern in "${!patterns[@]}"; do
         replacement="${patterns[${pattern}]}"
@@ -178,59 +136,75 @@ if [[ -f "${TARGET_PATH}" ]]; then
     if ${file_modified}; then
         echo -e "${GREEN}✓ Processed 1 file for NET=${NET}${NC}"
     else
-        echo -e "${YELLOW}No files to convert for NET=${current_net}${NC}"
+        echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
     fi
 else
     # Build find command with exclusions for directory
-    # Build find command with excluded directories (properly handle subdirectories)
+    find_cmd="find \"${TARGET_PATH}\""
+
+    # Build exclusion list for directories
     if [[ ${#EXCLUDE_DIRS[@]} -gt 0 ]]; then
-        exclude_args=""
+        find_cmd+=" -type d \\("
+        first=true
         for exclude_dir in "${EXCLUDE_DIRS[@]}"; do
-            exclude_args+="-name \"$(basename "${exclude_dir}")\" -o "
+            # Remove leading ./ if present
+            exclude_dir="${exclude_dir#./}"
+
+            # Extract just the directory name (last component of path)
+            dir_name=$(basename "${exclude_dir}")
+
+            if ${first}; then
+                find_cmd+=" -name \"${dir_name}\""
+                first=false
+            else
+                find_cmd+=" -o -name \"${dir_name}\""
+            fi
         done
-        exclude_args="${exclude_args% -o }"
-        eval "find \"${TARGET_PATH}\" -type d \( ${exclude_args} \) -prune -o -type f -print" > /tmp/convert_files_$$.txt
-    else
-        find "${TARGET_PATH}" -type f > /tmp/convert_files_$$.txt
+        find_cmd+=" \\) -prune -o"
     fi
 
+    # Complete find command to get files
+    find_cmd+=" -type f -print"
+
+    # Execute find and get file list
+    if ! eval "${find_cmd}" > /tmp/convert_files_$$.txt; then
+        echo -e "${RED}ERROR: Failed to find files in ${TARGET_PATH}${NC}" >&2
+        exit 1
+    fi
+
+    # Count files to process
     file_count=$(wc -l < /tmp/convert_files_$$.txt)
 
     if [[ ${file_count} -eq 0 ]]; then
         echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
         rm -f /tmp/convert_files_$$.txt
     else
-        # Count files to process
         echo -e "${BLUE}Processing ${file_count} files...${NC}"
 
         # Perform the replacements
         failed_files=0
-        skipped_files=0
+        converted_files=0
         while IFS= read -r file; do
             if [[ -f "${file}" ]]; then
-                # Pre-check: Skip file if it contains ANY NET-specific variable (gfs, gefs, sfs, gcafs)
-                if grep -qE '\b(HOME|PARM|USH|SCR|EXEC|FIX)(gfs|gefs|sfs|gcafs)\b' "${file}" 2> /dev/null; then
-                    skipped_files=$((skipped_files + 1))
-                else
-                    # Proceed with conversion only if no NET-specific vars found
-                    file_modified=false
-                    file_failed=false
-                    for pattern in "${!patterns[@]}"; do
-                        replacement="${patterns[${pattern}]}"
-                        if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
-                            if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
-                                echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
-                                failed_files=$((failed_files + 1))
-                                file_failed=true
-                                break
-                            fi
-                            file_modified=true
+                # Process file regardless of whether it has NET-specific vars
+                # (this allows converting files with mixed global/NET vars)
+                file_modified=false
+                file_failed=false
+                for pattern in "${!patterns[@]}"; do
+                    replacement="${patterns[${pattern}]}"
+                    if grep -q "\\b${pattern}\\b" "${file}" 2> /dev/null; then
+                        if ! sed -i "s/\\b${pattern}\\b/${replacement}/g" "${file}"; then
+                            echo -e "${RED}ERROR: sed failed on ${file}${NC}" >&2
+                            failed_files=$((failed_files + 1))
+                            file_failed=true
+                            break
                         fi
-                    done
-
-                    if ! ${file_modified} && ! ${file_failed}; then
-                        skipped_files=$((skipped_files + 1))
+                        file_modified=true
                     fi
+                done
+
+                if ${file_modified} && ! ${file_failed}; then
+                    converted_files=$((converted_files + 1))
                 fi
             fi
         done < /tmp/convert_files_$$.txt
@@ -238,18 +212,17 @@ else
         # Clean up
         rm -f /tmp/convert_files_$$.txt
 
-        files_converted=$((file_count - failed_files - skipped_files))
-        if [[ ${files_converted} -eq 0 ]]; then
+        if [[ ${converted_files} -eq 0 ]]; then
             echo -e "${YELLOW}No files to convert for NET=${NET}${NC}"
         elif [[ ${failed_files} -gt 0 ]]; then
-            echo -e "${YELLOW}⚠ Converted ${files_converted}/${file_count} files (${failed_files} failed) for NET=${NET}${NC}"
+            echo -e "${YELLOW}⚠ Converted ${converted_files} files (${failed_files} failed) for NET=${NET}${NC}"
         else
-            echo -e "${GREEN}✓ Converted ${files_converted}/${file_count} files for NET=${NET}${NC}"
+            echo -e "${GREEN}✓ Converted ${converted_files} files for NET=${NET}${NC}"
         fi
     fi
 fi
-echo -e "${GREEN}Completed!${NC}"
 
 echo ""
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${GREEN}Conversion to NET=${NET} completed successfully!${NC}"
+echo -e "${GREEN}Conversion completed successfully!${NC}"
+echo -e "${CYAN}=========================================${NC}"

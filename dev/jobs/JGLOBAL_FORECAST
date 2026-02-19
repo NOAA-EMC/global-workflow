@@ -11,7 +11,7 @@ else
 fi
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Create the directory to hold restarts and output from the model in stmp
