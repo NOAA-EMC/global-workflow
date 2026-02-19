@@ -48,8 +48,7 @@ shift
 
 # Validate NET value
 case "${NET}" in
-    gfs|gefs|sfs|gcafs)
-        ;;
+    gfs | gefs | sfs | gcafs) ;;
     *)
         echo "ERROR: Invalid NET value '${NET}'. Must be one of: gfs, gefs, sfs, gcafs"
         exit 1
