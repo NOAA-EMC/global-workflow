@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
-function declare_from_tmpl() {
+# Disable this function
+#function declare_from_tmpl() {
     #
     # Define variables from corresponding templates by substituting in env variables.
     #
@@ -36,41 +37,41 @@ function declare_from_tmpl() {
     #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     #           COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
     #
-    if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then
-        set +x
-    fi
-    local opts="-g"
-    local OPTIND=1
-    while getopts "rx" option; do
-        opts="${opts}${option}"
-    done
-    shift $((OPTIND - 1))
+    #if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then
+    #    set +x
+    #fi
+    #local opts="-g"
+    #local OPTIND=1
+    #while getopts "rx" option; do
+    #    opts="${opts}${option}"
+    #done
+    #shift $((OPTIND - 1))
 
-    for input in "$@"; do
-        IFS=':' read -ra args <<< "${input}"
-        local com_var="${args[0]}"
-        local template
-        local value
-        if ((${#args[@]} > 1)); then
-            template="${args[1]}"
-        else
-            template="${com_var}_TMPL"
-        fi
-        if [[ ! -v "${template}" ]]; then
-            echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
-            exit 2
-        fi
-        value=$(echo "${!template}" | envsubst)
-        # shellcheck disable=SC2086
-        declare ${opts} "${com_var}"="${value}"
-        # shellcheck disable=
-        echo "declare_from_tmpl :: ${com_var}=${value}"
-    done
+    #for input in "$@"; do
+    #    IFS=':' read -ra args <<< "${input}"
+    #    local com_var="${args[0]}"
+    #    local template
+    #    local value
+    #    if ((${#args[@]} > 1)); then
+    #        template="${args[1]}"
+    #    else
+    #        template="${com_var}_TMPL"
+    #    fi
+    #    if [[ ! -v "${template}" ]]; then
+    #        echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
+    #        exit 2
+    #    fi
+    #    value=$(echo "${!template}" | envsubst)
+    #    # shellcheck disable=SC2086
+    #    declare ${opts} "${com_var}"="${value}"
+    #    # shellcheck disable=
+    #    echo "declare_from_tmpl :: ${com_var}=${value}"
+    #done
     # Check if the function set_trace is declared and execute it if so
-    if declare -f set_trace > /dev/null; then
-        set_trace
-    fi
-}
+    #if declare -f set_trace > /dev/null; then
+    #    set_trace
+    #fi
+#}
 
 function wait_for_file() {
     #
