@@ -2,6 +2,10 @@
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "stage_ic" -c "base stage_ic"
 
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Execute staging
 "${SCRgfs}/exglobal_stage_ic.py"
 err=$?
