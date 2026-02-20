@@ -1,0 +1,82 @@
+# ============================================================
+# Daily Wiki Update
+# Place this file at:  .github/workflows/daily-wiki-update.yml
+# in the NOAA-EMC/global-workflow repository.
+# ============================================================
+
+name: Daily Wiki Update
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'       # 06:00 UTC Mon-Fri (weekdays only)
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date to summarise (YYYY-MM-DD). Leave blank for yesterday.'
+        required: false
+        default: ''
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read            # read the workflow repo for the script
+
+    steps:
+      # ── 1. Grab only the script from the source repo ─────────────────────
+      - name: Checkout scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts
+          sparse-checkout-cone-mode: false
+
+      # ── 2. Python environment ─────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      # ── 3. Run the summary generator ─────────────────────────────────────
+      # Output file: daily_summary_patch.md  (created in $GITHUB_WORKSPACE)
+      - name: Generate daily summary
+        env:
+          GH_TOKEN: ${{ secrets.WIKI_PAT }}
+          AUTHOR_USERNAME: ${{ vars.WIKI_AUTHOR_USERNAME }}   # set in repo → Settings → Variables
+          SUMMARY_DATE: ${{ inputs.date }}
+          REPOS: 'NOAA-EMC/global-workflow,NOAA-EMC/GDASapp'
+        run: python .github/scripts/generate_daily_summary.py
+
+      # ── 4. Clone wiki, prepend today's entry, push ────────────────────────
+      - name: Push to wiki
+        env:
+          WIKI_PAT: ${{ secrets.WIKI_PAT }}
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone https://x-access-token:${WIKI_PAT}@github.com/NOAA-EMC/global-workflow.wiki.git wiki
+          cd wiki
+
+          # Create Daily-Updates.md with a header if it doesn't exist yet
+          if [ ! -f Daily-Updates.md ]; then
+            printf '# Daily Updates\n\nAutomatically generated daily activity summaries.\n\n---\n\n' \
+              > Daily-Updates.md
+          fi
+
+          # Prepend new entry so the newest date always appears at the top
+          cat ../daily_summary_patch.md Daily-Updates.md > tmp_updates.md
+          mv tmp_updates.md Daily-Updates.md
+
+          # Add sidebar link once
+          if ! grep -q 'Daily-Updates' _Sidebar.md; then
+            printf '\n* [[Daily Updates|Daily-Updates]]\n' >> _Sidebar.md
+          fi
+
+          git add Daily-Updates.md _Sidebar.md
+          git diff --cached --quiet \
+            || git commit -m "Daily wiki update: $(date -u +%Y-%m-%d)" \
+            && git push
