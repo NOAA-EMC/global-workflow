@@ -199,7 +199,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
             fi
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
+            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/sfc_data_cycle.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
@@ -277,7 +277,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             fi
             cpreq "${sfcdata_dir}/${PDY}.${cyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
+            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/sfc_data_cycle.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
