@@ -9,6 +9,7 @@ LOCKFILE="{{ expdir }}/.failed_jobs.lock"
 ROCOTOSTAT=$(command -v rocotostat)
 
 if [[ -n "${ROCOTOSTAT}" ]]; then
+    # shellcheck disable=SC2312
     FAILED_JOBS=$(${ROCOTOSTAT} -d "{{ expdir }}/{{ pslot }}.db" -w "{{ expdir }}/{{ pslot }}.xml" -c all 2> /dev/null | grep -E 'DEAD')
 
     if [[ -n "${FAILED_JOBS}" ]]; then

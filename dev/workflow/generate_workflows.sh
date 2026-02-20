@@ -631,6 +631,7 @@ if [[ "${_update_cron}" == "true" ]]; then
     fi
 
     # Save existing MAILTO before removing it
+    # shellcheck disable=SC2312
     existing_mailto=$(grep "^MAILTO=" existing.cron 2> /dev/null | head -1 || echo "")
 
     # Remove ALL MAILTO lines from existing.cron and tests.cron to prevent duplicates
