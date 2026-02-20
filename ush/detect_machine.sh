@@ -8,6 +8,12 @@
 #
 # Thank you for your contribution
 
+# Overwrite auto-detect if in container
+if [[ -v SINGULARITY_CONTAINER ]]; then
+    # We are in a container
+    MACHINE_ID=container
+fi
+
 # If the MACHINE_ID variable is set, skip this script.
 if [[ -n "${MACHINE_ID:-}" ]]; then
     return
@@ -23,6 +29,9 @@ case $(hostname -f) in
     dlogin0[1-9].dogwood.wcoss2.ncep.noaa.gov) MACHINE_ID=wcoss2 ;; ### dogwood01-9
     dlogin10.dogwood.wcoss2.ncep.noaa.gov) MACHINE_ID=wcoss2 ;;     ### dogwood10
 
+    gaea5[1-8]) MACHINE_ID=gaeac5 ;;          ### gaea51-58
+    gaea5[1-8].ncrc.gov) MACHINE_ID=gaeac5 ;; ### gaea51-58
+
     gaea6[1-8]) MACHINE_ID=gaeac6 ;;          ### gaea61-68
     gaea6[1-8].ncrc.gov) MACHINE_ID=gaeac6 ;; ### gaea61-68
 
@@ -33,6 +42,17 @@ case $(hostname -f) in
     ufe0[1-9]) MACHINE_ID=ursa ;; ### ursa01-09
     ufe1[0-6]) MACHINE_ID=ursa ;; ### ursa10-16
     uecflow01) MACHINE_ID=ursa ;; ### ursaecflow01
+
+    derecho1.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho1
+    derecho2.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho2
+    derecho3.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho3
+    derecho4.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho4
+    derecho5.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho5
+    derecho6.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho6
+    derecho7.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho7
+    derecho8.hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho8
+
+    dec*) MACHINE_ID=derecho ;; ### derech compute node
 
     s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
@@ -95,12 +115,18 @@ elif [[ -d /work ]]; then
     else
         MACHINE_ID=orion
     fi
+elif [[ -d /gpfs/f5 ]]; then
+    # We are on GAEAC5.
+    MACHINE_ID=gaeac5
 elif [[ -d /gpfs/f6 ]]; then
     # We are on GAEAC6.
     MACHINE_ID=gaeac6
 elif [[ -d /data/prod ]]; then
     # We are on SSEC's S4
     MACHINE_ID=s4
+elif [[ -d /glade/u ]]; then
+    # We are on DERECHO.
+    MACHINE_ID=derecho
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

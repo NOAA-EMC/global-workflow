@@ -87,12 +87,14 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
     echo "#!/bin/bash" >> "${mpmd_cmdfile}"
     while IFS= read -r line; do
         echo "${line} > mpmd.${nm}.out 2>&1" >> "${mpmd_cmdfile}"
+        ${line} > mpmd.${nm}.out
         ((nm = nm + 1))
     done < "${cmdfile}"
     chmod 755 "${mpmd_cmdfile}"
+    wait
 
     # shellcheck disable=SC2086
-    ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
+   #${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
     err=$?
 
 else # Unsupported or empty launcher, run in serial mode

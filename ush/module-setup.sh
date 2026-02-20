@@ -63,6 +63,17 @@ elif [[ ${MACHINE_ID} = stampede* ]]; then
     fi
     module purge
 
+elif [[ ${MACHINE_ID} = gaeac5 ]]; then
+    # We are on GAEA C5.
+    if (! eval module help > /dev/null 2>&1); then
+        # We cannot simply load the module command.  The GAEA
+        # /etc/profile modifies a number of module-related variables
+        # before loading the module command.  Without those variables,
+        # the module command fails.  Hence we actually have to source
+        # /etc/profile here.
+        source /etc/profile
+    fi
+    module reset
 elif [[ ${MACHINE_ID} = gaeac6 ]]; then
     # We are on GAEA C6.
     if (! eval module help > /dev/null 2>&1); then
@@ -84,11 +95,22 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
+elif [[ ${MACHINE_ID} = derecho ]]; then
+    # We are on GAEA C6.
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /glade/u/apps/derecho/24.12/spack/opt/spack/lmod/8.7.37/gcc/12.4.0/nr3e/lmod/lmod/init/bash
+    fi
+    module -force purge
+
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
 elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
     # We are on NOAA Cloud
     module purge
+
+elif [[ ${MACHINE_ID} = container ]]; then
+    # We are in container
+    source /usr/lmod/lmod/init/bash
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2

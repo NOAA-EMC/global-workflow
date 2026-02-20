@@ -1,0 +1,28 @@
+# Paths
+DMPDIR: '/scratch3/NCEPDEV/global/role.glopara/dump'
+BASE_GIT: '/scratch3/NCEPDEV/global/role.glopara/git'
+BASE_DATA: '/scratch3/NCEPDEV/global/role.glopara/data'
+BASE_IC: '/gpfs/csfs1/work/huangwei/ICSDIR'
+AERO_INPUTS_DIR: '/gpfs/csfs1/work/huangwei/GEFS_ExtData/20250310'
+PACKAGEROOT: '/scratch3/NCEPDEV/global/role.glopara/nwpara'
+HOMEDIR: '/gpfs/csfs1/work/${USER}'
+STMP: '/lustre/desc1/scratch/${USER}/stmp-retest'
+PTMP: '/lustre/desc1/scratch/${USER}/ptmp-retest'
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/scratch3/NCEPDEV/global/role.glopara/com/gfs/prod/syndat'
+COMINecmwf: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/ecmwf'
+COMINnam: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/nam'
+COMINukmet: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/ukmet'
+# BQS properties
+SCHEDULER: pbspro
+QUEUE: develop
+QUEUE_SERVICE: main
+# HPSS properties
+HPSS_PROJECT: emc-global
+ARCHCOM_TO: 'hpss'
+ATARDIR: '/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}'
+CHGRP_RSTPROD: 'YES'
+CHGRP_CMD: 'chgrp rstprod'
+# Features
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'NO'
