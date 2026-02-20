@@ -51,7 +51,7 @@ class GFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': cycledef,
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/fetch.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fetch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -199,7 +199,7 @@ class GFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/prepatmanlbias.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/prepatmanlbias.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'

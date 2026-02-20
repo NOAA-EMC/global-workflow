@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmanlbias" -c "base prepatmanlbias"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prepatmanlbias" -c "base prepatmanlbias"
 
 ##############################################
 # Set variables used in the script
@@ -34,7 +34,7 @@ ABIAS_SAT_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_pa
 ABIAS_AIR_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar
 
 SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECgfs}/satbias2ioda.x}
-SATBIAS2IODAY=${HOMEgfs}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
+SATBIAS2IODAY=${HOMEglobal}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
 OUTPUT=${DATA}/output
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS_PREV}"
