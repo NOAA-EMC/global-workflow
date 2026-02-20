@@ -10,6 +10,10 @@ else
     source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
 
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Create the directory to hold restarts and output from the model in stmp
 export DATArestart="${DATAjob}/restart"
 if [[ ! -d "${DATArestart}" ]]; then mkdir -p "${DATArestart}"; fi
