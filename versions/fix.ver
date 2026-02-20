@@ -16,7 +16,6 @@ export gdas_aero_ver=20251223
 export gdas_snow_ver=20241210
 export glwu_ver=20220805
 export gsi_ver=20251105
-#export gsi_ver=20251105 add new date here
 export lut_ver=20220805
 export mom6_ver=20250128
 export orog_ver=20240917
