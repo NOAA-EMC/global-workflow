@@ -29,11 +29,37 @@ runners. By mirroring the repository to GitLab and placing GitLab runners direct
 on those HPC systems, the project gains the ability to build and test the workflow
 in the same environments where it will be deployed operationally.
 
-.. figure:: _static/ci_cd_architecture.*
-   :align: center
-   :alt: CI/CD Architecture Diagram
+.. raw:: html
 
-   *High-level CI/CD architecture showing repository mirroring and pipeline flow.*
+   <div style="text-align:center; margin:1.5em 0;">
+     <img src="_static/ci_cd_architecture.svg" alt="CI/CD Architecture Diagram"
+          style="max-width:100%; height:auto; border:1px solid #e2e8f0; border-radius:8px;" />
+     <p><em>High-level CI/CD architecture showing repository mirroring and pipeline flow.</em></p>
+   </div>
+
+The architecture can also be summarized textually::
+
+    ┌──────────────────────────┐         ┌───────────────────────────┐         ┌──────────────────────────┐
+    │   GitHub (Authoritative) │  Pull   │  Licensed GitLab Instance │  Push   │  VLab Community GitLab   │
+    │   github.com/NOAA-EMC/   │ Mirror  │  (Premium — CI Pipelines) │ Mirror  │  vlab.noaa.gov/          │
+    │   global-workflow        ├────────►│                           ├────────►│  gitlab-community/...    │
+    │                          │         │                           │         │  (NOAA-wide read access)  │
+    └──────────┬───────────────┘         └─────────────┬─────────────┘         └──────────────────────────┘
+               │                                       │
+               │  GitHub Actions                       │  Pipeline Stages
+               │  (API Trigger)                        │
+               │                         ┌─────────────▼──────────────────────────────────────────┐
+               │                         │  1. Build → 2. Setup Tests → 3. Run Tests → 4. Finalize│
+               └─────────────────────────►                                                        │
+                                         └──────────────────────────┬─────────────────────────────┘
+                                                                    │
+                           ┌────────────────────────────────────────┼────────────────────────────────┐
+                           │        RDHPCS GitLab Shell Runners     │                                │
+                           │  ┌───────┐ ┌────────┐ ┌──────┐ ┌─────────┐ ┌──────┐                    │
+                           │  │ Hera  │ │Gaea C6 │ │Orion │ │Hercules │ │ Ursa │                    │
+                           │  │17 case│ │15 cases│ │8 case│ │10 cases │ │17 cas│                    │
+                           │  └───────┘ └────────┘ └──────┘ └─────────┘ └──────┘                    │
+                           └────────────────────────────────────────────────────────────────────────┘
 
 Key Design Principles
 =====================
