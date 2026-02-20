@@ -422,14 +422,21 @@ FV3_out() {
         local file_list fv3_file
         file_list=$(FV3_restarts)
 
-        # Copy restarts for the dates collected above to COM
+        # Build MPMD cmdfile to copy restarts in parallel
+        local cmdfile="${DATA}/cmdfile_fv3_out"
+        rm -f "${cmdfile}"
         for restart_date in "${restart_dates[@]}"; do
             echo "Copying FV3 restarts for 'RUN=${RUN}' at ${restart_date}"
             for fv3_file in ${file_list}; do
-                cpfs "${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file}" \
-                    "${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}"
+                echo "cpfs ${DATArestart}/FV3_RESTART/${restart_date}.${fv3_file} ${COMOUT_ATMOS_RESTART}/${restart_date}.${fv3_file}" >> "${cmdfile}"
             done
         done
+
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy FV3 restart files!"
+        fi
 
         echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
     fi
@@ -551,14 +558,17 @@ WW3_out() {
     # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
 
+    # Build MPMD cmdfile to copy WW3 restarts in parallel
+    local cmdfile="${DATA}/cmdfile_ww3_out"
+    rm -f "${cmdfile}"
+
     # Copy WW3 restarts at the end of the forecast segment to COM for RUN=gfs|gefs
     if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
         local restart_file
         if [[ "${RUN}" == "gfs" || "${RUN}" == "gefs" || "${RUN}" == "gcafs" ]]; then
             echo "Copying WW3 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
             restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.restart.ww3.nc"
-            cpfs "${DATArestart}/WW3_RESTART/${restart_file}" \
-                "${COMOUT_WAVE_RESTART}/${restart_file}"
+            echo "cpfs ${DATArestart}/WW3_RESTART/${restart_file} ${COMOUT_WAVE_RESTART}/${restart_file}" >> "${cmdfile}"
         fi
     fi
 
@@ -569,8 +579,7 @@ WW3_out() {
         restart_date="${model_start_date_next_cycle}"
         echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
         restart_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-        cpfs "${DATArestart}/WW3_RESTART/${restart_file}" \
-            "${COMOUT_WAVE_RESTART}/${restart_file}"
+        echo "cpfs ${DATArestart}/WW3_RESTART/${restart_file} ${COMOUT_WAVE_RESTART}/${restart_file}" >> "${cmdfile}"
     fi
 
     # Copy restarts for downstream usage in HAFS
@@ -579,8 +588,15 @@ WW3_out() {
         restart_date="${next_cycle}"
         echo "Copying WW3 restarts for 'RUN=${RUN}' at ${restart_date}"
         restart_file="${restart_date:0:8}.${restart_date:8:2}0000.restart.ww3.nc"
-        cpfs "${DATArestart}/WW3_RESTART/${restart_file}" \
-            "${COMOUT_WAVE_RESTART}/${restart_file}"
+        echo "cpfs ${DATArestart}/WW3_RESTART/${restart_file} ${COMOUT_WAVE_RESTART}/${restart_file}" >> "${cmdfile}"
+    fi
+
+    if [[ -s "${cmdfile}" ]]; then
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy WW3 restart files!"
+        fi
     fi
 
 }
@@ -713,6 +729,10 @@ MOM6_out() {
         *) ;;
     esac
 
+    # Build MPMD cmdfile to copy MOM6 restarts in parallel
+    local cmdfile="${DATA}/cmdfile_mom6_out"
+    rm -f "${cmdfile}"
+
     case ${RUN} in
         gdas | enkfgdas | enkfgfs) # Copy restarts for the next cycle for RUN=gdas|enkfgdas|enkfgfs
             local restart_date
@@ -720,8 +740,7 @@ MOM6_out() {
             echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${restart_date}"
             for mom6_restart_file in "${mom6_restart_files[@]}"; do
                 restart_file="${restart_date:0:8}.${restart_date:8:2}0000.${mom6_restart_file}"
-                cpfs "${DATArestart}/MOM6_RESTART/${restart_file}" \
-                    "${COMOUT_OCEAN_RESTART}/${restart_file}"
+                echo "cpfs ${DATArestart}/MOM6_RESTART/${restart_file} ${COMOUT_OCEAN_RESTART}/${restart_file}" >> "${cmdfile}"
             done
             ;;
         gfs | gefs | sfs | gcafs) # Copy MOM6 restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs
@@ -730,8 +749,7 @@ MOM6_out() {
                 echo "Copying MOM6 restarts for 'RUN=${RUN}' at ${forecast_end_cycle}"
                 for mom6_restart_file in "${mom6_restart_files[@]}"; do
                     restart_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.${mom6_restart_file}"
-                    cpfs "${DATArestart}/MOM6_RESTART/${restart_file}" \
-                        "${COMOUT_OCEAN_RESTART}/${restart_file}"
+                    echo "cpfs ${DATArestart}/MOM6_RESTART/${restart_file} ${COMOUT_OCEAN_RESTART}/${restart_file}" >> "${cmdfile}"
                 done
             fi
             ;;
@@ -740,6 +758,14 @@ MOM6_out() {
             exit 25
             ;;
     esac
+
+    if [[ -s "${cmdfile}" ]]; then
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
+        fi
+    fi
 }
 
 CICE_postdet() {
@@ -829,6 +855,10 @@ CICE_out() {
     # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
 
+    # Build MPMD cmdfile to copy CICE restarts in parallel
+    local cmdfile="${DATA}/cmdfile_cice_out"
+    rm -f "${cmdfile}"
+
     case ${RUN} in
         gdas | enkfgdas | enkfgfs) # Copy restarts for next cycle for RUN=gdas|enkfgdas|enkfgfs
             local restart_date
@@ -837,8 +867,7 @@ CICE_out() {
             seconds=$(to_seconds "${restart_date:8:2}0000") # convert HHMMSS to seconds
             source_file="cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
             target_file="${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-            cpfs "${DATArestart}/CICE_RESTART/${source_file}" \
-                "${COMOUT_ICE_RESTART}/${target_file}"
+            echo "cpfs ${DATArestart}/CICE_RESTART/${source_file} ${COMOUT_ICE_RESTART}/${target_file}" >> "${cmdfile}"
             ;;
         gfs | gefs | sfs | gcafs) # Copy CICE restarts at the end of the forecast segment to COM for RUN=gfs|gefs|sfs|gcafs
             if [[ "${COPY_FINAL_RESTARTS}" == "YES" ]]; then
@@ -847,8 +876,7 @@ CICE_out() {
                 seconds=$(to_seconds "${forecast_end_cycle:8:2}0000") # convert HHMMSS to seconds
                 source_file="cice_model.res.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
                 target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.cice_model.res.nc"
-                cpfs "${DATArestart}/CICE_RESTART/${source_file}" \
-                    "${COMOUT_ICE_RESTART}/${target_file}"
+                echo "cpfs ${DATArestart}/CICE_RESTART/${source_file} ${COMOUT_ICE_RESTART}/${target_file}" >> "${cmdfile}"
             fi
             ;;
         *)
@@ -856,6 +884,14 @@ CICE_out() {
             exit 25
             ;;
     esac
+
+    if [[ -s "${cmdfile}" ]]; then
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy CICE restart files!"
+        fi
+    fi
 }
 
 GOCART_rc() {
@@ -924,15 +960,26 @@ GOCART_out() {
         "inst_du_bin" "inst_ss_bin" "inst_ca_bin" "inst_ni_bin" "inst_su_bin"
         "inst_2d" "inst_3d" "tavg_du_ss" "tavg_du_bin" "tavg_2d_rad" "tavg_3d_rad")
 
+    # Build MPMD cmdfile to copy GOCART output files in parallel
+    local cmdfile="${DATA}/cmdfile_gocart_out"
+    rm -f "${cmdfile}"
+
     for fhr in $(GOCART_output_fh); do
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         for file_type in "${file_types[@]}"; do
             if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-                cpfs "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-                    "${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4"
+                echo "cpfs ${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4 ${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" >> "${cmdfile}"
             fi
         done
     done
+
+    if [[ -s "${cmdfile}" ]]; then
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy GOCART output files!"
+        fi
+    fi
 }
 
 # shellcheck disable=SC2178
@@ -1008,6 +1055,10 @@ CMEPS_postdet() {
 CMEPS_out() {
     echo "SUB ${FUNCNAME[0]}: Copying output data for CMEPS mediator"
 
+    # Build MPMD cmdfile to copy CMEPS mediator restarts in parallel
+    local cmdfile="${DATA}/cmdfile_cmeps_out"
+    rm -f "${cmdfile}"
+
     case ${RUN} in
         gdas | enkfgdas | enkfgfs) # Copy restarts for the next cycle to COM
             local restart_date
@@ -1017,8 +1068,7 @@ CMEPS_out() {
             source_file="ufs.cpld.cpl.r.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
             target_file="${restart_date:0:8}.${restart_date:8:2}0000.ufs.cpld.cpl.r.nc"
             if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-                cpfs "${DATArestart}/CMEPS_RESTART/${source_file}" \
-                    "${COMOUT_MED_RESTART}/${target_file}"
+                echo "cpfs ${DATArestart}/CMEPS_RESTART/${source_file} ${COMOUT_MED_RESTART}/${target_file}" >> "${cmdfile}"
             else
                 echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
             fi
@@ -1031,8 +1081,7 @@ CMEPS_out() {
                 source_file="ufs.cpld.cpl.r.${forecast_end_cycle:0:4}-${forecast_end_cycle:4:2}-${forecast_end_cycle:6:2}-${seconds}.nc"
                 target_file="${forecast_end_cycle:0:8}.${forecast_end_cycle:8:2}0000.ufs.cpld.cpl.r.nc"
                 if [[ -f "${DATArestart}/CMEPS_RESTART/${source_file}" ]]; then
-                    cpfs "${DATArestart}/CMEPS_RESTART/${source_file}" \
-                        "${COMOUT_MED_RESTART}/${target_file}"
+                    echo "cpfs ${DATArestart}/CMEPS_RESTART/${source_file} ${COMOUT_MED_RESTART}/${target_file}" >> "${cmdfile}"
                 else
                     echo "Mediator restart '${DATArestart}/CMEPS_RESTART/${source_file}' not found."
                 fi
@@ -1043,4 +1092,12 @@ CMEPS_out() {
             exit 25
             ;;
     esac
+
+    if [[ -s "${cmdfile}" ]]; then
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy CMEPS mediator restart files!"
+        fi
+    fi
 }
