@@ -40,25 +40,25 @@ The architecture can also be summarized textually::
 
     ┌──────────────────────────┐         ┌───────────────────────────┐         ┌──────────────────────────┐
     │   GitHub (Authoritative) │  Pull   │  Licensed GitLab Instance │  Push   │  VLab Community GitLab   │
-    │   github.com/NOAA-EMC/   │ Mirror  │  (Premium — CI Pipelines) │ Mirror  │  vlab.noaa.gov/          │
-    │   global-workflow        ├────────►│                           ├────────►│  gitlab-community/...    │
-    │                          │         │                           │         │  (NOAA-wide read access)  │
-    └──────────┬───────────────┘         └─────────────┬─────────────┘         └──────────────────────────┘
-               │                                       │
-               │  GitHub Actions                       │  Pipeline Stages
-               │  (API Trigger)                        │
-               │                         ┌─────────────▼──────────────────────────────────────────┐
-               │                         │  1. Build → 2. Setup Tests → 3. Run Tests → 4. Finalize│
-               └─────────────────────────►                                                        │
-                                         └──────────────────────────┬─────────────────────────────┘
-                                                                    │
-                           ┌────────────────────────────────────────┼────────────────────────────────┐
-                           │        RDHPCS GitLab Shell Runners     │                                │
-                           │  ┌───────┐ ┌────────┐ ┌──────┐ ┌─────────┐ ┌──────┐                    │
-                           │  │ Hera  │ │Gaea C6 │ │Orion │ │Hercules │ │ Ursa │                    │
-                           │  │17 case│ │15 cases│ │8 case│ │10 cases │ │17 cas│                    │
-                           │  └───────┘ └────────┘ └──────┘ └─────────┘ └──────┘                    │
-                           └────────────────────────────────────────────────────────────────────────┘
+    │   github.com/NOAA-EMC/   │ Mirror  │  (Premium — Mirroring     │ Mirror  │  vlab.noaa.gov/          │
+    │   global-workflow        ├────────►│   Only)                   ├────────►│  gitlab-community/...    │
+    │                          │         │                           │         │  (CI/CD Pipelines here)  │
+    └──────────┬───────────────┘         └───────────────────────────┘         └────────────┬─────────────┘
+               │                                                                            │
+               │  GitHub Actions                                               Pipeline Stages
+               │  (API Trigger)                                                             │
+               │                                                    ┌───────────────────────▼──────────┐
+               │                                                    │  1. Build → 2. Setup → 3. Run →  │
+               └───────────────────────────────────────────────────►│           4. Finalize            │
+                                                                    └──────────────────┬───────────────┘
+                                                                                       │
+                           ┌───────────────────────────────────────────────────────────▼───────────┐
+                           │        RDHPCS GitLab Shell Runners                                    │
+                           │  ┌───────┐ ┌────────┐ ┌──────┐ ┌─────────┐ ┌──────┐                   │
+                           │  │ Hera  │ │Gaea C6 │ │Orion │ │Hercules │ │ Ursa │                   │
+                           │  │17 case│ │15 cases│ │8 case│ │10 cases │ │17 cas│                   │
+                           │  └───────┘ └────────┘ └──────┘ └─────────┘ └──────┘                   │
+                           └───────────────────────────────────────────────────────────────────────┘
 
 Key Design Principles
 =====================
@@ -105,8 +105,9 @@ instance is configured to pull from the authoritative GitHub repository:
    * - **Sync frequency**
      - Automatic (every few minutes)
 
-This licensed instance is the one that runs the actual CI/CD pipelines with
-runners deployed on the RDHPCS systems.
+The licensed instance's sole purpose is **mirroring** — it does not run any
+CI/CD pipelines itself. Its pull mirror keeps the GitLab copy synchronized with
+GitHub, and its push mirror (described below) propagates changes onward.
 
 .. note::
 
@@ -136,9 +137,11 @@ the NOAA community GitLab instance hosted at VLab:
    * - **Sync frequency**
      - Automatic (every few minutes)
 
-This push mirror makes the repository available to the broader NOAA user community
-through the VLab community GitLab instance, which runs GitLab Community Edition and
-does not support pull mirroring.
+The VLab community GitLab instance is where the **CI/CD pipelines actually
+execute**. GitLab runners deployed on RDHPCS systems register against this
+instance, and all pipeline stages (build, setup, test, finalize) run here.
+This instance also provides the broader NOAA user community with read access
+to the repository.
 
 Mirror Chain Summary
 ====================
@@ -149,11 +152,11 @@ The complete mirror chain is::
         │
         │  Pull Mirror (licensed GitLab feature)
         ▼
-    Licensed GitLab Instance (CI/CD pipelines execute here)
+    Licensed GitLab Instance (mirroring only)
         │
         │  Push Mirror (available on all GitLab tiers)
         ▼
-    VLab Community GitLab (NOAA-wide read access)
+    VLab Community GitLab (CI/CD pipelines execute here, NOAA-wide access)
 
 Both mirrored repositories track **all branches**, ensuring that any branch pushed
 to GitHub (including PR branches fetched during pipeline execution) is available

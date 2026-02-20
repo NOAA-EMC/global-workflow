@@ -40,18 +40,18 @@
   <rect x="420" y="90" width="280" height="32" rx="10" fill="#7c3aed"/>
   <rect x="420" y="112" width="280" height="10" fill="#7c3aed"/>
   <text x="560" y="112" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Licensed GitLab Instance</text>
-  <text x="560" y="146" text-anchor="middle" font-size="11" fill="#475569">GitLab Premium (Pull Mirror)</text>
-  <text x="560" y="165" text-anchor="middle" font-size="10" fill="#64748b">CI/CD Pipeline Execution</text>
-  <text x="560" y="185" text-anchor="middle" font-size="10" fill="#64748b">Pipeline Triggers &#x2022; Runners</text>
+  <text x="560" y="146" text-anchor="middle" font-size="11" fill="#475569">GitLab Premium</text>
+  <text x="560" y="165" text-anchor="middle" font-size="10" fill="#64748b">Pull Mirror &#x2022; Push Mirror</text>
+  <text x="560" y="185" text-anchor="middle" font-size="10" fill="#64748b">Mirroring Only (No CI)</text>
 
   <!-- VLab Community GitLab -->
-  <rect x="780" y="90" width="260" height="110" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="2" filter="url(#shadow)"/>
-  <rect x="780" y="90" width="260" height="32" rx="10" fill="#6b7280"/>
-  <rect x="780" y="112" width="260" height="10" fill="#6b7280"/>
+  <rect x="780" y="90" width="260" height="110" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="780" y="90" width="260" height="32" rx="10" fill="#16a34a"/>
+  <rect x="780" y="112" width="260" height="10" fill="#16a34a"/>
   <text x="910" y="112" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">VLab Community GitLab</text>
   <text x="910" y="146" text-anchor="middle" font-size="11" fill="#475569">vlab.noaa.gov/gitlab-community</text>
-  <text x="910" y="165" text-anchor="middle" font-size="10" fill="#64748b">NOAA-Wide Read Access</text>
-  <text x="910" y="185" text-anchor="middle" font-size="10" fill="#64748b">Community Edition (Free)</text>
+  <text x="910" y="165" text-anchor="middle" font-size="10" fill="#64748b">CI/CD Pipeline Execution</text>
+  <text x="910" y="185" text-anchor="middle" font-size="10" fill="#64748b">Runners &#x2022; NOAA-Wide Access</text>
 
   <!-- Pull Mirror Arrow -->
   <line x1="340" y1="140" x2="418" y2="140" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
@@ -65,15 +65,15 @@
 
   <!-- ===== Trigger &amp; Feedback Arrows ===== -->
 
-  <!-- GitHub Actions Trigger (GitHub -> Licensed GitLab) -->
-  <path d="M 260 200 C 260 240, 500 240, 500 200" stroke="#ea580c" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrowOrange)"/>
-  <rect x="335" y="228" width="130" height="18" rx="4" fill="#fff7ed"/>
-  <text x="400" y="240" text-anchor="middle" font-size="9" font-weight="bold" fill="#ea580c">GitHub Actions Trigger</text>
+  <!-- GitHub Actions Trigger (GitHub -> VLab Community GitLab) -->
+  <path d="M 260 200 C 260 250, 910 250, 910 200" stroke="#ea580c" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrowOrange)"/>
+  <rect x="520" y="248" width="130" height="18" rx="4" fill="#fff7ed"/>
+  <text x="585" y="260" text-anchor="middle" font-size="9" font-weight="bold" fill="#ea580c">GitHub Actions Trigger</text>
 
-  <!-- Feedback Loop (Licensed GitLab -> GitHub) -->
-  <path d="M 500 90 C 500 60, 260 60, 260 90" stroke="#6b7280" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
-  <rect x="325" y="54" width="148" height="16" rx="4" fill="#f1f5f9"/>
-  <text x="399" y="65" text-anchor="middle" font-size="8" fill="#6b7280">Labels &#x2022; Comments &#x2022; Badges</text>
+  <!-- Feedback Loop (VLab Community GitLab -> GitHub) -->
+  <path d="M 850 90 C 850 50, 260 50, 260 90" stroke="#6b7280" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+  <rect x="490" y="38" width="148" height="16" rx="4" fill="#f1f5f9"/>
+  <text x="564" y="49" text-anchor="middle" font-size="8" fill="#6b7280">Labels &#x2022; Comments &#x2022; Badges</text>
 
   <!-- ===== ROW 2: Pipeline Stages ===== -->
 
@@ -178,8 +178,8 @@
   <line x1="430" y1="410" x2="720" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
   <line x1="430" y1="410" x2="905" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
 
-  <!-- Connection from Licensed GitLab to Pipeline -->
-  <line x1="560" y1="200" x2="430" y2="278" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowGray)"/>
+  <!-- Connection from VLab Community GitLab to Pipeline -->
+  <line x1="910" y1="200" x2="530" y2="278" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowGray)"/>
 
   <!-- ===== ROW 4: Key Configuration Files ===== -->
 
