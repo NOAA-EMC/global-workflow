@@ -26,7 +26,7 @@ host="$(hostname)"
 source "${HOMEgfs_}/ush/detect_machine.sh"
 # Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
-    hera | orion | hercules | wcoss2 | gaeac5 | gaeac6)
+    hera | orion | hercules | wcoss2 | gaeac6)
         echo "Running GitLab Runner script on ${MACHINE_ID}"
         ;;
     noaacloud)

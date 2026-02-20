@@ -2,22 +2,23 @@ experiment:
   net: gfs
   mode: cycled
   pslot: {{ 'pslot' | getenv }}
-  app: S2S
-  resdetatmos: 48
+  app: ATM
+  resdetatmos: 96
   resensatmos: 48
-  resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20250808
-  idate: 2021032418
-  edate: 2021032500
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
+  idate: 2024022318
+  edate: 2024022406
   nens: 2
   interval: 0
   start: warm
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/soca_hyb_gfs_defaults_ci.yaml
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufsenkf_atmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
+  - gaeac5
   - orion
+  - hercules
   - awsepicglobalworkflow
 
 workflow:
