@@ -75,17 +75,31 @@ if [[ ${DONST} == "YES" ]]; then
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
-# Deterministic analysis and increment files
-export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
-export DTFINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.dtf.i006.nc"
-export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
-export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
+if [[ ${DOENKFONLY_ATM:-"NO"} == "YES" ]]; then
+    # Deterministic analysis and increment files
+    export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
+    export DTFINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.dtf.i006.nc"
+    export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
+    export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
 
-# Guess Bias correction coefficients related to control
-export GBIAS=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt
-export GBIASPC=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt
-export GBIASAIR=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt
-export GRADSTAT=${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.tar
+    # Guess Bias correction coefficients related to ensemble
+    export GBIAS="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias.txt"
+    export GBIASPC="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_pc.txt"
+    export GBIASAIR="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}abias_air.txt"
+    export GRADSTAT="${COMIN_ATMOS_ANALYSIS_PREV}/${GPREFIX}radstat.tar"
+else
+    # Deterministic analysis and increment files
+    export SFCANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.sfc.a006.nc"
+    export DTFANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.dtf.i006.nc"
+    export ATMANL="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}analysis.atm.a006.nc"
+    export ATMINC="${COMOUT_ATMOS_ANALYSIS_DET}/${APREFIX_DET}increment.atm.i006.nc"
+
+    # Guess Bias correction coefficients related to control
+    export GBIAS="${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias.txt"
+    export GBIASPC="${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_pc.txt"
+    export GBIASAIR="${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}abias_air.txt"
+    export GRADSTAT="${COMIN_ATMOS_ANALYSIS_DET_PREV}/${GPREFIX_DET}radstat.tar"
+fi
 
 # Bias correction coefficients related to ensemble mean
 export ABIAS="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt"

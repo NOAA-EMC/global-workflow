@@ -1,0 +1,137 @@
+#! /usr/bin/env bash
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prepatmanlbias" -c "base prepatmanlbias"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export gyy=${GDATE:0:4}
+export gmm=${GDATE:4:2}
+export gdd=${GDATE:6:2}
+export GDUMP="gdas"
+
+# Generate COM variables from templates
+MEMDIR="ensstat" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+
+# Process bias corrections files grabbed from HPSS in task gdas_fetchatmanlbias
+BIASDIR=${DATA}/${GDUMP}.${gPDY}/${gcyc}/atmos
+BIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_air  ${GDUMP}.t${gcyc}z.abias_int ${GDUMP}.t${gcyc}z.abias_pc ${GDUMP}.t${gcyc}z.radstat"
+
+ABIAS_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias
+ABIASPC_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias_pc
+ABIAS_SAT_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar
+ABIAS_AIR_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar
+
+SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECgfs}/satbias2ioda.x}
+SATBIAS2IODAY=${HOMEgfs}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
+OUTPUT=${DATA}/output
+
+mkdir -p "${COMOUT_ATMOS_ANALYSIS_PREV}"
+mkdir -p "${OUTPUT}"
+
+if [[ ${DO_JEDIATMENS} == "YES" ]]; then
+    # JEDI run
+    cd "${DATA}" || exit 1
+    mkdir -p "testrun/varbc"
+    ln -sf "${ABIAS_SAT}" "./satbias_in"
+    ln -sf "${ABIASPC_SAT}" "./satbias_pc"
+    if grep -i "NaN" satbias_in > /dev/null 2>&1; then
+        ##export err=1
+        ##err_chk "FATAL ERROR There are NaN in satbias_in."
+        echo "WARNING: There are NaN in satbias_in.  Replace NaN with 0.000000"
+        cp satbias_in satbias_in_original
+        sed -i -e 's/         NaN/    0.000000/g' \
+            -e 's/         nan/    0.000000/g' \
+            -e 's/         NAN/    0.000000/g' satbias_in
+    fi
+
+    # Get instruments from satbias_in
+    obsclass=$(grep "_" satbias_in | awk '{print $2}' | uniq)
+
+    # Loop over instruments. Covert GSI abias to JEDI format
+    for instrument in ${obsclass}; do
+        echo "${instrument}"
+        cp -f "${SATBIAS2IODAY}" satbias_converter.yaml
+        sed -i -e "s/INSTRUMENT/${instrument}/g" satbias_converter.yaml
+
+        ${SATBIAS2IODAX} satbias_converter.yaml
+
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "FATAL ERROR satbias2iodas.x failed for ${instrument}, ABORT!"
+        fi
+
+        rm -f testrun/varbc/*nc
+        rm -f testrun/varbc/*txt
+
+        cd ./testrun/varbc/
+        grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
+            "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.tlapse.txt"
+        cpreq -p "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.satbias.nc"
+        mv "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.satbias_cov.nc"
+        cd "${DATA}"
+        rm -f satbias_converter.yaml
+    done
+
+    if [[ ${err} -eq 0 ]]; then
+        cd "${OUTPUT}" || exit
+        for file in ${BIASFILES}; do
+            cpreq "${BIASDIR}/${file}" "./enkf${file}.txt"
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "Error copying operational anl bias correction files"
+            fi
+        done
+        # TODO: Temporary solution and need to process abias_air for JEDI when ready
+        tar -cvf "${ABIAS_AIR_JEDI_TAR}" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
+        rm -f "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
+        tar -cvf "${ABIAS_SAT_JEDI_TAR}" ./*.nc ./*.txt
+        export err=$?
+    fi
+
+else
+    # GSI run
+    for file in ${BIASFILES}; do
+        cpreq "${BIASDIR}/${file}" "${COMOUT_ATMOS_ANALYSIS_PREV}/enkf${file}.txt"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "FATAL ERROR copying operational anl bias correction files"
+        fi
+    done
+fi
+
+if [[ ${err} -ne 0 ]]; then
+    err_exit "FATAL ERROR executing ${EXSCRIPT}"
+fi
+set_trace
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

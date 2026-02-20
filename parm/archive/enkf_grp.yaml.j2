@@ -14,17 +14,23 @@ enkf_grp:
         {% if DO_JEDIATMENS %}
             {% for iaufhr in iaufhrs_str %}
                 {% for itile in range(6) %}
+                    {% if DOENKFONLY_ATM %}
+        - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
+                    {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_jedi_increment.atm.i{{ iaufhr }}.tile{{ itile+1 }}.nc"
+                    {% endif %}
                 {% endfor %}
             {% endfor %}
         {% else %}
             {% if do_calc_increment %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}analysis.atm.a006.nc"
             {% else %}
-                {% for iaufhr in iaufhrs_str %}
-                    {% set iaufhr = iaufhr %}
+                {% if not DOENKFONLY_ATM %}
+                    {% for iaufhr in iaufhrs_str %}
+                        {% set iaufhr = iaufhr %}
         - "{{ COMIN_ATMOS_ANALYSIS_MEM }}/{{ head }}recentered_increment.atm.i{{ iaufhr }}.nc"
-                {% endfor %}  # iaufhr in iaufhrs_str
+                    {% endfor %}  # iaufhr in iaufhrs_str
+                {% endif %}
             {% endif %}
         {% endif %}
 

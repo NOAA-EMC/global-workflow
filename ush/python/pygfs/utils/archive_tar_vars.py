@@ -207,6 +207,7 @@ class ArchiveTarVars:
                 'ENSGRP', 'NMEM_EARCGRP', 'NMEM_ENS_GFS',
                 # EnKF-specific operations
                 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS', 'DO_JEDIATMENS_SPLIT_OBSSOL', 'DO_CALC_INCREMENT',
+                'DOENKFONLY_ATM',
                 # EnKF forecast configuration
                 'FHMIN_ENKF', 'FHMAX_ENKF_GFS', 'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF',
                 # EnKF settings
