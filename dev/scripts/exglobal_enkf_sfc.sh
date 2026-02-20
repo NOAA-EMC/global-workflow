@@ -235,7 +235,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
 
-            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/sfc_data_cycle.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
         done # ensembles
 
@@ -275,7 +275,6 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             else
                 sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
             fi
-
             cpreq "${sfcdata_dir}/${PDY}.${cyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
             cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
@@ -313,7 +312,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
 
-            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/sfc_data_cycle.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
 
         done
 
