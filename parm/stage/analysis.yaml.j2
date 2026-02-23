@@ -61,6 +61,39 @@ analysis:
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                     {% endif %}
                 {% endfor %}
+
+        {# -------------------------------------------------------------------- #}
+        {# JEDI Atmospheric Ensemble Data Assimilation                          #}
+        {# -------------------------------------------------------------------- #}
+        {% elif DO_JEDIATMENS %}
+
+            {# Cubed Sphere Grid Configuration #}
+
+            {% for itile in range(ntiles) %}
+
+                {# Ensemble Members (member != -1) #}
+                {% if not DOENKFONLY_ATM %}
+                    {% if DOIAU_ENKF %}
+                        {% set ftypes = ["recentered_jedi_increment.atm.i003", "recentered_jedi_increment.atm.i006", "recentered_jedi_increment.atm.i009" ] %}
+                    {% else %}
+                        {% set ftypes = ["recentered_jedi_increment.atm.i006" ] %}
+                    {% endif %}
+                {% else %}
+                    {% if DOIAU_ENKF %}
+                        {% set ftypes = ["jedi_increment.atm.i003", "jedi_increment.atm.i006", "jedi_increment.atm.i009" ] %}
+                    {% else %}
+                        {% set ftypes = ["jedi_increment.atm.i006" ] %}
+                    {% endif %}
+                {% endif %}
+
+                {% for ftype in ftypes %}
+                    {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                    {% endif %}
+                {% endfor %}
+
+            {% endfor %}
+
         {# -------------------------------------------------------------------- #}
         {# GSI Data Assimilation (Non-JEDI)                                     #}
         {# -------------------------------------------------------------------- #}

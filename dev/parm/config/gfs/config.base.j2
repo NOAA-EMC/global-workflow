@@ -396,6 +396,10 @@ export BUILD_GSINFO_DIR="${PARMgfs}/gsinfo"
 export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"
 export NMEM_ENS_GFS_OFFSET="{{ NMEM_ENS_GFS_OFFSET }}"
 export DO_CALC_INCREMENT_ENKF_GFS="NO"
+export DOENKFONLY_ATM="{{ DOENKFONLY_ATM }}"
+if [[ "${DOENKFONLY_ATM}" = "YES" && "${DO_JEDIATMENS}" = "YES" ]]; then
+    export DO_HISTORY_FILE_ON_NATIVE_GRID="YES"
+fi
 
 # EnKF output frequency
 if [[ "${DOHYBVAR}" = "YES" ]]; then
@@ -517,6 +521,17 @@ fi
 # TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
 if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
     export DO_METP=NO
+fi
+
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+    export RECENTER_ENKF="NO"   # Turn off recentering ensemble analysis
+    export DO_VERFOZN="NO"      # Ozone data assimilation monitoring
+    export DO_VERFRAD="NO"      # Radiance data assimilation monitoring
+    export DO_VMINMON="NO"      # GSI minimization monitoring
+    export DO_METP="NO"   	# Run METPLUS jobs - set METPLUS settings in config.metp
+    export DO_FIT2OBS="NO"      # Run fit to observations package
+    export DO_TRACKER="NO"	# Hurricane track verification
+    export DO_GENESIS="NO"      # Cyclone genesis verification
 fi
 
 # If starting ICs that are not at cycle hour

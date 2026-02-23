@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-
+export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
 
 # Setup Python path for pygfs
