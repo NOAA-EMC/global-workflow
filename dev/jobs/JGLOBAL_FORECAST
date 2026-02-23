@@ -38,7 +38,7 @@ declare -rx gPDY="${GDATE:0:8}"
 declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables
-if ((10#${ENSMEM:-0} > 0)); then
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros
     memdir=$(printf "mem%03i" "${ENSMEM}")
     declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
