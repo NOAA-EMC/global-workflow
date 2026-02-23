@@ -383,7 +383,7 @@ case ${fv3_res} in
     exit 15
     ;;
 esac
-export zstandard_level ideflate quantize_nsd
+export zstandard_level ideflate quantize_nsd zstandard_level_rst ideflate_rst
 export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
 # cpl defaults
