@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+# shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"

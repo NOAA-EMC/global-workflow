@@ -5,6 +5,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 export MP_PULSE=0
 
 # Set COM Paths
+# shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros
     memdir=$(printf "mem%03i" "${ENSMEM}")
