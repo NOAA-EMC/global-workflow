@@ -55,8 +55,8 @@ else
 fi
 
 declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
-declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart"  # Used for most restarts
-declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"  # Used for warm start surface analysis
+declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart" # Used for most restarts
+declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"                   # Used for warm start surface analysis
 declare -rx COMOUT_CONF="${COMOUT}/conf"
 declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
 declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
