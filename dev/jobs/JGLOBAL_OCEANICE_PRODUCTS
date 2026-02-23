@@ -20,18 +20,13 @@ else
     export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
 fi
 
-COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/model"
 if [[ -z "${COMPONENT:-}" ]]; then
     export err=1
     err_exit "COMPONENT variable is not set."
-elif [[ "${COMPONENT}" == "ice" ]]; then
-    declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
-    declare -rx COMOUT_ICE_GRIB="${COMOUT}/products/ice/grib2"
-    declare -rx COMOUT_ICE_NETCDF="${COMOUT}/products/ice/netcdf"
-elif [[ "${COMPONENT}" == "ocean" ]]; then
-    declare -rx COMIN_OCEAN_HISTORY="${COMIN}/model/ocean/history"
-    declare -rx COMOUT_OCEAN_GRIB="${COMOUT}/products/ocean/grib2"
-    declare -rx COMOUT_OCEAN_NETCDF="${COMOUT}/products/ocean/netcdf"
+elif [[ "${COMPONENT}" == "ice" || "${COMPONENT}" == "ocean" ]]; then
+    declare -rx "COMIN_${COMPONENT^^}_HISTORY"="${COMIN}/model/${COMPONENT}/history"
+    declare -rx "COMOUT_${COMPONENT^^}_GRIB"="${COMOUT}/products/${COMPONENT}/grib2"
+    declare -rx "COMOUT_${COMPONENT^^}_NETCDF"="${COMOUT}/products/${COMPONENT}/netcdf"
 else
     export err=1
     err_exit "COMPONENT variable '${COMPONENT}' is invalid. Must be 'ice' or 'ocean'."
