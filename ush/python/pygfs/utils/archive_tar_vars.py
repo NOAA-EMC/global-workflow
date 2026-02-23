@@ -415,17 +415,26 @@ class ArchiveTarVars:
         # Both archive groups require: is_gdas AND SDATE AND specific day/cycle conditions
         sdate = config_dict.get('SDATE')
         arch_warmicfreq = config_dict.get('ARCH_WARMICFREQ', 1)
-        arch_cyc = config_dict.get('ARCH_CYC', 0)
+        arch_cyc_raw = config_dict.get('ARCH_CYC', 0)
+        if isinstance(arch_cyc_raw, int):
+            arch_cyc_list = [arch_cyc_raw]
+        elif isinstance(arch_cyc_raw, str):
+            arch_cyc_list = [int(val) for val in arch_cyc_raw.strip().split()]
+        elif isinstance(arch_cyc_raw, (list, tuple)):
+            arch_cyc_list = [int(val) for val in arch_cyc_raw]
+        else:
+            arch_cyc_list = [0]
         assim_freq = config_dict.get('assim_freq', 6)
 
         # Archive timing booleans - increments (group a)
         # Logic: (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 AND is_gdas AND ARCH_CYC == cycle_HH
         enkf_vars['archive_increments'] = False
         current_cycle_days = (current_cycle - sdate).days
+        cycle_hour = int(current_cycle.strftime("%H"))
         enkf_vars['archive_increments'] = (
             (current_cycle_days % arch_warmicfreq == 0) and
             enkf_vars.get('is_gdas', False) and
-            (arch_cyc == int(current_cycle.strftime("%H")))
+            (cycle_hour in arch_cyc_list)
         )
 
         # Archive timing booleans - ICs (group b)
@@ -436,7 +445,7 @@ class ArchiveTarVars:
         enkf_vars['archive_ics'] = (
             (ics_offset_days % arch_warmicfreq == 0) and
             enkf_vars.get('is_gdas', False) and
-            ((arch_cyc - assim_freq) % 24 == int(current_cycle.strftime("%H")))
+            any((val - assim_freq) % 24 == cycle_hour for val in arch_cyc_list)
         )
 
         # Warm start flags (placeholders for future use)
