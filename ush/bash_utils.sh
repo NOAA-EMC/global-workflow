@@ -249,7 +249,7 @@ tock() {
 
 # shellcheck disable=
 
-declare -xf declare_from_tmpl
+# declare -xf declare_from_tmpl
 declare -xf wait_for_file
 declare -xf dataroot_com_path
 declare -xf tick
