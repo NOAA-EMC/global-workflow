@@ -187,6 +187,7 @@ ush/python/soca
 ush/python/gen_bufr2ioda_json.py
 ush/python/gen_bufr2ioda_yaml.py
 ush/python/run_bufr2ioda.py
+ush/python/wxflow
 ush/spoc
 # ush log file
 ush/fetch-fix-data.log
