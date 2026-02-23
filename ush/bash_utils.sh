@@ -47,30 +47,30 @@
     #done
     #shift $((OPTIND - 1))
 
-    #for input in "$@"; do
-    #    IFS=':' read -ra args <<< "${input}"
-    #    local com_var="${args[0]}"
-    #    local template
-    #    local value
-    #    if ((${#args[@]} > 1)); then
-    #        template="${args[1]}"
-    #    else
-    #        template="${com_var}_TMPL"
-    #    fi
-    #    if [[ ! -v "${template}" ]]; then
-    #        echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
-    #        exit 2
-    #    fi
-    #    value=$(echo "${!template}" | envsubst)
-    #    # shellcheck disable=SC2086
-    #    declare ${opts} "${com_var}"="${value}"
-    #    # shellcheck disable=
-    #    echo "declare_from_tmpl :: ${com_var}=${value}"
-    #done
-    # Check if the function set_trace is declared and execute it if so
-    #if declare -f set_trace > /dev/null; then
-    #    set_trace
-    #fi
+#for input in "$@"; do
+#    IFS=':' read -ra args <<< "${input}"
+#    local com_var="${args[0]}"
+#    local template
+#    local value
+#    if ((${#args[@]} > 1)); then
+#        template="${args[1]}"
+#    else
+#        template="${com_var}_TMPL"
+#    fi
+#    if [[ ! -v "${template}" ]]; then
+#        echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
+#        exit 2
+#    fi
+#    value=$(echo "${!template}" | envsubst)
+#    # shellcheck disable=SC2086
+#    declare ${opts} "${com_var}"="${value}"
+#    # shellcheck disable=
+#    echo "declare_from_tmpl :: ${com_var}=${value}"
+#done
+# Check if the function set_trace is declared and execute it if so
+#if declare -f set_trace > /dev/null; then
+#    set_trace
+#fi
 #}
 
 function wait_for_file() {
