@@ -796,7 +796,8 @@ class Archive(Task):
             - ARCH_FCSTICFREQ (int): Frequency in days for archiving forecast ICs
             - current_cycle (datetime): The current cycle datetime
             - SDATE (datetime): Reference start date
-            - assim_freq (int or str): Assimilation frequency in hours
+            - assim_freq (int or str convertible to int): Assimilation frequency in hours;
+              string values will be converted to integers internally.
 
         Returns
         -------
