@@ -416,13 +416,34 @@ class ArchiveTarVars:
         sdate = config_dict.get('SDATE')
         arch_warmicfreq = config_dict.get('ARCH_WARMICFREQ', 1)
         arch_cyc_raw = config_dict.get('ARCH_CYC', 0)
+        # Normalize ARCH_CYC to a list of valid cycle hours (0-23), handling bad formats gracefully
+        arch_cyc_list = []
         if isinstance(arch_cyc_raw, int):
             arch_cyc_list = [arch_cyc_raw]
         elif isinstance(arch_cyc_raw, str):
-            arch_cyc_list = [int(val) for val in arch_cyc_raw.strip().split()]
+            for val in arch_cyc_raw.strip().split():
+                try:
+                    hour = int(val)
+                except ValueError:
+                    logger.warning("Invalid ARCH_CYC entry '%s' in string '%s'; skipping", val, arch_cyc_raw)
+                    continue
+                if 0 <= hour <= 23:
+                    arch_cyc_list.append(hour)
+                else:
+                    logger.warning("ARCH_CYC hour out of range (0-23): %s; skipping", hour)
         elif isinstance(arch_cyc_raw, (list, tuple)):
-            arch_cyc_list = [int(val) for val in arch_cyc_raw]
-        else:
+            for val in arch_cyc_raw:
+                try:
+                    hour = int(val)
+                except ValueError:
+                    logger.warning("Invalid ARCH_CYC list/tuple entry '%s'; skipping", val)
+                    continue
+                if 0 <= hour <= 23:
+                    arch_cyc_list.append(hour)
+                else:
+                    logger.warning("ARCH_CYC hour out of range (0-23): %s; skipping", hour)
+        # Fallback to default 0 if nothing valid was parsed
+        if not arch_cyc_list:
             arch_cyc_list = [0]
         assim_freq = config_dict.get('assim_freq', 6)
 
