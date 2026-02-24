@@ -1,14 +1,10 @@
 # AI Coding Agent Instructions for Global Workflow
 
-Always check for global-workflow-unified MCP tool availability before answering questions about the NOAA Global Workflow system and all related NOAA-EMC repositories.
-
-Also check for the presence of the global-workflow-unified RAG system. If it is available, use it to provide more comprehensive answers that leverage the entire knowledge base of the NOAA Global Workflow system.
-
-Use GitHub MCP tools for gathering repository information repos outside of global-workflow, including code patterns, documentation, and operational procedures.
-
 **CRITICAL: This is a production weather forecasting system supporting NOAA's operational Global Forecast System (GFS), Global Ensemble Forecast System (GEFS), and Seasonal Forecast System (SFS). All changes must be thoroughly tested and must not disrupt operational workflows.**
 
-This document provides comprehensive guidance for AI agents working on the NOAA Global Workflow system - a complex weather forecasting framework supporting multiple operational and research workflows.
+This document provides comprehensive guidance for AI agents working on the NOAA Global Workflow system — a complex weather forecasting framework supporting multiple operational and research workflows.
+
+> **Note:** If an EIB MCP-RAG server is connected, additional tool-specific guidance loads automatically via `.github/instructions/mcp.instructions.md`. No action needed — the agent will see those tools when they are available.
 
 ## System Architecture Overview
 
