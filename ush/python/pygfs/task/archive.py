@@ -766,18 +766,24 @@ class Archive(Task):
         Raises
         ------
         ValueError
-            If arch_cyc is not an int, list, or tuple, or contains non-integer values
+            If arch_cyc is not an int, list, or tuple, contains non-integer values,
+            or contains values outside the valid hour range [0, 23].
         """
         if isinstance(arch_cyc, int):
-            return [arch_cyc]
+            cycle_hours = [arch_cyc]
         elif isinstance(arch_cyc, (list, tuple)):
             try:
-                return [int(cyc) for cyc in arch_cyc]
+                cycle_hours = [int(cyc) for cyc in arch_cyc]
             except (ValueError, TypeError) as e:
                 raise ValueError(f"ARCH_CYC list must contain only integers: {e}")
         else:
             raise ValueError("ARCH_CYC must be an int or list/tuple of ints.")
 
+        # Validate that all cycle hours are within the valid 0-23 range
+        if any(hour < 0 or hour >= 24 for hour in cycle_hours):
+            raise ValueError(f"ARCH_CYC values must be between 0-23, got: {cycle_hours}")
+
+        return cycle_hours
     def _arch_warm_start_increments(self, arch_dict: AttrDict) -> bool:
         """
         Determines whether warm restart increments should be archived for the current cycle.
