@@ -784,6 +784,7 @@ class Archive(Task):
             raise ValueError(f"ARCH_CYC values must be between 0-23, got: {cycle_hours}")
 
         return cycle_hours
+
     def _arch_warm_start_increments(self, arch_dict: AttrDict) -> bool:
         """
         Determines whether warm restart increments should be archived for the current cycle.
