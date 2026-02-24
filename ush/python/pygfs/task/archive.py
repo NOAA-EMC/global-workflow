@@ -780,7 +780,7 @@ class Archive(Task):
             raise ValueError("ARCH_CYC must be an int or list/tuple of ints.")
 
         # Validate that all cycle hours are within the valid 0-23 range
-        if any(hour < 0 or hour >= 24 for hour in cycle_hours):
+        if any(not (0 <= hour <= 23) for hour in cycle_hours):
             raise ValueError(f"ARCH_CYC values must be between 0-23, got: {cycle_hours}")
 
         return cycle_hours
@@ -797,9 +797,7 @@ class Archive(Task):
             - ARCH_FCSTICFREQ (int): Frequency in days for archiving forecast ICs
             - current_cycle (datetime): The current cycle datetime
             - SDATE (datetime): Reference start date
-            - assim_freq (int or str convertible to int): Assimilation frequency in hours;
-              string values will be converted to integers internally.
-
+            - assim_freq (int): Assimilation frequency in hours.
         Returns
         -------
         bool

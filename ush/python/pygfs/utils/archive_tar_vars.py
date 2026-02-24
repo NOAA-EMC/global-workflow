@@ -416,35 +416,35 @@ class ArchiveTarVars:
         sdate = config_dict.get('SDATE')
         arch_warmicfreq = config_dict.get('ARCH_WARMICFREQ', 1)
         arch_cyc_raw = config_dict.get('ARCH_CYC', 0)
-        # Normalize ARCH_CYC to a list of valid cycle hours (0-23), handling bad formats gracefully
-        arch_cyc_list = []
+        # Normalize ARCH_CYC to a list of valid cycle hours (0-23), with strict validation.
+        # This behavior is intended to match the archive.py normalization: invalid
+        # configurations raise ValueError rather than being silently corrected.
         if isinstance(arch_cyc_raw, int):
-            arch_cyc_list = [arch_cyc_raw]
-        elif isinstance(arch_cyc_raw, str):
-            for val in arch_cyc_raw.strip().split():
-                try:
-                    hour = int(val)
-                except ValueError:
-                    logger.warning("Invalid ARCH_CYC entry '%s' in string '%s'; skipping", val, arch_cyc_raw)
-                    continue
-                if 0 <= hour <= 23:
-                    arch_cyc_list.append(hour)
-                else:
-                    logger.warning("ARCH_CYC hour out of range (0-23): %s; skipping", hour)
+            if 0 <= arch_cyc_raw <= 23:
+                arch_cyc_list = [arch_cyc_raw]
+            else:
+                raise ValueError(
+                    f"ARCH_CYC hour out of range (0-23): {arch_cyc_raw!r}"
+                )
         elif isinstance(arch_cyc_raw, (list, tuple)):
+            arch_cyc_list = []
             for val in arch_cyc_raw:
                 try:
                     hour = int(val)
-                except ValueError:
-                    logger.warning("Invalid ARCH_CYC list/tuple entry '%s'; skipping", val)
-                    continue
+                except (TypeError, ValueError):
+                    raise ValueError(
+                        f"Invalid ARCH_CYC entry {val!r}; must be integer hours in range 0-23"
+                    ) from None
                 if 0 <= hour <= 23:
                     arch_cyc_list.append(hour)
                 else:
-                    logger.warning("ARCH_CYC hour out of range (0-23): %s; skipping", hour)
-        # Fallback to default 0 if nothing valid was parsed
-        if not arch_cyc_list:
-            arch_cyc_list = [0]
+                    raise ValueError(
+                        f"ARCH_CYC hour out of range (0-23): {hour!r}"
+                    )
+        else:
+            raise ValueError(
+                f"ARCH_CYC must be an int or a sequence of ints in range 0-23, got {type(arch_cyc_raw).__name__}"
+            )
         assim_freq = config_dict.get('assim_freq', 6)
 
         # Archive timing booleans - increments (group a)
