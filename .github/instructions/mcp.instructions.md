@@ -3,6 +3,7 @@ applyWhen: hasActiveMCPServer("eib-mcp-rag-full")
 excludeAgent: "code-review"
 ---
 
+_Note:_ The YAML front matter in this file uses the GitHub Copilot instructions schema; `excludeAgent: "code-review"` ensures these instructions are not applied to the Copilot Code Review agent. See the official schema documentation at https://aka.ms/github-copilot-instructions-schema.
 # EIB MCP/RAG Server — Tool Guide for Global Workflow (v7.21.0)
 
 This file loads **only** when the EIB MCP-RAG server is connected. It provides tool selection guidance for AI agents working on global-workflow with MCP + RAG capabilities (48 tools across 9 modules backed by Neo4j graph DB and ChromaDB vector store).
