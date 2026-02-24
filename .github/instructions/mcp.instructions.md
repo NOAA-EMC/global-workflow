@@ -3,15 +3,15 @@ applyWhen: hasActiveMCPServer("eib-mcp-rag-full")
 excludeAgent: "code-review"
 ---
 
-# EIB MCP/RAG Server — Tool Guide for Global Workflow (v7.20.0)
+# EIB MCP/RAG Server — Tool Guide for Global Workflow (v7.21.0)
 
-This file loads **only** when the EIB MCP-RAG server is connected. It provides tool selection guidance for AI agents working on global-workflow with MCP + RAG capabilities (44 tools across 9 modules backed by Neo4j graph DB and ChromaDB vector store).
+This file loads **only** when the EIB MCP-RAG server is connected. It provides tool selection guidance for AI agents working on global-workflow with MCP + RAG capabilities (48 tools across 9 modules backed by Neo4j graph DB and ChromaDB vector store).
 
 ## MCP-First Policy
 
 **Prefer MCP tools over shell commands** for code analysis, documentation search, and compliance checking. Use `read_file`/`grep_search` only for exact line-level reads or literal string searches.
 
-## Tool Modules (44 tools / 9 modules)
+## Tool Modules (48 tools / 9 modules)
 
 ### 1. Workflow Info (3 tools — Filesystem only)
 | Tool | Use For |
@@ -59,7 +59,7 @@ This file loads **only** when the EIB MCP-RAG server is connected. It provides t
 | `list_job_scripts` | Categorized job script inventory |
 | `get_job_details` | Detailed job script analysis |
 
-### 6. GraphRAG (5 tools — ChromaDB + Neo4j)
+### 6. GraphRAG + Session State (9 tools — ChromaDB + Neo4j)
 | Tool | Required Param | Use For |
 |------|----------------|--------|
 | `get_code_context` | `symbol` | GGSR neighborhood + community summary |
@@ -67,6 +67,10 @@ This file loads **only** when the EIB MCP-RAG server is connected. It provides t
 | `find_similar_code` | `code_or_symbol` | Vector similarity + graph enrichment |
 | `get_change_impact` | `symbol` | Blast radius with risk scoring |
 | `trace_data_flow` | `from_symbol` | Data flow across codebase |
+| `mark_as_modified` | `file_path` | Track file modifications in active session |
+| `get_session_context` | *(none)* | Aggregated view of session work |
+| `checkpoint_state` | `name` | Snapshot session state for recovery |
+| `restore_checkpoint` | `checkpoint_id` | Roll back to a named checkpoint |
 
 ### 7. GitHub Integration (4 tools — GitHub API)
 | Tool | Use For |
