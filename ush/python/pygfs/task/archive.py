@@ -882,7 +882,7 @@ class Archive(Task):
 
         # Adjust cycle hours for GDAS runs
         # GDAS and EnKFGDAS ICs lag forecast increments by assim_freq hours
-        is_gdas_run = RUN.startswith("gdas") or RUN.startswith("enkfgdas")
+        is_gdas_run = RUN in ("gdas", "enkfgdas")
         adjusted_cycle_hours = []
         for cyc_hour in cycle_hours:
             if is_gdas_run:
