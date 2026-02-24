@@ -854,7 +854,8 @@ class Archive(Task):
             - ARCH_WARMICFREQ (int): Frequency in days for archiving warm ICs
             - current_cycle (datetime): The current cycle datetime
             - SDATE (datetime): Reference start date
-            - assim_freq (int or str): Assimilation frequency in hours
+            - assim_freq (int or str): Assimilation frequency in hours. If provided
+              as a string, it is converted to an integer internally.
             - RUN (str): Run type identifier (e.g., "gdas", "gfs")
 
         Returns
