@@ -5,13 +5,13 @@ excludeAgent: "code-review"
 
 # EIB MCP/RAG Server — Tool Guide for Global Workflow (v7.20.0)
 
-This file loads **only** when the EIB MCP-RAG server is connected. It provides tool selection guidance for AI agents working on global-workflow with MCP + RAG capabilities (42 tools across 9 modules backed by Neo4j graph DB and ChromaDB vector store).
+This file loads **only** when the EIB MCP-RAG server is connected. It provides tool selection guidance for AI agents working on global-workflow with MCP + RAG capabilities (44 tools across 9 modules backed by Neo4j graph DB and ChromaDB vector store).
 
 ## MCP-First Policy
 
 **Prefer MCP tools over shell commands** for code analysis, documentation search, and compliance checking. Use `read_file`/`grep_search` only for exact line-level reads or literal string searches.
 
-## Tool Modules (42 tools / 9 modules)
+## Tool Modules (44 tools / 9 modules)
 
 ### 1. Workflow Info (3 tools — Filesystem only)
 | Tool | Use For |
@@ -60,13 +60,13 @@ This file loads **only** when the EIB MCP-RAG server is connected. It provides t
 | `get_job_details` | Detailed job script analysis |
 
 ### 6. GraphRAG (5 tools — ChromaDB + Neo4j)
-| Tool | Use For |
-|------|---------|
-| `get_code_context` | GGSR neighborhood + community summary |
-| `search_architecture` | Semantic search over community summaries |
-| `find_similar_code` | Vector similarity + graph enrichment |
-| `get_change_impact` | Blast radius with risk scoring |
-| `trace_data_flow` | Data flow across codebase |
+| Tool | Required Param | Use For |
+|------|----------------|--------|
+| `get_code_context` | `symbol` | GGSR neighborhood + community summary |
+| `search_architecture` | `query` | Semantic search over community summaries |
+| `find_similar_code` | `code_or_symbol` | Vector similarity + graph enrichment |
+| `get_change_impact` | `symbol` | Blast radius with risk scoring |
+| `trace_data_flow` | `from_symbol` | Data flow across codebase |
 
 ### 7. GitHub Integration (4 tools — GitHub API)
 | Tool | Use For |
