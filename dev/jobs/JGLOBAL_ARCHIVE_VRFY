@@ -13,6 +13,7 @@ export PYTHONPATH
 if [[ ${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" "${ENSMEM}")
     COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    COMIN_ensstat="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat"
     COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
 else
     COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
@@ -34,7 +35,7 @@ done
 
 # GEFS-specific: Ensemble statistics path
 if [[ "${RUN}" == "gefs" ]]; then
-    declare -rx COMIN_ATMOS_ENSSTAT_1p00="${COMIN}/ensstat/products/atmos/grib2/1p00"
+    declare -rx COMIN_ATMOS_ENSSTAT_1p00="${COMIN_ensstat}/products/atmos/grib2/1p00"
 fi
 
 ###############################################################
