@@ -10,7 +10,7 @@ This includes:
 - Removing unused files where appropriate
 """
 import os
-from wxflow import FileHandler
+from wxflow import FileHandler, Jinja
 
 # Get the absolute path of the directory containing this file
 current_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -42,13 +42,11 @@ gcdas_ex_scripts = {
 }
 
 gcafs_jobs = {
-    "JGCAFS_FORECAST": "JGLOBAL_FORECAST",
     "JGCAFS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
     "JGCAFS_ATMOS_POST_MANAGER": "JGLOBAL_ATMOS_POST_MANAGER",
     "JGCAFS_ATMOS_PRODUCTS": "JGLOBAL_ATMOS_PRODUCTS",
 }
 gcdas_jobs = {
-    "JGCDAS_FORECAST": "JGLOBAL_FORECAST",
     "JGCDAS_PREP_EMISSIONS": "JGLOBAL_PREP_EMISSIONS",
     "JGCDAS_ATMOS_POST_MANAGER": "JGLOBAL_ATMOS_POST_MANAGER",
     "JGCDAS_ATMOS_PRODUCTS": "JGLOBAL_ATMOS_PRODUCTS",
@@ -245,12 +243,6 @@ def setup_gcafs_for_nco():
     # Remove unused executables from the exec directory
     removed_files = remove_unused_executables(global_workflow_dir)
 
-    # Go through the copied job and ex-script files and replace FOOgfs with FOOgcafs
-    all_copied_files = [dest for _, dest in job_file_copy_list + ex_script_file_copy_list]
-    for file_path in all_copied_files:
-        num_replacements = replace_gfs_with_gcafs(file_path)
-        print(f"Modified {file_path}: {num_replacements} replacements made.")
-
     # Go through the copied job files and replace the scripts they call as appropriate
     jobs_dir = os.path.join(global_workflow_dir, 'jobs')
     for job_name in list(gcafs_jobs.keys()) + list(gcdas_jobs.keys()):
@@ -280,6 +272,19 @@ def setup_gcafs_for_nco():
             if modified:
                 with open(job_file_path, 'w') as f:
                     f.write(content)
+
+    # Go through the copied job and ex-script files and replace FOOgfs with FOOgcafs
+    all_copied_files = [dest for _, dest in job_file_copy_list + ex_script_file_copy_list]
+    for file_path in all_copied_files:
+        num_replacements = replace_gfs_with_gcafs(file_path)
+        print(f"Modified {file_path}: {num_replacements} replacements made.")
+
+    # Render the JGLOBAL_FORECAST.j2 template for both GCDAS and GCAFS
+    template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_FORECAST.j2')
+    for RUN in ['gcafs', 'gcdas']:
+        dest_job_path = os.path.join(global_workflow_dir, 'jobs', f"J{RUN.upper()}_FORECAST")
+        Jinja(template_path, {'RUN': RUN}).save(dest_job_path)
+        print(f"Rendered template for {RUN.upper()} and saved to {dest_job_path}")
 
     # Go through the ush directory and replace FOOgfs with FOOgcafs in all scripts
     ush_dir = os.path.join(global_workflow_dir, 'ush')
