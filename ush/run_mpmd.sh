@@ -80,13 +80,13 @@ chunk_mpmd() {
     err=$?
     if [[ ${err} -ne 0 ]]; then
         echo "ERROR: Failed to create chunk file '${chunk_file}' from '${mpmd_file}'"
-        return ${err}
+        return "${err}"
     fi
     sed -i "1,${chunk_size}d" "${mpmd_file}"
     err=$?
     if [[ ${err} -ne 0 ]]; then
         echo "ERROR: Failed to remove lines from '${mpmd_file}' after creating chunk file '${chunk_file}'"
-        return ${err}
+        return "${err}"
     fi
     return 0
 }
@@ -115,7 +115,7 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion,
         cp "${mpmd_cmdfile}" "${tmp_file}"
         for ((i = 0; i < nm; i += chunk_size)); do
             chunk_file="${mpmd_cmdfile}.chunk${i}"
-            chunk_mpmd "${tmp_file}" ${chunk_size} "${chunk_file}"
+            chunk_mpmd "${tmp_file}" "${chunk_size}" "${chunk_file}"
             err=$?
             if [[ ${err} -ne 0 ]]; then
                 echo "FATAL ERROR: Failed to create chunk file '${chunk_file}' from '${tmp_file}'"
@@ -160,7 +160,7 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
         chunk_size=${max_tasks_per_node:-1}
         for ((i = 0; i < nm; i += chunk_size)); do
             chunk_file="${mpmd_cmdfile}.chunk${i}"
-            chunk_mpmd "${tmp_file}" ${chunk_size} "${chunk_file}"
+            chunk_mpmd "${tmp_file}" "${chunk_size}" "${chunk_file}"
             unset_strict
             # shellcheck disable=SC2086
             ${launcher:-} ${mpmd_opt:-} -np ${n_mpmd_tasks} "${chunk_file}"
