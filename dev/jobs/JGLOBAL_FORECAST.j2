@@ -94,7 +94,7 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
 RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
     COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 
-{% else if "gcafs" in RUN or "gcdas" in RUN %}
+{% elif "gcafs" in RUN or "gcdas" in RUN %}
 YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
 YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
