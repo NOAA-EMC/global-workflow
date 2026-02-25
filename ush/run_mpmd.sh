@@ -35,8 +35,24 @@ source "${USHgfs}/preamble.sh"
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD/serial mode"}
 
+# Check if we are running a supported launcher
+if [[ "${launcher:-}" =~ ^srun.* || "${launcher:-}" =~ ^mpiexec.* ]]; then
+    echo "INFO: Detected launcher '${launcher:-}', will attempt to run in MPMD mode if USE_CFP is set to YES"
+    if [[ -z "${max_tasks_per_node:-}" || -z "${ntasks:-}" ]]; then
+        echo "WARNING: max_tasks_per_node and/or ntasks is not set, disabling MPMD mode."
+        USE_CFP=NO
+    else
+        USE_CFP=${USE_CFP:-"NO"}
+        max_tasks_per_node=$((ntasks < max_tasks_per_node ? ntasks : max_tasks_per_node))
+    fi
+else
+    echo "WARNING: Unsupported or empty launcher: '${launcher:-}', using serial mode instead"
+    echo "         Supported launchers are 'srun' and 'mpiexec'"
+    USE_CFP="NO"
+fi
+
 # If USE_CFP is not set or is not YES, run in serial mode
-if [[ "${USE_CFP:-}" != "YES" ]]; then
+if [[ "${USE_CFP}" != "YES" ]]; then
     echo "INFO: Using serial mode for MPMD job"
     chmod 755 "${cmdfile}"
     bash +x "${cmdfile}" > mpmd.out 2>&1
@@ -107,8 +123,8 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion,
     # TODO: consider running the MPMD job across multiple nodes.
 
     if [[ ${nm} -gt ${max_tasks_per_node:-1} ]]; then
-        echo "WARNING: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
-        echo "         Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
+        echo "INFO: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
+        echo "      Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
         chunk_size=${max_tasks_per_node:-1}
         # Create a temporary copy of the mpmd_cmdfile
         tmp_file="${mpmd_cmdfile}.tmp"
@@ -155,8 +171,8 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
 
     # Similar to srun, split the cmdfile into chunks if needed
     if [[ ${nm} -gt ${max_tasks_per_node:-1} ]]; then
-        echo "WARNING: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
-        echo "         Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
+        echo "INFO: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
+        echo "      Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
         chunk_size=${max_tasks_per_node:-1}
         for ((i = 0; i < nm; i += chunk_size)); do
             chunk_file="${mpmd_cmdfile}.chunk${i}"
@@ -178,13 +194,6 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
         err=$?
 
     fi
-
-else # Unsupported or empty launcher, run in serial mode
-
-    echo "WARNING: CFP is not usable with launcher: '${launcher:-}', using serial mode instead"
-    chmod 755 "${cmdfile}"
-    bash +x "${cmdfile}" > mpmd.out 2>&1
-    err=$?
 
 fi
 
