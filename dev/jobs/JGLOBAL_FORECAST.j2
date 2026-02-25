@@ -1,14 +1,13 @@
 #! /usr/bin/env bash
-
-if ((10#${ENSMEM:-0} > 0)); then
-    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
-    export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
-else
-    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
-    export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
-fi
+{% if "enkf" in RUN %}
+export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+export DATA="${DATAjob}/${jobid}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+{% else %}
+export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+export DATA="${DATAjob}/${jobid}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+{% endif %}
 
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
@@ -66,45 +65,43 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
 {% endif %}
 
-if [[ "${DO_WAVE}" == "YES" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-        COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
-        COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
-    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-        COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
-fi
+{% if "gfs" in RUN or "gdas" in RUN %}
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
+    COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
 
-if [[ "${DO_OCN}" == "YES" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-        COMIN_OCEAN_INPUT:COM_OCEAN_INPUT_TMPL \
-        COMOUT_MED_RESTART:COM_MED_RESTART_TMPL \
-        COMOUT_OCEAN_RESTART:COM_OCEAN_RESTART_TMPL \
-        COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
-    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-        COMIN_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
-        COMIN_MED_RESTART_PREV:COM_MED_RESTART_TMPL
-fi
+RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+    COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
 
-if [[ "${DO_ICE}" == "YES" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
-        COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
-        COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
-        COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
-    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-        COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
-fi
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
+    COMIN_OCEAN_INPUT:COM_OCEAN_INPUT_TMPL \
+    COMOUT_MED_RESTART:COM_MED_RESTART_TMPL \
+    COMOUT_OCEAN_RESTART:COM_OCEAN_RESTART_TMPL \
+    COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
 
-if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
-    YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
-        COMIN_TRACER_RESTART:COM_ATMOS_RESTART_TMPL
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMIN_CHEM_INPUT:COM_CHEM_INPUT_TMPL
-fi
+RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+    COMIN_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
+    COMIN_MED_RESTART_PREV:COM_MED_RESTART_TMPL
+
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
+    COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
+    COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
+    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
+
+RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+    COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+
+{% else if "gcafs" in RUN or "gcdas" in RUN %}
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
+YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
+    COMIN_TRACER_RESTART:COM_ATMOS_RESTART_TMPL
+YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_CHEM_INPUT:COM_CHEM_INPUT_TMPL
+{% endif %}
 
 ###############################################################
 # Run relevant exglobal script
