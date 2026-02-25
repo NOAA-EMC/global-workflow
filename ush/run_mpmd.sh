@@ -76,7 +76,7 @@ chunk_mpmd() {
         echo "ERROR: MPMD command file '${mpmd_file}' is empty or does not exist."
         return 1
     fi
-    head -n ${chunk_sz} "${mpmd_file}" > "${chunk_file}" && true
+    head -n "${chunk_sz}" "${mpmd_file}" > "${chunk_file}" && true
     err=$?
     if [[ ${err} -ne 0 ]]; then
         echo "ERROR: Failed to create chunk file '${chunk_file}' from '${mpmd_file}'"
