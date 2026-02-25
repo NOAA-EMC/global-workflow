@@ -63,7 +63,7 @@ INFO: On failure, logs for each job will be available in ${DATA}/mpmd.proc_num.o
 INFO: The proc_num corresponds to the line in '${mpmd_cmdfile}'
 EOF
 
-chunk_mpmd () {
+chunk_mpmd() {
     # Usage chunk_mpmd mpmd_cmdfile chunk_size chunk_file
     # This takes a chunk of the full mpmd command file and creates a new chunk
     # file with the specified number of lines, while removing those lines from the
