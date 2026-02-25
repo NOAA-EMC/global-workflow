@@ -171,10 +171,13 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
             fi
             set_strict
         done
+    else
 
-    # shellcheck disable=SC2086
-    ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
-    err=$?
+        # shellcheck disable=SC2086
+        ${launcher:-} -np ${nprocs} ${mpmd_opt:-} "${mpmd_cmdfile}"
+        err=$?
+
+    fi
 
 else # Unsupported or empty launcher, run in serial mode
 
