@@ -137,9 +137,10 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion,
                 echo "FATAL ERROR: Failed to create chunk file '${chunk_file}' from '${tmp_file}'"
                 break
             fi
+            n_mpmd_tasks=$(wc -l < "${chunk_file}")
             unset_strict
             # shellcheck disable=SC2086
-            ${launcher:-} ${mpmd_opt:-} -n ${n_mpmd_tasks} "${chunk_file}"
+            ${launcher:-} ${mpmd_opt:-} -n "${n_mpmd_tasks}" "${chunk_file}"
             err=$?
             if [[ ${err} -ne 0 ]]; then
                 echo "ERROR: MPMD job failed for ${chunk_file}"
@@ -177,9 +178,10 @@ elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec
         for ((i = 0; i < nm; i += chunk_size)); do
             chunk_file="${mpmd_cmdfile}.chunk${i}"
             chunk_mpmd "${tmp_file}" "${chunk_size}" "${chunk_file}"
+            n_mpmd_tasks=$(wc -l < "${chunk_file}")
             unset_strict
             # shellcheck disable=SC2086
-            ${launcher:-} ${mpmd_opt:-} -np ${n_mpmd_tasks} "${chunk_file}"
+            ${launcher:-} ${mpmd_opt:-} -np "${n_mpmd_tasks}" "${chunk_file}"
             err=$?
             if [[ ${err} -ne 0 ]]; then
                 echo "ERROR: MPMD job failed for ${chunk_file}"
