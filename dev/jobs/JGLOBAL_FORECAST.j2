@@ -115,7 +115,7 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
-{% if "enkf" in RUN%}
+{% if "enkf" in RUN %}
 # Send DBN alerts for EnKF
 # TODO: Should these be in post manager instead?
 if [[ "${SENDDBN:-}" == YES ]]; then
@@ -149,7 +149,7 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
 
     # Determine if this is the last segment
     commas="${FCST_SEGMENTS//[^,]/}"
-    n_segs=${#commas}
+    {% raw %}n_segs=${#commas}{% endraw %}
     if ((n_segs - 1 == ${FCST_SEGMENT:-0})); then
         # Only delete temporary restarts if it is the last segment
         rm -rf "${DATArestart}"
