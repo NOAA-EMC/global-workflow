@@ -6,7 +6,7 @@ source "${USHgfs}/wave_domain_grid.sh"
 # Set COM Paths
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
-    memdir=$(printf "mem%03i" $((10#${ENSMEM}")))
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
     declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
 else
