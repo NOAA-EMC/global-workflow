@@ -1,7 +1,8 @@
 # shellcheck shell=bash
 # Ignore shellcheck warnings about variables not being expanded; this is what we want
 # shellcheck disable=SC2016
-echo "BEGIN: config.com"
+echo "FATAL ERROR: This file is not to be executed/sourced. It is only for reference."
+exit 99
 
 # These are just templates. All templates must use single quotations so variable
 #   expansion does not occur when this file is sourced. Substitution happens later
