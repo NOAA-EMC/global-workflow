@@ -1,0 +1,13 @@
+atmosphere_fv3_increments:
+    mkdir:
+        - "{{ COMOUT_ATMOS_ANALYSIS }}"
+    link_req:
+        {% if member == 0 %}
+            {% set FTYPES = ["increment.atm.i000.nc", "increment.atm.i003.nc", "increment.atm.i006.nc"] %}
+        {% else %}
+            {% set FTYPES = ["recentered_increment.atm.i000.nc", "recentered_increment.atm.i003.nc", "recentered_increment.atm.i006.nc"] %}
+        {% endif %}
+        {% for ftype in FTYPES %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH}}z.{{ ftype }}",
+           "{{ COMOUT_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}"]
+        {% endfor %}

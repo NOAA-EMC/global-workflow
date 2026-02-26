@@ -1,0 +1,24 @@
+experiment:
+  net: sfs
+  mode: forecast-only
+  idate: 2025070100
+  edate: 2025070100
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 192
+  resensatmos: 192
+  resdetocean: 0.25
+  start: 'cold'
+  nens: 3
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'TOPICDIR' | getenv }}/GFS/C192mx025
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full_C192mx025_GFSV17_ICS.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 50
+    verbosity: 2

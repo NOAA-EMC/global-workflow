@@ -215,23 +215,23 @@ case ${step} in
     ;;
 
   "atmos_post")
-    export walltime="06:00:00"
-    export ntasks=1
+    export walltime="00:30:00"
+    export ntasks=48
     export threads_per_task=1
     export tasks_per_node="${ntasks}"
-    export memory="96GB"
+    export memory="120GB"
     ;;
 
   "ocn_post")
-    export walltime="06:00:00"
-    export ntasks=1
+    export walltime="00:30:00"
+    export ntasks=13
     export threads_per_task=1
     export tasks_per_node="${ntasks}"
-    export memory="96GB"
+    export memory="120GB"
     ;;
 
   "ice_post")
-    export walltime="06:00:00"
+    export walltime="00:30:00"
     export ntasks=1
     export threads_per_task=1
     export tasks_per_node="${ntasks}"

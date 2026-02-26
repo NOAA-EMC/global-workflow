@@ -19,7 +19,7 @@ if [[ ${RUN} == "gefs" ]] ; then
     echo "ERROR: Invalid GEFSTYPE=${GEFSTYPE} for config.stage_ic"
   fi
 else
-  export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
+  export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_${RUN}.yaml.j2"
 fi
 
 source "${HOMEgfs}/versions/ic.ver"

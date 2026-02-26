@@ -108,7 +108,7 @@ common_predet() {
     forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
     # Define model start date for current_cycle and next_cycle as the time the forecast will start
-    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+    if [[ "${DOIAU:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
         model_start_date_current_cycle="${current_cycle_begin}"
         model_start_date_next_cycle="${next_cycle_begin}"
     else
@@ -695,10 +695,8 @@ MOM6_predet() {
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
 
-    # check if ocean_geometry.nc in DATAoutput/MOM6_OUTPUT exists and its size, if size is zero, then delete it manually
-    if [[ -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc" && ! -s "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc" ]]; then
-        rm -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc"
-    fi
+    # rm ocean_geometry.nc as model fails if zero length exist
+    rm -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc"
 
     # Link the output and restart directories to the DATA directory
     ${NLN} "${DATAoutput}/MOM6_OUTPUT" "${DATA}/MOM6_OUTPUT"

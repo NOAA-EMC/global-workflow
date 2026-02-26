@@ -259,6 +259,8 @@ export restart_interval_enkfgfs=12
 
 export QUILTING=".true."
 export OUTPUT_GRID="global_latlon" # gaussian_grid,global_latlon
+export LONB_IMO=720 # one degree output
+export LATB_JMO=361 #  1/2 degree output is 720 by 361
 export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
 export WRITE_NSFLIP=".false." #True, False
 
@@ -290,6 +292,7 @@ else
 fi
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
+export DOIAU_COLDSTART="{{ DOIAU_COLDSTART }}" #SFS from GFS ICs cold starts with IAU
 
 # Check if cycle is warm starting with IAU
 if [[ "${EXP_WARM_START}" = ".true." ]]; then

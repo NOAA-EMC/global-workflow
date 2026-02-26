@@ -118,7 +118,7 @@ FV3_postdet() {
 
     #============================================================================
     # Determine increment files when doing cold start
-    if [[ "${warm_start}" == ".false." ]]; then
+    if [[ "${warm_start}" == ".false." ]] && [[ "${DOIAU_COLDSTART:-NO}" == "NO" ]]; then
 
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
             if ((MEMBER == 0)); then
@@ -137,7 +137,7 @@ FV3_postdet() {
         fi
 
     # Determine IAU and increment files when doing warm start
-    elif [[ "${warm_start}" == ".true." ]]; then
+    elif [[ "${warm_start}" == ".true." ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
 
         #--------------------------------------------------------------------------
         if [[ "${RERUN}" == "YES" ]]; then
@@ -157,6 +157,8 @@ FV3_postdet() {
             # Need a coupler.res that is consistent with the model start time
             if [[ "${DOIAU:-NO}" == "YES" ]]; then
                 local model_start_time="${previous_cycle}"
+            elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+                local model_start_time="${model_start_date_current_cycle}"
             else
                 local model_start_time="${current_cycle}"
             fi
@@ -170,7 +172,14 @@ EOF
 
             # Create a array of increment files
             local inc_files inc_file iaufhrs iaufhr
-            if [[ "${DOIAU}" == "YES" ]]; then
+            if [[ "${DOIAU}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+                if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+                    IAUFHRS=0,3,6
+                else
+                    IAUFHRS=3,6,9
+                fi 
+                IAU_DELTHRS=6
+                DO_LAND_IAU=".true."
                 # create an array of inc_files for each IAU hour
                 IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
                 inc_files=()
@@ -218,7 +227,7 @@ EOF
                 fi
             fi
 
-            if [[ "${RUN}" == "enkfgfs" ]] || [[ "${RUN}" == "enkfgdas" ]]; then
+            if [[ "${RUN}" == "enkfgfs" || "${RUN}" == "enkfgdas" ]] || [[ "${DOIAU_COLDSTART}" == "YES" && ${MEMBER} -gt 0 ]]; then
                 prefix_atminc="recentered_"
             else
                 prefix_atminc=""
@@ -600,9 +609,12 @@ MOM6_postdet() {
         *) ;;
     esac
 
+    if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+        ODA_INCUPD=T
+    fi
     # Copy increment (only when RERUN=NO)
     if [[ "${RERUN}" == "NO" ]]; then
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
             cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.mom6_increment.i006.nc" "${DATA}/INPUT/mom6_increment.nc"
         fi
     fi # if [[ "${RERUN}" == "NO" ]]; then
@@ -736,6 +748,9 @@ CICE_postdet() {
     else # "${RERUN}" == "NO"
         restart_date="${model_start_date_current_cycle}"
         cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+            cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
+        fi
         if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
             if [[ "${MEMBER}" -eq 0 ]]; then
                 # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON

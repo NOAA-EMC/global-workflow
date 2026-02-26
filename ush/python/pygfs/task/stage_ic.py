@@ -45,7 +45,8 @@ class Stage(Task):
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'ATMINC_GRID',
             'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL', 'MOM6_INTERP_ICS',
-            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DO_GSISOILDA', 'DO_LAND_IAU'
+            'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DOIAU_COLDSTART',
+            'DO_GSISOILDA', 'DO_LAND_IAU'
         ]
 
         if self.task_config.get('NET') == 'gfs':
@@ -79,6 +80,8 @@ class Stage(Task):
             if self.task_config.get("DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
                 config_vars['START_ICE_FROM_ANA'] = True
             if self.task_config.get("DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
+                config_vars['START_ICE_FROM_ANA'] = True
+            if self.task_config.get("DOIAU_COLDSTART", False):
                 config_vars['START_ICE_FROM_ANA'] = True
 
         return config_vars

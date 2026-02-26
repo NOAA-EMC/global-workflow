@@ -11,8 +11,17 @@ FV3_model_configure() {
     # The ones already defined are left commented as a reminder
 
     local model_start_date
+            if [[ "${DOIAU:-NO}" == "YES" ]]; then
+                local model_start_time="${previous_cycle}"
+            elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+                local model_start_time="${model_start_date_current_cycle}" 
+            else
+                local model_start_time="${current_cycle}"
+            fi
     if [[ "${DOIAU}" == "YES" ]]; then
         model_start_date="${previous_cycle}"
+    elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+        model_start_date="${model_start_date_current_cycle}"
     else
         model_start_date="${current_cycle}"
     fi
@@ -54,7 +63,11 @@ FV3_model_configure() {
     local IMO=${LONB_IMO}
     local JMO=${LATB_JMO}
     local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
-    local IAU_OFFSET=${IAU_OFFSET:-0}
+    if [[ ${DOIAU_COLDSTART:-"NO"} == "NO" ]]; then
+        local IAU_OFFSET=${IAU_OFFSET:-0}
+    else
+        local IAU_OFFSET=3
+    fi
     local USE_FV3_ROUTEHANDLES=.false.
 
     #set FV3 output directory:

@@ -15,7 +15,9 @@ fi
 # cleanup is only executed after the entire cycle is successfully completed.
 # Removing DATAROOT should be possible if that is the case.
 
-rm -rf "${DATAROOT}"
-echo "Cleanup ${DATAROOT} completed!"
+if [[ ${CLEANUP_FCST:-YES} == "YES" ]]; then
+    rm -rf "${DATAROOT}"
+    echo "Cleanup ${DATAROOT} completed!"
+fi
 
 exit 0
