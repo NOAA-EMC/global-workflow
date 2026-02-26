@@ -1,6 +1,5 @@
-# shellcheck shell=bash
+# shellcheck disable=all
 # Ignore shellcheck warnings about variables not being expanded; this is what we want
-# shellcheck disable=SC2016
 echo "FATAL ERROR: This file is not to be executed/sourced. It is only for reference."
 exit 99
 
