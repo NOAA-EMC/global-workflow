@@ -18,7 +18,7 @@ export PYTHONPATH
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros
-    memdir=$(printf "mem%03i" "${ENSMEM}")
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
 else
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"

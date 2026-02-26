@@ -42,7 +42,7 @@ declare -rx gcyc="${GDATE:8:2}"
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros
-    memdir=$(printf "mem%03i" "${ENSMEM}")
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
     declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
