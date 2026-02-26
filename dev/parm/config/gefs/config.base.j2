@@ -106,6 +106,9 @@ export envir=${envir:-"prod"}
 export NET="gefs"  # NET is defined in the job-card (ecf)
 export RUN="gefs"  # RUN is defined in the job-card (ecf)
 
+# Get all the COM path templates
+source "${EXPDIR}/config.com"
+
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 
