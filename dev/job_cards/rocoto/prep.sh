@@ -149,9 +149,9 @@ export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
 export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 
 if [[ ${DOENKFONLY_ATM:-"NO"} == "YES" ]]; then
-    MEMDIR="ensstat" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_ENS_STAT_PREV:COM_ATMOS_HISTORY_TMPL
-    MEMDIR="mem001" RUN="enkf${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_ENS_MEM001_PREV:COM_ATMOS_HISTORY_TMPL
-    RUN="gdas" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx COMOUT_ATMOS_HISTORY_DET_PREV:COM_ATMOS_HISTORY_TMPL
+    declare -rx COMIN_ATMOS_HISTORY_ENS_STAT_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
+    declare -rx COMIN_ATMOS_HISTORY_ENS_MEM001_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/mem001/model/atmos/history"
+    declare -rx COMOUT_ATMOS_HISTORY_DET_PREV="${ROTDIR}/gdas.${gPDY}/${gcyc}/model/atmos/history"
     mkdir -p "${COMOUT_ATMOS_HISTORY_DET_PREV}"
     ln -sf "${COMIN_ATMOS_HISTORY_ENS_MEM001_PREV}/enkfgdas.t${gcyc}z.log.f003.txt" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.log.f003.txt"
     ln -sf "${COMIN_ATMOS_HISTORY_ENS_MEM001_PREV}/enkfgdas.t${gcyc}z.log.f006.txt" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.log.f006.txt"
