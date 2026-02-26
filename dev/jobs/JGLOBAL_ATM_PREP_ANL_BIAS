@@ -21,7 +21,7 @@ export gdd=${GDATE:6:2}
 export GDUMP="gdas"
 
 # Generate COM variables from templates
-declare -rx COMIN_ATMOS_ANALYSIS_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/ensstat/analysis/atmos"
 
 # Process bias corrections files grabbed from HPSS in task gdas_fetchatmanlbias
 BIASDIR=${DATA}/${GDUMP}.${gPDY}/${gcyc}/atmos
