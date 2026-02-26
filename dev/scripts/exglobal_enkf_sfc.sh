@@ -198,8 +198,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
-                "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/sfc_data_cycle.${cmem}"
+                "${DATA}/sfc_data_cycle.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
@@ -322,7 +321,5 @@ fi
 ################################################################################
 
 ################################################################################
-# Postprocessing
-cd "${pwd}" || exit 1
 
 exit "${err}"
