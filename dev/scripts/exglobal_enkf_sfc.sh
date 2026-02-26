@@ -17,9 +17,6 @@
 #
 ################################################################################
 
-# Directories.
-pwd=$(pwd)
-
 # Base variables
 DONST=${DONST:-"NO"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
