@@ -109,7 +109,7 @@ chunk_mpmd() {
     fi
 
     # Determine which line to start reading from
-    local _start_line=$(( (chunk_num - 1) * chunk_sz + 1 ))
+    local _start_line=$(((chunk_num - 1) * chunk_sz + 1))
     local _end_line=$((chunk_num * chunk_sz))
 
     local _counter=1
@@ -215,7 +215,7 @@ for ((i = 0; i < nm; i += chunk_size)); do
         echo "ERROR: No output files found for MPMD job for chunk file '${chunk_file}'"
         break
     fi
-    (( chunk_num = chunk_num + 1 ))
+    ((chunk_num = chunk_num + 1))
 done
 
 # On success remove the command file and any chunk files.
