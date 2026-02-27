@@ -5,6 +5,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_arch" -c "base globus"
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_CONF:COM_CONF_TMPL
 
