@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+
+source "${HOMEgcafs}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
+
+##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Generate COM variables from templates
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL \
+    COMOUT_CHEM_BMAT:COM_CHEM_BMAT_TMPL \
+    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
+    COMOUT_CONF:COM_CONF_TMPL
+
+mkdir -p "${COMOUT_CHEM_BMAT}"
+mkdir -p "${COMOUT_CONF}"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASAEROBMATPY:-${SCRgcafs}/exgcdas_aero_analysis_generate_bmatrix.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
