@@ -15,8 +15,8 @@ COMINnam: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/nam'
 COMINukmet: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: pbspro
-QUEUE: develop
-QUEUE_SERVICE: main
+QUEUE: main
+QUEUE_SERVICE: develop
 # HPSS properties
 HPSS_PROJECT: emc-global
 ARCHCOM_TO: 'hpss'
