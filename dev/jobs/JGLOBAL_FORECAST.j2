@@ -106,6 +106,7 @@ YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
+# shellcheck disable=SC2288
 "${FORECASTSH:-${SCRgfs}/ex{{ RUN | lower }}_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
