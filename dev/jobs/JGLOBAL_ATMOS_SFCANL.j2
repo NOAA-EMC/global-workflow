@@ -10,11 +10,11 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 export GDATE
 
-{% if RUN == "gcdas" %}
+#{% if RUN == "gcdas" %}
 BKG_RUN="gcdas"
-{% else %}
+#{% else %}
 BKG_RUN="gdas"
-{% endif %}
+#{% endif %}
 
 RUN=${BKG_RUN} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
     COMIN_OBS_PREV:COM_OBS_TMPL \
