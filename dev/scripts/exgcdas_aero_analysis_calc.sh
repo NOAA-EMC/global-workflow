@@ -1,0 +1,197 @@
+#! /usr/bin/env bash
+
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_atmos_analysis_calc.sh
+# Script description:  Runs non-diagnostic file tasks after GSI analysis is performed
+#
+# Author: Cory Martin      Org: NCEP/EMC     Date: 2020-03-03
+#
+# Abstract: This script wraps up analysis-related tasks after GSI exits successfully
+#
+# $Id$
+#
+# Attributes:
+#   Language: POSIX shell
+#
+################################################################################
+
+#  Set environment.
+
+#  Directories.
+pwd=$(pwd)
+
+# Base variables
+rCDUMP=${rCDUMP:-"gdas"}
+GDUMP=${GDUMP:-"gdas"}
+
+# Utilities
+export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
+export NCLEN=${NCLEN:-"${USHgcafs}/getncdimlen"}
+COMPRESS=${COMPRESS:-gzip}
+UNCOMPRESS=${UNCOMPRESS:-gunzip}
+
+# Diagnostic files options
+netcdf_diag=${netcdf_diag:-".true."}
+binary_diag=${binary_diag:-".false."}
+
+# IAU
+DOIAU=${DOIAU:-"NO"}
+export IAUFHRS=${IAUFHRS:-"6,"}
+
+# Dependent Scripts and Executables
+export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
+export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
+export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
+export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
+
+export CALCANLEXEC=${CALCANLEXEC:-"${EXECgcafs}/calc_analysis.x"}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-"${EXECgcafs}/enkf_chgres_recenter_nc.x"}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-"${EXECgcafs}/interp_inc.x"}
+export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
+CALCINCPY=${CALCINCPY:-"${USHgcafs}/calcinc_gfs.py"}
+if [[ "${RUN}" == "gcdas" ]]; then
+    CALCANLPY=${CALCANLPY:-"${USHgcafs}/calcanl_gcafs.py"}
+else
+    CALCANLPY=${CALCANLPY:-"${USHgcafs}/calcanl_gfs.py"}
+fi
+DOGAUSFCANL=${DOGAUSFCANL-"NO"}
+GAUSFCANLSH=${GAUSFCANLSH:-"${USHgcafs}/gaussian_sfcanl.sh"}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-"${EXECgcafs}/gaussian_sfcanl.x"}
+NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
+APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
+
+# Guess files
+GPREFIX=${GPREFIX:-""}
+
+ATMG03=${ATMG03:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f003.nc"}
+ATMG04=${ATMG04:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f004.nc"}
+ATMG05=${ATMG05:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f005.nc"}
+ATMGES=${ATMGES:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f006.nc"}
+ATMG07=${ATMG07:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f007.nc"}
+ATMG08=${ATMG08:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f008.nc"}
+ATMG09=${ATMG09:-"${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f009.nc"}
+
+# Analysis files
+export APREFIX=${APREFIX:-""}
+SFCANL=${SFCANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"}
+ATMANL=${ATMANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"}
+
+# Increment files
+ATMINC=${ATMINC:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"}
+DTFANL=${DTFANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"}
+if [[ "${RUN}" == "gcdas" ]]; then
+    AEROINC=${AEROINC:-"${COMIN_CHEM_ANALYSIS}/${APREFIX}aeroinc.nc"}
+fi
+
+# Set script / GSI control parameters
+DOHYBVAR=${DOHYBVAR:-"NO"}
+lrun_subdirs=${lrun_subdirs:-".true."}
+if [[ "${DOHYBVAR}" == "YES" ]]; then
+    l_hyb_ens=.true.
+    export l4densvar=${l4densvar:-".false."}
+    export lwrite4danl=${lwrite4danl:-".false."}
+else
+    export l_hyb_ens=.false.
+    export l4densvar=.false.
+    export lwrite4danl=.false.
+fi
+
+# Set 4D-EnVar specific variables
+if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+    ATMA03=${ATMA03:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a003.nc"}
+    ATMI03=${ATMI03:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i003.nc"}
+    ATMA04=${ATMA04:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a004.nc"}
+    ATMI04=${ATMI04:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i004.nc"}
+    ATMA05=${ATMA05:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a005.nc"}
+    ATMI05=${ATMI05:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i005.nc"}
+    ATMA07=${ATMA07:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a007.nc"}
+    ATMI07=${ATMI07:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i007.nc"}
+    ATMA08=${ATMA08:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a008.nc"}
+    ATMI08=${ATMI08:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i008.nc"}
+    ATMA09=${ATMA09:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a009.nc"}
+    ATMI09=${ATMI09:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc"}
+fi
+
+################################################################################
+# Clean the run-directory
+rm -rf dir.*
+
+##############################################################
+# If analysis increment is written by GSI, produce an analysis file here
+if [[ "${DO_CALC_ANALYSIS}" == "YES" ]]; then
+    # link analysis and increment files
+    ${NLN} "${ATMANL}" siganl
+    ${NLN} "${ATMINC}" siginc.nc
+
+    if [[ "${RUN}" == "gcdas" ]]; then
+        ${NLN} "${AEROINC}" aeroinc.nc
+    fi
+
+    if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+        ${NLN} "${ATMA03}" siga03
+        ${NLN} "${ATMI03}" sigi03.nc
+        ${NLN} "${ATMA04}" siga04
+        ${NLN} "${ATMI04}" sigi04.nc
+        ${NLN} "${ATMA05}" siga05
+        ${NLN} "${ATMI05}" sigi05.nc
+        ${NLN} "${ATMA07}" siga07
+        ${NLN} "${ATMI07}" sigi07.nc
+        ${NLN} "${ATMA08}" siga08
+        ${NLN} "${ATMI08}" sigi08.nc
+        ${NLN} "${ATMA09}" siga09
+        ${NLN} "${ATMI09}" sigi09.nc
+    fi
+    # link guess files
+    ${NLN} "${ATMG03}" sigf03
+    ${NLN} "${ATMGES}" sigf06
+    ${NLN} "${ATMG09}" sigf09
+
+    if [[ -f "${ATMG04}" ]]; then
+        ${NLN} "${ATMG04}" sigf04
+    fi
+    if [[ -f "${ATMG05}" ]]; then
+        ${NLN} "${ATMG05}" sigf05
+    fi
+    if [[ -f "${ATMG07}" ]]; then
+        ${NLN} "${ATMG07}" sigf07
+    fi
+    if [[ -f "${ATMG08}" ]]; then
+        ${NLN} "${ATMG08}" sigf08
+    fi
+
+    # Link hourly backgrounds (if present)
+    if [[ -f "${ATMG04}" && -f "${ATMG05}" && -f "${ATMG07}" && -f "${ATMG08}" ]]; then
+        export nhr_obsbin=1
+    fi
+
+    ${CALCANLPY}
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "Failed to run ${CALCANLPY}"
+    fi
+else
+    echo "WARNING Neither increment nor analysis are generated by external utils"
+fi
+
+##############################################################
+# Create gaussian grid surface analysis file at middle of window
+if [[ "${DOGAUSFCANL}" == "YES" ]]; then
+    export APRUNSFC="${APRUN_GAUSFCANL}"
+    export OMP_NUM_THREADS_SFC="${NTHREADS_GAUSFCANL}"
+
+    ${GAUSFCANLSH}
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "Gaussian grid surface file was not generated!"
+    fi
+fi
+
+echo "${rCDUMP} ${PDY}${cyc} atmanl and sfcanl done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.done.txt"
+
+################################################################################
+# Postprocessing
+cd "${pwd}" || true
+
+exit 0
