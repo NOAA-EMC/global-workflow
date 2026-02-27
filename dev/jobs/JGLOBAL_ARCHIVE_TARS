@@ -14,6 +14,7 @@ PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Construct COM paths
+# shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
     COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
