@@ -100,5 +100,5 @@ jobs:
             */.git/*
             */*.yml
             */*.yaml
-            */*/*.j2
+            ./dev/jobs/*.j2
           check_all_files_with_shebangs: true
