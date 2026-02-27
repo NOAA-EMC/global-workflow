@@ -284,7 +284,7 @@ def setup_gcafs_for_nco():
         dest_job_path = os.path.join(global_workflow_dir, 'jobs', f"J{RUN.upper()}_FORECAST")
         Jinja(template_path, {'RUN': RUN}).save(dest_job_path)
         print(f"Rendered template for {RUN.upper()} and saved to {dest_job_path}")
-    
+
     # Render the surface analysis template
     surface_template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_ATMOS_SFCANL.j2')
     dest_surface_job_path = os.path.join(global_workflow_dir, 'jobs', "JGCDAS_SURFACE_INITIALIZE")
