@@ -14,7 +14,7 @@ PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Construct COM paths
-if [[ ${ENSMEM:--1} -ge 0 ]]; then
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
     COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
