@@ -72,23 +72,11 @@ fi
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
 export OMP_NUM_THREADS=1
 
-# Determine the number of MPMD processes from incoming ${cmdfile}
-nprocs=$(wc -l < "${cmdfile}")
-
-# Create a local copy of the mpmd commands
+# Establish the MPMD chunk file pattern.
 mpmd_cmdfile="${DATA:-}/mpmd_cmdfile"
-if [[ -s "${mpmd_cmdfile}" ]]; then
-    rm -f "${mpmd_cmdfile}"
-fi
+rm -f "${mpmd_cmdfile}"*
 
-# Write all commands to a temporary mpmd_cmdfile. The chunking function will modify this file as needed.
-# Also count the number of commands to determine how many chunks to run in.
-nm=0
-while IFS= read -r line; do
-    echo "${line}" >> "${mpmd_cmdfile}"
-    ((nm = nm + 1))
-done < "${cmdfile}"
-
+# Functions to support MPMD execution
 chunk_mpmd() {
     # Usage chunk_mpmd cmdfile chunk_size chunk_num chunk_file
     # This takes a chunk of the full mpmd command file and creates a new chunk
@@ -162,22 +150,23 @@ cat_outputs() {
 cat << EOF
 INFO: Executing MPMD job, STDOUT and STDERR redirected for each process separately
 INFO: On failure, logs for each job will be available in ${DATA}/mpmd.proc_num.out
-INFO: The proc_num corresponds to the line in '${mpmd_cmdfile}'
+INFO: The proc_num corresponds to the line in '${cmdfile}'
 EOF
 
-# Get the number of commands
+# Determine the number of MPMD processes from incoming ${cmdfile}
 nm=$(wc -l < "${cmdfile}")
 
-# For now, keep all MPMD tasks on one node.
 # Test if the number of lines in the cmdfile is greater than the number of tasks per node ($max_tasks_per_node).
-# If needed, split the mpmd_cmdfile and run it in chunks.
-# TODO: consider running the MPMD job across multiple nodes.
 
 if [[ ${nm} -gt ${max_tasks_per_node:-1} ]]; then
+    # If needed, split the cmdfile and run it in chunks.
+    # For now, keep all MPMD tasks on one node.
+    # TODO: consider running the MPMD job across multiple nodes.
     echo "INFO: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
     echo "      Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
     chunk_size=${max_tasks_per_node:-1}
 else
+    # Otherwise, we can run all MPMD tasks in one chunk.
     chunk_size=${nm}
 fi
 
@@ -189,10 +178,10 @@ chunk_num=1
 err=0
 for ((i = 0; i < nm; i += chunk_size)); do
     chunk_file="${mpmd_cmdfile}.chunk${chunk_num}"
-    chunk_mpmd "${mpmd_cmdfile}" "${chunk_size}" "${chunk_num}" "${chunk_file}"
+    chunk_mpmd "${cmdfile}" "${chunk_size}" "${chunk_num}" "${chunk_file}"
     err=$?
     if [[ ${err} -ne 0 ]]; then
-        echo "ERROR: Failed to create chunk file '${chunk_file}' from '${mpmd_cmdfile}'"
+        echo "ERROR: Failed to create chunk file '${chunk_file}' from '${cmdfile}'"
         break
     fi
     n_mpmd_tasks=$(wc -l < "${chunk_file}")
@@ -220,7 +209,6 @@ done
 
 # On success remove the command file and any chunk files.
 if [[ ${err} -eq 0 ]]; then
-    rm -f "${mpmd_cmdfile}"
     rm -f "${mpmd_cmdfile}.chunk"*
 fi
 
