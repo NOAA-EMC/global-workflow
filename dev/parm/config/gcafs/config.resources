@@ -382,8 +382,8 @@ case ${step} in
         walltime="00:30:00"
         ;;
       "C384")
-        layout_x=6
-        layout_y=6
+        layout_x=9
+        layout_y=8
         walltime="00:20:00"
         ;;
       "C192" | "C96")
@@ -422,10 +422,10 @@ case ${step} in
         tasks_per_node=24
         ;;
       "C384")
-        layout_x=6
-        layout_y=6
-        walltime="00:30:00"
-        tasks_per_node=24
+        layout_x=9
+        layout_y=8
+        walltime="00:50:00"
+        tasks_per_node=48
         ;;
       "C192" | "C96")
         layout_x=4
