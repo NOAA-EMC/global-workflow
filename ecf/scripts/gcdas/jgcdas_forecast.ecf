@@ -71,7 +71,7 @@ export PYTHONPATH
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgcafs}/jobs/JGLOBAL_FORECAST
+${HOMEgcafs}/jobs/JGCDAS_FORECAST
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
