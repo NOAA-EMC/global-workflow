@@ -30,11 +30,11 @@ if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
 else
     declare -rx COMIN_OBSPROC="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
     ## DBH does not know what to put here
-    declare -rx COMINgfs=
+    declare -rx COMINgfs=${ROTDIR}
 fi
 declare -rx COMINgfs_ATMOS_ANALYSIS=${COMINgfs}/atmos/
 
-declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/gdas.${PDY}/${cyc}/analysis/atmos"
+
 
 declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
