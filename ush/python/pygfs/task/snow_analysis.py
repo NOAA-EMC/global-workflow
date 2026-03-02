@@ -97,6 +97,7 @@ class SnowAnalysis(Analysis):
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
                 'snow_bkg_path': os.path.join('.', 'bkg/'),
+                'snow_prepobs_path': os.path.join(self.task_config.DATA, 'prep'),
                 'ims_file': _ims_file,
                 'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
                 'DO_GHCN': _DO_GHCN,  # Boolean to decide if GHCN processing is done
@@ -137,9 +138,6 @@ class SnowAnalysis(Analysis):
         ----------
         None
         """
-
-        # Invoke snow_prepobs_path from jcb-base.yaml.j2
-        self.jedi_dict['snowanlvar'].jcb_config.snow_prepobs_path
 
         # Stage observation files
         logger.info(f"Staging observation files")
