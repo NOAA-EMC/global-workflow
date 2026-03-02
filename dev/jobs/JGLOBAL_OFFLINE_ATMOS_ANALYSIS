@@ -29,7 +29,6 @@ if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     declare -rx COMINgfs=$(compath.py "${envir}/gfs/${gfs_ver}")
 else
     declare -rx COMIN_OBSPROC="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
-    ## DBH does not know what to put here
     declare -rx COMINgfs=${ROTDIR}
 fi
 declare -rx COMINgfs_ATMOS_ANALYSIS=${COMINgfs}/atmos/
