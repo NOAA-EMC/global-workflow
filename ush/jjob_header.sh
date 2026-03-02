@@ -5,10 +5,11 @@
 # Sets up and completes actions common to all j-jobs:
 # - Creates and moves to $DATA after removing any
 #     existing one unless $WIPE_DATA is set to "NO"
-# - Runs `setpdy.sh`
 # - Sources configs provided as arguments
 # - Sources machine environment script
-# - Defines a few other variables
+#
+# Note: setpdy.sh and PDY variables are now handled in
+#   jjob_shell_setup.sh, not here.
 #
 # The job name for the environment files should be passed
 #   in using the `-e` option (required). Any config files
@@ -40,7 +41,9 @@
 #   - $pid          : Override the default process id
 #                     [default: $$]
 
-_calling_script="${BASH_SOURCE[1]}"
+# Set calling script name before sourcing preamble so it logs the J-Job name
+# rather than this header script's name
+_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 source "${HOMEgfs}/ush/preamble.sh"
 
 OPTIND=1

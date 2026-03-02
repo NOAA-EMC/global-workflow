@@ -1,38 +1,28 @@
 #! /usr/bin/env bash
 
 #######
-# Preamble script to be SOURCED at the beginning of every script. Sets
-#   useful PS4 and optionally turns on set -x and set -eu. Also sets up
-#   crude script timing and provides a postamble that runs on exit.
+# Preamble script to be SOURCED at the beginning of every execution script.
+#
+# Captures the calling script name for logging and defines the err_exit
+# function used for fatal error handling across all scripts.
 #
 # Syntax:
-#   preamble.sh
+#   source "${HOMEgfs}/ush/preamble.sh"
 #
-# Input environment variables:
-#   TRACE (YES/NO): Whether to echo every command (set -x) [default: "YES"]
-#   STRICT (YES/NO): Whether to exit immediately on error or undefined variable
-#     (set -eu) [default: "YES"]
-#   POSTAMBLE_CMD (empty/set): A command to run at the end of the job
-#     [default: empty]
-#   _calling_script: The name of the calling script (optional)
+# Sets:
+#   _calling_script: Base name of the script that sourced this file
 #
+# Requires in environment:
+#   (none required; HOMEgfs used indirectly by err_exit callers)
+#
+# Note:
+#   Shell strict mode (set -eu), tracing (set -x), postamble EXIT trap,
+#   and bash utility sourcing are handled in jjob_shell_setup.sh for J-Jobs.
 #######
 set +x
-
-# Record the start time so we can calculate the elapsed time later
-start_time=$(date +%s)
-
 # Get the base name of the calling script
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
-
-# Announce the script has begun
-start_time_human=$(date -d"@${start_time}" -u +%H:%M:%S)
-echo "Begin ${_calling_script} at ${start_time_human}"
-
-
-source "${HOMEgfs}/ush/set_strict.sh"
-
-source "${HOMEgfs}/ush/postamble.sh"
+echo "Sourced-based script: ${_calling_script}"
 
 # TODO: Remove this when moving to operations
 function err_exit() {
@@ -108,15 +98,3 @@ function err_exit() {
         scancel "${SLURM_JOB_ID}"
     fi
 }
-
-# Place the postamble in a trap so it is always called no matter how the script exits
-# Shellcheck: Turn off warning about substitions at runtime instead of signal time
-# shellcheck disable=SC2064
-trap "postamble ${_calling_script} ${start_time} \$?" EXIT
-# shellcheck disable=
-
-source "${HOMEgfs}/ush/bash_utils.sh"
-
-# Turn on our settings
-shopt -s nullglob # Allow null globs instead of treating * as literal
-export SHELLOPTS

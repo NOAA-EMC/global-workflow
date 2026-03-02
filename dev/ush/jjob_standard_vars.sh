@@ -3,8 +3,9 @@
 #######
 # Standard environment variables for all J-Jobs.
 #
-# Source at the top of every J-Job (via jjob_init.sh):
-#   source "${HOMEgfs}/dev/ush/jjob_init.sh"
+# Source at the top of every J-Job before jjob_shell_setup.sh:
+#   source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
+#   source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 #
 # Sets variables defined in NCO HPC Implementation Standards Table 1:
 #   https://github.com/NCO-HPC/nws-hpc-standards/blob/develop/docs/standards.rst
@@ -17,11 +18,21 @@
 #   envir, KEEPDATA, SENDECF, SENDDBN,
 #     SENDDBN_NTC, DBNROOT                      (run environment and control)
 #   DATA                                        (working directory)
-#   cycle, PDY, PDYm#, PDYp#                   (temporal variables)
+#   cycle                                       (temporal variable; PDY, PDYm#,
+#                                                PDYp# set in jjob_shell_setup.sh
+#                                                via setpdy.sh)
 #
 # Requires in environment (set by job card / batch system):
 #   HOMEgfs, DATAROOT, jobid, cyc
 #######
+
+##############################################
+# Script timing: record start time and announce the job has begun
+##############################################
+export start_time=$(date +%s)
+_start_time_human=$(date -d"@${start_time}" -u +%H:%M:%S)
+_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
+echo "Begin ${_calling_script} at ${_start_time_human}"
 
 ##############################################
 # Debug trace format
@@ -35,31 +46,6 @@ export USHglobal="${HOMEgfs}/ush"
 export FIXglobal="${HOMEgfs}/fix"
 export PARMglobal="${HOMEgfs}/parm"
 export SCRIPTSglobal="${HOMEgfs}/scripts"
-
-##############################################
-# Shell options, strict mode, and tracing
-##############################################
-source "${USHglobal}/set_strict.sh"
-export SHELLOPTS
-
-# Export functions to subshells
-declare -xf set_strict
-declare -xf unset_strict
-declare -xf set_trace
-declare -xf postamble
-declare -xf err_exit
-
-# Activate strict mode and tracing
-set_strict
-set_trace
-
-##############################################
-# Script timing and exit trap
-##############################################
-export start_time=$(date +%s)
-source "${USHglobal}/postamble.sh"
-# shellcheck disable=SC2064
-trap "postamble ${start_time}" EXIT
 
 ##############################################
 # Job output variables
@@ -87,8 +73,5 @@ export DATA="${DATA:-${DATAROOT}/${jobid}}"
 ##############################################
 # Temporal variables
 ##############################################
+# cycle is set here; PDY, PDYm#, PDYp# are set in jjob_shell_setup.sh via setpdy.sh
 export cycle="t${cyc}z"
-unset_strict
-setpdy.sh || true
-source ./PDY || true
-set_strict
