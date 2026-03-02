@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"

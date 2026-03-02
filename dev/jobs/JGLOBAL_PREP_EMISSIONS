@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissions"
 

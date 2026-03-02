@@ -29,77 +29,10 @@ _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 start_time_human=$(date -d"@${start_time}" -u +%H:%M:%S)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
-declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'
 
-set_strict() {
-    if [[ ${STRICT:-"YES"} == "YES" ]]; then
-        # Exit on error or undefined variable
-        set -eu
-        # Exit on error in a pipeline (e.g. if and command in "cmd | cmd2" fails)
-        set -o pipefail
-    fi
-}
+source "${HOMEgfs}/ush/set_strict.sh"
 
-unset_strict() {
-    # Turn off strict mode
-    set +eu
-    set +o pipefail
-}
-
-set_trace() {
-    # Print the script name and line number of each command as it is
-    #   executed when using trace.
-    if [[ ${TRACE:-"YES"} == "YES" ]]; then
-        set -x
-    fi
-}
-
-postamble() {
-    #
-    # Commands to execute when a script ends.
-    #
-    # Syntax:
-    #   postamble script start_time rc
-    #
-    #   Arguments:
-    #     script: name of the script ending
-    #     start_time: start time of script (in seconds)
-    #     rc: the exit code of the script
-    #
-
-    set +x
-    script="${1}"
-    start_time="${2}"
-    rc="${3}"
-
-    # Execute postamble command
-    #
-    # Commands can be added to the postamble by appending them to $POSTAMBLE_CMD:
-    #    POSTAMBLE_CMD="new_thing; ${POSTAMBLE_CMD:-}" # (before existing commands)
-    #    POSTAMBLE_CMD="${POSTAMBLE_CMD:-}; new_thing" # (after existing commands)
-    #
-    # Always use this form so previous POSTAMBLE_CMD are not overwritten. This should
-    #   only be used for commands that execute conditionally (i.e. on certain machines
-    #   or jobs). Global changes should just be added to this function.
-    # These commands will be called when EACH SCRIPT terminates, so be mindful. Please
-    #   consult with global-workflow CMs about permanent changes to $POSTAMBLE_CMD or
-    #   this postamble function.
-    #
-
-    if [[ -v 'POSTAMBLE_CMD' ]]; then
-        ${POSTAMBLE_CMD}
-    fi
-
-    # Calculate the elapsed time
-    end_time=$(date +%s)
-    end_time_human=$(date -d@"${end_time}" -u +%H:%M:%S)
-    elapsed_sec=$((end_time - start_time))
-    elapsed=$(date -d@"${elapsed_sec}" -u +%H:%M:%S)
-
-    # Announce the script has ended, then pass the error code up
-    echo "End ${script} at ${end_time_human} with error code ${rc:-0} (time elapsed: ${elapsed})"
-    exit "${rc}"
-}
+source "${HOMEgfs}/ush/postamble.sh"
 
 # TODO: Remove this when moving to operations
 function err_exit() {
@@ -187,10 +120,3 @@ source "${HOMEgfs}/ush/bash_utils.sh"
 # Turn on our settings
 shopt -s nullglob # Allow null globs instead of treating * as literal
 export SHELLOPTS
-declare -xf set_strict
-declare -xf unset_strict
-declare -xf set_trace
-declare -xf postamble
-declare -xf err_exit
-set_strict
-set_trace

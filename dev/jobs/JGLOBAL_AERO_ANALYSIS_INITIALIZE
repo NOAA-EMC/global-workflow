@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanlinit"

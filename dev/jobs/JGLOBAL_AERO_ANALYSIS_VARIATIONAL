@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}

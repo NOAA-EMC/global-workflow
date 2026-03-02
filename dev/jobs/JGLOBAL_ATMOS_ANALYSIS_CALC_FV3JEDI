@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153

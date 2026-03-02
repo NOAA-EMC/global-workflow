@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then

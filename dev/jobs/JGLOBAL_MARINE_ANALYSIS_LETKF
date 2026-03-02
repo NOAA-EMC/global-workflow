@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"

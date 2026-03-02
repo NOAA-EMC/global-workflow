@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 #
 # Caculate the mean, spread, and other probabilistic fields.
