@@ -43,64 +43,62 @@ declare -rx GDATE
 declare -rx gPDY="${GDATE:0:8}"
 declare -rx gcyc="${GDATE:8:2}"
 
-# Construct COM variables from templates (see config.com)
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL \
-    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
-    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
-    COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMOUT_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    # Turn ensmem into 3-digit format with leading zeros
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
+else
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}"
+fi
 
-RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
+declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart" # Used for most restarts
+declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"                   # Used for warm start surface analysis
+declare -rx COMOUT_CONF="${COMOUT}/conf"
+declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
+declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
+declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
 
 #{% if "gcafs" in RUN or "gcdas" in RUN %}
 # GCAFS/GCDAS uses an offline atmospheric analysis
-YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN_RESTART}/analysis/atmos"
 #{% else %}
 #{# other runs use their own atmospheric analysis #}
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
 #{% endif %}
 
 #{% if "gfs" in RUN or "gdas" in RUN %}
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
-    COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
+declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
+declare -rx COMOUT_WAVE_RESTART="${COMOUT}/model/wave/restart"
+declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
+declare -rx COMIN_WAVE_RESTART_PREV="${COMIN_RESTART_PREV}/model/wave/restart"
 
-RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+declare -rx COMIN_OCEAN_ANALYSIS="${COMIN}/analysis/ocean"
+declare -rx COMIN_OCEAN_INPUT="${COMIN}/model/ocean/input"
+declare -rx COMOUT_MED_RESTART="${COMOUT}/model/med/restart"
+declare -rx COMOUT_OCEAN_RESTART="${COMOUT}/model/ocean/restart"
+declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+declare -rx COMIN_OCEAN_RESTART_PREV="${COMIN_RESTART_PREV}/model/ocean/restart"
+declare -rx COMIN_MED_RESTART_PREV="${COMIN_RESTART_PREV}/model/med/restart"
 
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-    COMIN_OCEAN_INPUT:COM_OCEAN_INPUT_TMPL \
-    COMOUT_MED_RESTART:COM_MED_RESTART_TMPL \
-    COMOUT_OCEAN_RESTART:COM_OCEAN_RESTART_TMPL \
-    COMOUT_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL
-
-RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL \
-    COMIN_MED_RESTART_PREV:COM_MED_RESTART_TMPL
-
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
-    COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
-    COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
-    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
-
-RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-    COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+declare -rx COMIN_ICE_INPUT="${COMIN}/model/ice/input"
+declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
+declare -rx COMOUT_ICE_RESTART="${COMOUT}/model/ice/restart"
+declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+declare -rx COMIN_ICE_RESTART_PREV="${COMIN_RESTART_PREV}/model/ice/restart"
 
 #{% elif "gcafs" in RUN or "gcdas" in RUN %}
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMOUT_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL
-YMD="${PDY}" HH="${cyc}" RUN="${rCDUMP}" declare_from_tmpl -rx \
-    COMIN_TRACER_RESTART:COM_ATMOS_RESTART_TMPL
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    COMIN_CHEM_INPUT:COM_CHEM_INPUT_TMPL
+declare -rx COMOUT_CHEM_HISTORY="${COMOUT}/model/chem/history"
+declare -rx COMIN_TRACER_RESTART="${COMIN_RESTART}/model/atmos/restart"
+declare -rx COMIN_CHEM_INPUT="${COMIN}/model/chem/input"
 #{% endif %}
 
 ###############################################################
