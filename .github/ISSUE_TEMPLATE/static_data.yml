@@ -4,7 +4,7 @@ labels: ["Static Data Mgmt"]
 projects: ["NOAA-EMC/41"]
 assignees:
   - DavidHuber-NOAA
-  - aerorahul
+  - TravisElless-NOAA
 
 body:
   - type: markdown

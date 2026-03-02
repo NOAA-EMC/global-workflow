@@ -27,20 +27,20 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-RUN=${CDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
+    # Make the member COM directories. These will be declared in the script as we cycle through members.
     memchar="mem$(printf %03i "${imem}")"
-    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-        COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
-    mkdir -p "${COMOUT_SNOW_ANALYSIS}"
+    product_dir="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/snow"
+    mkdir -p "${product_dir}"
 done
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -x COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+unset product_dir
+
+declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/snow"
 
 mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
