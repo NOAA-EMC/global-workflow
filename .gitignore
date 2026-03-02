@@ -197,3 +197,6 @@ versions/run.ver
 
 # jcb checkout and symlinks
 ush/python/jcb
+
+# wxflow symlink
+ush/python/wxflow

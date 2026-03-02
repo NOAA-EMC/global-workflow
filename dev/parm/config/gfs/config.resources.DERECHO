@@ -10,20 +10,15 @@ step=$1
 
 case ${step} in
   "prep")
-    export QUEUE="develop"
     export ntasks=12
     export tasks_per_node=12
     ;;
 
   "stage_ic")
-    export QUEUE="develop"
-    export QUEUE_SERVICE="develop"
     export is_exclusive="False"
     ;;
 
   "fcst" | "efcs" | "wavepostpnt")
-    export QUEUE="main"
-    export QUEUE_SERVICE="main"
     export tasks_per_nodes=${max_tasks_per_node}
     export is_exclusive="True"
     ;;
@@ -40,14 +35,12 @@ case ${step} in
 
   "sfcanl")
     export is_exclusive="False"
-    export QUEUE="develop"
     export threads_per_task=1 
     export tasks_per_node=${ntiles:-6}
     ;;
 
   "epos" | "ecen")
     export is_exclusive="False"
-    export QUEUE="develop"
     export threads_per_task=1
 
     # Set ntasks to number of ens members and distribute tasks evenly across nodes
@@ -59,7 +52,6 @@ case ${step} in
 
   "eobs")
     walltime="00:20:00"
-    export QUEUE="develop"
     # NOTE The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
     export threads_per_task=1
@@ -90,25 +82,21 @@ case ${step} in
         export tasks_per_node=1
         ;;
       "C768")
-        export QUEUE="develop"
         export tasks_per_node=1
         ;;
       *)
-        export QUEUE="develop"
         export tasks_per_node=3
         ;;
     esac
     ;;
 
   "atmos_products")
-    export QUEUE="develop"
     max_tasks_per_node=24
     tasks_per_node=24
     export is_exclusive="False"
     ;;
 
   *)
-    export QUEUE="develop"
     export is_exclusive="False"
     ;;
 
