@@ -16,10 +16,8 @@ export gcyc=${GDATE:8:2}
 #---------------------------------------------
 # OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
 #
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_OZNMON:COM_ATMOS_OZNMON_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_OZNMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/oznmon"
 
 export oznstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat.tar"
 export TANKverf_ozn=${TANKverf_ozn:-${COMOUT_ATMOS_OZNMON}}

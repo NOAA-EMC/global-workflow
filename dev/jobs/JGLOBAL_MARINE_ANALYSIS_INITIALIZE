@@ -24,17 +24,14 @@ export GDUMP=${GDUMP:-"gdas"}
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL \
-    COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN_ICE_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/restart"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-    COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+declare -rx COMIN_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean"
+declare -rx COMIN_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
 
 ###############################################################
 # Run relevant script

@@ -8,7 +8,7 @@ source "${HOMEglobal}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl p
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_OBS:COM_OBS_TMPL
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 
 ##############################################
 # Begin JOB SPECIFIC work

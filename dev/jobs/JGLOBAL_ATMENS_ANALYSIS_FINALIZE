@@ -18,9 +18,8 @@ GDUMP_ENS="enkf${GDUMP}"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variable from template
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS_ENS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_CONF="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/conf"
 
 mkdir -m 755 -p "${COMOUT_ATMOS_ANALYSIS_ENS}"
 mkdir -m 755 -p "${COMOUT_CONF}"

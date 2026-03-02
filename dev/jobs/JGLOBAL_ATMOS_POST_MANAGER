@@ -15,7 +15,7 @@ export RUN=${RUN:-gfs}
 ###########################
 export EXT_FCST=NO
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
 
 ########################################################
 # Execute the script.

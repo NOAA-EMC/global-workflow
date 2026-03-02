@@ -39,7 +39,7 @@ cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in 
 if [[ "${USE_CFP:-}" != "YES" ]]; then
     echo "INFO: Using serial mode for MPMD job"
     chmod 755 "${cmdfile}"
-    bash +x "${cmdfile}" > mpmd.out 2>&1
+    bash +x "${cmdfile}" > mpmd.out 2>&1 && true
     rc=$?
     cat mpmd.out
     exit "${rc}"

@@ -139,7 +139,6 @@ class ArchiveVrfyVars:
                 logger.warning(f"Config key '{key}' not found in config_dict; skipping.")
 
         # Import COM* directory and template variables created by job scripts
-        # Job scripts use declare_from_tmpl -rx which exports variables to environment
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
                 general_dict[key] = config_dict.get(key)

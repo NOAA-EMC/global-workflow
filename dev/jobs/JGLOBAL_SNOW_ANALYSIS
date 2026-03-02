@@ -20,13 +20,11 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
 
 mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
