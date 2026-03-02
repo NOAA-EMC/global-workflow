@@ -25,16 +25,13 @@ export APREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/history"
 
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
 # shellcheck disable=SC2153
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
