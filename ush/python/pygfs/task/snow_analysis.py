@@ -101,7 +101,6 @@ class SnowAnalysis(Analysis):
                 'ims_file': _ims_file,
                 'DO_IMS_SCF': _DO_IMS_SCF,  # Boolean to decide if IMS snow cover processing is done
                 'DO_GHCN': _DO_GHCN,  # Boolean to decide if GHCN processing is done
-                'OCNRES': f"{self.task_config.OCNRES:03d}",
             }
         ))
 
