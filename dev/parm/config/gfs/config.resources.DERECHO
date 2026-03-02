@@ -15,16 +15,13 @@ case ${step} in
     ;;
 
   "stage_ic")
-    export is_exclusive="False"
     ;;
 
   "fcst" | "efcs" | "wavepostpnt")
     export tasks_per_nodes=${max_tasks_per_node}
-    export is_exclusive="True"
     ;;
 
   "anal" | "analcalc" | "analdiag")
-    export is_exclusive="True"
     export threads_per_task=1
     export tasks_per_node=${max_tasks_per_node}
     ;;
