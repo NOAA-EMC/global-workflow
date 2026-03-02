@@ -16,7 +16,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 export COMIN="gfs.multi"
 mkdir -p "${COMIN}"
 for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
-    YMD=${PDY} HH=${cycle} GRID="1p00" declare_from_tmpl gempak_dir:COM_ATMOS_GEMPAK_TMPL
+    gempak_dir="${ROTDIR}/${RUN}.${PDY}/${cycle}/products/atmos/gempak/1p00"
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         file_out="${COMIN}/$(basename "${file_in}")"
         cpreq "${file_in}" "${file_out}"
@@ -78,7 +78,7 @@ for garea in NAtl NPac; do
         # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         HPCGFS="${RUN}.${init_time}"
         if [[ ! -L ${HPCGFS} ]]; then
-            YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+            source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
             ${NLN} "${source_dir}" "${HPCGFS}"
         fi
 

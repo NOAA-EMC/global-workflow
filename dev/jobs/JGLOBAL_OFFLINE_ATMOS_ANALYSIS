@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+#shellcheck disable=SC2155
 
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
@@ -23,16 +24,20 @@ export APREFIX_IN="gdas.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
-RUN="gdas" DUMP="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBSPROC:COM_OBSPROC_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    declare -rx COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"
+    declare -rx COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${gPDY}/${gcyc}/atmos"
+else
+    declare -rx COMINobsproc="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
+    declare -rx COMINobsproc_PREV="${DMPDIR}/gdas.${gPDY}/${gcyc}/atmos"
+fi
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OBS:COM_OBS_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/gdas.${PDY}/${cyc}/analysis/atmos"
 
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/history"
 
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -p "${COMOUT_OBS}"
