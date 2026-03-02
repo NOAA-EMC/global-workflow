@@ -1,5 +1,5 @@
 {% set cycle_YMDH = current_cycle | to_YMDH %}
-{% set head = RUN ~ "*t" ~ cycle_HH ~ "z.1p00.daily.nc" %}
+{% set head = RUN ~ "*t" ~ cycle_HH ~ "z.?p??.daily.nc" %}
 {% for mem in range(0, NMEM_ENS + 1) %}
 {% set mem_char = 'mem%03d' | format(mem) %}
 {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,

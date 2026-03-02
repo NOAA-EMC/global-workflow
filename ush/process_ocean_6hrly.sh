@@ -3,6 +3,10 @@
 
 set -e
 
+# paths for output grid (1p00)
+r360x181="${USHgfs}/python/ocn_diag/r360x181"
+
+# Arguments:
 start_fhr=$1
 interval=6  # Fixed 6-hour interval
 fhr_inc=120   # Number of 6-hour jobs per task
@@ -34,7 +38,7 @@ for (( i=0; i<${fhr_inc}; i++ )); do
         ncks -A -v geolon,geolat "${input_file}" "${output_native_file}"
 
         ncatted -a coordinates,temp,c,c,"geolon geolat" "${output_native_file}"
-        cdo remapbil,r360x181 -setgridtype,curvilinear "${output_native_file}" "${output_1p00_file}"
+        cdo remapbil,${r360x181} -setgridtype,curvilinear "${output_native_file}" "${output_1p00_file}"
         ncatted -a long_name,temp,o,c,"Potential Temperature at 5m below sea level" "${output_1p00_file}"
 
         rm -f "${tmp_file}" "${output_native_file}"
