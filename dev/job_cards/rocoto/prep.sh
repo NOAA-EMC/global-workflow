@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
-
+set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 ###############################################################
 # Source FV3GFS workflow modules
 source "${HOMEgfs}/dev/ush/load_modules.sh" run
@@ -12,6 +13,7 @@ fi
 export job="prep"
 export jobid="${job}.$$"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 # Strip 'enkf' from RUN for pulling data
 RUN_local="${RUN/enkf/}"

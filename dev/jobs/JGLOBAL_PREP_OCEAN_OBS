@@ -1,6 +1,8 @@
 #!/bin/bash
 set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl prepoceanobs"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script

@@ -1,11 +1,13 @@
 #!/bin/bash
 set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script

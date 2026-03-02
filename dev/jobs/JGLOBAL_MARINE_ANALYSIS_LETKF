@@ -1,5 +1,6 @@
 #!/bin/bash
 set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
@@ -8,6 +9,7 @@ export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script

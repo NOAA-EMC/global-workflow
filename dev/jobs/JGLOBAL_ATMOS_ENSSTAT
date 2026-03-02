@@ -1,11 +1,13 @@
 #! /usr/bin/env bash
 set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 
 #
 # Caculate the mean, spread, and other probabilistic fields.
 #
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work

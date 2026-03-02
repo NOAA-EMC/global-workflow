@@ -1,7 +1,9 @@
 #! /usr/bin/env bash
 set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"

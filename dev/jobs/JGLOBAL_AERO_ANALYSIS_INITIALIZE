@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 set -x
+source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
 
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanlinit"
+source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
