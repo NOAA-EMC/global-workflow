@@ -14,8 +14,18 @@ export PYTHONPATH
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_CHEM_INPUT:COM_CHEM_INPUT_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_CHEM_RESTART:COM_CHEM_RESTART_TMPL
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    # Turn ensmem into 3-digit format with leading zeros
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+declare -rx COMOUT_CHEM_INPUT="${COMOUT}/model/chem/input"
+declare -rx COMOUT_CHEM_RESTART="${COMOUT}/model/chem/restart"
 
 mkdir -p "${COMOUT_CHEM_INPUT}"
 

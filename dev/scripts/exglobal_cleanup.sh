@@ -113,8 +113,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
         tail_log=$(tail -n 1 "${rocotolog}") || true
         # Test if the last line of rocotolog indicates success
         if [[ ${tail_log} =~ "This cycle is complete: Success" ]]; then
-            YMD="${current_PDY}" HH="${current_cyc}" declare_from_tmpl \
-                COMOUT_TOP:COM_TOP_TMPL
+            declare -x COMOUT_TOP=${ROTDIR}/${RUN}.${current_PDY}/${current_cyc}
             if [[ -d "${COMOUT_TOP}" ]]; then
                 IFS=", " read -r -a exclude_list <<< "${exclude_string}"
                 remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"

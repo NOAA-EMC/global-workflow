@@ -5,10 +5,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpnt" -c "base wave wavepos
 export MP_PULSE=0
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-    COMOUT_WAVE_STATION:COM_WAVE_STATION_TMPL
+declare -rx COMIN_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
+declare -rx COMIN_WAVE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/history"
+declare -rx COMOUT_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
 
 mkdir -p "${COMOUT_WAVE_STATION}"
 

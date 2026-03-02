@@ -28,18 +28,16 @@ GDUMP="gdas"
 
 export OPREFIX="${RUN_local}.t${cyc}z."
 
-RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_OBS:COM_OBS_TMPL \
-    COMINobsproc:COM_OBSPROC_TMPL \
-    COMINobsforge:COM_OBSFORGE_TMPL \
-    COMIN_TCVITAL:COM_TCVITAL_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
+declare -rx COMINobsproc="${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos"
+declare -rx COMINobsforge="${IODADIR}/${RUN_local}.${PDY}/${cyc}"
+declare -rx COMIN_TCVITAL="${DMPDIR}/${RUN_local}.${PDY}/${cyc}/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/analysis/atmos"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMOUT_OBS_PREV:COM_OBS_TMPL \
-    COMINobsproc_PREV:COM_OBSPROC_TMPL \
-    COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMOUT_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
+declare -rx COMINobsproc_PREV="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
 mkdir -p "${COMOUT_OBS}"
 
@@ -136,8 +134,8 @@ rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
 rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
 rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
 
-RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS:COM_ATMOS_HISTORY_TMPL
-RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GFS:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_GDAS="${ROTDIR}/gdas.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMIN_ATMOS_HISTORY_GFS="${ROTDIR}/gfs.${PDY}/${cyc}/model/atmos/history"
 
 export job="j${RUN_local}_prep_${cyc}"
 
