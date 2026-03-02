@@ -6,15 +6,25 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_produc
 # Begin JOB SPECIFIC work
 ##############################################
 
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
+declare -rx COMIN_ATMOS_HISTORY="${COMIN}/model/atmos/history"
+declare -rx COMIN_ATMOS_MASTER="${COMIN}/model/atmos/master"
 
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "COMOUT_ATMOS_GRIB_${grid}"="${COMOUT}/products/atmos/grib2/${grid}"
     mkdir -m 775 -p "${!prod_dir}"
 done
 
