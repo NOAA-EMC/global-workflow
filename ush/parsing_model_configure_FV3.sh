@@ -44,7 +44,7 @@ FV3_model_configure() {
     # OUTPUT_GRID
     local OUTPUT_FILE="'${OUTPUT_FILETYPE_ATM}' '${OUTPUT_FILETYPE_SFC}'"
     local ZSTANDARD_LEVEL=${zstandard_level:-0}
-    local IDEFLATE=${ideflate:-0}         # netCDF zlib lossless compression (0-9); 0: no compression
+    local IDEFLATE=${ideflate:-0}                       # netCDF zlib lossless compression (0-9); 0: no compression
     local ZSTANDARD_LEVEL_RST=${zstandard_level_rst:-0} # For restart files
     local IDEFLATE_RST=${ideflate_rst:-0} # Restart files: netCDF zlib lossless compression (0-9); 0: none
     local QUANTIZE_NSD=${quantize_nsd:-0} # netCDF compression
