@@ -63,7 +63,7 @@ for lookback in "${lookbacks[@]}"; do
     # Create symlink in DATA to sidestep gempak path limits
     HPCGFS="${RUN}.${init_time}"
     if [[ ! -L ${HPCGFS} ]]; then
-        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
         ${NLN} "${source_dir}" "${HPCGFS}"
     fi
 

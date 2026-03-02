@@ -16,10 +16,9 @@ export PYTHONPATH
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL \
-    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+declare -rx COMOUT_CHEM_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
 
 mkdir -m 755 -p "${COMOUT_CHEM_ANALYSIS}"
 mkdir -m 755 -p "${COMOUT_ATMOS_RESTART}"
