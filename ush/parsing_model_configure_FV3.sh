@@ -63,7 +63,7 @@ FV3_model_configure() {
     local IMO=${LONB_IMO}
     local JMO=${LATB_JMO}
     local OUTPUT_FH=${FV3_OUTPUT_FH_NML}
-    if [[ ${DOIAU_COLDSTART:-"NO"} == "NO" ]]; then
+    if [[ ${DOIAU_COLDSTART:-"NO"} == "NO" || "${RERUN}" == "YES" ]]; then
         local IAU_OFFSET=${IAU_OFFSET:-0}
     else
         local IAU_OFFSET=3

@@ -142,6 +142,7 @@ UFS_det() {
             fi
 
             warm_start=".true."
+            IAU_OFFSET=${IAU_OFFSET:-0}
             echo "All restarts found for '${RERUN_DATE}', RERUN='${RERUN}', warm_start='${warm_start}'"
             break
         fi

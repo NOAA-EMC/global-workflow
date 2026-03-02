@@ -11,7 +11,7 @@ export DO_OCN_PERT_EPBL="NO"  # In MOM_input, this variable determines PERT_EPBL
 export MOM6_USE_LI2016="True" # set to False for restart reproducibility
 export MOM6_THERMO_SPAN="False"
 
-if [[ "${DO_JEDIOCNVAR}" == "YES" ]]; then
+if [[ "${DO_JEDIOCNVAR}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
   export ODA_INCUPD="True"
 else
   export ODA_INCUPD="False"

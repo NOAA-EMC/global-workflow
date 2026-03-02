@@ -108,7 +108,7 @@ common_predet() {
     forecast_end_cycle=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${FHMAX} hours" +%Y%m%d%H)
 
     # Define model start date for current_cycle and next_cycle as the time the forecast will start
-    if [[ "${DOIAU:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
         model_start_date_current_cycle="${current_cycle_begin}"
         model_start_date_next_cycle="${next_cycle_begin}"
     else

@@ -157,8 +157,6 @@ FV3_postdet() {
             # Need a coupler.res that is consistent with the model start time
             if [[ "${DOIAU:-NO}" == "YES" ]]; then
                 local model_start_time="${previous_cycle}"
-            elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
-                local model_start_time="${model_start_date_current_cycle}"
             else
                 local model_start_time="${current_cycle}"
             fi
@@ -169,7 +167,6 @@ FV3_postdet() {
       ${model_start_time:0:4}  ${model_start_time:4:2}  ${model_start_time:6:2}  ${model_start_time:8:2}  0  0        Model start time: year, month, day, hour, minute, second
       ${model_current_time:0:4}  ${model_current_time:4:2}  ${model_current_time:6:2}  ${model_current_time:8:2}  0  0        Current model time: year, month, day, hour, minute, second
 EOF
-
             # Create a array of increment files
             local inc_files inc_file iaufhrs iaufhr
             if [[ "${DOIAU}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
@@ -592,7 +589,11 @@ MOM6_postdet() {
         restart_date="${RERUN_DATE}"
     else # "${RERUN}" == "NO"
         restart_dir="${COMIN_OCEAN_RESTART_PREV}"
-        restart_date="${model_start_date_current_cycle}"
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then 
+            restart_date="${current_cycle_begin}"
+        else
+            restart_date="${model_start_date_current_cycle}"
+        fi
     fi
 
     # Copy MOM6 ICs
@@ -609,9 +610,6 @@ MOM6_postdet() {
         *) ;;
     esac
 
-    if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
-        ODA_INCUPD=T
-    fi
     # Copy increment (only when RERUN=NO)
     if [[ "${RERUN}" == "NO" ]]; then
         if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
@@ -746,12 +744,16 @@ CICE_postdet() {
         seconds=$(to_seconds "${restart_date:8:2}0000") # convert HHMMSS to seconds
         cice_restart_file="${DATArestart}/CICE_RESTART/cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
     else # "${RERUN}" == "NO"
-        restart_date="${model_start_date_current_cycle}"
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then 
+            restart_date="${current_cycle_begin}"
+        else
+            restart_date="${model_start_date_current_cycle}"
+        fi
         cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
         if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
         fi
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             if [[ "${MEMBER}" -eq 0 ]]; then
                 # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
                 cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
