@@ -252,7 +252,7 @@ class OfflineAnalysis(Task):
         FileHandler({'copy': output_files}).sync()
         # these files are for the surface analysis
         transfer_files = []
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])
         transfer_files.append([os.path.join(self.task_config.COMINgfs_ATMOS_ANALYSIS, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}seaice.5min.blend.grb")])

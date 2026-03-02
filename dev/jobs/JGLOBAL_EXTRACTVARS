@@ -6,22 +6,20 @@ source "${USHgfs}/wave_domain_grid.sh"
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMIN_ATMOS_GRIB_${grid}"
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
     mkdir -p "${!prod_dir}"
 done
 
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-    "COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL" \
-    "COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL" \
-    "COMIN_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL" \
-    "COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL" \
-    "COMIN_ICE_GRIB:COM_ICE_GRIB_TMPL" \
-    "COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL" \
-    "COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL"
+declare -rx COMIN_OCEAN_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"
+declare -rx COMIN_OCEAN_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/grib2"
+declare -rx COMIN_OCEAN_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ocean/netcdf"
+declare -rx COMIN_ICE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"
+declare -rx COMIN_ICE_GRIB="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/grib2"
+declare -rx COMIN_ICE_NETCDF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/ice/netcdf"
+declare -rx COMIN_WAVE_GRID="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded"
 
 process_grdID "${waveGRD}"
-YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-    "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+declare -rx "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}"
 
 if [[ "${DO_ATM}" == "YES" ]]; then
     mkdir -p "${ARC_RFCST_PROD_ATMOS_F2D}"
