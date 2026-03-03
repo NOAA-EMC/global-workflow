@@ -359,6 +359,8 @@ case ${fv3_res} in
   "C48" | "C96" | "C192")
     zstandard_level=0
     ideflate=0
+    zstandard_level_rst=0
+    ideflate_rst=0
     quantize_nsd=0
     OUTPUT_FILETYPE_ATM="netcdf"
     OUTPUT_FILETYPE_SFC="netcdf"
@@ -366,6 +368,8 @@ case ${fv3_res} in
   "C384" | "C768" | "C1152" | "C3072")
     zstandard_level=0
     ideflate=1
+    zstandard_level_rst=0
+    ideflate_rst=0
     quantize_nsd=14
     OUTPUT_FILETYPE_ATM="netcdf_parallel"
     if [[ "${fv3_res}" == "C384" ]]; then
@@ -379,7 +383,7 @@ case ${fv3_res} in
     exit 15
     ;;
 esac
-export zstandard_level ideflate quantize_nsd
+export zstandard_level ideflate quantize_nsd zstandard_level_rst ideflate_rst
 export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
 # cpl defaults
