@@ -1,0 +1,50 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+export GDATE
+
+#{% if RUN == "gcdas" %}
+BKG_RUN="gcdas"
+#{% else %}
+BKG_RUN="gdas"
+#{% endif %}
+
+RUN=${BKG_RUN} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
+    COMIN_OBS_PREV:COM_OBS_TMPL \
+    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_OBS:COM_OBS_TMPL \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+
+RUN="enkfgdas" MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_ENKF_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+mkdir -p "${COMOUT_ATMOS_RESTART}"
+
+# Use CFP to stage and save files in parallel
+export USE_CFP=YES
+
+###############################################################
+# Run relevant script
+
+${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################

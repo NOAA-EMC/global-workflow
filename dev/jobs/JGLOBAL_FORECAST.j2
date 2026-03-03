@@ -1,0 +1,157 @@
+#! /usr/bin/env bash
+#{% if "enkf" in RUN %}
+export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+export DATA="${DATAjob}/${jobid}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+#{% else %}
+export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+export DATA="${DATAjob}/${jobid}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+#{% endif %}
+
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+# Create the directory to hold restarts and output from the model in stmp
+export DATArestart="${DATAjob}/restart"
+if [[ ! -d "${DATArestart}" ]]; then mkdir -p "${DATArestart}"; fi
+export DATAoutput="${DATAjob}/output"
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+#{% if RUN == "gfs" %}
+# Restart conditions for GFS cycle come from GDAS
+rCDUMP="gdas"
+#{% elif RUN == "gcafs" %}
+# Restart conditions for GCAFS cycle come from GCDAS
+rCDUMP="gcdas"
+#{% else %}
+# this run uses its own restart conditions, so set rCDUMP to RUN
+rCDUMP="${RUN}"
+#{% endif %}
+export rCDUMP
+
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+declare -rx GDATE
+# shellcheck disable=
+declare -rx gPDY="${GDATE:0:8}"
+declare -rx gcyc="${GDATE:8:2}"
+
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    # Turn ensmem into 3-digit format with leading zeros
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
+else
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}"
+fi
+
+declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
+declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart" # Used for most restarts
+declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"                   # Used for warm start surface analysis
+declare -rx COMOUT_CONF="${COMOUT}/conf"
+declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
+declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
+declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
+
+#{% if "gcafs" in RUN or "gcdas" in RUN %}
+# GCAFS/GCDAS uses an offline atmospheric analysis
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN_RESTART}/analysis/atmos"
+#{% else %}
+#{# other runs use their own atmospheric analysis #}
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
+#{% endif %}
+
+#{% if "gfs" in RUN or "gdas" in RUN %}
+declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
+declare -rx COMOUT_WAVE_RESTART="${COMOUT}/model/wave/restart"
+declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
+declare -rx COMIN_WAVE_RESTART_PREV="${COMIN_RESTART_PREV}/model/wave/restart"
+
+declare -rx COMIN_OCEAN_ANALYSIS="${COMIN}/analysis/ocean"
+declare -rx COMIN_OCEAN_INPUT="${COMIN}/model/ocean/input"
+declare -rx COMOUT_MED_RESTART="${COMOUT}/model/med/restart"
+declare -rx COMOUT_OCEAN_RESTART="${COMOUT}/model/ocean/restart"
+declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+declare -rx COMIN_OCEAN_RESTART_PREV="${COMIN_RESTART_PREV}/model/ocean/restart"
+declare -rx COMIN_MED_RESTART_PREV="${COMIN_RESTART_PREV}/model/med/restart"
+
+declare -rx COMIN_ICE_INPUT="${COMIN}/model/ice/input"
+declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
+declare -rx COMOUT_ICE_RESTART="${COMOUT}/model/ice/restart"
+declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+declare -rx COMIN_ICE_RESTART_PREV="${COMIN_RESTART_PREV}/model/ice/restart"
+
+#{% elif "gcafs" in RUN or "gcdas" in RUN %}
+declare -rx COMOUT_CHEM_HISTORY="${COMOUT}/model/chem/history"
+declare -rx COMIN_TRACER_RESTART="${COMIN_RESTART}/model/atmos/restart"
+declare -rx COMIN_CHEM_INPUT="${COMIN}/model/chem/input"
+#{% endif %}
+
+###############################################################
+# Run relevant exglobal script
+###############################################################
+# shellcheck disable=SC2288
+"${FORECASTSH:-${SCRgfs}/ex{{ RUN | lower }}_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+#{% if "enkf" in RUN %}
+# Send DBN alerts for EnKF
+# TODO: Should these be in post manager instead?
+if [[ "${SENDDBN:-}" == YES ]]; then
+    for ((fhr == FHOUT; fhr <= FHMAX; fhr + FHOUT)); do
+        if ((fhr % 3 == 0)); then
+            fhr3=$(printf %03i "${fhr}")
+            "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${fhr3}.nc"
+        fi
+    done
+fi
+#{% endif %}
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+# do not remove DATAjob. It contains DATAoutput
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+
+    # Determine if this is the last segment
+    commas="${FCST_SEGMENTS//[^,]/}"
+#{% raw %}
+    n_segs=${#commas}
+#{% endraw %}
+    if ((n_segs - 1 == ${FCST_SEGMENT:-0})); then
+        # Only delete temporary restarts if it is the last segment
+        rm -rf "${DATArestart}"
+    fi
+fi
+
+exit 0
