@@ -225,7 +225,7 @@ launch_runner() {
     if [[ -n "${stale_pids}" ]]; then
         log_msg "Killing stale gitlab-runner process(es): ${stale_pids}"
         echo "${stale_pids}" | while read -r pid; do
-            kill "${pid}" 2>/dev/null || true
+            kill "${pid}" 2> /dev/null || true
         done
         sleep 2
     fi
