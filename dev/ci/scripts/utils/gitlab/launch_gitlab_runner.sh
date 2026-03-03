@@ -221,7 +221,7 @@ check_runner_status() {
 launch_runner() {
     # Kill any orphaned process
     local stale_pids
-    stale_pids=$(pgrep -f "gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}" 2>/dev/null || true)
+    stale_pids=$(pgrep -f "gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}" 2> /dev/null || true)
     if [[ -n "${stale_pids}" ]]; then
         log_msg "Killing stale gitlab-runner process(es): ${stale_pids}"
         echo "${stale_pids}" | while read -r pid; do
