@@ -175,7 +175,7 @@ check_port_available() {
         # Port is in use — check if it's OUR runner
         if curl -s --max-time 2 "http://localhost:${port}/metrics" 2>/dev/null | grep -q "gitlab_runner"; then
             log_msg "Port ${port} already in use by a GitLab Runner (may be our existing process)"
-            return 1  # port used by a runner — caller should check if it's ours
+            return 1 # port used by a runner — caller should check if it's ours
         else
             log_msg "ERROR: Port ${port} is occupied by another service. Set GITLAB_RUNNER_METRICS_PORT to an available port in config.${MACHINE_ID}"
             return 2  # port used by something else — fatal
