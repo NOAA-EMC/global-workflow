@@ -9,8 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_gro
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_CONF:COM_CONF_TMPL
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
 ###############################################################
 # Run globus script

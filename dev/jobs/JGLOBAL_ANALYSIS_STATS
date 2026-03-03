@@ -15,30 +15,27 @@ export PYTHONPATH
 
 # Generate COM variables from templates
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_ATMOS_ANLMON:COM_ATMOS_ANLMON_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANLMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/anlmon"
 mkdir -m 755 -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -m 755 -p "${COMOUT_ATMOS_ANLMON}"
 mkdir -m 755 -p "${COMOUT_CONF}"
 
 if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        COMIN_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-        COMOUT_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-        COMOUT_AERO_ANLMON:COM_CHEM_ANLMON_TMPL
+    declare -rx COMIN_AERO_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem"
+    declare -rx COMOUT_AERO_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem"
+    declare -rx COMOUT_AERO_ANLMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/chem/anlmon"
     mkdir -m 755 -p "${COMOUT_AERO_ANALYSIS}"
     mkdir -m 755 -p "${COMOUT_AERO_ANLMON}"
 fi
 
 if [[ "${DO_JEDISNOWDA:-NO}" == "YES" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-        COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-        COMOUT_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL
+    declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
+    declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
+    declare -rx COMOUT_SNOW_ANLMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/snow/anlmon"
     mkdir -m 755 -p "${COMOUT_SNOW_ANALYSIS}"
     mkdir -m 755 -p "${COMOUT_SNOW_ANLMON}"
 fi

@@ -4,8 +4,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "wave_stat_pnt" -c "base wave wave_sta
 
 # Set COM Paths
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_WAVE_STATION_ENS:COM_WAVE_STATION_TMPL
+declare -rx COMOUT_WAVE_STATION_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/station"
 if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
     mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
 fi

@@ -90,9 +90,8 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
 
         memdir=$(printf "mem%03i" "${imem}")
 
-        MEMDIR=${memdir} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-            COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
-            COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+        COMIN_SOIL_ANALYSIS_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}/analysis/atmos"
+        COMOUT_ATMOS_ANALYSIS_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}/analysis/atmos"
 
         # Create MPMD command file for this member
         rm -f "cmdfile_in.${imem}" "cmdfile_out.${imem}"

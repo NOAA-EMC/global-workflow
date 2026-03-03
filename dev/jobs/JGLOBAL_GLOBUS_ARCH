@@ -9,8 +9,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_arch" -c "base globus"
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_CONF:COM_CONF_TMPL
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 ###############################################################
 # Run globus script
