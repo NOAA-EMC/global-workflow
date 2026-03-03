@@ -18,7 +18,7 @@ set -e
 #   -n    Skip the wait period if runner is found offline
 #   -h    Print help message
 #
-# Phase 35: Hardened to Jenkins launch_java_agent.sh parity
+# Phase 35: Hardened for robust GitLab runner lifecycle management
 #########################################################################
 
 print_usage() {
