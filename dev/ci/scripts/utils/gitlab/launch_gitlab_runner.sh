@@ -171,7 +171,7 @@ fi
 
 check_port_available() {
     local port="${1}"
-    if ss -tlnp 2>/dev/null | grep -q ":${port} "; then
+    if ss -tlnp 2> /dev/null | grep -q ":${port} "; then
         # Port is in use — check if it's OUR runner
         if curl -s --max-time 2 "http://localhost:${port}/metrics" 2>/dev/null | grep -q "gitlab_runner"; then
             log_msg "Port ${port} already in use by a GitLab Runner (may be our existing process)"
