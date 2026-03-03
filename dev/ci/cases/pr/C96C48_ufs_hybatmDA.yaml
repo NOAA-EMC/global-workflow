@@ -16,7 +16,6 @@ experiment:
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
-  - gaeac5
   - gaeac6
   - orion
   - hercules

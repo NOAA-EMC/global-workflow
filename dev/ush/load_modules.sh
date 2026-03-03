@@ -98,7 +98,7 @@ case "${MODULE_TYPE}" in
         module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 
         case "${MACHINE_ID}" in
-            "hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6" | "ursa" | "noaacloud")
+            "hera" | "orion" | "hercules" | "wcoss2" | "gaeac6" | "ursa" | "noaacloud")
                 #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
                 if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
                     export LMOD_TMOD_FIND_FIRST=yes
@@ -215,15 +215,6 @@ case "${MODULE_TYPE}" in
         ;;
 
 esac
-
-# Set up the PYTHONPATH to include wxflow from HOMEgfs
-if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
-fi
-
-# Add HOMEgfs/ush/python to PYTHONPATH
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
-export PYTHONPATH
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"

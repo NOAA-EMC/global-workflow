@@ -140,7 +140,7 @@ class OfflineAnalysis(Task):
                 "j_output": self.task_config.nlat_interp,
                 "sfcanl_file": "sfcanl.input.nc",
                 "sfcf006_file": "sfcges_mem001",
-                "output_file": "dtfanl.nc",
+                "output_file": "dtfinc.nc",
             }
         }
 
@@ -252,15 +252,15 @@ class OfflineAnalysis(Task):
         FileHandler({'copy': output_files}).sync()
         # these files are for the surface analysis
         transfer_files = []
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}seaice.5min.blend.grb")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}snogrb_t1534.3072.1536")])
         # TODO: Re-stage the inputs for the GCDAS offline analysis on HPSS following EE2-compliant filenames, then update this line
         transfer_files.append([
-            os.path.join(self.task_config.DATA, "dtfanl.nc"),
+            os.path.join(self.task_config.DATA, "dtfinc.nc"),
             os.path.join(self.task_config.COMOUT_ATMOS_ANALYSIS,
                          f"{self.task_config.APREFIX}increment.dtf.i006.nc")
         ])

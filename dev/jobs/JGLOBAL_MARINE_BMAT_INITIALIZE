@@ -16,6 +16,10 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marinebmat m
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
@@ -37,17 +41,14 @@ fi
 ##############################################
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ice/history"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-    COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+declare -rx COMOUT_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean"
+declare -rx COMOUT_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
 
 mkdir -p "${COMOUT_OCEAN_BMATRIX}"
 mkdir -p "${COMOUT_ICE_BMATRIX}"

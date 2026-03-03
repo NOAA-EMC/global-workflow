@@ -80,7 +80,7 @@ ATMANL=${ATMANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a006.nc"}
 
 # Increment files
 ATMINC=${ATMINC:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i006.nc"}
-DTFANL=${DTFANL:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"}
+DTFINC=${DTFINC:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc"}
 if [[ "${RUN}" == "gcdas" ]]; then
     AEROINC=${AEROINC:-"${COMIN_CHEM_ANALYSIS}/${APREFIX}aeroinc.nc"}
 fi

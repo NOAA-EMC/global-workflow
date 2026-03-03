@@ -14,7 +14,6 @@ skip_ci_on_hosts:
   - wcoss2
   - hera
   - ursa
-  - gaeac5
   - gaeac6
   - orion
   - hercules

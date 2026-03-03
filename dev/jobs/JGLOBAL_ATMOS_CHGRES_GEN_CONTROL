@@ -11,8 +11,7 @@ export BDATE
 # Define COM directories
 # TODO: uncomment when testing for realtime
 #COMINgfs=$(compath.py "${envir}/gfs/${gfs_ver}")
-MEMDIR="mem000" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_INPUT_MEM:COM_ATMOS_INPUT_TMPL
+declare -rx COMOUT_ATMOS_INPUT_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem000/model/atmos/input"
 ###############################################################
 # Create COMOUT_ATMOS_INPUT_MEM
 mkdir -p "${COMOUT_ATMOS_INPUT_MEM}"
