@@ -178,7 +178,7 @@ check_port_available() {
             return 1 # port used by a runner — caller should check if it's ours
         else
             log_msg "ERROR: Port ${port} is occupied by another service. Set GITLAB_RUNNER_METRICS_PORT to an available port in config.${MACHINE_ID}"
-            return 2  # port used by something else — fatal
+            return 2 # port used by something else — fatal
         fi
     fi
     return 0  # port available
