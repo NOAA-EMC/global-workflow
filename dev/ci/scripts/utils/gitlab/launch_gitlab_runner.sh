@@ -181,7 +181,7 @@ check_port_available() {
             return 2 # port used by something else — fatal
         fi
     fi
-    return 0  # port available
+    return 0 # port available
 }
 
 check_runner_status() {
