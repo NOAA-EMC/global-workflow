@@ -67,7 +67,7 @@ fi
 
 # Validate subcommand
 case "${SUBCOMMAND}" in
-    register|run|unregister|status) ;;
+    register | run | unregister | status) ;;
     *)
         echo "ERROR: Unknown command '${SUBCOMMAND}'"
         print_usage
