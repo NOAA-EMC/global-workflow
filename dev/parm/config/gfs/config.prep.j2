@@ -15,6 +15,11 @@ export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 export TROPCYQCRELOSH="${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
+# If DOENKFONLY_ATM="YES", skip PROCESS_TROPCY
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+   export PROCESS_TROPCY="NO"
+fi
+
 # Allow users to control the generation or use of either operational or
 # their processed prepbufr, prepbufr.acft_profiles, nsstbufr files
 export MAKE_PREPBUFR="YES"  # Generate prepbufr, etc. files by executing obsproc

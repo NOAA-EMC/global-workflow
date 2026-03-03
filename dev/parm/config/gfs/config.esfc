@@ -26,6 +26,11 @@ if [[ "${DO_JEDIATMENS}" == "YES" || "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
+# Turn off NST if DOENKFONLY_ATM is YES
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+   export DONST="NO"
+fi
+
 if [[ "${RUN/enkf}" == "gfs" ]]; then  
     echo "turning off gsi soilda for gfs run"
     DO_GSISOILDA="NO"
