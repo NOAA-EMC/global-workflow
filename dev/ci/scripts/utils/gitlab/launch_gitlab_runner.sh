@@ -235,11 +235,16 @@ launch_runner() {
     # Check port availability before launching
     check_port_available "${METRICS_PORT}" || {
         local port_status=$?
-        if [[ ${port_status} -eq 2 ]]; then
+        if [[ ${port_status} -eq 1 ]]; then
+            log_msg "FATAL: Cannot launch — metrics port ${METRICS_PORT} already used by another GitLab Runner"
+            exit 1
+        elif [[ ${port_status} -eq 2 ]]; then
             log_msg "FATAL: Cannot launch — metrics port ${METRICS_PORT} occupied by non-runner service"
             exit 1
+        else
+            log_msg "FATAL: Cannot launch — metrics port ${METRICS_PORT} unavailable (status=${port_status})"
+            exit 1
         fi
-        # port_status 1 means occupied by another runner — proceed with caution
     }
 
     COMMAND="nohup ./gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR} --listen-address localhost:${METRICS_PORT}"
