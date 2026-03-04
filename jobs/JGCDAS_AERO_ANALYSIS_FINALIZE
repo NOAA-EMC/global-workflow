@@ -29,7 +29,7 @@ EXSCRIPT=${GDASAEROFINALPY:-${SCRgcafs}/exgcdas_aero_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
