@@ -47,7 +47,7 @@ EXSCRIPT=${ANLSTATSPY:-${SCRgcafs}/exgcdas_aero_analysis_stats.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
