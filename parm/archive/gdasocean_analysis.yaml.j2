@@ -22,6 +22,19 @@ gdasocean_analysis:
         - '{{ COMIN_CONF }}/{{ head }}soca_ensb.yaml'
         - '{{ COMIN_CONF }}/{{ head }}soca_ensweights.yaml'
         {% endif %}
+       
+        # extra marine ensemble statistics (off by default) 
+        {% if ARCH_MARINE_ENS and NMEM_ENS > 2 %}
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}ens_weights.nc'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}bkgerr_ens_stddev.nc'
+        - '{{ COMIN_ICE_BMATRIX }}/{{ head }}ens_weights.nc'
+        - '{{ COMIN_ICE_BMATRIX }}/{{ head }}recentering_error.nc'
+        - '{{ COMIN_ICE_BMATRIX }}/{{ head }}bkgerr_ens_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}ssh_steric_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}ssh_unbal_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}ssh_total_stddev.nc'
+        - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}steric_explained_variance.nc'
+        {% endif %}
 
         # runtime configs
         - '{{ COMIN_CONF }}/{{ head }}soca_setcorscales.yaml'

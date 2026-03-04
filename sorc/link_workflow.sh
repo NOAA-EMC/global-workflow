@@ -95,6 +95,15 @@ for package in "${packages[@]}"; do
     ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
 
+# Link wxflow to ush/python
+cd "${HOMEgfs}/ush/python" || exit 1
+if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+    if [[ -s "wxflow" ]]; then
+        rm -f "wxflow"
+    fi
+    ${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
+fi
+
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
     mkdir -p "${HOMEgfs}/fix" || exit 1
@@ -448,6 +457,7 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEgfs}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin"/gdas* ./
+    cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/satbias2ioda.x" ./satbias2ioda.x
     cp -f "${HOMEgfs}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
 fi
 
