@@ -26,7 +26,7 @@ export PREFIX="${RUN}.t${cyc}z."
 "${SCRgcafs}/exgcafs_atmos_products.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
