@@ -101,7 +101,7 @@ fi
 "${FORECASTSH:-${SCRgcafs}/exgcdas_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 # Send DBN alerts for EnKF
