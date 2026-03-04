@@ -21,7 +21,7 @@ EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRgcafs}/exgcdas_prep_emissions.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Error executing ${EXSCRIPT}, ABORT!"
+  err_exit "Error executing ${EXSCRIPT}, ABORT!"
 fi
 
 ##############################################
