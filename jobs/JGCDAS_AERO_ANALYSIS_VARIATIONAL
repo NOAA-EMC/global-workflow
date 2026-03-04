@@ -19,7 +19,7 @@ EXSCRIPT=${GDASAEROVARSH:-${SCRgcafs}/exgcdas_aero_analysis_variational.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
