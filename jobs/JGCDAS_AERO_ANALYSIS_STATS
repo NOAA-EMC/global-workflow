@@ -23,12 +23,12 @@ mkdir -m 755 -p "${COMOUT_ATMOS_ANLMON}"
 mkdir -m 755 -p "${COMOUT_CONF}"
 
 if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        COMIN_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-        COMOUT_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-        COMOUT_AERO_ANLMON:COM_CHEM_ANLMON_TMPL
-    mkdir -m 755 -p "${COMOUT_AERO_ANALYSIS}"
-    mkdir -m 755 -p "${COMOUT_AERO_ANLMON}"
+  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
+    COMOUT_AERO_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
+    COMOUT_AERO_ANLMON:COM_CHEM_ANLMON_TMPL
+  mkdir -m 755 -p "${COMOUT_AERO_ANALYSIS}"
+  mkdir -m 755 -p "${COMOUT_AERO_ANLMON}"
 fi
 
 if [[ "${DO_JEDISNOWDA:-NO}" == "YES" ]]; then
