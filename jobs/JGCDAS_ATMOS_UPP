@@ -23,7 +23,7 @@ mkdir -p "${COMOUT_ATMOS_MASTER}"
 "${SCRgcafs}/exgcdas_atmos_upp.py" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
