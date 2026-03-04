@@ -26,7 +26,7 @@ EXSCRIPT=${GDASAEROBMATPY:-${SCRgcafs}/exgcdas_aero_analysis_generate_bmatrix.py
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
