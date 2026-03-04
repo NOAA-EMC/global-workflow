@@ -166,7 +166,7 @@ fi
 if [[ ! -f gitlab-runner ]]; then
     log_msg "Downloading gitlab-runner binary..."
     case "$(uname -m)" in
-        x86_64)  RUNNER_ARCH="amd64" ;;
+        x86_64) RUNNER_ARCH="amd64" ;;
         aarch64) RUNNER_ARCH="arm64" ;;
         *)       log_msg "ERROR: Unsupported architecture: $(uname -m)"; exit 1 ;;
     esac
