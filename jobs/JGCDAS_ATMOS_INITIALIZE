@@ -41,7 +41,7 @@ ${EXSCRIPT}
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "${EXSCRIPT} returned a non-zero status!"
+  err_exit "${EXSCRIPT} returned a non-zero status!"
 fi
 
 ##########################################
