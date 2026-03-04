@@ -262,7 +262,7 @@ check_runner_status() {
 launch_runner() {
     # Kill any orphaned process — on the runner's host if it's a different node
     local stale_pids
-    stale_pids=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" 2>/dev/null || true)
+    stale_pids=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" 2> /dev/null || true)
     if [[ -n "${stale_pids}" ]]; then
         if [[ "${RUNNER_ON_REMOTE}" == "True" ]]; then
             log_msg "Killing stale gitlab-runner on remote host ${RUNNER_HOST_NODE}: PIDs ${stale_pids}"
