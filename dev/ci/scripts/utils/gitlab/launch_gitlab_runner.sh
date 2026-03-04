@@ -237,6 +237,7 @@ check_runner_status() {
 
     # Tier 1: Is the process running? (node-local — SSH if remote)
     if run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" > /dev/null 2>&1; then
+        # shellcheck disable=SC2311
         RUNNER_PID=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" 2> /dev/null | head -1)
         RUNNER_PROCESS_ALIVE="True"
     else
@@ -262,6 +263,7 @@ check_runner_status() {
 launch_runner() {
     # Kill any orphaned process — on the runner's host if it's a different node
     local stale_pids
+    # shellcheck disable=SC2311
     stale_pids=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" 2> /dev/null || true)
     if [[ -n "${stale_pids}" ]]; then
         if [[ "${RUNNER_ON_REMOTE}" == "True" ]]; then
