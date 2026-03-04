@@ -165,9 +165,14 @@ fi
 # Download the GitLab runner binary if it does not exist
 if [[ ! -f gitlab-runner ]]; then
     log_msg "Downloading gitlab-runner binary..."
-    curl -L --output "${PWD}/gitlab-runner" https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+    case "$(uname -m)" in
+        x86_64)  RUNNER_ARCH="amd64" ;;
+        aarch64) RUNNER_ARCH="arm64" ;;
+        *)       log_msg "ERROR: Unsupported architecture: $(uname -m)"; exit 1 ;;
+    esac
+    curl -L --output "${PWD}/gitlab-runner" "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-${RUNNER_ARCH}"
     chmod +x ./gitlab-runner
-    log_msg "gitlab-runner binary downloaded"
+    log_msg "gitlab-runner binary downloaded (${RUNNER_ARCH})"
 fi
 
 #########################################################################
