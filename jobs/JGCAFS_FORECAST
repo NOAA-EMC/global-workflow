@@ -77,13 +77,13 @@ if [[ "${DO_OCN}" == "YES" ]]; then
 fi
 
 if [[ "${DO_ICE}" == "YES" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
-        COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
-        COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
-        COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
-    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-        COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
+    COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
+    COMOUT_ICE_RESTART:COM_ICE_RESTART_TMPL \
+    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL
+  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+    COMIN_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
 fi
 
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
