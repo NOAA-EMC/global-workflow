@@ -56,12 +56,12 @@ else
 fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
-        COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-        COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
-        COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
-    RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
-        COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+  YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx \
+    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
+    COMOUT_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
+    COMOUT_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL
+  RUN="${rCDUMP}" YMD="${gPDY}" HH="${gcyc}" declare_from_tmpl -rx \
+    COMIN_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
 fi
 
 if [[ "${DO_OCN}" == "YES" ]]; then
