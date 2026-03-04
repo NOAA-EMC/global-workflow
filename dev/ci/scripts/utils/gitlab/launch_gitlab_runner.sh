@@ -168,7 +168,10 @@ if [[ ! -f gitlab-runner ]]; then
     case "$(uname -m)" in
         x86_64) RUNNER_ARCH="amd64" ;;
         aarch64) RUNNER_ARCH="arm64" ;;
-        *)       log_msg "ERROR: Unsupported architecture: $(uname -m)"; exit 1 ;;
+        *)
+            log_msg "ERROR: Unsupported architecture: $(uname -m)"
+            exit 1
+            ;;
     esac
     curl -L --output "${PWD}/gitlab-runner" "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-${RUNNER_ARCH}"
     chmod +x ./gitlab-runner
