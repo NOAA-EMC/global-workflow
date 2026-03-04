@@ -52,7 +52,7 @@ cd "${DATAROOT}" || (
   exit 1
 )
 if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
+  rm -rf "${DATA}"
 fi
 
 exit 0
