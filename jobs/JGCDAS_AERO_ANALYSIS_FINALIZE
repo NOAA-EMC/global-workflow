@@ -52,7 +52,7 @@ if [[ ${err} -ne 0 ]]; then
   err_exit
 fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
+  rm -rf "${DATA}"
 fi
 
 exit 0
