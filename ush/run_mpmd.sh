@@ -114,11 +114,12 @@ chunk_mpmd() {
     local _counter=1
     while IFS= read -r line; do
         if [[ ${_counter} -ge ${_start_line} && ${_counter} -le ${_end_line} ]]; then
+            local i=$((_counter - _start_line))
             # Slurm requires a counter in front of each line in the script
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
-                echo "$((_counter - _start_line)) ${line}" >> "${chunk_file}"
+                echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${line} > mpmd.${_counter}.out 2>&1" >> "${chunk_file}"
+                echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then
@@ -192,7 +193,9 @@ for ((i = 0; i < nm; i += chunk_size)); do
         echo "ERROR: Failed to create chunk file '${chunk_file}' from '${cmdfile}'"
         break
     fi
-    n_mpmd_tasks=$(wc -l < "${chunk_file}")
+    chmod 755 "${chunk_file}"
+    # Count the number of lines not including commented lines (i.e. shebangs)
+    n_mpmd_tasks=$(grep -v -c "^ *#" < "${chunk_file}")
     if [[ "${_mpmd_launcher}" == "srun" ]]; then
         unset_strict
         # shellcheck disable=SC2086
@@ -200,7 +203,7 @@ for ((i = 0; i < nm; i += chunk_size)); do
         set_strict
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # shellcheck disable=SC2086
-        ${launcher:-} -np "${n_mpmd_tasks}" "${chunk_file}"
+        ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
     fi
     err=$?
     if [[ ${err} -ne 0 ]]; then
