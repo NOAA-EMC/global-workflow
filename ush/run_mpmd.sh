@@ -96,9 +96,20 @@ chunk_mpmd() {
         return 1
     fi
 
+    if [[ -f "${chunk_file}" ]]; then
+        echo "ERROR: chunk file '${chunk_file}' already exists!"
+        return 1
+    fi
+
     # Determine which line to start reading from
     local _start_line=$(((chunk_num - 1) * chunk_sz + 1))
     local _end_line=$((chunk_num * chunk_sz))
+
+
+    # mpiexec needs to know the interpreter
+    if [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
+        echo "#!/usr/bin/bash" > "${chunk_file}"
+    fi
 
     local _counter=1
     while IFS= read -r line; do
@@ -107,7 +118,7 @@ chunk_mpmd() {
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
                 echo "$((_counter - _start_line)) ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${line}" >> "${chunk_file}"
+                echo "${line} > mpmd.${_counter}.out 2>&1" >> "${chunk_file}"
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then
@@ -170,9 +181,6 @@ else
     chunk_size=${nm}
 fi
 
-# Disable error checking for MPMD execution.
-in_shellopts=${SHELLOPTS}
-set +e
 # Start chunking through the MPMD command file.
 chunk_num=1
 err=0
@@ -185,12 +193,14 @@ for ((i = 0; i < nm; i += chunk_size)); do
         break
     fi
     n_mpmd_tasks=$(wc -l < "${chunk_file}")
-    # shellcheck disable=SC2086
     if [[ "${_mpmd_launcher}" == "srun" ]]; then
+        unset_strict
+        # shellcheck disable=SC2086
         ${launcher:-} ${mpmd_opt:-} -n "${n_mpmd_tasks}" "${chunk_file}"
+        set_strict
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # shellcheck disable=SC2086
-        ${launcher:-} ${mpmd_opt:-} -np "${n_mpmd_tasks}" "${chunk_file}"
+        ${launcher:-} -np "${n_mpmd_tasks}" "${chunk_file}"
     fi
     err=$?
     if [[ ${err} -ne 0 ]]; then
@@ -219,7 +229,5 @@ if [[ -s mpmd.out ]]; then
 else
     echo "WARNING: No output files found for MPMD job"
 fi
-
-export SHELLOPTS="${in_shellopts}"
 
 exit "${err}"
