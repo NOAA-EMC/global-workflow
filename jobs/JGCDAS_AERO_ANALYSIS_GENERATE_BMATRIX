@@ -46,7 +46,7 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
