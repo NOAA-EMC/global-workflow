@@ -14,9 +14,9 @@ source "${HOMEgcafs}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aero
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL \
-    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+  COMOUT_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
+  COMOUT_CONF:COM_CONF_TMPL \
+  COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
 
 mkdir -m 755 -p "${COMOUT_CHEM_ANALYSIS}"
 mkdir -m 755 -p "${COMOUT_ATMOS_RESTART}"
