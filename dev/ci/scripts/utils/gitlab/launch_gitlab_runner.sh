@@ -19,6 +19,7 @@ set -e
 #   -h    Print help message
 #
 # Phase 35: Hardened for robust GitLab runner lifecycle management
+# Phase 35b: Cross-node health checks for multi-head-node RDHPCS clusters
 #########################################################################
 
 print_usage() {
@@ -102,6 +103,10 @@ TOKEN_ARG="${1:-}"
 HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 host="$(hostname)"
 
+# Defaults for cross-node state (set properly by check_runner_status)
+RUNNER_ON_REMOTE="False"
+RUNNER_HOST_NODE="${host}"
+
 #########################################################################
 #  Set up runtime environment variables for accounts on supported machines
 #########################################################################
@@ -167,7 +172,26 @@ fi
 
 #########################################################################
 # Health check functions
+#
+# Cross-node awareness (Phase 35b):
+# On multi-head-node RDHPCS clusters (Hera, Ursa, Gaea, etc.), cron
+# jobs can execute on ANY login node. The runner process and its metrics
+# port are only visible on the node where it was launched. When this
+# script runs on a different node, we SSH to the runner's host (recorded
+# in runner.state) for Tier 1 (pgrep) and Tier 2 (curl metrics) checks.
+# SSH between head nodes is passwordless for the same service account.
 #########################################################################
+
+# Run a command on the runner's host node. If the runner is on this node,
+# execute locally; otherwise SSH to the recorded RUNNER_HOST.
+run_on_runner_host() {
+    if [[ "${RUNNER_ON_REMOTE}" == "True" ]]; then
+        ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
+            "${RUNNER_HOST_NODE}" "$*" 2>/dev/null
+    else
+        eval "$*"
+    fi
+}
 
 check_port_available() {
     local port="${1}"
@@ -194,23 +218,32 @@ check_runner_status() {
         METRICS_PORT="${GITLAB_RUNNER_METRICS_PORT:-9252}"
     fi
 
-    # Tier 1: Is the process running?
-    if pgrep -f "gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}" > /dev/null 2>&1; then
-        RUNNER_PID=$(pgrep -f "gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}" | head -1)
+    # Determine if runner is on a different head node (cross-node awareness)
+    RUNNER_HOST_NODE="${RUNNER_HOST:-${host}}"
+    if [[ -n "${RUNNER_HOST_NODE}" && "${RUNNER_HOST_NODE}" != "${host}" ]]; then
+        RUNNER_ON_REMOTE="True"
+        log_msg "Runner was launched on ${RUNNER_HOST_NODE} (current node: ${host}) — using SSH for health checks"
+    else
+        RUNNER_ON_REMOTE="False"
+    fi
+
+    # Tier 1: Is the process running? (node-local — SSH if remote)
+    if run_on_runner_host pgrep -f \"gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}\" > /dev/null 2>&1; then
+        RUNNER_PID=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}\" 2>/dev/null | head -1)
         RUNNER_PROCESS_ALIVE="True"
     else
         RUNNER_PID=""
         RUNNER_PROCESS_ALIVE="False"
     fi
 
-    # Tier 2: Is the metrics endpoint responding? (true liveness probe)
-    if curl -s --max-time 5 "http://localhost:${METRICS_PORT}/metrics" > /dev/null 2>&1; then
+    # Tier 2: Is the metrics endpoint responding? (node-local — SSH if remote)
+    if run_on_runner_host curl -s --max-time 5 "http://localhost:${METRICS_PORT}/metrics" > /dev/null 2>&1; then
         RUNNER_METRICS_ALIVE="True"
     else
         RUNNER_METRICS_ALIVE="False"
     fi
 
-    # Tier 3: Can it reach the GitLab server? (registration validity)
+    # Tier 3: Can it reach the GitLab server? (registration validity — works from any node)
     if ./gitlab-runner verify --name "${GITLAB_RUNNER_NAME}" > /dev/null 2>&1; then
         RUNNER_VERIFIED="True"
     else
@@ -219,14 +252,19 @@ check_runner_status() {
 }
 
 launch_runner() {
-    # Kill any orphaned process
+    # Kill any orphaned process — on the runner's host if it's a different node
     local stale_pids
-    stale_pids=$(pgrep -f "gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}" 2> /dev/null || true)
+    stale_pids=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory ${GITLAB_RUNNER_DIR}\" 2>/dev/null || true)
     if [[ -n "${stale_pids}" ]]; then
-        log_msg "Killing stale gitlab-runner process(es): ${stale_pids}"
-        echo "${stale_pids}" | while read -r pid; do
-            kill "${pid}" 2> /dev/null || true
-        done
+        if [[ "${RUNNER_ON_REMOTE}" == "True" ]]; then
+            log_msg "Killing stale gitlab-runner on remote host ${RUNNER_HOST_NODE}: PIDs ${stale_pids}"
+            run_on_runner_host "kill ${stale_pids}" || true
+        else
+            log_msg "Killing stale gitlab-runner process(es): ${stale_pids}"
+            echo "${stale_pids}" | while read -r pid; do
+                kill "${pid}" 2> /dev/null || true
+            done
+        fi
         sleep 2
     fi
 
@@ -298,6 +336,7 @@ fi
 
 if [[ "${SUBCOMMAND}" == "status" ]]; then
     check_runner_status
+    log_msg "Runner host: ${RUNNER_HOST_NODE} (current node: ${host}, remote: ${RUNNER_ON_REMOTE})"
     log_msg "Process alive: ${RUNNER_PROCESS_ALIVE} (PID: ${RUNNER_PID:-none})"
     log_msg "Metrics endpoint: ${RUNNER_METRICS_ALIVE} (port: ${METRICS_PORT})"
     log_msg "Server verified: ${RUNNER_VERIFIED}"
