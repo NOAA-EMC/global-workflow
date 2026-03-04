@@ -21,8 +21,8 @@ export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
 RUN="gdas" DUMP="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBSPROC:COM_OBSPROC_TMPL \
-    COMINgcafs:COM_GFS_TMPL
+  COMIN_OBSPROC:COM_OBSPROC_TMPL \
+  COMINgcafs:COM_GFS_TMPL
 export COMINgfs_ATMOS_ANALYSIS=${COMINgcafs}/atmos/
 
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
