@@ -32,12 +32,12 @@ if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then
 fi
 
 if [[ "${DO_JEDISNOWDA:-NO}" == "YES" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-        COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-        COMOUT_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL
-    mkdir -m 755 -p "${COMOUT_SNOW_ANALYSIS}"
-    mkdir -m 755 -p "${COMOUT_SNOW_ANLMON}"
+  YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
+    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
+    COMOUT_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL
+  mkdir -m 755 -p "${COMOUT_SNOW_ANALYSIS}"
+  mkdir -m 755 -p "${COMOUT_SNOW_ANLMON}"
 fi
 
 ###############################################################
