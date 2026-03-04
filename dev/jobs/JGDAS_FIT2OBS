@@ -13,8 +13,8 @@ vcyc=${CDATE:8:2}
 
 # These are used by fit2obs, so we can't change them to the standard COM variable names
 # shellcheck disable=SC2153
-YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COMIN_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-RUN=${RUN/enkf/} YMD=${vday} HH=${vcyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL
+declare -rx COMIN_ANALYSIS="${ROTDIR}/${RUN}.${vday}/${vcyc}/analysis/atmos"
+declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${vday}/${vcyc}/obs"
 
 export COM_VRFYARCH=${COM_VRFYARCH:-${ROTDIR}/vrfyarch}
 

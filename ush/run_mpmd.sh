@@ -63,7 +63,7 @@ fi
 if [[ "${USE_CFP}" != "YES" ]]; then
     echo "INFO: Using serial mode for MPMD job"
     chmod 755 "${cmdfile}"
-    bash +x "${cmdfile}" > mpmd.out 2>&1
+    bash +x "${cmdfile}" > mpmd.out 2>&1 && true
     rc=$?
     cat mpmd.out
     exit "${rc}"
@@ -104,7 +104,6 @@ chunk_mpmd() {
     # Determine which line to start reading from
     local _start_line=$(((chunk_num - 1) * chunk_sz + 1))
     local _end_line=$((chunk_num * chunk_sz))
-
 
     # mpiexec needs to know the interpreter
     if [[ "${_mpmd_launcher}" == "mpiexec" ]]; then

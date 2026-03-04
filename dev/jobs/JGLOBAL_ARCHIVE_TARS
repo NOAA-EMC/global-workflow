@@ -13,54 +13,64 @@ fi
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_ANLMON:COM_ATMOS_ANLMON_TMPL \
-    COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
-    COMIN_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL \
-    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_ATMOS_INPUT:COM_ATMOS_INPUT_TMPL \
-    COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL \
-    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
-    COMIN_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
-    COMIN_ATMOS_WMO:COM_ATMOS_WMO_TMPL \
-    COMIN_CHEM_HISTORY:COM_CHEM_HISTORY_TMPL \
-    COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-    COMIN_MED_RESTART:COM_MED_RESTART_TMPL \
-    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-    COMIN_SNOW_ANLMON:COM_SNOW_ANLMON_TMPL \
-    COMIN_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL \
-    COMIN_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL \
-    COMIN_ICE_HISTORY:COM_ICE_HISTORY_TMPL \
-    COMIN_ICE_INPUT:COM_ICE_INPUT_TMPL \
-    COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
-    COMIN_ICE_GRIB:COM_ICE_GRIB_TMPL \
-    COMIN_ICE_NETCDF:COM_ICE_NETCDF_TMPL \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMIN_TOP:COM_TOP_TMPL \
-    COMIN_OCEAN_HISTORY:COM_OCEAN_HISTORY_TMPL \
-    COMIN_OCEAN_RESTART:COM_OCEAN_RESTART_TMPL \
-    COMIN_OCEAN_GRIB:COM_OCEAN_GRIB_TMPL \
-    COMIN_OCEAN_NETCDF:COM_OCEAN_NETCDF_TMPL \
-    COMIN_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-    COMIN_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-    COMIN_WAVE_GRID:COM_WAVE_GRID_TMPL \
-    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-    COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
-    COMIN_WAVE_RESTART:COM_WAVE_RESTART_TMPL \
-    COMIN_ATMOS_OZNMON:COM_ATMOS_OZNMON_TMPL \
-    COMIN_ATMOS_RADMON:COM_ATMOS_RADMON_TMPL \
-    COMIN_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL \
-    COMIN_CONF:COM_CONF_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL \
-    COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL
+# Construct COM paths
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
 
-if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
+declare -rx COMIN_ATMOS_ANLMON="${COMIN}/products/atmos/anlmon"
+declare -rx COMIN_ATMOS_BUFR="${COMIN}/products/atmos/bufr"
+declare -rx COMIN_ATMOS_GEMPAK="${COMIN}/products/atmos/gempak/"
+declare -rx COMIN_ATMOS_GENESIS="${COMIN}/products/atmos/cyclone/genesis_vital"
+declare -rx COMIN_ATMOS_HISTORY="${COMIN}/model/atmos/history"
+declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
+declare -rx COMIN_ATMOS_MASTER="${COMIN}/model/atmos/master"
+declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"
+declare -rx COMIN_ATMOS_TRACK="${COMIN}/products/atmos/cyclone/tracks"
+declare -rx COMIN_ATMOS_WMO="${COMIN}/products/atmos/wmo"
+declare -rx COMIN_CHEM_HISTORY="${COMIN}/model/chem/history"
+declare -rx COMIN_CHEM_ANALYSIS="${COMIN}/analysis/chem"
+declare -rx COMIN_MED_RESTART="${COMIN}/model/med/restart"
+declare -rx COMIN_SNOW_ANALYSIS="${COMIN}/analysis/snow"
+declare -rx COMIN_SNOW_ANLMON="${COMIN}/products/snow/anlmon"
+declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
+declare -rx COMIN_ICE_BMATRIX="${COMIN}/bmatrix/ice"
+declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
+declare -rx COMIN_ICE_INPUT="${COMIN}/model/ice/input"
+declare -rx COMIN_ICE_RESTART="${COMIN}/model/ice/restart"
+declare -rx COMIN_ICE_GRIB="${COMIN}/products/ice/grib2"
+declare -rx COMIN_ICE_NETCDF="${COMIN}/products/ice/netcdf"
+declare -rx COMIN_OBS="${COMIN}/obs"
+declare -rx COMIN_TOP="${COMIN}"
+declare -rx COMIN_OCEAN_HISTORY="${COMIN}/model/ocean/history"
+declare -rx COMIN_OCEAN_RESTART="${COMIN}/model/ocean/restart"
+declare -rx COMIN_OCEAN_GRIB="${COMIN}/products/ocean/grib2"
+declare -rx COMIN_OCEAN_NETCDF="${COMIN}/products/ocean/netcdf"
+declare -rx COMIN_OCEAN_ANALYSIS="${COMIN}/analysis/ocean"
+declare -rx COMIN_OCEAN_BMATRIX="${COMIN}/bmatrix/ocean"
+declare -rx COMIN_WAVE_GRID="${COMIN}/products/wave/gridded"
+declare -rx COMIN_WAVE_HISTORY="${COMIN}/model/wave/history"
+declare -rx COMIN_WAVE_STATION="${COMIN}/products/wave/station"
+declare -rx COMIN_WAVE_RESTART="${COMIN}/model/wave/restart"
+declare -rx COMIN_ATMOS_OZNMON="${COMIN}/products/atmos/oznmon"
+declare -rx COMIN_ATMOS_RADMON="${COMIN}/products/atmos/radmon"
+declare -rx COMIN_ATMOS_MINMON="${COMIN}/products/atmos/minmon"
+declare -rx COMIN_CONF="${COMIN}/conf"
+declare -rx COMOUT_CONF="${COMOUT}/conf"
+declare -rx COMOUT_ATMOS_TRACK="${COMOUT}/products/atmos/cyclone/tracks"
+
+mkdir -p "${COMOUT_CONF}"
+mkdir -p "${COMOUT_ATMOS_TRACK}"
 
 for grid in "0p25" "0p50" "1p00"; do
-    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "COMIN_ATMOS_GRIB_${grid}"="${COMIN}/products/atmos/grib2/${grid}"
 done
 
 ###############################################################
@@ -70,8 +80,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
         for grdID in ${wavepostGRD} ${waveinterpGRD}; do
             process_grdID "${grdID}"
-            YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-                "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+            declare -rx "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"="${COMIN}/products/wave/gridded/${grdNAME}"
             grids_arr+=("${GRDREGION}.${GRDRES}")
         done
         export WAVE_OUT_GRIDS="${grids_arr[*]}"
