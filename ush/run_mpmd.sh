@@ -105,7 +105,6 @@ chunk_mpmd() {
     local _start_line=$(((chunk_num - 1) * chunk_sz + 1))
     local _end_line=$((chunk_num * chunk_sz))
 
-
     # mpiexec needs to know the interpreter
     if [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         echo "#!/usr/bin/bash" > "${chunk_file}"
