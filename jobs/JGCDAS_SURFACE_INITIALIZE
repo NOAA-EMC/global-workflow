@@ -41,7 +41,7 @@ export USE_CFP=YES
 ${SFCANALSH:-${SCRgcafs}/exgcdas_surface_initialize.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+  err_exit
 fi
 
 ##############################################
