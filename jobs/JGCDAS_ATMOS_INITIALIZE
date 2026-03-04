@@ -48,8 +48,8 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || (
-    echo "${DATAROOT} does not exist. ABORT!"
-    exit 1
+  echo "${DATAROOT} does not exist. ABORT!"
+  exit 1
 )
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
