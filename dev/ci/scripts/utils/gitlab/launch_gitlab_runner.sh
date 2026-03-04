@@ -195,7 +195,7 @@ fi
 run_on_runner_host() {
     if [[ "${RUNNER_ON_REMOTE}" == "True" ]]; then
         ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
-            "${RUNNER_HOST_NODE}" "$*" 2>/dev/null
+            "${RUNNER_HOST_NODE}" "$*" 2> /dev/null
     else
         eval "$*"
     fi
