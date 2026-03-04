@@ -68,6 +68,8 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
         echo "${FAILED_JOBS}" > "${LOCKFILE}"
     else
         # No failures, remove lockfile if it exists
-        [[ -f "${LOCKFILE}" ]] && rm -f "${LOCKFILE}"
+        if [[ -f "${LOCKFILE}" ]]; then
+            rm -f "${LOCKFILE}"
+        fi
     fi
 fi
