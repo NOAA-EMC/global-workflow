@@ -12,7 +12,7 @@ export GDATE
 
 BKG_RUN="gdas"
 if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
-    BKG_RUN="gcdas"
+  BKG_RUN="gcdas"
 fi
 
 RUN=${BKG_RUN} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
