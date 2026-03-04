@@ -56,7 +56,8 @@ analysis:
             {% endif %}
 
                 {# Bias Correction Files #}
-                {% for ftype in ["varbc_params.tar"] %}
+                {#TODO: remove abias files when JEDI can cycle bias correction files #}
+                {% for ftype in ["varbc_params.tar", "abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt"] %}
                     {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                     {% endif %}
