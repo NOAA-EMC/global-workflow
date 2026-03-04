@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 if ((10#${ENSMEM:-0} > 0)); then
-    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
-    export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgcafs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+  export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+  export DATA="${DATAjob}/${jobid}"
+  source "${HOMEgcafs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
     export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
