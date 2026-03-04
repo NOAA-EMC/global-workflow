@@ -237,7 +237,7 @@ check_runner_status() {
 
     # Tier 1: Is the process running? (node-local — SSH if remote)
     if run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" > /dev/null 2>&1; then
-        RUNNER_PID=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" 2>/dev/null | head -1)
+        RUNNER_PID=$(run_on_runner_host pgrep -f \"gitlab-runner run --working-directory "${GITLAB_RUNNER_DIR}"\" 2> /dev/null | head -1)
         RUNNER_PROCESS_ALIVE="True"
     else
         RUNNER_PID=""
