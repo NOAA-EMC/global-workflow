@@ -106,7 +106,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-source "${HOMEgfs}/env/${machine}.env" "${env_job}" && true
+source "${HOMEglobal}/env/${machine}.env" "${env_job}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "[${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
