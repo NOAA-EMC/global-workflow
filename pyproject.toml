@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "global-workflow"
+version = "0.1.0"
+description = "NOAA Global Workflow Python Infrastructure"
+readme = "README.md"
+requires-python = "~=3.11"
+authors = [
+    { name = "Barry Baker" }
+]
+license = { text = "BSD-3-Clause" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "certifi",
+    "cftime",
+    "click",
+    "f90nml",
+    "Jinja2",
+    "MarkupSafe",
+    "netCDF4",
+    "numpy",
+    "pandas",
+    "PyYAML",
+    "xarray",
+    # Note: jcb and wxflow are currently local editable installs in requirements_frozen.txt
+    # and should be handled accordingly (e.g., as part of the workspace or installed manually).
+]
+
+[project.optional-dependencies]
+gcafs = [
+    # GCAFS Specific dependencies if any are identified later
+]
+globus = [
+    "globus-cli",
+]
+gfs = [
+    # GFS specific dependencies if any are identified later
+]
+gefs = [
+    # GEFS specific dependencies if any are identified later
+]
+sfs = [
+    # SFS specific dependencies if any are identified later
+]
+testing = [
+    "pytest",
+    "pytest-cov",
+    "pycodestyle",
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "sphinxcontrib-bibtex",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+]
+deployment = [
+    "pip-tools"
+]
+all = [
+    "global-workflow[gcafs,globus,gfs,gefs,sfs,testing,docs,deployment]",
+]
+
+[tool.setuptools]
+package-dir = {"" = "ush/python"}
+packages = ["pygfs", "wxflow", "jcb", "ufsda", "soca", "pyiodaconv", "gsincdiag_to_ioda"]
+
+[tool.pytest.ini_options]
+testpaths = ["dev/test", "dev/ctests"]
+python_files = "*.py"
