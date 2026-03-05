@@ -4,8 +4,8 @@
 # Standard environment variables for all J-Jobs.
 #
 # Source at the top of every J-Job before jjob_shell_setup.sh:
-#   source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
-#   source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
+#   source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#   source "${HOMEgfs}/ush/jjob_shell_setup.sh"
 #
 # Sets variables defined in NCO HPC Implementation Standards Table 1:
 #   https://github.com/NCO-HPC/nws-hpc-standards/blob/develop/docs/standards.rst
