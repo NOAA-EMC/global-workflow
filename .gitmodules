@@ -10,23 +10,23 @@
   url = https://github.com/NOAA-EMC/gfs-utils
 [submodule "sorc/ufs_utils.fd"]
   path = sorc/ufs_utils.fd
-  url = https://github.com/AntonMFernando-NOAA/UFS_UTILS
+  url = https://github.com/ufs-community/UFS_UTILS.git
 [submodule "sorc/verif-global.fd"]
   path = sorc/verif-global.fd
-  url = https://github.com/AntonMFernando-NOAA/EMC_verif-global
+  url = https://github.com/NOAA-EMC/EMC_verif-global.git
 [submodule "sorc/gsi_enkf.fd"]
   path = sorc/gsi_enkf.fd
   url = https://github.com/NOAA-EMC/GSI.git
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
-  url = https://github.com/AntonMFernando-NOAA/GDASApp
+  url = https://github.com/NOAA-EMC/GDASApp.git
   ignore = dirty
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
   url = https://github.com/NOAA-EMC/GSI-Utils.git
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
-  url = https://github.com/AntonMFernando-NOAA/GSI-Monitor
+  url = https://github.com/NOAA-EMC/GSI-Monitor.git
 [submodule "sorc/nexus.fd"]
   path = sorc/nexus.fd
   url = https://github.com/NOAA-OAR-ARL/NEXUS.git
