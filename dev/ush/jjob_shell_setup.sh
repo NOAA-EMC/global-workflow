@@ -32,8 +32,8 @@ _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 ##############################################
 source "${USHglobal}/wait_for_file.sh"
 source "${USHglobal}/dataroot_com_path.sh"
-source "${HOMEglobal}/dev/ush/timer.sh"
-source "${HOMEglobal}/dev/ush/err_exit.sh"
+source "${USHglobal}/timer.sh"
+source "${USHglobal}/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
