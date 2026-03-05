@@ -6,21 +6,35 @@
 # Source after jjob_standard_vars.sh at the top of every J-Job.
 #
 # Handles:
-#   - Sourcing bash_utils.sh for shared shell utility functions
+#   - Sourcing utility functions (wait_for_file, dataroot_com_path, timer,
+#       err_exit, set_strict, postamble)
 #   - Setting shell options (nullglob)
-#   - Sourcing set_strict.sh and exporting strict mode/trace functions
+#   - Exporting all utility functions to subshells
 #   - Activating strict mode (set -eu) and tracing (set -x)
 #   - Setting up the postamble EXIT trap for script timing and cleanup
 #   - Running setpdy.sh and sourcing PDY date variables
 #
-# Requires in environment (set by jjob_standard_vars.sh):
-#   HOMEgfs, USHglobal, start_time
+# Requires in environment:
+#   HOMEgfs (mandatory)
+#   USHglobal, start_time (defaulted here if not already set)
 #######
 
 ##############################################
-# Bash utility functions and shell options
+# Shell defaults (allow sourcing without jjob_standard_vars.sh)
 ##############################################
-source "${HOMEgfs}/ush/bash_utils.sh"
+# Ensure USHglobal is set for scripts that source this file directly
+# (e.g. preamble.sh callers such as run_mpmd.sh)
+: "${USHglobal:=${HOMEgfs}/ush}"
+export start_time=${start_time:-$(date +%s)}
+_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
+
+##############################################
+# Utility functions
+##############################################
+source "${USHglobal}/wait_for_file.sh"
+source "${USHglobal}/dataroot_com_path.sh"
+source "${HOMEgfs}/dev/ush/timer.sh"
+source "${HOMEgfs}/dev/ush/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
@@ -29,12 +43,16 @@ shopt -s nullglob # Allow null globs instead of treating * as literal
 source "${USHglobal}/set_strict.sh"
 export SHELLOPTS
 
-# Export strict mode, trace, postamble, and err_exit functions to subshells
+# Export all utility functions to subshells
 declare -xf set_strict
 declare -xf unset_strict
 declare -xf set_trace
 declare -xf postamble
 declare -xf err_exit
+declare -xf wait_for_file
+declare -xf dataroot_com_path
+declare -xf tick
+declare -xf tock
 
 # Activate strict mode and tracing
 set_strict

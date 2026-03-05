@@ -1,9 +1,6 @@
 #! /usr/bin/env bash
 set -x
 source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
-#shellcheck disable=SC2155
-
-source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
 source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
 
