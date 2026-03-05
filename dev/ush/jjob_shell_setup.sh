@@ -9,7 +9,7 @@
 #   - Sourcing utility functions (wait_for_file, dataroot_com_path, timer,
 #       err_exit, set_strict, postamble)
 #   - Setting shell options (nullglob)
-#   - Exporting all utility functions to subshells
+#   - Each utility script exports its own functions via declare -xf
 #   - Activating strict mode (set -eu) and tracing (set -x)
 #   - Setting up the postamble EXIT trap for script timing and cleanup
 #   - Running setpdy.sh and sourcing PDY date variables
@@ -40,19 +40,8 @@ shopt -s nullglob # Allow null globs instead of treating * as literal
 ##############################################
 # Shell options, strict mode, and tracing
 ##############################################
-source "${USHglobal}/set_strict.sh"
+source "${USHglobal}/set_strict_trace.sh"
 export SHELLOPTS
-
-# Export all utility functions to subshells
-declare -xf set_strict
-declare -xf unset_strict
-declare -xf set_trace
-declare -xf postamble
-declare -xf err_exit
-declare -xf wait_for_file
-declare -xf dataroot_com_path
-declare -xf tick
-declare -xf tock
 
 # Activate strict mode and tracing
 set_strict

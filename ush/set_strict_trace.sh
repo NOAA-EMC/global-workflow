@@ -5,7 +5,7 @@
 # J-jobs and ex-scripts.
 #
 # Source this file to load the functions into the current shell:
-#   source "${USHglobal}/set_strict.sh"
+#   source "${USHglobal}/set_strict_trace.sh"
 #######
 
 set_strict() {
