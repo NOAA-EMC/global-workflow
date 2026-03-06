@@ -106,11 +106,9 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         gmemchar="mem"$(printf %03i "${smem}")
         memchar="mem"$(printf %03i "${imem}")
 
-        MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
-            COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+        declare -x COMOUT_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
-        MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
-            COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
+        declare -x COMIN_ATMOS_HISTORY_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/history
 
         # TODO: remove deadlinks and refer https://github.com/NOAA-EMC/global-workflow/issues/4405
         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"

@@ -1,0 +1,13 @@
+defaults:
+  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
+base:
+  DOIAU: "NO"
+  DO_JEDIATMVAR: "NO"
+  DO_JEDIATMENS: "YES"
+  DOENKFONLY_ATM: "YES"
+  DO_TEST_MODE: "NO"
+  CASE_ANL: "C48"
+  CASE_HIST: "C96"
+  DONST: "NO"
+  DO_ARCHCOM: "YES"
+  USE_IODADIR: "YES"

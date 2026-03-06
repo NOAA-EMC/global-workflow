@@ -20,11 +20,13 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/obs"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+if [[ ${DOENKFONLY_ATM:-"NO"} == "YES" ]]; then
+    declare -rx COMIN_ATMOS_ANALYSIS_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/ensstat/analysis/atmos"
+else
+    declare -rx COMIN_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+fi
 
 ###############################################################
 # Run relevant script

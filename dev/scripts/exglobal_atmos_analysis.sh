@@ -155,7 +155,7 @@ OMPSNPNC=${OMPSNPNC:-${COMIN_OBS}/OMPSNP.${PDY}_${cyc}z.nc}
 OMPSLPNC=${OMPSLPNC:-${COMIN_OBS}/OMPS-LPoz-Vis.${PDY}_${cyc}z.nc}
 MLS55NC=${MLS55NC:-${COMIN_OBS}/MLS-v5.0-oz.${PDY}_${cyc}z.nc}
 SAILDRONE=${SAILDRONE:-${COMIN_OBS}/${OPREFIX}saldrn.tm00.bufr_d${OSUFFIX}}
-GSBBF=${GSBBF:-${COMIN_OBS}/${OPREFIX}gsbprf.tm00.bufr_d${OSUFFIX}}
+GSBBF=${GSBBF:-${COMIN_OBS}/${OPREFIX}gsbpfl.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
@@ -600,8 +600,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
 
     for imem in $(seq 1 "${NMEM_ENS}"); do
         memchar="mem$(printf %03i "${imem}")"
-        MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-            COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+        declare -x COMIN_ATMOS_HISTORY=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${memchar}/model/atmos/history
 
         for fhr in ${fhrs}; do
             ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}${ENKF_SUFFIX}atm.f0${fhr}.nc" "./ensemble_data/sigf${fhr}_ens_${memchar}"

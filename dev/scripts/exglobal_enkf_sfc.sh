@@ -173,17 +173,13 @@ if [[ "${DOIAU}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+            declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
-            MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-                COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+            declare -x COMIN_ATMOS_RESTART_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/restart
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+            declare -x COMIN_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
+            declare -x COMIN_SNOW_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/snow
 
             # determine where the input snow restart files come from
             snow_prefix=""
@@ -228,8 +224,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+            declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
             if [[ ${TILE_NUM} -eq 1 ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
@@ -258,14 +253,11 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
+            declare -x COMIN_SNOW_ANALYSIS_MEM=${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/${gmemchar}/analysis/snow
 
-            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-                COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+            declare -x COMIN_ATMOS_RESTART_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/restart
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+            declare -x COMIN_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
             # determine where the input snow restart files come from
             snow_prefix=""
@@ -306,8 +298,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+            declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
             if [[ ! -d "${COMOUT_ATMOS_RESTART_MEM}" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
