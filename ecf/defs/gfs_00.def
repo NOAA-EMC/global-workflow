@@ -4,7 +4,7 @@ extern /emc_dev/gfs_v17_0/primary/18/gdas/product/atmos
 extern /emc_dev/gfs_v17_0/primary/18/enkfgdas/forecast
 extern /emc_dev/gfs_v17_0/primary/18/enkfgdas/analysis/recenter/ecen/jenkfgdas_echgres
 
-suite gfs_v17_0
+suite gfs_v17_0_d1
   family primary
     edit gfs_ver 'v17.0'
     edit PACKAGEHOME '/lfs/h3/emc/eib/noscrub/%EMC_USER%/gfs/para/packages/gfs.%gfs_ver%'
@@ -37,9 +37,9 @@ suite gfs_v17_0
             task jgfs_marine_prep_fsm
               edit RJN 'prep'
               trigger :TIME >= 0300 and :TIME < 0330
-              event 1 release_jgfs_marine_prepoceanobs
+              event 1 release_gfs_marine_prepoceanobs
             task jgfs_marine_prepoceanobs
-              trigger jgfs_marine_prep_fsm:release_jgfs_marine_prepoceanobs
+              trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
           endfamily		//marine
         endfamily		//prep
         family init
@@ -66,7 +66,7 @@ suite gfs_v17_0
             task jgfs_atmos_sfcanl
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_snowanl==complete
             task jgfs_atmos_analcalc
-              trigger jgfs_atmos_anal==complete and jgfs_atmos_sfcanl==complete
+              trigger jgfs_atmos_sfcanl==complete
             task jgfs_atmos_atmanlupp
               trigger jgfs_atmos_analcalc==complete
             task jgfs_atmos_atmanlprod
@@ -477,135 +477,135 @@ suite gfs_v17_0
             event 661 release_gfs_ice_product_f372
             event 662 release_gfs_ice_product_f378
             event 663 release_gfs_ice_product_f384
-            event 700 release_jgfs_atmos_goesupp_f000
-            event 701 release_jgfs_atmos_goesupp_f003
-            event 702 release_jgfs_atmos_goesupp_f006
-            event 703 release_jgfs_atmos_goesupp_f009
-            event 704 release_jgfs_atmos_goesupp_f012
-            event 705 release_jgfs_atmos_goesupp_f015
-            event 706 release_jgfs_atmos_goesupp_f018
-            event 707 release_jgfs_atmos_goesupp_f021
-            event 708 release_jgfs_atmos_goesupp_f024
-            event 709 release_jgfs_atmos_goesupp_f027
-            event 710 release_jgfs_atmos_goesupp_f030
-            event 711 release_jgfs_atmos_goesupp_f033
-            event 712 release_jgfs_atmos_goesupp_f036
-            event 713 release_jgfs_atmos_goesupp_f039
-            event 714 release_jgfs_atmos_goesupp_f042
-            event 715 release_jgfs_atmos_goesupp_f045
-            event 716 release_jgfs_atmos_goesupp_f048
-            event 717 release_jgfs_atmos_goesupp_f051
-            event 718 release_jgfs_atmos_goesupp_f054
-            event 719 release_jgfs_atmos_goesupp_f057
-            event 720 release_jgfs_atmos_goesupp_f060
-            event 721 release_jgfs_atmos_goesupp_f063
-            event 722 release_jgfs_atmos_goesupp_f066
-            event 723 release_jgfs_atmos_goesupp_f069
-            event 724 release_jgfs_atmos_goesupp_f072
-            event 725 release_jgfs_atmos_goesupp_f075
-            event 726 release_jgfs_atmos_goesupp_f078
-            event 727 release_jgfs_atmos_goesupp_f081
-            event 728 release_jgfs_atmos_goesupp_f084
-            event 729 release_jgfs_atmos_goesupp_f087
-            event 730 release_jgfs_atmos_goesupp_f090
-            event 731 release_jgfs_atmos_goesupp_f093
-            event 732 release_jgfs_atmos_goesupp_f096
-            event 733 release_jgfs_atmos_goesupp_f099
-            event 734 release_jgfs_atmos_goesupp_f102
-            event 735 release_jgfs_atmos_goesupp_f105
-            event 736 release_jgfs_atmos_goesupp_f108
-            event 737 release_jgfs_atmos_goesupp_f111
-            event 738 release_jgfs_atmos_goesupp_f114
-            event 739 release_jgfs_atmos_goesupp_f117
-            event 740 release_jgfs_atmos_goesupp_f120
-            event 741 release_jgfs_atmos_goesupp_f123
-            event 742 release_jgfs_atmos_goesupp_f126
-            event 743 release_jgfs_atmos_goesupp_f129
-            event 744 release_jgfs_atmos_goesupp_f132
-            event 745 release_jgfs_atmos_goesupp_f135
-            event 746 release_jgfs_atmos_goesupp_f138
-            event 747 release_jgfs_atmos_goesupp_f141
-            event 748 release_jgfs_atmos_goesupp_f144
-            event 749 release_jgfs_atmos_goesupp_f147
-            event 750 release_jgfs_atmos_goesupp_f150
-            event 751 release_jgfs_atmos_goesupp_f153
-            event 752 release_jgfs_atmos_goesupp_f156
-            event 753 release_jgfs_atmos_goesupp_f159
-            event 754 release_jgfs_atmos_goesupp_f162
-            event 755 release_jgfs_atmos_goesupp_f165
-            event 756 release_jgfs_atmos_goesupp_f168
-            event 757 release_jgfs_atmos_goesupp_f171
-            event 758 release_jgfs_atmos_goesupp_f174
-            event 759 release_jgfs_atmos_goesupp_f177
-            event 760 release_jgfs_atmos_goesupp_f180
-            event 761 release_jgfs_atmos_goesupp_f183
-            event 762 release_jgfs_atmos_goesupp_f186
-            event 763 release_jgfs_atmos_goesupp_f189
-            event 764 release_jgfs_atmos_goesupp_f192
-            event 765 release_jgfs_atmos_goesupp_f195
-            event 766 release_jgfs_atmos_goesupp_f198
-            event 767 release_jgfs_atmos_goesupp_f201
-            event 768 release_jgfs_atmos_goesupp_f204
-            event 769 release_jgfs_atmos_goesupp_f207
-            event 770 release_jgfs_atmos_goesupp_f210
-            event 771 release_jgfs_atmos_goesupp_f213
-            event 772 release_jgfs_atmos_goesupp_f216
-            event 773 release_jgfs_atmos_goesupp_f219
-            event 774 release_jgfs_atmos_goesupp_f222
-            event 775 release_jgfs_atmos_goesupp_f225
-            event 776 release_jgfs_atmos_goesupp_f228
-            event 777 release_jgfs_atmos_goesupp_f231
-            event 778 release_jgfs_atmos_goesupp_f234
-            event 779 release_jgfs_atmos_goesupp_f237
-            event 780 release_jgfs_atmos_goesupp_f240
-            event 781 release_jgfs_atmos_goesupp_f243
-            event 782 release_jgfs_atmos_goesupp_f246
-            event 783 release_jgfs_atmos_goesupp_f249
-            event 784 release_jgfs_atmos_goesupp_f252
-            event 785 release_jgfs_atmos_goesupp_f255
-            event 786 release_jgfs_atmos_goesupp_f258
-            event 787 release_jgfs_atmos_goesupp_f261
-            event 788 release_jgfs_atmos_goesupp_f264
-            event 789 release_jgfs_atmos_goesupp_f267
-            event 790 release_jgfs_atmos_goesupp_f270
-            event 791 release_jgfs_atmos_goesupp_f273
-            event 792 release_jgfs_atmos_goesupp_f276
-            event 793 release_jgfs_atmos_goesupp_f279
-            event 794 release_jgfs_atmos_goesupp_f282
-            event 795 release_jgfs_atmos_goesupp_f285
-            event 796 release_jgfs_atmos_goesupp_f288
-            event 797 release_jgfs_atmos_goesupp_f291
-            event 798 release_jgfs_atmos_goesupp_f294
-            event 799 release_jgfs_atmos_goesupp_f297
-            event 800 release_jgfs_atmos_goesupp_f300
-            event 801 release_jgfs_atmos_goesupp_f303
-            event 802 release_jgfs_atmos_goesupp_f306
-            event 803 release_jgfs_atmos_goesupp_f309
-            event 804 release_jgfs_atmos_goesupp_f312
-            event 805 release_jgfs_atmos_goesupp_f315
-            event 806 release_jgfs_atmos_goesupp_f318
-            event 807 release_jgfs_atmos_goesupp_f321
-            event 808 release_jgfs_atmos_goesupp_f324
-            event 809 release_jgfs_atmos_goesupp_f327
-            event 810 release_jgfs_atmos_goesupp_f330
-            event 811 release_jgfs_atmos_goesupp_f333
-            event 812 release_jgfs_atmos_goesupp_f336
-            event 813 release_jgfs_atmos_goesupp_f339
-            event 814 release_jgfs_atmos_goesupp_f342
-            event 815 release_jgfs_atmos_goesupp_f345
-            event 816 release_jgfs_atmos_goesupp_f348
-            event 817 release_jgfs_atmos_goesupp_f351
-            event 818 release_jgfs_atmos_goesupp_f354
-            event 819 release_jgfs_atmos_goesupp_f357
-            event 820 release_jgfs_atmos_goesupp_f360
-            event 821 release_jgfs_atmos_goesupp_f363
-            event 822 release_jgfs_atmos_goesupp_f366
-            event 823 release_jgfs_atmos_goesupp_f369
-            event 824 release_jgfs_atmos_goesupp_f372
-            event 825 release_jgfs_atmos_goesupp_f375
-            event 826 release_jgfs_atmos_goesupp_f378
-            event 827 release_jgfs_atmos_goesupp_f381
-            event 828 release_jgfs_atmos_goesupp_f384
+            event 700 release_gfs_atmos_goesupp_f000
+            event 701 release_gfs_atmos_goesupp_f003
+            event 702 release_gfs_atmos_goesupp_f006
+            event 703 release_gfs_atmos_goesupp_f009
+            event 704 release_gfs_atmos_goesupp_f012
+            event 705 release_gfs_atmos_goesupp_f015
+            event 706 release_gfs_atmos_goesupp_f018
+            event 707 release_gfs_atmos_goesupp_f021
+            event 708 release_gfs_atmos_goesupp_f024
+            event 709 release_gfs_atmos_goesupp_f027
+            event 710 release_gfs_atmos_goesupp_f030
+            event 711 release_gfs_atmos_goesupp_f033
+            event 712 release_gfs_atmos_goesupp_f036
+            event 713 release_gfs_atmos_goesupp_f039
+            event 714 release_gfs_atmos_goesupp_f042
+            event 715 release_gfs_atmos_goesupp_f045
+            event 716 release_gfs_atmos_goesupp_f048
+            event 717 release_gfs_atmos_goesupp_f051
+            event 718 release_gfs_atmos_goesupp_f054
+            event 719 release_gfs_atmos_goesupp_f057
+            event 720 release_gfs_atmos_goesupp_f060
+            event 721 release_gfs_atmos_goesupp_f063
+            event 722 release_gfs_atmos_goesupp_f066
+            event 723 release_gfs_atmos_goesupp_f069
+            event 724 release_gfs_atmos_goesupp_f072
+            event 725 release_gfs_atmos_goesupp_f075
+            event 726 release_gfs_atmos_goesupp_f078
+            event 727 release_gfs_atmos_goesupp_f081
+            event 728 release_gfs_atmos_goesupp_f084
+            event 729 release_gfs_atmos_goesupp_f087
+            event 730 release_gfs_atmos_goesupp_f090
+            event 731 release_gfs_atmos_goesupp_f093
+            event 732 release_gfs_atmos_goesupp_f096
+            event 733 release_gfs_atmos_goesupp_f099
+            event 734 release_gfs_atmos_goesupp_f102
+            event 735 release_gfs_atmos_goesupp_f105
+            event 736 release_gfs_atmos_goesupp_f108
+            event 737 release_gfs_atmos_goesupp_f111
+            event 738 release_gfs_atmos_goesupp_f114
+            event 739 release_gfs_atmos_goesupp_f117
+            event 740 release_gfs_atmos_goesupp_f120
+            event 741 release_gfs_atmos_goesupp_f123
+            event 742 release_gfs_atmos_goesupp_f126
+            event 743 release_gfs_atmos_goesupp_f129
+            event 744 release_gfs_atmos_goesupp_f132
+            event 745 release_gfs_atmos_goesupp_f135
+            event 746 release_gfs_atmos_goesupp_f138
+            event 747 release_gfs_atmos_goesupp_f141
+            event 748 release_gfs_atmos_goesupp_f144
+            event 749 release_gfs_atmos_goesupp_f147
+            event 750 release_gfs_atmos_goesupp_f150
+            event 751 release_gfs_atmos_goesupp_f153
+            event 752 release_gfs_atmos_goesupp_f156
+            event 753 release_gfs_atmos_goesupp_f159
+            event 754 release_gfs_atmos_goesupp_f162
+            event 755 release_gfs_atmos_goesupp_f165
+            event 756 release_gfs_atmos_goesupp_f168
+            event 757 release_gfs_atmos_goesupp_f171
+            event 758 release_gfs_atmos_goesupp_f174
+            event 759 release_gfs_atmos_goesupp_f177
+            event 760 release_gfs_atmos_goesupp_f180
+            event 761 release_gfs_atmos_goesupp_f183
+            event 762 release_gfs_atmos_goesupp_f186
+            event 763 release_gfs_atmos_goesupp_f189
+            event 764 release_gfs_atmos_goesupp_f192
+            event 765 release_gfs_atmos_goesupp_f195
+            event 766 release_gfs_atmos_goesupp_f198
+            event 767 release_gfs_atmos_goesupp_f201
+            event 768 release_gfs_atmos_goesupp_f204
+            event 769 release_gfs_atmos_goesupp_f207
+            event 770 release_gfs_atmos_goesupp_f210
+            event 771 release_gfs_atmos_goesupp_f213
+            event 772 release_gfs_atmos_goesupp_f216
+            event 773 release_gfs_atmos_goesupp_f219
+            event 774 release_gfs_atmos_goesupp_f222
+            event 775 release_gfs_atmos_goesupp_f225
+            event 776 release_gfs_atmos_goesupp_f228
+            event 777 release_gfs_atmos_goesupp_f231
+            event 778 release_gfs_atmos_goesupp_f234
+            event 779 release_gfs_atmos_goesupp_f237
+            event 780 release_gfs_atmos_goesupp_f240
+            event 781 release_gfs_atmos_goesupp_f243
+            event 782 release_gfs_atmos_goesupp_f246
+            event 783 release_gfs_atmos_goesupp_f249
+            event 784 release_gfs_atmos_goesupp_f252
+            event 785 release_gfs_atmos_goesupp_f255
+            event 786 release_gfs_atmos_goesupp_f258
+            event 787 release_gfs_atmos_goesupp_f261
+            event 788 release_gfs_atmos_goesupp_f264
+            event 789 release_gfs_atmos_goesupp_f267
+            event 790 release_gfs_atmos_goesupp_f270
+            event 791 release_gfs_atmos_goesupp_f273
+            event 792 release_gfs_atmos_goesupp_f276
+            event 793 release_gfs_atmos_goesupp_f279
+            event 794 release_gfs_atmos_goesupp_f282
+            event 795 release_gfs_atmos_goesupp_f285
+            event 796 release_gfs_atmos_goesupp_f288
+            event 797 release_gfs_atmos_goesupp_f291
+            event 798 release_gfs_atmos_goesupp_f294
+            event 799 release_gfs_atmos_goesupp_f297
+            event 800 release_gfs_atmos_goesupp_f300
+            event 801 release_gfs_atmos_goesupp_f303
+            event 802 release_gfs_atmos_goesupp_f306
+            event 803 release_gfs_atmos_goesupp_f309
+            event 804 release_gfs_atmos_goesupp_f312
+            event 805 release_gfs_atmos_goesupp_f315
+            event 806 release_gfs_atmos_goesupp_f318
+            event 807 release_gfs_atmos_goesupp_f321
+            event 808 release_gfs_atmos_goesupp_f324
+            event 809 release_gfs_atmos_goesupp_f327
+            event 810 release_gfs_atmos_goesupp_f330
+            event 811 release_gfs_atmos_goesupp_f333
+            event 812 release_gfs_atmos_goesupp_f336
+            event 813 release_gfs_atmos_goesupp_f339
+            event 814 release_gfs_atmos_goesupp_f342
+            event 815 release_gfs_atmos_goesupp_f345
+            event 816 release_gfs_atmos_goesupp_f348
+            event 817 release_gfs_atmos_goesupp_f351
+            event 818 release_gfs_atmos_goesupp_f354
+            event 819 release_gfs_atmos_goesupp_f357
+            event 820 release_gfs_atmos_goesupp_f360
+            event 821 release_gfs_atmos_goesupp_f363
+            event 822 release_gfs_atmos_goesupp_f366
+            event 823 release_gfs_atmos_goesupp_f369
+            event 824 release_gfs_atmos_goesupp_f372
+            event 825 release_gfs_atmos_goesupp_f375
+            event 826 release_gfs_atmos_goesupp_f378
+            event 827 release_gfs_atmos_goesupp_f381
+            event 828 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
             trigger ../analysis/atmos==complete and ../init/marine==complete and ../analysis/marine==complete
         endfamily		//forecast
@@ -3042,519 +3042,519 @@ suite gfs_v17_0
               task jgfs_atmos_goesupp_f000
                 edit FHR '000'
                 edit FHR_LIST '0'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f000
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f000
               task jgfs_atmos_goesupp_f003
                 edit FHR '003'
                 edit FHR_LIST '3'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f003
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f003
               task jgfs_atmos_goesupp_f006
                 edit FHR '006'
                 edit FHR_LIST '6'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f006
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f006
               task jgfs_atmos_goesupp_f009
                 edit FHR '009'
                 edit FHR_LIST '9'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f009
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f009
               task jgfs_atmos_goesupp_f012
                 edit FHR '012'
                 edit FHR_LIST '12'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f012
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f012
               task jgfs_atmos_goesupp_f015
                 edit FHR '015'
                 edit FHR_LIST '15'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f015
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f015
               task jgfs_atmos_goesupp_f018
                 edit FHR '018'
                 edit FHR_LIST '18'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f018
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f018
               task jgfs_atmos_goesupp_f021
                 edit FHR '021'
                 edit FHR_LIST '21'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f021
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f021
               task jgfs_atmos_goesupp_f024
                 edit FHR '024'
                 edit FHR_LIST '24'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f024
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f024
               task jgfs_atmos_goesupp_f027
                 edit FHR '027'
                 edit FHR_LIST '27'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f027
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f027
               task jgfs_atmos_goesupp_f030
                 edit FHR '030'
                 edit FHR_LIST '30'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f030
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f030
               task jgfs_atmos_goesupp_f033
                 edit FHR '033'
                 edit FHR_LIST '33'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f033
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f033
               task jgfs_atmos_goesupp_f036
                 edit FHR '036'
                 edit FHR_LIST '36'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f036
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f036
               task jgfs_atmos_goesupp_f039
                 edit FHR '039'
                 edit FHR_LIST '39'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f039
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f039
               task jgfs_atmos_goesupp_f042
                 edit FHR '042'
                 edit FHR_LIST '42'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f042
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f042
               task jgfs_atmos_goesupp_f045
                 edit FHR '045'
                 edit FHR_LIST '45'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f045
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f045
               task jgfs_atmos_goesupp_f048
                 edit FHR '048'
                 edit FHR_LIST '48'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f048
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f048
               task jgfs_atmos_goesupp_f051
                 edit FHR '051'
                 edit FHR_LIST '51'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f051
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f051
               task jgfs_atmos_goesupp_f054
                 edit FHR '054'
                 edit FHR_LIST '54'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f054
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f054
               task jgfs_atmos_goesupp_f057
                 edit FHR '057'
                 edit FHR_LIST '57'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f057
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f057
               task jgfs_atmos_goesupp_f060
                 edit FHR '060'
                 edit FHR_LIST '60'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f060
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f060
               task jgfs_atmos_goesupp_f063
                 edit FHR '063'
                 edit FHR_LIST '63'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f063
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f063
               task jgfs_atmos_goesupp_f066
                 edit FHR '066'
                 edit FHR_LIST '66'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f066
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f066
               task jgfs_atmos_goesupp_f069
                 edit FHR '069'
                 edit FHR_LIST '69'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f069
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f069
               task jgfs_atmos_goesupp_f072
                 edit FHR '072'
                 edit FHR_LIST '72'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f072
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f072
               task jgfs_atmos_goesupp_f075
                 edit FHR '075'
                 edit FHR_LIST '75'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f075
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f075
               task jgfs_atmos_goesupp_f078
                 edit FHR '078'
                 edit FHR_LIST '78'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f078
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f078
               task jgfs_atmos_goesupp_f081
                 edit FHR '081'
                 edit FHR_LIST '81'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f081
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f081
               task jgfs_atmos_goesupp_f084
                 edit FHR '084'
                 edit FHR_LIST '84'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f084
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f084
               task jgfs_atmos_goesupp_f087
                 edit FHR '087'
                 edit FHR_LIST '87'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f087
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f087
               task jgfs_atmos_goesupp_f090
                 edit FHR '090'
                 edit FHR_LIST '90'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f090
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f090
               task jgfs_atmos_goesupp_f093
                 edit FHR '093'
                 edit FHR_LIST '93'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f093
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f093
               task jgfs_atmos_goesupp_f096
                 edit FHR '096'
                 edit FHR_LIST '96'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f096
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f096
               task jgfs_atmos_goesupp_f099
                 edit FHR '099'
                 edit FHR_LIST '99'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f099
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f099
               task jgfs_atmos_goesupp_f102
                 edit FHR '102'
                 edit FHR_LIST '102'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f102
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f102
               task jgfs_atmos_goesupp_f105
                 edit FHR '105'
                 edit FHR_LIST '105'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f105
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f105
               task jgfs_atmos_goesupp_f108
                 edit FHR '108'
                 edit FHR_LIST '108'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f108
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f108
               task jgfs_atmos_goesupp_f111
                 edit FHR '111'
                 edit FHR_LIST '111'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f111
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f111
               task jgfs_atmos_goesupp_f114
                 edit FHR '114'
                 edit FHR_LIST '114'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f114
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f114
               task jgfs_atmos_goesupp_f117
                 edit FHR '117'
                 edit FHR_LIST '117'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f117
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f117
               task jgfs_atmos_goesupp_f120
                 edit FHR '120'
                 edit FHR_LIST '120'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f120
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f120
               task jgfs_atmos_goesupp_f123
                 edit FHR '123'
                 edit FHR_LIST '123'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f123
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f123
               task jgfs_atmos_goesupp_f126
                 edit FHR '126'
                 edit FHR_LIST '126'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f126
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f126
               task jgfs_atmos_goesupp_f129
                 edit FHR '129'
                 edit FHR_LIST '129'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f129
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f129
               task jgfs_atmos_goesupp_f132
                 edit FHR '132'
                 edit FHR_LIST '132'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f132
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f132
               task jgfs_atmos_goesupp_f135
                 edit FHR '135'
                 edit FHR_LIST '135'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f135
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f135
               task jgfs_atmos_goesupp_f138
                 edit FHR '138'
                 edit FHR_LIST '138'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f138
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f138
               task jgfs_atmos_goesupp_f141
                 edit FHR '141'
                 edit FHR_LIST '141'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f141
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f141
               task jgfs_atmos_goesupp_f144
                 edit FHR '144'
                 edit FHR_LIST '144'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f144
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f144
               task jgfs_atmos_goesupp_f147
                 edit FHR '147'
                 edit FHR_LIST '147'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f147
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f147
               task jgfs_atmos_goesupp_f150
                 edit FHR '150'
                 edit FHR_LIST '150'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f150
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f150
               task jgfs_atmos_goesupp_f153
                 edit FHR '153'
                 edit FHR_LIST '153'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f153
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f153
               task jgfs_atmos_goesupp_f156
                 edit FHR '156'
                 edit FHR_LIST '156'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f156
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f156
               task jgfs_atmos_goesupp_f159
                 edit FHR '159'
                 edit FHR_LIST '159'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f159
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f159
               task jgfs_atmos_goesupp_f162
                 edit FHR '162'
                 edit FHR_LIST '162'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f162
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f162
               task jgfs_atmos_goesupp_f165
                 edit FHR '165'
                 edit FHR_LIST '165'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f165
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f165
               task jgfs_atmos_goesupp_f168
                 edit FHR '168'
                 edit FHR_LIST '168'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f168
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f168
               task jgfs_atmos_goesupp_f171
                 edit FHR '171'
                 edit FHR_LIST '171'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f171
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f171
               task jgfs_atmos_goesupp_f174
                 edit FHR '174'
                 edit FHR_LIST '174'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f174
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f174
               task jgfs_atmos_goesupp_f177
                 edit FHR '177'
                 edit FHR_LIST '177'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f177
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f177
               task jgfs_atmos_goesupp_f180
                 edit FHR '180'
                 edit FHR_LIST '180'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f180
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f180
               task jgfs_atmos_goesupp_f183
                 edit FHR '183'
                 edit FHR_LIST '183'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f183
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f183
               task jgfs_atmos_goesupp_f186
                 edit FHR '186'
                 edit FHR_LIST '186'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f186
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f186
               task jgfs_atmos_goesupp_f189
                 edit FHR '189'
                 edit FHR_LIST '189'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f189
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f189
               task jgfs_atmos_goesupp_f192
                 edit FHR '192'
                 edit FHR_LIST '192'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f192
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f192
               task jgfs_atmos_goesupp_f195
                 edit FHR '195'
                 edit FHR_LIST '195'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f195
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f195
               task jgfs_atmos_goesupp_f198
                 edit FHR '198'
                 edit FHR_LIST '198'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f198
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f198
               task jgfs_atmos_goesupp_f201
                 edit FHR '201'
                 edit FHR_LIST '201'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f201
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f201
               task jgfs_atmos_goesupp_f204
                 edit FHR '204'
                 edit FHR_LIST '204'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f204
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f204
               task jgfs_atmos_goesupp_f207
                 edit FHR '207'
                 edit FHR_LIST '207'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f207
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f207
               task jgfs_atmos_goesupp_f210
                 edit FHR '210'
                 edit FHR_LIST '210'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f210
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f210
               task jgfs_atmos_goesupp_f213
                 edit FHR '213'
                 edit FHR_LIST '213'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f213
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f213
               task jgfs_atmos_goesupp_f216
                 edit FHR '216'
                 edit FHR_LIST '216'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f216
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f216
               task jgfs_atmos_goesupp_f219
                 edit FHR '219'
                 edit FHR_LIST '219'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f219
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f219
               task jgfs_atmos_goesupp_f222
                 edit FHR '222'
                 edit FHR_LIST '222'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f222
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f222
               task jgfs_atmos_goesupp_f225
                 edit FHR '225'
                 edit FHR_LIST '225'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f225
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f225
               task jgfs_atmos_goesupp_f228
                 edit FHR '228'
                 edit FHR_LIST '228'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f228
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f228
               task jgfs_atmos_goesupp_f231
                 edit FHR '231'
                 edit FHR_LIST '231'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f231
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f231
               task jgfs_atmos_goesupp_f234
                 edit FHR '234'
                 edit FHR_LIST '234'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f234
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f234
               task jgfs_atmos_goesupp_f237
                 edit FHR '237'
                 edit FHR_LIST '237'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f237
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f237
               task jgfs_atmos_goesupp_f240
                 edit FHR '240'
                 edit FHR_LIST '240'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f240
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f240
               task jgfs_atmos_goesupp_f243
                 edit FHR '243'
                 edit FHR_LIST '243'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f243
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f243
               task jgfs_atmos_goesupp_f246
                 edit FHR '246'
                 edit FHR_LIST '246'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f246
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f246
               task jgfs_atmos_goesupp_f249
                 edit FHR '249'
                 edit FHR_LIST '249'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f249
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f249
               task jgfs_atmos_goesupp_f252
                 edit FHR '252'
                 edit FHR_LIST '252'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f252
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f252
               task jgfs_atmos_goesupp_f255
                 edit FHR '255'
                 edit FHR_LIST '255'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f255
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f255
               task jgfs_atmos_goesupp_f258
                 edit FHR '258'
                 edit FHR_LIST '258'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f258
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f258
               task jgfs_atmos_goesupp_f261
                 edit FHR '261'
                 edit FHR_LIST '261'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f261
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f261
               task jgfs_atmos_goesupp_f264
                 edit FHR '264'
                 edit FHR_LIST '264'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f264
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f264
               task jgfs_atmos_goesupp_f267
                 edit FHR '267'
                 edit FHR_LIST '267'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f267
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f267
               task jgfs_atmos_goesupp_f270
                 edit FHR '270'
                 edit FHR_LIST '270'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f270
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f270
               task jgfs_atmos_goesupp_f273
                 edit FHR '273'
                 edit FHR_LIST '273'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f273
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f273
               task jgfs_atmos_goesupp_f276
                 edit FHR '276'
                 edit FHR_LIST '276'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f276
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f276
               task jgfs_atmos_goesupp_f279
                 edit FHR '279'
                 edit FHR_LIST '279'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f279
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f279
               task jgfs_atmos_goesupp_f282
                 edit FHR '282'
                 edit FHR_LIST '282'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f282
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f282
               task jgfs_atmos_goesupp_f285
                 edit FHR '285'
                 edit FHR_LIST '285'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f285
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f285
               task jgfs_atmos_goesupp_f288
                 edit FHR '288'
                 edit FHR_LIST '288'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f288
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f288
               task jgfs_atmos_goesupp_f291
                 edit FHR '291'
                 edit FHR_LIST '291'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f291
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f291
               task jgfs_atmos_goesupp_f294
                 edit FHR '294'
                 edit FHR_LIST '294'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f294
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f294
               task jgfs_atmos_goesupp_f297
                 edit FHR '297'
                 edit FHR_LIST '297'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f297
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f297
               task jgfs_atmos_goesupp_f300
                 edit FHR '300'
                 edit FHR_LIST '300'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f300
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f300
               task jgfs_atmos_goesupp_f303
                 edit FHR '303'
                 edit FHR_LIST '303'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f303
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f303
               task jgfs_atmos_goesupp_f306
                 edit FHR '306'
                 edit FHR_LIST '306'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f306
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f306
               task jgfs_atmos_goesupp_f309
                 edit FHR '309'
                 edit FHR_LIST '309'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f309
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f309
               task jgfs_atmos_goesupp_f312
                 edit FHR '312'
                 edit FHR_LIST '312'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f312
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f312
               task jgfs_atmos_goesupp_f315
                 edit FHR '315'
                 edit FHR_LIST '315'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f315
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f315
               task jgfs_atmos_goesupp_f318
                 edit FHR '318'
                 edit FHR_LIST '318'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f318
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f318
               task jgfs_atmos_goesupp_f321
                 edit FHR '321'
                 edit FHR_LIST '321'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f321
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f321
               task jgfs_atmos_goesupp_f324
                 edit FHR '324'
                 edit FHR_LIST '324'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f324
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f324
               task jgfs_atmos_goesupp_f327
                 edit FHR '327'
                 edit FHR_LIST '327'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f327
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f327
               task jgfs_atmos_goesupp_f330
                 edit FHR '330'
                 edit FHR_LIST '330'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f330
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f330
               task jgfs_atmos_goesupp_f333
                 edit FHR '333'
                 edit FHR_LIST '333'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f333
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f333
               task jgfs_atmos_goesupp_f336
                 edit FHR '336'
                 edit FHR_LIST '336'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f336
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f336
               task jgfs_atmos_goesupp_f339
                 edit FHR '339'
                 edit FHR_LIST '339'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f339
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f339
               task jgfs_atmos_goesupp_f342
                 edit FHR '342'
                 edit FHR_LIST '342'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f342
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f342
               task jgfs_atmos_goesupp_f345
                 edit FHR '345'
                 edit FHR_LIST '345'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f345
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f345
               task jgfs_atmos_goesupp_f348
                 edit FHR '348'
                 edit FHR_LIST '348'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f348
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f348
               task jgfs_atmos_goesupp_f351
                 edit FHR '351'
                 edit FHR_LIST '351'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f351
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f351
               task jgfs_atmos_goesupp_f354
                 edit FHR '354'
                 edit FHR_LIST '354'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f354
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f354
               task jgfs_atmos_goesupp_f357
                 edit FHR '357'
                 edit FHR_LIST '357'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f357
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f357
               task jgfs_atmos_goesupp_f360
                 edit FHR '360'
                 edit FHR_LIST '360'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f360
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f360
               task jgfs_atmos_goesupp_f363
                 edit FHR '363'
                 edit FHR_LIST '363'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f363
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f363
               task jgfs_atmos_goesupp_f366
                 edit FHR '366'
                 edit FHR_LIST '366'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f366
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f366
               task jgfs_atmos_goesupp_f369
                 edit FHR '369'
                 edit FHR_LIST '369'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f369
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f369
               task jgfs_atmos_goesupp_f372
                 edit FHR '372'
                 edit FHR_LIST '372'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f372
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f372
               task jgfs_atmos_goesupp_f375
                 edit FHR '375'
                 edit FHR_LIST '375'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f375
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f375
               task jgfs_atmos_goesupp_f378
                 edit FHR '378'
                 edit FHR_LIST '378'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f378
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f378
               task jgfs_atmos_goesupp_f381
                 edit FHR '381'
                 edit FHR_LIST '381'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f381
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f381
               task jgfs_atmos_goesupp_f384
                 edit FHR '384'
                 edit FHR_LIST '384'
-                trigger ../../../forecast/jgfs_fcst_fsm:release_jgfs_atmos_goesupp_f384
+                trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_goesupp_f384
             endfamily           //goesupp
           endfamily		//atmos
           family wave
@@ -4010,24 +4010,26 @@ suite gfs_v17_0
           endfamily		//create
           family recenter
             family ecen
-              trigger ../create/jenkfgdas_eupd==complete and ../../../gdas/analysis/atmos/jgdas_atmos_analcalc==complete
-              task jenkfgdas_ecen000
-                edit FHRGRP 000
-                edit FHRLST 003
-              task jenkfgdas_ecen001
-                edit FHRGRP 001
-                edit FHRLST 006
-              task jenkfgdas_ecen002
-                edit FHRGRP 002
-                edit FHRLST 009
-              task jenkfgdas_echgres
-                trigger ../../../../gdas/forecast/jgdas_fcst==complete and ../../../forecast/jenkfgdas_fcst_mem001==complete
-              task jenkfgdas_ediag
-                trigger ../../create/jenkfgdas_eobs==complete
               task jenkfgdas_marineanlecen
                 trigger ../../../../gdas/init/marine/jgdas_marine_bmat_init==complete
               task jenkfgdas_esnowanl
                 trigger ../../../../gdas/prep/atmos/jgdas_atmos_prep==complete and /emc_dev/gfs_v17_0/primary/18/enkfgdas/post==complete
+              task jenkfgdas_ediag
+                trigger ../../create/jenkfgdas_eobs==complete
+              task jenkfgdas_ecen000
+                trigger ../../create/jenkfgdas_eupd==complete and ../../../../gdas/analysis/atmos/jgdas_atmos_analcalc==complete
+                edit FHRGRP '000'
+                edit FHRLST '003'
+              task jenkfgdas_ecen001
+                trigger ../../create/jenkfgdas_eupd==complete and ../../../../gdas/analysis/atmos/jgdas_atmos_analcalc==complete
+                edit FHRGRP '001'
+                edit FHRLST '006'
+              task jenkfgdas_ecen002
+                trigger ../../create/jenkfgdas_eupd==complete and ../../../../gdas/analysis/atmos/jgdas_atmos_analcalc==complete
+                edit FHRGRP '002'
+                edit FHRLST '009'
+              task jenkfgdas_echgres
+                trigger ../../../../gdas/forecast/jgdas_fcst==complete and ../../../forecast/jenkfgdas_fcst_mem001==complete
             endfamily	//ecen
             task jenkfgdas_esfc
               trigger ecen/jenkfgdas_esnowanl==complete and ../create/jenkfgdas_eupd==complete and ../../../gdas/analysis/atmos/jgdas_atmos_analcalc==complete
