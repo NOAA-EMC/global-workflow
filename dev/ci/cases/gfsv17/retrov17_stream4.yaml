@@ -14,7 +14,7 @@ experiment:
   idate: 2025051506
   edate: 2025093018
   icsdir: /gpfs/f6/gfs-cpu/world-shared/role.glopara/RETRO_GFSv17/IC/v3
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_stream4.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/s2sw_stream4.yaml
 
 workflow:
   engine: rocoto

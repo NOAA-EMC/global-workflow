@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 declare -rx COMIN_ATMOS_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
@@ -17,7 +17,7 @@ declare -rx COMIN_SNOW_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/
 # Run archive script
 ###############################################################
 
-"${SCRgfs}/exglobal_enkf_earc_vrfy.py"
+"${SCRglobal}/exglobal_enkf_earc_vrfy.py"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

@@ -42,8 +42,8 @@ def yq(yamlfile, key):
         The value of the specified key in the yaml file.
     """
 
-    HOMEgfs = find_upward('.github')
-    ydict = parse_j2yaml(path=yamlfile, data={'HOMEgfs': HOMEgfs})
+    HOMEglobal = find_upward('.github')
+    ydict = parse_j2yaml(path=yamlfile, data={'HOMEglobal': HOMEglobal})
     if key == 'all':
         return ydict
     list_keys = key.split('.')

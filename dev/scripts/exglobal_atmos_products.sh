@@ -37,7 +37,7 @@ fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
 
-# Files needed by ${USHgfs}/interp_atmos_master.sh
+# Files needed by ${USHglobal}/interp_atmos_master.sh
 MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
 
 # Create an index file for the master
@@ -109,7 +109,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         fi
         input_file="${tmpfile}_${iproc}"
         output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-        echo "${USHgfs}/interp_atmos_master.sh ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/cmdfile"
+        echo "${USHglobal}/interp_atmos_master.sh ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/cmdfile"
 
         # if at final record and have not reached the final processor then write echo's to
         # cmdfile for remaining processors
@@ -122,7 +122,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     done # for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
 
     # Run with MPMD or serial
-    "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+    "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "FATAL ERROR: Some or all interpolations of the master grib file failed during MPMD execution!"
@@ -173,7 +173,7 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
     input_file="${FLUX_FILE}"
     output_file_prefix="sflux_${fhr3}"
     grid_string="1p00"
-    "${USHgfs}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
+    "${USHglobal}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "FATAL ERROR: Unable to interpolate the surface flux grib2 files!"

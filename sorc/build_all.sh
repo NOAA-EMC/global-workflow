@@ -73,26 +73,26 @@ if [[ "${verbose}" == "YES" ]]; then
 fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
-HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+HOMEglobal=$(cd "${script_dir}" && git rev-parse --show-toplevel)
 # Needs to be exported for gw_setup.sh
-export HOMEgfs
+export HOMEglobal
 
 echo "Sourcing global-workflow modules ..."
-source "${HOMEgfs}/dev/ush/gw_setup.sh"
+source "${HOMEglobal}/dev/ush/gw_setup.sh"
 
 # Un-export after gw_setup.sh
-export -n HOMEgfs
+export -n HOMEglobal
 
-cd "${HOMEgfs}/sorc" || exit 1
-mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
+cd "${HOMEglobal}/sorc" || exit 1
+mkdir -p "${HOMEglobal}/sorc/logs" || exit 1
 
 # Delete the rocoto XML and database if they exist
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
 echo "Generating build.xml for building global-workflow programs ..."
-yaml="${HOMEgfs}/sorc/build_opts.yaml"
+yaml="${HOMEglobal}/sorc/build_opts.yaml"
 # shellcheck disable=SC2086,SC2248
-"${HOMEgfs}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
+"${HOMEglobal}/dev/workflow/setup_buildxml.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}" ${debug_opt:-}
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"

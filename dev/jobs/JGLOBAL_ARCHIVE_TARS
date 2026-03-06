@@ -1,16 +1,16 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
 if [[ "${DO_WAVE}" == "YES" ]]; then
     source "${EXPDIR}/config.wave"
-    source "${USHgfs}/wave_domain_grid.sh"
+    source "${USHglobal}/wave_domain_grid.sh"
 fi
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Construct COM paths
@@ -96,7 +96,7 @@ fi
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
 unset_strict
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
+${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_tars.py}
 export err=$?
 set_strict
 if [[ ${err} -ne 0 ]]; then

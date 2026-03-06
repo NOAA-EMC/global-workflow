@@ -3,7 +3,7 @@
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
 #############################################
 #  determine PDY and cyc for previous cycle
@@ -30,7 +30,7 @@ if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p "${TANKverf_rad}"; fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgdas_atmos_verfrad.sh" && true
+"${SCRglobal}/exgdas_atmos_verfrad.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

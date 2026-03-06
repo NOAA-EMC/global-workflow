@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 ##############################################
 # Set variables used in the script
@@ -25,7 +25,7 @@ declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDA
 ###############################################################
 # Run relevant script
 
-${ENKFUPDSH:-${SCRgfs}/exglobal_enkf_update.sh} && true
+${ENKFUPDSH:-${SCRglobal}/exglobal_enkf_update.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

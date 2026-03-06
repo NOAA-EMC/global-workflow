@@ -21,7 +21,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/wave_domain_grid.sh"
+source "${USHglobal}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
@@ -113,7 +113,7 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
         cpreq "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
 
         # 1.d Input template files
-        parmfile="${PARMgfs}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
+        parmfile="${PARMglobal}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
         if [[ -f "${parmfile}" ]]; then
             ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
         else

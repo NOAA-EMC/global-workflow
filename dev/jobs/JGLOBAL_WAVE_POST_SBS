@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsbs"
-source "${USHgfs}/wave_domain_grid.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsbs"
+source "${USHglobal}/wave_domain_grid.sh"
 
 # Set COM Paths
 # shellcheck disable=SC2309
@@ -33,7 +33,7 @@ else
 fi
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_post_gridded_sbs.sh" && true
+"${SCRglobal}/exgfs_wave_post_gridded_sbs.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "ex-script of gridded wave post failed!"
