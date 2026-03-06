@@ -157,7 +157,7 @@ class ArchiveTarVars:
 
         Configuration keys extracted (if present):
         - Basic: ATARDIR, current_cycle, IAUFHRS, RUN, PDY, PSLOT
-        - Archive control: DO_ARCHCOM, ARCHCOM_TO, ROTDIR, PARMgfs, ARCDIR, SDATE, MODE
+        - Archive control: DO_ARCHCOM, ARCHCOM_TO, ROTDIR, PARMglobal, ARCDIR, SDATE, MODE
         - Ensemble: ENSGRP, NMEM_EARCGRP, NMEM_ENS, NMEM_ENS_GFS
         - EnKF operations: DO_CALC_INCREMENT_ENKF_GFS, DO_JEDIATMENS, DO_JEDIATMENS_SPLIT_OBSSOL
         - Forecast: FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS, FHMAX_ENKF, FHOUT_ENKF
@@ -187,14 +187,14 @@ class ArchiveTarVars:
         config_keys = [
             # Basic configuration
             'ATARDIR', 'current_cycle', 'RUN', 'PDY', 'PSLOT', 'NET', 'MODE',
-            'PARMgfs', 'ROTDIR', 'SDATE',
+            'PARMglobal', 'ROTDIR', 'SDATE',
             # Archive control
             'DO_ARCHCOM', 'ARCHCOM_TO', 'ARCDIR',
             # Data assimilation
             'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
             'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
             # Ocean/Ice DA
-            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS',
+            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS', 'ARCH_MARINE_ENS',
             # Archive timing and control
             'ARCH_CYC', 'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
         ]
@@ -207,6 +207,7 @@ class ArchiveTarVars:
                 'ENSGRP', 'NMEM_EARCGRP', 'NMEM_ENS_GFS',
                 # EnKF-specific operations
                 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS', 'DO_JEDIATMENS_SPLIT_OBSSOL', 'DO_CALC_INCREMENT',
+                'DOENKFONLY_ATM',
                 # EnKF forecast configuration
                 'FHMIN_ENKF', 'FHMAX_ENKF_GFS', 'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF',
                 # EnKF settings
@@ -237,7 +238,7 @@ class ArchiveTarVars:
                 'OCNRES', 'ICERES', 'waveGRD', 'WAVE_OUT_GRIDS',
                 # Other
                 'DO_BUFRSND', 'NUM_SND_COLLECTIVES', 'DOBNDPNT_WAVE',
-                'OFFSET_START_HOUR', 'EXPDIR', 'EDATE', 'HOMEgfs',
+                'OFFSET_START_HOUR', 'EXPDIR', 'EDATE', 'HOMEglobal',
                 'DO_GEMPAK', 'DATASETS_YAML', 'TARBALL_TYPE',
             ])
 
@@ -414,17 +415,47 @@ class ArchiveTarVars:
         # Both archive groups require: is_gdas AND SDATE AND specific day/cycle conditions
         sdate = config_dict.get('SDATE')
         arch_warmicfreq = config_dict.get('ARCH_WARMICFREQ', 1)
-        arch_cyc = config_dict.get('ARCH_CYC', 0)
+        arch_cyc_raw = config_dict.get('ARCH_CYC', 0)
+        # Normalize ARCH_CYC to a list of valid cycle hours (0-23), with strict validation.
+        # This behavior is intended to match the archive.py normalization: invalid
+        # configurations raise ValueError rather than being silently corrected.
+        if isinstance(arch_cyc_raw, int):
+            if 0 <= arch_cyc_raw <= 23:
+                arch_cyc_list = [arch_cyc_raw]
+            else:
+                raise ValueError(
+                    f"ARCH_CYC hour out of range (0-23): {arch_cyc_raw!r}"
+                )
+        elif isinstance(arch_cyc_raw, (list, tuple)):
+            arch_cyc_list = []
+            for val in arch_cyc_raw:
+                try:
+                    hour = int(val)
+                except (TypeError, ValueError):
+                    raise ValueError(
+                        f"Invalid ARCH_CYC entry {val!r}; must be integer hours in range 0-23"
+                    ) from None
+                if 0 <= hour <= 23:
+                    arch_cyc_list.append(hour)
+                else:
+                    raise ValueError(
+                        f"ARCH_CYC hour out of range (0-23): {hour!r}"
+                    )
+        else:
+            raise ValueError(
+                f"ARCH_CYC must be an int or a sequence of ints in range 0-23, got {type(arch_cyc_raw).__name__}"
+            )
         assim_freq = config_dict.get('assim_freq', 6)
 
         # Archive timing booleans - increments (group a)
         # Logic: (current_cycle - SDATE).days % ARCH_WARMICFREQ == 0 AND is_gdas AND ARCH_CYC == cycle_HH
         enkf_vars['archive_increments'] = False
         current_cycle_days = (current_cycle - sdate).days
+        cycle_hour = int(current_cycle.strftime("%H"))
         enkf_vars['archive_increments'] = (
             (current_cycle_days % arch_warmicfreq == 0) and
             enkf_vars.get('is_gdas', False) and
-            (arch_cyc == int(current_cycle.strftime("%H")))
+            (cycle_hour in arch_cyc_list)
         )
 
         # Archive timing booleans - ICs (group b)
@@ -435,7 +466,7 @@ class ArchiveTarVars:
         enkf_vars['archive_ics'] = (
             (ics_offset_days % arch_warmicfreq == 0) and
             enkf_vars.get('is_gdas', False) and
-            ((arch_cyc - assim_freq) % 24 == int(current_cycle.strftime("%H")))
+            any((val - assim_freq) % 24 == cycle_hour for val in arch_cyc_list)
         )
 
         # Warm start flags (placeholders for future use)

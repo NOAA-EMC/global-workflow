@@ -77,7 +77,7 @@ class MarineAnalysis(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
+                'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'berror_model': _berror_model,
                 'rst_date': _rst_date,

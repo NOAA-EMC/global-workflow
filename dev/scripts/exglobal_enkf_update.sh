@@ -21,12 +21,12 @@
 cd "${DATA}" || exit 1
 
 # Utilities
-NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-${EXECgfs}/enkf.x}
+ENKFEXEC=${ENKFEXEC:-${EXECglobal}/enkf.x}
 
 APREFIX=${APREFIX:-${RUN}.t${cyc}z.}
 GPREFIX=${GPREFIX:-${RUN}.t${GDATE:8:2}z.}
@@ -74,14 +74,14 @@ else
 fi
 LATA_ENKF=${LATA_ENKF:-${LATB_ENKF}}
 LONA_ENKF=${LONA_ENKF:-${LONB_ENKF}}
-SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
-CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
-OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
-SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS_ENKF}.txt}
-ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS_ENKF}.txt}
-VLOCALEIG=${VLOCALEIG:-${FIXgfs}/gsi/vlocal_eig_l${LEVS_ENKF}.dat}
+SATANGL=${SATANGL:-${FIXglobal}/gsi/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIXglobal}/gsi/global_satinfo.txt}
+CONVINFO=${CONVINFO:-${FIXglobal}/gsi/global_convinfo.txt}
+OZINFO=${OZINFO:-${FIXglobal}/gsi/global_ozinfo.txt}
+SCANINFO=${SCANINFO:-${FIXglobal}/gsi/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIXglobal}/gsi/global_hybens_info.l${LEVS_ENKF}.txt}
+ANAVINFO=${ANAVINFO:-${FIXglobal}/gsi/global_anavinfo.l${LEVS_ENKF}.txt}
+VLOCALEIG=${VLOCALEIG:-${FIXglobal}/gsi/vlocal_eig_l${LEVS_ENKF}.dat}
 ENKF_SUFFIX="s"
 if [[ "${SMOOTH_ENKF:-YES}" == "NO" ]]; then
     ENKF_SUFFIX=""
@@ -95,17 +95,17 @@ cpreq "${HYBENSINFO}" hybens_info
 cpreq "${ANAVINFO}" anavinfo
 cpreq "${VLOCALEIG}" vlocal_eig.dat
 if [[ "${SATINFO}" == "generate" ]]; then
-    "${USHgfs}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
+    "${USHglobal}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
 else
     cpreq "${SATINFO}" satinfo
 fi
 if [[ "${CONVINFO}" == "generate" ]]; then
-    "${USHgfs}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
+    "${USHglobal}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
 else
     cpreq "${CONVINFO}" convinfo
 fi
 if [[ "${OZINFO}" == "generate" ]]; then
-    "${USHgfs}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
+    "${USHglobal}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
 else
     cpreq "${OZINFO}" ozinfo
 fi
@@ -131,11 +131,9 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     gmemchar="mem"$(printf "%03i" "${smem}")
     memchar="mem"$(printf "%03i" "${imem}")
 
-    MEMDIR=${gmemchar} RUN=${GDUMP} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -x \
-        COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
+    declare -x COMIN_ATMOS_HISTORY_MEM_PREV=${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/${gmemchar}/model/atmos/history
 
-    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
-        COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+    declare -x COMOUT_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
     mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
 

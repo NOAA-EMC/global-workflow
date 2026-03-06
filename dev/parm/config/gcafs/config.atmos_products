@@ -26,11 +26,11 @@ elif [[ "${RUN:-}" == "gcafs" ]]; then
 fi
 
 # paramlist files for the different forecast hours and downsets
-export paramlista="${PARMgfs}/product/gcafs.fFFF.paramlist.a.txt"
-export paramlista_anl="${PARMgfs}/product/gcafs.anl.paramlist.a.txt"
-export paramlista_f000="${PARMgfs}/product/gcafs.f000.paramlist.a.txt"
-export paramlistb="${PARMgfs}/product/gcafs.fFFF.paramlist.b.txt"
-export paramlistb_anl="${PARMgfs}/product/gcafs.anl.paramlist.b.txt"
-export paramlistb_f000="${PARMgfs}/product/gcafs.f000.paramlist.b.txt"
+export paramlista="${PARMglobal}/product/gcafs.fFFF.paramlist.a.txt"
+export paramlista_anl="${PARMglobal}/product/gcafs.anl.paramlist.a.txt"
+export paramlista_f000="${PARMglobal}/product/gcafs.f000.paramlist.a.txt"
+export paramlistb="${PARMglobal}/product/gcafs.fFFF.paramlist.b.txt"
+export paramlistb_anl="${PARMglobal}/product/gcafs.anl.paramlist.b.txt"
+export paramlistb_f000="${PARMglobal}/product/gcafs.f000.paramlist.b.txt"
 
 echo "END: config.atmos_products"

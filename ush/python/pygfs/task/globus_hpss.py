@@ -123,7 +123,7 @@ class GlobusHpss(Task):
             Sets of tarballs and instructions for sending them to HPSS via Globus
         """
 
-        globus_parm = os.path.join(globus_dict.PARMgfs, "globus")
+        globus_parm = os.path.join(globus_dict.PARMglobal, "globus")
 
         com_conf = globus_dict.COMIN_CONF
 

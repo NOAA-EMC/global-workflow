@@ -13,13 +13,13 @@
 # M. Klein/HPC   11/2006   Modify to run in production.
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEglobal}/ush/preamble.sh"
 
 export pgm=gdplot2_nc
 source prep_step
 
 device="nc | ukmetver_12.meta"
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume

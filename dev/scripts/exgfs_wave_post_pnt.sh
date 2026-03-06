@@ -82,12 +82,12 @@ done
 # 1.b Output locations file
 
 rm -f buoy.loc
-if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
-    cpreq -f "${PARMgfs}/wave/wave_${NET}.buoys" buoy.loc.temp
+if [[ -f "${PARMglobal}/wave/wave_${NET}.buoys" ]]; then
+    cpreq -f "${PARMglobal}/wave/wave_${NET}.buoys" buoy.loc.temp
     if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
         #only do boundary points
         sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc || {
-            echo "WARNING: No boundary points found in buoy file ${PARMgfs}/wave/wave_${NET}.buoys"
+            echo "WARNING: No boundary points found in buoy file ${PARMglobal}/wave/wave_${NET}.buoys"
             echo "         Ending job without doing anything."
             exit 0
         }
@@ -98,7 +98,7 @@ if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
 fi
 
 if [[ -s buoy.loc ]]; then
-    echo "   buoy.loc and buoy.ibp copied and processed (${PARMgfs}/wave/wave_${NET}.buoys)."
+    echo "   buoy.loc and buoy.ibp copied and processed (${PARMglobal}/wave/wave_${NET}.buoys)."
 else
     export err=3
     err_exit 'NO BUOY LOCATION FILE'
@@ -106,8 +106,8 @@ fi
 
 # 1.c Input template files
 
-if [[ -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ]]; then
-    cpreq -f "${PARMgfs}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
+if [[ -f "${PARMglobal}/wave/ww3_outp_spec.inp.tmpl" ]]; then
+    cpreq -f "${PARMglobal}/wave/ww3_outp_spec.inp.tmpl" ww3_outp_spec.inp.tmpl
 fi
 
 if [[ -f ww3_outp_spec.inp.tmpl ]]; then
@@ -117,8 +117,8 @@ else
     err_exit "NO TEMPLATE FOR SPEC INPUT FILE"
 fi
 
-if [[ -f "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ]]; then
-    cpreq "${PARMgfs}/wave/ww3_outp_bull.inp.tmpl" ww3_outp_bull.inp.tmpl
+if [[ -f "${PARMglobal}/wave/ww3_outp_bull.inp.tmpl" ]]; then
+    cpreq "${PARMglobal}/wave/ww3_outp_bull.inp.tmpl" ww3_outp_bull.inp.tmpl
 fi
 
 if [[ -f ww3_outp_bull.inp.tmpl ]]; then
@@ -171,7 +171,7 @@ ${NLN} "./mod_def.${waveuoutpGRD}" ./mod_def.ww3
 export pgm="${NET,,}_ww3_outp.x"
 source prep_step
 
-"${EXECgfs}/${pgm}" > buoy_lst.loc 2>&1
+"${EXECglobal}/${pgm}" > buoy_lst.loc 2>&1
 export err=$?
 if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
     cat buoy_tmp.loc || true
@@ -232,7 +232,7 @@ if [[ "${DOSPC_WAV}" == "YES" ]]; then
         ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
     export pgm="${NET,,}_ww3_outp.x"
-    "${EXECgfs}/${pgm}"
+    "${EXECglobal}/${pgm}"
 fi
 
 if [[ "${DOBLL_WAV}" == "YES" ]]; then
@@ -244,7 +244,7 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
         -e "s/REFT/${truntime}/g" \
         ww3_outp_bull.inp.tmpl > ww3_outp.inp
     export pgm="${NET,,}_ww3_outp.x"
-    "${EXECgfs}/${pgm}"
+    "${EXECglobal}/${pgm}"
 fi
 
 # --------------------------------------------------------------------------- #
@@ -262,19 +262,19 @@ printf "\n   Making command file for taring all point output files."
 
 if [[ "${DOBNDPNT_WAV}" == "YES" ]]; then
     if [[ "${DOSPC_WAV}" == "YES" ]]; then
-        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibp ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibp_tar.out" >> cmdtarfile
+        echo "${USHglobal}/wave_tar.sh ${WAV_MOD_TAG} ibp ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibp_tar.out" >> cmdtarfile
     fi
     if [[ "${DOBLL_WAV}" == "YES" ]]; then
-        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpbull_tar.out" >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} ibpcbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpcbull_tar.out" >> cmdtarfile
+        echo "${USHglobal}/wave_tar.sh ${WAV_MOD_TAG} ibpbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpbull_tar.out" >> cmdtarfile
+        echo "${USHglobal}/wave_tar.sh ${WAV_MOD_TAG} ibpcbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_ibpcbull_tar.out" >> cmdtarfile
     fi
 else
     if [[ "${DOSPC_WAV}" == "YES" ]]; then
-        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} spec ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_spec_tar.out" >> cmdtarfile
+        echo "${USHglobal}/wave_tar.sh ${WAV_MOD_TAG} spec ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_spec_tar.out" >> cmdtarfile
     fi
     if [[ "${DOBLL_WAV}" == "YES" ]]; then
-        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} bull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_bull_tar.out" >> cmdtarfile
-        echo "${USHgfs}/wave_tar.sh ${WAV_MOD_TAG} cbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_cbull_tar.out" >> cmdtarfile
+        echo "${USHglobal}/wave_tar.sh ${WAV_MOD_TAG} bull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_bull_tar.out" >> cmdtarfile
+        echo "${USHglobal}/wave_tar.sh ${WAV_MOD_TAG} cbull ${Nb} 2>&1 | tee ${WAV_MOD_TAG}_cbull_tar.out" >> cmdtarfile
     fi
 fi
 
@@ -287,7 +287,7 @@ if [[ ${NTASKS} -lt ${ncmds} ]]; then
     fi
 fi
 
-"${USHgfs}/run_mpmd.sh" "${DATA}/cmdtarfile" && true
+"${USHglobal}/run_mpmd.sh" "${DATA}/cmdtarfile" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     export pgm="run_mpmd.sh"
