@@ -1,18 +1,18 @@
 # Paths
-DMPDIR: '/scratch3/NCEPDEV/global/role.glopara/dump'
-BASE_GIT: '/scratch3/NCEPDEV/global/role.glopara/git'
-BASE_DATA: '/scratch3/NCEPDEV/global/role.glopara/data'
+DMPDIR: '/glade/derecho/scratch/kolczynski/temp_global/dump_nr'
+BASE_GIT: '/glade/work/kolczynski/global_externals'
+BASE_DATA: '/glade/derecho/scratch/kolczynski/temp_global/data'
 BASE_IC: '/gpfs/csfs1/work/huangwei/ICSDIR'
 AERO_INPUTS_DIR: '/gpfs/csfs1/work/huangwei/GEFS_ExtData/20250310'
-PACKAGEROOT: '/scratch3/NCEPDEV/global/role.glopara/nwpara'
+PACKAGEROOT: '/glade/derecho/scratch/kolczynski/temp_global/data/nwpara'
 HOMEDIR: '/gpfs/csfs1/work/${USER}'
 STMP: '/lustre/desc1/scratch/${USER}/stmp-retest'
 PTMP: '/lustre/desc1/scratch/${USER}/ptmp-retest'
 NOSCRUB: '${HOMEDIR}'
-COMINsyn: '/scratch3/NCEPDEV/global/role.glopara/com/gfs/prod/syndat'
-COMINecmwf: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/ecmwf'
-COMINnam: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/nam'
-COMINukmet: '/scratch3/NCEPDEV/global/role.glopara/data/external_gempak/ukmet'
+COMINsyn: '/glade/derecho/scratch/kolczynski/temp_global/data/syndat'
+COMINecmwf: '/glade/derecho/scratch/kolczynski/temp_global/data/data/external_gempak/ecmwf'
+COMINnam: '/glade/derecho/scratch/kolczynski/temp_global/data/data/external_gempak/nam'
+COMINukmet: '/glade/derecho/scratch/kolczynski/temp_global/data/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: pbspro
 QUEUE: develop
