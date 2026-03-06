@@ -9,45 +9,44 @@
 step=$1
 
 case ${step} in
-  "prep")
+"prep")
     export ntasks=12
     export tasks_per_node=12
     ;;
 
-  "stage_ic")
-    ;;
+"stage_ic") ;;
 
-  "fcst" | "efcs" | "wavepostpnt")
+"fcst" | "efcs" | "wavepostpnt")
     export tasks_per_nodes=${max_tasks_per_node}
     ;;
 
-  "anal" | "analcalc" | "analdiag")
+"anal" | "analcalc" | "analdiag")
     export threads_per_task=1
     export tasks_per_node=${max_tasks_per_node}
     ;;
 
-  "echgres")
+"echgres")
     export is_exclusive="True"
     ;;
 
-  "sfcanl")
+"sfcanl")
     export is_exclusive="False"
-    export threads_per_task=1 
+    export threads_per_task=1
     export tasks_per_node=${ntiles:-6}
     ;;
 
-  "epos" | "ecen")
+"epos" | "ecen")
     export is_exclusive="False"
     export threads_per_task=1
 
     # Set ntasks to number of ens members and distribute tasks evenly across nodes
     export ntasks="${NMEM_ENS}"
     max_tasks_per_node=24
-    NNODES=$(( (ntasks + max_tasks_per_node - 1) / max_tasks_per_node ))
-    export tasks_per_node=$(( (ntasks + NNODES - 1) / NNODES ))
+    NNODES=$(((ntasks + max_tasks_per_node - 1) / max_tasks_per_node))
+    export tasks_per_node=$(((ntasks + NNODES - 1) / NNODES))
     ;;
 
-  "eobs")
+"eobs")
     walltime="00:20:00"
     # NOTE The number of tasks and cores used must be the same for eobs
     # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
@@ -55,45 +54,45 @@ case ${step} in
     export tasks_per_node=20
     ;;
 
-  "ediag")
+"ediag")
     export is_exclusive="True"
     ;;
 
-  "eupd")
+"eupd")
     export threads_per_task=1
     export tasks_per_node=${max_tasks_per_node}
     ;;
 
-  "esfc")
+"esfc")
     export is_exclusive="True"
     export tasks_per_node=40
     ;;
 
-  "upp")
+"upp")
     export tasks_per_node=${max_tasks_per_node}
     ;;
 
-  "fit2obs")
+"fit2obs")
     case "${CASE}" in
-      "C1152")
+    "C1152")
         export tasks_per_node=1
         ;;
-      "C768")
+    "C768")
         export tasks_per_node=1
         ;;
-      *)
+    *)
         export tasks_per_node=3
         ;;
     esac
     ;;
 
-  "atmos_products")
+"atmos_products")
     max_tasks_per_node=24
     tasks_per_node=24
     export is_exclusive="False"
     ;;
 
-  *)
+*)
     export is_exclusive="False"
     ;;
 
