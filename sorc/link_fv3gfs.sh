@@ -35,7 +35,7 @@ if [ $machine == "cray" ]; then
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16.3.0"
 elif [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_nco_gfsv16.3.22"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_nco_gfsv16.3.30"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16.3.22"
 elif [ $machine = "orion" ]; then
