@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 # TODO (#1222) This job is not part of the rocoto suite
 
@@ -8,7 +8,7 @@ source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
 # GFS GEMPAK META PRODUCT GENERATION
 ############################################
 source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
-source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ###############################################
 # Set MP variables

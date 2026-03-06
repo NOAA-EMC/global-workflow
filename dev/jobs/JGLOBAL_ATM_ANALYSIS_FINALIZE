@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfinal"
-source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script

@@ -1,12 +1,12 @@
 #!/bin/bash
 set -x
-source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"
 export DATA="${DATAjob}/marineanlvar"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlfinal" -c "base marineanl marineanlfinal"
-source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
