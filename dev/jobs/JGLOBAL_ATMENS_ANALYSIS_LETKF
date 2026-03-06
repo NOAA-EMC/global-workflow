@@ -2,13 +2,13 @@
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl atmensanlletkf"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl atmensanlletkf"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -18,7 +18,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSRUNSH:-${SCRgfs}/exglobal_atmens_analysis_letkf.py}
+EXSCRIPT=${GDASATMENSRUNSH:-${SCRglobal}/exglobal_atmens_analysis_letkf.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

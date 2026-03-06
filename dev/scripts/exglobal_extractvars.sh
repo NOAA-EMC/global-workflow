@@ -9,12 +9,12 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/extractvars_tools.sh"
+source "${USHglobal}/extractvars_tools.sh"
 
 # Scripts used
-EXTRCTVARA="${USHgfs}/atmos_extractvars.sh"
-EXTRCTVARO="${USHgfs}/ocnice_extractvars.sh"
-EXTRCTVARW="${USHgfs}/wave_extractvars.sh"
+EXTRCTVARA="${USHglobal}/atmos_extractvars.sh"
+EXTRCTVARO="${USHglobal}/ocnice_extractvars.sh"
+EXTRCTVARW="${USHglobal}/wave_extractvars.sh"
 
 # Set FHMAX_HF_GFS equal to FHMAX_GFS if FHMAX_HF_GFS is greater than FHMAX_GFS
 if ((FHMAX_GFS < FHMAX_HF_GFS)); then

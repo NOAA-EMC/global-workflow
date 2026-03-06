@@ -15,7 +15,7 @@ import rocoto.rocoto as rocoto
 
 
 _here = os.path.dirname(__file__)
-HOMEgfs = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
+HOMEglobal = os.path.abspath(os.path.join(os.path.abspath(_here), '../..'))
 
 
 def input_args(*argv):
@@ -64,11 +64,11 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.task_name = task_name
     task_dict.cycledef = "build"
     task_dict.maxtries = 1
-    task_dict.command = f"cd {HOMEgfs}/sorc/; {task_spec.command} -j {task_spec.cores}"
+    task_dict.command = f"cd {HOMEglobal}/sorc/; {task_spec.command} -j {task_spec.cores}"
     if host_spec.debug:
         task_dict.command = f"{task_dict.command} -d"
     task_dict.job_name = task_name
-    task_dict.log = f"{HOMEgfs}/sorc/logs/{task_name}.log"
+    task_dict.log = f"{HOMEglobal}/sorc/logs/{task_name}.log"
 
     task_dict.resources = AttrDict()
     task_dict.resources.account = host_spec.account
@@ -236,7 +236,7 @@ def main(*argv):
     strings = ['<?xml version="1.0"?>',
                '<!DOCTYPE workflow', '[', '<!ENTITY PSLOT "build">', ']>',
                f'<workflow realtime="F" scheduler="{host_specs.scheduler}" cyclethrottle="1" taskthrottle="25">',
-               f'\t<log verbosity="10">{HOMEgfs}/sorc/logs/build.log</log>',
+               f'\t<log verbosity="10">{HOMEglobal}/sorc/logs/build.log</log>',
                '\t<cycledef group="build">190001010000 190001010000 24:00:00</cycledef>',
                '\n']
     xml_header = '\n'.join(strings)
@@ -248,7 +248,7 @@ def main(*argv):
     xml_tasks = '\n'.join(task_list)
 
     xml = ''.join([xml_header, xml_tasks, xml_footer])
-    xml_file = f"{HOMEgfs}/sorc/build.xml"
+    xml_file = f"{HOMEglobal}/sorc/build.xml"
     with open(xml_file, 'w') as fh:
         fh.write(xml)
 

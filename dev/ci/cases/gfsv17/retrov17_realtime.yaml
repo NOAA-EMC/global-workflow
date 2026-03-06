@@ -14,7 +14,7 @@ experiment:
   idate: 2025111306
   edate: 2027011600
   icsdir: /lfs/h2/emc/gfstemp/emc.global/comroot/rt17_upd03_realtime 
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_realtime.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/s2sw_realtime.yaml
 
 workflow:
   engine: rocoto

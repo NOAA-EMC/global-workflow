@@ -17,7 +17,7 @@ echo "BEGIN: config.aero"
 # Base directory for aerosol input data files (e.g., initial conditions, climatologies).
 # This path is mounted or staged in the workflow and referenced by the model for reading aerosol fields.
 #---------------------------------------------------------------------------------------------------
-export AERO_INPUTS_DIR="${HOMEgfs}/fix/chem/Emission_data"
+export AERO_INPUTS_DIR="${HOMEglobal}/fix/chem/Emission_data"
 
 #-------------------------------------------------
 # Diag Table and Field Table for GOCART aerosols
@@ -27,8 +27,8 @@ export AERO_INPUTS_DIR="${HOMEgfs}/fix/chem/Emission_data"
 # diag_table.aero: Specifies which aerosol fields to output and at what frequency (used by FMS diagnostics).
 # field_table.aero: Registers prognostic/diagnostic tracers with the FV3 dynamical core (e.g., for advection, diffusion).
 #---------------------------------------------------------------------------------------------------
-export AERO_DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table.aero"
-export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
+export AERO_DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table.aero"
+export AERO_FIELD_TABLE="${PARMglobal}/ufs/fv3/field_table.aero"
 
 #================================================================================
 # Aerosol configuration
@@ -37,7 +37,7 @@ export AERO_FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table.aero"
 # Directory containing GOCART-specific namelists, parameters, and runtime configs (e.g., namelist.aero).
 # Loaded during model initialization to set aerosol scheme parameters like time steps, vertical levels.
 #---------------------------------------------------------------------------------------------------
-export AERO_CONFIG_DIR="${PARMgfs}/ufs/gocart"
+export AERO_CONFIG_DIR="${PARMglobal}/ufs/gocart"
 
 # Aerosol convective scavenging factors (list of string array elements)
 # Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
@@ -81,7 +81,7 @@ export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = fals
 
 #---------------------------------------------------------------------------------------------------
 export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
-export FIRE_EMIS_DIR="${HOMEgfs}/fix/chem/Emission_data/fires_data/GBBEPx/v4" # Directory containing historical fire emissions
+export FIRE_EMIS_DIR="${HOMEglobal}/fix/chem/Emission_data/fires_data/GBBEPx/v4" # Directory containing historical fire emissions
 
 
 #===============================================================================
@@ -101,7 +101,7 @@ export NEXUS_CONFIG="{{ NEXUS_CONFIG | default('gocart') }}" # Options: gocart, 
 # Runtime choice of NEXUS config variant; defaults to gocart for standard aerosol tracers.
 # Overrides via Jinja2 templating in workflow (e.g., for different chemistry schemes).
 #---------------------------------------------------------------------------------------------------
-export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory containing NEXUS configuration files
+export NEXUS_CONFIG_DIR="${PARMglobal}/chem/nexus/${NEXUS_CONFIG}" # Directory containing NEXUS configuration files
 
 # NEXUS Inputs
 #---------------
@@ -112,7 +112,7 @@ export NEXUS_CONFIG_DIR="${PARMgfs}/chem/nexus/${NEXUS_CONFIG}" # Directory cont
 # Specific path for GCAFS external data on this filesystem.
 # Contains emission datasets (e.g., CEDS2019/2024, HTAPv2, CAMS) processed by NEXUS.
 #---------------------------------------------------------------------------------------------------
-export NEXUS_INPUT_DIR="${HOMEgfs}/fix/chem/Emission_data/nexus"
+export NEXUS_INPUT_DIR="${HOMEglobal}/fix/chem/Emission_data/nexus"
 
 
 

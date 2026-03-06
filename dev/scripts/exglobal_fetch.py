@@ -27,7 +27,7 @@ def main():
         fetch = Fetch(config)
 
         # Pull out all the configuration keys needed to run the fetch step
-        keys = ['current_cycle', 'previous_cycle', 'RUN', 'PDY', 'PARMgfs', 'PSLOT', 'ROTDIR',
+        keys = ['current_cycle', 'previous_cycle', 'RUN', 'PDY', 'PARMglobal', 'PSLOT', 'ROTDIR',
                 'FETCH_YAML_TMPL', 'FETCHDIR', 'ntiles', 'DATA', 'DATAROOT', 'waveGRD', 'gdas_version']
 
         fetch_dict = AttrDict()

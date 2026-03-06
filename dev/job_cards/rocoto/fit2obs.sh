@@ -5,7 +5,7 @@ set -x
 ###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -18,7 +18,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN FIT2OBS ==============="
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGDAS_FIT2OBS"
+"${HOMEglobal}/dev/jobs/JGDAS_FIT2OBS"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"

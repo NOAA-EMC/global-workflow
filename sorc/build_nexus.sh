@@ -10,7 +10,7 @@ usage() {
 }
 
 # shellcheck disable=SC2155
-readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
+readonly HOMEglobal_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 
 OPTIND=1
 _opts="-f " # forces a clean build
@@ -34,6 +34,6 @@ shift $((OPTIND - 1))
 # double quoting opts will not work since it is a string of options
 # shellcheck disable=SC2086
 BUILD_JOBS="${BUILD_JOBS:-1}" \
-    ./nexus.fd/build.sh ${_opts} -f -w ${HOMEgfs_}
+    ./nexus.fd/build.sh ${_opts} -f -w ${HOMEglobal_}
 
 exit

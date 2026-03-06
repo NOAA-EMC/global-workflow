@@ -41,16 +41,16 @@
 ##		1. computing grid, ${FIXorog}/$CASE/${CASE}_grid.tile${n}.nc
 ##		2. orography data, ${FIXorog}/$CASE/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc
 ##		3. mosaic data, ${FIXorog}/$CASE/${CASE}_mosaic.nc
-##		4. Global O3 data, ${FIXgfs}/am/${O3FORC}
-##		5. Global H2O data, ${FIXgfs}/am/${H2OFORC}
-##		6. Global solar constant data, ${FIXgfs}/am/global_solarconstant_noaa_an.txt
-##		7. Global surface emissivity, ${FIXgfs}/am/global_sfc_emissivity_idx.txt
-##		8. Global CO2 historical data, ${FIXgfs}/am/global_co2historicaldata_glob.txt
-##		8. Global CO2 monthly data, ${FIXgfs}/am/co2monthlycyc.txt
-##		10. Additional global CO2 data, ${FIXgfs}/am/fix_co2_proj/global_co2historicaldata
+##		4. Global O3 data, ${FIXglobal}/am/${O3FORC}
+##		5. Global H2O data, ${FIXglobal}/am/${H2OFORC}
+##		6. Global solar constant data, ${FIXglobal}/am/global_solarconstant_noaa_an.txt
+##		7. Global surface emissivity, ${FIXglobal}/am/global_sfc_emissivity_idx.txt
+##		8. Global CO2 historical data, ${FIXglobal}/am/global_co2historicaldata_glob.txt
+##		8. Global CO2 monthly data, ${FIXglobal}/am/co2monthlycyc.txt
+##		10. Additional global CO2 data, ${FIXglobal}/am/fix_co2_proj/global_co2historicaldata
 ##		11. Climatological aerosol global distribution
-##			${FIXgfs}/am/global_climaeropac_global.txt
-## 		12. Monthly volcanic forcing ${FIXgfs}/am/global_volcanic_aerosols_YYYY-YYYY.txt
+##			${FIXglobal}/am/global_climaeropac_global.txt
+## 		12. Monthly volcanic forcing ${FIXglobal}/am/global_volcanic_aerosols_YYYY-YYYY.txt
 ##
 ## Data output (location, name)
 ##	If quilting=true and output grid is gaussian grid:
@@ -78,12 +78,12 @@
 #######################
 
 # include all subroutines. Executions later.
-source "${USHgfs}/forecast_predet.sh"       # include functions for variable definition
-source "${USHgfs}/forecast_det.sh"          # include functions for run type determination
-source "${USHgfs}/forecast_postdet.sh"      # include functions for variables after run type determination
-source "${USHgfs}/parsing_ufs_configure.sh" # include functions for ufs_configure processing
+source "${USHglobal}/forecast_predet.sh"       # include functions for variable definition
+source "${USHglobal}/forecast_det.sh"          # include functions for run type determination
+source "${USHglobal}/forecast_postdet.sh"      # include functions for variables after run type determination
+source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_configure processing
 
-source "${USHgfs}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
+source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
@@ -175,7 +175,7 @@ else
     export OMP_NUM_THREADS=${UFS_THREADS:-1}
 fi
 
-cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
+cpreq "${EXECglobal}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

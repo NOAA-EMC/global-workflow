@@ -1,0 +1,17 @@
+certifi==2026.2.25
+cftime==1.6.5
+click==8.3.1
+f90nml==1.5.0
+jcb==0.1.0
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+netCDF4==1.7.4
+numpy==2.4.2
+packaging==26.0
+pandas==3.0.1
+pycodestyle==2.14.0
+python-dateutil==2.9.0.post0
+PyYAML==6.0.3
+six==1.17.0
+wxflow==0.3.0
+xarray==2026.2.0

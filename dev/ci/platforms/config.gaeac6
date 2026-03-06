@@ -27,7 +27,7 @@ export JENKINS_WORK_DIR="${GFS_CI_ROOT}/Jenkins/workspace"
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
 # /gpfs/f6/drsa-precip3/proj-shared/global/CI
-# and is defined in $HOMEgfs/dev/ci/Jenkinsfile
+# and is defined in $HOMEglobal/dev/ci/Jenkinsfile
 
 
 #########################################################################
