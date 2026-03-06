@@ -84,7 +84,7 @@ export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 # Copy fix file for obsproc  # TODO: Why is this necessary?
 if [[ ${RUN} == "gfs" ]]; then
     mkdir -p "${ROTDIR}/fix"
-    cpreq "${FIXgfs}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
+    cpreq "${FIXglobal}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
 fi
 
 ###############################################################
