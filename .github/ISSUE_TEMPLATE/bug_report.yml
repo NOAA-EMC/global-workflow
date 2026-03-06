@@ -46,7 +46,6 @@ body:
         - Gaea-C6
         - Orion
         - Hercules
-        - Jet
         - Cloud
     validations:
       required: true
