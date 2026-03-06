@@ -7,7 +7,7 @@
 
 mkdir -p -m 775 "${DATA}/VER"
 cd "${DATA}/VER" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 MDL=GFS
 metaname="gfsver_${cyc}.meta"

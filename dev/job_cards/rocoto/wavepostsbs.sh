@@ -4,8 +4,8 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-#source "${HOMEgfs}/dev/ush/load_modules.sh" run
-source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
+#source "${HOMEglobal}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufswm
 err=$?
 if [[ "${err}" -ne 0 ]]; then
     exit "${err}"
@@ -22,7 +22,7 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
     fhr3=$(printf '%03d' "${FORECAST_HOUR}")
     jobid="${job}_f${fhr3}.$$"
     # Execute the JJOB
-    "${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_POST_SBS"
+    "${HOMEglobal}/dev/jobs/JGLOBAL_WAVE_POST_SBS"
     err=$?
     if [[ "${err}" -ne 0 ]]; then
         exit "${err}"

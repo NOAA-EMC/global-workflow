@@ -1,5 +1,5 @@
 defaults:
-  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
 
 base:
   DOIAU: "YES"
@@ -32,20 +32,20 @@ prepoceanobs:
   dmpdir_exp: /lfs/h2/emc/da/noscrub/mindo.choi/MARINE_obs/COMROOT/realtime
 
 marinebmat:
-  SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
-  SOCA_ANL_GEOM: {{ HOMEgfs }}/fix/gdas/soca/720x540x75/soca
+  SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
 
 marineanl:
-  SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
-  SOCA_ANL_GEOM: {{ HOMEgfs }}/fix/gdas/soca/720x540x75/soca
-  SOCA_OBS_LIST: {{ HOMEgfs }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2
+  SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
+  SOCA_OBS_LIST: {{ HOMEglobal }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2
   SOCA_NINNER: 100
 
 marineanlecen:
-  SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
-  SOCA_ANL_GEOM: {{ HOMEgfs }}/fix/gdas/soca/720x540x75/soca
+  SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
 
 marineanlletkf:
-  SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
-  SOCA_ANL_GEOM: {{ HOMEgfs }}/fix/gdas/soca/720x540x75/soca
-  SOCA_OBS_LIST: {{ HOMEgfs }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2
+  SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
+  SOCA_OBS_LIST: {{ HOMEglobal }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2

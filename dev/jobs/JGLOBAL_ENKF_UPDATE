@@ -1,18 +1,18 @@
 #! /usr/bin/env bash
 set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 ##############################################
 # Set variables used in the script
@@ -37,7 +37,7 @@ declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDA
 ###############################################################
 # Run relevant script
 
-${ENKFUPDSH:-${SCRgfs}/exglobal_enkf_update.sh} && true
+${ENKFUPDSH:-${SCRglobal}/exglobal_enkf_update.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

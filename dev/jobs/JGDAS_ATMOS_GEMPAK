@@ -1,18 +1,18 @@
 #! /usr/bin/env bash
 set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
@@ -38,7 +38,7 @@ done
 # Execute the script for one degree grib
 ########################################################
 
-"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
+"${SCRglobal}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -49,7 +49,7 @@ fi
 # Execute the script for quater-degree grib
 ########################################################
 
-"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
+"${SCRglobal}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

@@ -167,7 +167,7 @@ for type in "${itype[@]}"; do
             err_exit 'Input type not yet implemented'
             ;;
     esac
-    cpreq "${PARMgfs}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl" ./
+    cpreq "${PARMglobal}/wave/ww3_prnc.${type}.${grdID}.inp.tmpl" ./
 done
 
 # --------------------------------------------------------------------------- #
@@ -182,7 +182,7 @@ if [[ "${WW3ICEINP}" == 'YES' ]]; then
     #     ensemble members
     if [[ "${RUNMEM}" == "-1" || "${WW3ICEIENS}" == "T" || "${waveMEMB}" == "00" ]]; then
 
-        "${USHgfs}/wave_prnc_ice.sh" > wave_prnc_ice.out && true
+        "${USHglobal}/wave_prnc_ice.sh" > wave_prnc_ice.out && true
         ERR=$?
 
         if [[ -d ice || ${ERR} -ne 0 ]]; then
@@ -300,7 +300,7 @@ if [[ "${WW3CURINP}" == 'YES' ]]; then
                 err_exit "NO CURRENT FILE (RTOFS): ${curfile}"
             fi
 
-            echo "${USHgfs}/wave_prnc_cur.sh ${ymdh_rtofs} ${curfile} ${fhr_rtofs} ${FLGFIRST} > cur_${ymdh_rtofs}.out 2>&1" >> cmdfile
+            echo "${USHglobal}/wave_prnc_cur.sh ${ymdh_rtofs} ${curfile} ${fhr_rtofs} ${FLGFIRST} > cur_${ymdh_rtofs}.out 2>&1" >> cmdfile
 
             if [[ "${FLGFIRST}" == "T" ]]; then
                 FLGFIRST='F'
@@ -312,7 +312,7 @@ if [[ "${WW3CURINP}" == 'YES' ]]; then
             ymdh_rtofs=$(date --utc +%Y%m%d%H -d "${ymdh_rtofs} + ${DATE_DT} hours")
         done
 
-        "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+        "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             export pgm="run_mpmd.sh"

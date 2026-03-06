@@ -14,7 +14,7 @@ device="nc | ecmwfver.meta"
 # Copy in datatype table to define gdfile type
 #
 
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gdas.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then

@@ -7,4 +7,4 @@ export stack_mpi_ver=8.1.30
 
 spack_stack_root="/ncrc/proj/epic/spack-stack"
 
-source "${HOMEgfs:-}/versions/spack.ver"
+source "${HOMEglobal:-}/versions/spack.ver"

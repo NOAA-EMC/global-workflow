@@ -20,7 +20,7 @@
 ################################################################################
 
 # Dependent Scripts and Executables
-CYCLESH=${CYCLESH:-"${USHgfs}/global_cycle.sh"}
+CYCLESH=${CYCLESH:-"${USHglobal}/global_cycle.sh"}
 export CYCLEXEC=${CYCLEXEC:-"${EXECgfs}/global_cycle"}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
@@ -101,8 +101,8 @@ export MAX_TASKS_CY="${ntiles}"
 
 # Copy fix files required by global_cycle to DATA just once
 for ((nn = 1; nn <= ntiles; nn++)); do
-    cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
-    cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
+    cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
+    cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
 done
 
 # Copy the NSST analysis file for global_cycle
@@ -152,6 +152,15 @@ for hr in "${!gcycle_dates[@]}"; do
         done
     fi
 
+<<<<<<< HEAD:dev/scripts/exglobal_atmos_sfcanl_gcycle.sh
+=======
+    # Copy inputs from COMIN to DATA
+    for ((nn = 1; nn <= ntiles; nn++)); do
+        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
+        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/sfc_data_cycle.00${nn}"
+    done
+
+>>>>>>> 202c5ff92 (Rename EE2 Environment Variables: Replace NET-Specific (VARgfs) with Global (VARglobal) Naming (#4540)):dev/scripts/exglobal_atmos_sfcanl.sh
     "${CYCLESH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then

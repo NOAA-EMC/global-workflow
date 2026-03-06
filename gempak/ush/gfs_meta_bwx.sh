@@ -7,7 +7,7 @@
 
 mkdir -p -m 775 "${DATA}/BWX"
 cd "${DATA}/BWX" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 metatype="bwx"
 metaname="${RUN}_${PDY}_${cyc}_us_${metatype}"

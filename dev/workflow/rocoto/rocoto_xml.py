@@ -143,7 +143,7 @@ class RocotoXML(WorkflowSuite, ABC):
 
         # Format the template with experiment-specific values
         context = {
-            'HOMEgfs': self.HOMEgfs,
+            'HOMEglobal': self.HOMEglobal,
             'rocotorunstr': rocotorunstr,
             'expdir': self.expdir,
             'pslot': self.pslot,

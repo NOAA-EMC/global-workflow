@@ -67,7 +67,7 @@ export IMS_FILE="${COMINobsproc}/${RUN}.t${cyc}z.imssnow96.grib2"
 export FIVE_MIN_ICE_FILE="${COMINobsproc}/${RUN}.t${cyc}z.seaice.5min.grib2"
 
 # landmask file for global 5-minute data (grib 2)
-export FIVE_MIN_ICE_MASK_FILE="${FIXgfs}/am/emcsfc_gland5min.grib2"
+export FIVE_MIN_ICE_MASK_FILE="${FIXglobal}/am/emcsfc_gland5min.grib2"
 
 # afwa snow depth data
 export AFWA_GLOBAL_FILE="${COMINobsproc}/${RUN}.t${cyc}z.snow.usaf.grib2"
@@ -81,7 +81,7 @@ export BLENDED_ICE_FILE="${RUN}.t${cyc}z.seaice.5min.blend.grb"
 export BLENDED_ICE_FILE_PREV="${COMINobsproc_PREV}/${RUN}.t${gcyc}z.seaice.5min.blend.grb"
 
 # the emcsfc_ice_blend executable
-export BLENDICEEXEC=${BLENDICEEXEC:-${EXECgfs}/emcsfc_ice_blend}
+export BLENDICEEXEC=${BLENDICEEXEC:-${EXECglobal}/emcsfc_ice_blend}
 
 # standard output file
 export pgmout=${pgmout:-OUTPUT}
@@ -91,7 +91,7 @@ export pgmout=${pgmout:-OUTPUT}
 #-----------------------------------------------------------------------
 
 echo "Create blended ice data."
-"${USHgfs}/prep_sfc_ice_blend.sh"
+"${USHglobal}/prep_sfc_ice_blend.sh"
 export err=$?
 
 #-----------------------------------------------------------------------
@@ -120,20 +120,20 @@ fi
 # and (if a gdas run) enkf gaussian grid.
 #-----------------------------------------------------------------------
 
-export SNOW2MDLEXEC="${EXECgfs}/emcsfc_snow2mdl"
+export SNOW2MDLEXEC="${EXECglobal}/emcsfc_snow2mdl"
 
 LONB_CASE=$((4 * ${CASE:1}))
 LATB_CASE=$((2 * ${CASE:1}))
 
-export MODEL_SLMASK_FILE=${SLMASK:-${FIXgfs}/am/global_slmask.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
-export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXgfs}/am/global_latitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
-export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXgfs}/am/global_longitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
-export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXgfs}/am/global_lonsperlat.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.txt}
+export MODEL_SLMASK_FILE=${SLMASK:-${FIXglobal}/am/global_slmask.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
+export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXglobal}/am/global_latitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
+export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXglobal}/am/global_longitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
+export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXglobal}/am/global_lonsperlat.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.txt}
 export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
 export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
 
 echo "Create ${CASE} snow data."
-"${USHgfs}/prep_sfc_snow.sh"
+"${USHglobal}/prep_sfc_snow.sh"
 export err=$?
 
 #----------------------------------------------------------------------
@@ -166,15 +166,15 @@ if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
     LONB_CASE_ENS=$((4 * ${CASE_ENS:1}))
     LATB_CASE_ENS=$((2 * ${CASE_ENS:1}))
 
-    export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXgfs}/am/global_slmask.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-    export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXgfs}/am/global_latitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-    export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXgfs}/am/global_longitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-    export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXgfs}/am/global_lonsperlat.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
+    export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXglobal}/am/global_slmask.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXglobal}/am/global_latitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXglobal}/am/global_longitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXglobal}/am/global_lonsperlat.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
     export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
     export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
 
     echo "Create enkf snow data."
-    "${USHgfs}/prep_sfc_snow.sh"
+    "${USHglobal}/prep_sfc_snow.sh"
     export err=$?
 
     #-----------------------------------------------------------------------

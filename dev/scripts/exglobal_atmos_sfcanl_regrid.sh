@@ -18,7 +18,7 @@
 ################################################################################
 
 # Dependent Scripts and Executables
-REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 
 if [[ "${DO_GSISOILDA}" == "YES" ]]; then
 

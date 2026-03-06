@@ -72,8 +72,8 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 #######################################################################
 
-export FORECASTSH="${SCRgfs}/exglobal_forecast.sh"
-#export FORECASTSH="${SCRgfs}/exglobal_forecast.py"  # Temp. while this is worked on
+export FORECASTSH="${SCRglobal}/exglobal_forecast.sh"
+#export FORECASTSH="${SCRglobal}/exglobal_forecast.py"  # Temp. while this is worked on
 export FCSTEXEC="gfs_model.x"
 
 #######################################################################
@@ -188,17 +188,17 @@ export random_clds=".true."
 case ${imp_physics} in
     99) # ZhaoCarr
         export ncld=1
-        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_zhaocarr${tbf}${tbp}"
+        export FIELD_TABLE="${PARMglobal}/ufs/fv3/field_table_zhaocarr${tbf}${tbp}"
         export nwat=2
         ;;
     6)  # WSM6
         export ncld=2
-        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_wsm6${tbf}${tbp}"
+        export FIELD_TABLE="${PARMglobal}/ufs/fv3/field_table_wsm6${tbf}${tbp}"
         export nwat=6
         ;;
     8)  # Thompson
         export ncld=2
-        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_noaero_tke${tbp}"
+        export FIELD_TABLE="${PARMglobal}/ufs/fv3/field_table_thompson_noaero_tke${tbp}"
         export nwat=6
 
         export cal_pre=".false."
@@ -222,7 +222,7 @@ case ${imp_physics} in
         export d4_bg=0.12
 
         if [[ "${CCPP_SUITE}" == "FV3_global_nest"* ]]; then
-          export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_thompson_aero_tke${tbp}"
+          export FIELD_TABLE="${PARMglobal}/ufs/fv3/field_table_thompson_aero_tke${tbp}"
           export ltaerosol=".true."
           export lcnorm=".true."
           export do_mynnedmf=".true."
@@ -237,7 +237,7 @@ case ${imp_physics} in
         ;;
     11) # GFDL
         export ncld=5
-        export FIELD_TABLE="${PARMgfs}/ufs/fv3/field_table_gfdl${tbf}${tbp}"
+        export FIELD_TABLE="${PARMglobal}/ufs/fv3/field_table_gfdl${tbf}${tbp}"
         export nwat=6
         export dnats=1
         export cal_pre=".false."
@@ -286,7 +286,7 @@ export pbl_taper="0,0,0,0.1,0.2,0.4,0.6"
 if [[ "${RUN}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
-    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_da"
+    export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table_da"
 
     # Write gfs restart files to rerun fcst from any break point
     export restart_interval=${restart_interval_gdas:-6}
@@ -297,7 +297,7 @@ if [[ "${RUN}" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 elif [[ "${RUN}" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
-    export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
+    export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table"
 
     # Write gfs restart files to rerun fcst from any break point
     export restart_interval=${restart_interval_gfs:-12}

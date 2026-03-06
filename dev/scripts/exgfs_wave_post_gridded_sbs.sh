@@ -21,7 +21,7 @@
 #
 ###############################################################################
 
-source "${USHgfs}/wave_domain_grid.sh"
+source "${USHglobal}/wave_domain_grid.sh"
 
 DOGRI_WAV=${DOGRI_WAV:-"NO"}  # Interpolate to a grid
 DOGRB_WAV=${DOGRB_WAV:-"YES"} # Create grib2 files
@@ -51,7 +51,7 @@ cpreq "${COMIN_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "./out_grd
 # Check for input templates for grib2 products (copying will be done in the grib2 script)
 if [[ "${DOGRB_WAV}" == "YES" ]]; then
     for grbGRD in ${waveinterpGRD} ${wavepostGRD}; do
-        if [[ ! -f "${PARMgfs}/wave/ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
+        if [[ ! -f "${PARMglobal}/wave/ww3_grib2.${grbGRD}.inp.tmpl" ]]; then
             export err=1
             err_exit "No template for grib generation"
         fi
@@ -84,11 +84,11 @@ if [[ "${DOGRI_WAV}" == "YES" ]]; then
     for grdID in ${waveinterpGRD}; do
         count=$((count + 1))
         echo "#!/bin/bash" > "cmdfile.${count}"
-        echo "${USHgfs}/wave_grid_interp_sbs.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+        echo "${USHglobal}/wave_grid_interp_sbs.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
         echo "cat ${DATA}/grid_interp_${grdID}.out" >> "cmdfile.${count}"
         if [[ "${DOGRB_WAV}" == "YES" ]]; then
             process_grdID "${grdID}"
-            echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+            echo "${USHglobal}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
             echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
         fi
         chmod 755 "cmdfile.${count}"
@@ -102,7 +102,7 @@ if [[ "${DOGRB_WAV}" == "YES" ]]; then
         count=$((count + 1))
         process_grdID "${grdID}"
         echo "#!/bin/bash" > "cmdfile.${count}"
-        echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+        echo "${USHglobal}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
         echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
         chmod 755 "cmdfile.${count}"
         echo "${DATA}/cmdfile.${count}" >> "${DATA}/cmdfile"
@@ -119,7 +119,7 @@ fi
 
 # Execute command file
 echo "INFO: Running MPMD job with ${count} commands"
-"${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+"${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "run_mpmd.sh failed!"

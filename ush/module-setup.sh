@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
 
-source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEglobal}/ush/detect_machine.sh"
 
 if [[ ${MACHINE_ID} = hera* ]]; then
     # We are on NOAA Hera

@@ -10,7 +10,7 @@ declare -rx HOMEgfs
 file1=${1:?}
 file2=${2:?}
 
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 
 # Use wgrib2 to compute correlations and print any record that does not have corr=1 for mismatch
 #shellcheck disable=SC2312

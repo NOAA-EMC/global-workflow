@@ -8,17 +8,17 @@ cd "${DATA}" || exit 1
 fhr3=$1
 
 # "Import" functions used in this script
-source "${USHgfs}/product_functions.sh"
+source "${USHglobal}/product_functions.sh"
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
-    source_table="${HOMEgfs}/gempak/fix/${table}"
+    source_table="${HOMEglobal}/gempak/fix/${table}"
     if [[ ! -f "${source_table}" ]]; then
         err_exit "FATAL ERROR: ${table} is missing"
     fi
     cpreq "${source_table}" "${table}"
 done
 
-NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
+NAGRIB_TABLE="${HOMEglobal}/gempak/fix/nagrib.tbl"
 NAGRIB="${GEMEXE}/nagrib2_nc"
 
 # shellcheck disable=SC2312
@@ -61,7 +61,7 @@ startmsg
 
 ${NAGRIB} << EOF
 GBFILE   = grib${fhr3}
-INDXFL   = 
+INDXFL   =
 GDOUTF   = ${GEMGRD}
 PROJ     = ${proj}
 GRDAREA  = ${grdarea}
@@ -71,7 +71,7 @@ CPYFIL   = ${cpyfil}
 GAREA    = ${garea}
 OUTPUT   = ${output}
 GBTBLS   = ${gbtbls}
-GBDIAG   = 
+GBDIAG   =
 PDSEXT   = ${pdsext}
 l
 r

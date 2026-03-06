@@ -17,7 +17,7 @@ export pgm=gdplot2_nc
 source prep_step
 
 device="nc | ukmetver_12.meta"
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 export COMIN="gdas.${PDY}${cyc}"

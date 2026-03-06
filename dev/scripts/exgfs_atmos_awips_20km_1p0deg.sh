@@ -36,7 +36,7 @@ fi
 cd "${DATA}" || exit 2
 
 # "Import" functions used in this script
-source "${USHgfs}/product_functions.sh"
+source "${USHglobal}/product_functions.sh"
 
 ###############################################
 # Wait for the availability of the pgrb file
@@ -83,7 +83,7 @@ cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_a.0p25.f${fcsthr}.grib2" "tmpf
 cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_b.0p25.f${fcsthr}.grib2" "tmpfile2b${fcsthr}"
 cat "tmpfile2${fcsthr}" "tmpfile2b${fcsthr}" > "tmpfile${fcsthr}"
 # shellcheck disable=SC2312
-${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" |
+${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMglobal}/product/gfs_awips_parmlist_g2" |
     ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -177,7 +177,7 @@ for GRID in conus ak prico pac 003; do
         export FORT31="awps_file_fi${fcsthr}_${GRID}"
         export FORT51="grib2.awpgfs${fcsthr}.${GRID}"
 
-        cpreq "${PARMgfs}/wmo/grib2_awpgfs${fcsthr}.${GRID}" "parm_list"
+        cpreq "${PARMglobal}/wmo/grib2_awpgfs${fcsthr}.${GRID}" "parm_list"
 
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?
@@ -215,7 +215,7 @@ for GRID in conus ak prico pac 003; do
         export FORT31="awps_file_fi${fcsthr}_${GRID}"
         export FORT51="grib2.awpgfs_20km_${GRID}_f${fcsthr}"
 
-        cpreq "${PARMgfs}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthr}" "parm_list"
+        cpreq "${PARMglobal}/wmo/grib2_awpgfs_20km_${GRID}f${fcsthr}" "parm_list"
 
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?

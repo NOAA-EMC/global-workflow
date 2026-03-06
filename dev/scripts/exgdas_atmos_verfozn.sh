@@ -29,7 +29,7 @@ if [[ -s "${oznstat}" ]]; then
 
     export OZNMON_NETCDF=${netcdf}
 
-    "${USHgfs}/ozn_xtrct.sh" && true
+    "${USHglobal}/ozn_xtrct.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "ozn_xtrct.sh failed!"

@@ -9,7 +9,7 @@
 
 cd "${DATA}" || exit 1
 
-export NTS="${HOMEgfs}/gempak/ush/restore"
+export NTS="${HOMEglobal}/gempak/ush/restore"
 
 if [[ "${MODEL}" == GDAS ]] || [[ "${MODEL}" == GFS ]]; then
     case "${MODEL}" in
@@ -34,9 +34,9 @@ if [[ "${MODEL}" == GDAS ]] || [[ "${MODEL}" == GFS ]]; then
         cpreq "${GRIBFILE}" "gem_grids${fhr3}.gem"
         export fhr3
         if [[ ${fhr} -eq 0 ]]; then
-            "${HOMEgfs}/gempak/ush/gempak_${RUN}_f000_gif.sh"
+            "${HOMEglobal}/gempak/ush/gempak_${RUN}_f000_gif.sh"
         else
-            "${HOMEgfs}/gempak/ush/gempak_${RUN}_fhhh_gif.sh"
+            "${HOMEglobal}/gempak/ush/gempak_${RUN}_fhhh_gif.sh"
         fi
     done
 fi
@@ -45,12 +45,12 @@ cd "${DATA}" || exit 1
 
 export RSHPDY="${PDY:4}${PDY:2:2}"
 
-cpreq "${HOMEgfs}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
-cpreq "${HOMEgfs}/gempak/dictionaries/metar.tbl" metar.tbl
+cpreq "${HOMEglobal}/gempak/dictionaries/sonde.land.tbl" sonde.land.tbl
+cpreq "${HOMEglobal}/gempak/dictionaries/metar.tbl" metar.tbl
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
 cpreq "${COMIN_OBS}/${RUN}.${cycle}.adpupa.tm00.bufr_d" fort.40
 
-"${HOMEgfs}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
+"${HOMEglobal}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run rdbfmsua!"

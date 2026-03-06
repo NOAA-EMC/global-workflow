@@ -5,7 +5,7 @@ from shutil import rmtree
 
 from wxflow import Executable, Configuration, ProcessError, find_upward
 
-HOMEgfs = find_upward('.github')
+HOMEglobal = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR = os.path.join(current_dir, 'testdata/RUNTESTS')
 pslot = "C48_ATM"
@@ -36,7 +36,7 @@ def test_setup_expt():
             "--idate", "2021032312", "--edate", "2021032312", "--overwrite",
             "--gwrc", temp_gwrc_path
         ]
-        setup_expt_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_expt.py"))
+        setup_expt_script = Executable(os.path.join(HOMEglobal, "dev/workflow/setup_expt.py"))
         setup_expt_script.add_default_arg(arguments)
         setup_expt_script()
         assert (setup_expt_script.returncode == 0)
@@ -60,7 +60,7 @@ def test_setup_expt():
 
 def test_setup_workflow():
 
-    setup_workflow_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_workflow.py"))
+    setup_workflow_script = Executable(os.path.join(HOMEglobal, "dev/workflow/setup_workflow.py"))
     cmd_args = [f"{RUNDIR}/{pslot}", "rocoto"]
     setup_workflow_script(*cmd_args)
     assert (setup_workflow_script.returncode == 0)
@@ -79,10 +79,10 @@ def test_setup_workflow():
 
 def test_setup_workflow_fail_config_env_cornercase(tmp_path):
 
-    setup_workflow_script = Executable(os.path.join(HOMEgfs, "dev/workflow/setup_workflow.py"))
+    setup_workflow_script = Executable(os.path.join(HOMEglobal, "dev/workflow/setup_workflow.py"))
     cmd_args = [f"{RUNDIR}/{pslot}", "rocoto"]
     env = os.environ.copy()
-    env['HOMEgfs'] = 'foobar'  # Intentionally incorrect to trigger failure
+    env['HOMEglobal'] = 'foobar'  # Intentionally incorrect to trigger failure
 
     try:
         setup_workflow_script(*cmd_args, env=env)

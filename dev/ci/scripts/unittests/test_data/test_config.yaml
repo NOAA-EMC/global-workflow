@@ -18,4 +18,4 @@ complex:
       value: 1
     - name: second
       value: 2
-template_value: "{{ HOMEgfs }}/some/path"
+template_value: "{{ HOMEglobal }}/some/path"

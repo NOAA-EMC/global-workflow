@@ -12,7 +12,7 @@
 rm -Rf "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 mkdir -p -m 775 "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 cd "${DATA}/COMP" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 mdl=gfs
 MDL=GFS

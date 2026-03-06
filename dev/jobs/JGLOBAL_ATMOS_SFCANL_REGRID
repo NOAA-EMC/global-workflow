@@ -1,18 +1,18 @@
 #! /usr/bin/env bash
 set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl_regrid" -c "base sfcanl_regrid"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl_regrid" -c "base sfcanl_regrid"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -46,7 +46,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl_regrid.sh} && true
+${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl_regrid.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
