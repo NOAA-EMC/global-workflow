@@ -63,7 +63,7 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh} && true
+${ANALCALCSH:-${SCRglobal}/exglobal_atmos_analysis_calc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

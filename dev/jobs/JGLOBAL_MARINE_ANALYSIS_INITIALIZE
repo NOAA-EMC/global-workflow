@@ -39,7 +39,7 @@ declare -rx COMIN_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_initialize.py}
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRglobal}/exglobal_marine_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

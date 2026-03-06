@@ -43,7 +43,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${ENKFRESFCSH:-${SCRgfs}/exglobal_enkf_sfc.sh} && true
+${ENKFRESFCSH:-${SCRglobal}/exglobal_enkf_sfc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

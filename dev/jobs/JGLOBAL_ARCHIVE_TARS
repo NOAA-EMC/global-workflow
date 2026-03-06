@@ -99,7 +99,7 @@ fi
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
 unset_strict
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
+${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_tars.py}
 export err=$?
 set_strict
 if [[ ${err} -ne 0 ]]; then

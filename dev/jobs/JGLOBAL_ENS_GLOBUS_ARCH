@@ -19,7 +19,7 @@ declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 ###############################################################
 
 export -n SHELLOPTS
-${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_earc.py}
+${GLOBALGLOBUSARCHSH:-${SCRglobal}/exglobal_globus_earc.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

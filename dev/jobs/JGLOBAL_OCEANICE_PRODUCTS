@@ -38,7 +38,7 @@ fi
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_oceanice_products.py" && true
+"${SCRglobal}/exglobal_oceanice_products.py" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

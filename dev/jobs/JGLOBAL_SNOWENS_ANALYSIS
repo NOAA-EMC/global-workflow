@@ -50,7 +50,7 @@ mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snowens_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRglobal}/exglobal_snowens_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

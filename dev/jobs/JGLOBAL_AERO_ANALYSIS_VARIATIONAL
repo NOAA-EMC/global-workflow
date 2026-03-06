@@ -21,7 +21,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROVARSH:-${SCRgfs}/exglobal_aero_analysis_variational.py}
+EXSCRIPT=${GDASAEROVARSH:-${SCRglobal}/exglobal_aero_analysis_variational.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

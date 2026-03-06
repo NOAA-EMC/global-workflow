@@ -36,7 +36,7 @@ mkdir -m 775 -p "${COMOUT_CONF}"
 # Run relevant script
 ###############################################################
 
-EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_finalize.py}
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRglobal}/exglobal_marine_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

@@ -46,7 +46,7 @@ fi
 # Run archive script
 ###############################################################
 
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
+${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_vrfy.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

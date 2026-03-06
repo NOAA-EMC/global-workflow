@@ -46,7 +46,7 @@ fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${ANLSTATSPY:-${SCRgfs}/exglobal_analysis_stats.py}
+EXSCRIPT=${ANLSTATSPY:-${SCRglobal}/exglobal_analysis_stats.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

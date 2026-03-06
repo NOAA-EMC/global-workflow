@@ -39,7 +39,7 @@ declare -rx COMIN_CHEM_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROINITPY:-${SCRgfs}/exglobal_aero_analysis_initialize.py}
+EXSCRIPT=${GDASAEROINITPY:-${SCRglobal}/exglobal_aero_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

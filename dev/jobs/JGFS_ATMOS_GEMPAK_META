@@ -53,7 +53,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_gempak_meta.sh" && true
+"${SCRglobal}/exgfs_atmos_gempak_meta.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

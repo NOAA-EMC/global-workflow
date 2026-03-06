@@ -21,7 +21,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_variational.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRglobal}/exglobal_atm_analysis_variational.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

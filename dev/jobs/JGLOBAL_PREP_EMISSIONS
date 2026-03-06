@@ -34,7 +34,7 @@ mkdir -p "${COMOUT_CHEM_INPUT}"
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRgfs}/exglobal_prep_emissions.py}
+EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRglobal}/exglobal_prep_emissions.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

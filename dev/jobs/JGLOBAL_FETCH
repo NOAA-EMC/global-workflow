@@ -12,7 +12,7 @@ export PYTHONPATH
 # Execute fetching
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
-"${SCRgfs}/exglobal_fetch.py"
+"${SCRglobal}/exglobal_fetch.py"
 err=$?
 
 ###############################################################

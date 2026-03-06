@@ -19,7 +19,7 @@ declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 ###############################################################
 
 export -n SHELLOPTS
-${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_arch.py}
+${GLOBALGLOBUSARCHSH:-${SCRglobal}/exglobal_globus_arch.py}
 err=$?
 [[ ${err} -ne 0 ]] && exit "${err}"
 

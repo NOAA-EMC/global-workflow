@@ -4,8 +4,8 @@
 # Standard environment variables for all J-Jobs.
 #
 # Source at the top of every J-Job before jjob_shell_setup.sh:
-#   source "${HOMEgfs}/ush/jjob_standard_vars.sh"
-#   source "${HOMEgfs}/ush/jjob_shell_setup.sh"
+#   source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#   source "${HOMEglobal}/ush/jjob_shell_setup.sh"
 #
 # Sets variables defined in NCO HPC Implementation Standards Table 1:
 #   https://github.com/NCO-HPC/nws-hpc-standards/blob/develop/docs/standards.rst
@@ -23,7 +23,7 @@
 #                                                via setpdy.sh)
 #
 # Requires in environment (set by job card / batch system):
-#   HOMEgfs, DATAROOT, jobid, cyc
+#   HOMEglobal, DATAROOT, jobid, cyc
 #######
 
 ##############################################
@@ -42,10 +42,10 @@ declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LIN
 ##############################################
 # Standard global directory paths
 ##############################################
-export USHglobal="${HOMEgfs}/ush"
-export FIXglobal="${HOMEgfs}/fix"
-export PARMglobal="${HOMEgfs}/parm"
-export SCRIPTSglobal="${HOMEgfs}/scripts"
+export USHglobal="${HOMEglobal}/ush"
+export FIXglobal="${HOMEglobal}/fix"
+export PARMglobal="${HOMEglobal}/parm"
+export SCRIPTSglobal="${HOMEglobal}/scripts"
 
 ##############################################
 # Job output variables

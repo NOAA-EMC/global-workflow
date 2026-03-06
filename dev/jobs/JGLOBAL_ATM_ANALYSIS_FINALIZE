@@ -28,7 +28,7 @@ mkdir -m 775 -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMFINALPY:-${SCRgfs}/exglobal_atm_analysis_finalize.py}
+EXSCRIPT=${GDASATMFINALPY:-${SCRglobal}/exglobal_atm_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

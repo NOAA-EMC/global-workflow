@@ -90,7 +90,7 @@ fi
 ###############################################################
 # Run relevant script
 
-${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh} && true
+${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

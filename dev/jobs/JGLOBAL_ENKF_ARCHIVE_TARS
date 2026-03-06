@@ -30,7 +30,7 @@ mkdir -p "${COMIN_CONF}"
 # Calls an external bash command; do not fail on unassigned/error
 export -n SHELLOPTS
 unset_strict
-"${SCRgfs}/exglobal_enkf_earc_tars.py"
+"${SCRglobal}/exglobal_enkf_earc_tars.py"
 export err=$?
 set_strict
 if [[ ${err} -ne 0 ]]; then

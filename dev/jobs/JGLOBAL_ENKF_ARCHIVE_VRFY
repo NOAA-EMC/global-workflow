@@ -20,7 +20,7 @@ declare -rx COMIN_SNOW_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/
 # Run archive script
 ###############################################################
 
-"${SCRgfs}/exglobal_enkf_earc_vrfy.py"
+"${SCRglobal}/exglobal_enkf_earc_vrfy.py"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

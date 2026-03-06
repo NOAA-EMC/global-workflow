@@ -30,7 +30,7 @@ mkdir -m 755 -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROFINALPY:-${SCRgfs}/exglobal_aero_analysis_finalize.py}
+EXSCRIPT=${GDASAEROFINALPY:-${SCRglobal}/exglobal_aero_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

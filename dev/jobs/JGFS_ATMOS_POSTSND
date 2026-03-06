@@ -31,7 +31,7 @@ fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_postsnd.sh" && true
+"${SCRglobal}/exgfs_atmos_postsnd.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

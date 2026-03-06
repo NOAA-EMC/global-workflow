@@ -28,7 +28,7 @@ fi
 mkdir -p "${COMOUT_WAVE_PREP}"
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_prep.sh" && true
+"${SCRglobal}/exgfs_wave_prep.sh" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

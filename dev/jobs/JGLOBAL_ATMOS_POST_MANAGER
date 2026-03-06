@@ -22,7 +22,7 @@ declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/hist
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exglobal_atmos_pmgr.sh" && true
+"${SCRglobal}/exglobal_atmos_pmgr.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

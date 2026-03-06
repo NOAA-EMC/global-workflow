@@ -22,7 +22,7 @@ if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
 fi
 
 # Execute the Script
-#"${SCRgfs}/exgefs_wave_stat.sh"
+#"${SCRglobal}/exgefs_wave_stat.sh"
 export err=$?
 err_chk
 ##########################################

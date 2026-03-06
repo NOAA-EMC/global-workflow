@@ -20,7 +20,7 @@ declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPREPOCNOBSPY:-${SCRgfs}/exglobal_prep_ocean_obs.py}
+EXSCRIPT=${GDASPREPOCNOBSPY:-${SCRglobal}/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

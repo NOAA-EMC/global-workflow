@@ -34,7 +34,7 @@ fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSINITPY:-${SCRgfs}/exglobal_atmens_analysis_initialize.py}
+EXSCRIPT=${GDASATMENSINITPY:-${SCRglobal}/exglobal_atmens_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

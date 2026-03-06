@@ -43,7 +43,7 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -p "${COMOUT_OBS}"
 
 # Execute generation of increments from offline analysis
-EXSCRIPT=${OFFLINEANLPY:-${SCRgfs}/exglobal_offline_atmos_analysis.py}
+EXSCRIPT=${OFFLINEANLPY:-${SCRglobal}/exglobal_offline_atmos_analysis.py}
 ${EXSCRIPT}
 
 export err=$?

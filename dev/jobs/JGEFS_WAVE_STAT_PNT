@@ -13,7 +13,7 @@ if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
 fi
 
 # Execute the Script
-#"${SCRgfs}/exgefs_wave_stat_pnt.sh"
+#"${SCRglobal}/exgefs_wave_stat_pnt.sh"
 export err=$?
 err_chk
 ##########################################

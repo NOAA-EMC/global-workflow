@@ -15,7 +15,7 @@
 #   - Running setpdy.sh and sourcing PDY date variables
 #
 # Requires in environment:
-#   HOMEgfs (mandatory)
+#   HOMEglobal (mandatory)
 #   USHglobal, start_time (defaulted here if not already set)
 #######
 

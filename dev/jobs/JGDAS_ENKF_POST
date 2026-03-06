@@ -21,7 +21,7 @@ export LEVS=$((LEVS - 1))
 ###############################################################
 # Run relevant script
 
-${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh} && true
+${ENKFPOSTSH:-${SCRglobal}/exgdas_enkf_post.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

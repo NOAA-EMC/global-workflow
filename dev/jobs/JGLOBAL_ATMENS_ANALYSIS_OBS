@@ -21,7 +21,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMENSOBSSH:-${SCRgfs}/exglobal_atmens_analysis_obs.py}
+EXSCRIPT=${GDASATMENSOBSSH:-${SCRglobal}/exglobal_atmens_analysis_obs.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

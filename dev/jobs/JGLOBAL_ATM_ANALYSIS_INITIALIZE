@@ -32,7 +32,7 @@ declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/a
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMINITPY:-${SCRgfs}/exglobal_atm_analysis_initialize.py}
+EXSCRIPT=${GDASATMINITPY:-${SCRglobal}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

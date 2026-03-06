@@ -22,7 +22,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_checkpoint.py}
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRglobal}/exglobal_marine_analysis_checkpoint.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

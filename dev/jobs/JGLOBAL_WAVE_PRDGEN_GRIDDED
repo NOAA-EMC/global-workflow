@@ -27,7 +27,7 @@ fi
 ###################################
 # Execute the Script
 ###################################
-"${SCRgfs}/exgfs_wave_prdgen_gridded.sh" && true
+"${SCRglobal}/exgfs_wave_prdgen_gridded.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

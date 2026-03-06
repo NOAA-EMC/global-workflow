@@ -24,7 +24,7 @@ done
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_atmos_ensstat.sh" && true
+"${SCRglobal}/exglobal_atmos_ensstat.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
