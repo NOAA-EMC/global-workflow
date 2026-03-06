@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
-source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
+source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work

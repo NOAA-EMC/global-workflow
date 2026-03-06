@@ -90,13 +90,13 @@ else
 fi
 
 angle_exec=radmon_angle.x
-shared_scaninfo="${shared_scaninfo:-${PARMgfs}/monitor/gdas_radmon_scaninfo.txt}"
+shared_scaninfo="${shared_scaninfo:-${PARMglobal}/monitor/gdas_radmon_scaninfo.txt}"
 scaninfo=scaninfo.txt
 
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-cpreq "${EXECgfs}/${angle_exec}" ./
+cpreq "${EXECglobal}/${angle_exec}" ./
 cpreq "${shared_scaninfo}" "./${scaninfo}"
 
 #--------------------------------------------------------------------
@@ -183,7 +183,7 @@ EOF
 
 done # for type in ${SATYPE} loop
 
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 tar_file=radmon_angle.tar
 if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then

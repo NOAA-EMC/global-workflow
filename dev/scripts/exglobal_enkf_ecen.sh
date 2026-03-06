@@ -24,16 +24,16 @@ pwd=$(pwd)
 ntiles=${ntiles:-6}
 
 # Utilities
-NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 
 # Scripts
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
-RECENATMEXEC=${RECENATMEXEC:-${EXECgfs}/recentersigp.x}
-CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-${EXECgfs}/calc_increment_ens.x}
-CALCINCNCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECglobal}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECglobal}/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-${EXECglobal}/recentersigp.x}
+CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-${EXECglobal}/calc_increment_ens.x}
+CALCINCNCEXEC=${CALCINCEXEC:-${EXECglobal}/calc_increment_ens_ncio.x}
 
 # Files.
 OPREFIX=${OPREFIX:-""}
@@ -64,14 +64,14 @@ else
 fi
 
 # global_chgres stuff
-CHGRESNEMS=${CHGRESNEMS:-${EXECgfs}/enkf_chgres_recenter.x}
-CHGRESNC=${CHGRESNC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+CHGRESNEMS=${CHGRESNEMS:-${EXECglobal}/enkf_chgres_recenter.x}
+CHGRESNC=${CHGRESNC:-${EXECglobal}/enkf_chgres_recenter_nc.x}
 NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
 
 # global_cycle stuff
-CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
+CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
@@ -217,7 +217,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         else
             cpreq "${ATMANL_GSI}" atmanl_gsi
             cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
-            SIGLEVEL="${SIGLEVEL:-"${FIXgfs}/am/global_hyblev.l${LEVS}.txt"}"
+            SIGLEVEL="${SIGLEVEL:-"${FIXglobal}/am/global_hyblev.l${LEVS}.txt"}"
             ${NLN} "${CHGRESNC}" chgres.x
             chgresnml=chgres_nc_gauss.nml
             nmltitle=chgres

@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
 
 # TODO (#1227) This job is not used in the rocoto suite
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
-source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "post" -c "base post"
+source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
 
 ####################################
 # Specify NET and RUN Name and model

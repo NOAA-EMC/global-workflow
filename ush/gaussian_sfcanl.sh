@@ -28,7 +28,7 @@
 #                   (if nonexistent will be made)
 #                   defaults to current working directory
 #     GAUSFCANLEXE  Program executable.
-#                   Defaults to $EXECgfs/gaussian_sfcanl.x
+#                   Defaults to $EXECglobal/gaussian_sfcanl.x
 #     gfs_ver       Version number of gfs directory.  Default is
 #                   v15.0.0.
 #     OMP_NUM_
@@ -47,7 +47,7 @@
 #
 #     fixed data : ${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile*.nc
 #                  ${FIXWGTS}
-#                  ${FIXgfs}/am/global_hyblev.l65.txt
+#                  ${FIXglobal}/am/global_hyblev.l65.txt
 #
 #     input data : ${COMIN_ATMOS_RESTART}/${PDY}.${cyc}0000.sfcanl_data.tile*.nc
 #                  ${COMIN_ATMOS_ANALYSIS}/increment.sfc.i006.tile${i}.nc"
@@ -83,8 +83,8 @@ LEVSP1=$((LEVS + 1))
 FIXWGTS=${FIXWGTS:-${FIXorog}/${CASE}/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 
 #  Filenames.
-GAUSFCANLEXE=${GAUSFCANLEXE:-${EXECgfs}/gaussian_sfcanl.x}
-SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVSP1}.txt}
+GAUSFCANLEXE=${GAUSFCANLEXE:-${EXECglobal}/gaussian_sfcanl.x}
+SIGLEVEL=${SIGLEVEL:-${FIXglobal}/am/global_hyblev.l${LEVSP1}.txt}
 
 #  Other variables.
 

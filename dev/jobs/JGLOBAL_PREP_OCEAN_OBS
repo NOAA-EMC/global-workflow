@@ -1,14 +1,14 @@
 #!/bin/bash
 set -x
-source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl prepoceanobs"
-source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
+source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prepoceanobs" -c "base marineanl prepoceanobs"
+source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"

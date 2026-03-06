@@ -37,7 +37,7 @@ export bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+export NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
@@ -68,19 +68,19 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6,"}
 
 # Dependent Scripts and Executables
-GSIEXEC=${GSIEXEC:-${EXECgfs}/gsi.x}
+GSIEXEC=${GSIEXEC:-${EXECglobal}/gsi.x}
 export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
-export CALCINCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens.x}
-export CALCINCNCEXEC=${CALCINCNCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
-export CALCANLEXEC=${CALCANLEXEC:-${EXECgfs}/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-${EXECgfs}/interp_inc.x}
-CHGRESEXEC=${CHGRESEXEC:-${EXECgfs}/enkf_chgres_recenter.x}
+export CALCINCEXEC=${CALCINCEXEC:-${EXECglobal}/calc_increment_ens.x}
+export CALCINCNCEXEC=${CALCINCNCEXEC:-${EXECglobal}/calc_increment_ens_ncio.x}
+export CALCANLEXEC=${CALCANLEXEC:-${EXECglobal}/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECglobal}/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-${EXECglobal}/interp_inc.x}
+CHGRESEXEC=${CHGRESEXEC:-${EXECglobal}/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
-CALCINCPY=${CALCINCPY:-${USHgfs}/calcinc_gfs.py}
+CALCINCPY=${CALCINCPY:-${USHglobal}/calcinc_gfs.py}
 
 export hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 export ignore_2mQM=${ignore_2mQM:-".false."}
@@ -285,24 +285,24 @@ else
 fi
 
 # GSI Fix files
-BERROR=${BERROR:-${FIXgfs}/gsi/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
-SATANGL=${SATANGL:-${FIXgfs}/gsi/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIXgfs}/gsi/global_satinfo.txt}
-RADCLOUDINFO=${RADCLOUDINFO:-${FIXgfs}/gsi/cloudy_radiance_info.txt}
-ATMSFILTER=${ATMSFILTER:-${FIXgfs}/gsi/atms_beamwidth.txt}
-ANAVINFO=${ANAVINFO:-${FIXgfs}/gsi/global_anavinfo.l${LEVS}.txt}
-CONVINFO=${CONVINFO:-${FIXgfs}/gsi/global_convinfo.txt}
-vqcdat=${vqcdat:-${FIXgfs}/gsi/vqctp001.dat}
-INSITUINFO=${INSITUINFO:-${FIXgfs}/gsi/global_insituinfo.txt}
-OZINFO=${OZINFO:-${FIXgfs}/gsi/global_ozinfo.txt}
-PCPINFO=${PCPINFO:-${FIXgfs}/gsi/global_pcpinfo.txt}
-AEROINFO=${AEROINFO:-${FIXgfs}/gsi/global_aeroinfo.txt}
-SCANINFO=${SCANINFO:-${FIXgfs}/gsi/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIXgfs}/gsi/global_hybens_info.l${LEVS}.txt}
-OBERROR=${OBERROR:-${FIXgfs}/gsi/prepobs_errtable.global}
+BERROR=${BERROR:-${FIXglobal}/gsi/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
+SATANGL=${SATANGL:-${FIXglobal}/gsi/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIXglobal}/gsi/global_satinfo.txt}
+RADCLOUDINFO=${RADCLOUDINFO:-${FIXglobal}/gsi/cloudy_radiance_info.txt}
+ATMSFILTER=${ATMSFILTER:-${FIXglobal}/gsi/atms_beamwidth.txt}
+ANAVINFO=${ANAVINFO:-${FIXglobal}/gsi/global_anavinfo.l${LEVS}.txt}
+CONVINFO=${CONVINFO:-${FIXglobal}/gsi/global_convinfo.txt}
+vqcdat=${vqcdat:-${FIXglobal}/gsi/vqctp001.dat}
+INSITUINFO=${INSITUINFO:-${FIXglobal}/gsi/global_insituinfo.txt}
+OZINFO=${OZINFO:-${FIXglobal}/gsi/global_ozinfo.txt}
+PCPINFO=${PCPINFO:-${FIXglobal}/gsi/global_pcpinfo.txt}
+AEROINFO=${AEROINFO:-${FIXglobal}/gsi/global_aeroinfo.txt}
+SCANINFO=${SCANINFO:-${FIXglobal}/gsi/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIXglobal}/gsi/global_hybens_info.l${LEVS}.txt}
+OBERROR=${OBERROR:-${FIXglobal}/gsi/prepobs_errtable.global}
 OBS_INPUT=${OBS_INPUT:-${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt}
 HIRS_FIX=${HIRS_FIX:-${CRTM_FIX}}
-BLACKLST=${BLACKLST:-${FIXgfs}/gsi/rejectlist_global.txt}
+BLACKLST=${BLACKLST:-${FIXglobal}/gsi/rejectlist_global.txt}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -354,7 +354,7 @@ ${NLN} "${BERROR}" berror_stats
 ${NLN} "${SATANGL}" satbias_angle
 if [[ "${SATINFO}" == "generate" ]]; then
     # shellcheck disable=SC2153
-    "${USHgfs}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
+    "${USHglobal}/create_gsi_info.sh" sat "${PDY}${cyc}" "${DATA}"
 else
     ${NLN} "${SATINFO}" satinfo
 fi
@@ -362,14 +362,14 @@ ${NLN} "${RADCLOUDINFO}" cloudy_radiance_info.txt
 ${NLN} "${ATMSFILTER}" atms_beamwidth.txt
 ${NLN} "${ANAVINFO}" anavinfo
 if [[ "${CONVINFO}" == "generate" ]]; then
-    "${USHgfs}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
+    "${USHglobal}/create_gsi_info.sh" conv "${PDY}${cyc}" "${DATA}" "${USE_2M_OBS}"
 else
     ${NLN} "${CONVINFO}" convinfo
 fi
 ${NLN} "${vqcdat}" vqctp001.dat
 ${NLN} "${INSITUINFO}" insituinfo
 if [[ "${OZINFO}" == "generate" ]]; then
-    "${USHgfs}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
+    "${USHglobal}/create_gsi_info.sh" oz "${PDY}${cyc}" "${DATA}"
 else
     ${NLN} "${OZINFO}" ozinfo
 fi
@@ -380,14 +380,14 @@ ${NLN} "${HYBENSINFO}" hybens_info
 ${NLN} "${OBERROR}" errtable
 ${NLN} "${BLACKLST}" blacklist
 
-${NLN} "${FIXgfs}/gsi/AIRS_CLDDET.NL" AIRS_CLDDET.NL
-${NLN} "${FIXgfs}/gsi/CRIS_CLDDET.NL" CRIS_CLDDET.NL
-${NLN} "${FIXgfs}/gsi/IASI_CLDDET.NL" IASI_CLDDET.NL
+${NLN} "${FIXglobal}/gsi/AIRS_CLDDET.NL" AIRS_CLDDET.NL
+${NLN} "${FIXglobal}/gsi/CRIS_CLDDET.NL" CRIS_CLDDET.NL
+${NLN} "${FIXglobal}/gsi/IASI_CLDDET.NL" IASI_CLDDET.NL
 
 #If using correlated error, link to the covariance files
 if [[ "${USE_CORRELATED_OBERRS}" == "YES" ]]; then
     if grep -q "Rcov" "${ANAVINFO}"; then
-        mapfile -t covfile_array < <(find "${FIXgfs}/gsi/" -name "Rcov*")
+        mapfile -t covfile_array < <(find "${FIXglobal}/gsi/" -name "Rcov*")
         if ((${#covfile_array[@]} > 0)); then
             for covfile in "${covfile_array[@]}"; do
                 covfile_base=$(basename "${covfile}")
@@ -708,7 +708,7 @@ EOF
         echo "${DATA}/unzip_diag.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
     done
 
-    "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+    "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "Failed to unzip rad diag file!"

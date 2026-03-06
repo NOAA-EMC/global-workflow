@@ -23,7 +23,7 @@
 #
 # Script requires the following variables to already be
 #   defined in the environment:
-#   - $HOMEgfs
+#   - $HOMEglobal
 #   - $DATAROOT (unless $DATA is overriden)
 #   - $jobid
 #   - $PDY
@@ -33,7 +33,7 @@
 # Additionally, there are a couple of optional settings that
 #   can be set before calling the script:
 #   - $EXPDIR       : Override the default $EXPDIR
-#                     [default: ${HOMEgfs}/dev/parm/config]
+#                     [default: ${HOMEglobal}/dev/parm/config]
 #   - $DATA         : Override the default $DATA location
 #                     [default: ${DATAROOT}/${jobid}]
 #   - $WIPE_DATA    : Set whether to delete any existing $DATA
@@ -46,7 +46,7 @@ _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 # err_exit is needed for this header script's own error handling;
 # all other utilities are sourced by jjob_shell_setup.sh afterward
-source "${HOMEgfs}/dev/ush/err_exit.sh"
+source "${HOMEglobal}/dev/ush/err_exit.sh"
 
 OPTIND=1
 while getopts "c:e:" option; do
@@ -94,7 +94,7 @@ fi
 #############################
 # Source relevant config files
 #############################
-export EXPDIR="${EXPDIR:-${HOMEgfs}/dev/parm/config}"
+export EXPDIR="${EXPDIR:-${HOMEglobal}/dev/parm/config}"
 for config in "${configs[@]:-''}"; do
     source "${EXPDIR}/config.${config}" && true
     export err=$?

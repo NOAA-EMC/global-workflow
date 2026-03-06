@@ -1,16 +1,16 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEgfs}/dev/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/dev/ush/jjob_standard_vars.sh"
 
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlinit"
-source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmanlinit" -c "base atmanl atmanlinit"
+source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # shellcheck disable=SC2153

@@ -14,7 +14,7 @@ experiment:
   nens: 2
   interval: 0
   start: warm
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/soca_hyb_gfs_defaults_ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/soca_hyb_gfs_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - orion
