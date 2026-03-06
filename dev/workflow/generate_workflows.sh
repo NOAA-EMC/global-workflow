@@ -18,9 +18,12 @@ function _usage() {
 
     -b Run build_all.sh with default flags
        (build the UFS, UPP, UFS_Utils, and GFS-utils only on login nodes)
+       The required system builds (GSI, GDASApp, etc.) are also automatically
+       selected based on the net value in each specified YAML.
 
     -B Run build_all.sh -c with default flags [-c triggers build on compute nodes]
        (build the UFS, UPP, UFS_Utils, and GFS-utils only on compute nodes)
+       As with -b, system builds are automatically selected from the YAML net values.
 
     -u Update submodules before building and/or generating experiments.
 
@@ -390,6 +393,40 @@ if [[ "${_run_all_gcafs}" == "true" ]]; then
     declare -a _gfs_yaml_list
     select_all_yamls "gcafs" "_gcafs_yaml_list"
     _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
+fi
+
+# If no system flags (-G, -E, -S, -C) were specified, auto-detect required
+# builds from the net value in each YAML
+if [[ "${_run_all_gfs}" == "false" && "${_run_all_gefs}" == "false" && \
+      "${_run_all_sfs}" == "false" && "${_run_all_gcafs}" == "false" ]]; then
+    for _yaml in "${_yaml_list[@]}"; do
+        _yaml_file="${_yaml_dir}/${_yaml}.yaml"
+        if [[ ! -f "${_yaml_file}" ]]; then continue; fi
+        _yaml_net=$(grep -m1 "^[[:space:]]*net:" "${_yaml_file}" | awk '{print $2}')
+        case "${_yaml_net}" in
+            gfs)
+                if [[ "${_build_flags}" != *"gfs"* ]]; then
+                    _build_flags="${_build_flags} gfs gsi gdas "
+                fi
+                ;;
+            gefs)
+                if [[ "${_build_flags}" != *"gefs"* ]]; then
+                    _build_flags="${_build_flags} gefs "
+                fi
+                ;;
+            sfs)
+                if [[ "${_build_flags}" != *"sfs"* ]]; then
+                    _build_flags="${_build_flags} sfs "
+                fi
+                ;;
+            gcafs)
+                if [[ "${_build_flags}" != *"gcafs"* ]]; then
+                    _build_flags="${_build_flags} gcafs gdas "
+                fi
+                ;;
+            *) ;;
+        esac
+    done
 fi
 
 # Update submodules if requested
