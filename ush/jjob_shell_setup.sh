@@ -30,16 +30,16 @@ _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 ##############################################
 # Utility functions
 ##############################################
-source "${USHglobal}/wait_for_file.sh"
-source "${USHglobal}/dataroot_com_path.sh"
-source "${USHglobal}/timer.sh"
-source "${USHglobal}/err_exit.sh"
+source "${HOMEglobal}/dev/ush/wait_for_file.sh"
+source "${HOMEglobal}/dev/ush/dataroot_com_path.sh"
+source "${HOMEglobal}/dev/ush/timer.sh"
+source "${HOMEglobal}/dev/ush/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
 # Shell options, strict mode, and tracing
 ##############################################
-source "${USHglobal}/set_strict_trace.sh"
+source "${HOMEglobal}/dev/ush/set_strict_trace.sh"
 export SHELLOPTS
 
 # Activate strict mode and tracing
@@ -49,7 +49,7 @@ set_trace
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
-source "${USHglobal}/postamble.sh"
+source "${HOMEglobal}/dev/ush/postamble.sh"
 # shellcheck disable=SC2064
 trap "postamble ${start_time}" EXIT
 
