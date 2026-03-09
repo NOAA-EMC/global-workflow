@@ -70,15 +70,6 @@ if [[ -z ${env_job} ]]; then
     err_exit "[${BASH_SOURCE[0]}]: Must specify a job name with -e"
 fi
 
-##############################################
-# Determine Job Output Name on System
-##############################################
-# TODO: remove this when going to production
-# Needs to be set for err_chk/err_exit
-
-##############################################
-##############################################
-
 #############################
 # Source relevant config files
 #############################
