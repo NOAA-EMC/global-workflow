@@ -14,7 +14,7 @@
 export m=$1
 mkdir -p "${DATA}/${m}"
 cd "${DATA}/${m}" || exit 2
-cpreq "${FIXgfs}/product/gfs_collective${m}.list" "${DATA}/${m}/"
+cpreq "${FIXglobal}/product/gfs_collective${m}.list" "${DATA}/${m}/"
 CCCC=KWBC
 file_list=gfs_collective${m}.list
 
@@ -32,7 +32,7 @@ while IFS= read -r stn; do
     #. prep_step
     export FORT11="${DATA}/${m}/bufrin"
     export FORT51=./bufrout
-    "${EXECgfs}/${pgm}" << EOF
+    "${EXECglobal}/${pgm}" << EOF
  &INPUT
   BULHED="${WMOHEAD}",KWBX="${CCCC}",
   NCEP2STD=.TRUE.,

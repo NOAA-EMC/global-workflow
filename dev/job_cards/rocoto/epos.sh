@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source GSI workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" gsi
+source "${HOMEglobal}/dev/ush/load_modules.sh" gsi
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -23,7 +23,7 @@ for fhr in ${fhrlst}; do
     export FHMIN_EPOS=${fhr}
     export FHMAX_EPOS=${fhr}
     export FHOUT_EPOS=${fhr}
-    "${HOMEgfs}/dev/jobs/JGDAS_ENKF_POST"
+    "${HOMEglobal}/dev/jobs/JGDAS_ENKF_POST"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"

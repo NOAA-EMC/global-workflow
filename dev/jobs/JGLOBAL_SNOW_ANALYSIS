@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Ignore possible spelling error (nothing is misspelled)
@@ -31,7 +31,7 @@ mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRglobal}/exglobal_snow_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

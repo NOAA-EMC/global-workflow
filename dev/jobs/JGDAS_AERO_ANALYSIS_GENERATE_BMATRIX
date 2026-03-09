@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -25,7 +25,7 @@ mkdir -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exgdas_aero_analysis_generate_bmatrix.py}
+EXSCRIPT=${GDASAEROBMATPY:-${SCRglobal}/exgdas_aero_analysis_generate_bmatrix.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

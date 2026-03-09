@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 
 ########################################
 # Runs GFS BUFR SOUNDINGS
@@ -28,7 +28,7 @@ fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_postsnd.sh" && true
+"${SCRglobal}/exgfs_atmos_postsnd.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

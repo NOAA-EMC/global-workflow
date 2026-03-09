@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsgridded" -c "base wave waveawipsgridded"
-source "${USHgfs}/wave_domain_grid.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "waveawipsgridded" -c "base wave waveawipsgridded"
+source "${USHglobal}/wave_domain_grid.sh"
 
 ###################################
 # Set COM Paths
@@ -24,7 +24,7 @@ fi
 ###################################
 # Execute the Script
 ###################################
-"${SCRgfs}/exgfs_wave_prdgen_gridded.sh" && true
+"${SCRglobal}/exgfs_wave_prdgen_gridded.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -47,7 +47,7 @@ complex:
       value: 1
     - name: second
       value: 2
-template_value: "/path/to/homegfs/some/path"''')
+template_value: "/path/to/homeglobal/some/path"''')
 
     def test_cli_basic(self):
         """Test the command-line interface with basic options"""

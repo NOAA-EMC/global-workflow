@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_arch" -c "base globus"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "globus_arch" -c "base globus"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
@@ -16,7 +16,7 @@ declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 ###############################################################
 
 export -n SHELLOPTS
-${GLOBALGLOBUSARCHSH:-${SCRgfs}/exglobal_globus_arch.py}
+${GLOBALGLOBUSARCHSH:-${SCRglobal}/exglobal_globus_arch.py}
 err=$?
 [[ ${err} -ne 0 ]] && exit "${err}"
 

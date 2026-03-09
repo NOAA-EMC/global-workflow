@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -35,7 +35,7 @@ fi
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_oceanice_products.py" && true
+"${SCRglobal}/exglobal_oceanice_products.py" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

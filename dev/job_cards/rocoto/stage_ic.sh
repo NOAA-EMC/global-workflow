@@ -3,7 +3,7 @@
 set -x
 
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ "${status}" -ne 0 ]]; then
     exit "${status}"
@@ -13,7 +13,7 @@ export job="stage_ic"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_STAGE_IC"
+"${HOMEglobal}/dev/jobs/JGLOBAL_STAGE_IC"
 status=$?
 
 exit "${status}"

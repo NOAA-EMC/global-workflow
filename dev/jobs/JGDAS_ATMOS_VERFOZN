@@ -3,7 +3,7 @@
 #############################################################
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
 
 #############################################
 #  determine PDY and cyc for previous cycle
@@ -27,7 +27,7 @@ if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p "${TANKverf_ozn}"; fi
 #-------------------------------------------------------
 # Execute the script.
 #
-"${SCRgfs}/exgdas_atmos_verfozn.sh" && true
+"${SCRglobal}/exgdas_atmos_verfozn.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

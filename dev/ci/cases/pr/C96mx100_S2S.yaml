@@ -13,7 +13,7 @@ experiment:
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20250808
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_defaults.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_defaults.yaml
 
 skip_ci_on_hosts:
   - awsepicglobalworkflow

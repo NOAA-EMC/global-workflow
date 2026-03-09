@@ -130,8 +130,8 @@ else
     #--------------------------------------------------------------------
     #   Copy extraction programs to working directory
     #
-    cpreq "${EXECgfs}/oznmon_time.x" ./oznmon_time.x
-    cpreq "${EXECgfs}/oznmon_horiz.x" ./oznmon_horiz.x
+    cpreq "${EXECglobal}/oznmon_time.x" ./oznmon_time.x
+    cpreq "${EXECglobal}/oznmon_horiz.x" ./oznmon_horiz.x
 
     #---------------------------------------------------------------------------
     #  Outer loop over $ozn_ptype (default values 'ges', 'anl')

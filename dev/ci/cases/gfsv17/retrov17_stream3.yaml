@@ -14,7 +14,7 @@ experiment:
   idate: 2024111506
   edate: 2025053118
   icsdir: /lfs/h2/emc/gfstemp/emc.global/IC/v3 
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/s2sw_stream3.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/s2sw_stream3.yaml
 
 workflow:
   engine: rocoto

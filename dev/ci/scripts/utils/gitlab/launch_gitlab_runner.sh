@@ -13,8 +13,8 @@ set -e
 # Usage: ./launch_gitlab_runner.sh [register|run|unregister] [token]
 #########################################################################
 
-# Set the HOMEgfs_ variable to the root directory of the global workflow
-HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+# Set the HOMEglobal_ variable to the root directory of the global workflow
+HOMEglobal_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 # Get the hostname of the current machine
 host="$(hostname)"
 
@@ -23,7 +23,7 @@ host="$(hostname)"
 #########################################################################
 
 # Source the detect_machine.sh script to determine the MACHINE_ID
-source "${HOMEgfs_}/ush/detect_machine.sh"
+source "${HOMEglobal_}/ush/detect_machine.sh"
 # Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
     hera | orion | hercules | wcoss2 | gaeac6)
@@ -41,7 +41,7 @@ esac
 # Source the platform-specific configuration file
 # This file contains platform-specific variables such as GITLAB_URL, GITLAB_CI_BUILDS_DIR,
 # and GITLAB_RUNNER_DIR which are required for runner registration and execution
-source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
+source "${HOMEglobal_}/dev/ci/platforms/config.${MACHINE_ID}"
 
 # Change to the GitLab runner directory defined in the platform config
 cd "${GITLAB_RUNNER_DIR}" || exit 1

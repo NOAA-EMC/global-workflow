@@ -3,7 +3,7 @@
 set -x
 
 ###############################################################
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if ((status != 0)); then exit "${status}"; fi
 
@@ -11,7 +11,7 @@ export job="gempakncdcupapgif"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF"
+"${HOMEglobal}/dev/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF"
 
 status=$?
 exit "${status}"

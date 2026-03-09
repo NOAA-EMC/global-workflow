@@ -121,7 +121,7 @@ class ArchiveVrfyVars:
                 config_dict[key] = f"{config_dict[key]:03d}"
 
         # Configuration keys to extract (if present)
-        config_keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs',
+        config_keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMglobal',
                        'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR',
                        'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET',
                        'FHOUT_GFS', 'FHMAX_HF_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT',
