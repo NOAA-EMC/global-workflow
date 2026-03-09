@@ -3984,8 +3984,6 @@ suite gfs_v17_0_d1
         family verf
           family atmos
             edit WGF 'atmos'
-            task jgdas_fit2obs
-              trigger ../../product/atmos==complete
             task jgdas_verfozn
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
             task jgdas_verfrad
