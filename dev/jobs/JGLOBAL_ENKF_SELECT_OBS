@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 
 ##############################################
 # Set variables used in the script
@@ -128,7 +128,7 @@ done
 ###############################################################
 # Run relevant script
 
-${INVOBSSH:-${SCRgfs}/exglobal_enkf_select_obs.sh} && true
+${INVOBSSH:-${SCRglobal}/exglobal_enkf_select_obs.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
 
 ##############################################
 # Set variables used in the script
@@ -40,7 +40,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${ENKFRESFCSH:-${SCRgfs}/exglobal_enkf_sfc.sh} && true
+${ENKFRESFCSH:-${SCRglobal}/exglobal_enkf_sfc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
 
 # Set rtofs PDY
 # shellcheck disable=SC2153
@@ -25,7 +25,7 @@ fi
 mkdir -p "${COMOUT_WAVE_PREP}"
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_prep.sh" && true
+"${SCRglobal}/exgfs_wave_prep.sh" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

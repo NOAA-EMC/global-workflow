@@ -2,8 +2,8 @@
 set -x
 
 # shellcheck disable=SC2155
-readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
-cd "${HOMEgfs_}/sorc" || exit 1
+readonly HOMEglobal_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
+cd "${HOMEglobal_}/sorc" || exit 1
 
 # Default settings
 PDLIB="ON"
@@ -24,15 +24,15 @@ while getopts ":j:a:dvw" option; do
 done
 
 # Determine machine and load modules
-source "${HOMEgfs_}/ush/detect_machine.sh"
+source "${HOMEglobal_}/ush/detect_machine.sh"
 set +x
-source "${HOMEgfs_}/sorc/ufs_model.fd/tests/module-setup.sh"
-module use "${HOMEgfs_}/sorc/ufs_model.fd/modulefiles"
+source "${HOMEglobal_}/sorc/ufs_model.fd/tests/module-setup.sh"
+module use "${HOMEglobal_}/sorc/ufs_model.fd/modulefiles"
 module load "ufs_${MACHINE_ID}.intel"
 set -x
 
 #Set WW3 directory
-cd "${HOMEgfs_}/sorc/ufs_model.fd/WW3" || exit 1
+cd "${HOMEglobal_}/sorc/ufs_model.fd/WW3" || exit 1
 WW3_DIR=$(pwd -P)
 export WW3_DIR
 

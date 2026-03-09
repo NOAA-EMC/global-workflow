@@ -131,7 +131,7 @@ CICE_namelists() {
     local stream_files_dice="none"
 
     # Ensure the template exists
-    local template=${CICE_TEMPLATE:-"${PARMgfs}/ufs/ice_in.IN"}
+    local template=${CICE_TEMPLATE:-"${PARMglobal}/ufs/ice_in.IN"}
     if [[ ! -f "${template}" ]]; then
         echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
         exit 1

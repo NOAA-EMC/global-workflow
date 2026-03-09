@@ -33,7 +33,7 @@ export bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+export NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 
 # IAU
 DOIAU=${DOIAU:-"NO"}
@@ -41,12 +41,12 @@ export IAUFHRS=${IAUFHRS:-"6,"}
 
 # Dependent Scripts and Executables
 export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECglobal}/enkf_chgres_recenter_nc.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
 APRUNCFP=${APRUNCFP:-""}
 
 # level info file
-SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
+SIGLEVEL=${SIGLEVEL:-${FIXglobal}/am/global_hyblev.l${LEVS}.txt}
 
 # forecast files
 APREFIX=${APREFIX:-""}
@@ -113,7 +113,7 @@ if [[ ${DO_CALC_ANALYSIS} == "YES" ]]; then
         ${NLN} "${ATMF09ENS}" fcst.ensres.09
     fi
     export OMP_NUM_THREADS=${NTHREADS_CHGRES}
-    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
+    SIGLEVEL=${SIGLEVEL:-${FIXglobal}/am/global_hyblev.l${LEVS_ENKF}.txt}
 
     if [[ "${USE_CFP}" == "YES" ]]; then
         rm -f "${DATA}/mp_chgres.sh"
@@ -139,7 +139,7 @@ EOF
     done
 
     # Run with MPMD
-    "${USHgfs}/run_mpmd.sh" "${DATA}/mp_chgres.sh" && true
+    "${USHglobal}/run_mpmd.sh" "${DATA}/mp_chgres.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit

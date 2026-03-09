@@ -237,8 +237,8 @@ def get_resource(self, task_name):
 ### Environment Setup
 ```bash
 # From gw_setup.sh - CRITICAL for Python imports
-if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
+if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
+  PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/sorc/wxflow/src"
   export PYTHONPATH
 fi
 ```
@@ -331,13 +331,13 @@ meta_tasks_state = {}  # State tracking per metatask
 
 ### Machine Detection
 ```bash
-source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEglobal}/ush/detect_machine.sh"
 # Sets MACHINE_ID for host-specific configurations
 ```
 
 ### Module Loading
 ```bash
-module use "${HOMEgfs}/modulefiles"
+module use "${HOMEglobal}/modulefiles"
 module load "module_gwsetup.${MACHINE_ID}"
 ```
 
@@ -360,7 +360,7 @@ module load "module_gwsetup.${MACHINE_ID}"
 # Standard environment setup in tasks
 envar_dict = {
     'RUN_ENVIR': 'emc',
-    'HOMEgfs': self.HOMEgfs,
+    'HOMEglobal': self.HOMEglobal,
     'EXPDIR': self._base.get('EXPDIR'),
     'NET': self._base.get('NET'),
     'RUN': self.run,

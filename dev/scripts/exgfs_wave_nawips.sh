@@ -10,13 +10,13 @@
 #  March-2020 Roberto.Padilla@noaa.gov
 #####################################################################
 
-source "${USHgfs}/wave_domain_grid.sh"
-source "${USHgfs}/atparse.bash"
+source "${USHglobal}/wave_domain_grid.sh"
+source "${USHglobal}/atparse.bash"
 
 NAGRIB="nagrib2"
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
-cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
+cpreq "${HOMEglobal}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
 
 grids=${GEMPAK_GRIDS:-${waveinterpGRD:-'aoc_9km gnh_10m gsh_15m'}}
 

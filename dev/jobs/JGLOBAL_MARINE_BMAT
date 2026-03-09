@@ -12,13 +12,13 @@ if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 
 # source config.base, config.ocnanal and config.marinebmat
 # and pass marinebmat to ${machine}.env
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmat" -c "base marinebmat"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marinebmat" -c "base marinebmat"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # shellcheck disable=SC2153
@@ -59,7 +59,7 @@ mkdir -m 775 -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat.py}
+EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRglobal}/exglobal_marinebmat.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

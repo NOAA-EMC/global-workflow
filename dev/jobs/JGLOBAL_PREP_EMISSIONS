@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissions"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissions"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # TODO: Set local variables used in this script e.g. GDATE may be needed for previous cycle
@@ -31,7 +31,7 @@ mkdir -p "${COMOUT_CHEM_INPUT}"
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRgfs}/exglobal_prep_emissions.py}
+EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRglobal}/exglobal_prep_emissions.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
