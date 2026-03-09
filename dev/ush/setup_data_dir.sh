@@ -1,24 +1,32 @@
 #! /usr/bin/env bash
 
 #######
-# Creates the DATA working directory and cd's into it.
-# DATA must be set externally before sourcing this script.
+# Defines the setup_data_dir function for use in J-jobs.
 #
-# Source this file to execute the setup:
+# Creates a working directory and cd's into it.
+#
+# Source this file to load the function into the current shell:
 #   source "${HOMEglobal}/dev/ush/setup_data_dir.sh"
 #
+# Usage:
+#   setup_data_dir <dir>
+#
 # Requires in environment:
-#   DATA      - path to the working directory
 #   err_exit  - (from err_exit.sh)
 # Optional:
-#   WIPE_DATA - whether to delete any existing DATA [default: "YES"]
+#   WIPE_DATA - whether to delete any existing directory [default: "YES"]
 #######
 
-if [[ ${WIPE_DATA:-YES} == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
-mkdir -p "${DATA}"
-if ! cd "${DATA}"; then
-    export err=1
-    err_exit "[${BASH_SOURCE[0]}]: ${DATA} does not exist"
-fi
+setup_data_dir() {
+    local dir="${1:?setup_data_dir requires a directory argument}"
+    if [[ ${WIPE_DATA:-YES} == "YES" ]]; then
+        rm -rf "${dir}"
+    fi
+    mkdir -p "${dir}"
+    if ! cd "${dir}"; then
+        export err=1
+        err_exit "[${BASH_SOURCE[0]}]: ${dir} does not exist"
+    fi
+}
+
+declare -xf setup_data_dir

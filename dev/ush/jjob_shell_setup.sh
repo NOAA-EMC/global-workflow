@@ -10,7 +10,7 @@
 #       err_exit, set_strict, postamble)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
-#   - Defining and calling setup_data_dir to create and cd to DATA
+#   - Creating and cd-ing to the DATA working directory (setup_data_dir.sh)
 #   - Activating strict mode (set -eu) and tracing (set -x)
 #   - Setting up the postamble EXIT trap for script timing and cleanup
 #   - Running setpdy.sh and sourcing PDY date variables
