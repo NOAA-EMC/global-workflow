@@ -100,8 +100,8 @@ class Jedi:
             self.jcb_config['observations'] = parse_j2yaml(self.jedi_config.obs_list_yaml, task_config)['observations']
 
         # Include test reference YAML in JCB config if app_test_yaml specified
-        if self.task_config.DO_TEST_MODE and self.jedi_config.app_test_yaml is not None:
-            self.jcb_config = {**self.jcb_config, **parse_j2yaml(self.jedi_config.app_test_yaml, task_config)}
+        if task_config.DO_TEST_MODE and self.jedi_config.app_test_yaml is not None:
+            self.jcb_config.update(parse_j2yaml(self.jedi_config.app_test_yaml, task_config))
 
         # Set object attributes
         # ---------------------
