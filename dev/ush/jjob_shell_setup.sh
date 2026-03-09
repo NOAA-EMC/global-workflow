@@ -10,6 +10,7 @@
 #       err_exit, set_strict, postamble)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
+#   - Defining and calling setup_data_dir to create and cd to DATA
 #   - Activating strict mode (set -eu) and tracing (set -x)
 #   - Setting up the postamble EXIT trap for script timing and cleanup
 #   - Running setpdy.sh and sourcing PDY date variables
@@ -36,6 +37,12 @@ source "${HOMEglobal}/dev/ush/timer.sh"
 source "${HOMEglobal}/dev/ush/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
+
+##############################################
+# DATA directory setup
+##############################################
+source "${HOMEglobal}/dev/ush/setup_data_dir.sh"
+setup_data_dir "${DATA}"
 ##############################################
 # Shell options, strict mode, and tracing
 ##############################################

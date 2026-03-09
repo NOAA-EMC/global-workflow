@@ -71,18 +71,6 @@ if [[ -z ${env_job} ]]; then
 fi
 
 ##############################################
-# make temp directory
-##############################################
-if [[ ${WIPE_DATA:-YES} == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
-mkdir -p "${DATA}"
-if ! cd "${DATA}"; then
-    export err=1
-    err_exit "[${BASH_SOURCE[0]}]: ${DATA} does not exist"
-fi
-
-##############################################
 # Determine Job Output Name on System
 ##############################################
 # TODO: remove this when going to production
