@@ -39,7 +39,9 @@ shopt -s nullglob # Allow null globs instead of treating * as literal
 ##############################################
 # Shell options, strict mode, and tracing
 ##############################################
-source "${HOMEglobal}/dev/ush/set_strict_trace.sh"
+source "${HOMEglobal}/dev/ush/set_strict.sh"
+source "${HOMEglobal}/dev/ush/unset_strict.sh"
+source "${HOMEglobal}/dev/ush/set_trace.sh"
 export SHELLOPTS
 
 # Activate strict mode and tracing
