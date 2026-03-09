@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_tars earc_groups"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################

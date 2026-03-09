@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 # TODO (#1221) This job is not part of the rocoto suite
 
@@ -8,6 +7,7 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 # GFS FBWIND PRODUCT GENERATION
 ############################################
 source "${HOMEglobal}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
 export COMPONENT="atmos"

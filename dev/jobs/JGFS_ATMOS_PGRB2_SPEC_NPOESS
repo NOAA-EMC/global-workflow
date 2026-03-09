@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 # TODO (#1225) This job is not part of the rocoto suite
 
@@ -8,6 +7,7 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
 source "${HOMEglobal}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}

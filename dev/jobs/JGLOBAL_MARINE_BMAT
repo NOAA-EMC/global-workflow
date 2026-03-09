@@ -1,6 +1,5 @@
 #!/bin/bash
 set -x
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
@@ -15,6 +14,7 @@ if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 # source config.base, config.ocnanal and config.marinebmat
 # and pass marinebmat to ${machine}.env
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marinebmat" -c "base marinebmat"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################

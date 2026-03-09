@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
