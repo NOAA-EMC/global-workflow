@@ -7,7 +7,11 @@ set -x
 # GFS GEMPAK META PRODUCT GENERATION
 ############################################
 source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
+#{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
 source "${USHglobal}/jjob_shell_setup.sh"
 
 ###############################################

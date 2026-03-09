@@ -7,7 +7,11 @@ set -x
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
 source "${HOMEglobal}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
+#{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
 source "${USHglobal}/jjob_shell_setup.sh"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}

@@ -11,7 +11,11 @@ else
     export DATA="${DATAjob}/${jobid}"
     source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
+#{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
 source "${USHglobal}/jjob_shell_setup.sh"
 
 # Setup Python path for pygfs

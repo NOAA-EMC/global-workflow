@@ -1,7 +1,11 @@
 #! /usr/bin/env bash
 set -x
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl atmensanlletkf"
+#{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
 source "${USHglobal}/jjob_shell_setup.sh"
