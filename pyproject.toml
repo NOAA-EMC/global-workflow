@@ -14,7 +14,6 @@ authors = [
 license = { text = "BSD-3-Clause" }
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
@@ -22,6 +21,7 @@ dependencies = [
     "cftime",
     "click",
     "f90nml",
+    "jcb @ git+https://github.com/noaa-emc/jcb.git@0.1.0",
     "Jinja2",
     "MarkupSafe",
     "netCDF4",
@@ -29,8 +29,7 @@ dependencies = [
     "pandas",
     "PyYAML",
     "xarray",
-    # Note: jcb and wxflow are currently local editable installs in requirements_frozen.txt
-    # and should be handled accordingly (e.g., as part of the workspace or installed manually).
+    "wxflow @ git+https://github.com/noaa-emc/wxflow.git@v0.4.0",
 ]
 
 [project.optional-dependencies]
@@ -70,7 +69,10 @@ all = [
 
 [tool.setuptools]
 package-dir = {"" = "ush/python"}
-packages = ["pygfs", "wxflow", "jcb", "ufsda", "soca", "pyiodaconv", "gsincdiag_to_ioda"]
+
+[tool.setuptools.packages.find]
+where = ["ush/python"]
+include = ["pygfs*", "jcb*", "ufsda*", "soca*", "pyiodaconv*", "gsincdiag_to_ioda*"]
 
 [tool.pytest.ini_options]
 testpaths = ["dev/test", "dev/ctests"]

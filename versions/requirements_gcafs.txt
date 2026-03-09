@@ -2,6 +2,7 @@ certifi==2026.2.25
 cftime==1.6.5
 click==8.3.1
 f90nml==1.5.0
+jcb @ git+https://github.com/noaa-emc/jcb.git@0.1.0
 jinja2==3.1.6
 markupsafe==3.0.3
 netcdf4==1.7.4
@@ -11,4 +12,5 @@ pandas==3.0.1
 python-dateutil==2.9.0.post0
 pyyaml==6.0.3
 six==1.17.0
+wxflow @ git+https://github.com/noaa-emc/wxflow.git@v0.4.0
 xarray==2026.2.0
