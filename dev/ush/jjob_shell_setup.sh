@@ -23,9 +23,6 @@
 ##############################################
 # Shell defaults (allow sourcing without jjob_standard_vars.sh)
 ##############################################
-# Ensure USHglobal is set for scripts that source this file directly
-# (e.g. preamble.sh callers such as run_mpmd.sh)
-export start_time=${start_time:-$(date +%s)}
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
