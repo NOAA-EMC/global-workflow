@@ -1,10 +1,9 @@
 #! /usr/bin/env bash
 set -x
-
-export WIPE_DATA="NO"
-export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlletkf" -c "base atmensanl atmensanlletkf"
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
 source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################

@@ -14,19 +14,3 @@ export PYTHONPATH
 export -n SHELLOPTS
 "${SCRglobal}/exglobal_fetch.py"
 err=$?
-
-###############################################################
-# Check for errors and exit if any of the above failed
-if [[ ${err} -ne 0 ]]; then
-    err_exit "Unable to fetch ICs to ${ROTDIR}; ABORT!"
-fi
-
-##########################################
-# Remove the Temporary working directory
-##########################################
-cd "${DATAROOT}" || exit 1
-if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
-fi
-
-exit 0
