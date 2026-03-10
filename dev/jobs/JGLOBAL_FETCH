@@ -2,11 +2,13 @@
 set -x
 export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
 source "${HOMEglobal}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
+
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
+
 source "${USHglobal}/jjob_shell_setup.sh"
 
 # Setup Python path for pygfs

@@ -2,11 +2,13 @@
 set -x
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "wave_stat" -c "base wave wave_stat"
+
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
+
 source "${USHglobal}/jjob_shell_setup.sh"
 source "${USHglobal}/wave_domain_grid.sh"
 
@@ -27,10 +29,7 @@ fi
 
 # Execute the Script
 #"${SCRglobal}/exgefs_wave_stat.sh"
-export err=$?
-if [[ ${err} -ne 0 ]]; then
-    err_exit
-fi
+err_chk
 ##########################################
 ## Remove the Temporary working directory
 ###########################################
