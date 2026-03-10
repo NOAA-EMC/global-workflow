@@ -34,7 +34,6 @@ source "${HOMEglobal}/dev/ush/timer.sh"
 source "${HOMEglobal}/dev/ush/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
-
 ##############################################
 # DATA directory setup
 ##############################################
