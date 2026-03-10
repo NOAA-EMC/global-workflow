@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from global_to_net_converter import ConversionResult, _SELF_SCRIPTS
-from global_to_net_converter import _RED, _GREEN, _YELLOW, _BLUE, _CYAN, _NC
 
 
 VALID_NET_VALUES = ('gfs', 'gefs', 'sfs', 'gcafs')
@@ -33,7 +32,7 @@ class NetToGlobalConverter:
     Parameters
     ----------
     verbose : bool
-        Print colourised progress to stdout (default True).
+        Print progress to stdout (default True).
 
     Examples
     --------
@@ -135,11 +134,11 @@ class NetToGlobalConverter:
 
         if self.verbose:
             if result.failed:
-                print(f"{_RED}✗ Failed to process {filepath}{_NC}")
+                print(f"ERROR: Failed to process {filepath}", file=sys.stderr)
             elif result.converted:
-                print(f"{_GREEN}✓ Processed {filepath}{_NC}")
+                print(f"Processed {filepath}")
             else:
-                print(f"{_YELLOW}No patterns found in {filepath}{_NC}")
+                print(f"No patterns found in {filepath}")
 
         return result
 
@@ -174,26 +173,34 @@ class NetToGlobalConverter:
         net_list = ALL_NET_VALUES if net == 'all' else (net,)
 
         if self.verbose:
-            self._print_header(net, net_list, dirpath, display_exclude)
+            print("=========================================")
+            if net == 'all':
+                print(f"Converting NET-specific variables to global-workflow variables "
+                      f"from: {' '.join(net_list)}")
+            else:
+                print(f"Converting {net}-specific variables to global-workflow variables")
+            print(f"Target: {dirpath}")
+            if display_exclude:
+                print(f"Excluding: {' '.join(display_exclude)}")
+            print("=========================================")
 
         files = list(self._iter_files(dirpath, exclude_names))
         combined = ConversionResult()
 
         for current_net in net_list:
             if self.verbose:
-                print(f"{_YELLOW}Converting for: {_RED}{current_net}{_NC} "
-                      f"{_YELLOW}\u2192{_NC} {_GREEN}global{_NC}")
+                print(f"Converting: {current_net} -> global")
 
             patterns = self._get_patterns(current_net)
             result = ConversionResult()
 
             if not files:
                 if self.verbose:
-                    print(f"{_YELLOW}No files to convert{_NC}")
+                    print("No files to convert")
                 continue
 
             if self.verbose:
-                print(f"{_BLUE}Processing {len(files)} files...{_NC}")
+                print(f"Processing {len(files)} files...")
 
             for f in files:
                 modified, failed = self._process_file(f, patterns)
@@ -213,9 +220,9 @@ class NetToGlobalConverter:
 
         if self.verbose:
             print()
-            print(f"{_CYAN}========================================={_NC}")
-            print(f"{_GREEN}All conversions completed successfully!{_NC}")
-            print(f"{_CYAN}========================================={_NC}")
+            print("=========================================")
+            print("All conversions completed successfully!")
+            print("=========================================")
 
         return combined
 
@@ -246,7 +253,7 @@ class NetToGlobalConverter:
         try:
             content = filepath.read_text(errors='replace')
         except OSError as exc:
-            print(f"{_RED}ERROR: Could not read {filepath}: {exc}{_NC}", file=sys.stderr)
+            print(f"ERROR: Could not read {filepath}: {exc}", file=sys.stderr)
             return False, True
 
         new_content = content
@@ -259,7 +266,7 @@ class NetToGlobalConverter:
         try:
             filepath.write_text(new_content)
         except OSError as exc:
-            print(f"{_RED}ERROR: Could not write {filepath}: {exc}{_NC}", file=sys.stderr)
+            print(f"ERROR: Could not write {filepath}: {exc}", file=sys.stderr)
             return False, True
 
         return True, False
@@ -286,29 +293,13 @@ class NetToGlobalConverter:
             raise FileNotFoundError(f"Target path does not exist: {target}")
 
     @staticmethod
-    def _print_header(net, net_list, target, display_exclude):
-        print(f"{_CYAN}========================================={_NC}")
-        if net == 'all':
-            print(f"{_YELLOW}Processing: Converting NET-specific variables to "
-                  f"{_GREEN}global{_NC}{_YELLOW}-workflow variables from: "
-                  f"{_RED}{' '.join(net_list)}{_NC}")
-        else:
-            print(f"{_YELLOW}Processing: Converting {_RED}{net}{_NC}{_YELLOW}-specific "
-                  f"variables to {_GREEN}global{_NC}{_YELLOW}-workflow variables{_NC}")
-        print(f"{_BLUE}Target: {target}{_NC}")
-        if display_exclude:
-            print(f"{_BLUE}Excluding: {' '.join(display_exclude)}{_NC}")
-        print(f"{_CYAN}========================================={_NC}")
-
-    @staticmethod
     def _print_net_summary(result: ConversionResult, net: str) -> None:
         if result.converted == 0:
-            print(f"{_YELLOW}No files to convert for NET={net}{_NC}")
+            print(f"No files to convert for NET={net}")
         elif result.failed > 0:
-            print(f"{_YELLOW}\u26a0 Converted {result.converted} files "
-                  f"({result.failed} failed) for NET={net}{_NC}")
+            print(f"Converted {result.converted} files ({result.failed} failed) for NET={net}")
         else:
-            print(f"{_GREEN}\u2713 Converted {result.converted} files for NET={net}{_NC}")
+            print(f"Converted {result.converted} files for NET={net}")
         print()
 
 
@@ -334,7 +325,7 @@ def main() -> None:
     try:
         result = converter.convert(args.target_path, args.net, exclude=args.exclude)
     except (ValueError, FileNotFoundError) as exc:
-        print(f"{_RED}ERROR: {exc}{_NC}", file=sys.stderr)
+        print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
     if not result.success:

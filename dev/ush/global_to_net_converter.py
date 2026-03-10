@@ -16,7 +16,7 @@ Can be used as a standalone CLI tool or imported as a module:
 import argparse
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -28,14 +28,6 @@ _SELF_SCRIPTS = frozenset({
     'convert_from_net_to_global.py', 'convert_from_global_to_net.py',
     'net_to_global_converter.py', 'global_to_net_converter.py',
 })
-
-# ANSI colours used in console output
-_RED = '\033[0;31m'
-_GREEN = '\033[0;32m'
-_YELLOW = '\033[1;33m'
-_BLUE = '\033[0;34m'
-_CYAN = '\033[0;36m'
-_NC = '\033[0m'
 
 
 @dataclass
@@ -71,7 +63,7 @@ class GlobalToNetConverter:
     Parameters
     ----------
     verbose : bool
-        Print colourised progress to stdout (default True).
+        Print progress to stdout (default True).
 
     Examples
     --------
@@ -168,11 +160,11 @@ class GlobalToNetConverter:
 
         if self.verbose:
             if failed:
-                print(f"{_RED}✗ Failed to process {filepath}{_NC}")
+                print(f"ERROR: Failed to process {filepath}", file=sys.stderr)
             elif modified:
-                print(f"{_GREEN}✓ Processed 1 file for NET={net}{_NC}")
+                print(f"Processed 1 file for NET={net}")
             else:
-                print(f"{_YELLOW}No patterns found in {filepath} for NET={net}{_NC}")
+                print(f"No patterns found in {filepath} for NET={net}")
 
         return result
 
@@ -207,18 +199,24 @@ class GlobalToNetConverter:
         patterns = self._get_patterns(net)
 
         if self.verbose:
-            self._print_header(net, dirpath, display_exclude)
+            print("=========================================")
+            print(f"Converting global-workflow variables to {net}-specific variables")
+            print(f"Target: {dirpath}")
+            if display_exclude:
+                print(f"Excluding: {' '.join(display_exclude)}")
+            print("=========================================")
+            print(f"Converting: global -> {net}")
 
         files = list(self._iter_files(dirpath, exclude_names))
         result = ConversionResult()
 
         if not files:
             if self.verbose:
-                print(f"{_YELLOW}No files to convert for NET={net}{_NC}")
+                print(f"No files to convert for NET={net}")
             return result
 
         if self.verbose:
-            print(f"{_BLUE}Processing {len(files)} files...{_NC}")
+            print(f"Processing {len(files)} files...")
 
         for f in files:
             modified, failed = self._process_file(f, patterns)
@@ -261,7 +259,7 @@ class GlobalToNetConverter:
         try:
             content = filepath.read_text(errors='replace')
         except OSError as exc:
-            print(f"{_RED}ERROR: Could not read {filepath}: {exc}{_NC}", file=sys.stderr)
+            print(f"ERROR: Could not read {filepath}: {exc}", file=sys.stderr)
             return False, True
 
         new_content = content
@@ -274,7 +272,7 @@ class GlobalToNetConverter:
         try:
             filepath.write_text(new_content)
         except OSError as exc:
-            print(f"{_RED}ERROR: Could not write {filepath}: {exc}{_NC}", file=sys.stderr)
+            print(f"ERROR: Could not write {filepath}: {exc}", file=sys.stderr)
             return False, True
 
         return True, False
@@ -300,31 +298,19 @@ class GlobalToNetConverter:
         if not target.exists():
             raise FileNotFoundError(f"Target path does not exist: {target}")
 
-    def _print_header(self, net, target, display_exclude):
-        print(f"{_CYAN}========================================={_NC}")
-        print(f"{_YELLOW}Processing: Converting {_GREEN}global{_NC}{_YELLOW}-workflow "
-              f"variables to {_RED}{net}{_NC}{_YELLOW}-specific variables{_NC}")
-        print(f"{_BLUE}Target: {target}{_NC}")
-        if display_exclude:
-            print(f"{_BLUE}Excluding: {' '.join(display_exclude)}{_NC}")
-        print(f"{_CYAN}========================================={_NC}")
-        print()
-        print(f"{_YELLOW}Converting: {_GREEN}global{_NC} {_YELLOW}\u2192{_NC} {_RED}{net}{_NC}")
-
     @staticmethod
     def _print_summary(result: ConversionResult, net: str) -> None:
         print()
         if result.converted == 0:
-            print(f"{_YELLOW}No files to convert for NET={net}{_NC}")
+            print(f"No files to convert for NET={net}")
         elif result.failed > 0:
-            print(f"{_YELLOW}\u26a0 Converted {result.converted} files "
-                  f"({result.failed} failed) for NET={net}{_NC}")
+            print(f"Converted {result.converted} files ({result.failed} failed) for NET={net}")
         else:
-            print(f"{_GREEN}\u2713 Converted {result.converted} files for NET={net}{_NC}")
+            print(f"Converted {result.converted} files for NET={net}")
         print()
-        print(f"{_CYAN}========================================={_NC}")
-        print(f"{_GREEN}Conversion completed successfully!{_NC}")
-        print(f"{_CYAN}========================================={_NC}")
+        print("=========================================")
+        print("Conversion completed successfully!")
+        print("=========================================")
 
 
 # ---------------------------------------------------------------------------
@@ -349,7 +335,7 @@ def main() -> None:
     try:
         result = converter.convert(args.target_path, args.net, exclude=args.exclude)
     except (ValueError, FileNotFoundError) as exc:
-        print(f"{_RED}ERROR: {exc}{_NC}", file=sys.stderr)
+        print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
     if not result.success:
