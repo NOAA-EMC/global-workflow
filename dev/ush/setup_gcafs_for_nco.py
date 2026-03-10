@@ -62,53 +62,6 @@ gcdas_jobs = {
 }
 
 
-def replace_gfs_with_gcafs(input_file):
-    """
-    Replace all instances of FOOgfs with FOOgcafs in the given input file.
-    This matches patterns like HOMEgfs -> HOMEgcafs, USHgfs -> USHgcafs, etc.
-
-    Parameters
-    ----------
-    input_file : str
-        Path to the file to modify
-
-    Returns
-    -------
-    int
-        Number of replacements made
-    """
-    if not os.path.exists(input_file):
-        raise FileNotFoundError(f"File not found: {input_file}")
-
-    # Read the file content
-    with open(input_file, 'r') as f:
-        content = f.read()
-
-    # Count and replace all instances of FOOgfs with FOOgcafs
-    # This will match patterns like: HOMEgfs, USHgfs, PARMgfs, etc.
-    # Does NOT match standalone "gfs" or quoted "gfs"
-    import re
-    # Match word characters followed by "gfs" at word boundary, but ensure the character
-    # immediately before "gfs" is a capital letter (e.g., HOMEgfs, not pygfs)
-    pattern = r'(\w*[A-Z])gfs\b'
-
-    replacement_count = 0
-
-    def replace_func(match):
-        nonlocal replacement_count
-        replacement_count += 1
-        prefix = match.group(1)
-        return f"{prefix}gcafs"
-
-    modified_content = re.sub(pattern, replace_func, content)
-
-    # Write the modified content back to the file
-    with open(input_file, 'w') as f:
-        f.write(modified_content)
-
-    return replacement_count
-
-
 def copy_job_files(global_workflow_dir):
     """
     Copy job files from dev/jobs to jobs directory with appropriate renaming.
@@ -272,12 +225,6 @@ def setup_gcafs_for_nco():
                 with open(job_file_path, 'w') as f:
                     f.write(content)
 
-    # Go through the copied job and ex-script files and replace FOOgfs with FOOgcafs
-    all_copied_files = [dest for _, dest in job_file_copy_list + ex_script_file_copy_list]
-    for file_path in all_copied_files:
-        num_replacements = replace_gfs_with_gcafs(file_path)
-        print(f"Modified {file_path}: {num_replacements} replacements made.")
-
     # Render the JGLOBAL_FORECAST.j2 template for both GCDAS and GCAFS
     template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_FORECAST.j2')
     for RUN in ['gcafs', 'gcdas']:
@@ -290,68 +237,6 @@ def setup_gcafs_for_nco():
     dest_surface_job_path = os.path.join(global_workflow_dir, 'jobs', "JGCDAS_SURFACE_INITIALIZE")
     Jinja(surface_template_path, {'RUN': 'gcdas'}).save(dest_surface_job_path)
     print(f"Rendered surface analysis template and saved to {dest_surface_job_path}")
-
-    # Go through the ush directory and replace FOOgfs with FOOgcafs in all scripts
-    ush_dir = os.path.join(global_workflow_dir, 'ush')
-    for root, _, files in os.walk(ush_dir):
-        for file in files:
-            # Only process .sh and .py files
-            if file.endswith(('.sh', '.py')):
-                file_path = os.path.join(root, file)
-                num_replacements = replace_gfs_with_gcafs(file_path)
-                if num_replacements > 0:
-                    print(f"Modified {file_path}: {num_replacements} replacements made.")
-
-    # Go through the dev/ush and dev/workflow directories and replace FOOgfs with FOOgcafs in all scripts
-    # and YAMLs in dev/ci/cases
-    for subdir in ['dev/ush', 'dev/workflow', 'dev/ci/cases']:
-        dir_path = os.path.join(global_workflow_dir, subdir)
-        for root, _, files in os.walk(dir_path):
-            for file in files:
-                # Skip the current script to avoid self-modification
-                if file == 'setup_gcafs_for_nco.py':
-                    continue
-                # Only process .sh and .py scripts and YAML files
-                if file.endswith(('.sh', '.py', '.yaml')):
-                    file_path = os.path.join(root, file)
-                    num_replacements = replace_gfs_with_gcafs(file_path)
-                    if num_replacements > 0:
-                        print(f"Modified {file_path}: {num_replacements} replacements made.")
-
-    # Go through the dev/parm/config/gcafs directory and replace FOOgfs with FOOgcafs in all config files
-    config_gcafs_dir = os.path.join(global_workflow_dir, 'dev', 'parm', 'config', 'gcafs')
-    for root, _, files in os.walk(config_gcafs_dir):
-        for file in files:
-            # Only process config files
-            if file.startswith('config.'):
-                file_path = os.path.join(root, file)
-                num_replacements = replace_gfs_with_gcafs(file_path)
-                if num_replacements > 0:
-                    print(f"Modified {file_path}: {num_replacements} replacements made.")
-
-    # Go through parm/ directory and replace FOOgfs with FOOgcafs in all files
-    parm_dir = os.path.join(global_workflow_dir, 'parm')
-    for root, _, files in os.walk(parm_dir):
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                num_replacements = replace_gfs_with_gcafs(file_path)
-                if num_replacements > 0:
-                    print(f"Modified {file_path}: {num_replacements} replacements made.")
-            except:  # noqa
-                print(f"Skipping: {file_path}")
-
-    # Go through sorc/gdas.cd/parm directory and replace FOOgcafs with FOOgcafs in all files
-    gcdas_parm_dir = os.path.join(global_workflow_dir, 'sorc', 'gdas.cd', 'parm')
-    for root, _, files in os.walk(gcdas_parm_dir):
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                num_replacements = replace_gfs_with_gcafs(file_path)
-                if num_replacements > 0:
-                    print(f"Modified {file_path}: {num_replacements} replacements made (gcafs).")
-            except:  # noqa
-                print(f"Skipping: {file_path}")
 
 
 if __name__ == "__main__":
