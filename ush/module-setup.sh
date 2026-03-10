@@ -85,11 +85,11 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
 elif [[ ${MACHINE_ID} = derecho ]]; then
-    # We are on GAEA C6.
+    # We are on NSF NCAR Derecho
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /glade/u/apps/derecho/24.12/spack/opt/spack/lmod/8.7.37/gcc/12.4.0/nr3e/lmod/lmod/init/bash
     fi
-    module -force purge
+    module --force purge
 
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
