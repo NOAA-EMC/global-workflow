@@ -69,6 +69,21 @@ if [[ "${USE_CFP}" != "YES" ]]; then
     exit "${rc}"
 fi
 
+# Some mpiexec implementations do not respect stdout redirection so make
+# a wrapper. This method should be valid across all implementations
+if [[ ${_mpmd_launcher} == mpiexec ]]; then
+    wrapper_script="stdout_wrapper.sh"
+    rm -f "${wrapper_script}"
+    cat << 'EOF' > "${wrapper_script}"
+#! /usr/bin/bash
+# Run the rest of the args and redirect stdout and stderr to the
+# file named by the last argument
+${@: 1:$#-1} > ${@: -1} 2>&1
+exit $?
+EOF
+    chmod 755 "${wrapper_script}"
+fi
+
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
 export OMP_NUM_THREADS=1
 
@@ -118,7 +133,7 @@ chunk_mpmd() {
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
                 echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
+                echo "${wrapper_script} ${line} mpmd.${i}.out" >> "${chunk_file}"
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then
@@ -202,7 +217,7 @@ for ((i = 0; i < nm; i += chunk_size)); do
         set_strict
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # shellcheck disable=SC2086
-        ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+        ${launcher:-} -np 1 ${mpmd_opt:-} "${chunk_file}"
     fi
     err=$?
     if [[ ${err} -ne 0 ]]; then
@@ -222,6 +237,7 @@ done
 # On success remove the command file and any chunk files.
 if [[ ${err} -eq 0 ]]; then
     rm -f "${mpmd_cmdfile}.chunk"*
+    rm -f "${wrapper_script:-}"
 fi
 
 # Concatenate any remaining output files if they exist
