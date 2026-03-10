@@ -38,8 +38,8 @@ EOF
 }
 
 # shellcheck disable=SC2155
-readonly HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
-cd "${HOMEgfs}/sorc" || exit 1
+readonly HOMEglobal=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
+cd "${HOMEglobal}/sorc" || exit 1
 
 _build_ufs_opt=""
 _build_debug=""
@@ -91,7 +91,7 @@ system_builds=(
     ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils nexus"
 )
 
-logs_dir="${HOMEgfs}/sorc/logs"
+logs_dir="${HOMEglobal}/sorc/logs"
 if [[ ! -d "${logs_dir}" ]]; then
     echo "Creating logs folder"
     mkdir -p "${logs_dir}" || exit 1
@@ -165,15 +165,15 @@ done
 # GET MACHINE
 #------------------------------------
 export COMPILER="intel"
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
+source "${HOMEglobal}/ush/detect_machine.sh"
+source "${HOMEglobal}/ush/module-setup.sh"
 if [[ -z "${MACHINE_ID}" ]]; then
     echo "FATAL: Unable to determine target machine"
     exit 1
 fi
 
 # Create the log directory
-mkdir -p "${HOMEgfs}/sorc/logs"
+mkdir -p "${HOMEglobal}/sorc/logs"
 
 #------------------------------------
 # SOURCE BUILD VERSION FILES
@@ -209,7 +209,7 @@ check_builds() {
                 if [[ ${build_stat} != 0 ]]; then
                     echo "build_${chk_build}.sh failed!  Exiting!"
                     echo "Check logs/build_${chk_build}.log for details."
-                    echo "logs/build_${chk_build}.log" > "${HOMEgfs}/sorc/logs/error.logs"
+                    echo "logs/build_${chk_build}.log" > "${HOMEglobal}/sorc/logs/error.logs"
                     for kill_build in "${!builds[@]}"; do
                         if [[ -n "${build_ids[${kill_build}]+0}" ]]; then
                             pkill -P "${build_ids[${kill_build}]}"
