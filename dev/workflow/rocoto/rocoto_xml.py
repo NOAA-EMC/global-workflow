@@ -182,7 +182,7 @@ class RocotoXML(WorkflowSuite, ABC):
                 script_fh.write(
                     "#!/usr/bin/env bash\n" +
                     "set -x\n" +
-                    f"source {self.HOMEgfs}/dev/ush/gw_setup.sh" + "\n" +
+                    f"source {self.HOMEglobal}/dev/ush/gw_setup.sh" + "\n" +
                     rocotorunstr + "\n"
                 )
 
