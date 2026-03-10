@@ -10,7 +10,7 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% endif %}
 
 source "${USHglobal}/jjob_shell_setup.sh"
-source "${USHgfs}/wave_domain_grid.sh"
+source "${USHglobal}/wave_domain_grid.sh"
 
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
