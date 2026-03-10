@@ -18,7 +18,7 @@ def main():
     upp = UPP(config)
 
     # Pull out all the configuration keys needed to run the rest of UPP steps
-    keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN', 'NET',
+    keys = ['HOMEglobal', 'DATA', 'current_cycle', 'RUN', 'NET',
             'COMIN_ATMOS_ANALYSIS', 'COMIN_ATMOS_HISTORY', 'COMOUT_ATMOS_MASTER',
             'upp_run',
             'APRUN_UPP',

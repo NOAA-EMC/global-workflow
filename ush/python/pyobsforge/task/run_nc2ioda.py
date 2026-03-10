@@ -17,13 +17,13 @@ def run_nc2ioda(task_config: dict, obs_space: str, context: dict) -> int:
     Returns:
         int: Returns 0 upon successful execution. Logs errors and warnings for failures.
     """
-    jinja_template = join(task_config['HOMEgcafs'], "parm", "chem", "nc2ioda.yaml.j2")
+    jinja_template = join(task_config['HOMEglobal'], "parm", "chem", "nc2ioda.yaml.j2")
     yaml_config = parse_j2yaml(jinja_template, context)
     nc2ioda_yaml = join(task_config['DATA'], obs_space, f"{obs_space}_nc2ioda.yaml")
     save_as_yaml(yaml_config, nc2ioda_yaml)
 
     # Run the ioda converter
-    nc2ioda_exe = join(task_config['HOMEgcafs'], 'exec', 'gdas_obsprovider2ioda.x')
+    nc2ioda_exe = join(task_config['HOMEglobal'], 'exec', 'gdas_obsprovider2ioda.x')
     exe = Executable(nc2ioda_exe)
     exe.add_default_arg([nc2ioda_yaml])
     try:

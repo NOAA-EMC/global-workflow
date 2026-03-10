@@ -5,7 +5,7 @@ set -x
 ###############################################################
 ## Abstract:
 ## Inline awips driver script
-## HOMEgfs   : /full/path/to/workflow
+## HOMEglobal   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## RUN    : cycle name (gdas / gfs)
 ## PDY    : current date (YYYYMMDD)
@@ -14,7 +14,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -38,14 +38,14 @@ for fhr3 in ${fhrlst}; do
         if ((fhr % 3 == 0)); then
             export fcsthr="${fhr3}"
             export DATA="${DATAROOT}/${jobid}.${fcsthr}"
-            "${HOMEgfs}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+            "${HOMEglobal}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
         fi
     # Process every 6 hrs from hour 90 up to hour 240
     elif [[ ${fhr} -ge 90 ]] && [[ ${fhr} -le 240 ]]; then
         if ((fhr % 6 == 0)); then
             export fcsthr="${fhr3}"
             export DATA="${DATAROOT}/${jobid}.${fcsthr}"
-            "${HOMEgfs}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+            "${HOMEglobal}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
         fi
     fi
 done

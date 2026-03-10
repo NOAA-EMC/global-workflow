@@ -7,31 +7,31 @@ TEST_NAME=${2:?"Name of the test is required"}
 TEST_DATE=${3:?"Date of the test is required"}
 # CMake to fill these variables
 RUNTESTS="@RUNTESTS@"
-HOMEgfs="@PROJECT_SOURCE_DIR@"
+HOMEglobal="@PROJECT_SOURCE_DIR@"
 STAGED_CTESTS="@STAGED_CTESTS@"
 
 # Load the runtime environment for this script (needs wxflow and its dependencies)
 set +x
-source "${HOMEgfs}/dev/ush/gw_setup.sh"
+source "${HOMEglobal}/dev/ush/gw_setup.sh"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
    exit "${rc}"
 fi
 set -x
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/wxflow/src"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/sorc/wxflow/src"
 export PYTHONPATH
 
-YAML_FILE="${HOMEgfs}/dev/ctests/cases/${TEST_NAME}.yaml"
+YAML_FILE="${HOMEglobal}/dev/ctests/cases/${TEST_NAME}.yaml"
 
 # Find pslot with pattern CASE_NAME_<suffix> where suffix is typically a hash
-PSLOT=$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${STAGED_CTESTS}" "${CASE_NAME}")
-TEST_NAME=$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS}" "${TEST_NAME}")
+PSLOT=$("${HOMEglobal}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${STAGED_CTESTS}" "${CASE_NAME}")
+TEST_NAME=$("${HOMEglobal}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS}" "${TEST_NAME}")
 
 STAGED_CTESTS="${STAGED_CTESTS}" \
 PSLOT="${PSLOT}" \
 RUNTESTS="${RUNTESTS}" \
 TEST_NAME="${TEST_NAME}" \
-"${HOMEgfs}/dev/ctests/scripts/stage.py" --yaml "${YAML_FILE}" --test_date "${TEST_DATE}"
+"${HOMEglobal}/dev/ctests/scripts/stage.py" --yaml "${YAML_FILE}" --test_date "${TEST_DATE}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     set +x

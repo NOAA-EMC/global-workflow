@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 
 ##############################################
 # Set variables used in the script
@@ -33,7 +33,7 @@ declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/en
 ###############################################################
 # Run relevant script
 
-${ENKFRECENSH:-${SCRgfs}/exglobal_enkf_ecen.sh} && true
+${ENKFRECENSH:-${SCRglobal}/exglobal_enkf_ecen.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

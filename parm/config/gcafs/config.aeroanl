@@ -21,8 +21,8 @@ export CASE_ANL
 
 export STATICB_TYPE='diffusion'
 
-export TASK_CONFIG_YAML="${PARMgcafs}/gdas/aero/aero_det_config.yaml.j2"
-export OBS_LIST_YAML="${PARMgcafs}/gdas/aero/aero_obs_list.yaml.j2"
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/aero/aero_det_config.yaml.j2"
+export OBS_LIST_YAML="${PARMglobal}/gdas/aero/aero_obs_list.yaml.j2"
 
 export io_layout_x="1"
 export io_layout_y="1"

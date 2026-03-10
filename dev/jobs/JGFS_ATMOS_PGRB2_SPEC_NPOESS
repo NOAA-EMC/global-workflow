@@ -5,7 +5,7 @@
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
@@ -21,7 +21,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GOES}"
 
 #############################################################
 # Execute the script
-"${SCRgfs}/exgfs_atmos_grib2_special_npoess.sh" && true
+"${SCRglobal}/exgfs_atmos_grib2_special_npoess.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

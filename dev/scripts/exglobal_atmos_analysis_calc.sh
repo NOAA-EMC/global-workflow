@@ -28,7 +28,7 @@ GDUMP=${GDUMP:-"gdas"}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-"${USHgfs}/getncdimlen"}
+export NCLEN=${NCLEN:-"${USHglobal}/getncdimlen"}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 
@@ -46,19 +46,19 @@ export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
 
-export CALCANLEXEC=${CALCANLEXEC:-"${EXECgfs}/calc_analysis.x"}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-"${EXECgfs}/enkf_chgres_recenter_nc.x"}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-"${EXECgfs}/interp_inc.x"}
+export CALCANLEXEC=${CALCANLEXEC:-"${EXECglobal}/calc_analysis.x"}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-"${EXECglobal}/enkf_chgres_recenter_nc.x"}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-"${EXECglobal}/interp_inc.x"}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
-CALCINCPY=${CALCINCPY:-"${USHgfs}/calcinc_gfs.py"}
+CALCINCPY=${CALCINCPY:-"${USHglobal}/calcinc_gfs.py"}
 if [[ "${RUN}" == "gcdas" ]]; then
-    CALCANLPY=${CALCANLPY:-"${USHgfs}/calcanl_gcafs.py"}
+    CALCANLPY=${CALCANLPY:-"${USHglobal}/calcanl_gcafs.py"}
 else
-    CALCANLPY=${CALCANLPY:-"${USHgfs}/calcanl_gfs.py"}
+    CALCANLPY=${CALCANLPY:-"${USHglobal}/calcanl_gfs.py"}
 fi
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
-GAUSFCANLSH=${GAUSFCANLSH:-"${USHgfs}/gaussian_sfcanl.sh"}
-export GAUSFCANLEXE=${GAUSFCANLEXE:-"${EXECgfs}/gaussian_sfcanl.x"}
+GAUSFCANLSH=${GAUSFCANLSH:-"${USHglobal}/gaussian_sfcanl.sh"}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-"${EXECglobal}/gaussian_sfcanl.x"}
 NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
 APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 

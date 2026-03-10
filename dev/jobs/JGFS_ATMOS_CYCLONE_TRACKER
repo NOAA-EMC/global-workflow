@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "tracker" -c "base tracker"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "tracker" -c "base tracker"
 
 export COMPONENT="atmos"
 

@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Execute fetching
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
-"${SCRgfs}/exglobal_fetch.py"
+"${SCRglobal}/exglobal_fetch.py"
 err=$?
 
 ###############################################################

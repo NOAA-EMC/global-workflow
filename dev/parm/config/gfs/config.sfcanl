@@ -30,7 +30,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
         export GCYCLE_DO_SOILINCR=".true."
     fi
     export GCYCLE_INTERP_LANDINCR=".false."
-    export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
+    export REGRID_EXEC="${HOMEglobal}/exec/regridStates.x"
 fi
 
 echo "END: config.sfcanl"

@@ -94,7 +94,7 @@ esac
 LOG=launched_agent-$(date +%Y%m%d%M).log
 rm -f "${LOG}"
 
-HOMEgfs="${HOMEgfs_}" source "${HOMEgfs_}/ush/module-setup.sh"
+HOMEglobal="${HOMEgfs_}" source "${HOMEgfs_}/ush/module-setup.sh"
 module use "${HOMEgfs_}/modulefiles"
 module load "gw_setup.${MACHINE_ID}"
 

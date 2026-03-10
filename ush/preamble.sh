@@ -182,7 +182,7 @@ function err_exit() {
 trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 # shellcheck disable=
 
-source "${HOMEgfs}/ush/bash_utils.sh"
+source "${HOMEglobal}/ush/bash_utils.sh"
 
 # Turn on our settings
 shopt -s nullglob # Allow null globs instead of treating * as literal

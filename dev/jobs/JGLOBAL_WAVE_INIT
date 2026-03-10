@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "waveinit" -c "base wave waveinit"
 
 export MP_PULSE=0
 
@@ -22,7 +22,7 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_init.sh" && true
+"${SCRglobal}/exgfs_wave_init.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis" -c "base genesis"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "genesis" -c "base genesis"
 
 ##############################################
 # Set variables used in the exglobal script

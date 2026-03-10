@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -60,7 +60,7 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh} && true
+${ANALCALCSH:-${SCRglobal}/exglobal_atmos_analysis_calc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

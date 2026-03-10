@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
 
 ###################################
 # Set COM Paths
@@ -14,7 +14,7 @@ mkdir -p "${COMOUT_WAVE_WMO}"
 ###################################
 # Execute the Script
 
-"${SCRgfs}/exgfs_wave_prdgen_bulls.sh" && true
+"${SCRglobal}/exgfs_wave_prdgen_bulls.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

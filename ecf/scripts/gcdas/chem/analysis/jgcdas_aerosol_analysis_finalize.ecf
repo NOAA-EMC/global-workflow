@@ -23,7 +23,7 @@ export RUN=%RUN%
 #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
 export LMOD_TMOD_FIND_FIRST=yes
 # TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgcafs}/sorc/gdas.cd/build/lib"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/sorc/gdas.cd/build/lib"
 # TODO: Remove LD_LIBRARY_PATH line as soon as permanent solution is available
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.29/ofi/intel/2022.1/lib"
 
@@ -95,16 +95,16 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=%EXPDIR%
 
-if [[ -d "${HOMEgcafs}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${HOMEgcafs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
+  PYTHONPATH="${HOMEglobal}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
 fi
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgcafs}/ush/python"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/ush/python"
 export PYTHONPATH
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgcafs}/jobs/JGCDAS_AERO_ANALYSIS_FINALIZE
+${HOMEglobal}/jobs/JGCDAS_AERO_ANALYSIS_FINALIZE
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

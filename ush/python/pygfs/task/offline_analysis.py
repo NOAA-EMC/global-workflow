@@ -153,7 +153,7 @@ class OfflineAnalysis(Task):
         executables_to_copy = []
         executable_list = ['enkf_chgres_recenter_nc.x', 'calc_increment_ens_ncio.x', 'tref_calc.x']
         for exec_name in executable_list:
-            executables_to_copy.append([os.path.join(self.task_config.EXECgfs, exec_name),
+            executables_to_copy.append([os.path.join(self.task_config.EXECglobal, exec_name),
                                         os.path.join(self.task_config.DATA, exec_name)])
         FileHandler({'copy': executables_to_copy}).sync()
 

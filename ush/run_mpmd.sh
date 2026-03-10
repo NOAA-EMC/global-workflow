@@ -28,7 +28,7 @@
 #
 ################################################################################
 
-source "${USHgfs}/preamble.sh"
+source "${USHglobal}/preamble.sh"
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD/serial mode"}
 

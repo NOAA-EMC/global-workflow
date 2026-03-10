@@ -17,8 +17,8 @@ def main():
     # Instantiate the globus object
     globus = GlobusHpss(config)
 
-    keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'HOMEgfs', 'sven_dropbox',
-            'doorman_gendel', 'DATASETS_YAML', 'PARMgfs', 'COMIN_CONF', 'KEEPDATA',
+    keys = ['STAGE_DIR', 'current_cycle', 'RUN', 'PDY', 'HOMEglobal', 'sven_dropbox',
+            'doorman_gendel', 'DATASETS_YAML', 'PARMglobal', 'COMIN_CONF', 'KEEPDATA',
             'jobid', 'hpss_target_dir', 'server_home', 'SERVER_NAME', 'DOORMAN_ROOT',
             'CLIENT_GLOBUS_UUID', 'SERVER_GLOBUS_UUID', 'PSLOT']
 

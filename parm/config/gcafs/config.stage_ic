@@ -15,9 +15,9 @@ fi
 
 export BASE_IC="/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR" # Platform home for staged ICs
 
-export STAGE_IC_YAML_TMPL="${PARMgcafs}/stage/master_${NET}.yaml.j2"
+export STAGE_IC_YAML_TMPL="${PARMglobal}/stage/master_${NET}.yaml.j2"
 
-source "${HOMEgcafs}/versions/ic.ver"
+source "${HOMEglobal}/versions/ic.ver"
 
 if [[ ${EXP_WARM_START} = ".false." ]] ; then
   export DOIAU="NO"        # Turn off for staging
