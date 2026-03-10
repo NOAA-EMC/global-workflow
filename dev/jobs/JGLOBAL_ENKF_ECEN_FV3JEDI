@@ -1,8 +1,6 @@
 #! /usr/bin/env bash
 # shellcheck disable=SC2153
 set -x
-
-
 source "${HOMEglobal}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
