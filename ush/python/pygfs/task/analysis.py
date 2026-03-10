@@ -72,6 +72,7 @@ class Analysis(Task):
                 'iau_times_iso': _iau_times_iso,
                 'MOM6_LEVS': _ocnres_to_nlev[f"{self.task_config.OCNRES:03d}"],
                 'mom_domain_stack_size': 116640000,  # TODO: Make the stack size resolution dependent
+                'OCNRES': f"{self.task_config.OCNRES:03d}",
             }
         ))
 
