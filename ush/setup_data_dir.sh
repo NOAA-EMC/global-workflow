@@ -6,7 +6,7 @@
 # Creates a working directory and cd's into it.
 #
 # Source this file to load the function into the current shell:
-#   source "${HOMEglobal}/dev/ush/setup_data_dir.sh"
+#   source "${HOMEglobal}/ush/setup_data_dir.sh"
 #
 # Usage:
 #   setup_data_dir <dir>

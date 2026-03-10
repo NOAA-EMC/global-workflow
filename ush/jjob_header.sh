@@ -46,7 +46,7 @@ _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 # err_exit is needed for this header script's own error handling;
 # all other utilities are sourced by jjob_shell_setup.sh afterward
-source "${HOMEglobal}/dev/ush/err_exit.sh"
+source "${HOMEglobal}/ush/err_exit.sh"
 
 OPTIND=1
 while getopts "c:e:" option; do

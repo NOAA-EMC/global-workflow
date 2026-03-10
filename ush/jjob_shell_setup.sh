@@ -24,23 +24,31 @@
 ##############################################
 # Ensure USHglobal is set for scripts that source this file directly
 # (e.g. preamble.sh callers such as run_mpmd.sh)
+export USHglobal="${USHglobal:-${HOMEglobal}/ush}"
 export start_time=${start_time:-$(date +%s)}
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
 # Utility functions
 ##############################################
-source "${HOMEglobal}/dev/ush/wait_for_file.sh"
-source "${HOMEglobal}/dev/ush/dataroot_com_path.sh"
-source "${HOMEglobal}/dev/ush/timer.sh"
-source "${HOMEglobal}/dev/ush/err_exit.sh"
+source "${USHglobal}/wait_for_file.sh"
+source "${USHglobal}/dataroot_com_path.sh"
+source "${USHglobal}/timer.sh"
+source "${USHglobal}/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
 # Shell options, strict mode, and tracing
 ##############################################
-source "${HOMEglobal}/dev/ush/set_strict_trace.sh"
+source "${USHglobal}/set_strict.sh"
+source "${USHglobal}/unset_strict.sh"
+source "${USHglobal}/set_trace.sh"
 export SHELLOPTS
+##############################################
+# Create and enter the working directory
+##############################################
+source "${USHglobal}/setup_data_dir.sh"
+setup_data_dir "${DATA}"
 
 # Activate strict mode and tracing
 set_strict
@@ -49,7 +57,7 @@ set_trace
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
-source "${HOMEglobal}/dev/ush/postamble.sh"
+source "${USHglobal}/postamble.sh"
 # shellcheck disable=SC2064
 trap "postamble ${start_time}" EXIT
 
