@@ -510,6 +510,10 @@ FV3_predet() {
                     break
                 fi
             done
+            if (( Syear >= 2025 )); then
+                Eyear=$(( Eyear - 5 ))
+                Syear=$(( Syear - 5 ))
+            fi
             for ((month = 1; month <= 12; month++)); do
                 mm=$(printf %02d "${month}")
                 cpreq "${FIXgfs}/aer/y${Syear}-${Eyear}/merra2_${Syear}-${Eyear}_${mm}.nc" "aeroclim.m${mm}.nc"

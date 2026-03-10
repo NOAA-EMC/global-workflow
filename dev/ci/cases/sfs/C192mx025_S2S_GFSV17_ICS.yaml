@@ -1,15 +1,15 @@
 experiment:
   net: sfs
   mode: forecast-only
-  idate: 2025070100
-  edate: 2025070100
+  idate: 2026030100
+  edate: 2026030100
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 192
   resensatmos: 192
   resdetocean: 0.25
   start: 'cold'
-  nens: 3
+  nens: 30
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/GFS/C192mx025
