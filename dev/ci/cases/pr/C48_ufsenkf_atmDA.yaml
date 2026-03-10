@@ -13,7 +13,7 @@ experiment:
   nens: 2
   interval: 0
   start: warm
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufsenkf_atmDA_defaults.ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/ufsenkf_atmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
   - gaeac5

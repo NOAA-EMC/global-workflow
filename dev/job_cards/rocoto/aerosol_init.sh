@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -29,7 +29,7 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-"${HOMEgfs}/scripts/exgfs_aero_init_aerosol.py"
+"${HOMEglobal}/scripts/exgfs_aero_init_aerosol.py"
 
 status=$?
 if [[ ${status} -ne 0 ]]; then

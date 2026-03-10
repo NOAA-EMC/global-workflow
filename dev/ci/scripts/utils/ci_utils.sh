@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Determine HOMEgfs_ and source machine detection early
-if [[ -z "${HOMEgfs_}" ]]; then
-    HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+# Determine HOMEglobal_ and source machine detection early
+if [[ -z "${HOMEglobal_}" ]]; then
+    HOMEglobal_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 fi
-source "${HOMEgfs_}/ush/detect_machine.sh"
+source "${HOMEglobal_}/ush/detect_machine.sh"
 
 # --- Existing functions ---
 
@@ -68,7 +68,7 @@ function get_pr_case_list() {
     # loop over every yaml file in the PR's ci/cases
     # and create an run directory for each one for this PR loop
     #############################################################
-    for yaml_config in "${HOMEgfs_}/dev/ci/cases/pr/"*.yaml; do
+    for yaml_config in "${HOMEglobal_}/dev/ci/cases/pr/"*.yaml; do
         case=$(basename "${yaml_config}" .yaml) || true
         echo "${case}"
     done
@@ -123,30 +123,30 @@ function create_experiment() {
     local yaml_config="${1}"
     pr_sha=$(git rev-parse --short HEAD)
     local TAG="${2:-${pr_sha}}"
-    cd "${HOMEgfs_}" || exit 1
+    cd "${HOMEglobal_}" || exit 1
     case=$(basename "${yaml_config}" .yaml) || true
 
     echo "Using provided TAG: ${TAG} for pslot"
     export pslot=${case}_${TAG}
 
     if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-        source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
+        source "${HOMEglobal_}/dev/ci/platforms/config.${PW_CSP}"
     else
-        source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
+        source "${HOMEglobal_}/dev/ci/platforms/config.${MACHINE_ID}"
     fi
 
-    source "${HOMEgfs_}/dev/ush/gw_setup.sh"
+    source "${HOMEglobal_}/dev/ush/gw_setup.sh"
 
     # Remove RUNDIRS dir incase this is a retry (STMP now in host file)
     if [[ ${MACHINE_ID} == "noaacloud" ]]; then
-        STMP=$("${HOMEgfs_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs_}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
+        STMP=$("${HOMEglobal_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEglobal_}/dev/workflow/hosts/${PW_CSP}pw.yaml" -k STMP -s)
     else
-        STMP=$("${HOMEgfs_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEgfs_}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
+        STMP=$("${HOMEglobal_}/dev/ci/scripts/utils/parse_yaml.py" -y "${HOMEglobal_}/dev/workflow/hosts/${MACHINE_ID}.yaml" -k STMP -s)
     fi
     echo "Removing ${STMP}/RUNDIRS/${pslot} directory incase this is a retry"
     rm -Rf "${STMP}/RUNDIRS/${pslot}"
 
-    "${HOMEgfs_}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
+    "${HOMEglobal_}/${system}/dev/workflow/create_experiment.py" --overwrite --yaml "${yaml_config}"
 
 }
 
@@ -170,8 +170,8 @@ function publish_logs() {
 
     if [[ -n "${full_paths}" ]]; then
         # shellcheck disable=SC2027,SC2086
-        ${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
-        URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
+        ${HOMEglobal_}/dev/ci/scripts/utils/publish_logs.py --file ${full_paths} --repo ${PR_header} > /dev/null
+        URL="$("${HOMEglobal_}/dev/ci/scripts/utils/publish_logs.py" --file "${full_paths}" --gist "${PR_header}")"
     fi
     echo "${URL}"
 }
@@ -203,13 +203,13 @@ function publish_logs_from_file() {
     local URL=""
     if ((${#files[@]} > 0)); then
         # First, upload to repo (retain original behavior) if desired
-        "${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --repo "${PR_header}" > /dev/null || true
+        "${HOMEglobal_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[@]}" --repo "${PR_header}" > /dev/null || true
 
         # For gist, if more than one file use --multiple --format github
         if ((${#files[@]} > 1)); then
             cmd_args="--multiple --format github"
         fi
-        URL="$("${HOMEgfs_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" "${cmd_args:-}" --gist "${PR_header}")"
+        URL="$("${HOMEglobal_}/dev/ci/scripts/utils/publish_logs.py" --file "${files[0]}" "${cmd_args:-}" --gist "${PR_header}")"
     fi
 
     echo "${URL}"
@@ -227,7 +227,7 @@ function cleanup_experiment() {
     pslot=$(basename "${EXPDIR}")
 
     # Use the Python utility to get the required variables
-    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEgfs_}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
+    read -r ARCDIR ATARDIR STMP COMROOT < <("${HOMEglobal_}/dev/ci/scripts/utils/get_config_var.py" ARCDIR ATARDIR STMP COMROOT "${EXPDIR}") || true
 
     rm -Rf "${ARCDIR:?}"
     rm -Rf "${ATARDIR:?}"
@@ -238,13 +238,13 @@ function cleanup_experiment() {
 
 function build() {
 
-    source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
-    logs_dir="${HOMEgfs_}/sorc/logs"
+    source "${HOMEglobal_}/dev/ci/platforms/config.${MACHINE_ID}"
+    logs_dir="${HOMEglobal_}/sorc/logs"
     if [[ ! -d "${logs_dir}" ]]; then
         echo "Creating logs folder"
         mkdir -p "${logs_dir}" || exit 1
     fi
-    "${HOMEgfs_}/sorc/build_all.sh" -c -A "${HPC_ACCOUNT}" all
+    "${HOMEglobal_}/sorc/build_all.sh" -c -A "${HPC_ACCOUNT}" all
 
 }
 

@@ -126,34 +126,34 @@ export RADMON_NETCDF=${netcdf}
 #   Run the child scripts.
 #------------------------------------------------------------------
 
-"${USHgfs}/radmon_verf_angle.sh" && true
+"${USHglobal}/radmon_verf_angle.sh" && true
 rc_angle=$?
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 # Allow all scripts to run.  Call err_exit at the end, after files are restricted.
 if [[ ${rc_angle} -ne 0 ]]; then
     echo "FATAL ERROR: radmon_verf_angle.sh failed!"
 fi
 
-"${USHgfs}/radmon_verf_bcoef.sh" && true
+"${USHglobal}/radmon_verf_bcoef.sh" && true
 rc_bcoef=$?
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
     echo "FATAL ERROR: radmon_verf_bcoef.sh failed!"
 fi
 
-"${USHgfs}/radmon_verf_bcor.sh" && true
+"${USHglobal}/radmon_verf_bcor.sh" && true
 rc_bcor=$?
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
     echo "FATAL ERROR: radmon_verf_bcor.sh failed!"
 fi
 
-"${USHgfs}/radmon_verf_time.sh" && true
+"${USHglobal}/radmon_verf_time.sh" && true
 rc_time=$?
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
     echo "FATAL ERROR: radmon_verf_time.sh failed!"

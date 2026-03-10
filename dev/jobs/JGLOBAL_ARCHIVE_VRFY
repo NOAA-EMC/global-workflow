@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Construct COM paths
@@ -43,7 +43,7 @@ fi
 # Run archive script
 ###############################################################
 
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
+${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_vrfy.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

@@ -55,7 +55,7 @@
 #                data base
 #                (Default: /dcom/us007003)
 #   slmask    - path to t126 32-bit gaussian land/sea mask file
-#                (Default: ${FIXgfs}/am/syndat_slmask.t126.gaussian)
+#                (Default: ${FIXglobal}/am/syndat_slmask.t126.gaussian)
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
@@ -67,7 +67,7 @@ ARCHSYND=${ARCHSYND:-${COMROOTp3}/gfs/prod/syndat}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-slmask=${slmask:-${FIXgfs}/am/syndat_slmask.t126.gaussian}
+slmask=${slmask:-${FIXglobal}/am/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
 files_override=${files_override:-""}
 
@@ -173,12 +173,12 @@ if [[ -n "${files_override}" ]]; then # for testing, typically want FILES=F
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = ${files} " > vitchk.inp
-cat "${PARMgfs}/relo/syndat_qctropcy.${RUN}.parm" >> vitchk.inp
+cat "${PARMglobal}/relo/syndat_qctropcy.${RUN}.parm" >> vitchk.inp
 
 #  Copy the fixed fields
 
-cpreq "${FIXgfs}/am/syndat_fildef.vit" fildef.vit
-cpreq "${FIXgfs}/am/syndat_stmnames" stmnames
+cpreq "${FIXglobal}/am/syndat_fildef.vit" fildef.vit
+cpreq "${FIXglobal}/am/syndat_stmnames" stmnames
 
 rm -f nhc fnoc lthistry
 
@@ -202,19 +202,19 @@ if [[ "${copy_back}" == 'YES' ]]; then
 fi
 
 mv -f nhc nhc1
-"${USHgfs}/parse-storm-type.pl" nhc1 > nhc
+"${USHglobal}/parse-storm-type.pl" nhc1 > nhc
 
 cpreq -p nhc nhc.ORIG
 # JTWC/FNOC ... execute syndat_getjtbul script to write into working directory
 #               as fnoc; copy to archive
-"${USHgfs}/syndat_getjtbul.sh" "${run_date}"
+"${USHglobal}/syndat_getjtbul.sh" "${run_date}"
 touch fnoc
 if [[ "${copy_back}" == 'YES' ]]; then
     cat fnoc >> "${ARCHSYND}/syndat_tcvitals.${year}"
 fi
 
 mv -f fnoc fnoc1
-"${USHgfs}/parse-storm-type.pl" fnoc1 > fnoc
+"${USHglobal}/parse-storm-type.pl" fnoc1 > fnoc
 
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL SYNDAT_TCVITALS "${job}" "${ARCHSYND}/syndat_tcvitals.${year}"
@@ -226,7 +226,7 @@ cpreq "${slmask}" slmask.126
 
 #  Execute program syndat_qctropcy
 
-pgm=$(basename "${EXECgfs}/syndat_qctropcy.x")
+pgm=$(basename "${EXECglobal}/syndat_qctropcy.x")
 export pgm
 if [[ -s prep_step ]]; then
     unset_strict
@@ -241,7 +241,7 @@ fi
 echo "${run_date}" > run_date.dat
 export FORT11=slmask.126
 export FORT12=run_date.dat
-"${EXECgfs}/${pgm}"
+"${EXECglobal}/${pgm}"
 errqct=$?
 set +x
 echo

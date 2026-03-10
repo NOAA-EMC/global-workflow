@@ -19,7 +19,7 @@ print('config.base ...')
 base = cfg.parse_config('config.base')
 cfg.print_config('config.base')
 print(type(base))
-print(base.HOMEgfs)
+print(base.HOMEglobal)
 
 print('*' * 80)
 print('config.anal...')

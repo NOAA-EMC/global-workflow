@@ -40,7 +40,7 @@ class MarineBMat(Analysis):
         """
         super().__init__(config)
 
-        _calc_scale_exec = os.path.join(self.task_config.HOMEgfs, 'ush', 'python', 'soca', 'calc_scales.py')
+        _calc_scale_exec = os.path.join(self.task_config.HOMEglobal, 'ush', 'python', 'soca', 'calc_scales.py')
 
         # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
         _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
@@ -48,7 +48,7 @@ class MarineBMat(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
+                'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
                 'CALC_SCALE_EXEC': _calc_scale_exec,
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,

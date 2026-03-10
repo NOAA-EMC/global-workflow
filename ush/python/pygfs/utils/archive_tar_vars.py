@@ -157,7 +157,7 @@ class ArchiveTarVars:
 
         Configuration keys extracted (if present):
         - Basic: ATARDIR, current_cycle, IAUFHRS, RUN, PDY, PSLOT
-        - Archive control: DO_ARCHCOM, ARCHCOM_TO, ROTDIR, PARMgfs, ARCDIR, SDATE, MODE
+        - Archive control: DO_ARCHCOM, ARCHCOM_TO, ROTDIR, PARMglobal, ARCDIR, SDATE, MODE
         - Ensemble: ENSGRP, NMEM_EARCGRP, NMEM_ENS, NMEM_ENS_GFS
         - EnKF operations: DO_CALC_INCREMENT_ENKF_GFS, DO_JEDIATMENS, DO_JEDIATMENS_SPLIT_OBSSOL
         - Forecast: FHMIN_ENKF, FHMAX_ENKF_GFS, FHOUT_ENKF_GFS, FHMAX_ENKF, FHOUT_ENKF
@@ -187,7 +187,7 @@ class ArchiveTarVars:
         config_keys = [
             # Basic configuration
             'ATARDIR', 'current_cycle', 'RUN', 'PDY', 'PSLOT', 'NET', 'MODE',
-            'PARMgfs', 'ROTDIR', 'SDATE',
+            'PARMglobal', 'ROTDIR', 'SDATE',
             # Archive control
             'DO_ARCHCOM', 'ARCHCOM_TO', 'ARCDIR',
             # Data assimilation
@@ -238,7 +238,7 @@ class ArchiveTarVars:
                 'OCNRES', 'ICERES', 'waveGRD', 'WAVE_OUT_GRIDS',
                 # Other
                 'DO_BUFRSND', 'NUM_SND_COLLECTIVES', 'DOBNDPNT_WAVE',
-                'OFFSET_START_HOUR', 'EXPDIR', 'EDATE', 'HOMEgfs',
+                'OFFSET_START_HOUR', 'EXPDIR', 'EDATE', 'HOMEglobal',
                 'DO_GEMPAK', 'DATASETS_YAML', 'TARBALL_TYPE',
             ])
 

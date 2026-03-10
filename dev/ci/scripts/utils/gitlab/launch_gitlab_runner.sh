@@ -111,7 +111,9 @@ RUNNER_HOST_NODE="${host}"
 #  Set up runtime environment variables for accounts on supported machines
 #########################################################################
 
-source "${HOMEgfs_}/ush/detect_machine.sh"
+# Source the detect_machine.sh script to determine the MACHINE_ID
+source "${HOMEglobal_}/ush/detect_machine.sh"
+# Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
     ursa | hera | orion | hercules | wcoss2 | gaeac6)
         echo "Running GitLab Runner script on ${MACHINE_ID}"
@@ -131,11 +133,9 @@ module use "${HOMEgfs_}/modulefiles"
 module load "gw_setup.${MACHINE_ID}"
 
 # Source the platform-specific configuration file
-if [[ "${MACHINE_ID}" == "noaacloud" ]]; then
-    source "${HOMEgfs_}/dev/ci/platforms/config.${PW_CSP}"
-else
-    source "${HOMEgfs_}/dev/ci/platforms/config.${MACHINE_ID}"
-fi
+# This file contains platform-specific variables such as GITLAB_URL, GITLAB_CI_BUILDS_DIR,
+# and GITLAB_RUNNER_DIR which are required for runner registration and execution
+source "${HOMEglobal_}/dev/ci/platforms/config.${MACHINE_ID}"
 
 # Change to the GitLab runner directory defined in the platform config
 mkdir -p "${GITLAB_RUNNER_DIR}"

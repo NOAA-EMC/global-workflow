@@ -2,7 +2,7 @@
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     err_exit "${status}"
@@ -11,7 +11,7 @@ fi
 ###############################################################
 export job="prep"
 export jobid="${job}.$$"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
 # Strip 'enkf' from RUN for pulling data
 RUN_local="${RUN/enkf/}"
@@ -44,7 +44,7 @@ mkdir -p "${COMOUT_OBS}"
 ###############################################################
 # Copy IODA files to ROTDIR
 if [[ ${USE_IODADIR:-"NO"} == "YES" ]]; then
-    "${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
+    "${HOMEglobal}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"
@@ -57,7 +57,7 @@ if [[ "${RUN_local}" == "gcdas" ]]; then
 fi
 
 # Copy dump files to ROTDIR
-"${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
+"${HOMEglobal}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -65,7 +65,7 @@ fi
 
 #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
 if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
-    "${HOMEgfs}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
+    "${HOMEglobal}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"
@@ -98,7 +98,7 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
 
     rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
 
-    "${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
+    "${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"
@@ -211,7 +211,7 @@ fi
 # If requested, create radiance bias correction files for JEDI
 if [[ ${RUN} == "gdas" && ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
     cd "${DATAROOT}" || true
-    "${HOMEgfs}/ush/gsi_satbias2ioda_all.sh"
+    "${HOMEglobal}/ush/gsi_satbias2ioda_all.sh"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "gsi_satbias2ioda failed, ABORT!"

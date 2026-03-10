@@ -8,8 +8,8 @@ echo "BEGIN: config.fit2obs"
 # Get task specific resources
 . "${EXPDIR}/config.resources" fit2obs
 
-export PRVT=${FIXgfs}/gsi/prepobs_errtable.global
-export HYBLEVS=${FIXgfs}/am/global_hyblev.l${LEVS}.txt
+export PRVT=${FIXglobal}/gsi/prepobs_errtable.global
+export HYBLEVS=${FIXglobal}/am/global_hyblev.l${LEVS}.txt
 
 export COM_VRFYARCH="${ROTDIR}/vrfyarch"
 
