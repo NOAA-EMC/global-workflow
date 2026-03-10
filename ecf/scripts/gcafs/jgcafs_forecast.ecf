@@ -3,7 +3,7 @@
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=01:00:00
+#PBS -l walltime=06:00:00
 #PBS -l select=18:mpiprocs=128:ompthreads=1:ncpus=128
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
@@ -71,7 +71,7 @@ export PYTHONPATH
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEglobal}/jobs/JGLOBAL_FORECAST
+${HOMEgcafs}/jobs/JGCAFS_FORECAST
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
