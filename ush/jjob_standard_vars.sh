@@ -29,7 +29,8 @@
 ##############################################
 # Script timing: record start time and announce the job has begun
 ##############################################
-export start_time=$(date +%s)
+start_time=$(date +%s)
+export start_time
 _start_time_human=$(date -d"@${start_time}" -u +%H:%M:%S)
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 echo "Begin ${_calling_script} at ${_start_time_human}"
