@@ -9,7 +9,7 @@
 # Main body starts here
 #######################
 
-source "${USHgfs}/wave_domain_grid.sh"
+source "${USHglobal}/wave_domain_grid.sh"
 
 process_grdID "${waveGRD}"
 com_varname="COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"

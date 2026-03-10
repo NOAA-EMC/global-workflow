@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 #shellcheck disable=SC2155
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_sfc" -c "base prep_sfc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prep_sfc" -c "base prep_sfc"
 
 ##############################################
 # Set date and cycle
@@ -28,7 +28,7 @@ mkdir -p "${COMOUT_OBS}"
 # Run relevant script
 ###############################################################
 
-"${SCRgfs}/exglobal_prep_sfc.sh"
+"${SCRglobal}/exglobal_prep_sfc.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Surface observation preparation failed!"

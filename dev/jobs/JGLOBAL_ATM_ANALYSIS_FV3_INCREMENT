@@ -2,13 +2,13 @@
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlfv3inc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlfv3inc"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -18,7 +18,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_fv3_increment.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRglobal}/exglobal_atm_analysis_fv3_increment.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

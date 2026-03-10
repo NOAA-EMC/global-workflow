@@ -3,13 +3,13 @@
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -36,7 +36,7 @@ mkdir -m 755 -p "${COMOUT_CONF}"
 # Run relevant script
 ##############################################
 
-EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exglobal_enkf_ecen_fv3jedi.py}
+EXSCRIPT=${GDASATMRUNPY:-${SCRglobal}/exglobal_enkf_ecen_fv3jedi.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

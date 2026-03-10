@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 ###############################################################
-source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufswm
 err=$?
 if [[ "${err}" -ne 0 ]]; then
     exit "${err}"
@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN WAVESTAT PNT ==============="
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGEFS_WAVE_STAT_PNT"
+"${HOMEglobal}/dev/jobs/JGEFS_WAVE_STAT_PNT"
 err=$?
 if [[ "${err}" -ne 0 ]]; then
     exit "${err}"

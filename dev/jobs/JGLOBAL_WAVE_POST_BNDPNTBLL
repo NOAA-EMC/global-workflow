@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpntbll" -c "base wave wavepostsbs wavepostbndpntbll"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "wavepostbndpntbll" -c "base wave wavepostsbs wavepostbndpntbll"
 
 export COMPONENT="wave"
 
@@ -21,7 +21,7 @@ export DOBLL_WAV='YES'    # Bulletin post
 export DOBNDPNT_WAV='YES' # Boundary points
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_post_pnt.sh" && true
+"${SCRglobal}/exgfs_wave_post_pnt.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -3,7 +3,7 @@
 # Metafile Script : gdas_meta_loop
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEglobal}/ush/preamble.sh"
 
 device="nc | gdasloop.meta"
 

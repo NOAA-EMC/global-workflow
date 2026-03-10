@@ -13,7 +13,7 @@ experiment:
   nens: 2
   interval: 24
   start: warm
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/ufs_hybatmDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
   - gaeac6

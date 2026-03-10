@@ -1,5 +1,5 @@
 defaults:
-  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
   DO_JEDIOCNVAR: "YES"
   DO_METP: "NO"
@@ -8,4 +8,4 @@ marineanl:
   SOCA_NINNER: 1
   DO_TEST_MODE: "NO"
 marineanl:
-  JCB_ALGO_YAML_VAR: "{{ HOMEgfs }}/sorc/gdas.cd/test/gw-ci/soca/jcb-prototype_3dfgat_3DVarAOWCDA.yaml.j2"
+  JCB_ALGO_YAML_VAR: "{{ HOMEglobal }}/sorc/gdas.cd/test/gw-ci/soca/jcb-prototype_3dfgat_3DVarAOWCDA.yaml.j2"

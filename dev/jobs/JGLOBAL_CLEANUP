@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
-"${SCRgfs}/exglobal_cleanup.sh" && true
+"${SCRglobal}/exglobal_cleanup.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

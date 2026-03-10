@@ -4,13 +4,13 @@ export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Ignore possible spelling error (nothing is misspelled)
@@ -42,7 +42,7 @@ fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_ecen.py}
+EXSCRIPT=${GDASOCNCENPY:-${HOMEglobal}/scripts/exglobal_marine_analysis_ecen.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

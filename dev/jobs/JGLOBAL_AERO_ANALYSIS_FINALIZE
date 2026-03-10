@@ -2,13 +2,13 @@
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroanlfinal"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroanlfinal"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -27,7 +27,7 @@ mkdir -m 755 -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROFINALPY:-${SCRgfs}/exglobal_aero_analysis_finalize.py}
+EXSCRIPT=${GDASAEROFINALPY:-${SCRglobal}/exglobal_aero_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

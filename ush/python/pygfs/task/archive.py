@@ -60,7 +60,7 @@ class Archive(Task):
             # TODO This really doesn't belong in archiving and should be moved elsewhere
             Archive._rename_cyclone_expt(arch_dict)
 
-        archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
+        archive_parm = os.path.join(arch_dict.PARMglobal, "archive")
 
         # Collect the dataset to archive locally
         # Select template based on RUN type: ensemble (enkf) or deterministic (NET)
@@ -125,7 +125,7 @@ class Archive(Task):
                             f"as no warm restarts or warm ICs are to be archived.")
                 return []
 
-        archive_parm = os.path.join(arch_dict.PARMgfs, "archive")
+        archive_parm = os.path.join(arch_dict.PARMglobal, "archive")
 
         # Add the glob.glob function for capturing log filenames
         # TODO remove this kludge once log filenames are explicit
@@ -689,8 +689,8 @@ class Archive(Task):
 
             EXPDIR: str
                 Location of the EXPDIR
-            HOMEgfs: str
-                Location of the HOMEgfs (the global workflow)
+            HOMEglobal: str
+                Location of the HOMEglobal (the global workflow)
             ARCH_HASHES: bool
                 Whether to archive git hashes of the workflow and submodules
             ARCH_DIFFS: bool
@@ -700,7 +700,7 @@ class Archive(Task):
         # Get commonly used variables
         arch_hashes = arch_dict.ARCH_HASHES
         arch_diffs = arch_dict.ARCH_DIFFS
-        homegfs = arch_dict.HOMEgfs
+        homeglobal = arch_dict.HOMEglobal
         expdir = arch_dict.EXPDIR
 
         # Find the git command
@@ -709,8 +709,8 @@ class Archive(Task):
             raise FileNotFoundError("FATAL ERROR: the git command could not be found!")
 
         output = ""
-        # Navigate to HOMEgfs to run the git commands
-        with chdir(homegfs):
+        # Navigate to HOMEglobal to run the git commands
+        with chdir(homeglobal):
 
             # Are we running git to get hashes?
             if arch_hashes:

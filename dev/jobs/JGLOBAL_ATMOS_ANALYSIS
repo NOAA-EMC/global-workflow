@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "anal" -c "base anal"
 
 ##############################################
 # Set variables used in the script
@@ -81,13 +81,13 @@ export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 # Copy fix file for obsproc  # TODO: Why is this necessary?
 if [[ ${RUN} == "gfs" ]]; then
     mkdir -p "${ROTDIR}/fix"
-    cpreq "${FIXgfs}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
+    cpreq "${FIXglobal}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
 fi
 
 ###############################################################
 # Run relevant script
 
-${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh} && true
+${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

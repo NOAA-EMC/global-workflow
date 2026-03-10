@@ -2,11 +2,11 @@ help([[
 Load environment to run GFS on Gaea C6
 ]])
 
--- Test that HOMEgfs is set.
+-- Test that HOMEglobal is set.
 -- If not, load_modules.sh was not sourced to load this module.
-local homegfssdir=os.getenv("HOMEgfs") or "None"
+local homegfssdir=os.getenv("HOMEglobal") or "None"
 if (homegfssdir == "None") then
-    LmodError("FATAL ERROR HOMEgfs variable is unset.\n" ..
+    LmodError("FATAL ERROR HOMEglobal variable is unset.\n" ..
               "Please \"source dev/ush/load_modules.sh\" rather than loading this module directly.\n")
 end
 

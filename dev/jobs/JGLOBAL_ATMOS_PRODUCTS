@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_products"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmos_products" -c "base atmos_products"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -33,7 +33,7 @@ export PREFIX="${RUN}.t${cyc}z."
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_atmos_products.sh" && true
+"${SCRglobal}/exglobal_atmos_products.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

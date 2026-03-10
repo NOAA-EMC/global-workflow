@@ -4,15 +4,15 @@
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
     export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Create the directory to hold restarts and output from the model in stmp
@@ -104,7 +104,8 @@ fi
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
-"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
+: "${FORECASTSH:=${SCRglobal}/exglobal_forecast.sh}"
+"${FORECASTSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ediag" -c "base anal eobs analdiag ediag"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ediag" -c "base anal eobs analdiag ediag"
 
 ##############################################
 # Set variables used in the script
@@ -37,7 +37,7 @@ export DIAG_COMPRESS="NO"
 ###############################################################
 # Run relevant script
 
-${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
+${ANALDIAGSH:-${SCRglobal}/exglobal_diag.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

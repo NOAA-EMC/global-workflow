@@ -17,7 +17,7 @@ PDYHH="${PDY}${cyc}"
 if [[ "${HEADER}" == "YES" ]]; then
     INPATH="${DATA}/${outname}"
     SUB=DFAX1064
-    "${HOMEgfs}/ush/make_NTC_file.pl" "${WMO}" "${ORIG}" "${PDYHH}" "${SUB}" "${INPATH}" "${OUTPATH}"
+    "${HOMEglobal}/ush/make_NTC_file.pl" "${WMO}" "${ORIG}" "${PDYHH}" "${SUB}" "${INPATH}" "${OUTPATH}"
     #
     #  Send the graphic to TOC
 
