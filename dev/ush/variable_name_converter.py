@@ -188,7 +188,7 @@ class GlobalToNetConverter:
         FileNotFoundError
             If target does not exist.
         """
-        target = Path(base_path) / relative_path
+        target = Path(base_path) / relative_path.strip('/')
         self._validate_net(net)
         _validate_target(target)
 
@@ -408,7 +408,7 @@ class NetToGlobalConverter:
         FileNotFoundError
             If target does not exist.
         """
-        target = Path(base_path) / relative_path
+        target = Path(base_path) / relative_path.strip('/')
         self._validate_net(net)
         _validate_target(target)
 
