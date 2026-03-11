@@ -2,9 +2,9 @@
 
 set -xe
 
-HOMEgfs="@PROJECT_SOURCE_DIR@"
+HOMEglobal="@PROJECT_SOURCE_DIR@"
 TEST_NAME=${1:?"Name of the test is required"}
-TEST_NAME=$("${HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS" "${TEST_NAME}")
+TEST_NAME=$("${HOMEglobal}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "@CMAKE_CURRENT_BINARY_DIR@/RUNTESTS" "${TEST_NAME}")
 JOB=${2:?"Job name is required"}
 idate=$3
 
@@ -29,8 +29,8 @@ fi
 # Use custom Rocoto build with dryrun feature for testing
 # When GFS_CI_ROCOTO_PATH is unset, the system Rocoto will be used
 
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/dev/ci/platforms/config.${MACHINE_ID}"
+source "${HOMEglobal}/ush/detect_machine.sh"
+source "${HOMEglobal}/dev/ci/platforms/config.${MACHINE_ID}"
 
 if [[ -x "${GFS_CI_ROCOTO_PATH}/rocotoboot" ]]; then
     yes | "${GFS_CI_ROCOTO_PATH}/rocotoboot" --dryrun -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true

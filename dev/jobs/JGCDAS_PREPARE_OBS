@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source "${HOMEgcafs}/ush/preamble.sh"
-source "${HOMEgcafs}/ush/jjob_header.sh" -e "prepareobs" -c "base prepareobs"
+source "${HOMEglobal}/ush/preamble.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prepareobs" -c "base prepareobs"
 
 ##############################################
 # Set variables used in the script
@@ -15,7 +15,7 @@ export COMOUT_OBS="${COMROOT}/${RUN}.${PDY}/${cyc}/obs/chem"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${DUMPAODPY:-${HOMEgcafs}/scripts/exgcdas_prepare_obs.py}
+EXSCRIPT=${DUMPAODPY:-${HOMEglobal}/scripts/exgcdas_prepare_obs.py}
 ${EXSCRIPT}
 status=$?
 if [[ ${status} -ne 0 ]]; then

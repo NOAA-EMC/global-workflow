@@ -66,28 +66,28 @@ if [[ "${verbose}" == "YES" ]]; then
 fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
-HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+HOMEglobal=$(cd "${script_dir}" && git rev-parse --show-toplevel)
 # Needs to be exported for gw_setup.sh
-export HOMEgfs
+export HOMEglobal
 
 echo "Sourcing global-workflow modules ..."
-source "${HOMEgfs}/dev/ush/gw_setup.sh"
+source "${HOMEglobal}/dev/ush/gw_setup.sh"
 
 # Un-export after gw_setup.sh
-export -n HOMEgfs
+export -n HOMEglobal
 
-cd "${HOMEgfs}/sorc" || exit 1
-mkdir -p "${HOMEgfs}/sorc/logs" || exit 1
+cd "${HOMEglobal}/sorc" || exit 1
+mkdir -p "${HOMEglobal}/sorc/logs" || exit 1
 
 # Delete the rocoto XML and database if they exist
 rm -f "${build_xml}" "${build_db}" "${build_lock_db}"
 
-yaml="${HOMEgfs}/dev/workflow/build_opts.yaml"
+yaml="${HOMEglobal}/dev/workflow/build_opts.yaml"
 echo "Generating build.xml for building global-workflow programs on compute nodes ..."
 # Catch errors manually from here out
 set +e
 
-"${HOMEgfs}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
+"${HOMEglobal}/dev/workflow/build_compute.py" --account "${HPC_ACCOUNT}" --yaml "${yaml}" --systems "${systems}"
 rc=$?
 if [[ "${rc}" -ne 0 ]]; then
     echo "FATAL ERROR: ${BASH_SOURCE[0]} failed to create 'build.xml' with error code ${rc}"
@@ -110,7 +110,7 @@ while [[ "${finished}" == "false" ]]; do
     sleep 1m
     ${runcmd}
 
-    state="$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")" || true
+    state="$("${HOMEglobal}/dev/ci/scripts/utils/rocotostat.py" -w "${build_xml}" -d "${build_db}")" || true
     if [[ "${verbose_opt}" == "true" ]]; then
         echo "Rocoto is in state ${state}"
     else

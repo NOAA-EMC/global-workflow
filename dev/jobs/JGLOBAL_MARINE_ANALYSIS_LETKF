@@ -6,13 +6,13 @@ export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Ignore possible spelling error (nothing is misspelled)
@@ -53,7 +53,7 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
+EXSCRIPT=${GDASOCNLETKFPY:-${HOMEglobal}/scripts/exglobal_marine_analysis_letkf.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

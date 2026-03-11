@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source UFSDA workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" ufsda
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufsda
 err=$?
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR Failed to load UFSDA modules!"
@@ -16,5 +16,5 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_ANALYSIS_STATS"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ANALYSIS_STATS"
 exit $?

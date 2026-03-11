@@ -14,7 +14,7 @@ experiment:
   idate: 2021063018
   edate: 2021070306
   icsdir: 
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marinehyb.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/marinehyb.yaml
 
 workflow:
   engine: rocoto

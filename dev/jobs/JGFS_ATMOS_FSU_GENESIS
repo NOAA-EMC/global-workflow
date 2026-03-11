@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
 
 ##############################################
 # Define COM and Data directories

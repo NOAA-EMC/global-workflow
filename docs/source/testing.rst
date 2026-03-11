@@ -68,7 +68,7 @@ Configuration Management
 
 Platform-specific configuration is defined in::
 
-    $HOMEgfs/dev/ci/platforms/config.$MACHINE_ID
+    $HOMEglobal/dev/ci/platforms/config.$MACHINE_ID
 
 **Key Variables**:
 
@@ -90,7 +90,7 @@ These variables define:
 CMake Integration
 =================
 
-The framework uses CMake to configure and manage test execution. The main CMakeLists.txt file is located at ``$HOMEgfs/dev/ctests/CMakeLists.txt``.
+The framework uses CMake to configure and manage test execution. The main CMakeLists.txt file is located at ``$HOMEglobal/dev/ctests/CMakeLists.txt``.
 
 **AddJJOBTest Function**:
 
@@ -324,7 +324,7 @@ Environment Setup
 
 Before running tests, ensure the required environment variables are set. These can be provided via:
 
-1. Platform configuration files (``$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID``)
+1. Platform configuration files (``$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID``)
 2. Command-line CMake options (``-DVARIABLE=value``)
 3. Environment variables exported in shell
 
@@ -337,7 +337,7 @@ Before running tests, ensure the required environment variables are set. These c
 **Optional Variables**:
 
 * ``RUNTESTS``: Test execution directory (defaults to ``${CMAKE_BINARY_DIR}/RUNTESTS``)
-* ``HOMEgfs``: Global workflow root (defaults to ``${PROJECT_SOURCE_DIR}``)
+* ``HOMEglobal``: Global workflow root (defaults to ``${PROJECT_SOURCE_DIR}``)
 
 Configuration
 =============
@@ -346,7 +346,7 @@ Configure the CTest framework using CMake from the ctests directory:
 
 .. code-block:: bash
 
-    cd $HOMEgfs/dev/ctests
+    cd $HOMEglobal/dev/ctests
     mkdir -p build
     cd build
     
@@ -374,7 +374,7 @@ Running Tests
 
 .. code-block:: bash
 
-    cd $HOMEgfs/dev/ctests/build
+    cd $HOMEglobal/dev/ctests/build
     ctest
 
 **Run Tests by Label** (all tests for a specific case):
@@ -458,7 +458,7 @@ Step-by-Step Procedure
 
 **Step 1: Add Test Definition to CMakeLists.txt**
 
-Add the test at the end of ``$HOMEgfs/dev/ctests/CMakeLists.txt``:
+Add the test at the end of ``$HOMEglobal/dev/ctests/CMakeLists.txt``:
 
 .. code-block:: cmake
 
@@ -470,7 +470,7 @@ Add the test at the end of ``$HOMEgfs/dev/ctests/CMakeLists.txt``:
 
 **Step 2: Create YAML Case File**
 
-Create a YAML file following the naming convention in ``$HOMEgfs/dev/ctests/cases/``:
+Create a YAML file following the naming convention in ``$HOMEglobal/dev/ctests/cases/``:
 
 **Filename**: ``${CASE}-${JOB}.yaml``
 
@@ -534,7 +534,7 @@ Create the YAML file with proper input staging configuration:
 
 .. code-block:: bash
 
-    cd $HOMEgfs/dev/ctests/build
+    cd $HOMEglobal/dev/ctests/build
     cmake ../..
     ctest -R test_C48_ATM-gfs_analysis_execute -V
 
@@ -744,7 +744,7 @@ Debugging Strategies
 .. code-block:: bash
 
     # Run test phases manually
-    cd $HOMEgfs/dev/ctests/build/scripts
+    cd $HOMEglobal/dev/ctests/build/scripts
     ./setup.sh TEST_NAME CASE_YAML TEST_DATE
     ./stage.sh CASE_NAME TEST_NAME TEST_DATE
     ./execute.sh TEST_NAME JOB_NAME TEST_DATE
@@ -784,18 +784,18 @@ Directory Reference
 
 **Key Directories**:
 
-* ``$HOMEgfs/dev/ctests/`` - CTest framework root
-* ``$HOMEgfs/dev/ctests/cases/`` - YAML test case definitions
-* ``$HOMEgfs/dev/ctests/build/`` - CMake build directory
+* ``$HOMEglobal/dev/ctests/`` - CTest framework root
+* ``$HOMEglobal/dev/ctests/cases/`` - YAML test case definitions
+* ``$HOMEglobal/dev/ctests/build/`` - CMake build directory
 * ``${STAGED_CTESTS}/COMROOT/`` - Stable baseline outputs
 * ``${RUNTESTS}/COMROOT/`` - Test execution environments
-* ``$HOMEgfs/jobs/JGLOBAL_*`` - Production job scripts
+* ``$HOMEglobal/jobs/JGLOBAL_*`` - Production job scripts
 
 **Configuration Files**:
 
-* ``$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID`` - Platform settings
-* ``$HOMEgfs/dev/ctests/CMakeLists.txt`` - Test definitions
-* ``$HOMEgfs/dev/ci/gitlab-ci-hosts.yml`` - CI/CD pipeline
+* ``$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID`` - Platform settings
+* ``$HOMEglobal/dev/ctests/CMakeLists.txt`` - Test definitions
+* ``$HOMEglobal/dev/ci/gitlab-ci-hosts.yml`` - CI/CD pipeline
 
 Development History
 ===================

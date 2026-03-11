@@ -40,7 +40,7 @@ export FHRGRP=%FHRGRP% FHRLST=%FHRLST% FCSTHR=%FCSTHR% TRDRUN=%TRDRUN% fcsthr=%F
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgfs/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG
+$HOMEglobal/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

@@ -2,15 +2,15 @@
 #{% if "enkf" in RUN %}
 export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 #{% else %}
 export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 #{% endif %}
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Create the directory to hold restarts and output from the model in stmp
@@ -105,7 +105,7 @@ declare -rx COMIN_CHEM_INPUT="${COMIN}/model/chem/input"
 # Run relevant exglobal script
 ###############################################################
 # shellcheck disable=SC2288
-"${FORECASTSH:-${SCRgfs}/ex{{ RUN | lower }}_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
+"${FORECASTSH:-${SCRglobal}/ex{{ RUN | lower }}_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

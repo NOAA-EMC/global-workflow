@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_spec" -c "base gempak"
 
 export COMPONENT="atmos"
 export EXT=""
@@ -28,7 +28,7 @@ export RUN2=gfs_goessim
 export GRIB=goessimpgrb2.0p25.f
 export EXT=""
 
-"${SCRgfs}/exgfs_atmos_goes_nawips.sh" "${FHR3}"
+"${SCRglobal}/exgfs_atmos_goes_nawips.sh" "${FHR3}"
 
 #################################################################
 # Execute the script for the 221 grib
@@ -42,7 +42,7 @@ export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 
-"${SCRgfs}/exgfs_atmos_goes_nawips.sh" "${FHR3}" && true
+"${SCRglobal}/exgfs_atmos_goes_nawips.sh" "${FHR3}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

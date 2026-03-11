@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
-source "${USHgfs}/wave_domain_grid.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "extractvars" -c "base extractvars"
+source "${USHglobal}/wave_domain_grid.sh"
 
 # Set COM Paths
 for grid in '0p25' '0p50' '1p00'; do
@@ -36,7 +36,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
 fi
 
 # Execute the Script
-"${SCRgfs}/exglobal_extractvars.sh"
+"${SCRglobal}/exglobal_extractvars.sh"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

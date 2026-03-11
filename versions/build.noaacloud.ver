@@ -10,4 +10,4 @@ export gnu_ver=13.2.0
 
 spack_stack_root="/contrib/spack-stack-rocky8"
 
-source "${HOMEgfs:-}/versions/spack.ver"
+source "${HOMEglobal:-}/versions/spack.ver"
