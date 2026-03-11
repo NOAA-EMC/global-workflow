@@ -2,13 +2,13 @@
 """
 convert_jobs.py
 Example script showing how to use variable_name_converter to convert
-all J-job scripts in dev/jobs between HOMEglobal-style and HOME${NET}-style.
+all J-job scripts in dev/jobs between HOMEgfs-style and HOME${NET}-style.
 
 Usage:
-    # Convert HOMEglobal -> HOMEglobal in dev/jobs
+    # Convert HOMEgfs -> HOMEgfs in dev/jobs
     python3 convert_jobs.py to-net gfs
 
-    # Convert HOMEglobal -> HOMEglobal in dev/jobs
+    # Convert HOMEgfs -> HOMEgfs in dev/jobs
     python3 convert_jobs.py to-global gfs
 
     # Revert all NET values at once
@@ -37,14 +37,14 @@ def main() -> None:
 
     to_net = subparsers.add_parser(
         'to-net',
-        help='Convert HOMEglobal etc. to HOME${NET} etc.'
+        help='Convert HOMEgfs etc. to HOME${NET} etc.'
     )
     to_net.add_argument('net', metavar='NET_value',
                         help=f'One of: {", ".join(VALID_NET_VALUES)}')
 
     to_global = subparsers.add_parser(
         'to-global',
-        help='Convert HOME${NET} etc. back to HOMEglobal etc.'
+        help='Convert HOME${NET} etc. back to HOMEgfs etc.'
     )
     to_global.add_argument('net', metavar='NET_value',
                            help=f'One of: {", ".join(VALID_NET_VALUES)}, or all')

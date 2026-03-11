@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-from pathlib import Path
 from variable_name_converter import GlobalToNetConverter, NetToGlobalConverter
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-JOBS_PATH = 'dev/'
+REPO_ROOT = '/scratch3/NCEPDEV/global/Anton.Fernando/global-workflow'
+JOBS_PATH = 'dev/jobs'
 
-# Convert HOMEglobal -> HOMEglobal
-#GlobalToNetConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
-
-# Revert HOMEglobal -> HOMEglobal
+GlobalToNetConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
 NetToGlobalConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')

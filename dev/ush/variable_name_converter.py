@@ -30,11 +30,12 @@ from typing import List, Optional, Union
 VALID_NET_VALUES = ('gfs', 'gefs', 'sfs', 'gcafs')
 ALL_NET_VALUES = ('gefs', 'gfs', 'gcafs', 'sfs')
 
+_SELF_PATH = Path(__file__).resolve()
 _SELF_SCRIPTS = frozenset({
     'convert_from_net_to_global.sh', 'convert_from_global_to_net.sh',
     'convert_from_net_to_global.py', 'convert_from_global_to_net.py',
     'net_to_global_converter.py', 'global_to_net_converter.py',
-    'variable_name_converter.py', 'example_convert.py',
+    'example_convert.py',
 })
 
 
@@ -102,6 +103,10 @@ def _process_file(filepath: Path, patterns: dict):
 def _iter_files(dirpath: Path, exclude_names):
     for path in dirpath.rglob('*'):
         if path.is_dir():
+            continue
+        if path.resolve() == _SELF_PATH:
+            continue
+        if path.name in exclude_names:
             continue
         if any(p.name in exclude_names for p in path.parents):
             continue
