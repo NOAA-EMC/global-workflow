@@ -9,23 +9,7 @@ echo "BEGIN: config.base"
 export machine="WCOSS2"
 
 # EMC parallel or NCO production
-export RUN_ENVIR="emc"
-
-# Account, queue, etc.
-export ACCOUNT="GFS-DEV"
-export QUEUE="dev"
-export QUEUE_SERVICE="dev_transfer"
-export QUEUE_DTN="${QUEUE_SERVICE}"
-export PARTITION_BATCH="{{ PARTITION_BATCH }}"
-export PARTITION_SERVICE=""
-export PARTITION_DTN=""
-export RESERVATION=""
-export CLUSTERS=""
-export CLUSTERS_SERVICE="${CLUSTERS}"
-export CLUSTERS_DTN="${CLUSTERS_SERVICE}"
-
-# Project to use in mass store:
-export HPSS_PROJECT="emc-global"
+export RUN_ENVIR="nco"
 
 # Directories relative to installation areas:
 export HOMEglobal="${HOMEgcafs}"
@@ -48,29 +32,6 @@ export FIXgdas="${FIXglobal}/gdas"
 
 # GLOBAL static environment parameters
 export PACKAGEROOT="${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}"    # TODO: set via prod_envir in Ops
-#export COMROOT="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/runtests2/COMROOT"    # TODO: set via prod_envir in Ops
-export COMINsyn="/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
-export DMPDIR="/lfs/h2/emc/dump/noscrub/dump"
-export IODADIR="/lfs/h2/emc/dump/noscrub/dump_ioda"
-export USE_IODADIR="YES"
-
-# Gempak from external models
-# Default locations are to dummy locations for testing
-export COMINecmwf="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf"
-export COMINnam="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam"
-export COMINukmet="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet"
-
-# USER specific paths
-export HOMEDIR="/lfs/h2/emc/global/noscrub/${USER}"
-export STMP="/lfs/h2/emc/stmp/${USER}"
-export PTMP="/lfs/h2/emc/ptmp/${USER}"
-export NOSCRUB="${HOMEDIR}"
-
-# Base directories for various builds
-export BASE_GIT="/lfs/h2/emc/global/save/emc.global/git"
-
-# Base directory for staged data
-export BASE_DATA="/lfs/h2/emc/global/noscrub/emc.global/data"
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_GOES="NO"               # GOES products
@@ -81,10 +42,10 @@ export DO_NPOESS="NO"           # NPOESS products
 export DO_TRACKER="NO"         # Hurricane track verification
 export DO_GENESIS="NO"         # Cyclone genesis verification
 export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)
-export DO_VERFOZN="YES"                  # Ozone data assimilation monitoring
-export DO_VERFRAD="YES"                  # Radiance data assimilation monitoring
-export DO_VMINMON="YES"                  # GSI minimization monitoring
-export DO_ANLSTAT="NO"                   # JEDI-based analysis statistics
+export DO_VERFOZN="NO"                  # Ozone data assimilation monitoring
+export DO_VERFRAD="NO"                  # Radiance data assimilation monitoring
+export DO_VMINMON="NO"                  # GSI minimization monitoring
+export DO_ANLSTAT="YES"                   # JEDI-based analysis statistics
 export DO_MOS="NO"                       # GFS Model Output Statistics - Only supported on WCOSS2
 
 # NO for retrospective parallel; YES for real-time parallel
@@ -106,7 +67,6 @@ export DO_TEST_MODE="NO" # option to change configuration for automated testing
 # Build paths relative to $HOMEglobal
 export FIXgsi="${HOMEglobal}/fix/gsi"
 export HOMEpost="${HOMEglobal}"
-export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NMV="/bin/mv"
@@ -138,14 +98,6 @@ fi
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}"
 export FETCHDIR="{{ FETCHDIR }}"
-
-# Commonly defined parameters in JJOBS
-export envir=${envir:-"prod"}
-export NET="gcafs"  # NET is defined in the job-card (ecf)
-export RUN=${RUN:-"gcafs"}  # RUN is defined in the job-card (ecf)
-
-# Get all the COM path templates
-source "${EXPDIR}/config.com"
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}

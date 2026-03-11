@@ -15,15 +15,6 @@ fi
 
 # Source model specific information that is resolution dependent
 string="--fv3 ${CASE}"
-if [[ "${DO_OCN}" == "YES" ]]; then
-    string="${string} --mom6 ${OCNRES}"
-fi
-if [[ "${DO_ICE}" == "YES" ]]; then
-    string="${string} --cice6 ${ICERES}"
-fi
-if [[ "${DO_WAVE}" == "YES" ]]; then
-    string="${string} --ww3 ${waveGRD}"
-fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
     string="${string} --gocart"
 fi
@@ -31,25 +22,21 @@ fi
 # shellcheck disable=SC2086
 source "${EXPDIR}/config.ufs" ${string}
 
-# Forecast length for GFS forecast
+# Forecast length for GCAFS forecast
 case ${RUN} in
-  gfs|gcafs)
+  gcafs)
     # Convert comma-separated string into bash array
     IFS=', ' read -ra segments <<< "${FCST_SEGMENTS}"
     # Determine MIN and MAX based on the forecast segment
     export FHMIN=${segments[${FCST_SEGMENT}]}
     export FHMAX=${segments[${FCST_SEGMENT}+1]}
     # Cap other FH variables at FHMAX for the segment
-    export FHMIN_WAV=$(( FHMIN > FHMIN_WAV ? FHMIN : FHMIN_WAV ))
     export FHMAX_HF=$(( FHMAX_HF_GFS > FHMAX ? FHMAX : FHMAX_HF_GFS ))
-    export FHMAX_WAV=$(( FHMAX_WAV > FHMAX ? FHMAX : FHMAX_WAV ))
     # shellcheck disable=SC2153
     export FHOUT=${FHOUT_GFS}
     export FHOUT_HF=${FHOUT_HF_GFS}
-    export FHOUT_OCN=${FHOUT_OCN_GFS}
-    export FHOUT_ICE=${FHOUT_ICE_GFS}
     ;;
-  *gdas|gcdas)
+  *gcdas)
     export FHMAX_HF=0
     export FHOUT_HF=0
     ;;
@@ -289,7 +276,7 @@ export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
-if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gcdas" ]] ; then # GDAS cycle specific parameters
+if [[ "${RUN}" =~ "gcdas" ]] ; then # DA cycle specific parameters
 
     # Variables used in DA cycling
     export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table_da"
@@ -300,7 +287,7 @@ if [[ "${RUN}" =~ "gdas" || "${RUN}" =~ "gcdas" ]] ; then # GDAS cycle specific 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
 
-elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]] ; then # GFS or GCAFS cycle specific parameters
+elif [[ "${RUN}" = "gcafs" ]] ; then # GCAFS cycle specific parameters
 
     # Write more variables to output
     export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table"
@@ -308,7 +295,7 @@ elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]] ; then # GFS or GCAFS cycle sp
     # Write gfs restart files to rerun fcst from any break point
     export restart_interval=${restart_interval_gcafs:-12}
 
-    # Turn off dry mass adjustment in GFS
+    # Turn off dry mass adjustment in GCAFS
     export adjust_dry_mass=".false."
 
     # Write each restart file in 16 small files to save time
