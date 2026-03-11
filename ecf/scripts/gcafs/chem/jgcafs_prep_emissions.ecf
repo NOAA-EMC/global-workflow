@@ -64,11 +64,6 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=%EXPDIR%
 
-if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${HOMEglobal}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
-fi
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/ush/python"
-export PYTHONPATH
 
 ############################################################
 # CALL executable job script here

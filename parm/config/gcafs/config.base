@@ -28,7 +28,7 @@ export CLUSTERS_DTN="${CLUSTERS_SERVICE}"
 export HPSS_PROJECT="emc-global"
 
 # Directories relative to installation areas:
-#export HOMEglobal="/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/global-workflow"
+export HOMEglobal="${HOMEgcafs}"
 export EXECglobal="${HOMEglobal}/exec"
 export FIXglobal="${HOMEglobal}/fix"
 export PARMglobal="${HOMEglobal}/parm"

@@ -56,7 +56,7 @@ export PYTHONPATH
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEglobal}/jobs/JGCDAS_AERO_ANALYSIS_CALC
+${HOMEgcafs}/jobs/JGCDAS_AERO_ANALYSIS_CALC
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

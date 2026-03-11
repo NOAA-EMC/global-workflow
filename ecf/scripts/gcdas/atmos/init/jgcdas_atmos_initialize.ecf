@@ -64,16 +64,11 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=%EXPDIR%
 
-if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
-  PYTHONPATH="${HOMEglobal}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
-fi
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/ush/python"
-export PYTHONPATH
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEglobal}/jobs/JGCDAS_ATMOS_INITIALIZE
+${HOMEgcafs}/jobs/JGCDAS_ATMOS_INITIALIZE
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
