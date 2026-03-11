@@ -553,7 +553,7 @@ FV3_predet() {
     # Inline UPP fix files
     if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
         cpreq "${POSTGRB2TBL:-${PARMglobal}/post/params_grib2_tbl_new}" "${DATA}/params_grib2_tbl_new"
-        cpreq "${PARMglobal}/ufs/post_itag_gfs" "${DATA}/itag" # TODO: Need a GEFS version when available in the UFS-weather-model
+        cpreq "${PARMglobal}/ufs/post_itag_${NET}" "${DATA}/itag" # TODO: Need a GEFS version when available in the UFS-weather-model
         # TODO: These should be replaced with ones from the ufs-weather-model when available there
         case ${NET} in
             gfs)
