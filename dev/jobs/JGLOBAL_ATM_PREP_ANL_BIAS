@@ -29,8 +29,7 @@ BIASFILES="${GDUMP}.t${gcyc}z.abias ${GDUMP}.t${gcyc}z.abias_air  ${GDUMP}.t${gc
 
 ABIAS_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias
 ABIASPC_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias_pc
-ABIAS_SAT_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.rad_varbc_params.tar
-ABIAS_AIR_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.air_varbc_params.tar
+ABIAS_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.varbc_params.tar
 
 SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECglobal}/satbias2ioda.x}
 SATBIAS2IODAY=${HOMEglobal}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
@@ -77,8 +76,8 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
         cd ./testrun/varbc/
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
             "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.tlapse.txt"
-        cpreq -p "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.satbias.nc"
-        mv "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.satbias_cov.nc"
+        cpreq -p "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.bias.nc"
+        mv "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.bias_cov.nc"
         cd "${DATA}"
         rm -f satbias_converter.yaml
     done
@@ -93,9 +92,7 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
             fi
         done
         # TODO: Temporary solution and need to process abias_air for JEDI when ready
-        tar -cvf "${ABIAS_AIR_JEDI_TAR}" "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
-        rm -f "./enkf${GDUMP}.t${gcyc}z.abias_air.txt"
-        tar -cvf "${ABIAS_SAT_JEDI_TAR}" ./*.nc ./*.txt
+        tar -cvf "${ABIAS_JEDI_TAR}" ./*.nc ./*.txt
         export err=$?
     fi
 

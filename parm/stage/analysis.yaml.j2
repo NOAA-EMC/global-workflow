@@ -56,7 +56,8 @@ analysis:
             {% endif %}
 
                 {# Bias Correction Files #}
-                {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "rad_varbc_params.tar"] %}
+                {#TODO: remove abias files when JEDI can cycle bias correction files #}
+                {% for ftype in ["varbc_params.tar", "abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt"] %}
                     {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                     {% endif %}
@@ -102,7 +103,7 @@ analysis:
             {# All GSI Analysis Files #}
             {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt",
                              "increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc", "radstat.tar",
-                             "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc", "rad_varbc_params.tar"] %}
+                             "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc"] %}
                 {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                 {% endif %}
