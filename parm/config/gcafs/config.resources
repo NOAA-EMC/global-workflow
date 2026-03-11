@@ -321,6 +321,10 @@ case ${step} in
     if [[ "${CASE}" == "C384" || "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
        memory="${mem_node_max}"
     fi
+        tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+
+    export threads_per_task_cycle=${threads_per_task}
+    export tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     ;;
 
   "anlstat")
