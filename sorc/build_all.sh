@@ -338,7 +338,7 @@ else
             job_state="${build_status[${name}]}"
             if [[ "${job_state}" =~ "DEAD" || "${job_state}" =~ "FAIL" ]]; then
                 nfailed=$((nfailed + 1))
-            elif [[ "${job_state}" =~ "UNKNOWN" || "${job_state}" =~ "UNAVAILABLE"  ]]; then
+            elif [[ "${job_state}" =~ "UNKNOWN" || "${job_state}" =~ "UNAVAILABLE" ]]; then
                 nunknown=$((nunknown + 1))
             elif [[ "${job_state}" == "SUCCEEDED" ]]; then
                 nsuccess=$((nsuccess + 1))
