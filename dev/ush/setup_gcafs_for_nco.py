@@ -238,6 +238,22 @@ def setup_gcafs_for_nco():
     Jinja(surface_template_path, {'RUN': 'gcdas'}).save(dest_surface_job_path)
     print(f"Rendered surface analysis template and saved to {dest_surface_job_path}")
 
+    # Now for all jobs, we need a line that exports HOMEglobal
+    for job_name in os.listdir(jobs_dir):
+        job_file_path = os.path.join(jobs_dir, job_name)
+        if not os.path.isfile(job_file_path):
+            continue
+        with open(job_file_path, 'r') as f:
+            lines = f.readlines()
+        if lines and lines[0].startswith('#!'):
+            export_line = 'export HOMEglobal="${HOMEgcafs}"\n'
+            if len(lines) < 2 or lines[1] != export_line:
+                lines.insert(1, export_line)
+                with open(job_file_path, 'w') as f:
+                    f.writelines(lines)
+                print(f"Added HOMEglobal export to {job_name}")
+
+
 
 if __name__ == "__main__":
     setup_gcafs_for_nco()
