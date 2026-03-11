@@ -34,7 +34,7 @@ _SELF_SCRIPTS = frozenset({
     'convert_from_net_to_global.sh', 'convert_from_global_to_net.sh',
     'convert_from_net_to_global.py', 'convert_from_global_to_net.py',
     'net_to_global_converter.py', 'global_to_net_converter.py',
-    'variable_name_converter.py',
+    'variable_name_converter.py', 'example_convert.py',
 })
 
 

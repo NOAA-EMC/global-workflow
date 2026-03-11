@@ -2,11 +2,11 @@
 from pathlib import Path
 from variable_name_converter import GlobalToNetConverter, NetToGlobalConverter
 
-REPO_ROOT = '/scratch3/NCEPDEV/global/Anton.Fernando/global-workflow'
-TARGET_PATH = 'dev/jobs'
+REPO_ROOT = Path(__file__).resolve().parents[2]
+JOBS_PATH = 'dev/'
 
-# Convert HOMEglobal -> HOMEgfs
-#GlobalToNetConverter().convert(REPO_ROOT, TARGET_PATH, 'gfs')
+# Convert HOMEglobal -> HOMEglobal
+#GlobalToNetConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
 
-# Revert HOMEgfs -> HOMEglobal
-NetToGlobalConverter().convert(REPO_ROOT, TARGET_PATH, 'gfs')
+# Revert HOMEglobal -> HOMEglobal
+NetToGlobalConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
