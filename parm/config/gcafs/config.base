@@ -95,8 +95,6 @@ export DUMP_SUFFIX=""
 if [[ "${PDY}${cyc}" -ge "2019092100" && "${PDY}${cyc}" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
-export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
-export ATARDIR="/NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/${PSLOT}"
 export FETCHDIR="{{ FETCHDIR }}"
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
