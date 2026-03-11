@@ -35,7 +35,11 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
+#{% if RUN == "gcdas" %}
+${SFCANALSH:-${SCRglobal}/exgcdas_surface_initialize.sh} && true
+#{% else %}
 ${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl.sh} && true
+#{% endif %}
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
