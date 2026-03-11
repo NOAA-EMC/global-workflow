@@ -64,8 +64,8 @@ echo " "
 set_trace
 
 # Set type of Interpolation for WGRIB2
-export opt1=' -set_grib_type same -new_grid_winds earth '
-export opt1uv=' -set_grib_type same -new_grid_winds grid '
+export opt1=' -set_grib_type complex2 -new_grid_winds earth '
+export opt1uv=' -set_grib_type complex2 -new_grid_winds grid '
 export opt21=' -new_grid_interpolation bilinear -if '
 export opt22=":(CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
