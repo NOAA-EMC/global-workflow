@@ -5,18 +5,15 @@ Convert between HOMEglobal-style and HOME${NET}-style variable names.
 
 Can be used as a standalone CLI tool or imported as a module:
 
-    from variable_name_converter import GlobalToNetConverter, NetToGlobalConverter
+from variable_name_converter import GlobalToNetConverter, NetToGlobalConverter
 
-    converter = GlobalToNetConverter()
-    result = converter.convert_file('/path/to/file.sh', 'gfs')
-
-    converter = NetToGlobalConverter()
-    result = converter.convert('/path/to/dir', 'all', exclude=['sorc'])
+    GlobalToNetConverter()('/path/to/repo_root', 'relative/path/to/file.sh', 'gfs')
+    NetToGlobalConverter()('/path/to/repo_root', 'relative/path/to/dir', 'gfs', exclude=['sorc'])
 
 CLI usage:
-    variable_name_converter.py to-net gfs /path/to/target [--exclude sorc]
-    variable_name_converter.py to-global gfs /path/to/target [--exclude sorc]
-    variable_name_converter.py to-global all /path/to/target
+    variable_name_converter.py to-net gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
+    variable_name_converter.py to-global gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
+    variable_name_converter.py to-global all /path/to/repo_root relative/path/to/target
 """
 
 import argparse
@@ -32,9 +29,7 @@ ALL_NET_VALUES = ('gefs', 'gfs', 'gcafs', 'sfs')
 
 _SELF_PATH = Path(__file__).resolve()
 _SELF_SCRIPTS = frozenset({
-    'convert_from_net_to_global.sh', 'convert_from_global_to_net.sh',
-    'convert_from_net_to_global.py', 'convert_from_global_to_net.py',
-    'net_to_global_converter.py', 'global_to_net_converter.py',
+    'variable_name_converter.py',
     'example_convert.py',
 })
 
