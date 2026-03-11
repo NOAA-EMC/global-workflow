@@ -84,6 +84,13 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
+elif [[ ${MACHINE_ID} = aws-ec2* ]]; then
+    # We are on AWS ec2
+    if (! eval module help > /dev/null 2>&1); then
+        source /usr/share/lmod/lmod/init/bash
+    fi
+    module purge
+
 # TODO: This can likely be made more general once other cloud
 # platforms come online.
 elif [[ ${MACHINE_ID} = "noaacloud" ]]; then
