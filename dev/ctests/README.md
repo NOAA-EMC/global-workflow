@@ -16,12 +16,12 @@ STAGED_CTESTS     # Path to nightly baseline COMROOT
 ICSDIR_ROOT       # Path to initial condition files
 ```
 
-These are typically defined in `$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID`.
+These are typically defined in `$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID`.
 
 ### Configure and Build
 
 ```bash
-cd $HOMEgfs/dev/ctests
+cd $HOMEglobal/dev/ctests
 mkdir -p build
 cd build
 
@@ -220,13 +220,13 @@ cd build/scripts
 ## Key Directories
 
 ```
-$HOMEgfs/dev/ctests/              # Framework root
+$HOMEglobal/dev/ctests/              # Framework root
 ├── build/                        # CMake build directory (create this)
 ├── cases/                        # YAML test definitions
 ├── scripts/                      # Test phase scripts
 └── CMakeLists.txt                # Test configuration
 
-$HOMEgfs/dev/ci/platforms/        # Platform-specific configuration
+$HOMEglobal/dev/ci/platforms/        # Platform-specific configuration
 └── config.$MACHINE_ID            # Machine settings (STAGED_CTESTS, HPC_ACCOUNT, etc.)
 
 ${STAGED_CTESTS}/COMROOT/         # Nightly baseline outputs (input source)
@@ -235,7 +235,7 @@ ${RUNTESTS}/COMROOT/              # Test execution environments (created by test
 
 ## Platform Configuration
 
-Platform-specific settings are in `$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID`:
+Platform-specific settings are in `$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID`:
 
 ```bash
 # Example from config.hera
@@ -249,8 +249,8 @@ export HPC_ACCOUNT=nems
 Source the appropriate configuration before running CMake:
 
 ```bash
-source $HOMEgfs/ush/detect_machine.sh
-source $HOMEgfs/dev/ci/platforms/config.$MACHINE_ID
+source $HOMEglobal/ush/detect_machine.sh
+source $HOMEglobal/dev/ci/platforms/config.$MACHINE_ID
 ```
 
 ## Additional Resources

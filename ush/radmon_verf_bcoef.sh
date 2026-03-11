@@ -27,7 +27,7 @@
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECgfs           executable directory
+#     EXECglobal           executable directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
 #     TANKverf_rad      data repository
@@ -88,7 +88,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and supporting files to working directory
 
-cpreq "${EXECgfs}/${bcoef_exec}" "./${bcoef_exec}"
+cpreq "${EXECglobal}/${bcoef_exec}" "./${bcoef_exec}"
 cpreq "${biascr}" ./biascr.txt
 
 #--------------------------------------------------------------------
@@ -175,7 +175,7 @@ EOF
     done # dtype in $gesanl loop
 done     # type in $SATYPE loop
 
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 if compgen -G "bcoef*.ieee_d*" > /dev/null || compgen -G "bcoef*.ctl*" > /dev/null; then
     tar_file=radmon_bcoef.tar

@@ -12,17 +12,17 @@ export BASE_IC="{{ BASE_IC }}" # Platform home for staged ICs
 
 if [[ ${RUN} == "gefs" ]] ; then
   if [[ ${GEFSTYPE} = "gefs-real-time" ]] ; then
-    export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs_RT.yaml.j2"
+    export STAGE_IC_YAML_TMPL="${PARMglobal}/stage/master_gefs_RT.yaml.j2"
   elif [[ ${GEFSTYPE} = "gefs-offline" ]] ; then
-    export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
+    export STAGE_IC_YAML_TMPL="${PARMglobal}/stage/master_gefs.yaml.j2"
   else
     echo "ERROR: Invalid GEFSTYPE=${GEFSTYPE} for config.stage_ic"
   fi
 else
-  export STAGE_IC_YAML_TMPL="${PARMgfs}/stage/master_gefs.yaml.j2"
+  export STAGE_IC_YAML_TMPL="${PARMglobal}/stage/master_gefs.yaml.j2"
 fi
 
-source "${HOMEgfs}/versions/ic.ver"
+source "${HOMEglobal}/versions/ic.ver"
 
 if [[ ${EXP_WARM_START} = ".false." ]] ; then
   export DOIAU="NO"        # Turn off for staging

@@ -4,7 +4,7 @@
 # of ecmwf fcsts
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEglobal}/ush/preamble.sh"
 
 export pgm=gdplot2_nc
 source prep_step
@@ -16,7 +16,7 @@ device="nc | ecmwfver.meta"
 # Copy in datatype table to define gdfile type
 #
 
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406

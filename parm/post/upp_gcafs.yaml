@@ -10,15 +10,15 @@ upp:
       - "{{ DATA }}"
     copy:
       - ["{{ 'g2tmpl_ROOT' | getenv }}/share/params_grib2_tbl_new", "{{ DATA }}/params_grib2_tbl_new"]
-      - ["{{ PARMgfs }}/post/nam_micro_lookup.dat", "{{ DATA }}/eta_micro_lookup.dat"]
-      - ["{{ EXECgfs }}/upp.x", "{{ DATA }}/"]
-      - ["{{ PARMgfs }}/post/itag.jinja", "{{ DATA }}/"]
-      - ["{{ PARMgfs }}/post/optics_luts_DUST_nasa.dat", "{{ DATA }}/optics_luts_DUST_nasa.dat"]
-      - ["{{ PARMgfs }}/post/optics_luts_NITR_nasa.dat", "{{ DATA }}/optics_luts_NITR_nasa.dat"]
-      - ["{{ PARMgfs }}/post/optics_luts_SALT_nasa.dat", "{{ DATA }}/optics_luts_SALT_nasa.dat"]
-      - ["{{ PARMgfs }}/post/optics_luts_SOOT_nasa.dat", "{{ DATA }}/optics_luts_SOOT_nasa.dat"]
-      - ["{{ PARMgfs }}/post/optics_luts_SUSO_nasa.dat", "{{ DATA }}/optics_luts_SUSO_nasa.dat"]
-      - ["{{ PARMgfs }}/post/optics_luts_WASO_nasa.dat", "{{ DATA }}/optics_luts_WASO_nasa.dat"]
+      - ["{{ PARMglobal }}/post/nam_micro_lookup.dat", "{{ DATA }}/eta_micro_lookup.dat"]
+      - ["{{ EXECglobal }}/upp.x", "{{ DATA }}/"]
+      - ["{{ PARMglobal }}/post/itag.jinja", "{{ DATA }}/"]
+      - ["{{ PARMglobal }}/post/optics_luts_DUST_nasa.dat", "{{ DATA }}/optics_luts_DUST_nasa.dat"]
+      - ["{{ PARMglobal }}/post/optics_luts_NITR_nasa.dat", "{{ DATA }}/optics_luts_NITR_nasa.dat"]
+      - ["{{ PARMglobal }}/post/optics_luts_SALT_nasa.dat", "{{ DATA }}/optics_luts_SALT_nasa.dat"]
+      - ["{{ PARMglobal }}/post/optics_luts_SOOT_nasa.dat", "{{ DATA }}/optics_luts_SOOT_nasa.dat"]
+      - ["{{ PARMglobal }}/post/optics_luts_SUSO_nasa.dat", "{{ DATA }}/optics_luts_SUSO_nasa.dat"]
+      - ["{{ PARMglobal }}/post/optics_luts_WASO_nasa.dat", "{{ DATA }}/optics_luts_WASO_nasa.dat"]
 
 analysis:
   config:
@@ -27,7 +27,7 @@ analysis:
     NET: GFS   # upp doesn't work with GCAFS,set to GFS instead
   data_in:
     copy:
-      - ["{{ PARMgfs }}/post/gcafs/postxconfig-NT-gcafs.txt", "{{ DATA }}/postxconfig-NT.txt"]
+      - ["{{ PARMglobal }}/post/gcafs/postxconfig-NT-gcafs.txt", "{{ DATA }}/postxconfig-NT.txt"]
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.atm.a006.nc", "{{ DATA }}/{{ atmos_filename }}"]
       - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.analysis.sfc.a006.nc", "{{ DATA }}/{{ flux_filename }}"]
   data_out:

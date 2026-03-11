@@ -193,7 +193,7 @@ fi
 split -l "${tasks_per_node}" ./cmdfile cmdfile_part_
 cmdfile_parts=$(ls cmdfile_part_*)
 for partfile in ${cmdfile_parts}; do
-    "${USHgfs}/run_mpmd.sh" "${partfile}" && true
+    "${USHglobal}/run_mpmd.sh" "${partfile}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "Failed to create one or more observation diagnostic files for ${partfile}!"

@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-source "{{ HOMEgfs }}/dev/ush/gw_setup.sh"
+source "{{ HOMEglobal }}/dev/ush/gw_setup.sh"
 
 # Run rocotorun
 bash -c "{{ rocotorunstr }}"
@@ -68,6 +68,8 @@ if [[ -n "${ROCOTOSTAT}" ]]; then
         echo "${FAILED_JOBS}" > "${LOCKFILE}"
     else
         # No failures, remove lockfile if it exists
-        [[ -f "${LOCKFILE}" ]] && rm -f "${LOCKFILE}"
+        if [[ -f "${LOCKFILE}" ]]; then
+            rm -f "${LOCKFILE}"
+        fi
     fi
 fi
