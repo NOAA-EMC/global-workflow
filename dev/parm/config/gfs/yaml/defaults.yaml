@@ -29,6 +29,7 @@ base:
   DO_TEST_MODE: "NO"
   NMEM_ENS_GFS: 30
   NMEM_ENS_GFS_OFFSET: 20
+  MOM6_INTERP_ICS: "NO"
 
 atmanl:
   STATICB_TYPE: "gsibec"
