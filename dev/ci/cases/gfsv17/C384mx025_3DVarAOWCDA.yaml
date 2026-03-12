@@ -14,7 +14,7 @@ experiment:
   edate: 2021070306
   # NOTE: this directory is read-only
   icsdir: 
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marine3dvar.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/marine3dvar.yaml
 
 workflow:
   engine: rocoto

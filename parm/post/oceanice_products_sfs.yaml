@@ -8,17 +8,17 @@ ocnicepost:
     mkdir:
       - "{{ DATA }}"
     copy:
-      - ["{{ PARMgfs }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
+      - ["{{ PARMglobal }}/post/ocnicepost.nml.jinja2", "{{ DATA }}/"]
       {% if write_grib2 or write_netcdf %}
-      - ["{{ PARMgfs }}/post/{{ component }}_{{ RUN }}.csv", "{{ DATA }}/{{ component }}.csv"]
-      - ["{{ EXECgfs }}/ocnicepost.x", "{{ DATA }}/"]
-      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ PARMglobal }}/post/{{ component }}_{{ RUN }}.csv", "{{ DATA }}/{{ component }}.csv"]
+      - ["{{ EXECglobal }}/ocnicepost.x", "{{ DATA }}/"]
+      - ["{{ FIXglobal }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Bu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ FIXglobal }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cu.to.Ct.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ FIXglobal }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Cv.to.Ct.bilinear.nc", "{{ DATA }}/"]
       {% for grid in product_grids %}
-      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.bilinear.nc", "{{ DATA }}/"]
-      - ["{{ FIXgfs }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
-      - ["{{ FIXgfs }}/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
+      - ["{{ FIXglobal }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.bilinear.nc", "{{ DATA }}/"]
+      - ["{{ FIXglobal }}/mom6/post/{{ model_grid }}/tripole.{{ model_grid }}.Ct.to.rect.{{ grid }}.conserve.nc", "{{ DATA }}/"]
+      - ["{{ FIXglobal }}/mom6/post/template.global.{{ grid }}.gb2", "{{ DATA }}/"]
       {% endfor %}
       {% endif %}
 

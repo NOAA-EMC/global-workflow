@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
@@ -26,7 +26,7 @@ done
 # Execute the script for one degree grib
 ########################################################
 
-"${SCRgfs}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
+"${SCRglobal}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -37,7 +37,7 @@ fi
 # Execute the script for quater-degree grib
 ########################################################
 
-"${SCRgfs}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
+"${SCRglobal}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

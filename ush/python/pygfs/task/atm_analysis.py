@@ -147,7 +147,7 @@ class AtmAnalysis(Analysis):
         # Tar radiative bias correction files to COM directory
         logger.info(f"Saving radiative bias correction files to COM")
         self.jedi_dict['atmanlvar'].save_obsbiasout(self.task_config.COMOUT_ATMOS_ANALYSIS,
-                                                    f"{self.task_config.APREFIX}rad_varbc_params")
+                                                    f"{self.task_config.APREFIX}varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")

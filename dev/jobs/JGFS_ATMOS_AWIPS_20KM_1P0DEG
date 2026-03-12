@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
@@ -27,7 +27,7 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
+"${SCRglobal}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

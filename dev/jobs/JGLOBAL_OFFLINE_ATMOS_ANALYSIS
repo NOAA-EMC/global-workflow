@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 #shellcheck disable=SC2155
 
-source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
+source "${HOMEglobal}/ush/preamble.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -43,7 +43,7 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -p "${COMOUT_OBS}"
 
 # Execute generation of increments from offline analysis
-EXSCRIPT=${OFFLINEANLPY:-${SCRgfs}/exglobal_offline_atmos_analysis.py}
+EXSCRIPT=${OFFLINEANLPY:-${SCRglobal}/exglobal_offline_atmos_analysis.py}
 ${EXSCRIPT}
 
 export err=$?

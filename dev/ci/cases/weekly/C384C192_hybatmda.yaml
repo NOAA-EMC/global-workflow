@@ -14,7 +14,7 @@ experiment:
   nens: 2
   interval: 24
   start: cold
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
 
 workflow:
   engine: rocoto

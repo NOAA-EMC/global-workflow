@@ -28,14 +28,14 @@ export CLUSTERS_DTN="{{ CLUSTERS_DTN | default('${CLUSTERS_SERVICE}') }}"
 export HPSS_PROJECT="{{ HPSS_PROJECT }}"
 
 # Directories relative to installation areas:
-export HOMEgfs="{{ HOMEgfs }}"
-export EXECgfs=${HOMEgfs}/exec
-export FIXgfs=${HOMEgfs}/fix
-export PARMgfs=${HOMEgfs}/parm
-export SCRgfs=${HOMEgfs}/scripts
-export USHgfs=${HOMEgfs}/ush
-export FIXorog=${FIXgfs}/orog
-export FIXugwd=${FIXgfs}/ugwd
+export HOMEglobal="{{ HOMEglobal }}"
+export EXECglobal=${HOMEglobal}/exec
+export FIXglobal=${HOMEglobal}/fix
+export PARMglobal=${HOMEglobal}/parm
+export SCRglobal=${HOMEglobal}/scripts
+export USHglobal=${HOMEglobal}/ush
+export FIXorog=${FIXglobal}/orog
+export FIXugwd=${FIXglobal}/ugwd
 
 ########################################################################
 
@@ -71,8 +71,8 @@ export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for au
 # FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT
 # CLEAR
 ####################################################
-# Build paths relative to $HOMEgfs
-export HOMEpost="${HOMEgfs}"
+# Build paths relative to $HOMEglobal
+export HOMEpost="${HOMEglobal}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NMV="/bin/mv"
@@ -83,10 +83,10 @@ export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
 export CHGRP_CMD="{{ CHGRP_CMD }}"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
-export NCLEN="${HOMEgfs}/ush/getncdimlen"
+export NCLEN="${HOMEglobal}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
-export BASE_ENV="${HOMEgfs}/env"
+export BASE_ENV="${HOMEglobal}/env"
 
 # EXPERIMENT specific environment parameters
 export SDATE="{{ SDATE }}"

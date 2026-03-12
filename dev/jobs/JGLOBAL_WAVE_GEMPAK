@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
-source "${USHgfs}/wave_domain_grid.sh"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
+source "${USHglobal}/wave_domain_grid.sh"
 
 ###################################
 # Set COM Paths
@@ -23,7 +23,7 @@ if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_wave_nawips.sh" && true
+"${SCRglobal}/exgfs_wave_nawips.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
