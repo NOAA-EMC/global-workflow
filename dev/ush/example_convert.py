@@ -2,7 +2,7 @@
 from variable_name_converter import GlobalToNetConverter, NetToGlobalConverter
 
 REPO_ROOT = '/scratch3/NCEPDEV/global/Anton.Fernando/global-workflow/'
-JOBS_PATH = 'dev/jobs/'
+JOBS_PATH = 'dev/'
 
-#GlobalToNetConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
+# GlobalToNetConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
 NetToGlobalConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
