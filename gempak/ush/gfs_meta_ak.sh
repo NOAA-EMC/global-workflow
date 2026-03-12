@@ -3,14 +3,14 @@
 # Metafile Script : gfs_meta_ak.sh
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEglobal}/ush/preamble.sh"
 
 cd "${DATA}" || exit 2
 
 rm -rf "${DATA}/ak"
 mkdir -p -m 775 "${DATA}/ak"
 cd "${DATA}/ak" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 device="nc | gfs.meta.ak"
 

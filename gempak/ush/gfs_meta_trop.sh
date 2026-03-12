@@ -5,11 +5,11 @@
 # Set Up Local Variables
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEglobal}/ush/preamble.sh"
 
 mkdir -p -m 775 "${DATA}/TROP"
 cd "${DATA}/TROP" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits

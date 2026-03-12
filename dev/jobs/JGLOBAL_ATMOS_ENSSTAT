@@ -1,10 +1,19 @@
 #! /usr/bin/env bash
+set -x
 
 #
 # Caculate the mean, spread, and other probabilistic fields.
 #
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -15,13 +24,13 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmos_ensstat" -c "base atmos_ensstat
 
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    MEMDIR="ensstat" GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/atmos/grib2/${grid}"
     mkdir -m 775 -p "${!prod_dir}"
 done
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_atmos_ensstat.sh" && true
+"${SCRglobal}/exglobal_atmos_ensstat.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

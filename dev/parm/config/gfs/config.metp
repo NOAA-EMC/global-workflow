@@ -19,7 +19,7 @@ export RUN_PRECIP_STEP1="YES"    # Run precip verification using METplus
 # METplus: Verify grid-to-grid, grid-to-obs, precipitation options
 #----------------------------------------------------------
 ## EMC_VERIF_GLOBAL SETTINGS
-export HOMEverif_global=${HOMEgfs}/sorc/verif-global.fd
+export HOMEverif_global=${HOMEglobal}/sorc/verif-global.fd
 export VERIF_GLOBALSH=${HOMEverif_global}/ush/run_verif_global_in_global_workflow.sh
 ## INPUT DATA SETTINGS
 export model=${PSLOT}

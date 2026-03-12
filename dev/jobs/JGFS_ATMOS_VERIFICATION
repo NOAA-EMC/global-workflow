@@ -1,11 +1,20 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "metp" -c "base metp"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ###############################################################
 ## Abstract:
 ## Inline METplus verification and diagnostics driver script
-## HOMEgfs   : /full/path/to/workflow
+## HOMEglobal   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## PDY    : current date (YYYYMMDD)
 ## RUN    : cycle name (gdas / gfs)
@@ -22,7 +31,7 @@ export CDATE=${PDY}${cyc}
 # shellcheck disable=SC2041
 for grid in '1p00'; do
     prod_dir="COM_ATMOS_GRIB_${grid}"
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
 done
 
 # TODO: If none of these are on, why are we running this job?

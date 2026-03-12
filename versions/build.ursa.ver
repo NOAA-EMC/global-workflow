@@ -7,4 +7,4 @@ export stack_mpi_ver=2021.13
 
 spack_stack_root="/contrib/spack-stack"
 
-source "${HOMEgfs:-}/versions/spack.ver"
+source "${HOMEglobal:-}/versions/spack.ver"

@@ -28,21 +28,21 @@ export CLUSTERS_DTN="{{ CLUSTERS_DTN | default('${CLUSTERS_SERVICE}') }}"
 export HPSS_PROJECT="{{ HPSS_PROJECT }}"
 
 # Directories relative to installation areas:
-export HOMEgfs="{{ HOMEgfs }}"
-export EXECgfs="${HOMEgfs}/exec"
-export FIXgfs="${HOMEgfs}/fix"
-export PARMgfs="${HOMEgfs}/parm"
-export SCRgfs="${HOMEgfs}/scripts"
-export USHgfs="${HOMEgfs}/ush"
+export HOMEglobal="{{ HOMEglobal }}"
+export EXECglobal="${HOMEglobal}/exec"
+export FIXglobal="${HOMEglobal}/fix"
+export PARMglobal="${HOMEglobal}/parm"
+export SCRglobal="${HOMEglobal}/scripts"
+export USHglobal="${HOMEglobal}/ush"
 
-export FIXam="${FIXgfs}/am"
-export FIXaer="${FIXgfs}/aer"
-export FIXcpl="${FIXgfs}/cpl"
-export FIXlut="${FIXgfs}/lut"
-export FIXcice="${FIXgfs}/cice"
-export FIXmom="${FIXgfs}/mom6"
-export FIXreg2grb2="${FIXgfs}/reg2grb2"
-export FIXgdas="${FIXgfs}/gdas"
+export FIXam="${FIXglobal}/am"
+export FIXaer="${FIXglobal}/aer"
+export FIXcpl="${FIXglobal}/cpl"
+export FIXlut="${FIXglobal}/lut"
+export FIXcice="${FIXglobal}/cice"
+export FIXmom="${FIXglobal}/mom6"
+export FIXreg2grb2="${FIXglobal}/reg2grb2"
+export FIXgdas="${FIXglobal}/gdas"
 
 ########################################################################
 
@@ -103,24 +103,23 @@ export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for au
 # FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT
 # CLEAR
 ####################################################
-# Build paths relative to $HOMEgfs
-export FIXgsi="${HOMEgfs}/fix/gsi"
-export HOMEpost="${HOMEgfs}"
+# Build paths relative to $HOMEglobal
+export FIXgsi="${HOMEglobal}/fix/gsi"
+export HOMEpost="${HOMEglobal}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="NO"
 export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
 export CHGRP_CMD="{{ CHGRP_CMD }}"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
-export NCLEN="${HOMEgfs}/ush/getncdimlen"
+export NCLEN="${HOMEglobal}/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
-export BASE_ENV="${HOMEgfs}/env"
+export BASE_ENV="${HOMEglobal}/env"
 
 # EXPERIMENT specific environment parameters
 export SDATE="{{ SDATE }}"
@@ -139,7 +138,6 @@ export ATARDIR="{{ ATARDIR }}"
 export FETCHDIR="{{ FETCHDIR }}"
 
 # Commonly defined parameters in JJOBS
-export envir=${envir:-"prod"}
 export NET="gcafs"  # NET is defined in the job-card (ecf)
 export RUN=${RUN:-"gcafs"}  # RUN is defined in the job-card (ecf)
 
@@ -149,11 +147,7 @@ source "${EXPDIR}/config.com"
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 
-export SENDECF=${SENDECF:-"NO"}
 export SENDSDM=${SENDSDM:-"NO"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
-export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings
@@ -189,12 +183,12 @@ export DO_NEST="NO" # Whether to run a global-nested domain
 if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
   export ntiles=7
   export NEST_OUTPUT_GRID="regional_latlon"
-  export FIXugwd="${FIXgfs}/ugwd_nest"
-  export FIXorog="${FIXgfs}/orog_nest"
+  export FIXugwd="${FIXglobal}/ugwd_nest"
+  export FIXorog="${FIXglobal}/orog_nest"
 else
   export ntiles=6
-  export FIXugwd="${FIXgfs}/ugwd"
-  export FIXorog="${FIXgfs}/orog"
+  export FIXugwd="${FIXglobal}/ugwd"
+  export FIXorog="${FIXglobal}/orog"
 fi
 
 # Set operational resolution
@@ -380,7 +374,7 @@ export l4densvar=".true."
 export lwrite4danl=".true."
 export DO_CALC_INCREMENT="NO"
 export USE_BUILD_GSINFO="NO"
-export BUILD_GSINFO_DIR="${PARMgfs}/gsinfo"
+export BUILD_GSINFO_DIR="${PARMglobal}/gsinfo"
 
 # Early-cycle EnKF parameters
 export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"

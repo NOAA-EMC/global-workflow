@@ -46,7 +46,7 @@ fi
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-if [[ -z "${PDY+0}" || -z "${cyc+0}" || -z "${dtspec+0}" || -z "${EXECgfs+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]; then
+if [[ -z "${PDY+0}" || -z "${cyc+0}" || -z "${dtspec+0}" || -z "${EXECglobal+0}" || -z "${WAV_MOD_TAG+0}" || -z "${STA_DIR+0}" ]]; then
     echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET'
     exit 3
 fi
@@ -109,9 +109,9 @@ fi
 export pgm="${NET,,}_ww3_outp.x"
 source prep_step
 
-echo "   Executing ${EXECgfs}/${pgm}"
+echo "   Executing ${EXECglobal}/${pgm}"
 
-"${EXECgfs}/${pgm}" 1> "outp_${specdir}_${buoy}.out" 2>&1
+"${EXECglobal}/${pgm}" 1> "outp_${specdir}_${buoy}.out" 2>&1
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR : ERROR IN ${pgm} *** "

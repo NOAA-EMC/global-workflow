@@ -1,6 +1,14 @@
 #! /usr/bin/env bash
+set -x
+source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -15,20 +23,16 @@ if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
     BKG_RUN="gcdas"
 fi
 
-RUN=${BKG_RUN} YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
-    COMIN_OBS_PREV:COM_OBS_TMPL \
-    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/obs"
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
 
-RUN="enkfgdas" MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ENKF_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
 
 mkdir -p "${COMOUT_ATMOS_RESTART}"
 
@@ -38,7 +42,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${SFCANALSH:-${SCRgfs}/exglobal_atmos_sfcanl.sh} && true
+${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

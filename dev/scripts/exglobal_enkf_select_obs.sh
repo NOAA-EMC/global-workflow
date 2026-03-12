@@ -21,7 +21,7 @@
 pwd=$(pwd)
 
 # Scripts.
-ANALYSISSH=${ANALYSISSH:-${SCRgfs}/exglobal_atmos_analysis.sh}
+ANALYSISSH=${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh}
 
 # Select obs
 export RUN_SELECT=${RUN_SELECT:-"YES"}

@@ -1,9 +1,18 @@
 #! /usr/bin/env bash
+set -x
 
 #############################################################
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 #############################################
 #  determine PDY and cyc for previous cycle
@@ -16,10 +25,8 @@ export gcyc=${GDATE:8:2}
 #---------------------------------------------
 # OZN_TANKDIR - WHERE OUTPUT DATA WILL RESIDE
 #
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_OZNMON:COM_ATMOS_OZNMON_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_OZNMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/oznmon"
 
 export oznstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.oznstat.tar"
 export TANKverf_ozn=${TANKverf_ozn:-${COMOUT_ATMOS_OZNMON}}
@@ -29,7 +36,7 @@ if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p "${TANKverf_ozn}"; fi
 #-------------------------------------------------------
 # Execute the script.
 #
-"${SCRgfs}/exgdas_atmos_verfozn.sh" && true
+"${SCRglobal}/exgdas_atmos_verfozn.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

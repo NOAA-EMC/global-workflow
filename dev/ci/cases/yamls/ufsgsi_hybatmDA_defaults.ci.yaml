@@ -1,5 +1,5 @@
 defaults:
-  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
   DOIAU: "NO"
   DO_JEDIATMVAR: "YES"
@@ -12,9 +12,9 @@ base:
 atmanl:
   LAYOUT_X_ATMANL: 4
   LAYOUT_Y_ATMANL: 4
-  OBS_LIST_YAML: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/atm_obs_list_ufs_hybatmDA.yaml.j2"
-  VAR_JEDI_TEST_YAML: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_3dvar_ufs_hybatmDA.yaml.j2"
-  FV3INC_JEDI_TEST_YAML: "${HOMEgfs}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_3dvar-fv3inc_ufs_hybatmDA.yaml.j2"
+  OBS_LIST_YAML: "${HOMEglobal}/sorc/gdas.cd/test/gw-ci/atm/atm_obs_list_ufs_hybatmDA.yaml.j2"
+  VAR_JEDI_TEST_YAML: "${HOMEglobal}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_3dvar_ufs_hybatmDA.yaml.j2"
+  FV3INC_JEDI_TEST_YAML: "${HOMEglobal}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_3dvar-fv3inc_ufs_hybatmDA.yaml.j2"
   NUMBER_OUTER_LOOPS: 2
   NINNER_LOOP1: 2
   NINNER_LOOP2: 4

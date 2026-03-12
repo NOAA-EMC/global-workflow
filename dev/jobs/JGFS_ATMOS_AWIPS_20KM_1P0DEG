@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "awips" -c "base awips"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
@@ -10,10 +19,8 @@ export COMPONENT="atmos"
 # Define COM directories
 ##############################################
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL
-GRID="0p25" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 
 if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
     mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"
@@ -29,7 +36,7 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
+"${SCRglobal}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

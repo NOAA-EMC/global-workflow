@@ -1,21 +1,29 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ###################################
 # Set COM Paths
 ###################################
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
-    COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
+declare -rx COMIN_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
+declare -rx COMOUT_WAVE_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/wmo"
 
 mkdir -p "${COMOUT_WAVE_WMO}"
 
 ###################################
 # Execute the Script
 
-"${SCRgfs}/exgfs_wave_prdgen_bulls.sh" && true
+"${SCRglobal}/exgfs_wave_prdgen_bulls.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

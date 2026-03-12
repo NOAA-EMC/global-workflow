@@ -8,7 +8,7 @@
 
 cd "${DATA}" || exit 2
 
-export NTS="${HOMEgfs}/gempak/ush/restore"
+export NTS="${HOMEglobal}/gempak/ush/restore"
 
 if [[ ${MODEL} == GDAS ]]; then
     fcsthrs="000"
@@ -34,7 +34,7 @@ if [[ ${MODEL} == GDAS ]]; then
 
         cpreq "${gempak_file}" "gem_grids${fhr3}.gem"
 
-        "${HOMEgfs}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh" && true
+        "${HOMEglobal}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit

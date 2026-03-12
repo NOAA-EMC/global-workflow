@@ -25,7 +25,7 @@ grid0p50="latlon 0:720:0.5 90:361:-0.5"
 grid1p00="latlon 0:360:1.0 90:181:-1.0"
 
 # "Import" functions used in this script
-source "${USHgfs}/product_functions.sh"
+source "${USHglobal}/product_functions.sh"
 
 # Transform the input ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"

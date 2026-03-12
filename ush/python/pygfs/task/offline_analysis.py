@@ -153,7 +153,7 @@ class OfflineAnalysis(Task):
         executables_to_copy = []
         executable_list = ['enkf_chgres_recenter_nc.x', 'calc_increment_ens_ncio.x', 'tref_calc.x']
         for exec_name in executable_list:
-            executables_to_copy.append([os.path.join(self.task_config.EXECgfs, exec_name),
+            executables_to_copy.append([os.path.join(self.task_config.EXECglobal, exec_name),
                                         os.path.join(self.task_config.DATA, exec_name)])
         FileHandler({'copy': executables_to_copy}).sync()
 
@@ -252,11 +252,11 @@ class OfflineAnalysis(Task):
         FileHandler({'copy': output_files}).sync()
         # these files are for the surface analysis
         transfer_files = []
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}rtgssthr.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}rtgssthr.grb")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}seaice.5min.blend.grb"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}seaice.5min.blend.grb")])
-        transfer_files.append([os.path.join(self.task_config.COMIN_OBSPROC, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
+        transfer_files.append([os.path.join(self.task_config.COMINobsproc, f"{self.task_config.APREFIX_IN}snogrb_t1534.3072.1536"),
                                os.path.join(self.task_config.COMOUT_OBS, f"{self.task_config.APREFIX}snogrb_t1534.3072.1536")])
         # TODO: Re-stage the inputs for the GCDAS offline analysis on HPSS following EE2-compliant filenames, then update this line
         transfer_files.append([
