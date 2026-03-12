@@ -1,8 +1,17 @@
 #! /usr/bin/env bash
+set -x
 
 # TODO (#1227) This job is not used in the rocoto suite
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "post" -c "base post"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ####################################
 # Specify NET and RUN Name and model
