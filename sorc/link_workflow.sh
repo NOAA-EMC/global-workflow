@@ -3,7 +3,6 @@
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
 HOMEglobal=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" > /dev/null 2>&1 && git rev-parse --show-toplevel)
-TRACE=NO source "${HOMEglobal}/ush/preamble.sh"
 
 function usage() {
     cat << EOF
