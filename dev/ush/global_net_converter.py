@@ -22,9 +22,9 @@ Then run it:
     python path/to/example_convert.py
 
 CLI usage:
-    variable_name_converter.py to-net gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
-    variable_name_converter.py to-global gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
-    variable_name_converter.py to-global all /path/to/repo_root relative/path/to/target
+    global_net_converter.py to-net gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
+    global_net_converter.py to-global gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
+    global_net_converter.py to-global all /path/to/repo_root relative/path/to/target
 """
 
 import argparse
@@ -40,7 +40,7 @@ ALL_NET_VALUES = ('gefs', 'gfs', 'gcafs', 'sfs')
 
 _SELF_PATH = Path(__file__).resolve()
 _SELF_SCRIPTS = frozenset({
-    'variable_name_converter.py',
+    'global_net_converter.py',
     'example_convert.py',
 })
 
