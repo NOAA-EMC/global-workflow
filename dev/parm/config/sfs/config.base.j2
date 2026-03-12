@@ -101,7 +101,6 @@ export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
 export ATARDIR="{{ ATARDIR }}"
 
 # Commonly defined parameters in JJOBS
-export envir=${envir:-"prod"}
 export NET="sfs"  # NET is defined in the job-card (ecf)
 export RUN="sfs"  # RUN is defined in the job-card (ecf)
 
@@ -111,11 +110,7 @@ source "${EXPDIR}/config.com"
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 
-export SENDECF=${SENDECF:-"NO"}
 export SENDSDM=${SENDSDM:-"NO"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
-export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings

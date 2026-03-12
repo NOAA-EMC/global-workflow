@@ -1,10 +1,19 @@
 #!/bin/bash
+set -x
 
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
