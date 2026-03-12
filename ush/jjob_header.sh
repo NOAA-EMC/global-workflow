@@ -5,10 +5,11 @@
 # Sets up and completes actions common to all j-jobs:
 # - Creates and moves to $DATA after removing any
 #     existing one unless $WIPE_DATA is set to "NO"
-# - Runs `setpdy.sh`
 # - Sources configs provided as arguments
 # - Sources machine environment script
-# - Defines a few other variables
+#
+# Note: setpdy.sh and PDY variables are now handled in
+#   jjob_shell_setup.sh, not here.
 #
 # The job name for the environment files should be passed
 #   in using the `-e` option (required). Any config files
@@ -40,8 +41,12 @@
 #   - $pid          : Override the default process id
 #                     [default: $$]
 
-_calling_script="${BASH_SOURCE[1]}"
-source "${HOMEglobal}/ush/preamble.sh"
+# Set calling script name so it logs the J-Job name rather than this header
+_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
+
+# err_exit is needed for this header script's own error handling;
+# all other utilities are sourced by jjob_shell_setup.sh afterward
+source "${HOMEglobal}/ush/err_exit.sh"
 
 OPTIND=1
 while getopts "c:e:" option; do
@@ -64,36 +69,6 @@ if [[ -z ${env_job} ]]; then
     export err=1
     err_exit "[${BASH_SOURCE[0]}]: Must specify a job name with -e"
 fi
-
-##############################################
-# make temp directory
-##############################################
-export DATA=${DATA:-"${DATAROOT}/${jobid}"}
-if [[ ${WIPE_DATA:-YES} == "YES" ]]; then
-    rm -rf "${DATA}"
-fi
-mkdir -p "${DATA}"
-if ! cd "${DATA}"; then
-    export err=1
-    err_exit "[${BASH_SOURCE[0]}]: ${DATA} does not exist"
-fi
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid="${pid:-$$}"
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-# TODO: remove this when going to production
-# Needs to be set for err_chk/err_exit
-export pgm=${pgm:-}
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh || true
-source ./PDY || true
 
 #############################
 # Source relevant config files
