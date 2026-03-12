@@ -1,6 +1,16 @@
 #! /usr/bin/env bash
+set -x
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
+
+"${SCRgfs}/exglobal_cleanup.sh" && true
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
 
 "${SCRgfs}/exglobal_cleanup.sh" && true
 export err=$?
