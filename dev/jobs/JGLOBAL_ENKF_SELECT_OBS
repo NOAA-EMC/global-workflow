@@ -59,7 +59,11 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     export pCOMOUT_ATMOS_ANALYSIS
 fi
 
+LEVS=$(${NCLEN} "${ATMGES_ENSMEAN}" pfull) && true
+export err=$?
 set_strict
+
+export LEVS
 
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
