@@ -1,8 +1,14 @@
 #! /usr/bin/env bash
-#shellcheck disable=SC2155
-
-source "${HOMEglobal}/ush/preamble.sh"
+set -x
 source "${HOMEglobal}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
@@ -25,8 +31,10 @@ export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    declare -rx COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"
-    declare -rx COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${gPDY}/${gcyc}/atmos"
+    COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"
+    declare -rx COMINobsproc
+    COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${gPDY}/${gcyc}/atmos"
+    declare -rx COMINobsproc_PREV
 else
     declare -rx COMINobsproc="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
     declare -rx COMINobsproc_PREV="${DMPDIR}/gdas.${gPDY}/${gcyc}/atmos"
