@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-variable_name_converter.py
+global_net_converter.py
 Convert between HOMEglobal-style and HOME${NET}-style variable names.
 
 Can be used as a standalone CLI tool or imported as a module:
