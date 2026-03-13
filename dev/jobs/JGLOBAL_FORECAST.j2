@@ -11,15 +11,7 @@ source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 #{% endif %}
 
 
-#{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
-#{% if false %}
-# When running the workflow in development, source jjob_standard_vars.sh #}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
-#{% else %}
-#{# When rendered for operations, place the contents of jjob_var_setup.j2 here #}
-#{# Note that the first line of jjob_var_setup.j2 will be commented #}
-#{% include jjob_var_setup.j2 %}
-#{% endif %}
 
 source "${USHglobal}/jjob_shell_setup.sh"
 
