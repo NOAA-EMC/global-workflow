@@ -13,6 +13,7 @@ suite gcafs_v1
     edit DATAROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/dataroot'
     edit ECF_INCLUDE '/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/git/release/gcafs.v1.0.0/ecf/include'
     edit DBNLOG '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/com/dbnlog'
+    edit HOMEglobal '/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/git/release/gcafs.v1.0.0'
     family 00
       edit CYC '00'
       family gcafs
@@ -88,7 +89,7 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete and ../../atmos/init/jgcdas_atmos_initialize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
                   trigger ../../jgcdas_forecast == complete
               endfamily
@@ -520,7 +521,7 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_finalize
                   trigger ./jgcdas_aerosol_analysis_variational == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete and ../../atmos/init/jgcdas_atmos_initialize == complete
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
@@ -610,7 +611,7 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_finalize
                   trigger ./jgcdas_aerosol_analysis_variational == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete and ../../atmos/init/jgcdas_atmos_initialize == complete
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix
@@ -1044,7 +1045,7 @@ suite gcafs_v1
                 task jgcdas_aerosol_analysis_finalize
                   trigger ./jgcdas_aerosol_analysis_variational == complete
                 task jgcdas_aerosol_analysis_calc
-                  trigger ./jgcdas_aerosol_analysis_finalize == complete
+                  trigger ./jgcdas_aerosol_analysis_finalize == complete and ../../atmos/init/jgcdas_atmos_initialize == complete
                 task jgcdas_aerosol_analysis_stats
                   trigger ./jgcdas_aerosol_analysis_finalize == complete
                 task jgcdas_aerosol_analysis_generate_bmatrix

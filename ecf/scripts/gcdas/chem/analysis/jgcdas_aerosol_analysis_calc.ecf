@@ -35,6 +35,8 @@ module load g2tmpl/${g2tmpl_ver}
 module load wgrib2/${wgrib2_ver}
 module load python/${python_ver}
 module load pnetcdf-D/${pnetcdf_ver}
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
 
 module list
 
