@@ -85,7 +85,7 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
 
         iparam=1
         while [[ ${iparam} -le ${nparam} ]]; do
-            nip=${arrpar[${iparam}-1]}
+            nip=${arrpar[iparam-1]}
             prepar=${nip::-1} # Part prefix (assumes 1 digit index)
             paridx="${nip:0-1}"
             npart=0
