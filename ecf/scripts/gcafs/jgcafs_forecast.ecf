@@ -52,7 +52,6 @@ module load craype-network-ucx/${craype_network_ucx_ver}
 module load cray-mpich-ucx
 module load python/${python_ver}
 module load wgrib2/${wgrib2_ver}
-module load ve/rrfs/1.0 # TODO change to gcafs
 
 module list
 
