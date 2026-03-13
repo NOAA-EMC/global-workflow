@@ -22,8 +22,14 @@ Then run it:
     python path/to/example_convert.py
 
 CLI usage:
-    global_net_converter.py to-net gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
-    global_net_converter.py to-global gfs /path/to/repo_root relative/path/to/target [--exclude sorc]
+    # Convert all HOMEglobal-style variables to HOMEgfs-style variables in the target directory,
+    # excluding any files or directories named 'sorc'.
+    global_net_converter.py to-net gfs /path/to/repo_root relative/path/to/target --exclude sorc
+    # Convert all HOMEgfs-style variables HOMEglobal-style variables in the target directory,
+    # excluding any files or directories named 'sorc'.
+    global_net_converter.py to-global gfs /path/to/repo_root relative/path/to/target --exclude sorc
+    # Convert all HOME${NET}-style variables (for all NET values: gfs, gefs, sfs, gcafs)
+    # back to HOMEglobal-style variables in the target directory.
     global_net_converter.py to-global all /path/to/repo_root relative/path/to/target
 """
 
