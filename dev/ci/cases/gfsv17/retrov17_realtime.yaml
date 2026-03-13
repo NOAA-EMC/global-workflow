@@ -9,11 +9,11 @@ experiment:
   nens: 80
   interval: 6
   start: warm
-  comroot: /lfs/h2/emc/ptmp/{{ 'USER' | getenv }}/realtime_test/COM
-  expdir: /lfs/h2/emc/ptmp/{{ 'USER' | getenv }}/realtime_test/EXP
-  idate: 2026031306
-  edate: 2026031312
-  icsdir: /lfs/h2/emc/gfstemp/emc.global/comroot/retrov17_01_realtime
+  comroot: /lfs/h2/emc/gfstemp/emc.global/comroot
+  expdir: /lfs/h2/emc/gfstemp/emc.global/expdir
+  idate: 2025111306
+  edate: 2027011600
+  icsdir: /lfs/h2/emc/gfstemp/emc.global/comroot/rt17_upd03_realtime
   yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/s2sw_realtime.yaml
 
 workflow:
