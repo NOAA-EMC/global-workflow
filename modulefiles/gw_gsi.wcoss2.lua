@@ -21,7 +21,7 @@ load(pathJoin("netcdf-D", (os.getenv("netcdf_ver") or "None")))
 load(pathJoin("libjpeg", (os.getenv("libjpeg_ver") or "None")))
 load(pathJoin("grib_util", (os.getenv("grib_util_ver") or "None")))
 -- Do not load prod_util when running ecflow
-local is_ecf os.getenv("ECF_JOB") ~= nil
+local is_ecf = os.getenv("ECF_JOB") ~= nil
 if not is_ecf then
     load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 end

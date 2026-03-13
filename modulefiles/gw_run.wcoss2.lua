@@ -29,7 +29,7 @@ load(pathJoin("esmf-D", (os.getenv("esmf_ver") or "None")))
 
 load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
 -- Do not load prod_util when running ecflow
-local is_ecf os.getenv("ECF_JOB") ~= nil
+local is_ecf = os.getenv("ECF_JOB") ~= nil
 if not is_ecf then
     load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 end

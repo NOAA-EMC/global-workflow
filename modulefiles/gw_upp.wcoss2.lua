@@ -11,7 +11,7 @@ load(pathJoin("cray-pals", "1.0.17"))
 
 -- Load workflow modules
 -- Do not load prod_util when running ecflow
-local is_ecf os.getenv("ECF_JOB") ~= nil
+local is_ecf = os.getenv("ECF_JOB") ~= nil
 if not is_ecf then
     load(pathJoin("prod_util", "2.0.9"))
 end
