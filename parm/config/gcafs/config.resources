@@ -536,7 +536,12 @@ case ${step} in
     ;;
 
   "post")
-    is_exclusive=True
+    # Walltime is per forecast hour; will be multipled by group size
+    walltime="00:15:00"
+    ntasks=24
+    threads_per_task=1
+    tasks_per_node="${ntasks}"
+    export is_exclusive=True
     ;;
 
   *)
