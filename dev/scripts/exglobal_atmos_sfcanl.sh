@@ -170,8 +170,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
     # Copy inputs from COMIN to DATA
     for ((nn = 1; nn <= ntiles; nn++)); do
-        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/sfc_data_cycle.00${nn}"
+        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/sfc_data_cycle.00${nn}"
     done
 
     "${CYCLESH}" && true

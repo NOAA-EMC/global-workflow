@@ -10,7 +10,8 @@
   url = https://github.com/NOAA-EMC/gfs-utils
 [submodule "sorc/ufs_utils.fd"]
   path = sorc/ufs_utils.fd
-  url = https://github.com/ufs-community/UFS_UTILS.git
+  url = https://github.com/ClaraDraper-NOAA/UFS_UTILS.git
+  branch = speedup_sfcanl
 [submodule "sorc/verif-global.fd"]
   path = sorc/verif-global.fd
   url = https://github.com/NOAA-EMC/EMC_verif-global.git
