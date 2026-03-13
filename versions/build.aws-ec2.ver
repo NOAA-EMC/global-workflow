@@ -8,4 +8,4 @@ export gnu_ver=14.1.0
 
 spack_stack_root="/opt/spack-stack"
 
-source "${HOMEgfs:-}/versions/spack.ver"
+source "${HOMEglobal:-}/versions/spack.ver"
