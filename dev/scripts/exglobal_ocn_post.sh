@@ -73,6 +73,7 @@ if [[ "${RUN}" == sfs ]]; then
    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs."*".t00z.${grid}.f"*".nc"
    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs."*".t00z.${grid}.daily.nc"
    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
+   rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.f"*".nc"
    echo "Finish Cleaning All Generated Files From the Previous Failed Run!"
 # -----------------------------------------------------------------------------
 # Task A: Generated 6hrly 5m potential temperature from 6hrly temperature files

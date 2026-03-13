@@ -21,6 +21,23 @@ if [[ ! -d "${COMOUT_OCEAN_NETCDF}" ]]; then mkdir -p "${COMOUT_OCEAN_NETCDF}"; 
 # Define current cycle
 export current_cycle="${PDY}${cyc}"
 
+# Check if ocean 24hr_avg and 6hr_avg history files are complete for ocn post job
+shopt -s nullglob
+ocn_24hrly_files=( "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.t${cyc}z.1p00.f"*".nc" ) # ocean 24hr_avg history files
+ocn_6hrly_files=( "${DATAoutput}/MOM6_OUTPUT/temp_"*".nc" ) # ocean (temp) 6hr_avg history files
+ocn_24hrly_num=$(( FHMAX_GFS / 24 )) #expected total number of ocean 24hr_avg files
+ocn_6hrly_num=$(( FHMAX_GFS / 6 )) #expected total number of ocean 6hr_avg files
+echo "INFO: Found ${#ocn_24hrly_files[@]} of ocean 24hr_avg history files."
+echo "INFO: Found ${#ocn_6hrly_files[@]} of ocean 6hr_avg history files."
+
+if [[ "${#ocn_24hrly_files[@]}" -lt "${ocn_24hrly_num}" ]] || [[ "${#ocn_6hrly_files[@]}" -lt "${ocn_6hrly_num}" ]]; then
+   echo "ERROR: File count mismatch detected!"
+   echo "Ocean 24hr_avg fistory files: ${#ocn_24hrly_files[@]} Found vs ${ocn_24hrly_num} Expected"
+   echo "Ocean 6hr_avg history files:  ${#ocn_6hrly_files[@]} Found vs ${ocn_6hrly_num} Expected"
+   echo "FATAL: The ocean history files are incomplete. Ocean post job quits!"
+   exit 1
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

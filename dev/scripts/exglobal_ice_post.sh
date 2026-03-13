@@ -4,6 +4,9 @@
 # Begin JOB SPECIFIC work
 ##############################################
 
+# Task 0. Clean all intermediate and unfinished output files from the previous failed run
+   rm -f "${COMOUT_ICE_NETCDF}/native/"*".monthly_avg."*"nc"
+
 #LINK NEW FILE NAMES TO THE OUTPUT DAILY ICE HISTORY FILES FOR MONTHLY AVERAGING
 CICE_OUTPUT_FH=($(seq -s ' ' "${FHMIN_GFS}" "${FHOUT_ICE}" "${FHMAX_GFS}"))
 if [[ "${RUN}" == sfs ]]; then

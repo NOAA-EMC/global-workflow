@@ -21,6 +21,19 @@ if [[ ! -d "${COMOUT_ICE_NETCDF}" ]]; then mkdir -p "${COMOUT_ICE_NETCDF}"; fi
 # Define current cycle
 export current_cycle="${PDY}${cyc}"
 
+# Check if ice 24hr_avg native files are complete for ice post job
+shopt -s nullglob
+ice_24hrly_files=( "${COMOUT_ICE_NETCDF}/native/${RUN}.t${cyc}z.native.f"*".nc" ) # ice 24hr_avg history files
+ice_24hrly_num=$(( FHMAX_GFS / 24 )) #expected total number of ice 24hr_avg history files
+echo "INFO: Found ${#ice_24hrly_files[@]} of ice 24hr_avg history files."
+
+if [[ "${#ice_24hrly_files[@]}" -lt "${ice_24hrly_num}" ]]; then
+   echo "ERROR: Ice history file count mismatch detected!"
+   echo "ice 24hr_avg history files: ${#ice_24hrly_files[@]} Found VS ${ice_24hrly_num} Expected"
+   echo "FATAL: The ice history files are incomplete. Ice post job quits!"
+   exit 1
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
