@@ -21,11 +21,7 @@ esac
 declare -a posthours
 while [[ "${hour}" -le "${TEND}" ]]; do
     posthours+=("${hour}")
-    if [[ ${hour} -lt 120 ]]; then
-        hour=$((hour + 1))
-    else
-        hour=$((hour + 3))
-    fi
+    hour=$((hour + 3))
 done
 
 #
