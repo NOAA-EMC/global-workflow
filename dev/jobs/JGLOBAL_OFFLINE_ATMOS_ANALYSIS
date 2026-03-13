@@ -51,7 +51,7 @@ mkdir -p "${COMOUT_OBS}"
 
 # Execute generation of increments from offline analysis
 EXSCRIPT=${OFFLINEANLPY:-${SCRglobal}/exglobal_offline_atmos_analysis.py}
-${EXSCRIPT}
+${EXSCRIPT} && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

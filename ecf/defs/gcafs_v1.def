@@ -27,7 +27,7 @@ suite gcafs_v1
                   # TODO trigger gdas analysis == complete
                   time 07:00
                 task jgcdas_surface_initialize
-                  trigger ./jgcdas_atmos_initialize == complete and ../../chem/analysis/jgcdas_prepare_obs == complete
+                  trigger ./jgcdas_atmos_initialize == complete
               endfamily
               family post
                 task jgcdas_atmos_post_manager
@@ -461,7 +461,7 @@ suite gcafs_v1
                   # TODO trigger gdas analysis == complete
                   time 13:00
                 task jgcdas_surface_initialize
-                  trigger ./jgcdas_atmos_initialize == complete and ../../chem/analysis/jgcdas_prepare_obs == complete
+                  trigger ./jgcdas_atmos_initialize == complete
               endfamily
               family post
                 task jgcdas_atmos_post_manager
@@ -551,7 +551,7 @@ suite gcafs_v1
                   # TODO trigger gdas analysis == complete
                   time 19:00
                 task jgcdas_surface_initialize
-                  trigger ./jgcdas_atmos_initialize == complete and ../../chem/analysis/jgcdas_prepare_obs == complete
+                  trigger ./jgcdas_atmos_initialize == complete
               endfamily
               family post
                 task jgcdas_atmos_post_manager
@@ -985,7 +985,7 @@ suite gcafs_v1
                   # TODO trigger gdas analysis == complete
                   time 01:00
                 task jgcdas_surface_initialize
-                  trigger ./jgcdas_atmos_initialize == complete and ../../chem/analysis/jgcdas_prepare_obs == complete
+                  trigger ./jgcdas_atmos_initialize == complete
               endfamily
               family post
                 task jgcdas_atmos_post_manager
