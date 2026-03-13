@@ -1,7 +1,7 @@
 # Paths
 IODADIR: '/lustre/dump_ur'
 DMPDIR: '/lustre/dump_ur'
-BASE_GIT: '/contrib/git'
+BASE_GIT: '/lustre/global_externals'
 BASE_DATA: '/lustre/data'
 BASE_IC: '/lustre/sharedGWdata/ICSDIR'
 AERO_INPUTS_DIR: '/contrib/global-workflow-shared-data/data/GEFS_ExtData/20250310'
