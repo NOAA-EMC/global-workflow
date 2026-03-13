@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
