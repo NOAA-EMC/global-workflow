@@ -629,8 +629,10 @@ def main() -> None:
 
     if args.direction == 'to-net':
         converter = GlobalToNetConverter(verbose=True)
-    else:
+    elif args.direction == 'to-global':
         converter = NetToGlobalConverter(verbose=True)
+    else:
+        raise ValueError(f"Unknown direction '{args.direction}'. Must be 'to-net' or 'to-global'.")
 
     try:
         result = converter.convert(args.base_path, args.relative_path, args.net, exclude=args.exclude)
