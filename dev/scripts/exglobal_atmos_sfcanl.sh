@@ -171,8 +171,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
     # Copy inputs from COMIN to DATA
     for ((nn = 1; nn <= ntiles; nn++)); do
-        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/fnbgso.00${nn}"
+        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/sfc_data_cycle.${nn}"
     done
 
     "${CYCLESH}" && true
@@ -183,7 +182,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
     # Copy outputs from DATA to COMOUT
     for ((nn = 1; nn <= ntiles; nn++)); do
-        cpfs "${DATA}/fnbgso.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+        cpfs "${DATA}/sfc_data_cycle.${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
     done
 
 done
