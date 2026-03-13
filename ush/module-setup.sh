@@ -47,7 +47,10 @@ elif [[ ${MACHINE_ID} = wcoss2 ]]; then
     # We are on WCOSS2
     # Ignore default modules of the same version lower in the search path (req'd by spack-stack)
     #export LMOD_TMOD_FIND_FIRST=yes #TODO: Uncomment this when using spack-stack for the entire workflow
-    module reset
+    # Do not reset on an ecflow system
+    if [[ -z "${ECF_JOB:-}" ]]; then
+        module reset
+    fi
 
 elif [[ ${MACHINE_ID} = cheyenne* ]]; then
     # We are on NCAR Cheyenne
