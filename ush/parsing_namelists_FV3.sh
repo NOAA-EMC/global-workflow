@@ -44,8 +44,6 @@ FV3_namelists() {
 
     atparse < "${template}" >> "diag_table"
 
-    # copy data table
-    cpreq "${DATA_TABLE}" data_table
 
     # build field_table
     if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
