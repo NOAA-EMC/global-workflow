@@ -1,7 +1,16 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEglobal}/ush/preamble.sh"
+export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
 source "${HOMEglobal}/ush/jjob_header.sh" -e "prepareobs" -c "base prepareobs"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
@@ -19,10 +28,10 @@ export COMOUT_OBS="${COMROOT}/${RUN}.${PDY}/${cyc}/obs/chem"
 # Run relevant script
 
 EXSCRIPT=${DUMPAODPY:-${HOMEglobal}/scripts/exgcdas_prepare_obs.py}
-${EXSCRIPT}
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    exit "${status}"
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
 fi
 
 ##############################################
@@ -34,14 +43,6 @@ fi
 ##############################################
 if [[ -e "${pgmout}" ]]; then
     cat "${pgmout}"
-fi
-
-##########################################
-# Remove the Temporary working directory
-##########################################
-cd "${DATAROOT}" || exit
-if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATA}"
 fi
 
 exit 0
