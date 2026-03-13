@@ -7,7 +7,7 @@ Can be used as a standalone CLI tool or imported as a module:
 
 For programmatic usage, create a script path/to/example_convert.py:
 
-    from variable_name_converter import GlobalToNetConverter, NetToGlobalConverter
+    from global_net_converter import GlobalToNetConverter, NetToGlobalConverter
 
     REPO_ROOT = '/path/to/global-workflow/'
     JOBS_PATH = 'dev/'
