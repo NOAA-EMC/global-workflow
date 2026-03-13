@@ -34,7 +34,7 @@ done
 sleep_interval=10
 max_tries=1000
 for fhr in "${posthours[@]}"; do
-    fhr3=$(sprintf "%03d" "${fhr}")
+    fhr3=$(printf "%03d" "${fhr}")
     log_file="${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.logf${fhr3}.txt"
     if ! wait_for_file "${log_file}" "${sleep_interval}" "${max_tries}"; then
         export err=1
