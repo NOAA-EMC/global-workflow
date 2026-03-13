@@ -10,13 +10,13 @@ For programmatic usage, create a script path/to/example_convert.py:
     from global_net_converter import GlobalToNetConverter, NetToGlobalConverter
 
     REPO_ROOT = '/path/to/global-workflow/'
-    JOBS_PATH = 'dev/'
+    TARGET_PATH = 'dev/'
 
     # Convert HOMEglobal -> HOMEgfs
-    GlobalToNetConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
+    GlobalToNetConverter().convert(REPO_ROOT, TARGET_PATH, 'gfs')
 
     # Convert HOMEgfs -> HOMEglobal
-    NetToGlobalConverter().convert(REPO_ROOT, JOBS_PATH, 'gfs')
+    NetToGlobalConverter().convert(REPO_ROOT, TARGET_PATH, 'gfs')
 
 Then run it:
     python path/to/example_convert.py
