@@ -58,7 +58,7 @@ gcdas_jobs = {
     "JGCDAS_AERO_ANALYSIS_STATS": "JGLOBAL_ANALYSIS_STATS",
     "JGCDAS_AERO_ANALYSIS_GENERATE_BMATRIX": "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX",
     "JGCDAS_PREPARE_OBS": "JGCDAS_PREPARE_OBS",
-    # need to add something here for the post job once Yaping's PR is in
+    "JGCDAS_ATMOS_UPP": "JGLOBAL_ATMOS_UPP",
 }
 
 
