@@ -41,9 +41,9 @@ SU_AVIATION_CRS NA  Y Y %y4-%m2-%d2t12:00:00 none none so2_aviation ExtData/PIES
 # --------------------------------------------------------------
 # If using 64 levels please replace this section with the correct values (ie replace 127 with 64)
 
-SU_H2O2 NA  N Y %y4-%m2-%d2t12:00:00 none none h2o2 ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.%y4.nc
-SU_OH   NA  N Y %y4-%m2-%d2t12:00:00 none none oh   ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.%y4.nc
-SU_NO3  NA  N Y %y4-%m2-%d2t12:00:00 none none no3  ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.%y4.nc
+SU_H2O2 NA  N Y 2025-%m2-%d2t12:00:00 none none h2o2 ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.2025.nc
+SU_OH   NA  N Y 2025-%m2-%d2t12:00:00 none none oh   ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.2025.nc
+SU_NO3  NA  N Y 2025-%m2-%d2t12:00:00 none none no3  ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.2025.nc
 #---------------------------------------------------------------
 
 # Production of SO2 from OCS oxidation

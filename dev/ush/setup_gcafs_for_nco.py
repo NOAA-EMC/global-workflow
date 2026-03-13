@@ -38,7 +38,7 @@ gcdas_ex_scripts = {
     "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
     "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
     "exgcdas_prepare_obs.py": "exgcdas_prepare_obs.py",
-    # need to add something here for the post job once Yaping's PR is in ?
+    "exgcdas_atmos_upp.py": "exglobal_atmos_upp.py"
 }
 
 gcafs_jobs = {
