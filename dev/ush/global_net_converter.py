@@ -321,10 +321,10 @@ class GlobalToNetConverter:
         return {
             'HOMEglobal': f'HOME{net}',
             'PARMglobal': f'PARM{net}',
-            'USHglobal':  f'USH{net}',
-            'SCRglobal':  f'SCR{net}',
+            'USHglobal': f'USH{net}',
+            'SCRglobal': f'SCR{net}',
             'EXECglobal': f'EXEC{net}',
-            'FIXglobal':  f'FIX{net}',
+            'FIXglobal': f'FIX{net}',
         }
 
     @staticmethod
@@ -565,10 +565,10 @@ class NetToGlobalConverter:
         return {
             f'HOME{net}': 'HOMEglobal',
             f'PARM{net}': 'PARMglobal',
-            f'USH{net}':  'USHglobal',
-            f'SCR{net}':  'SCRglobal',
+            f'USH{net}': 'USHglobal',
+            f'SCR{net}': 'SCRglobal',
             f'EXEC{net}': 'EXECglobal',
-            f'FIX{net}':  'FIXglobal',
+            f'FIX{net}': 'FIXglobal',
         }
 
     @staticmethod
