@@ -440,15 +440,7 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 set -u
 machine=${MACHINE_ID}
-platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
-if [[ -f "${platform_config}" ]]; then
-    source "${HOMEglobal}/dev/ci/platforms/config.${machine}"
-else
-    if [[ "${_set_account}" == "false" ]]; then
-        echo "ERROR Unknown HPC account!  Please use the -A option to specify."
-        exit 11
-    fi
-fi
+
 
 # If _yaml_dir is not set, set it to $HOMEglobal/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
@@ -460,6 +452,10 @@ if [[ "${_build}" == "true" ]]; then
     printf "Building via build_all.sh %s\n\n" "${_build_flags}"
     # Let the output of build_all.sh go to stdout regardless of verbose options
     if [[ "${_compute_build}" == true ]]; then
+        if [[ "${_set_account}" == "false" && -z "${HPC_ACCOUNT:-}" ]]; then
+            echo "ERROR Unknown HPC account!  Please use the -A option to specify."
+            exit 11
+        fi
         _compute_build_flag="-c -A ${HPC_ACCOUNT}"
     fi
     #shellcheck disable=SC2086,SC2248

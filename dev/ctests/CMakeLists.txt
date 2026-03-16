@@ -39,17 +39,10 @@ if (NOT DEFINED STAGED_CTESTS)
   return()
 endif()
 
-# Set ICSDIR_ROOT
-set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "")
-if (NOT DEFINED ICSDIR_ROOT)
-  message(WARNING "ICSDIR_ROOT must be set. CTests will not be created.")
-  return()
-endif()
 
 message(STATUS "gw: global-workflow baselines will be used from: '${HOMEglobal}'")
 message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
-message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'")
 
 # Prepare test scripts
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/setup.sh.in

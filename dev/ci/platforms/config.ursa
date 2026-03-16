@@ -12,9 +12,9 @@
 # main path to establish a unique path
 export GFS_CI_ROOT=/scratch3/NCEPDEV/global/role.glopara/GFS_CI_CD/URSA
 
-# ICSDIR root directory - Contains initial condition data
-# Used by create_experiment.py for setting up test cases
-export ICSDIR_ROOT=/scratch3/NCEPDEV/global/role.glopara/data/ICSDIR
+# BASE_IC directory - Platform home for staged initial conditions
+# Used by case yaml files for setting up the IC path
+export BASE_IC=/scratch3/NCEPDEV/global/role.glopara/data/ICSDIR
 
 
 #########################################################################
