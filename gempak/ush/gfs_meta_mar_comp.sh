@@ -5,8 +5,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 rm -Rf "${DATA}/GEMPAK_META_MAR"
 mkdir -p -m 775 "${DATA}/GEMPAK_META_MAR" "${DATA}/MAR_COMP"
 

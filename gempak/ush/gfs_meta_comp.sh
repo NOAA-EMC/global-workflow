@@ -9,8 +9,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 rm -Rf "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 mkdir -p -m 775 "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 cd "${DATA}/COMP" || exit 2
