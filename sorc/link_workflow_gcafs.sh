@@ -80,7 +80,7 @@ esac
 # Source fix version file
 source "${HOMEglobal}/versions/fix.ver"
 
-# Link gdasapp python packages in ush/python
+# Link gdasapp python packages in ush/python TODO remove when venv is done
 packages=("jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEglobal}/ush/python" || exit 1
@@ -89,6 +89,9 @@ for package in "${packages[@]}"; do
     fi
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
+
+# Link wxflow (TODO remove when venv is done)
+${LINK_OR_COPY} "${HOMEglobal}/sorc/wxflow/src/wxflow/" "${HOMEglobal}/ush/python/wxflow"
 
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
