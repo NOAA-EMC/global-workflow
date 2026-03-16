@@ -3,7 +3,7 @@
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=06:00:00
+#PBS -l walltime=02:00:00
 #PBS -l select=18:mpiprocs=128:ompthreads=1:ncpus=128
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
@@ -52,6 +52,8 @@ module load craype-network-ucx/${craype_network_ucx_ver}
 module load cray-mpich-ucx
 module load python/${python_ver}
 module load wgrib2/${wgrib2_ver}
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
 
 module list
 

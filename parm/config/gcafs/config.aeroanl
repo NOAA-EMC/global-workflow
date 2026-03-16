@@ -5,19 +5,8 @@
 
 echo "BEGIN: config.aeroanl"
 
-# define analysis resolution based on deterministic res
-case ${CASE} in
-  "C1152" | "C768" | "C384")
-    CASE_ANL="C384"
-    ;;
-  "C192" | "C96" | "C48")
-    CASE_ANL=${CASE}
-    ;;
-  *)
-    echo "FATAL ERROR: Aerosol DA not supported at ${CASE} resolution"
-    exit 4
-esac
-export CASE_ANL
+# define analysis resolution
+export CASE_ANL="C384"
 
 export STATICB_TYPE='diffusion'
 

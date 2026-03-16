@@ -52,6 +52,8 @@ module load craype-network-ucx/${craype_network_ucx_ver}
 module load cray-mpich-ucx
 module load python/${python_ver}
 module load wgrib2/${wgrib2_ver}
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
 
 module list
 

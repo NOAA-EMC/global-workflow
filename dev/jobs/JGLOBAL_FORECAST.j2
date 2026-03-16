@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 #{% if "enkf" in RUN %}
 export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
@@ -8,6 +9,11 @@ export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 #{% endif %}
+
+
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"

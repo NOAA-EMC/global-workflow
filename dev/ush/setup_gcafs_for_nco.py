@@ -38,7 +38,7 @@ gcdas_ex_scripts = {
     "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
     "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
     "exgcdas_prepare_obs.py": "exgcdas_prepare_obs.py",
-    # need to add something here for the post job once Yaping's PR is in ?
+    "exgcdas_atmos_upp.py": "exglobal_atmos_upp.py"
 }
 
 gcafs_jobs = {
@@ -58,7 +58,7 @@ gcdas_jobs = {
     "JGCDAS_AERO_ANALYSIS_STATS": "JGLOBAL_ANALYSIS_STATS",
     "JGCDAS_AERO_ANALYSIS_GENERATE_BMATRIX": "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX",
     "JGCDAS_PREPARE_OBS": "JGCDAS_PREPARE_OBS",
-    # need to add something here for the post job once Yaping's PR is in
+    "JGCDAS_ATMOS_UPP": "JGLOBAL_ATMOS_UPP",
 }
 
 
@@ -231,12 +231,29 @@ def setup_gcafs_for_nco():
         dest_job_path = os.path.join(global_workflow_dir, 'jobs', f"J{RUN.upper()}_FORECAST")
         Jinja(template_path, {'RUN': RUN}).save(dest_job_path)
         print(f"Rendered template for {RUN.upper()} and saved to {dest_job_path}")
+        os.chmod(dest_job_path, 0o755)
 
     # Render the surface analysis template
     surface_template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_ATMOS_SFCANL.j2')
     dest_surface_job_path = os.path.join(global_workflow_dir, 'jobs', "JGCDAS_SURFACE_INITIALIZE")
     Jinja(surface_template_path, {'RUN': 'gcdas'}).save(dest_surface_job_path)
     print(f"Rendered surface analysis template and saved to {dest_surface_job_path}")
+    os.chmod(dest_surface_job_path, 0o755)
+
+    # Now for all jobs, we need a line that exports HOMEglobal
+    for job_name in os.listdir(jobs_dir):
+        job_file_path = os.path.join(jobs_dir, job_name)
+        if not os.path.isfile(job_file_path):
+            continue
+        with open(job_file_path, 'r') as f:
+            lines = f.readlines()
+        if lines and lines[0].startswith('#!'):
+            export_line = 'export HOMEglobal="${HOMEgcafs}"\n'
+            if len(lines) < 2 or lines[1] != export_line:
+                lines.insert(1, export_line)
+                with open(job_file_path, 'w') as f:
+                    f.writelines(lines)
+                print(f"Added HOMEglobal export to {job_name}")
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ else
     declare -rx COMINobsproc="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
     declare -rx COMINgfs=${ROTDIR}
 fi
-declare -rx COMINgfs_ATMOS_ANALYSIS=${COMINgfs}/atmos/
+declare -rx COMINgfs_ATMOS_ANALYSIS=${COMINgfs}/gdas.${PDY}/${cyc}/atmos/
 
 declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
@@ -51,7 +51,7 @@ mkdir -p "${COMOUT_OBS}"
 
 # Execute generation of increments from offline analysis
 EXSCRIPT=${OFFLINEANLPY:-${SCRglobal}/exglobal_offline_atmos_analysis.py}
-${EXSCRIPT}
+${EXSCRIPT} && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
