@@ -17,7 +17,7 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
     gempak_dir="${ROTDIR}/${RUN}.${PDY}/${cycle}/products/atmos/gempak/1p00"
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         # Only copy the file if it exists (it will not if we start on 6, 12, or 18z)
-        if [[ ! -f "${file_in}" ]] ; then
+        if [[ ! -f "${file_in}" ]]; then
             continue
         fi
 
