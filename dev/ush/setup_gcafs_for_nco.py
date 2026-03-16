@@ -240,8 +240,6 @@ def setup_gcafs_for_nco():
     print(f"Rendered surface analysis template and saved to {dest_surface_job_path}")
     os.chmod(dest_surface_job_path, 0o755)
 
-
-
     # Now for all jobs, we need a line that exports HOMEglobal
     for job_name in os.listdir(jobs_dir):
         job_file_path = os.path.join(jobs_dir, job_name)
