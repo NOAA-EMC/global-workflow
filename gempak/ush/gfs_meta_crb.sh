@@ -5,8 +5,6 @@
 # Set Up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/crb"
 cd "${DATA}/crb" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -132,7 +130,6 @@ WIND    = bk0!ak7/.3/1/221/.4!ak6/.3/1/221/.4
 REFVEC  = 0
 TITLE   = 1/-2/~ ? ${MDL} @ WIND SHEAR (KNTS)|~850MB-300MB WIND SHEAR!0
 filter  = no
-
 
 GLEVEL	= 700
 GVCORD  = pres

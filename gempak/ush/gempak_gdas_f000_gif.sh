@@ -7,8 +7,6 @@
 #
 #########################################################################
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 LATVAL="1/1/1/1/5;5"
 LATSOUTH="1/1/1/1;4/5;5"
 pixels="1728;1472"
@@ -60,7 +58,6 @@ gdfile=gem_grids${fhr3}.gem
 
 "${GEMEXE}/gdplot2_gif" << EOF
 
-
 ! 850MB HEIGHTS/TEMPERATURES
 
   restore ${NTS}/base_nh.nts
@@ -88,7 +85,6 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgttmp850lab}
   l
   r
-
 
 ! 700MB HEIGHTS/TEMPERATURES
 
@@ -118,7 +114,6 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
-
 ! 500MB HEIGHTS/TEMPERATURES
 
   restore ${NTS}/base_nh.nts
@@ -147,7 +142,6 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
-
 ! 300MB HEIGHTS/ISOTACHS
 
   restore ${NTS}/base_nh.nts
@@ -175,7 +169,6 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgtiso300lab}
   l
   r
-
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 
@@ -206,7 +199,6 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
-
 ! 200MB HEIGHTS/ISOTACHS
 
   restore ${NTS}/base_nh.nts
@@ -234,7 +226,6 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgtiso200lab}
   l
   r
-
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
@@ -312,7 +303,6 @@ hgtiso250dev="gdas_250_hgt_iso_sh_anl_${cyc}.gif"
 
 "${GEMEXE}/gdplot2_gif" << EOF
 
-
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
   restore ${NTS}/base_sh.nts
@@ -342,12 +332,10 @@ hgtiso250dev="gdas_250_hgt_iso_sh_anl_${cyc}.gif"
   l
   r
 
-
 ! 500MB ANALYSIS  HEIGHTS/TEMPERATURES
 
   restore ${NTS}/base_sh.nts
   restore ${NTS}/500_hgt_tmp.nts
-
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -371,7 +359,6 @@ hgtiso250dev="gdas_250_hgt_iso_sh_anl_${cyc}.gif"
   TITLE   = 1/3/${hgttmp500lab}
   l
   r
-
 
 ! 300MB HEIGHTS/ISOTACHS
 
@@ -400,7 +387,6 @@ hgtiso250dev="gdas_250_hgt_iso_sh_anl_${cyc}.gif"
   TITLE   = 1/3/${hgtiso300lab}
   l
   r
-
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 

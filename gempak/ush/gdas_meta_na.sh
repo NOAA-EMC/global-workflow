@@ -3,8 +3,6 @@
 # Metafile Script : gdas_meta_na
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 device="nc | gdas.meta"
 
 #
@@ -43,7 +41,6 @@ GAREA   = 17.529;-129.296;53.771;-22.374
 PROJ    = str/90;-105;0
 LATLON  = 1
 
-
 restore ${HOMEglobal}/gempak/ush/restore/pmsl_thkn.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
@@ -51,7 +48,6 @@ TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} PMSL, 1000-500 MB THICKNESS|~MSLP, 1000-500 THKN!0
 l
 ru
-
 
 restore ${HOMEglobal}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
@@ -62,7 +58,6 @@ TITLE	= 5/-2/~ ? ${m_title} @ HGT, TEMP AND WIND (KTS)|~@ HGT, TMP, WIND!0
 l
 ru
 
-
 restore ${HOMEglobal}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
@@ -70,14 +65,12 @@ TITLE	= 5/-2/~ ? ${m_title} @ HGT, REL HUMIDITY AND OMEGA|~@ HGT, RH AND OMEGA!0
 l
 ru
 
-
 restore ${HOMEglobal}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGT AND VORTICITY|~@ HGT AND VORTICITY!0
 l
 ru
-
 
 restore ${HOMEglobal}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1

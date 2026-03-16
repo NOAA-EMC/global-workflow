@@ -3,8 +3,6 @@
 # Metafile Script : gfs_meta_hi.sh
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/mrfhi"
 cd "${DATA}/mrfhi" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -50,14 +48,12 @@ TITLE	= 5/-2/~ ? ${m_title} MSL PRESSURE, 1000-500 MB THICKNESS|~MSLP, 1000-500 
 l
 ru
 
-
 restore ${HOMEglobal}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGHTS, TEMPERATURE AND WIND (KTS)|~@ HGHT, TMP, WIND!0!0!0
 l
 ru
-
 
 restore ${HOMEglobal}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
@@ -66,14 +62,12 @@ TITLE	= 5/-2/~ ? ${m_title} @ HGHTS, REL HUMIDITY AND OMEGA|~@ HGHT, RH AND OMEG
 l
 ru
 
-
 restore ${HOMEglobal}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS AND VORTICITY|~@ HGHT AND VORTICITY!0
 l
 ru
-
 
 restore ${HOMEglobal}/gempak/ush/restore/200mb_hght_wnd.2.nts
 CLRBAR  = 1
@@ -82,7 +76,6 @@ TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~@ HGHT AND WIND!
 l
 ru
 
-
 restore ${HOMEglobal}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
@@ -90,14 +83,12 @@ TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~@ HGHT AND WIND!
 l
 ru
 
-
 restore ${HOMEglobal}/gempak/ush/restore/300mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~@ HGHT AND WIND!0
 l
 ru
-
 
 GLEVEL  = 4400:10000
 GVCORD  = sgma
@@ -126,7 +117,6 @@ TYPE    = c      !c/f
 CLRBAR  = 1/V/LL
 r
 
-
 GLEVEL  = 1000
 GVCORD  = pres
 GDPFUN  = sm5s(tmpc)   !kntv(wnd)
@@ -142,7 +132,6 @@ FILTER  = Y
 CONTUR  = 3
 CLRBAR  = 1
 r
-
 
 restore ${HOMEglobal}/gempak/ush/restore/precip.2.nts
 CLRBAR  = 1

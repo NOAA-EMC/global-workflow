@@ -5,8 +5,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/MAR_SKEWT"
 cd "${DATA}/MAR_SKEWT" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -182,7 +180,6 @@ GFUNC   = dwpc
 LINE	= 4/1/2
 CLEAR   = no
 ru
-
 
 ! Buoy 46023
 GFUNC   = tmpc

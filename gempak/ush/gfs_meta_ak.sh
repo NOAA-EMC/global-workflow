@@ -3,8 +3,6 @@
 # Metafile Script : gfs_meta_ak.sh
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 cd "${DATA}" || exit 2
 
 rm -rf "${DATA}/ak"
@@ -189,7 +187,6 @@ HLSYM   = 1.5
 TITLE	= 5/-2/~ ? ${m_title} 12-HR TOTAL PCPN (IN)|~12-HR TOTAL PCPN!0
 l
 run
-
 
 GDATTIM	= F24-${fend}-06
 GDPFUN  = p24i  !pmsl

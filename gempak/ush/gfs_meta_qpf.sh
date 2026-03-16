@@ -5,8 +5,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/qpf"
 cd "${DATA}/qpf" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -374,7 +372,6 @@ gdattim  = ${gdatpcpn120}
 gdpfun   = p120i
 title    = 1/-2/~ ? ${MDL} 120 HOUR TOTAL PCPN|~120-HR TOTAL PCPN!0
 ${run}
-
 
 gdattim  = ${gdatpcpn06}
 gvcord   = none!none
