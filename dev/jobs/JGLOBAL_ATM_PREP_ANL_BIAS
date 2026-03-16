@@ -1,7 +1,16 @@
 #! /usr/bin/env bash
+set -x
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
 source "${HOMEglobal}/ush/jjob_header.sh" -e "prepatmanlbias" -c "base prepatmanlbias"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
@@ -73,12 +82,12 @@ if [[ ${DO_JEDIATMENS} == "YES" ]]; then
         rm -f testrun/varbc/*nc
         rm -f testrun/varbc/*txt
 
-        cd ./testrun/varbc/
+        cd ./testrun/varbc/ || exit 1
         grep "${instrument}" ../../satbias_in | awk '{print $2" "$3" "$4}' > \
             "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.tlapse.txt"
         cpreq -p "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.bias.nc"
         mv "satbias_${instrument}.nc4" "${OUTPUT}/gdas.t${gcyc}z.radiance_${instrument}.bias_cov.nc"
-        cd "${DATA}"
+        cd "${DATA}" || exit 1
         rm -f satbias_converter.yaml
     done
 
