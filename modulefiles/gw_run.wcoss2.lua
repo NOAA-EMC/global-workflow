@@ -28,7 +28,11 @@ load(pathJoin("netcdf-D", (os.getenv("netcdf_ver") or "None")))
 load(pathJoin("esmf-D", (os.getenv("esmf_ver") or "None")))
 
 load(pathJoin("nco", (os.getenv("nco_ver") or "None")))
-load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
+-- Do not load prod_util when running ecflow
+local is_ecf = os.getenv("ECF_JOB") ~= nil
+if not is_ecf then
+    load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
+end
 load(pathJoin("grib_util", (os.getenv("grib_util_ver") or "None")))
 load(pathJoin("bufr_dump", (os.getenv("bufr_dump_ver") or "None")))
 load(pathJoin("util_shared", (os.getenv("util_shared_ver") or "None")))

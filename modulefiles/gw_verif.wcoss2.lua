@@ -23,7 +23,11 @@ load(pathJoin("netcdf", '4.7.4'))
 local cray_lib_path=os.getenv("CRAY_LD_LIBRARY_PATH") or ""
 prepend_path("LD_LIBRARY_PATH", cray_lib_path)
 
-load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
+-- Do not load prod_util when running ecflow
+local is_ecf = os.getenv("ECF_JOB") ~= nil
+if not is_ecf then
+    load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
+end
 load(pathJoin("grib_util", (os.getenv("grib_util_ver") or "None")))
 load(pathJoin("wgrib2", (os.getenv("wgrib2_ver") or "None")))
 

@@ -73,7 +73,9 @@ case "${MODULE_TYPE}" in
             echo "FATAL ERROR: Failed to load ufs_${MACHINE_ID}.intel"
             exit 1
         fi
-        module load prod_util
+        if [[ -z "${ECF_JOB:-}" ]]; then
+            module load prod_util
+        fi
         if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
             module load cray-pals
             module load cfp
