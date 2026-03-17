@@ -27,13 +27,15 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
         # Only copy the file if it exists (it will not if we start on 6, 12, or 18z)
         if [[ ! -f "${file_in}" ]]; then
-            continue
-        fi
-
-        file_out="${COMIN}/$(basename "${file_in}")"
-        # Only create new files, do not overwrite existing
-        if [[ ! -f "${file_out}" ]]; then
-            cpreq "${file_in}" "${file_out}"
+            echo "WARNING: ${file_in} does not exist, skipping"
+        else
+            file_out="${COMIN}/$(basename "${file_in}")"
+            # Only create new files, do not overwrite existing
+            if [[ ! -f "${file_out}" ]]; then
+                cpreq "${file_in}" "${file_out}"
+            else
+                echo "WARNING: ${file_out} already exists, skipping"
+            fi
         fi
     done
 done
