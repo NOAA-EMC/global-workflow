@@ -117,6 +117,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! 500MB HEIGHTS/TEMPERATURES
 
   restore ${NTS}/base_nh.nts
@@ -144,6 +145,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgttmp500lab}
   l
   r
+
 
 ! 300MB HEIGHTS/ISOTACHS
 
@@ -173,6 +175,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! 250MB HEIGHTS/TEMPERATURES
 
   restore ${NTS}/base_nh.nts
@@ -200,6 +203,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgttmp250lab}
   l
   r
+
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 
@@ -230,6 +234,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! 200MB HEIGHTS/ISOTACHS
 
   restore ${NTS}/base_nh.nts
@@ -257,6 +262,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgtiso200lab}
   l
   r
+
 
 ! 100MB HEIGHTS/TEMPERATURES
 
@@ -286,6 +292,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! 100MB HEIGHTS/ISOTACHS
 
   restore ${NTS}/base_nh.nts
@@ -313,6 +320,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgtiso100lab}
   l
   r
+
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
@@ -342,6 +350,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${mslpthksfclab}
   l
   r
+
 
 ! ANALYSIS MSLP/1000-500 THICKNESS (US/CANADA)
 
@@ -428,6 +437,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! ANALYSIS  LIFTED INDEX
 
   restore ${NTS}/base_nh.nts
@@ -456,6 +466,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! ANALYSIS  TROPOPAUSE PRESSURE/WIND SHEAR
 
   restore ${NTS}/base_nh.nts
@@ -483,6 +494,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${prswshtroplab}
   l
   r
+
 
 ! ANALYSIS 700MB RELATIVE HUMIDITY AND VERTICAL VELOCITY
 

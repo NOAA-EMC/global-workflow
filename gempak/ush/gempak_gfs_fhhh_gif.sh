@@ -44,6 +44,7 @@ gdfile=gem_grids${fhr3}.gem
 
 "${GEMEXE}/gdplot2_gif" << EOF
 
+
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
   restore ${NTS}/base_nh.nts
@@ -73,6 +74,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY
 
   restore ${NTS}/base_nh.nts
@@ -101,6 +103,7 @@ gdfile=gem_grids${fhr3}.gem
   l
   r
 
+
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY (US/CANADA)
 
   restore ${NTS}/base_uscan.nts
@@ -128,6 +131,7 @@ gdfile=gem_grids${fhr3}.gem
   TITLE   = 1/3/${hgtvor500lab}
   l
   r
+
 
 ! ANALYSIS 700MB RELATIVE HUMIDITY AND VERTICAL VELOCITY
 

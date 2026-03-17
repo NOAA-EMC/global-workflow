@@ -164,6 +164,7 @@ REFVEC  =
 TITLE   = 1/-2/~ ? ${MDL} @  WIND SHEAR (850=Purple, 300=Cyan) |~${domain} 850-300MB WIND SHEAR!0
 filter  = no
 
+
 glevel  = 250!250
 gvcord  = pres!pres
 skip    = 0
@@ -199,6 +200,7 @@ clrbar  = 0
 wind    = bk10/0.9/1.4/112!bk0
 refvec  =
 title   = 1/-2/~ ? ${MDL} 850-400mb MLW and MSLP|~${domain} 850-400mb MLW & MSLP!0
+
 
 GDATTIM	= F24-F144-06
 GLEVEL	= 0

@@ -58,12 +58,14 @@ TITLE	= 5//~ ? ${m_title} @ HEIGHTS AND VORTICITY|~ @ HGHT AND VORTICITY!0
 l
 ru
 
+
 restore ${HOMEglobal}/gempak/ush/restore/garea_sh.nts
 
 DEVICE	= nc | Nmeta_sh
 TITLE	= 5//~ ? ${m_title} @ HEIGHTS AND VORTICITY|~ @ HGHT AND VORTICITY!0
 l
 ru
+
 
 restore ${HOMEglobal}/gempak/ush/restore/garea_nh.nts
 DEVICE	= nc | Nmeta_nh
@@ -75,6 +77,7 @@ GDPFUN  = knts((mag(wnd)))            !sm9s(hght)
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~ @ HGHT AND WIND!0
 l
 ru
+
 
 restore ${HOMEglobal}/gempak/ush/restore/garea_sh.nts
 DEVICE	= nc | Nmeta_sh

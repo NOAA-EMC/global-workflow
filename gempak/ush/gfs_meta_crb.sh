@@ -131,6 +131,7 @@ REFVEC  = 0
 TITLE   = 1/-2/~ ? ${MDL} @ WIND SHEAR (KNTS)|~850MB-300MB WIND SHEAR!0
 filter  = no
 
+
 GLEVEL	= 700
 GVCORD  = pres
 GDPFUN	= vor(wnd)              !vor(wnd)!kntv(wnd)
