@@ -129,7 +129,7 @@ esac
 
 # Load module environment
 HOMEglobal="${HOMEglobal_}";source "${HOMEglobal_}/ush/module-setup.sh"
-module use "${HOMEglobal _}/modulefiles"
+module use "${HOMEglobal_}/modulefiles"
 module load "gw_setup.${MACHINE_ID}"
 
 # Source the platform-specific configuration file
