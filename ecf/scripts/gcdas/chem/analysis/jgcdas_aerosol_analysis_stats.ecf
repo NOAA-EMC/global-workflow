@@ -8,8 +8,9 @@
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
-model=gcafs
+export model=gcafs
 %include <head.h>
+export HOMEglobal=${HOMEgcafs}
 %include <envir-p1.h>
 
 set -x
