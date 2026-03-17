@@ -261,7 +261,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
 
-                task_names[run] += ['sfcanl']
+                task_names[run] += ['sfcanla']
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['snowanl']
@@ -280,6 +280,8 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_aero_anl']:
                         task_names[run] += ['aeroanlgenb']
 
+                    if options['do_gsisoilda']: 
+                        task_names[run] += ['sfcanlb']
                 else:
                     if options['do_wave']:
                         task_names[run] += wave_prep_tasks
