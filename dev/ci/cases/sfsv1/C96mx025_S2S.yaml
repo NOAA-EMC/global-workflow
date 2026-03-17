@@ -12,6 +12,7 @@ experiment:
   nens: 2
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'BASE_IC' | getenv }}/C96mx025/20251217
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_CPC_defaults.yaml
 
 skip_ci_on_hosts:

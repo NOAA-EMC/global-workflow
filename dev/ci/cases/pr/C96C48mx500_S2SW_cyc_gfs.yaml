@@ -8,6 +8,7 @@ experiment:
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'BASE_IC' | getenv }}/C96C48/20250808
   idate: 2021122012
   edate: 2021122100
   nens: 2
