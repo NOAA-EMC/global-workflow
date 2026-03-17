@@ -57,6 +57,10 @@ function _usage() {
        \$HOMEglobal/dev/ci/platform/config.\$machine
        will be used.
 
+    -I "/path/to/base_ic"  Override BASE_IC for all cases.
+       If this is not set, BASE_IC is read from the hosts YAML
+       (\$HOMEglobal/dev/workflow/hosts/\$machine.yaml).
+
     -c Append the chosen set of tests to your existing crontab
        If this option is not chosen, the new entries that would have been
        written to your crontab will be printed to stdout.
@@ -100,6 +104,8 @@ _run_all_sfs=false
 _run_all_gcafs=false
 _hpc_account=""
 _set_account=false
+_base_ic=""
+_set_base_ic=false
 _update_cron=false
 _email=""
 _tag=""
@@ -114,7 +120,7 @@ _auto_del=false
 _nonflag_option_count=0
 
 while [[ $# -gt 0 && "$1" != "--" ]]; do
-    while getopts ":H:bBDuy:Y:GESCA:ce:t:vVdh" option; do
+    while getopts ":H:bBDuy:Y:GESCA:I:ce:t:vVdh" option; do
         case "${option}" in
             H)
                 HOMEglobal="${OPTARG}"
@@ -147,6 +153,7 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
             v) _verbose=true ;;
             V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
             A) _set_account=true && _hpc_account="${OPTARG}" ;;
+            I) _set_base_ic=true && _base_ic="${OPTARG}" ;;
             d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
             h) _usage && exit 0 ;;
             :)
@@ -441,6 +448,7 @@ fi
 set -u
 machine=${MACHINE_ID}
 
+
 # If _yaml_dir is not set, set it to $HOMEglobal/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
     _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
@@ -521,6 +529,14 @@ if [[ "${_set_account}" == true ]]; then
     export HPC_ACCOUNT=${_hpc_account}
     if [[ "${_verbose}" == true ]]; then
         printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
+    fi
+fi
+
+# Override BASE_IC if specified via -I
+if [[ "${_set_base_ic}" == true ]]; then
+    export BASE_IC="${_base_ic}"
+    if [[ "${_verbose}" == true ]]; then
+        printf "Overriding BASE_IC to %s\n\n" "${BASE_IC}"
     fi
 fi
 
