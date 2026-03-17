@@ -112,7 +112,7 @@ RUNNER_HOST_NODE="${host}"
 #########################################################################
 
 # Source the detect_machine.sh script to determine the MACHINE_ID
-source "${HOMEglobal_}/ush/detect_machine.sh"
+HOMEglobal="${HOMEglobal_}" source "${HOMEglobal_}/ush/detect_machine.sh"
 # Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
     ursa | hera | orion | hercules | wcoss2 | gaeac6)
@@ -128,8 +128,8 @@ case "${MACHINE_ID}" in
 esac
 
 # Load module environment
-source "${HOMEglobal_}/ush/module-setup.sh"
-module use "${HOMEglobal_}/modulefiles"
+HOMEglobal="${HOMEglobal_}";source "${HOMEglobal_}/ush/module-setup.sh"
+module use "${HOMEglobal _}/modulefiles"
 module load "gw_setup.${MACHINE_ID}"
 
 # Source the platform-specific configuration file
