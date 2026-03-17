@@ -1,8 +1,17 @@
 #! /usr/bin/env bash
+set -x
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlsol" -c "base atmensanl atmensanlsol"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
