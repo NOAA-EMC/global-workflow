@@ -328,6 +328,7 @@ class GFSTasks(Tasks):
     def sfcanlb(self):
 
         deps = []
+        dep_dict = {'type': 'task', 'name': 'enkfgdas_eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -998,8 +999,8 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanla'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gdas']:
-        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanlb'}
-        deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanlb'}
+            deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:
             wave_job = 'waveprep' if self.options['app'] in ['ATMW'] else 'waveinit'
