@@ -22,9 +22,9 @@ postamble() {
     #     rc:         exit code of the script [default: $?]
     #
 
+    local rc="${2:-$?}"  # Capture exit code FIRST, before set +x clobbers $?
     set +x
     local start_time="${1}"
-    local rc="${2:-$?}"
 
     # Execute any commands registered in POSTAMBLE_CMD
     #

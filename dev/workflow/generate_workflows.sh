@@ -448,7 +448,6 @@ fi
 set -u
 machine=${MACHINE_ID}
 
-
 # If _yaml_dir is not set, set it to $HOMEglobal/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
     _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
