@@ -4,7 +4,7 @@ Load environment to run GFS on Gaea C6
 
 -- Test that HOMEglobal is set.
 -- If not, load_modules.sh was not sourced to load this module.
-if (homegfssdir == "None" and mode() == "load" ) then
+if (homegfssdir == "None" and mode() == "load") then
     LmodError("FATAL ERROR HOMEglobal variable is unset.\n" ..
               "Please \"source dev/ush/load_modules.sh\" rather than loading this module directly.\n")
 end
