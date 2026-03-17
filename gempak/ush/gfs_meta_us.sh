@@ -3,8 +3,6 @@
 # Metafile Script : gfs_meta_us.sh
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 cd "${DATA}" || exit 2
 rm -rf "${DATA}/us"
 mkdir -p -m 775 "${DATA}/us"

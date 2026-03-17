@@ -9,8 +9,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 rm -Rf "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 mkdir -p -m 775 "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 cd "${DATA}/COMP" || exit 2
@@ -27,8 +25,18 @@ mkdir "${COMIN}"
 for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
     gempak_dir="${ROTDIR}/${RUN}.${PDY}/${cycle}/products/atmos/gempak/1p00"
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
-        file_out="${COMIN}/$(basename "${file_in}")"
-        cpreq "${file_in}" "${file_out}"
+        # Only copy the file if it exists (it will not if we start on 6, 12, or 18z)
+        if [[ ! -f "${file_in}" ]]; then
+            echo "WARNING: ${file_in} does not exist, skipping"
+        else
+            file_out="${COMIN}/$(basename "${file_in}")"
+            # Only create new files, do not overwrite existing
+            if [[ ! -f "${file_out}" ]]; then
+                cpreq "${file_in}" "${file_out}"
+            else
+                echo "WARNING: ${file_out} already exists, skipping"
+            fi
+        fi
     done
 done
 
