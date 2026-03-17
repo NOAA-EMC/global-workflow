@@ -3,8 +3,6 @@
 # Metafile Script : mrf_meta_nhsh
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/mrfnhsh"
 cd "${DATA}/mrfnhsh" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
