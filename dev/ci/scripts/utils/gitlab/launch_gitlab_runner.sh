@@ -99,8 +99,8 @@ shift $((OPTIND - 1))
 # Remaining positional arg is the optional token
 TOKEN_ARG="${1:-}"
 
-# Set the HOMEgfs_ variable to the root directory of the global workflow
-HOMEgfs_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+# Set the HOMEglobal_ variable to the root directory of the global workflow
+HOMEglobal_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 host="$(hostname)"
 
 # Defaults for cross-node state (set properly by check_runner_status)
@@ -128,8 +128,8 @@ case "${MACHINE_ID}" in
 esac
 
 # Load module environment
-HOMEgfs="${HOMEgfs_}" source "${HOMEgfs_}/ush/module-setup.sh"
-module use "${HOMEgfs_}/modulefiles"
+source "${HOMEglobal_}/ush/module-setup.sh"
+module use "${HOMEglobal_}/modulefiles"
 module load "gw_setup.${MACHINE_ID}"
 
 # Source the platform-specific configuration file
