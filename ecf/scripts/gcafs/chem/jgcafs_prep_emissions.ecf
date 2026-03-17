@@ -8,7 +8,7 @@
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
 
-export model=gcafs
+model=gcafs
 %include <head.h>
 export HOMEglobal=${HOMEgcafs}
 %include <envir-p1.h>
