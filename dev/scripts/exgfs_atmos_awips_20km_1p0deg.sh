@@ -64,8 +64,8 @@ echo " "
 set_trace
 
 # Set type of Interpolation for WGRIB2
-export opt1=' -set_grib_type complex2 -new_grid_winds earth '
-export opt1uv=' -set_grib_type complex2 -new_grid_winds grid '
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt1uv=' -set_grib_type same -new_grid_winds grid '
 export opt21=' -new_grid_interpolation bilinear -if '
 export opt22=":(CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
@@ -183,6 +183,14 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to generate the awips Grib2 file!"
+	fi
+        echo "Complex2 compression/packing for grib2.awpgfs${fcsthr}.${GRID}"
+        cpreq "grib2.awpgfs${fcsthr}.${GRID}" "tmp_grib2_${fcsthr}_${GRID}"
+        ${WGRIB2} "tmp_grib2_${fcsthr}_${GRID}" -set_grib_type complex2 \
+                   -grib_out "grib2.awpgfs${fcsthr}.${GRID}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to compress and repack the awips Grib2 file!"
         fi
 
         ##############################
@@ -213,7 +221,15 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to write the AWIPS grib2 file"
-        fi
+	fi
+        echo "Complex2 compression/packing for grib2.awpgfs_20km_${GRID}_f${fcsthr}"
+        cpreq "grib2.awpgfs_20km_${GRID}_f${fcsthr}" "tmp_grib2_${GRID}_f${fcsthr}"
+        ${WGRIB2} "tmp_grib2_${GRID}_f${fcsthr}" -set_grib_type complex2 \
+                   -grib_out "grib2.awpgfs_20km_${GRID}_f${fcsthr}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to compress and repack the AWIPS grib2 file!"
+        fi 
 
         ##############################
         # Post Files to ${COMOUT_ATMOS_WMO}
