@@ -79,6 +79,9 @@ marineanlletkf:
   SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMglobal}/gdas/marine/obs/obs_list.yaml.j2"
 
+prep:
+  PROCESS_TROPCY: "NO"
+
 prepoceanobs:
   use_exp_obs: "YES"
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
