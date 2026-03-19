@@ -99,11 +99,11 @@ if [[ ! -s gribfile ]]; then
 fi
 
 if [[ ${fhr} -gt 0 ]]; then
-    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${outfile}"
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -set_grib_type simple -g2clib 0 -grib "${outfile}"
     err=$?
 else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-        -set table_1.4 1 -set table_1.2 1 -grib "${outfile}"
+        -set table_1.4 1 -set table_1.2 1 -set_grib_type simple -g2clib 0 -grib "${outfile}"
     err=$?
 fi
 
