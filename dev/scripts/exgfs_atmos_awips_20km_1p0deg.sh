@@ -221,7 +221,7 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to write the AWIPS grib2 file"
-	fi
+        fi
         echo "Complex2 compression/packing for grib2.awpgfs_20km_${GRID}_f${fcsthr}"
         cpreq "grib2.awpgfs_20km_${GRID}_f${fcsthr}" "tmp_grib2_${GRID}_f${fcsthr}"
         ${WGRIB2} "tmp_grib2_${GRID}_f${fcsthr}" -set_grib_type complex2 \
