@@ -543,7 +543,6 @@ EOM
     done
 done
 
-
 # Override BASE_IC if specified via -I
 if [[ "${_set_base_ic}" == true ]]; then
     export BASE_IC="${_base_ic}"
