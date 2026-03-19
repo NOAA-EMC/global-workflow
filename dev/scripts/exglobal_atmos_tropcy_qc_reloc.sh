@@ -55,7 +55,7 @@ if [[ "${PROCESS_TROPCY}" = 'YES' ]]; then
     ls -ltr ./*syndata*
     cd "${ARCHSYND}" || exit 1
     pwd
-    ls -ltr
+    ls -ltr ./*syndata* || true
     cat syndat_dateck
     cd "${HOMENHC}" || exit 1
     pwd
