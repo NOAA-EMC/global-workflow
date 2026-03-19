@@ -183,7 +183,7 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to generate the awips Grib2 file!"
-	fi
+        fi
         echo "Complex2 compression/packing for grib2.awpgfs${fcsthr}.${GRID}"
         cpreq "grib2.awpgfs${fcsthr}.${GRID}" "tmp_grib2_${fcsthr}_${GRID}"
         ${WGRIB2} "tmp_grib2_${fcsthr}_${GRID}" -set_grib_type complex2 \
