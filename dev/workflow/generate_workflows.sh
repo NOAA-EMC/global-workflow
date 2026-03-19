@@ -453,12 +453,32 @@ if [[ -z ${_yaml_dir} ]]; then
     _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
+# Update the account: -A flag > existing env var > platform config default
+if [[ "${_set_account}" == true ]]; then
+    export HPC_ACCOUNT="${_hpc_account}"
+    if [[ "${_verbose}" == true ]]; then
+        printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
+    fi
+elif [[ -z "${HPC_ACCOUNT:-}" ]]; then
+    platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
+    if [[ -f "${platform_config}" ]]; then
+        _platform_account=$(sed -n 's/^export HPC_ACCOUNT=\${HPC_ACCOUNT:-\([^}]*\)}.*/\1/p' "${platform_config}")
+        export HPC_ACCOUNT="${_platform_account}"
+        if [[ "${_verbose}" == true ]]; then
+            printf "Setting HPC account to %s from platform config\n\n" "${HPC_ACCOUNT}"
+        fi
+    else
+        echo "ERROR Unknown HPC account! Please use the -A option to specify."
+        exit 11
+    fi
+fi
+
 # Build the system if requested
 if [[ "${_build}" == "true" ]]; then
     printf "Building via build_all.sh %s\n\n" "${_build_flags}"
     # Let the output of build_all.sh go to stdout regardless of verbose options
     if [[ "${_compute_build}" == true ]]; then
-        if [[ "${_set_account}" == "false" && -z "${HPC_ACCOUNT:-}" ]]; then
+        if [[ -z "${HPC_ACCOUNT:-}" ]]; then
             echo "ERROR Unknown HPC account!  Please use the -A option to specify."
             exit 11
         fi
@@ -523,13 +543,6 @@ EOM
     done
 done
 
-# Update the account if specified
-if [[ "${_set_account}" == true ]]; then
-    export HPC_ACCOUNT=${_hpc_account}
-    if [[ "${_verbose}" == true ]]; then
-        printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
-    fi
-fi
 
 # Override BASE_IC if specified via -I
 if [[ "${_set_base_ic}" == true ]]; then
