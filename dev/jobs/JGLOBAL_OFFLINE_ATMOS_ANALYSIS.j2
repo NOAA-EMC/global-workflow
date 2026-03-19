@@ -46,7 +46,11 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -p "${COMOUT_OBS}"
 
 # Execute generation of increments from offline analysis
-EXSCRIPT=${OFFLINEANLPY:-${SCRglobal}/exglobal_offline_atmos_analysis.py}
+{% if RUN == "gcdas" %}
+EXSCRIPT=${SCRglobal}/exgcdas_atmos_initialize.py && true
+{% else %}
+EXSCRIPT=${SCRglobal}/exglobal_offline_atmos_analysis.py && true
+{% endif %}
 ${EXSCRIPT} && true
 
 export err=$?
