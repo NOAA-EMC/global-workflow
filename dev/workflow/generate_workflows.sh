@@ -87,6 +87,9 @@ EOF
 
 set -eu
 
+# --------------------------------------------------------------------------- #
+# 1. Defaults and Runtime State
+# --------------------------------------------------------------------------- #
 # Set default options
 HOMEglobal=""
 _specified_home=false
@@ -118,72 +121,100 @@ _cwd=$(pwd)
 _runtests="${RUNTESTS:-${_runtests:-}}"
 _auto_del=false
 _nonflag_option_count=0
+# --------------------------------------------------------------------------- #
+# 2. Argument Parsing
+# --------------------------------------------------------------------------- #
 
-while [[ $# -gt 0 && "$1" != "--" ]]; do
-    while getopts ":H:bBDuy:Y:GESCA:I:ce:t:vVdh" option; do
-        case "${option}" in
-            H)
-                HOMEglobal="${OPTARG}"
-                _specified_home=true
-                if [[ ! -d "${HOMEglobal}" ]]; then
-                    echo "Specified HOMEglobal directory (${HOMEglobal}) does not exist"
-                    exit 1
-                fi
-                ;;
-            b) _build=true ;;
-            B) _build=true && _compute_build=true ;;
-            D) _auto_del=true ;;
-            u) _update_submods=true ;;
-            y) # Start over with an empty _yaml_list
-                declare -a _yaml_list=()
-                for _yaml in ${OPTARG}; do
-                    # Strip .yaml from the end of each and append to _yaml_list
-                    _yaml_list+=("${_yaml//.yaml/}")
-                done
-                _specified_yaml_list=true
-                ;;
-            Y) _yaml_dir="${OPTARG}" && _specified_yaml_dir=true ;;
-            G) _run_all_gfs=true ;;
-            E) _run_all_gefs=true ;;
-            S) _run_all_sfs=true ;;
-            C) _run_all_gcafs=true ;;
-            c) _update_cron=true ;;
-            e) _email="${OPTARG}" && _set_email=true ;;
-            t) _tag="_${OPTARG}" ;;
-            v) _verbose=true ;;
-            V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
-            A) _set_account=true && _hpc_account="${OPTARG}" ;;
-            I) _set_base_ic=true && _base_ic="${OPTARG}" ;;
-            d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
-            h) _usage && exit 0 ;;
-            :)
-                echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
-                _usage
-                exit 1
-                ;;
-            *)
-                echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-                _usage
-                exit 1
-                ;;
-        esac
+function _set_yaml_list_from_arg() {
+    # Start over with an empty list and normalize names to no .yaml suffix.
+    declare -a _yaml_list=()
+    for _yaml in ${OPTARG}; do
+        _yaml_list+=("${_yaml//.yaml/}")
     done
+    _specified_yaml_list=true
+}
 
-    if [[ ${OPTIND:-0} -gt 0 ]]; then
-        shift $((OPTIND - 1))
-    fi
+function _parse_option() {
+    case "${option}" in
+        # Core paths and build mode
+        H)
+            HOMEglobal="${OPTARG}"
+            _specified_home=true
+            if [[ ! -d "${HOMEglobal}" ]]; then
+                echo "Specified HOMEglobal directory (${HOMEglobal}) does not exist"
+                exit 1
+            fi
+            ;;
+        b) _build=true ;;
+        B) _build=true && _compute_build=true ;;
+        D) _auto_del=true ;;
+        u) _update_submods=true ;;
 
-    while [[ $# -gt 0 && ! "$1" =~ ^- ]]; do
-        _runtests=${1}
-        ((_nonflag_option_count += 1))
-        if [[ ${_nonflag_option_count} -gt 1 ]]; then
-            echo "Too many arguments specified."
+        # Test/case selection
+        y) _set_yaml_list_from_arg ;;
+        Y) _yaml_dir="${OPTARG}" && _specified_yaml_dir=true ;;
+        G) _run_all_gfs=true ;;
+        E) _run_all_gefs=true ;;
+        S) _run_all_sfs=true ;;
+        C) _run_all_gcafs=true ;;
+
+        # Workflow behavior and notifications
+        c) _update_cron=true ;;
+        e) _email="${OPTARG}" && _set_email=true ;;
+        t) _tag="_${OPTARG}" ;;
+        I) _set_base_ic=true && _base_ic="${OPTARG}" ;;
+
+        # Logging/debug
+        v) _verbose=true ;;
+        V) _very_verbose=true && _verbose=true && _verbose_flag="-v" ;;
+        d) _debug=true && _very_verbose=true && _verbose=true && _verbose_flag="-v" && PS4='${LINENO}: ' ;;
+
+        # HPC account and usage
+        A) _set_account=true && _hpc_account="${OPTARG}" ;;
+        h) _usage && exit 0 ;;
+
+        :)
+            echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
             _usage
-            exit 2
+            exit 1
+            ;;
+        *)
+            echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
+            _usage
+            exit 1
+            ;;
+    esac
+}
+
+function _parse_args() {
+    while [[ $# -gt 0 && "$1" != "--" ]]; do
+        while getopts ":H:bBDuy:Y:GESCA:I:ce:t:vVdh" option; do
+            _parse_option
+        done
+
+        if [[ ${OPTIND:-0} -gt 0 ]]; then
+            shift $((OPTIND - 1))
+            OPTIND=1
         fi
-        shift
+
+        while [[ $# -gt 0 && ! "$1" =~ ^- ]]; do
+            _runtests=${1}
+            ((_nonflag_option_count += 1))
+            if [[ ${_nonflag_option_count} -gt 1 ]]; then
+                echo "Too many arguments specified."
+                _usage
+                exit 2
+            fi
+            shift
+        done
     done
-done
+}
+
+_parse_args "$@"
+
+# --------------------------------------------------------------------------- #
+# 3. Common Helpers
+# --------------------------------------------------------------------------- #
 
 function send_email() {
     # Send an email to $_email.
@@ -233,6 +264,10 @@ function delete_dir() {
     done
 }
 
+# --------------------------------------------------------------------------- #
+# 4. Validate Required Inputs
+# --------------------------------------------------------------------------- #
+
 if [[ -z "${_runtests}" ]]; then
     echo "Missing run directory (RUNTESTS) argument/environment variable."
     sleep 2
@@ -244,6 +279,10 @@ fi
 if [[ "${_debug}" == "true" ]]; then
     set -x
 fi
+
+# --------------------------------------------------------------------------- #
+# 5. Prepare RUNTESTS Directory
+# --------------------------------------------------------------------------- #
 
 # Create the RUNTESTS directory
 # Start by getting the full path
@@ -268,6 +307,10 @@ else
         delete_dir "${_runtests}"
     fi
 fi
+
+# --------------------------------------------------------------------------- #
+# 6. Resolve Initial Case Selection
+# --------------------------------------------------------------------------- #
 
 # Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" ||
@@ -299,6 +342,10 @@ fi
 if [[ "${_specified_yaml_dir}" == false ]]; then
     _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
+
+# --------------------------------------------------------------------------- #
+# 7. Case Discovery Helper
+# --------------------------------------------------------------------------- #
 
 function select_all_yamls() {
     # A helper function to select all of the YAMLs for a specified system (gfs, gefs, sfs)
@@ -362,6 +409,10 @@ EOM
     fi
 }
 
+# --------------------------------------------------------------------------- #
+# 8. Expand Case List By System Flags
+# --------------------------------------------------------------------------- #
+
 # Check if running all GEFS cases
 if [[ "${_run_all_gefs}" == "true" ]]; then
     # Append -w to build_all.sh flags if -E was specified
@@ -399,6 +450,10 @@ if [[ "${_run_all_gcafs}" == "true" ]]; then
     _yaml_list=("${_yaml_list[@]}" "${_gcafs_yaml_list[@]}")
 fi
 
+# --------------------------------------------------------------------------- #
+# 9. Optional Submodule Update
+# --------------------------------------------------------------------------- #
+
 # Update submodules if requested
 if [[ "${_update_submods}" == "true" ]]; then
     printf "Updating submodules\n\n"
@@ -424,6 +479,10 @@ EOM
         rm -f stdout stderr
     fi
 fi
+
+# --------------------------------------------------------------------------- #
+# 10. Load Workflow Environment
+# --------------------------------------------------------------------------- #
 
 # Loading modules sometimes raises unassigned errors, so disable checks
 set +u
@@ -453,6 +512,10 @@ if [[ -z ${_yaml_dir} ]]; then
     _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
+# --------------------------------------------------------------------------- #
+# 11. Resolve HPC Account
+# --------------------------------------------------------------------------- #
+
 # Update the account: -A flag > existing env var > platform config default
 if [[ "${_set_account}" == true ]]; then
     export HPC_ACCOUNT="${_hpc_account}"
@@ -472,6 +535,10 @@ elif [[ -z "${HPC_ACCOUNT:-}" ]]; then
         exit 11
     fi
 fi
+
+# --------------------------------------------------------------------------- #
+# 12. Build and Link Workflow
+# --------------------------------------------------------------------------- #
 
 # Build the system if requested
 if [[ "${_build}" == "true" ]]; then
@@ -503,6 +570,10 @@ if ! "${HOMEglobal}/sorc/link_workflow.sh" >&stdout; then
     exit 9
 fi
 rm -f stdout
+
+# --------------------------------------------------------------------------- #
+# 13. Validate YAML Inputs For This Host
+# --------------------------------------------------------------------------- #
 
 # Configure the environment for running create_experiment.py
 if [[ "${_verbose}" == true ]]; then
@@ -543,6 +614,10 @@ EOM
     done
 done
 
+# --------------------------------------------------------------------------- #
+# 14. Apply BASE_IC Override
+# --------------------------------------------------------------------------- #
+
 # Override BASE_IC if specified via -I
 if [[ "${_set_base_ic}" == true ]]; then
     export BASE_IC="${_base_ic}"
@@ -550,6 +625,10 @@ if [[ "${_set_base_ic}" == true ]]; then
         printf "Overriding BASE_IC to %s\n\n" "${BASE_IC}"
     fi
 fi
+
+# --------------------------------------------------------------------------- #
+# 15. Create Experiments and Collect Schedule Entries
+# --------------------------------------------------------------------------- #
 
 # Create the experiments
 rm -f "tests.cron" "${_verbose_flag}"
@@ -628,6 +707,10 @@ for _case in "${_yaml_list[@]}"; do
 done
 echo
 
+# --------------------------------------------------------------------------- #
+# 16. Configure Mail Behavior
+# --------------------------------------------------------------------------- #
+
 # Add MAILTO to tests.cron for regular crontab
 if [[ "${_use_scron}" == false ]]; then
     if [[ "${_set_email}" == "true" ]]; then
@@ -641,6 +724,10 @@ if [[ "${_use_scron}" == false ]]; then
         sed -i "1i MAILTO=\"\"" tests.cron
     fi
 fi
+
+# --------------------------------------------------------------------------- #
+# 17. Install or Print Scheduler Entries
+# --------------------------------------------------------------------------- #
 
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
@@ -719,6 +806,10 @@ else
         final_message="${final_message:-}"$'\n'"${_message}"
     fi
 fi
+
+# --------------------------------------------------------------------------- #
+# 18. Cleanup and Completion
+# --------------------------------------------------------------------------- #
 
 # Cleanup
 if [[ "${_debug}" == "false" ]]; then
