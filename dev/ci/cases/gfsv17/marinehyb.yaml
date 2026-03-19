@@ -17,8 +17,8 @@ base:
 
 prepoceanobs:
   use_exp_obs: "YES"
-  # will not work for realtime or retros
-  dmpdir_exp: "${BASE_DATA}/experimental_obs"
+  # ursa
+  dmpdir_exp: /scratch3/NCEPDEV/da/common_obsForge
 
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
