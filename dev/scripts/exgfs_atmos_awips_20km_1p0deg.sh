@@ -225,7 +225,7 @@ for GRID in conus ak prico pac 003; do
         echo "Complex2 compression/packing for grib2.awpgfs_20km_${GRID}_f${fcsthr}"
         cpreq "grib2.awpgfs_20km_${GRID}_f${fcsthr}" "tmp_grib2_${GRID}_f${fcsthr}"
         ${WGRIB2} "tmp_grib2_${GRID}_f${fcsthr}" -set_grib_type complex2 \
-                   -grib_out "grib2.awpgfs_20km_${GRID}_f${fcsthr}"
+            -grib_out "grib2.awpgfs_20km_${GRID}_f${fcsthr}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to compress and repack the AWIPS grib2 file!"
