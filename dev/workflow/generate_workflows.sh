@@ -462,7 +462,7 @@ if [[ "${_set_account}" == true ]]; then
 elif [[ -z "${HPC_ACCOUNT:-}" ]]; then
     platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
     if [[ -f "${platform_config}" ]]; then
-        _platform_account=$(sed -n 's/^export HPC_ACCOUNT=\${HPC_ACCOUNT:-\([^}]*\)}.*/\1/p' "${platform_config}")
+        _platform_account=$(sed -n "s/^export HPC_ACCOUNT=\${HPC_ACCOUNT:-\([^}]*\)}.*/\1/p" "${platform_config}")
         export HPC_ACCOUNT="${_platform_account}"
         if [[ "${_verbose}" == true ]]; then
             printf "Setting HPC account to %s from platform config\n\n" "${HPC_ACCOUNT}"
