@@ -40,7 +40,7 @@ export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
 
 # Used in the 'register' step of launch_gitlab_runner.sh for --url parameter
 export GITLAB_URL=https://vlab.noaa.gov/gitlab-community
-export GITLAB_RUNNER_NAME="RDHPCS Hera"
+export GITLAB_RUNNER_NAME="global-workflow-gitlab-runner-hera"
 
 # Directory for GitLab builds
 # Used in launch_gitlab_runner.sh for the --builds-dir parameter
@@ -51,6 +51,12 @@ export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
 # Directory for GitLab runner used by launch_gitlab_runner.sh
 # This is where runner state/config files are stored (--working-directory parameter)
 export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
+
+# Port for GitLab Runner's embedded Prometheus metrics endpoint
+# Used by launch_gitlab_runner.sh for liveness health checks
+# Default: 9252 (IANA-allocated for GitLab Runner in Prometheus port registry)
+# Bound to localhost only — not exposed to the network
+export GITLAB_RUNNER_METRICS_PORT=9252
 
 #########################################################################
 # CTest functional test directories for pre stagged input data
