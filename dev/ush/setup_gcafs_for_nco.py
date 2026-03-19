@@ -240,6 +240,13 @@ def setup_gcafs_for_nco():
     print(f"Rendered surface analysis template and saved to {dest_surface_job_path}")
     os.chmod(dest_surface_job_path, 0o755)
 
+    # Render the offline atmospheric analysis template
+    offline_atmos_template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_OFFLINE_ATMOS_ANALYSIS.j2')
+    dest_offline_atmos_job_path = os.path.join(global_workflow_dir, 'jobs', "JGCDAS_ATMOS_INITIALIZE")
+    Jinja(offline_atmos_template_path, {'RUN': 'gcdas'}).save(dest_offline_atmos_job_path)
+    print(f"Rendered offline atmospheric analysis template and saved to {dest_offline_atmos_job_path}")
+    os.chmod(dest_offline_atmos_job_path, 0o755)
+
     # Now for all jobs, we need a line that exports HOMEglobal
     for job_name in os.listdir(jobs_dir):
         job_file_path = os.path.join(jobs_dir, job_name)

@@ -1,0 +1,68 @@
+#! /usr/bin/env bash
+set -x
+source "${HOMEglobal}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
+
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+
+source "${USHglobal}/jjob_shell_setup.sh"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="${RUN}"
+
+export APREFIX_IN="gdas.t${cyc}z."
+export APREFIX="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+
+#{% if RUN == "gcdas" %}
+COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"
+declare -rx COMINobsproc
+COMINgfs=$(compath.py "${envir}/gfs/${gfs_ver}")
+declare -rx COMINgfs
+#{% else %}
+declare -rx COMINobsproc="${DMPDIR}/gdas.${PDY}/${cyc}/atmos"
+declare -rx COMINgfs=${ROTDIR}
+#{% endif %}
+declare -rx COMINgfs_ATMOS_ANALYSIS=${COMINgfs}/gdas.${PDY}/${cyc}/atmos/
+
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/history"
+
+mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+mkdir -p "${COMOUT_OBS}"
+
+# Execute generation of increments from offline analysis
+EXSCRIPT=${OFFLINEANLPY:-${SCRglobal}/exglobal_offline_atmos_analysis.py}
+${EXSCRIPT} && true
+
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "${EXSCRIPT} returned a non-zero status!"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
