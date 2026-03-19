@@ -229,7 +229,7 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to compress and repack the AWIPS grib2 file!"
-        fi 
+        fi
 
         ##############################
         # Post Files to ${COMOUT_ATMOS_WMO}
