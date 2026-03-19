@@ -37,8 +37,9 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_snowanl.log"
             {% endif %}
             {% if DO_GSISOILDA %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanlb.log"
             {% endif %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanla.log"
 
         # Analysis Master GRIB2 data
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"

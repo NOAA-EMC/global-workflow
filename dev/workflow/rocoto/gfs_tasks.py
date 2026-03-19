@@ -358,7 +358,10 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanla'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        deps.append(rocoto.add_dependency(dep_dict))A
+        if self.options['do_gsisoilda'] and self.run in ['gdas']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanlb'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar'] and self.run in ['gdas']:
             dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
