@@ -73,24 +73,12 @@ files_override=${files_override:-""}
 
 cd "${DATA}" || exit 2
 
-msg="Tropical Cyclone tcvitals QC processing has begun"
-set +x
-echo
-echo "${msg}"
-echo
-set_trace
+echo "Tropical Cyclone tcvitals QC processing has begun"
 
 if [[ "$#" -ne '1' ]]; then
-    msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
+    echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
 positional parameter 1"
-    set +x
-    echo
-    echo "${msg}"
-    echo
-    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
-    echo
-    echo "${msg}"
-    echo
+    echo "**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
 
     # Copy null files into "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and
     #  "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark" so later ftp attempts will find and
@@ -110,11 +98,7 @@ fi
 
 run_date=$1
 
-set +x
-echo
 echo "Run date is ${run_date}"
-echo
-set_trace
 
 year=${run_date:0:4}
 
@@ -134,12 +118,8 @@ touch dateck
 dateck_size=$(find ./ -name dateck -printf "%s")
 
 if [[ ${dateck_size} -lt 10 ]]; then
-    msg="WARNING: Archive run date check file not available or shorter than expected.\
-  Using dummy date 1900010100 to allow code to continue"
     echo 1900010100 > dateck
-    set +x
-    echo -e "\n${msg}\n"
-    set_trace
+    echo "WARNING: Archive run date check file not available or shorter than expected. Using dummy date 1900010100 to allow code to continue"
 fi
 
 #  Generate the correct RUNID and FILES value based on $NET, $RUN and $cyc
@@ -162,14 +142,11 @@ if [[ -n "${files_override}" ]]; then # for testing, typically want FILES=F
     files_override=${files_override//./}
     files_override=${files_override:0:1}
     if [[ "${files_override}" == 'T' || "${files_override}" == 'F' ]]; then
-        msg="WARNING: Variable files setting will be overriden from ${files} to ${files_override}. Override expected if testing."
+        echo "WARNING: Variable files setting will be overriden from ${files} to ${files_override}. Override expected if testing."
         files=${files_override}
     else
-        msg="WARNING: Invalid attempt to override files setting. Will stay with default for this job"
+        echo "WARNING: Invalid attempt to override files setting. Will stay with default for this job"
     fi
-    set +x
-    echo -e "\n${msg}\n"
-    set_trace
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = ${files} " > vitchk.inp
@@ -233,7 +210,7 @@ if [[ -s prep_step ]]; then
     source prep_step
     set_strict
 else
-    [[ -f errfile ]] && rm errfile
+    rm -f errfile
     # shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
@@ -243,24 +220,10 @@ export FORT11=slmask.126
 export FORT12=run_date.dat
 "${EXECglobal}/${pgm}"
 errqct=$?
-set +x
-echo
 echo "The foreground exit status for SYNDAT_QCTROPCY is ${errqct}"
-echo
-set_trace
 if [[ "${errqct}" -gt '0' ]]; then
-    msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE ${errqct}"
-    set +x
-    echo
-    echo "${msg}"
-    echo
-    set_trace
-    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
-    set +x
-    echo
-    echo "${msg}"
-    echo
-    set_trace
+    echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE ${errqct}"
+    echo "**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
 
     # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
     #  "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark"
@@ -277,13 +240,11 @@ if [[ "${errqct}" -gt '0' ]]; then
 
     exit
 fi
-set +x
-echo
-echo "----------------------------------------------------------"
-echo "**********  COMPLETED PROGRAM syndat_qctropcy   **********"
-echo "----------------------------------------------------------"
-echo
-set_trace
+cat << EOF
+----------------------------------------------------------
+**********  COMPLETED PROGRAM syndat_qctropcy   **********
+----------------------------------------------------------
+EOF
 
 if [[ "${copy_back}" == 'YES' ]]; then
     cat lthistry >> "${ARCHSYND}/syndat_lthistry.${year}"
@@ -312,29 +273,16 @@ if [[ "${errdiff}" -ne 0 ]]; then
         err=$?
 
         if [[ "${err}" -ne 0 ]]; then
-            msg="###ERROR: Previous NHC Synthetic Data Record File \
-${HOMENHC}/tcvitals not updated by syndat_qctropcy"
+            echo "###ERROR: Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not updated by syndat_qctropcy"
         else
-            msg="Previous NHC Synthetic Data Record File \
-${HOMENHC}/tcvitals successfully updated by syndat_qctropcy"
+            echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals successfully updated by syndat_qctropcy"
         fi
 
-        set +x
-        echo
-        echo "${msg}"
-        echo
-        set_trace
     fi
 
 else
 
-    msg="Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals \
-not changed by syndat_qctropcy"
-    set +x
-    echo
-    echo "${msg}"
-    echo
-    set_trace
+    echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not changed by syndat_qctropcy"
 
 fi
 
