@@ -18,7 +18,7 @@
 ################################################################################
 
 # Do not exit on errors so that restricted data can be protected
-unset_strict
+source "${USHglobal}/unset_strict.sh"
 
 if [[ ! -s "${radstat}" || ! -s "${biascr}" ]]; then
     export err=1

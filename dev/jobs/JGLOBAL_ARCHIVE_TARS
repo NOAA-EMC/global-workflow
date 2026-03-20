@@ -104,10 +104,10 @@ fi
 
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
-unset_strict
+source "${USHglobal}/unset_strict.sh"
 ${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_tars.py}
 export err=$?
-set_strict
+source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit "failed to archive the COM structure"
 fi

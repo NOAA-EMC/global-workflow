@@ -43,10 +43,10 @@ export JYYYY=${PDY:0:4}
 ##############################################
 
 # Do not fail on errors or unassigned variables in external code
-unset_strict
+source "${USHglobal}/unset_strict.sh"
 "${SCRIPTens_tracker}/exgfs_tc_genesis.sh" && true
 export err=$?
-set_strict
+source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit
 fi

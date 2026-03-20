@@ -64,7 +64,7 @@ fi
 
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
-set_strict
+source "${USHglobal}/set_strict.sh"
 
 export LEVS
 
