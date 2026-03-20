@@ -397,8 +397,8 @@ fi
 
 # If no system flags (-G, -E, -S, -C) were specified, auto-detect required
 # builds from the net value in each YAML
-if [[ "${_run_all_gfs}" == "false" && "${_run_all_gefs}" == "false" && \
-      "${_run_all_sfs}" == "false" && "${_run_all_gcafs}" == "false" ]]; then
+if [[ "${_run_all_gfs}" == "false" && "${_run_all_gefs}" == "false" &&
+    "${_run_all_sfs}" == "false" && "${_run_all_gcafs}" == "false" ]]; then
     for _yaml in "${_yaml_list[@]}"; do
         _yaml_file="${_yaml_dir}/${_yaml}.yaml"
         if [[ ! -f "${_yaml_file}" ]]; then continue; fi
