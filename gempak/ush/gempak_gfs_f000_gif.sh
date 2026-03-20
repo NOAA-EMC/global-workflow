@@ -15,8 +15,6 @@
 #
 #########################################################################
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 LATVAL="1/1/1/1/5;5"
 pixels="1728;1472"
 cpreq "${HOMEglobal}/gempak/fix/coltbl.spc" coltbl.xwp

@@ -1385,7 +1385,7 @@ case ${step} in
     elif [[ "${RUN}" = *gfs ]]; then
       ntasks=28
       tasks_per_node=28
-      memory="6GB"
+      memory="8GB"
     fi
     prepost=True
     ;;
