@@ -64,4 +64,3 @@ trap "postamble ${start_time}" EXIT
 # setpdy.sh may not be available in all environments; failures are non-fatal
 setpdy.sh || true
 source ./PDY || true
-
