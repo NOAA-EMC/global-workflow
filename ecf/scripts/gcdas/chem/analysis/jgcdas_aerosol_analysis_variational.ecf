@@ -113,6 +113,7 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=%EXPDIR%
+export HOMEglobal=${HOMEgcafs}
 
 
 ############################################################
