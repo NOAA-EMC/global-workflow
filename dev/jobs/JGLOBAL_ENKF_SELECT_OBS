@@ -65,7 +65,7 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     export pCOMOUT_ATMOS_ANALYSIS
 fi
 
-LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
+LEVS=$(${NCLEN} "${ATMGES_ENSMEAN}" pfull) && true
 export err=$?
 source "${USHglobal}/set_strict.sh"
 
