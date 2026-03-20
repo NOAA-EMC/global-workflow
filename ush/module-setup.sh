@@ -94,4 +94,4 @@ else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
 
-source "${USHglobal}/set_strict.sh"
+set +u
