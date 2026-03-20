@@ -4,8 +4,6 @@
 # of ecmwf fcsts
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 export pgm=gdplot2_nc
 source prep_step
 
