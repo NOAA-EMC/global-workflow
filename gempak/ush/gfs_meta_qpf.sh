@@ -5,8 +5,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/qpf"
 cd "${DATA}/qpf" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
