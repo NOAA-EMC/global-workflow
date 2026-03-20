@@ -4,6 +4,7 @@ export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"
 export DATA="${DATAjob}/marineanlvar"
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl marineanlvar"
 
 #{% if false %}

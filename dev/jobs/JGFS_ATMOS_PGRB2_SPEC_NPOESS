@@ -6,6 +6,7 @@ set -x
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
 
 #{% if false %}

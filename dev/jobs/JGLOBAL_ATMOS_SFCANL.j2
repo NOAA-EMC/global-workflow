@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"

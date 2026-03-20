@@ -2,6 +2,7 @@
 set -x
 #shellcheck disable=SC2155
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "prep_sfc" -c "base prep_sfc"
 
 #{% if false %}

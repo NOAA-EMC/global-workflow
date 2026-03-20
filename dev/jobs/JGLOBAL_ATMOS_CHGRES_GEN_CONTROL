@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 set -x
 # shellcheck disable=SC2153  # PDY is always set in environment
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
 
 #{% if false %}

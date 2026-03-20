@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 
 #{% if false %}

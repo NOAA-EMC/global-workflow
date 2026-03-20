@@ -4,6 +4,7 @@ set -x
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
 
 #{% if false %}

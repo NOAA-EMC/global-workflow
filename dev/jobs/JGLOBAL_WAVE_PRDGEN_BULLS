@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
 
 #{% if false %}

@@ -5,6 +5,7 @@ export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
 
 #{% if false %}
