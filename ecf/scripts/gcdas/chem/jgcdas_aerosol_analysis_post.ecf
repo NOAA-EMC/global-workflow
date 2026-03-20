@@ -10,7 +10,6 @@
 
 model=gcafs
 %include <head.h>
-export HOMEglobal=${HOMEgcafs}
 %include <envir-p1.h>
 
 set -x
@@ -66,6 +65,7 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=%EXPDIR%
+export HOMEglobal=${HOMEgcafs}
 export USE_CFP=YES
 export g2tmpl_ver=v${g2tmpl_ver}
 export FHR3=000
