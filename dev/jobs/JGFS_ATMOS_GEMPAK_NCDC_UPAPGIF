@@ -4,6 +4,7 @@ set -x
 ############################################
 # GFS GEMPAK NCDC PRODUCT GENERATION
 ############################################
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_gif" -c "base gempak"
 
 #{% if false %}

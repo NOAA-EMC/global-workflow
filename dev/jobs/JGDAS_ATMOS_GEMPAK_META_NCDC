@@ -5,6 +5,7 @@ set -x
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
 ############################################
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
 #{% if false %}

@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 #{% if "enkf" in RUN %}
 export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
 export DATA="${DATAjob}/${jobid}"

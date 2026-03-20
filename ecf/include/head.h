@@ -1,4 +1,3 @@
-echo "HELLO CRM"
 date
 hostname
 set -xe  # print commands as they are executed and enable signal trapping

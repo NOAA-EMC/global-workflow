@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"

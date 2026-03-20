@@ -44,7 +44,6 @@ FV3_namelists() {
 
     atparse < "${template}" >> "diag_table"
 
-
     # build field_table
     if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
         nrec=$(wc -l < "${FIELD_TABLE}")

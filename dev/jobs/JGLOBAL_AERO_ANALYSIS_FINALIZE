@@ -3,6 +3,7 @@ set -x
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroanlfinal"
 
 #{% if false %}

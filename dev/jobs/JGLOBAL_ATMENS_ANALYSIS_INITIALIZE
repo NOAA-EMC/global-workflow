@@ -2,6 +2,7 @@
 set -x
 
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlinit" -c "base atmensanl atmensanlinit"
 
 #{% if false %}

@@ -4,6 +4,7 @@ set -x
 #############################################################
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
 
 #{% if false %}

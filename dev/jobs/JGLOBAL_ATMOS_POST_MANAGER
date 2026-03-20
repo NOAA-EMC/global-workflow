@@ -3,6 +3,7 @@ set -x
 
 # TODO (#1227) This job is not used in the rocoto suite
 
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "post" -c "base post"
 
 #{% if false %}

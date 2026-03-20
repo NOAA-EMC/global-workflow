@@ -3,6 +3,7 @@ set -x
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmensanl_${cyc}}
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmensanlfv3inc" -c "base atmensanl atmensanlfv3inc"
 
 #{% if false %}
