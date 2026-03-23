@@ -3,8 +3,6 @@
 # Metafile Script : gfs_meta_hi.sh
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/mrfhi"
 cd "${DATA}/mrfhi" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
