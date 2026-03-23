@@ -117,4 +117,9 @@ class Host:
         except Exception:
             raise Exception(f'unable to get information for {self}')
 
+        # Allow BASE_IC to be overridden via the environment
+        # (e.g. from the -I flag in generate_workflows.sh)
+        if 'BASE_IC' in os.environ:
+            info['BASE_IC'] = os.environ['BASE_IC']
+
         return info
