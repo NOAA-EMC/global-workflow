@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
-export version=v16.3.7
+export version=v1.0.0
+export gcafs_ver=v1.0.0
 export gfs_ver=v16.3.7
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
