@@ -4,16 +4,16 @@ gfs_pgrb2b:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gfs_pgrb2b.tar"
     required:
         {% if MODE == "cycled" %}
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
         {% endif %}
         {% if ARCH_GAUSSIAN %}
         {% for fhr in range(0, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2.idx"
         {% endfor %}
         {% endif %}

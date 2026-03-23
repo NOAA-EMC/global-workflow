@@ -16,7 +16,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
-                       'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
+                       'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
 
@@ -84,8 +84,6 @@ class Host:
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
             self.machine = 'WCOSS2'
-        elif os.path.exists('/gpfs/f5'):
-            self.machine = 'GAEAC5'
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
         elif container is not None:

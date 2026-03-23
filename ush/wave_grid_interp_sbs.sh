@@ -34,7 +34,7 @@ mkdir -p "${interp_DATA}"
 cd "${interp_DATA}" || exit 99
 
 # Copy template files to interp_DATA (required for interpolation)
-cpreq "${PARMgfs}/wave/ww3_gint.inp.tmpl" "ww3_gint.inp.tmpl"
+cpreq "${PARMglobal}/wave/ww3_gint.inp.tmpl" "ww3_gint.inp.tmpl"
 
 # Link input files (WW3 output) from DATA into interp_DATA
 ${NLN} "${DATA}/out_grd.${waveGRD}" "./out_grd.${waveGRD}"
@@ -45,12 +45,12 @@ for ID in ${waveGRD} ${grdID}; do
 done
 
 # Check if there is an interpolation weights file available, and copy it if so
-if [[ -f "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" ]]; then
-    echo "INFO: Interpolation weights found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
-    cpreq "${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" "./WHTGRIDINT.bin"
+if [[ -f "${FIXglobal}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" ]]; then
+    echo "INFO: Interpolation weights found at: '${FIXglobal}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
+    cpreq "${FIXglobal}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}" "./WHTGRIDINT.bin"
     weights_found=1
 else
-    echo "WARNING: No weights file found at: '${FIXgfs}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
+    echo "WARNING: No weights file found at: '${FIXglobal}/wave/ww3_gint.WHTGRIDINT.bin.${waveGRD}.${grdID}'"
     echo "INFO: Interpolation will create a new weights file"
     weights_found=0
 fi
@@ -69,7 +69,7 @@ cat ww3_gint.inp
 export pgm="${NET,,}_ww3_gint.x"
 source prep_step
 echo "INFO: Executing '${pgm}'"
-"${EXECgfs}/${pgm}" > "grid_interp.${grdID}.out" 2>&1
+"${EXECglobal}/${pgm}" > "grid_interp.${grdID}.out" 2>&1
 cat "grid_interp.${grdID}.out"
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: '${pgm}' failed!"

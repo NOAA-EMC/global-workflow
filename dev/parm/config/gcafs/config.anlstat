@@ -8,6 +8,6 @@ echo "BEGIN: config.anlstat"
 # Get task specific resources
 source "${EXPDIR}/config.resources" anlstat
 
-export TASK_CONFIG_YAML="${PARMgfs}/gdas/anlstat/anlstat_config.yaml.j2"
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/anlstat/anlstat_config.yaml.j2"
 
 echo "END: config.anlstat"

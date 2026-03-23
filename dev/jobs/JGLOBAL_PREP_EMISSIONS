@@ -1,23 +1,46 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissions"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prep_emissions" -c "base prep_emissions"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # TODO: Set local variables used in this script e.g. GDATE may be needed for previous cycle
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_CHEM_INPUT:COM_CHEM_INPUT_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_CHEM_RESTART:COM_CHEM_RESTART_TMPL
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    # Turn ensmem into 3-digit format with leading zeros
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+declare -rx COMOUT_CHEM_INPUT="${COMOUT}/model/chem/input"
+declare -rx COMOUT_CHEM_RESTART="${COMOUT}/model/chem/restart"
 
 mkdir -p "${COMOUT_CHEM_INPUT}"
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRgfs}/exglobal_prep_emissions.py}
+EXSCRIPT=${PREP_EMISSIONS_PY:-${SCRglobal}/exglobal_prep_emissions.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

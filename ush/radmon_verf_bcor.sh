@@ -27,7 +27,7 @@
 #   Imported Shell Variables:
 #     RADMON_SUFFIX     data source suffix
 #                       defauls to opr
-#     EXECgfs           executable directory
+#     EXECglobal           executable directory
 #                       defaults to current directory
 #     RAD_AREA          global or regional flag
 #                       defaults to global
@@ -86,7 +86,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program to working directory
 
-cpreq "${EXECgfs}/${bcor_exec}" "./${bcor_exec}"
+cpreq "${EXECglobal}/${bcor_exec}" "./${bcor_exec}"
 
 #--------------------------------------------------------------------
 #   Run program for given time
@@ -172,7 +172,7 @@ EOF
     done # dtype in $gesanl loop
 done     # type in $SATYPE loop
 
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 tar_file=radmon_bcor.tar
 
 if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then

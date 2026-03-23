@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "waveprep" -c "base wave waveprep"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 # Set rtofs PDY
 # shellcheck disable=SC2153
@@ -12,15 +21,20 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMOUT_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMINrtofs:COM_RTOFS_TMPL
-if [[ ! -d ${COMOUT_WAVE_PREP} ]]; then mkdir -p "${COMOUT_WAVE_PREP}"; fi
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
+declare -rx COMOUT_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    #shellcheck disable=SC2155
+    declare -rx COMINrtofs=$(compath.py "${envir}/rtofs/${rtofs_ver}")
+else
+    declare -rx COMINrtofs="${DMPDIR}"
+fi
+
+mkdir -p "${COMOUT_WAVE_PREP}"
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_prep.sh" && true
+"${SCRglobal}/exgfs_wave_prep.sh" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

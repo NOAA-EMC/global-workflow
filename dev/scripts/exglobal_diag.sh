@@ -39,7 +39,7 @@ rm -f "${RADSTAT}" "${PCPSTAT}" "${CNVSTAT}" "${OZNSTAT}"
 
 # Obs diag
 GENDIAG=${GENDIAG:-"YES"}
-GSIDIAG=${GSIDIAG:-"${COMIN_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"}
+GSIDIAGDIR=${GSIDIAGDIR:-"${pCOMIN_ATMOS_ANALYSIS}/gsidiags"}
 USE_BUILD_GSINFO=${USE_BUILD_GSINFO:-"NO"}
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 if [[ "${DIAG_COMPRESS:-}" == "YES" ]]; then
@@ -55,14 +55,29 @@ if [[ "${GENDIAG}" != "YES" ]]; then
     exit 0
 fi
 
-################################################################################
-# Copy gsidiags.tar file from COMIN to DATA and untar
-cpreq "${GSIDIAG}" ./gsidiags.tar
-tar -xvf gsidiags.tar
-export err=$?
-if [[ ${err} -ne 0 ]]; then
-    err_exit "Unable to unpack gsidiags.tar file!"
+# Check that the gsidiags directory exists
+if [[ ! -d "${GSIDIAGDIR}" ]]; then
+    export err=1
+    err_exit "gsidiags directory ${GSIDIAGDIR} does not exist"
 fi
+
+################################################################################
+# Link to the gsidiags directory if it is populated
+count_dirs=$(find "${GSIDIAGDIR}" -maxdepth 1 -type d -name "dir.*" | wc -l)
+if [[ ${count_dirs} -eq 0 ]]; then
+    export err=1
+    err_exit "No gsidiags directories found in ${GSIDIAGDIR}"
+fi
+
+# Continue if there is at least one file to process
+# Note -quit stops find after the first match
+count_files=$(find "${GSIDIAGDIR}"/dir.* -maxdepth 1 -type f -printf '.' -quit | wc -c)
+if [[ ${count_files} -eq 0 ]]; then
+    echo "WARNING: No diagnostic files found to process!"
+    exit 0
+fi
+
+${NLN} "${GSIDIAGDIR}/"dir.* .
 
 # Set up lists and variables for various types of diagnostic files.
 ntype=3
@@ -153,7 +168,8 @@ for loop in ${loops}; do
             if [[ "${dtype}" == *"avhrr"* ]]; then # recast dtype in avhrr form
                 dtype="avhrr${dtype##avhrr[23]}"
             fi
-            count=$(find ./ -path "./dir.*/${dtype}_${loop}*" -type f -printf "." | wc -c)
+            # -L to follow symlinks, as dir.* are symlinks to gsidiags/dir.*
+            count=$(find -L ./dir.* -path "./dir.*/${dtype}_${loop}*" -type f -printf "." | wc -c)
             if [[ ${count} -eq 0 ]]; then
                 continue
             fi
@@ -177,7 +193,7 @@ fi
 split -l "${tasks_per_node}" ./cmdfile cmdfile_part_
 cmdfile_parts=$(ls cmdfile_part_*)
 for partfile in ${cmdfile_parts}; do
-    "${USHgfs}/run_mpmd.sh" "${partfile}" && true
+    "${USHglobal}/run_mpmd.sh" "${partfile}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "Failed to create one or more observation diagnostic files for ${partfile}!"

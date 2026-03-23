@@ -1,10 +1,10 @@
 name: gw-ci-aws
 # TEST_DIR contains 2 directories;
-# 1. HOMEgfs: clone of the global-workflow
+# 1. HOMEglobal: clone of the global-workflow
 # 2. RUNTESTS: A directory containing EXPDIR and COMROT for experiments
 # e.g. $> tree ./TEST_DIR
 # ./TEST_DIR
-# ├── HOMEgfs
+# ├── HOMEglobal
 # └── RUNTESTS
 #     ├── COMROT
 #     │   └── ${pslot}
@@ -98,7 +98,7 @@ jobs:
     - name: Checkout global-workflow
       uses: actions/checkout@v4
       with:
-        path: ${{ github.run_id }}/HOMEgfs
+        path: ${{ github.run_id }}/HOMEglobal
         submodules: 'recursive'
         repository: ${{ needs.fetch-branch.outputs.repo }}
         ref: ${{ needs.fetch-branch.outputs.branch }}
@@ -113,12 +113,12 @@ jobs:
     steps:
     - name: Build components
       run: |
-        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+        cd ${{ env.TEST_DIR }}/HOMEglobal/sorc
         ./build_all.sh -j 8
 
     - name: Link artifacts
       run: |
-        cd ${{ env.TEST_DIR }}/HOMEgfs/sorc
+        cd ${{ env.TEST_DIR }}/HOMEglobal/sorc
         ./link_workflow.sh
 
   create-experiments:
@@ -138,7 +138,7 @@ jobs:
           pslot: ${{ matrix.case }}.${{ github.run_id }}
         run: |
           mkdir -p ${{ env.RUNTESTS }}
-          cd ${{ env.TEST_DIR }}/HOMEgfs
+          cd ${{ env.TEST_DIR }}/HOMEglobal
           source dev/ush/gw_setup.sh
           source dev/ci/platforms/config.noaacloud
           ./dev/workflow/create_experiment.py --yaml dev/ci/cases/pr/${{ matrix.case }}.yaml --overwrite
@@ -156,8 +156,8 @@ jobs:
     steps:
       - name: Run Experiment ${{ matrix.case }}
         run: |
-          cd ${{ env.TEST_DIR }}/HOMEgfs
-          ./dev/ci/scripts/run_check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEgfs
+          cd ${{ env.TEST_DIR }}/HOMEglobal
+          ./dev/ci/scripts/run_check_ci.sh ${{ env.TEST_DIR }} ${{ matrix.case }}.${{ github.run_id }} HOMEglobal
 
   clean-up:
     needs: run-experiments

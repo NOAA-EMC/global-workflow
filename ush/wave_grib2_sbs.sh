@@ -60,7 +60,7 @@ if [[ -s "${com_dir}/${outfile}" ]] && [[ -s "${com_dir}/${outfile}.idx" ]]; the
 fi
 
 # Copy template files to grib_DATA (required for ww3_grib.x)
-cpreq "${PARMgfs}/wave/ww3_grib2.${grdID}.inp.tmpl" "./ww3_grib2.${grdID}.inp.tmpl"
+cpreq "${PARMglobal}/wave/ww3_grib2.${grdID}.inp.tmpl" "./ww3_grib2.${grdID}.inp.tmpl"
 
 # Link mod_def files from DATA into grib_DATA
 ${NLN} "${DATA}/mod_def.${grdID}" "./mod_def.ww3"
@@ -85,7 +85,7 @@ cat ww3_grib.inp
 # Run the ww3_grib generation code
 export pgm="${NET,,}_ww3_grib.x"
 source prep_step
-"${EXECgfs}/${pgm}" > "grib2_${grid_region}_${FH3}.out" 2>&1
+"${EXECglobal}/${pgm}" > "grib2_${grid_region}_${FH3}.out" 2>&1
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: ${pgm} returned non-zero status: ${err}; exiting!"

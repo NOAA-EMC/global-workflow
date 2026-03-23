@@ -1,14 +1,22 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpnt" -c "base wave wavepostsbs wavepostbndpnt"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "wavepostbndpnt" -c "base wave wavepostsbs wavepostbndpnt"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 export MP_PULSE=0
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-    COMOUT_WAVE_STATION:COM_WAVE_STATION_TMPL
+declare -rx COMIN_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
+declare -rx COMIN_WAVE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/history"
+declare -rx COMOUT_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
 
 mkdir -p "${COMOUT_WAVE_STATION}"
 
@@ -20,7 +28,7 @@ export DOBLL_WAV='NO'     # Bulletin post
 export DOBNDPNT_WAV='YES' # Boundary points
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_post_pnt.sh" && true
+"${SCRglobal}/exgfs_wave_post_pnt.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "ex-script of JGLOBAL_WAVE_POST_BNDPNT failed!"

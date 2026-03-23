@@ -49,14 +49,14 @@ while [[ ${fhr} -le ${fhend} ]]; do
 
     if [[ ${do_all} -eq 1 ]]; then
         do_all=0
-        awk '{print $1}' "${HOMEgfs}/gempak/fix/gfs_meta" | envsubst > "poescript"
+        awk '{print $1}' "${HOMEglobal}/gempak/fix/gfs_meta" | envsubst > "poescript"
     else
         #
         #    Do not try to grep out 12, it will grab the 12 from 126.
         #    This will work as long as we don't need 12 fhr metafiles
         #
         if [[ ${fhr} -ne 12 ]]; then
-            grep "${fhr}" "${HOMEgfs}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
+            grep "${fhr}" "${HOMEglobal}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
         fi
     fi
 
@@ -71,7 +71,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
 
     cat poescript
 
-    "${HOMEgfs}/ush/run_mpmd.sh" poescript && true
+    "${HOMEglobal}/ush/run_mpmd.sh" poescript && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "Failed to generate one or more gempak meta plots!"

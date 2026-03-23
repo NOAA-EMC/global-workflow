@@ -1,6 +1,19 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "analcalc" -c "base anal analcalc"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Set variables used in the script
@@ -23,22 +36,18 @@ export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${rCDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/obs"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
 
 if [[ "${RUN}" == "gcdas" ]]; then
-    YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-        COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL
+    declare -rx COMIN_CHEM_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem"
 fi
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OBS_PREV:COM_OBS_TMPL \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/history"
 
 export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f006.nc"
 if [[ ! -f "${ATMGES}" ]]; then
@@ -60,7 +69,7 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh} && true
+${ANALCALCSH:-${SCRglobal}/exglobal_atmos_analysis_calc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

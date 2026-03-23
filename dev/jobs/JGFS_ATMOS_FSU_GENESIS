@@ -1,12 +1,21 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "genesis_fsu" -c "base genesis_fsu"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Define COM and Data directories
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
-YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+declare -rx COMOUT_ATMOS_GENESIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/genesis_vital"
+declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time

@@ -1,20 +1,32 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "earc_vrfy" -c "base earc_vrfy"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_HISTORY_ENSSTAT:COM_ATMOS_HISTORY_TMPL \
-    COMIN_SNOW_ANALYSIS_ENSSTAT:COM_SNOW_ANALYSIS_TMPL
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+declare -rx COMIN_ATMOS_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMIN_ATMOS_HISTORY_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history"
+declare -rx COMIN_SNOW_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/snow"
 
 ###############################################################
 # Run archive script
 ###############################################################
 
-"${SCRgfs}/exglobal_enkf_earc_vrfy.py"
+"${SCRglobal}/exglobal_enkf_earc_vrfy.py"
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

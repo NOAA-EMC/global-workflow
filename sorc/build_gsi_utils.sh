@@ -2,7 +2,7 @@
 set -eux
 
 # shellcheck disable=SC2155
-readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
+readonly HOMEglobal_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 
 OPTIND=1
 while getopts ":j:dv" option; do
@@ -22,12 +22,12 @@ while getopts ":j:dv" option; do
 done
 shift $((OPTIND - 1))
 
-source "${HOMEgfs_}/ush/detect_machine.sh"
+source "${HOMEglobal_}/ush/detect_machine.sh"
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
     BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
     BUILD_JOBS=${BUILD_JOBS:-8} \
     UTIL_OPTS="-DBUILD_UTIL_ENKF_GFS=ON -DBUILD_UTIL_NCIO=ON" \
-    "${HOMEgfs_}/sorc/gsi_utils.fd/ush/build.sh"
+    "${HOMEglobal_}/sorc/gsi_utils.fd/ush/build.sh"
 
 exit

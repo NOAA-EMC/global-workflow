@@ -1,21 +1,32 @@
 #! /usr/bin/env bash
+set -x
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfinal"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmanlfinal" -c "base atmanl atmanlfinal"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 mkdir -m 775 -p "${COMOUT_CONF}"
@@ -23,7 +34,7 @@ mkdir -m 775 -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMFINALPY:-${SCRgfs}/exglobal_atm_analysis_finalize.py}
+EXSCRIPT=${GDASATMFINALPY:-${SCRglobal}/exglobal_atm_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

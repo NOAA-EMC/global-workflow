@@ -73,14 +73,13 @@ class GFSCycledAppConfig(AppConfig):
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
             run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
+            run_options[run]['do_enkfonly_atm'] = base.get('DOENKFONLY_ATM', False)
             run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
-            if run_options[run]['do_hybvar']:
-                run_options[run]['lobsdiag_forenkf'] = base.get('lobsdiag_forenkf', False)
-
             run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
             run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
+            run_options[run]['do_jediatmens_split_obssol'] = base.get('DO_JEDIATMENS_SPLIT_OBSSOL', True)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
@@ -105,6 +104,11 @@ class GFSCycledAppConfig(AppConfig):
         options = self.run_options[run]
 
         configs = ['prep']
+
+        if options['do_enkfonly_atm']:
+            configs += ['fetch', 'prepatmanlbias']
+            if options['do_archcom']:
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_prep_sfc']:
             configs += ['prep_sfc']
@@ -378,13 +382,19 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['cleanup']
 
+                # Reset tasks to run enkf-only for atm if do_enkfonly_atm=true
+                if options['do_enkfonly_atm']:
+                    if run == 'gdas':
+                        task_names[run] = []
+                        task_names[run] += ['prep', 'fetchatmanlbias', 'prepatmanlbias']
+
             # Ensemble tasks
             elif 'enkf' in run:
 
                 task_names[run] += ['stage_ic']
                 if options['do_jediatmens']:
                     task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal', 'ecen_fv3jedi']
-                    if options['lobsdiag_forenkf']:
+                    if options['do_jediatmens_split_obssol']:
                         task_names[run] += ['atmensanlobs', 'atmensanlsol']
                     else:
                         task_names[run] += ['atmensanlletkf']
@@ -416,4 +426,17 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['cleanup']
 
+                # Reset tasks to run enkf-only for atm if do_enkfonly_atm=true
+                if options['do_enkfonly_atm']:
+                    task_names[run] = []
+                    task_names[run] += ['stage_ic']
+                    if options['do_jediatmens']:
+                        task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal']
+                        if options['do_jediatmens_split_obssol']:
+                            task_names[run] += ['atmensanlobs', 'atmensanlsol']
+                        else:
+                            task_names[run] += ['atmensanlletkf']
+                    else:
+                        task_names[run] += ['eobs', 'eupd', 'ecen', 'ediag']
+                    task_names[run] += ['efcs', 'epos', 'esfc', 'earc_tars', 'cleanup']
         return task_names

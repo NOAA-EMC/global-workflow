@@ -3,18 +3,16 @@
 # Metafile Script : gfs_meta_hi.sh
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/mrfhi"
 cd "${DATA}/mrfhi" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 device="nc | mrfhi.meta"
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${COMIN} ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
@@ -40,9 +38,9 @@ MAP	= 1
 CLEAR	= yes
 CLRBAR  = 1
 
-restore ${HOMEgfs}/gempak/ush/restore/garea_hi.nts
+restore ${HOMEglobal}/gempak/ush/restore/garea_hi.nts
 
-restore ${HOMEgfs}/gempak/ush/restore/pmsl_thkn.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/pmsl_thkn.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -51,7 +49,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/850mb_hght_tmpc.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGHTS, TEMPERATURE AND WIND (KTS)|~@ HGHT, TMP, WIND!0!0!0
@@ -59,7 +57,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGHTS, REL HUMIDITY AND OMEGA|~@ HGHT, RH AND OMEGA!0
@@ -67,7 +65,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS AND VORTICITY|~@ HGHT AND VORTICITY!0
@@ -75,7 +73,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/200mb_hght_wnd.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/200mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~@ HGHT AND WIND!0
@@ -83,7 +81,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~@ HGHT AND WIND!0
@@ -91,7 +89,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/300mb_hght_wnd.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/300mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HEIGHTS, ISOTACHS AND WIND (KTS)|~@ HGHT AND WIND!0
@@ -144,7 +142,7 @@ CLRBAR  = 1
 r
 
 
-restore ${HOMEgfs}/gempak/ush/restore/precip.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/precip.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 GDATTIM = F12-F192-06; F214-F384-12

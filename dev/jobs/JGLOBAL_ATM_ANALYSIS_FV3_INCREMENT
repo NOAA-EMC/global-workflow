@@ -1,12 +1,24 @@
 #! /usr/bin/env bash
+set -x
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}atmanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlfv3inc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlfv3inc"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -15,7 +27,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmanlfv3inc" -c "base atmanl atmanlf
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASATMRUNSH:-${SCRgfs}/exglobal_atm_analysis_fv3_increment.py}
+EXSCRIPT=${GDASATMRUNSH:-${SCRglobal}/exglobal_atm_analysis_fv3_increment.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

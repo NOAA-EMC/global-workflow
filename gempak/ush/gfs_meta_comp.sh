@@ -9,12 +9,10 @@
 # Set up Local Variables
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 rm -Rf "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 mkdir -p -m 775 "${DATA}/COMP" "${DATA}/GEMPAK_META_COMP"
 cd "${DATA}/COMP" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 mdl=gfs
 MDL=GFS
@@ -25,17 +23,26 @@ device="nc | ${metaname}"
 export COMIN="gfs.multi"
 mkdir "${COMIN}"
 for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
-    YMD=${PDY} HH=${cycle} GRID="1p00" declare_from_tmpl gempak_dir:COM_ATMOS_GEMPAK_TMPL
+    gempak_dir="${ROTDIR}/${RUN}.${PDY}/${cycle}/products/atmos/gempak/1p00"
     for file_in in "${gempak_dir}/gfs_1p00_${PDY}${cycle}f"*; do
-        file_out="${COMIN}/$(basename "${file_in}")"
-        if [[ ! -L "${file_out}" ]]; then
-            ${NLN} "${file_in}" "${file_out}"
+        # Only copy the file if it exists (it will not if we start on 6, 12, or 18z)
+        if [[ ! -f "${file_in}" ]]; then
+            echo "WARNING: ${file_in} does not exist, skipping"
+        else
+            file_out="${COMIN}/$(basename "${file_in}")"
+            # Only create new files, do not overwrite existing
+            if [[ ! -f "${file_out}" ]]; then
+                cpreq "${file_in}" "${file_out}"
+            else
+                echo "WARNING: ${file_out} already exists, skipping"
+            fi
         fi
     done
 done
 
 export HPCNAM="nam.${PDY}"
 if [[ ! -L ${HPCNAM} ]]; then
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 fi
 
@@ -99,8 +106,10 @@ for gareas in US NP; do
 
         # Create symlink in DATA to sidestep gempak path limits
         HPCGFS="${RUN}.${init_time}"
+        # TODO: Add only necessary files and remove unneeded ones to minimize data volume
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         if [[ ! -L ${HPCGFS} ]]; then
-            YMD="${init_PDY}" HH="${init_cyc}" GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+            source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
             ${NLN} "${source_dir}" "${HPCGFS}"
         fi
 

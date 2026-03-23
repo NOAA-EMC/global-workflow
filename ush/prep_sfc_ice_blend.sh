@@ -48,13 +48,13 @@ export pgm=emcsfc_ice_blend
 # the input data.  ims may be grib1 or grib2.  five_min files are grib 2.
 IMS_FILE=${IMS_FILE:-"ims.grib2"}
 FIVE_MIN_ICE_FILE=${FIVE_MIN_ICE_FILE:-"seaice.5min.grib2"}
-FIVE_MIN_ICE_MASK_FILE=${FIVE_MIN_ICE_MASK_FILE:-"${FIXgfs}/am/emcsfc_gland5min.grib2"}
+FIVE_MIN_ICE_MASK_FILE=${FIVE_MIN_ICE_MASK_FILE:-"${FIXglobal}/am/emcsfc_gland5min.grib2"}
 
 # the output ice blend data (grib)
 BLENDED_ICE_FILE=${BLENDED_ICE_FILE:-"seaice.5min.blend"}
 
 # the program executable
-BLENDICEEXEC=${BLENDICEEXEC:-"${EXECgfs}/emcsfc_ice_blend"}
+BLENDICEEXEC=${BLENDICEEXEC:-"${EXECglobal}/emcsfc_ice_blend"}
 
 # standard output file
 pgmout=${pgmout:-"OUTPUT"}

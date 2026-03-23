@@ -1,36 +1,58 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_vrfy"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMIN_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL \
-    COMIN_CHEM_ANALYSIS:COM_CHEM_ANALYSIS_TMPL \
-    COMIN_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_ATMOS_TRACK:COM_ATMOS_TRACK_TMPL
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+# Construct COM paths
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    COMIN_ensstat="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat"
+    COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
+declare -rx COMIN_ATMOS_GENESIS="${COMIN}/products/atmos/cyclone/genesis_vital"
+declare -rx COMIN_ATMOS_HISTORY="${COMIN}/model/atmos/history"
+declare -rx COMIN_ATMOS_TRACK="${COMIN}/products/atmos/cyclone/tracks"
+declare -rx COMIN_CHEM_ANALYSIS="${COMIN}/analysis/chem"
+declare -rx COMIN_SNOW_ANALYSIS="${COMIN}/analysis/snow"
+declare -rx COMIN_OBS="${COMIN}/obs"
+declare -rx COMOUT_ATMOS_TRACK="${COMOUT}/products/atmos/cyclone/tracks"
 
 for grid in "0p25" "0p50" "1p00"; do
-    YMD=${PDY} HH=${cyc} GRID=${grid} declare_from_tmpl -rx \
-        "COMIN_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "COMIN_ATMOS_GRIB_${grid}"="${COMIN}/products/atmos/grib2/${grid}"
 done
 
 # GEFS-specific: Ensemble statistics path
 if [[ "${RUN}" == "gefs" ]]; then
-    MEMDIR="ensstat" YMD=${PDY} HH=${cyc} GRID="1p00" declare_from_tmpl -rx \
-        COMIN_ATMOS_ENSSTAT_1p00:COM_ATMOS_GRIB_GRID_TMPL
+    declare -rx COMIN_ATMOS_ENSSTAT_1p00="${COMIN_ensstat}/products/atmos/grib2/1p00"
 fi
 
 ###############################################################
 # Run archive script
 ###############################################################
 
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
+${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_vrfy.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
     exit "${err}"

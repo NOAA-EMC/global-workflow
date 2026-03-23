@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
@@ -14,16 +23,14 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 
-RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMOUT_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
 
-MEMDIR="mem001" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem001/model/atmos/history"
 
 ###############################################################
 # Run relevant script
-${CHGRESFCSTSH:-${SCRgfs}/exgdas_atmos_chgres_forenkf.sh} && true
+${CHGRESFCSTSH:-${SCRglobal}/exgdas_atmos_chgres_forenkf.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

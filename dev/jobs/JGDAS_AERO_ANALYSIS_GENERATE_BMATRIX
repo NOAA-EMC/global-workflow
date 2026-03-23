@@ -1,20 +1,32 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "aeroanlgenb" -c "base aeroanl aeroanlgenb"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_CHEM_BMAT:COM_CHEM_BMAT_TMPL \
-    COMIN_ATMOS_RESTART:COM_ATMOS_RESTART_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_CHEM_BMAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem/bmatrix"
+declare -rx COMIN_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 mkdir -p "${COMOUT_CHEM_BMAT}"
 mkdir -p "${COMOUT_CONF}"
@@ -22,7 +34,7 @@ mkdir -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROBMATPY:-${SCRgfs}/exgdas_aero_analysis_generate_bmatrix.py}
+EXSCRIPT=${GDASAEROBMATPY:-${SCRglobal}/exgdas_aero_analysis_generate_bmatrix.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
@@ -16,19 +25,16 @@ export GDUMP="enkfgdas" # EnKF ensemble always uses RUN=enkfgdas for prior membe
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${GDATE:8:2}z."
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-MEMDIR="ensstat" RUN="enkfgdas" YMD=${GDATE:0:8} HH=${GDATE:8:2} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDATE:8:2}/ensstat/model/atmos/history"
 
 ###############################################################
 # Run relevant script
 
-${ENKFUPDSH:-${SCRgfs}/exglobal_enkf_update.sh} && true
+${ENKFUPDSH:-${SCRglobal}/exglobal_enkf_update.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

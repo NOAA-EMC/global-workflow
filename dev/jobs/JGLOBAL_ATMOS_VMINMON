@@ -1,9 +1,18 @@
 #! /usr/bin/env bash
+set -x
 
 ###########################################################
 # Global Minimization Monitor (MinMon) job
 ###########################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "vminmon" -c "base vminmon"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "vminmon" -c "base vminmon"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 #############################################
 # Determine PDY and cyc for previous cycle
@@ -16,12 +25,10 @@ export gcyc=${GDATE:8:2}
 #############################################
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_ATMOS_MINMON:COM_ATMOS_MINMON_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_MINMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/minmon"
 
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_MINMON_PREV:COM_ATMOS_MINMON_TMPL
+declare -rx COMIN_ATMOS_MINMON_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/products/atmos/minmon"
 
 export gsistat="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.gsistat.txt"
 export M_TANKverf=${M_TANKverf:-${COMOUT_ATMOS_MINMON}}
@@ -31,7 +38,7 @@ mkdir -p "${M_TANKverf}"
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exglobal_atmos_vminmon.sh" && true
+"${SCRglobal}/exglobal_atmos_vminmon.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

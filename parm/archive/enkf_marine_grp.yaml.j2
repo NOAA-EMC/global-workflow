@@ -2,35 +2,18 @@ enkf_marine_grp:
     name: "ENKF_MARINE_GRP"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}_marine_grp{{ ENSGRP }}.tar"
     required:
-        {% for mem in range(first_group_mem, last_group_mem + 1) %}
-        {% set imem = mem - first_group_mem %}
-        # Construct member COM directories
-        {% set COMIN_OCEAN_ANALYSIS_MEM = COMIN_OCEAN_ANALYSIS_MEM_list[imem] %}
-        {% set COMIN_OCEAN_LETKF_MEM = COMIN_OCEAN_LETKF_MEM_list[imem] %}
-        {% set COMIN_OCEAN_HISTORY_MEM = COMIN_OCEAN_HISTORY_MEM_list[imem] %}
-        {% set COMIN_ICE_ANALYSIS_MEM = COMIN_ICE_ANALYSIS_MEM_list[imem] %}
-        {% set COMIN_ICE_LETKF_MEM = COMIN_ICE_LETKF_MEM_list[imem] %}
-        {% set COMIN_ICE_HISTORY_MEM = COMIN_ICE_HISTORY_MEM_list[imem] %}
-
         # Forecast data
         {% if is_gdas %}
-        - "{{ COMIN_OCEAN_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}inst.f009.nc"
+        - "{{ COMIN_OCEAN_HISTORY_MEM }}/{{ head }}inst.f009.nc"
 
         {% for body in ["ic", "inst.f009"] %}
-        - "{{ COMIN_ICE_HISTORY_MEM | relpath(ROTDIR) }}/{{ head }}{{ body }}.nc"
+        - "{{ COMIN_ICE_HISTORY_MEM }}/{{ head }}{{ body }}.nc"
         {% endfor %}
         {% endif %}
 
         # Store the individual member analysis data
-        {% if DOIAU_ENKF %}
-        {% set anl_delta = "-3H" | to_timedelta %}
-        {% else %}
-        {% set anl_delta = "0H" | to_timedelta %}
-        {% endif %}
-        {% set anl_time = current_cycle | add_to_datetime(anl_delta) %}
         {% if DOLETKF_OCN %}
-        - "{{ COMIN_OCEAN_LETKF_MEM | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc"
-        - "{{ COMIN_ICE_LETKF_MEM | relpath(ROTDIR) }}/{{ head }}jedi_analysis.a006.nc"
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/soca_letkf.yaml"
+        - "{{ COMIN_OCEAN_LETKF_MEM }}/{{ head }}jedi_analysis.a006.nc"
+        - "{{ COMIN_ICE_LETKF_MEM }}/{{ head }}jedi_analysis.a006.nc"
+        - "{{ COMIN_CONF }}/soca_letkf.yaml"
         {% endif %}
-        {% endfor %}  # first_group_mem to last_group_mem

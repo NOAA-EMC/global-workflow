@@ -71,8 +71,8 @@
 
 # File names
 
-radmon_err_rpt=${radmon_err_rpt:-${USHgfs}/radmon_err_rpt.sh}
-base_file=${base_file:-${PARMgfs}/monitor/gdas_radmon_base.tar}
+radmon_err_rpt=${radmon_err_rpt:-${USHglobal}/radmon_err_rpt.sh}
+base_file=${base_file:-${PARMglobal}/monitor/gdas_radmon_base.tar}
 report=report.txt
 disclaimer=disclaimer.txt
 
@@ -116,7 +116,7 @@ fi
 #--------------------------------------------------------------------
 #   Copy extraction program and base files to working directory
 #-------------------------------------------------------------------
-cpreq "${EXECgfs}/${time_exec}" ./
+cpreq "${EXECglobal}/${time_exec}" ./
 
 iyy="${PDY:0:4}"
 imm="${PDY:4:2}"
@@ -223,7 +223,7 @@ EOF
     done
 done
 
-"${USHgfs}/rstprod.sh"
+"${USHglobal}/rstprod.sh"
 
 if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
     tar_file=radmon_time.tar
@@ -265,7 +265,7 @@ EOF
     #
     tmp_satype="./tmp_satype.txt"
     echo "${SATYPE}" > "${tmp_satype}"
-    "${USHgfs}/radmon_diag_ck.sh" --rad "${radstat}" --sat "${tmp_satype}" --out "${diag}"
+    "${USHglobal}/radmon_diag_ck.sh" --rad "${radstat}" --sat "${tmp_satype}" --out "${diag}"
 
     if [[ -s "${diag}" ]]; then
         cat << EOF > "${diag_hdr}"

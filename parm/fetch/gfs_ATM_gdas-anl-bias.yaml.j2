@@ -1,0 +1,16 @@
+{% set cycle_YMDH = previous_cycle | to_YMDH %}
+{% set cycle_Y = previous_cycle | strftime("%Y") %}
+{% set cycle_YM = previous_cycle | strftime("%Y%m") %}
+{% set cycle_YMD = previous_cycle | to_YMD %}
+{% set cycle_HH = previous_cycle | strftime("%H") %}
+target:
+    tarball : "/NCEPPROD/hpssprod/runhistory/rh{{ cycle_Y }}/{{ cycle_YM }}/{{ cycle_YMD }}/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_restart.tar"
+    on_hpss: True
+    contents:
+        # Atmospheric analysis
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.abias
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.abias_air
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.abias_int
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.abias_pc
+        - ./gdas.{{ cycle_YMD }}/{{ cycle_HH }}/atmos/gdas.t{{ cycle_HH }}z.radstat
+    destination: "{{ DATA }}"

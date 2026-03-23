@@ -17,9 +17,6 @@
 #
 ################################################################################
 
-# Directories.
-pwd=$(pwd)
-
 # Base variables
 DONST=${DONST:-"NO"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
@@ -28,7 +25,7 @@ export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
 # Utilities
-NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 
 # Scripts
 
@@ -55,9 +52,9 @@ fi
 DOIAU=${DOIAU_ENKF:-"NO"}
 
 # Global_cycle stuff
-CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
-REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
-export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
+CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
+export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
@@ -173,17 +170,13 @@ if [[ "${DOIAU}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+            declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
-            MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-                COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+            declare -x COMIN_ATMOS_RESTART_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/restart
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+            declare -x COMIN_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
+            declare -x COMIN_SNOW_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/snow
 
             # determine where the input snow restart files come from
             snow_prefix=""
@@ -198,10 +191,9 @@ if [[ "${DOIAU}" == "YES" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
-                "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+                "${DATA}/sfc_data_cycle.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${LFHR}.tile${n}.nc" \
@@ -228,14 +220,13 @@ if [[ "${DOIAU}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+            declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
             if [[ ${TILE_NUM} -eq 1 ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
 
-            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/sfc_data_cycle.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"
 
         done # ensembles
 
@@ -258,14 +249,11 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_SNOW_ANALYSIS_MEM:COM_SNOW_ANALYSIS_TMPL
+            declare -x COMIN_SNOW_ANALYSIS_MEM=${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/${gmemchar}/analysis/snow
 
-            RUN="${GDUMP_ENS}" MEMDIR=${gmemchar} YMD=${gPDY} HH=${gcyc} declare_from_tmpl \
-                COMIN_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
+            declare -x COMIN_ATMOS_RESTART_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/restart
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMIN_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+            declare -x COMIN_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
             # determine where the input snow restart files come from
             snow_prefix=""
@@ -275,12 +263,11 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             else
                 sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
             fi
-
             cpreq "${sfcdata_dir}/${PDY}.${cyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/fnbgso.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/sfc_data_cycle.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${LFHR}.tile${n}.nc" \
@@ -306,14 +293,13 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             cmem=$(printf %03i "${imem}")
             memchar="mem${cmem}"
 
-            MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-                COMOUT_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
+            declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
             if [[ ! -d "${COMOUT_ATMOS_RESTART_MEM}" ]]; then
                 mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
             fi
 
-            cpfs "${DATA}/fnbgso.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
+            cpfs "${DATA}/sfc_data_cycle.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc"
 
         done
 
@@ -323,7 +309,5 @@ fi
 ################################################################################
 
 ################################################################################
-# Postprocessing
-cd "${pwd}" || exit 1
 
 exit "${err}"

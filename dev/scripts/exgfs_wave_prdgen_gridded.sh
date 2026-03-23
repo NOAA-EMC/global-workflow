@@ -21,7 +21,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
-source "${USHgfs}/wave_domain_grid.sh"
+source "${USHglobal}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
 
@@ -85,7 +85,7 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
 
         iparam=1
         while [[ ${iparam} -le ${nparam} ]]; do
-            nip=${arrpar[${iparam} - 1]}
+            nip=${arrpar[iparam-1]}
             prepar=${nip::-1} # Part prefix (assumes 1 digit index)
             paridx="${nip:0-1}"
             npart=0
@@ -110,10 +110,10 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
         #======================================================================
         GRIBIN="${RUN}.${cycle}.${grdID}.f${fhr}.clipped.grib2"
 
-        ${NLN} "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
+        cpreq "${GRIBIN}" "gribfile.${grdID}.f${fhr}"
 
         # 1.d Input template files
-        parmfile="${PARMgfs}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
+        parmfile="${PARMglobal}/wave/grib2_${RUN}wave.${grdOut}.f${fhr}"
         if [[ -f "${parmfile}" ]]; then
             ${NLN} "${parmfile}" "awipsgrb.${grdID}.f${fhr}"
         else

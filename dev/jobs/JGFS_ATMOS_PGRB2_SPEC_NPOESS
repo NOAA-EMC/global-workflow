@@ -1,11 +1,20 @@
 #! /usr/bin/env bash
+set -x
 
 # TODO (#1225) This job is not part of the rocoto suite
 
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "npoess" -c "base npoess"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
@@ -13,17 +22,15 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 # Define COM directories
 ##############################################
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_MASTER:COM_ATMOS_MASTER_TMPL \
-    COMOUT_ATMOS_GOES:COM_ATMOS_GOES_TMPL
-GRID="0p50" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_GRIB_0p50:COM_ATMOS_GRIB_GRID_TMPL
+declare -rx COMIN_ATMOS_MASTER="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/master"
+declare -rx COMOUT_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
+declare -rx COMIN_ATMOS_GRIB_0p50="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p50"
 
 mkdir -m 775 -p "${COMOUT_ATMOS_GOES}"
 
 #############################################################
 # Execute the script
-"${SCRgfs}/exgfs_atmos_grib2_special_npoess.sh" && true
+"${SCRglobal}/exgfs_atmos_grib2_special_npoess.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -1,8 +1,3 @@
-# Set variables/lists needed to parse the enkf templates
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMD = current_cycle | to_YMD %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
-
 # Determine which data to archive
 datasets:
     gcafs:
@@ -11,34 +6,34 @@ datasets:
         target: "{{ ATARDIR }}/{{ cycle_YMDH }}/gcafs.tar"
         required:
             {% for fhr in range(0, ARCH_GAUSSIAN_FHMAX + ARCH_GAUSSIAN_FHINC, ARCH_GAUSSIAN_FHINC) %}
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.f{{ '%03d' % fhr }}.nc"
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfc.f{{ '%03d' % fhr }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}atm.f{{ '%03d' % fhr }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}sfc.f{{ '%03d' % fhr }}.nc"
             {% endfor %}
 
             {% if ARCH_GAUSSIAN %}
             {% for fhr in range(0, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2.idx"
-            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_b.0p50.f{{ '%03d' % fhr }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_b.0p50.f{{ '%03d' % fhr }}.grib2.idx"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.f{{ '%03d' % fhr }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_0p50 }}/{{ head }}pres_b.0p50.f{{ '%03d' % fhr }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p50 }}/{{ head }}pres_b.0p50.f{{ '%03d' % fhr }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.f{{ '%03d' % fhr }}.grib2.idx"
             {% endfor %}
             {% endif %}
 
             - "{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.input.nml"
             # Forecast GRIB2 products
             {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2.idx"
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}log.f{{ '%03d' % fhr }}.txt"
+            - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ '%03d' % fhr }}.grib2.idx"
+            - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}log.f{{ '%03d' % fhr }}.txt"
             {% endfor %}
             # GRIB2 forecast data
             {% for fhr in range(FHMIN_GFS, FHMAX_GFS + FHOUT_GFS, FHOUT_GFS) %}
-            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_a.0p50.f{{ '%03d' % fhr }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_0p50 | relpath(ROTDIR) }}/{{ head }}pres_a.0p50.f{{ '%03d' % fhr }}.grib2.idx"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ '%03d' % fhr }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ '%03d' % fhr }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_0p50 }}/{{ head }}pres_a.0p50.f{{ '%03d' % fhr }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p50 }}/{{ head }}pres_a.0p50.f{{ '%03d' % fhr }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d' % fhr }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d' % fhr }}.grib2.idx"
             {% endfor %}
 # Archive the EXPDIR if requested
 {% if archive_expdir %}

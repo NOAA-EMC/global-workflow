@@ -1,19 +1,50 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Construct COM variables from templates
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMIN_${COMPONENT^^}_HISTORY":"COM_${COMPONENT^^}_HISTORY_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_GRIB":"COM_${COMPONENT^^}_GRIB_TMPL"
-YMD="${PDY}" HH="${cyc}" declare_from_tmpl -rx "COMOUT_${COMPONENT^^}_NETCDF":"COM_${COMPONENT^^}_NETCDF_TMPL"
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+if [[ -z "${COMPONENT:-}" ]]; then
+    export err=1
+    err_exit "COMPONENT variable is not set."
+elif [[ "${COMPONENT}" == "ice" || "${COMPONENT}" == "ocean" ]]; then
+    declare -rx "COMIN_${COMPONENT^^}_HISTORY"="${COMIN}/model/${COMPONENT}/history"
+    declare -rx "COMOUT_${COMPONENT^^}_GRIB"="${COMOUT}/products/${COMPONENT}/grib2"
+    declare -rx "COMOUT_${COMPONENT^^}_NETCDF"="${COMOUT}/products/${COMPONENT}/netcdf"
+else
+    export err=1
+    err_exit "COMPONENT variable '${COMPONENT}' is invalid. Must be 'ice' or 'ocean'."
+fi
 
 ###############################################################
 # Run exglobal script
-"${SCRgfs}/exglobal_oceanice_products.py" && true
+"${SCRglobal}/exglobal_oceanice_products.py" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

@@ -1,0 +1,74 @@
+# CTest Case: C48_S2SW-gfs_stage_ic
+#
+# Purpose: Validate the staging of coupled model initial conditions (ICs)
+# for the S2SW (Subseasonal-to-Seasonal with Waves) configuration. This test
+# ensures that the JGLOBAL_STAGE_IC job correctly stages multi-component ICs:
+# - Atmosphere ICs (13 files: gfs_ctrl + 6 gfs_data tiles + 6 sfc_data tiles)
+# - Ocean restart (from previous GDAS cycle)
+# - Ice restart (from previous GDAS cycle)
+# - Wave restart (from previous GDAS cycle)
+#
+# The test validates coupled system staging coordination, restart file handling
+# with 6-hour offset pattern, and component consistency checks.
+#
+# Source pedigree: inputs come from the nightly STAGED_CTESTS COMROOT snapshot
+# for `PSLOT=C48_S2SW` (e.g., 2021032312) and are compared to the same baseline.
+
+{% set H_offset = '-6H' %}
+{% set H_timedelta = H_offset | to_timedelta %}
+{% set TEST_DATE_offset = TEST_DATE | add_to_datetime(H_timedelta) %}
+
+{% set cyc = TEST_DATE | strftime('%H') %}
+{% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
+
+{% set PDY = TEST_DATE | to_YMD %}
+{% set PDY_offset = TEST_DATE_offset | to_YMD %}
+
+{% set SRC_DIR = STAGED_CTESTS + '/COMROOT/' + PSLOT %}
+{% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
+
+{% set SRC_ATMOS_INPUT = SRC_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/input' %}
+{% set DST_ATMOS_INPUT = DST_DIR + '/gfs.' + PDY + '/' + cyc + '/model/atmos/input' %}
+
+{% set SRC_GDAS_OCN_RESTART = SRC_DIR + '/gdas.' + PDY + '/' + cyc_offset + '/model/ocean/restart' %}
+{% set DST_GDAS_OCN_RESTART = DST_DIR + '/gdas.' + PDY + '/' + cyc_offset + '/model/ocean/restart' %}
+
+{% set SRC_GDAS_ICE_RESTART = SRC_DIR + '/gdas.' + PDY + '/' + cyc_offset + '/model/ice/restart' %}
+{% set DST_GDAS_ICE_RESTART = DST_DIR + '/gdas.' + PDY + '/' + cyc_offset + '/model/ice/restart' %}
+
+{% set SRC_GDAS_WAV_RESTART = SRC_DIR + '/gdas.' + PDY + '/' + cyc_offset + '/model/wave/restart' %}
+{% set DST_GDAS_WAV_RESTART = DST_DIR + '/gdas.' + PDY + '/' + cyc_offset + '/model/wave/restart' %}
+
+input_files:
+    # The stage_ic job stages from ICSDIR to ROTDIR.
+    # No input files need to be pre-staged - the job reads from ICSDIR.
+    mkdir:
+        - {{ DST_ATMOS_INPUT }}
+        - {{ DST_GDAS_OCN_RESTART }}
+        - {{ DST_GDAS_ICE_RESTART }}
+        - {{ DST_GDAS_WAV_RESTART }}
+
+output_files:
+    # Validate that the staged ICs match the authoritative baseline copies.
+    # These files are the outputs of the JGLOBAL_STAGE_IC job.
+    cmpfiles:
+        # Atmosphere ICs (13 files)
+        - [{{ SRC_ATMOS_INPUT }}/gfs_ctrl.nc, {{ DST_ATMOS_INPUT }}/gfs_ctrl.nc]
+        - [{{ SRC_ATMOS_INPUT }}/gfs_data.tile1.nc, {{ DST_ATMOS_INPUT }}/gfs_data.tile1.nc]
+        - [{{ SRC_ATMOS_INPUT }}/gfs_data.tile2.nc, {{ DST_ATMOS_INPUT }}/gfs_data.tile2.nc]
+        - [{{ SRC_ATMOS_INPUT }}/gfs_data.tile3.nc, {{ DST_ATMOS_INPUT }}/gfs_data.tile3.nc]
+        - [{{ SRC_ATMOS_INPUT }}/gfs_data.tile4.nc, {{ DST_ATMOS_INPUT }}/gfs_data.tile4.nc]
+        - [{{ SRC_ATMOS_INPUT }}/gfs_data.tile5.nc, {{ DST_ATMOS_INPUT }}/gfs_data.tile5.nc]
+        - [{{ SRC_ATMOS_INPUT }}/gfs_data.tile6.nc, {{ DST_ATMOS_INPUT }}/gfs_data.tile6.nc]
+        - [{{ SRC_ATMOS_INPUT }}/sfc_data.tile1.nc, {{ DST_ATMOS_INPUT }}/sfc_data.tile1.nc]
+        - [{{ SRC_ATMOS_INPUT }}/sfc_data.tile2.nc, {{ DST_ATMOS_INPUT }}/sfc_data.tile2.nc]
+        - [{{ SRC_ATMOS_INPUT }}/sfc_data.tile3.nc, {{ DST_ATMOS_INPUT }}/sfc_data.tile3.nc]
+        - [{{ SRC_ATMOS_INPUT }}/sfc_data.tile4.nc, {{ DST_ATMOS_INPUT }}/sfc_data.tile4.nc]
+        - [{{ SRC_ATMOS_INPUT }}/sfc_data.tile5.nc, {{ DST_ATMOS_INPUT }}/sfc_data.tile5.nc]
+        - [{{ SRC_ATMOS_INPUT }}/sfc_data.tile6.nc, {{ DST_ATMOS_INPUT }}/sfc_data.tile6.nc]
+        # Ocean restart (from previous GDAS cycle - 6 hour offset)
+        - [{{ SRC_GDAS_OCN_RESTART }}/{{ PDY }}.{{ cyc }}0000.MOM.res.nc, {{ DST_GDAS_OCN_RESTART }}/{{ PDY }}.{{ cyc }}0000.MOM.res.nc]
+        # Ice restart (from previous GDAS cycle - 6 hour offset)
+        - [{{ SRC_GDAS_ICE_RESTART }}/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc, {{ DST_GDAS_ICE_RESTART }}/{{ PDY }}.{{ cyc }}0000.cice_model.res.nc]
+        # Wave restart (from previous GDAS cycle - 6 hour offset)
+        - [{{ SRC_GDAS_WAV_RESTART }}/{{ PDY }}.{{ cyc }}0000.restart.ww3, {{ DST_GDAS_WAV_RESTART }}/{{ PDY }}.{{ cyc }}0000.restart.ww3]

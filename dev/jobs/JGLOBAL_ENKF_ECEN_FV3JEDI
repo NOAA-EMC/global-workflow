@@ -1,13 +1,22 @@
 #! /usr/bin/env bash
-
-# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
+set -x
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen_fv3jedi" -c "base ecen_fv3jedi"
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
 
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
@@ -20,15 +29,12 @@ GDUMP_ENS="enkfgdas"
 ##############################################
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_ATMOS_ANALYSIS_ENSSTAT:COM_ATMOS_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_ANALYSIS_ENSSTAT="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS_ENSSTAT="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_CONF="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/conf"
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/history"
 
 mkdir -m 755 -p "${COMOUT_CONF}"
 
@@ -36,7 +42,7 @@ mkdir -m 755 -p "${COMOUT_CONF}"
 # Run relevant script
 ##############################################
 
-EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exglobal_enkf_ecen_fv3jedi.py}
+EXSCRIPT=${GDASATMRUNPY:-${SCRglobal}/exglobal_enkf_ecen_fv3jedi.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

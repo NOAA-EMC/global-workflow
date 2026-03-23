@@ -22,9 +22,9 @@
 # Derived base variables
 
 # Dependent Scripts and Executables
-CYCLESH=${CYCLESH:-"${USHgfs}/global_cycle.sh"}
-REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
-export CYCLEXEC=${CYCLEXEC:-"${EXECgfs}/global_cycle"}
+CYCLESH=${CYCLESH:-"${USHglobal}/global_cycle.sh"}
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
+export CYCLEXEC=${CYCLEXEC:-"${EXECglobal}/global_cycle"}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 
@@ -103,8 +103,8 @@ export MAX_TASKS_CY="${ntiles}"
 
 # Copy fix files required by global_cycle to DATA just once
 for ((nn = 1; nn <= ntiles; nn++)); do
-    cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
-    cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
+    cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"
+    cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${nn}.nc" "${DATA}/fnorog.00${nn}"
 done
 
 # Copy the NSST analysis file for global_cycle
@@ -113,8 +113,8 @@ done
 if [[ "${DONST}" == "YES" ]]; then
     export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS}/${APREFIX}increment.dtf.i006.nc}
     if [[ -s "${NST_FILE}" ]]; then
-        cpreq "${NST_FILE}" "${DATA}/dtfanl"
-        export NST_FILE="dtfanl"
+        cpreq "${NST_FILE}" "${DATA}/dtfinc"
+        export NST_FILE="dtfinc"
     else
         export NST_FILE="NULL"
     fi
@@ -171,7 +171,7 @@ for hr in "${!gcycle_dates[@]}"; do
     # Copy inputs from COMIN to DATA
     for ((nn = 1; nn <= ntiles; nn++)); do
         cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/fnbgso.00${nn}"
+        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/sfc_data_cycle.00${nn}"
     done
 
     "${CYCLESH}" && true
@@ -182,7 +182,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
     # Copy outputs from DATA to COMOUT
     for ((nn = 1; nn <= ntiles; nn++)); do
-        cpfs "${DATA}/fnbgso.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+        cpfs "${DATA}/sfc_data_cycle.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
     done
 
 done

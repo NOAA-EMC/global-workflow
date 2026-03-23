@@ -9,16 +9,16 @@ WW3_namelists() {
     # --------------------------------------------------------------------------- #
     # Buoy location file
 
-    if [[ -f "${PARMgfs}/wave/wave_${NET}.buoys" ]]; then
-        cpreq "${PARMgfs}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
+    if [[ -f "${PARMglobal}/wave/wave_${NET}.buoys" ]]; then
+        cpreq "${PARMglobal}/wave/wave_${NET}.buoys" "${DATA}/ww3_points.list"
     fi
 
     if [[ -f "${DATA}/ww3_points.list" ]]; then
         set +x
-        echo "ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
+        echo "ww3_points.list copied (${PARMglobal}/wave/wave_${NET}.buoys)."
         set_trace
     else
-        echo "FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
+        echo "FATAL ERROR : ww3_points.list (${PARMglobal}/wave/wave_${NET}.buoys) NOT FOUND"
         exit 12
     fi
 
@@ -69,7 +69,7 @@ WW3_namelists() {
     export WW3_RST_OUTDIR="./WW3_RESTART/"
 
     # Ensure the template exists
-    local template=${WW3_INPUT_TEMPLATE:-"${PARMgfs}/ufs/ww3_shel.nml.IN"}
+    local template=${WW3_INPUT_TEMPLATE:-"${PARMglobal}/ufs/ww3_shel.nml.IN"}
     if [[ ! -f "${template}" ]]; then
         echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
         exit 1

@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prep" -c "base prep"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -20,7 +29,7 @@ export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}} # path to tropical cyclone record
 ##############################################
 # Define COM directories
 ##############################################
-declare_from_tmpl COMOUT_OBS:COM_OBS_TMPL
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 mkdir -p "${COMOUT_OBS}"
 
 export CRES=${CASE_HIST:1}
@@ -32,7 +41,7 @@ export BKGFREQ=1 # for hourly relocation
 # Run relevant script
 ##############################################
 
-${TROPCYQCRELOSH:-${SCRgfs}/exglobal_atmos_tropcy_qc_reloc.sh}
+${TROPCYQCRELOSH:-${SCRglobal}/exglobal_atmos_tropcy_qc_reloc.sh}
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

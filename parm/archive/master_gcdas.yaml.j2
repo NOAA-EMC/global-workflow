@@ -1,6 +1,3 @@
-{% set cycle_HH = current_cycle | strftime("%H") %}
-{% set cycle_YMD = current_cycle | to_YMD %}
-{% set cycle_YMDH = current_cycle | to_YMDH %}
 {% set head = "gcdas.t" + cycle_HH + "z." %}
 
 datasets:
@@ -14,10 +11,10 @@ datasets:
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlinit.log"
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlvar.log"
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlfinal.log"
-            - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
-            - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}aerovar.yaml"
+            - "{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
+            - "{{ COMIN_CONF }}/{{ head }}aerovar.yaml"
                 {% for itile in range(1,7) %}
-            - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
+            - "{{ COMIN_CHEM_ANALYSIS }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
                 {% endfor %}
             # Analysis Master GRIB2 data
             - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"
@@ -43,8 +40,8 @@ datasets:
             - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
             {% endif %}
             {% if DO_PREP_OBS_AERO %}
-            - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
-            - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
+            - "{{ COMIN_OBS }}/{{ head }}aeroobs"
+            - "{{ COMIN_OBS }}/{{ head }}aerorawobs"
             {% endif %}
             # Forecast and post logs
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_seg0.log"
@@ -56,36 +53,32 @@ datasets:
             - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_upp_f{{ fhr3 }}.log"
                 {% endif %}  ## not WRITE_DOPOST
             # Forecast GRIB2 data
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2"
-            - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
+            - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2"
+            - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2.idx"
             # Forecast GRIB2 fluxes
-            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2"
-            - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2.idx"
+            - "{{ COMIN_ATMOS_MASTER }}/{{ head }}sflux.f{{ fhr3 }}.grib2"
+            - "{{ COMIN_ATMOS_MASTER }}/{{ head }}sflux.f{{ fhr3 }}.grib2.idx"
             # FV3 log
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}log.f{{ fhr3 }}.txt"
+            - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}log.f{{ fhr3 }}.txt"
             # Raw netCDF forecasts
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.f{{ fhr3 }}.nc"
-            - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfc.f{{ fhr3 }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}atm.f{{ fhr3 }}.nc"
+            - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}sfc.f{{ fhr3 }}.nc"
             {% endfor %}
+            {# restart_prefixes are pre-calculated in Python #}
             # Now get the restart files.
-            {% for r_time in range(restart_interval_gdas, FHMAX + 1, restart_interval_gdas) %}
-            {% set r_timedelta = (r_time | string + "H") | to_timedelta %}
-            {% set r_dt = current_cycle | add_to_datetime(r_timedelta) %}
-            {% set r_YMD = r_dt | to_YMD %}
-            {% set r_HH = r_dt | strftime("%H") %}
-            {% set r_prefix = r_YMD + "." + r_HH + "0000" %}
+            {% for r_prefix in restart_prefixes %}
             {% for itile in range(1, 7) %}
             {% for datatype in ["fv_core.res", "fv_srf_wnd.res", "fv_tracer.res", "phy_data", "sfc_data"] %}
-            - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
+            - "{{ COMIN_ATMOS_RESTART }}/{{ r_prefix }}.{{datatype}}.tile{{ itile }}.nc"
             {% if DO_CA %}
-            - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.ca_data.tile{{ itile }}.nc"
+            - "{{ COMIN_ATMOS_RESTART }}/{{ r_prefix }}.ca_data.tile{{ itile }}.nc"
             {% endif %}
             {% endfor %}
             {% endfor %}
-            - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.coupler.res"
-            - "{{ COMIN_ATMOS_RESTART | relpath(ROTDIR) }}/{{ r_prefix }}.fv_core.res.nc"
+            - "{{ COMIN_ATMOS_RESTART }}/{{ r_prefix }}.coupler.res"
+            - "{{ COMIN_ATMOS_RESTART }}/{{ r_prefix }}.fv_core.res.nc"
             {% endfor %}
 
 # Archive the EXPDIR if requested

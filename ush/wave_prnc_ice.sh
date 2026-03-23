@@ -52,7 +52,7 @@ Making ice fields.
 EOF
 
 if [[ -z "${YMDH}" ]] || [[ -z "${cycle}" ]] ||
-    [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${FIXgfs}" ]] || [[ -z "${EXECgfs}" ]] ||
+    [[ -z "${COMOUT_WAVE_PREP}" ]] || [[ -z "${FIXglobal}" ]] || [[ -z "${EXECglobal}" ]] ||
     [[ -z "${WAV_MOD_TAG}" ]] || [[ -z "${WAVEICE_FID}" ]] || [[ -z "${COMIN_OBS}" ]]; then
 
     echo 'ERROR: EXPORTED VARIABLES IN preprocessor NOT SET ***'
@@ -110,7 +110,7 @@ cpreq -f "${DATA}/ww3_prnc.ice.${WAVEICE_FID}.inp.tmpl" ww3_prnc.inp
 export pgm="${NET,,}_ww3_prnc.x"
 source prep_step
 
-"${EXECgfs}/${pgm}" 1> "prnc_${WAVEICE_FID}_${cycle}.out" 2>&1
+"${EXECglobal}/${pgm}" 1> "prnc_${WAVEICE_FID}_${cycle}.out" 2>&1
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     cat "prnc_${WAVEICE_FID}_${cycle}.out"

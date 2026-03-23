@@ -81,12 +81,12 @@
 #                   or 'test')
 #                   Default is "prod"
 #     envir_getges  String indicating environment under which GETGES utility
-#                   ush runs (see documentation in ${USHgfs}/getges.sh for
+#                   ush runs (see documentation in ${USHglobal}/getges.sh for
 #                   more information)
 #                   Default is "$envir"
 #     network_getges
 #                   String indicating job network under which GETGES utility
-#                   ush runs (see documentation in ${USHgfs}/getges.sh for
+#                   ush runs (see documentation in ${USHglobal}/getges.sh for
 #                   more information)
 #                   Default is "global" unless the center relocation processing
 #                   date/time is not a multiple of 3-hrs, then the default is
@@ -113,13 +113,13 @@
 #                   -stdoutmode ordered"
 #     RELOX         String indicating executable path for RELOCATE_MV_NVORTEX
 #                   program
-#                   Default is "${EXECgfs}/relocate_mv_nvortex"
+#                   Default is "${EXECglobal}/relocate_mv_nvortex"
 #     SUPVX         String indicating executable path for SUPVIT utility
 #                   program
-#                   Default is "${EXECgfs}/supvit.x"
+#                   Default is "${EXECglobal}/supvit.x"
 #     GETTX         String indicating executable path for GETTRK utility
 #                   program
-#                   Default is "${EXECgfs}/gettrk"
+#                   Default is "${EXECglobal}/gettrk"
 #     BKGFREQ       Frequency of background files for relocation
 #                   Default is "3"
 #     SENDDBN       String when set to "YES" alerts output files to $COMSP
@@ -139,12 +139,12 @@
 #
 #   Modules and files referenced:
 #                  Herefile: RELOCATE_GES
-#                  ${USHgfs}/tropcy_relocate_extrkr.sh
-#                  ${USHgfs}/getges.sh
+#                  ${USHglobal}/tropcy_relocate_extrkr.sh
+#                  ${USHglobal}/getges.sh
 #                  /usr/bin/poe
 #                  postmsg
 #                  $DATA/prep_step (here and in child script
-#                        ${USHgfs}/tropcy_relocate_extrkr.sh)
+#                        ${USHglobal}/tropcy_relocate_extrkr.sh)
 #          NOTE: The last script above is not a required utility.
 #                If $DATA/prep_step not found, a scaled down version of it is
 #                executed in-line.
@@ -152,7 +152,7 @@
 #     programs   :
 #          RELOCATE_MV_NVORTEX - executable $RELOX
 #                                 T126 GRIB global land/sea mask:
-#                                          ${FIXgfs}/am/global_slmask.t126.grb
+#                                          ${FIXglobal}/am/global_slmask.t126.grb
 #          SUPVIT               - executable $SUPVX
 #          GETTRK               - executable $GETTX
 #
@@ -214,10 +214,10 @@ GRIBVERSION=${GRIBVERSION:-"grib2"}
 pgmout=${pgmout:-/dev/null}
 tstsp=${tstsp:-/tmp/null/}
 tmmark=${tmmark:-tm00}
-RELOX=${RELOX:-${EXECgfs}/relocate_mv_nvortex}
+RELOX=${RELOX:-${EXECglobal}/relocate_mv_nvortex}
 export BKGFREQ=${BKGFREQ:-1}
-SUPVX=${SUPVX:-${EXECgfs}/supvit.x}
-GETTX=${GETTX:-${EXECgfs}/gettrk}
+SUPVX=${SUPVX:-${EXECglobal}/supvit.x}
+GETTX=${GETTX:-${EXECglobal}/gettrk}
 
 ################################################
 # EXECUTE TROPICAL CYCLONE RELOCATION PROCESSING
@@ -253,7 +253,7 @@ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 EOF
-        "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" \
+        "${USHglobal}/getges.sh" -e "${envir_getges}" -n "${network_getges}" \
             -v "${run_date}" -f "${fhr}" -t tcvges "tcvitals.m${fhr}"
         cat << EOF
 
@@ -307,7 +307,7 @@ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 EOF
-        "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" \
+        "${USHglobal}/getges.sh" -e "${envir_getges}" -n "${network_getges}" \
             -v "${run_date}" -t "${stype}" "${sges}"
         errges=$?
         if [[ "${errges}" -ne 0 ]]; then
@@ -330,7 +330,7 @@ EOF
         #  ----------------------------------------------------------------------------
 
         if [[ ${fhr} -eq 0 ]]; then
-            "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${run_date}" \
+            "${USHglobal}/getges.sh" -e "${envir_getges}" -n "${network_getges}" -v "${run_date}" \
                 -t "${stype}" > "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}"
             cpfs "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pre-relocate_pathname.${tmmark}" \
                 "${COMOUT_OBS}/${RUN}.${cycle}.sgesprep_pathname.${tmmark}"
@@ -350,7 +350,7 @@ VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 EOF
-        "${USHgfs}/getges.sh" -e "${envir_getges}" -n "${network_getges}" \
+        "${USHglobal}/getges.sh" -e "${envir_getges}" -n "${network_getges}" \
             -v "${run_date}" -t "${ptype}" "${pges}"
         errges=$?
         if [[ "${errges}" -ne 0 ]]; then
@@ -421,14 +421,14 @@ else
     #   $DATA/$RUN.$cycle.relocate.model_track.tm00
     #  --------------------------------------------
 
-    "${USHgfs}/tropcy_relocate_extrkr.sh"
+    "${USHglobal}/tropcy_relocate_extrkr.sh"
     err=$?
     if [[ "${err}" -ne 0 ]]; then
 
         #  problem: script tropcy_relocate_extrkr.sh failed
         #  ------------------------------------------------
         export err
-        echo "FATAL ERROR: ${USHgfs}/tropcy_relocate_extrkr.sh failed"
+        echo "FATAL ERROR: ${USHglobal}/tropcy_relocate_extrkr.sh failed"
         err_exit "${msg}"
     fi
 

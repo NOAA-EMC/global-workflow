@@ -1,10 +1,23 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "snowanl" -c "base snowanl"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -16,20 +29,18 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_SNOW_ANALYSIS:COM_SNOW_ANALYSIS_TMPL \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
 
 mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
+EXSCRIPT=${SNOWANLPY:-${SCRglobal}/exglobal_snow_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

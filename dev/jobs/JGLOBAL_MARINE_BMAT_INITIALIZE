@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 # Create the directory to hold the BMAT initialization data
@@ -11,11 +12,23 @@ if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 
 # source config.base, config.ocnanal and config.marinebmatinit
 # and pass marinebmat to ${machine}.env
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marinebmat marinebmatinit"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marinebmat marinebmatinit"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
@@ -37,17 +50,14 @@ fi
 ##############################################
 
 # Generate COM variables from templates
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ice/history"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_BMATRIX:COM_OCEAN_BMATRIX_TMPL \
-    COMOUT_ICE_BMATRIX:COM_ICE_BMATRIX_TMPL
+declare -rx COMOUT_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean"
+declare -rx COMOUT_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
 
 mkdir -p "${COMOUT_OCEAN_BMATRIX}"
 mkdir -p "${COMOUT_ICE_BMATRIX}"
@@ -55,7 +65,7 @@ mkdir -p "${COMOUT_ICE_BMATRIX}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat_initialize.py}
+EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRglobal}/exglobal_marinebmat_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

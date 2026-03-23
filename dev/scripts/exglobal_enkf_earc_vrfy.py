@@ -3,7 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
-from pygfs.utils.archive_vars import ArchiveVrfyVars
+from pygfs.utils.archive_vrfy_vars import ArchiveVrfyVars
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, chdir, logit
 
 # initialize root logger

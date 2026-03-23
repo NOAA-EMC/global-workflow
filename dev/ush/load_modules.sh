@@ -34,16 +34,16 @@ fi
 # Setup runtime environment by loading modules
 ulimit_s=$(ulimit -S -s)
 
-# Test if HOMEgfs is defined.  If not, then try to determine it with git rev-parse
+# Test if HOMEglobal is defined.  If not, then try to determine it with git rev-parse
 _unset_homegfs="NO"
-if [[ -z ${HOMEgfs+x} ]]; then
-    echo "INFO: HOMEgfs is not defined.  Attempting to find the global-workflow root directory"
-    # HOMEgfs will be removed from the environment at the end of this script
+if [[ -z ${HOMEglobal+x} ]]; then
+    echo "INFO: HOMEglobal is not defined.  Attempting to find the global-workflow root directory"
+    # HOMEglobal will be removed from the environment at the end of this script
     _unset_homegfs="YES"
 
     script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-    HOMEgfs=$(cd "${script_dir}" && git rev-parse --show-toplevel)
-    export HOMEgfs
+    HOMEglobal=$(cd "${script_dir}" && git rev-parse --show-toplevel)
+    export HOMEglobal
     err=$?
     if [[ ${err} -ne 0 ]]; then
         is_git_dir=$(cd -- "${script_dir}" &> /dev/null && git rev-parse --is-inside-work-tree)
@@ -59,14 +59,14 @@ if [[ -z ${HOMEgfs+x} ]]; then
 fi
 
 # Find module command and purge:
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/ush/module-setup.sh"
+source "${HOMEglobal}/ush/detect_machine.sh"
+source "${HOMEglobal}/ush/module-setup.sh"
 
 # Handle different module types
 case "${MODULE_TYPE}" in
     "ufswm")
         # UFS Weather Model modules - special handling
-        module use "${HOMEgfs}/sorc/ufs_model.fd/modulefiles"
+        module use "${HOMEglobal}/sorc/ufs_model.fd/modulefiles"
         module load "ufs_${MACHINE_ID}.intel"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -84,7 +84,7 @@ case "${MODULE_TYPE}" in
             module load wgrib2
         else
             export UTILROOT=${prod_util_ROOT}
-            source "${HOMEgfs}/versions/run.ver"
+            source "${HOMEglobal}/versions/run.ver"
             module load "wgrib2/${wgrib2_ver}"
         fi
         export WGRIB2=wgrib2
@@ -95,15 +95,15 @@ case "${MODULE_TYPE}" in
 
     "ufsda")
         # UFSDA modules - special handling
-        module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
+        module use "${HOMEglobal}/sorc/gdas.cd/modulefiles"
 
         case "${MACHINE_ID}" in
-            "hera" | "orion" | "hercules" | "wcoss2" | "gaeac5" | "gaeac6" | "ursa" | "noaacloud")
+            "hera" | "orion" | "hercules" | "wcoss2" | "gaeac6" | "ursa" | "noaacloud")
                 #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
                 if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
                     export LMOD_TMOD_FIND_FIRST=yes
                     # TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
-                    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgfs}/sorc/gdas.cd/build/lib"
+                    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/sorc/gdas.cd/build/lib"
                     # TODO: Remove LD_LIBRARY_PATH line as soon as permanent solution is available
                     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.29/ofi/intel/2022.1/lib"
                 fi
@@ -149,8 +149,8 @@ case "${MODULE_TYPE}" in
         # setup python path for ioda utilities
         # TODO: a better solution should be created for setting paths to package python scripts
         # shellcheck disable=SC2311
-        pyiodaPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-        pybufrPATH="${HOMEgfs}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/site-packages/"
+        pyiodaPATH="${HOMEglobal}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
+        pybufrPATH="${HOMEglobal}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/site-packages/"
         PYTHONPATH="${pyiodaPATH}:${pybufrPATH}${PYTHONPATH:+:${PYTHONPATH}}"
         export PYTHONPATH
         ;;
@@ -158,14 +158,14 @@ case "${MODULE_TYPE}" in
     "run" | "gsi" | "verif" | "setup" | "upp")
 
         # Test that the version file exists
-        if [[ ! -f "${HOMEgfs}/versions/run.ver" ]]; then
-            echo "FATAL ERROR: ${HOMEgfs}/versions/run.ver does not exist!"
+        if [[ ! -f "${HOMEglobal}/versions/run.ver" ]]; then
+            echo "FATAL ERROR: ${HOMEglobal}/versions/run.ver does not exist!"
             echo "HINT: Run link_workflow.sh first."
             exit 1
         fi
 
         # Load our modules:
-        module use "${HOMEgfs}/modulefiles"
+        module use "${HOMEglobal}/modulefiles"
 
         # Determine target module based on type and machine
         target_module="gw_${MODULE_TYPE}.${MACHINE_ID}"
@@ -183,7 +183,7 @@ case "${MODULE_TYPE}" in
 
         # Source versions file (except for upp)
         if [[ "${mod_type}" != "upp" ]]; then
-            source "${HOMEgfs}/versions/run.ver"
+            source "${HOMEglobal}/versions/run.ver"
         fi
 
         if [[ -n "${target_module}" ]]; then
@@ -216,20 +216,20 @@ case "${MODULE_TYPE}" in
 
 esac
 
-# Set up the PYTHONPATH to include wxflow from HOMEgfs
-if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
+# Set up the PYTHONPATH to include wxflow from HOMEglobal
+if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
+    PYTHONPATH="${HOMEglobal}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
 fi
 
-# Add HOMEgfs/ush/python to PYTHONPATH
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
+# Add HOMEglobal/ush/python to PYTHONPATH
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/ush/python"
 export PYTHONPATH
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"
 unset ulimit_s
 
-# Unset HOMEgfs if it was not set at the beginning of this script
+# Unset HOMEglobal if it was not set at the beginning of this script
 if [[ ${_unset_homegfs} == "YES" ]]; then
-    unset HOMEgfs
+    unset HOMEglobal
 fi

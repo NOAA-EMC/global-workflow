@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
-
+set -x
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     err_exit "${status}"
@@ -11,7 +11,13 @@ fi
 ###############################################################
 export job="prep"
 export jobid="${job}.$$"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "prep" -c "base prep"
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+source "${HOMEglobal}/dev/ush/jjob_shell_setup.sh"
 
 # Strip 'enkf' from RUN for pulling data
 RUN_local="${RUN/enkf/}"
@@ -28,25 +34,23 @@ GDUMP="gdas"
 
 export OPREFIX="${RUN_local}.t${cyc}z."
 
-RUN=${RUN_local} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL \
-    COMOUT_OBS:COM_OBS_TMPL \
-    COMINobsproc:COM_OBSPROC_TMPL \
-    COMINobsforge:COM_OBSFORGE_TMPL \
-    COMIN_TCVITAL:COM_TCVITAL_TMPL \
-    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
+declare -rx COMINobsproc="${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos"
+declare -rx COMINobsforge="${IODADIR}/${RUN_local}.${PDY}/${cyc}"
+declare -rx COMIN_TCVITAL="${DMPDIR}/${RUN_local}.${PDY}/${cyc}/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/analysis/atmos"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMOUT_OBS_PREV:COM_OBS_TMPL \
-    COMINobsproc_PREV:COM_OBSPROC_TMPL \
-    COMOUT_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMOUT_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
+declare -rx COMINobsproc_PREV="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
 mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
 # Copy IODA files to ROTDIR
 if [[ ${USE_IODADIR:-"NO"} == "YES" ]]; then
-    "${HOMEgfs}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
+    "${HOMEglobal}/ush/getioda.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsforge}" "${COMOUT_OBS}"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"
@@ -59,7 +63,7 @@ if [[ "${RUN_local}" == "gcdas" ]]; then
 fi
 
 # Copy dump files to ROTDIR
-"${HOMEgfs}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
+"${HOMEglobal}/ush/getdump.sh" "${PDY}" "${cyc}" "${RUN_local}" "${COMINobsproc}" "${COMOUT_OBS}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -67,7 +71,7 @@ fi
 
 #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
 if [[ ! -s "${COMINobsproc_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
-    "${HOMEgfs}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
+    "${HOMEglobal}/ush/getdump.sh" "${gPDY}" "${gcyc}" "${GDUMP}" "${COMINobsproc_PREV}" "${COMOUT_OBS_PREV}"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"
@@ -100,7 +104,7 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
 
     rm -f "${COMOUT_OBS}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00"
 
-    "${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
+    "${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"
@@ -136,8 +140,8 @@ rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
 rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
 rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
 
-RUN="gdas" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GDAS:COM_ATMOS_HISTORY_TMPL
-RUN="gfs" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMIN_ATMOS_HISTORY_GFS:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_GDAS="${ROTDIR}/gdas.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMIN_ATMOS_HISTORY_GFS="${ROTDIR}/gfs.${PDY}/${cyc}/model/atmos/history"
 
 export job="j${RUN_local}_prep_${cyc}"
 
@@ -149,6 +153,19 @@ export COMINgdas=${COMIN_ATMOS_HISTORY_GDAS}
 export COMINgfs=${COMIN_ATMOS_HISTORY_GFS}
 
 export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
+
+if [[ ${DOENKFONLY_ATM:-"NO"} == "YES" ]]; then
+    declare -rx COMIN_ATMOS_HISTORY_ENS_STAT_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
+    declare -rx COMIN_ATMOS_HISTORY_ENS_MEM001_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/mem001/model/atmos/history"
+    declare -rx COMOUT_ATMOS_HISTORY_DET_PREV="${ROTDIR}/gdas.${gPDY}/${gcyc}/model/atmos/history"
+    mkdir -p "${COMOUT_ATMOS_HISTORY_DET_PREV}"
+    ln -sf "${COMIN_ATMOS_HISTORY_ENS_MEM001_PREV}/enkfgdas.t${gcyc}z.log.f003.txt" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.log.f003.txt"
+    ln -sf "${COMIN_ATMOS_HISTORY_ENS_MEM001_PREV}/enkfgdas.t${gcyc}z.log.f006.txt" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.log.f006.txt"
+    ln -sf "${COMIN_ATMOS_HISTORY_ENS_MEM001_PREV}/enkfgdas.t${gcyc}z.log.f009.txt" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.log.f009.txt"
+    ln -sf "${COMIN_ATMOS_HISTORY_ENS_STAT_PREV}/enkfgdas.t${gcyc}z.ensmean.atm.f003.nc" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.atm.f003.nc"
+    ln -sf "${COMIN_ATMOS_HISTORY_ENS_STAT_PREV}/enkfgdas.t${gcyc}z.ensmean.atm.f006.nc" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.atm.f006.nc"
+    ln -sf "${COMIN_ATMOS_HISTORY_ENS_STAT_PREV}/enkfgdas.t${gcyc}z.ensmean.atm.f009.nc" "${COMOUT_ATMOS_HISTORY_DET_PREV}/gdas.t${gcyc}z.atm.f009.nc"
+fi
 
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
 # Do not fail on external errors
@@ -200,7 +217,7 @@ fi
 # If requested, create radiance bias correction files for JEDI
 if [[ ${RUN} == "gdas" && ${CONVERT_BIASCOR:-"NO"} == "YES" ]]; then
     cd "${DATAROOT}" || true
-    "${HOMEgfs}/ush/gsi_satbias2ioda_all.sh"
+    "${HOMEglobal}/ush/gsi_satbias2ioda_all.sh"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "gsi_satbias2ioda failed, ABORT!"

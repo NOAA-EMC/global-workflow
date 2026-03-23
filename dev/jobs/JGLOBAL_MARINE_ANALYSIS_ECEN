@@ -1,14 +1,27 @@
 #!/bin/bash
+set -x
 
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlecen" -c "base marineanlecen"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -16,18 +29,15 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 
-RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_ENS_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_ENS_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/ice/history"
 
-RUN=${GDUMP} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_ANALYSIS:COM_OCEAN_ANALYSIS_TMPL \
-    COMIN_ICE_RESTART:COM_ICE_RESTART_TMPL \
-    COMOUT_ICE_ANALYSIS:COM_ICE_ANALYSIS_TMPL
+declare -rx COMOUT_OCEAN_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ocean"
+declare -rx COMIN_ICE_RESTART="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
+declare -rx COMOUT_ICE_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
 
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "enkfgfs" ]]; then
@@ -41,7 +51,7 @@ fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNCENPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_ecen.py}
+EXSCRIPT=${GDASOCNCENPY:-${HOMEglobal}/scripts/exglobal_marine_analysis_ecen.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
@@ -24,19 +33,16 @@ export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-RUN=${RUN/enkf/} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
 
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-MEMDIR="ensstat" RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
+declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
 ###############################################################
 # Run relevant script
 
-${ENKFRECENSH:-${SCRgfs}/exglobal_enkf_ecen.sh} && true
+${ENKFRECENSH:-${SCRglobal}/exglobal_enkf_ecen.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

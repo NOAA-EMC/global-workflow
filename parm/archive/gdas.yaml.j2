@@ -41,40 +41,40 @@ gdas:
             {% endif %}
 
         # Analysis Master GRIB2 data
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}master.analysis.grib2"
+        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}master.analysis.grib2.idx"
 
         # Analysis GRIB2 (sub-sampled) data
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.analysis.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.analysis.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
 
         # Analysis netCDF (raw) data
             {% if DO_JEDIATMVAR %}
                {% if ATMINC_GRID == 'gaussian' %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.sfc.a006.nc"
                {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.atm.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}jedi_analysis.sfc.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}jedi_analysis.sfc.a006.nc"
                {% endif %}
             {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.atm.a006.nc"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}analysis.sfc.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.atm.a006.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.sfc.a006.nc"
             {% endif %}
 
             {% if DOHYBVAR %}
         # Ensemble-resolution analysis
                 {% if DOIAU %}
         # Ensemble-resolution IAU analyses
-                    {% for fhr in IAUFHRS %}
+                    {% for fhr in iaufhrs_str %}
                        {% if not DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}ensres_analysis.atm.a{{ '%03d' % fhr }}.nc"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}ensres_analysis.atm.a{{ fhr }}.nc"
                        {% endif %}
                     {% endfor %}
                 {% endif %}
@@ -83,70 +83,70 @@ gdas:
 
         # Analysis state
             {% if DO_JEDIATMVAR %}
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.atm.yaml"
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}anlvar.fv3.atm.yaml"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
-        - "{{ COMIN_ATMOS_ANLMON | relpath(ROTDIR) }}/{{ head }}atmos_analysis.ioda_hofx_stats.tar.gz"
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.atm.yaml"
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.fv3.atm.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_ATMOS_ANLMON }}/{{ head }}atmos_analysis.ioda_hofx_stats.tar.gz"
             {% else %}
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}gsistat.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}cnvstat.tar"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_air.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_pc.txt"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}abias_int.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}gsistat.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}cnvstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_air.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_pc.txt"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_int.txt"
             {% endif %}
             {% if DO_AERO_ANL %}
-        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
-        - "{{ COMIN_CHEM_ANLMON | relpath(ROTDIR) }}/{{ head }}aero_analysis.ioda_hofx_stats.tar.gz"
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}aerovar.yaml"
+        - "{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_CHEM_ANLMON }}/{{ head }}aero_analysis.ioda_hofx_stats.tar.gz"
+        - "{{ COMIN_CONF }}/{{ head }}aerovar.yaml"
                 {% for itile in range(1,7) %}
-        - "{{ COMIN_CHEM_ANALYSIS | relpath(ROTDIR) }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
+        - "{{ COMIN_CHEM_ANALYSIS }}/aeroinc.{{ cycle_YMD }}.{{ cycle_HH }}0000.fv_tracer.res.tile{{ itile }}.nc"
                 {% endfor %}
             {% endif %}
             {% if DO_PREP_OBS_AERO %}
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aeroobs"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}aerorawobs"
+        - "{{ COMIN_OBS }}/{{ head }}aeroobs"
+        - "{{ COMIN_OBS }}/{{ head }}aerorawobs"
             {% endif %}
             {% if DO_JEDIOCNVAR %}
-        - "{{ COMIN_OCEAN_ANALYSIS | relpath(ROTDIR) }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
             {% endif %}
 
         # Snow analysis data
             {% if DO_JEDISNOWDA %}
                 {% for itile in range(1,7) %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ current_cycle | to_fv3time }}.snow_increment.sfc_data.tile{{ itile }}.nc"
+        - "{{ COMIN_SNOW_ANALYSIS }}/{{ cycle_fv3time }}.snow_increment.sfc_data.tile{{ itile }}.nc"
                 {% endfor %}
-        - "{{ COMIN_SNOW_ANALYSIS | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx.tar.gz"
-        - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
-        - "{{ COMIN_SNOW_ANLMON | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx_stats.tar.gz"
+        - "{{ COMIN_SNOW_ANALYSIS }}/{{ head }}snow_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_CONF }}/{{ head }}snowanlvar.yaml"
+        - "{{ COMIN_SNOW_ANLMON }}/{{ head }}snow_analysis.ioda_hofx_stats.tar.gz"
             {% endif %}
 
         # Ozone verification
             {% if DO_VERFOZN %}
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
+        - "{{ COMIN_ATMOS_OZNMON }}/time/bad_cnt.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON }}/time/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON }}/time/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON }}/time/stdout.time.tar.gz"
+        - "{{ COMIN_ATMOS_OZNMON }}/horiz/stdout.horiz.tar.gz"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfozn.log"
             {% endif %}
 
         # Radiance verification
             {% if DO_VERFRAD %}
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON }}/radmon_angle.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON }}/radmon_bcoef.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON }}/radmon_bcor.tar.gz"
+        - "{{ COMIN_ATMOS_RADMON }}/radmon_time.tar.gz"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfrad.log"
             {% endif %}
 
         # Minimization monitor
             {% if DO_VMINMON %}
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.costs.txt"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.cost_terms.txt"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
-        - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.costs.txt"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.cost_terms.txt"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.gnorms.ieee_d"
+        - "{{ COMIN_ATMOS_MINMON }}/{{ cycle_YMDH }}.reduction.ieee_d"
+        - "{{ COMIN_ATMOS_MINMON }}/gnorm_data.txt"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_vminmon.log"
             {% endif %}
         {% endif %}  # End of cycled data
@@ -161,39 +161,39 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_upp_f{{ fhr3 }}.log"
             {% endif %}  ## not WRITE_DOPOST
         # Forecast GRIB2 data
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ fhr3 }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_b.0p25.f{{ fhr3 }}.grib2.idx"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ fhr3 }}.grib2"
-        - "{{ COMIN_ATMOS_GRIB_1p00 | relpath(ROTDIR) }}/{{ head }}pres_b.1p00.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_b.0p25.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.f{{ fhr3 }}.grib2.idx"
         # Forecast GRIB2 fluxes
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2"
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}sflux.f{{ fhr3 }}.grib2.idx"
+        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}sflux.f{{ fhr3 }}.grib2"
+        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}sflux.f{{ fhr3 }}.grib2.idx"
         # FV3 log
-        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}log.f{{ fhr3 }}.txt"
+        - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}log.f{{ fhr3 }}.txt"
         # Raw netCDF forecasts
-        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}atm.f{{ fhr3 }}.nc"
-        - "{{ COMIN_ATMOS_HISTORY | relpath(ROTDIR) }}/{{ head }}sfc.f{{ fhr3 }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}atm.f{{ fhr3 }}.nc"
+        - "{{ COMIN_ATMOS_HISTORY }}/{{ head }}sfc.f{{ fhr3 }}.nc"
         {% endfor %}
 
 
         # Forecast Master GRIB2 data for F006
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f003.grib2"
-        - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.f006.grib2"
+        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}master.f003.grib2"
+        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}master.f006.grib2"
     optional:
         {% if MODE == "cycled" %}
             # Ozone and Radiance diagnostic files may not always be created
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}oznstat.tar"
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}oznstat.tar"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}radstat.tar"
             # Radiance verification (only created if there are problems)
             {% if DO_VERFRAD %}
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_pen.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/low_count.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/warning.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON }}/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON }}/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON }}/low_count.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_RADMON }}/warning.{{ cycle_YMDH }}"
             {% endif %}
 
             {% if DO_VERFOZN %}
@@ -209,10 +209,10 @@ gdas:
                         {% set suffix = "" %}
                     {% endif %}
                     {% for type in oznmon_types %}
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.analysis.ctl"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.analysis.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.guess.ctl"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/{{ group }}/{{ type }}.guess.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COMIN_ATMOS_OZNMON }}/{{ group }}/{{ type }}.analysis.ctl"
+        - "{{ COMIN_ATMOS_OZNMON }}/{{ group }}/{{ type }}.analysis.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
+        - "{{ COMIN_ATMOS_OZNMON }}/{{ group }}/{{ type }}.guess.ctl"
+        - "{{ COMIN_ATMOS_OZNMON }}/{{ group }}/{{ type }}.guess.{{ cycle_YMDH }}.ieee_d{{ suffix }}"
                     {% endfor %}
                 {% endfor %}
             {% endif %}

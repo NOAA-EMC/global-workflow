@@ -32,7 +32,7 @@ function _usage() {
     -D Delete the RUNTESTS and DATAROOT directories if they already exist
 
     -Y /path/to/directory/with/YAMLs
-       If this option is not specified, then the \${HOMEgfs}/dev/ci/cases/pr
+       If this option is not specified, then the \${HOMEglobal}/dev/ci/cases/pr
        directory is used.
 
     -G Run all valid GFS cases in the specified YAML directory.
@@ -54,7 +54,7 @@ function _usage() {
 
     -A "HPC account name"  Set the HPC account name.
        If this is not set, the default in
-       \$HOMEgfs/dev/ci/platform/config.\$machine
+       \$HOMEglobal/dev/ci/platform/config.\$machine
        will be used.
 
     -c Append the chosen set of tests to your existing crontab
@@ -84,7 +84,7 @@ EOF
 set -eu
 
 # Set default options
-HOMEgfs=""
+HOMEglobal=""
 _specified_home=false
 _build=false
 _compute_build=false
@@ -92,7 +92,7 @@ _build_flags=""
 _update_submods=false
 declare -a _yaml_list=("C48_ATM")
 _specified_yaml_list=false
-_yaml_dir="" # Will be set based off of HOMEgfs if not specified explicitly
+_yaml_dir="" # Will be set based off of HOMEglobal if not specified explicitly
 _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
@@ -117,10 +117,10 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
     while getopts ":H:bBDuy:Y:GESCA:ce:t:vVdh" option; do
         case "${option}" in
             H)
-                HOMEgfs="${OPTARG}"
+                HOMEglobal="${OPTARG}"
                 _specified_home=true
-                if [[ ! -d "${HOMEgfs}" ]]; then
-                    echo "Specified HOMEgfs directory (${HOMEgfs}) does not exist"
+                if [[ ! -d "${HOMEglobal}" ]]; then
+                    echo "Specified HOMEglobal directory (${HOMEglobal}) does not exist"
                     exit 1
                 fi
                 ;;
@@ -186,6 +186,18 @@ function send_email() {
 
     echo "${_body}" | mail -s "${_subject}" "${_email}"
 }
+
+# Function to notify user about REPLYTO for scrontab workflows
+function mail_warning() {
+    if [[ "${_use_scron}" == true && "${_set_email}" == false && -z "${REPLYTO:-}" ]]; then
+        echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport REPLYTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
+    fi
+}
+
+# Export REPLYTO if email was provided via -e flag and is not empty
+if [[ "${_set_email}" == "true" && -n "${_email}" ]]; then
+    export REPLYTO="${_email}"
+fi
 
 function delete_dir() {
     local dir_to_rm="${1:-}"
@@ -267,18 +279,18 @@ if [[ "${_run_all_gfs}" == "true" ||
     _yaml_list=()
 fi
 
-# Set HOMEgfs if it wasn't set by the user
+# Set HOMEglobal if it wasn't set by the user
 if [[ "${_specified_home}" == "false" ]]; then
     script_relpath="$(dirname "${BASH_SOURCE[0]}")"
-    HOMEgfs="$(cd "${script_relpath}" && git rev-parse --show-toplevel)"
+    HOMEglobal="$(cd "${script_relpath}" && git rev-parse --show-toplevel)"
     if [[ "${_verbose}" == "true" ]]; then
-        printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
+        printf "Setting HOMEglobal to %s\n\n" "${HOMEglobal}"
     fi
 fi
 
-# Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set
+# Set the _yaml_dir to HOMEglobal/dev/ci/cases/pr if not explicitly set
 if [[ "${_specified_yaml_dir}" == false ]]; then
-    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
+    _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
 function select_all_yamls() {
@@ -414,9 +426,9 @@ fi
 if [[ "${_debug}" == "true" ]]; then
     set +x
 fi
-if ! source "${HOMEgfs}/dev/ush/gw_setup.sh" >&stdout; then
+if ! source "${HOMEglobal}/dev/ush/gw_setup.sh" >&stdout; then
     cat stdout
-    echo "Failed to source ${HOMEgfs}/dev/ush/gw_setup.sh!"
+    echo "Failed to source ${HOMEglobal}/dev/ush/gw_setup.sh!"
     exit 7
 fi
 if [[ "${_verbose}" == "true" ]]; then
@@ -428,9 +440,9 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 set -u
 machine=${MACHINE_ID}
-platform_config="${HOMEgfs}/dev/ci/platforms/config.${machine}"
+platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
 if [[ -f "${platform_config}" ]]; then
-    source "${HOMEgfs}/dev/ci/platforms/config.${machine}"
+    source "${HOMEglobal}/dev/ci/platforms/config.${machine}"
 else
     if [[ "${_set_account}" == "false" ]]; then
         echo "ERROR Unknown HPC account!  Please use the -A option to specify."
@@ -438,9 +450,9 @@ else
     fi
 fi
 
-# If _yaml_dir is not set, set it to $HOMEgfs/dev/ci/cases/pr
+# If _yaml_dir is not set, set it to $HOMEglobal/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
-    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
+    _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
 # Build the system if requested
@@ -451,14 +463,14 @@ if [[ "${_build}" == "true" ]]; then
         _compute_build_flag="-c -A ${HPC_ACCOUNT}"
     fi
     #shellcheck disable=SC2086,SC2248
-    ${HOMEgfs}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
+    ${HOMEglobal}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
 fi
 
 # Link the workflow silently unless there's an error
 if [[ "${_verbose}" == true ]]; then
     printf "Linking the workflow\n\n"
 fi
-if ! "${HOMEgfs}/sorc/link_workflow.sh" >&stdout; then
+if ! "${HOMEglobal}/sorc/link_workflow.sh" >&stdout; then
     cat stdout
     echo "link_workflow.sh failed!"
     if [[ "${_set_email}" == true ]]; then
@@ -584,9 +596,9 @@ for _case in "${_yaml_list[@]}"; do
 
     if [[ "${_use_scron}" == true ]]; then
         {
-            grep "^#.*${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+            grep "^####" "${cron_file}"
             grep "^#SCRON" "${cron_file}"
-            grep "${scron_sh_file}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
+            grep "${scron_sh_file}" "${cron_file}"
         } >> tests.cron
     else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
@@ -594,10 +606,25 @@ for _case in "${_yaml_list[@]}"; do
 done
 echo
 
+# Add MAILTO to tests.cron for regular crontab
+if [[ "${_use_scron}" == false ]]; then
+    if [[ "${_set_email}" == "true" ]]; then
+        # Use email from -e flag
+        sed -i "1i MAILTO=\"${_email}\"" tests.cron
+    elif [[ -n "${REPLYTO:-}" ]]; then
+        # Use REPLYTO environment variable
+        sed -i "1i MAILTO=\"${REPLYTO}\"" tests.cron
+    else
+        # Use empty MAILTO
+        sed -i "1i MAILTO=\"\"" tests.cron
+    fi
+fi
+
 # Update the cron
 if [[ "${_update_cron}" == "true" ]]; then
     printf "Updating the existing crontab\n\n"
     echo
+    mail_warning
     rm -f existing.cron final.cron "${_verbose_flag}"
     touch existing.cron final.cron
 
@@ -610,16 +637,42 @@ if [[ "${_update_cron}" == "true" ]]; then
         echo "#######################"
     fi
 
+    # Save existing MAILTO before removing it
+    existing_mailto=$(grep "^MAILTO=" existing.cron 2> /dev/null | head -1 || echo "")
+
+    # Remove ALL MAILTO lines from existing.cron and tests.cron to prevent duplicates
+    sed -i '/^MAILTO=/d' existing.cron 2> /dev/null || true
+    sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
+
     if [[ "${_set_email}" == "true" ]]; then
-        # Replace the existing email in the crontab
+        # For scrontab, REPLYTO is already exported earlier; for crontab, set MAILTO
         if [[ "${_verbose}" == "true" ]]; then
             printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
         fi
 
-        if [[ "${_use_scron}" == true ]]; then
-            sed -i "s/.*--mail-user.*/#SCRON --mail-user=\"${_email}\"/" tests.cron
-        else
-            sed -i "s/^MAILTO.*/MAILTO=\"${_email}\"/" existing.cron
+        if [[ "${_use_scron}" == false ]]; then
+            # For regular crontab, set MAILTO at the top of final.cron
+            echo "MAILTO=\"${_email}\"" > final.cron
+        fi
+    else
+        # Preserve existing MAILTO if present with non-empty value (only for regular crontab)
+        if [[ "${_use_scron}" == false ]]; then
+            # Check if there was a MAILTO with a non-empty value in the original crontab
+            # Extract the email value from MAILTO="email" or MAILTO=email
+            if [[ -n "${existing_mailto}" ]]; then
+                # Extract email value between quotes or after =
+                existing_email=$(echo "${existing_mailto}" | sed -n 's/^MAILTO=["'\'']*\([^"'\'']*\)["'\'']*$/\1/p')
+            else
+                existing_email=""
+            fi
+
+            if [[ -n "${existing_email}" ]]; then
+                echo "${existing_mailto}" > final.cron
+            elif [[ -n "${REPLYTO:-}" ]]; then
+                echo "MAILTO=\"${REPLYTO}\"" > final.cron
+            else
+                echo "MAILTO=\"\"" > final.cron
+            fi
         fi
     fi
 
@@ -634,10 +687,12 @@ if [[ "${_update_cron}" == "true" ]]; then
 
     ${_crontab_cmd} final.cron
 else
+    mail_warning
     _message="Add the following to your crontab or scrontab to start running:"
     _cron_tests=$(cat tests.cron)
     _message="${_message}"$'\n'"${_cron_tests}"
     echo "${_message}"
+    echo
     if [[ "${_set_email}" == true ]]; then
         final_message="${final_message:-}"$'\n'"${_message}"
     fi

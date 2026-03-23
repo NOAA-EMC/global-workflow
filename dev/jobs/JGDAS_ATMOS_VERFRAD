@@ -1,9 +1,18 @@
 #! /usr/bin/env bash
+set -x
 
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "verfrad" -c "base verfrad"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 #############################################
 #  determine PDY and cyc for previous cycle
@@ -17,12 +26,9 @@ export gcyc=${GDATE:8:2}
 # COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_RADMON:COM_ATMOS_RADMON_TMPL
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_RADMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/radmon"
+declare -rx COMIN_ATMOS_RADMON_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/products/atmos/radmon"
 
 export biascr="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias.txt"
 export radstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat.tar"
@@ -33,7 +39,7 @@ if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p "${TANKverf_rad}"; fi
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgdas_atmos_verfrad.sh" && true
+"${SCRglobal}/exgdas_atmos_verfrad.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

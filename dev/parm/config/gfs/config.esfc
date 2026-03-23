@@ -14,8 +14,8 @@ if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
 fi
 
 # With IAU only need surface analysis at start of IAU window.
-# Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
-# center of analysis window.  
+# Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at
+# center of analysis window.
 
 if [[ ${DOIAU_ENKF} = "YES" ]]; then
    export DOSFCANL_ENKF="NO"
@@ -26,20 +26,25 @@ if [[ "${DO_JEDIATMENS}" == "YES" || "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
-if [[ "${RUN/enkf}" == "gfs" ]]; then  
+# Turn off NST if DOENKFONLY_ATM is YES
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+   export DONST="NO"
+fi
+
+if [[ "${RUN/enkf}" == "gfs" ]]; then
     echo "turning off gsi soilda for gfs run"
     DO_GSISOILDA="NO"
 fi
 
 # set up soil analysis
 if [[ ${DO_GSISOILDA} == "YES" ]]; then
-    if [[ "${DO_LAND_IAU}" = ".true." ]]; then 
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         export GCYCLE_DO_SOILINCR=".false."
     else
         export GCYCLE_DO_SOILINCR=".true."
     fi
     export GCYCLE_INTERP_LANDINCR=".false."
-    export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
+    export REGRID_EXEC="${HOMEglobal}/exec/regridStates.x"
 fi
 
 echo "END: config.esfc"

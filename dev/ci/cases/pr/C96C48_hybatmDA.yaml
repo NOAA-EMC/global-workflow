@@ -14,11 +14,10 @@ experiment:
   nens: 2
   interval: 24
   start: cold
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_hyb_defaults_ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_hyb_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - awsepicglobalworkflow
-  - gaeac5
 
 workflow:
   engine: rocoto

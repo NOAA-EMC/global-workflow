@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/atparse.bash"
+source "${HOMEglobal}/ush/atparse.bash"
 
 #-------------------------------------------------------------------------------------------------
 # Script to regrid surface increment from GSI grid
@@ -42,7 +42,7 @@ export jres=${LATB_CASE_IN}
 export ireso=${CASE_OUT:1}
 export jreso=${CASE_OUT:1}
 
-regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl"
+regrid_nml_tmpl="${PARMglobal}/regrid_sfc/regrid.nml_tmpl"
 
 if [[ "${LFHR}" -ge 0 ]]; then
     soilinc_fhrs=("${LFHR}")
@@ -90,9 +90,8 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
 
         memdir=$(printf "mem%03i" "${imem}")
 
-        MEMDIR=${memdir} YMD=${PDY} HH=${cyc} declare_from_tmpl \
-            COMIN_SOIL_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL \
-            COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+        COMIN_SOIL_ANALYSIS_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}/analysis/atmos"
+        COMOUT_ATMOS_ANALYSIS_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}/analysis/atmos"
 
         # Create MPMD command file for this member
         rm -f "cmdfile_in.${imem}" "cmdfile_out.${imem}"
@@ -211,7 +210,7 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
 fi
 
 # Run MPMD to stage input files
-"${USHgfs}/run_mpmd.sh" "cmdfile_in" && true
+"${USHglobal}/run_mpmd.sh" "cmdfile_in" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "run_mpmd.sh failed to copy input and fix data!"
@@ -268,7 +267,7 @@ if [[ "${DO_LAND_IAU}" = ".true." ]]; then
 fi
 
 # Run MPMD to save output files
-"${USHgfs}/run_mpmd.sh" "cmdfile_out" && true
+"${USHglobal}/run_mpmd.sh" "cmdfile_out" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "run_mpmd.sh failed to copy output files to COMOUT, ABORT!"

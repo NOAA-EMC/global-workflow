@@ -6,17 +6,15 @@
 # comparisons to the ecmwf and ukmet
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir SA2
 cd SA2 || exit 1
 
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export HPCGFS="${RUN}.${PDY}${cyc}"
 if [[ ! -L ${HPCGFS} ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
@@ -37,6 +35,7 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
 if [[ ! -L "${HPCECMWF}" ]]; then
+    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
 fi
 if [[ ! -L "${HPCUKMET}" ]]; then

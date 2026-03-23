@@ -1,4 +1,4 @@
-# Variables provided by archive_vars.py:
+# Variables provided by archive_vrfy_vars.py:
 # - cycle_HH, cycle_YMDH, cycle_YMD, head
 # - VFYARC, GEFS_ARCH
 # - All COMIN_* paths
@@ -109,5 +109,5 @@ copy_opt:
     - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}abias_int.txt",
        "{{ ARCDIR }}/abias_int.{{ RUN }}.{{ cycle_YMDH }}"]
     - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}increment.dtf.i006.nc",
-       "{{ ARCDIR }}/dtfanl.{{ RUN }}.{{ cycle_YMDH }}.nc"]
+       "{{ ARCDIR }}/dtfinc.{{ RUN }}.{{ cycle_YMDH }}.nc"]
 {% endif %}

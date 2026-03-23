@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
@@ -6,11 +7,23 @@ export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlletkf" -c "base marineanlletkf"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -29,19 +42,15 @@ else
     export mem_offset=0
 fi
 
-RUN="${GDUMP}" YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_OCEAN_HISTORY_PREV:COM_OCEAN_HISTORY_TMPL \
-    COMIN_ICE_HISTORY_PREV:COM_ICE_HISTORY_TMPL
+declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-RUN="${GDUMP}" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_OBS:COM_OBS_TMPL
+declare -rx COMIN_OBS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/obs"
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_OCEAN_LETKF:COM_OCEAN_LETKF_TMPL \
-    COMOUT_ICE_LETKF:COM_ICE_LETKF_TMPL
+declare -rx COMOUT_OCEAN_LETKF="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean/letkf"
+declare -rx COMOUT_ICE_LETKF="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/letkf"
 
-YMD=${PDY} HH=${cyc} MEMDIR="ensstat" declare_from_tmpl -rx \
-    COMOUT_CONF:COM_CONF_TMPL
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
 if [[ ! -d "${COMOUT_OCEAN_LETKF}" ]]; then mkdir -p "${COMOUT_OCEAN_LETKF}"; fi
 if [[ ! -d "${COMOUT_ICE_LETKF}" ]]; then mkdir -p "${COMOUT_ICE_LETKF}"; fi
@@ -53,7 +62,7 @@ if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
+EXSCRIPT=${GDASOCNLETKFPY:-${HOMEglobal}/scripts/exglobal_marine_analysis_letkf.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

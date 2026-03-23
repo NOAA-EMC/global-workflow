@@ -3,6 +3,7 @@
 import os
 
 from pygfs.task.archive import Archive
+from pygfs.utils.archive_tar_vars import ArchiveTarVars
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, chdir, logit
 
 # initialize root logger
@@ -17,30 +18,13 @@ def main():
     # Instantiate the Archive object
     archive = Archive(config)
 
-    # Pull out all the configuration keys needed to run the rest of archive steps
-    keys = ['ATARDIR', 'current_cycle', 'IAUFHRS', 'RUN', 'PDY',
-            'PSLOT', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'PARMgfs',
-            'ARCDIR', 'SDATE', 'MODE', 'ENSGRP', 'NMEM_EARCGRP',
-            'NMEM_ENS', 'DO_CALC_INCREMENT_ENKF_GFS', 'DO_JEDIATMENS',
-            'lobsdiag_forenkf', 'FHMIN_ENKF', 'FHMAX_ENKF_GFS',
-            'FHOUT_ENKF_GFS', 'FHMAX_ENKF', 'FHOUT_ENKF', 'ENKF_SPREAD',
-            'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
-            'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET', 'DOIAU', 'DO_CA',
-            'DO_CALC_INCREMENT', 'assim_freq', 'ARCH_CYC', 'DO_JEDISNOWDA',
-            'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ', 'DOHYBVAR_OCN',
-            'DOLETKF_OCN', 'IAUFHRS_ENKF', 'NET', 'NMEM_ENS_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
+    # Collect all variables for YAML templates (config keys, COM paths, cycle vars, member paths)
+    # Note: COM paths are relative to ROTDIR for portability in tar archives
+    archive_dict = ArchiveTarVars.get_all_yaml_vars(archive.task_config)
 
-    archive_dict = AttrDict()
-    for key in keys:
-        archive_dict[key] = archive.task_config.get(key)
-        if archive_dict[key] is None:
-            print(f"Warning: key ({key}) not found in task_config!")
-
-    # Also import all COMIN* directory and template variables
-    for key in archive.task_config.keys():
-        if key.startswith(("COM_", "COMIN_")):
-            archive_dict[key] = archive.task_config.get(key)
-
+    # Change to ROTDIR for the entire archiving workflow so that relative paths
+    # in YAML templates (e.g., logs/..., enkfgdas.20211221/...) are resolved
+    # correctly during both file existence checks (glob) and tar creation
     with chdir(config.ROTDIR):
 
         # Determine which archives to create

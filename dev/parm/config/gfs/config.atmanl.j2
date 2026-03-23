@@ -14,15 +14,9 @@ export layout_y_atmanl="{{ LAYOUT_Y_ATMANL }}"
 export io_layout_x="{{ IO_LAYOUT_X }}"
 export io_layout_y="{{ IO_LAYOUT_Y }}"
 
-export TASK_CONFIG_YAML="${PARMgfs}/gdas/atm/atm_det_config.yaml.j2"
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/atm/atm_det_config.yaml.j2"
 
 export LOCALIZATION_TYPE="bump"
-
-export CASE_GSIBEC=${CASE_ANL}
-if [[ "${DOHYBVAR}" = "YES" && "${ATMINC_GRID}" = "gaussian" ]]; then
-    export CASE_GSIBEC=${CASE_HIST}
-    export CASE_HIST=${CASE_ANL}
-fi
 
 export NUMBER_OUTER_LOOPS="{{ NUMBER_OUTER_LOOPS | default() }}"
 export NINNER_LOOP1="{{ NINNER_LOOP1 | default () }}"

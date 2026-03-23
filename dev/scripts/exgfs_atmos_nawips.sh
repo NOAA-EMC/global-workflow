@@ -20,7 +20,7 @@ mkdir -p "${DATA_RUN}"
 cd "${DATA_RUN}" || exit 1
 
 # "Import" functions used in this script
-source "${USHgfs}/product_functions.sh"
+source "${USHglobal}/product_functions.sh"
 
 NAGRIB="${GEMEXE}/nagrib2"
 
@@ -41,7 +41,7 @@ mkdir -p "lock.${fhr3}"
 cd "lock.${fhr3}" || exit 1
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
-    source_table="${HOMEgfs}/gempak/fix/${table}"
+    source_table="${HOMEglobal}/gempak/fix/${table}"
     if [[ ! -f "${source_table}" ]]; then
         err_exit "FATAL ERROR: ${table} is missing"
     fi

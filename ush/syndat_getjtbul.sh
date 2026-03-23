@@ -99,14 +99,14 @@ if [[ -s jtwcbul ]]; then
     echo "Processing JTWC bulletin halfs into tcvitals records"
 fi
 
-pgm=$(basename "${EXECgfs}/syndat_getjtbul.x")
+pgm=$(basename "${EXECglobal}/syndat_getjtbul.x")
 export pgm
 if [[ -s prep_step ]]; then
     unset_strict
     source prep_step
     set_strict
 else
-    [[ -f errfile ]] && rm errfile
+    rm -f errfile
     #shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
@@ -115,7 +115,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p "${EXECgfs}/${pgm}" 2> errfile
+time -p "${EXECglobal}/${pgm}" 2> errfile
 errget=$?
 cat errfile
 rm errfile

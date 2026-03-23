@@ -5,10 +5,5 @@ gdaswave_restart:
         # TODO explicitly name the wave restart files to archive
         # NOTE: there are 2 restart files, one is needed to be saved at the same time as restartb is saved
         #  The other which is +6 from the cycle date is needed every cycle for downstream jobs
-        # If IAU is on, grab the beginning of the window.
-        {% if DOIAU %}
-        {% set offset_dt = current_cycle | add_to_datetime("+3H" | to_timedelta) %}
-        {% else %}
-        {% set offset_dt = current_cycle | add_to_datetime("+6H" | to_timedelta) %}
-        {% endif %}
-        - "{{ COMIN_WAVE_RESTART | relpath(ROTDIR) }}/{{ offset_dt | to_fv3time }}.restart.ww3.nc"
+        # offset_dt_fv3 is pre-calculated in Python: +3H if DOIAU, +6H otherwise (FV3 format: YYYYMMDD.HHMMSS)
+        - "{{ COMIN_WAVE_RESTART }}/{{ offset_dt_fv3 }}.restart.ww3.nc"

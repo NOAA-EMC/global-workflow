@@ -5,11 +5,9 @@
 # Set Up Local Variables
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/crb"
 cd "${DATA}/crb" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 #
 mdl=gfs
 MDL=GFS
@@ -19,10 +17,10 @@ device="nc | ${metaname}"
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
-#
+# TODO: Add only necessary files and remove unneeded ones to minimize data volume
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
+if [[ ! -L "${COMIN}" ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
@@ -255,6 +253,7 @@ if [[ ${cyc} == 00 ]]; then
     HPCECMWF_m1=ecmwf.${PDY}
     export HPCUKMET=ukmet.${PDYm1}
     if [[ ! -L "${HPCECMWF}" ]]; then
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
     fi
     if [[ ! -L "${HPCECMWF_m1}" ]]; then

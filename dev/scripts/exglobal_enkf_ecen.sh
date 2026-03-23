@@ -24,16 +24,16 @@ pwd=$(pwd)
 ntiles=${ntiles:-6}
 
 # Utilities
-NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 
 # Scripts
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
-RECENATMEXEC=${RECENATMEXEC:-${EXECgfs}/recentersigp.x}
-CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-${EXECgfs}/calc_increment_ens.x}
-CALCINCNCEXEC=${CALCINCEXEC:-${EXECgfs}/calc_increment_ens_ncio.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECglobal}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECglobal}/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-${EXECglobal}/recentersigp.x}
+CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-${EXECglobal}/calc_increment_ens.x}
+CALCINCNCEXEC=${CALCINCEXEC:-${EXECglobal}/calc_increment_ens_ncio.x}
 
 # Files.
 OPREFIX=${OPREFIX:-""}
@@ -64,14 +64,14 @@ else
 fi
 
 # global_chgres stuff
-CHGRESNEMS=${CHGRESNEMS:-${EXECgfs}/enkf_chgres_recenter.x}
-CHGRESNC=${CHGRESNC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+CHGRESNEMS=${CHGRESNEMS:-${EXECglobal}/enkf_chgres_recenter.x}
+CHGRESNC=${CHGRESNC:-${EXECglobal}/enkf_chgres_recenter_nc.x}
 NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
 
 # global_cycle stuff
-CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
+CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
@@ -106,12 +106,11 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         gmemchar="mem"$(printf %03i "${smem}")
         memchar="mem"$(printf %03i "${imem}")
 
-        MEMDIR=${memchar} YMD=${PDY} HH=${cyc} declare_from_tmpl -x \
-            COMOUT_ATMOS_ANALYSIS_MEM:COM_ATMOS_ANALYSIS_TMPL
+        declare -x COMOUT_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
-        MEMDIR=${gmemchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -x \
-            COMIN_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
+        declare -x COMIN_ATMOS_HISTORY_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/history
 
+        # TODO: remove deadlinks and refer https://github.com/NOAA-EMC/global-workflow/issues/4405
         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
             ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX_ENS}analysis.atm.a00${FHR}.nc" "./atmanl_${memchar}"
@@ -166,9 +165,9 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             err_exit "Failed to recenter the ensemble increments!"
         fi
 
-        # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
+        # If available, copy the ensemble mean guess.  Otherwise, compute ensemble mean guess
         if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
-            ${NLN} "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
+            cpreq "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" "./atmges_ensmean"
         else
             DATAPATH="./"
             ATMGESNAME="atmges"
@@ -212,13 +211,13 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         ATMANL_GSI="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}analysis.atm.a00${FHR}.nc"
         ATMANL_GSI_ENSRES="${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}ensres_analysis.atm.a00${FHR}.nc"
 
-        # if we already have a ensemble resolution GSI analysis then just link to it
+        # if we already have a ensemble resolution GSI analysis then just copy it
         if [[ -f ${ATMANL_GSI_ENSRES} ]]; then
-            ${NLN} "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
+            cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
         else
-            ${NLN} "${ATMANL_GSI}" atmanl_gsi
-            ${NLN} "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
-            SIGLEVEL="${SIGLEVEL:-"${FIXgfs}/am/global_hyblev.l${LEVS}.txt"}"
+            cpreq "${ATMANL_GSI}" atmanl_gsi
+            cpreq "${ATMANL_GSI_ENSRES}" atmanl_gsi_ensres
+            SIGLEVEL="${SIGLEVEL:-"${FIXglobal}/am/global_hyblev.l${LEVS}.txt"}"
             ${NLN} "${CHGRESNC}" chgres.x
             chgresnml=chgres_nc_gauss.nml
             nmltitle=chgres

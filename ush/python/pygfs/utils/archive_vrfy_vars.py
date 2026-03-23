@@ -41,7 +41,6 @@ All public operational functions are decorated with @logit(logger).
 """
 import os
 from logging import getLogger
-from typing import Any, Dict
 from wxflow import AttrDict, logit, to_YMD, to_YMDH
 
 logger = getLogger(__name__.split('.')[-1])
@@ -63,7 +62,7 @@ class ArchiveVrfyVars:
 
     @staticmethod
     @logit(logger)
-    def get_all_yaml_vars(config_dict: AttrDict) -> Dict[str, Any]:
+    def get_all_yaml_vars(config_dict: AttrDict) -> AttrDict:
         """Collect all variables needed for YAML templates.
 
         This method provides only the VARIABLES needed by the YAML templates
@@ -76,7 +75,7 @@ class ArchiveVrfyVars:
 
         Returns
         -------
-        Dict[str, Any]
+        AttrDict
             Dictionary containing variables for Jinja2 templates:
             - cycle_HH, cycle_YMDH, cycle_YMD, head: Cycle-specific variables
             - COMIN_*, COMOUT_*, COM_*: All COM directory paths (from job scripts)
@@ -98,7 +97,7 @@ class ArchiveVrfyVars:
 
     @staticmethod
     @logit(logger)
-    def add_config_vars(config_dict: AttrDict) -> Dict[str, Any]:
+    def add_config_vars(config_dict: AttrDict) -> AttrDict:
         """Collect configuration keys and COM* variables for archive operations.
 
         Formats resolution variables (OCNRES, ICERES) to 3 digits and extracts
@@ -111,7 +110,7 @@ class ArchiveVrfyVars:
 
         Returns
         -------
-        Dict[str, Any]
+        AttrDict
             Dictionary with config keys and all COM_*, COMIN_*, COMOUT_* variables
         """
         general_dict = {}
@@ -122,7 +121,7 @@ class ArchiveVrfyVars:
                 config_dict[key] = f"{config_dict[key]:03d}"
 
         # Configuration keys to extract (if present)
-        config_keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs',
+        config_keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMglobal',
                        'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR',
                        'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET',
                        'FHOUT_GFS', 'FHMAX_HF_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT',
@@ -140,7 +139,6 @@ class ArchiveVrfyVars:
                 logger.warning(f"Config key '{key}' not found in config_dict; skipping.")
 
         # Import COM* directory and template variables created by job scripts
-        # Job scripts use declare_from_tmpl -rx which exports variables to environment
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
                 general_dict[key] = config_dict.get(key)
@@ -152,7 +150,7 @@ class ArchiveVrfyVars:
 
     @staticmethod
     @logit(logger)
-    def _get_cycle_vars(config_dict: AttrDict) -> Dict[str, Any]:
+    def _get_cycle_vars(config_dict: AttrDict) -> AttrDict:
         """Calculate cycle-specific variables.
 
         Parameters
@@ -162,7 +160,7 @@ class ArchiveVrfyVars:
 
         Returns
         -------
-        Dict[str, Any]
+        AttrDict
             Dictionary containing:
             - cycle_HH: Cycle hour (e.g., '00', '06')
             - cycle_YMDH: Full cycle timestamp (YYYYMMDDHH)

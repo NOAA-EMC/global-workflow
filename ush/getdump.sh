@@ -28,7 +28,7 @@ prefix="${RUN}.t${HH}z."
 cd "${SOURCE_DIR}" || exit 1
 if [[ -s "${prefix}updated.status.tm00.bufr_d" ]]; then
     for file in "${prefix}"*; do
-        ${NLN} "${SOURCE_DIR}/${file}" "${TARGET_DIR}/${file}"
+        cpreq "${SOURCE_DIR}/${file}" "${TARGET_DIR}/${file}"
     done
 else
     echo "***ERROR*** ${prefix}updated.status.tm00.bufr_d NOT FOUND in ${SOURCE_DIR}"
