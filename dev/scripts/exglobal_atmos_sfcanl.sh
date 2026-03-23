@@ -180,10 +180,13 @@ for hr in "${!gcycle_dates[@]}"; do
         err_exit "Unable to update surface data from guess and analysis!"
     fi
 
-    # Copy outputs from DATA to COMOUT
-    for ((nn = 1; nn <= ntiles; nn++)); do
-        cpfs "${DATA}/sfc_data_cycle.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
-    done
+    if [[ "${RUN}" != "gfs" || "${COPY_FINAL_RESTARTS:-NO}" == "YES" ]]; then
+        if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART}"; fi
+        # Copy outputs from DATA to COMOUT
+        for ((nn = 1; nn <= ntiles; nn++)); do
+            cpfs "${DATA}/sfc_data_cycle.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+        done
+    fi
 
 done
 
