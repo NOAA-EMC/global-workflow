@@ -88,7 +88,7 @@ EOF
 set -eu
 
 # --------------------------------------------------------------------------- #
-# 1. Defaults and Runtime State
+# Defaults and Runtime State
 # --------------------------------------------------------------------------- #
 # Set default options
 HOMEglobal=""
@@ -122,7 +122,7 @@ _runtests="${RUNTESTS:-${_runtests:-}}"
 _auto_del=false
 _nonflag_option_count=0
 # --------------------------------------------------------------------------- #
-# 2. Argument Parsing
+# Argument Parsing
 # --------------------------------------------------------------------------- #
 
 function _set_yaml_list_from_arg() {
@@ -213,7 +213,7 @@ function _parse_args() {
 _parse_args "$@"
 
 # --------------------------------------------------------------------------- #
-# 3. Common Helpers
+# Common Helpers
 # --------------------------------------------------------------------------- #
 
 function send_email() {
@@ -265,7 +265,7 @@ function delete_dir() {
 }
 
 # --------------------------------------------------------------------------- #
-# 4. Validate Required Inputs
+# Validate Required Inputs
 # --------------------------------------------------------------------------- #
 
 if [[ -z "${_runtests}" ]]; then
@@ -281,7 +281,7 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 5. Prepare RUNTESTS Directory
+# Prepare RUNTESTS Directory
 # --------------------------------------------------------------------------- #
 
 # Create the RUNTESTS directory
@@ -309,7 +309,7 @@ else
 fi
 
 # --------------------------------------------------------------------------- #
-# 6. Resolve Initial Case Selection
+# Resolve Initial Case Selection
 # --------------------------------------------------------------------------- #
 
 # Empty the _yaml_list array if -G, -E, -S and/or -C were selected
@@ -344,7 +344,7 @@ if [[ "${_specified_yaml_dir}" == false ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 7. Case Discovery Helper
+# Case Discovery Helper
 # --------------------------------------------------------------------------- #
 
 function select_all_yamls() {
@@ -410,7 +410,7 @@ EOM
 }
 
 # --------------------------------------------------------------------------- #
-# 8. Expand Case List By System Flags
+# Expand Case List By System Flags
 # --------------------------------------------------------------------------- #
 
 # Check if running all GEFS cases
@@ -451,7 +451,7 @@ if [[ "${_run_all_gcafs}" == "true" ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 9. Optional Submodule Update
+# Optional Submodule Update
 # --------------------------------------------------------------------------- #
 
 # Update submodules if requested
@@ -481,7 +481,7 @@ EOM
 fi
 
 # --------------------------------------------------------------------------- #
-# 10. Load Workflow Environment
+# Load Workflow Environment
 # --------------------------------------------------------------------------- #
 
 # Loading modules sometimes raises unassigned errors, so disable checks
@@ -513,7 +513,7 @@ if [[ -z ${_yaml_dir} ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 11. Resolve HPC Account
+# Resolve HPC Account
 # --------------------------------------------------------------------------- #
 
 # Update the account: -A flag > existing env var > platform config default
@@ -537,7 +537,7 @@ elif [[ -z "${HPC_ACCOUNT:-}" ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 12. Build and Link Workflow
+# Build and Link Workflow
 # --------------------------------------------------------------------------- #
 
 # Build the system if requested
@@ -572,7 +572,7 @@ fi
 rm -f stdout
 
 # --------------------------------------------------------------------------- #
-# 13. Validate YAML Inputs For This Host
+# Validate YAML Inputs For This Host
 # --------------------------------------------------------------------------- #
 
 # Configure the environment for running create_experiment.py
@@ -615,7 +615,7 @@ EOM
 done
 
 # --------------------------------------------------------------------------- #
-# 14. Apply BASE_IC Override
+# Apply BASE_IC Override
 # --------------------------------------------------------------------------- #
 
 # Override BASE_IC if specified via -I
@@ -627,7 +627,7 @@ if [[ "${_set_base_ic}" == true ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 15. Create Experiments and Collect Schedule Entries
+# Create Experiments and Collect Schedule Entries
 # --------------------------------------------------------------------------- #
 
 # Create the experiments
@@ -708,7 +708,7 @@ done
 echo
 
 # --------------------------------------------------------------------------- #
-# 16. Configure Mail Behavior
+# Configure Mail Behavior
 # --------------------------------------------------------------------------- #
 
 # Add MAILTO to tests.cron for regular crontab
@@ -726,7 +726,7 @@ if [[ "${_use_scron}" == false ]]; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 17. Install or Print Scheduler Entries
+# Install or Print Scheduler Entries
 # --------------------------------------------------------------------------- #
 
 # Update the cron
@@ -808,7 +808,7 @@ else
 fi
 
 # --------------------------------------------------------------------------- #
-# 18. Cleanup and Completion
+# Cleanup and Completion
 # --------------------------------------------------------------------------- #
 
 # Cleanup
