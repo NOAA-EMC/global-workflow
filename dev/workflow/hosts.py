@@ -104,6 +104,19 @@ class Host:
                                   'Currently supported hosts are:\n' +
                                   f'{" | ".join(Host.SUPPORTED_HOSTS)}')
 
+    def _apply_env_overrides(self, info: dict) -> None:
+        """Override host configuration values with environment variables.
+
+        Parameters
+        ----------
+        info : dict
+            Host configuration dictionary to update in-place.
+        """
+        # Allow BASE_IC to be overridden via the environment
+        # (e.g. from the -I flag in generate_workflows.sh)
+        if 'BASE_IC' in os.environ:
+            info['BASE_IC'] = os.environ['BASE_IC']
+
     @property
     def _get_info(self) -> dict:
 
@@ -119,16 +132,3 @@ class Host:
             raise Exception(f'unable to get information for {self}')
 
         return info
-
-    def _apply_env_overrides(self, info: dict) -> None:
-        """Override host configuration values with environment variables.
-
-        Parameters
-        ----------
-        info : dict
-            Host configuration dictionary to update in-place.
-        """
-        # Allow BASE_IC to be overridden via the environment
-        # (e.g. from the -I flag in generate_workflows.sh)
-        if 'BASE_IC' in os.environ:
-            info['BASE_IC'] = os.environ['BASE_IC']
