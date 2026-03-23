@@ -32,6 +32,7 @@ class Host:
             self.detect()
 
         self.info = self._get_info
+        self._apply_env_overrides(self.info)
         self.scheduler = self.info['SCHEDULER']
 
     def __str__(self) -> str:
@@ -116,8 +117,6 @@ class Host:
             raise IOError(f'Unable to read from {hostfile}')
         except Exception:
             raise Exception(f'unable to get information for {self}')
-
-        self._apply_env_overrides(info)
 
         return info
 
