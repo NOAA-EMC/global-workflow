@@ -147,9 +147,7 @@ FV3_predet() {
 
     if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then mkdir -p "${COMOUT_ATMOS_HISTORY}"; fi
     if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
-    if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART}"; fi
     if [[ ! -d "${DATAoutput}/FV3ATM_OUTPUT" ]]; then mkdir -p "${DATAoutput}/FV3ATM_OUTPUT"; fi
-    if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
 
     # The $DATA/RESTART directory is used for writing FV3 restart files (it is hard-wired in the model)
     # Link the output and restart directories to the DATA directory
@@ -609,7 +607,6 @@ WW3_predet() {
     echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
     if [[ ! -d "${COMOUT_WAVE_HISTORY}" ]]; then mkdir -p "${COMOUT_WAVE_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}"; fi
     if [[ ! -d "${DATAoutput}/WW3_OUTPUT" ]]; then mkdir -p "${DATAoutput}/WW3_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/WW3_RESTART" ]]; then mkdir -p "${DATArestart}/WW3_RESTART"; fi
 
@@ -665,7 +662,6 @@ CICE_predet() {
     echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
 
     if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_ICE_RESTART}" ]]; then mkdir -p "${COMOUT_ICE_RESTART}"; fi
     if [[ ! -d "${COMIN_ICE_INPUT}" ]]; then mkdir -p "${COMIN_ICE_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/CICE_OUTPUT" ]]; then mkdir -p "${DATAoutput}/CICE_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
@@ -690,7 +686,6 @@ MOM6_predet() {
     echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 
     if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then mkdir -p "${COMOUT_OCEAN_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_OCEAN_RESTART}" ]]; then mkdir -p "${COMOUT_OCEAN_RESTART}"; fi
     if [[ ! -d "${COMIN_OCEAN_INPUT}" ]]; then mkdir -p "${COMIN_OCEAN_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
@@ -745,7 +740,6 @@ EOF
 CMEPS_predet() {
     echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
 
-    if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
     if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
 
     # Link the restart directory to the DATA directory
