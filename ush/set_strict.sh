@@ -9,4 +9,7 @@ if [[ ${STRICT:-"YES"} == "YES" ]]; then
     set -eu
     # Exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
     set -o pipefail
+else
+    # Exit on undefined variable and exit on error in a pipeline
+    set -u -o pipefail
 fi
