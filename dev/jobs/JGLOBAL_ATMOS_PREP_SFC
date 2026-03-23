@@ -1,7 +1,16 @@
 #! /usr/bin/env bash
+set -x
 #shellcheck disable=SC2155
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "prep_sfc" -c "base prep_sfc"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set date and cycle
@@ -14,8 +23,10 @@ export gcyc=${GDATE:8:2}
 
 # Generate COM variables from templates
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    declare -rx COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
-    declare -rx COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${gPDY}/${gcyc}/atmos"
+    COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    declare -rx COMINobsproc
+    COMINobsproc_PREV=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${gPDY}/${gcyc}/atmos"
+    declare -rx COMINobsproc_PREV
 else
     declare -rx COMINobsproc="${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos"
     declare -rx COMINobsproc_PREV="${DMPDIR}/${RUN}.${gPDY}/${gcyc}/atmos"

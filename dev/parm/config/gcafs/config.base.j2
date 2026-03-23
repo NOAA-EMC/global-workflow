@@ -112,7 +112,6 @@ export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="NO"
 export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
 export CHGRP_CMD="{{ CHGRP_CMD }}"
@@ -139,7 +138,6 @@ export ATARDIR="{{ ATARDIR }}"
 export FETCHDIR="{{ FETCHDIR }}"
 
 # Commonly defined parameters in JJOBS
-export envir=${envir:-"prod"}
 export NET="gcafs"  # NET is defined in the job-card (ecf)
 export RUN=${RUN:-"gcafs"}  # RUN is defined in the job-card (ecf)
 
@@ -149,11 +147,7 @@ source "${EXPDIR}/config.com"
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 
-export SENDECF=${SENDECF:-"NO"}
 export SENDSDM=${SENDSDM:-"NO"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
-export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings

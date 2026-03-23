@@ -1,9 +1,18 @@
 #! /usr/bin/env bash
+set -x
 
 #############################################################
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
 source "${HOMEglobal}/ush/jjob_header.sh" -e "verfozn" -c "base verfozn"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 #############################################
 #  determine PDY and cyc for previous cycle

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 # Create the directory to hold the BMAT initialization data
@@ -12,6 +13,14 @@ if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 # source config.base, config.ocnanal and config.marinebmatinit
 # and pass marinebmat to ${machine}.env
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marinebmat marinebmatinit"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script

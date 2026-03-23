@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 # DATA is pre-populated by the MARINE_BMAT_INIT job
@@ -9,10 +9,17 @@ export DATAens="${DATAjob}/ensdata"
 export DATAstaticb="${DATAjob}/staticb"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
 if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
-
 # source config.base, config.ocnanal and config.marinebmat
 # and pass marinebmat to ${machine}.env
 source "${HOMEglobal}/ush/jjob_header.sh" -e "marinebmat" -c "base marinebmat"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 
 ##############################################
 # Set variables used in the script

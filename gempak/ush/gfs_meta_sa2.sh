@@ -6,8 +6,6 @@
 # comparisons to the ecmwf and ukmet
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 mkdir SA2
 cd SA2 || exit 1
 

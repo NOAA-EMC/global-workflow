@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
+set -x
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
 if [[ "${DO_WAVE}" == "YES" ]]; then
     source "${EXPDIR}/config.wave"
     source "${USHglobal}/wave_domain_grid.sh"

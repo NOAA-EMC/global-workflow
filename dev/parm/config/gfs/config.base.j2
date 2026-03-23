@@ -49,6 +49,8 @@ export FIXgdas="${FIXglobal}/gdas"
 # GLOBAL static environment parameters
 export PACKAGEROOT="{{ PACKAGEROOT }}"    # TODO: set via prod_envir in Ops
 export COMROOT="{{ COMROOT }}"    # TODO: set via prod_envir in Ops
+# Available for WCOSS2/realtime only
+export DCOMROOT="/lfs/h1/ops/prod/dcom"    # TODO: set via prod_envir in ops
 export COMINsyn="{{ COMINsyn }}"
 export DMPDIR="{{ DMPDIR }}"
 export IODADIR="{{ IODADIR }}"
@@ -108,7 +110,6 @@ export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="NO"
 export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
 export CHGRP_CMD="{{ CHGRP_CMD }}"
@@ -135,7 +136,6 @@ export ATARDIR="{{ ATARDIR }}"
 export FETCHDIR="{{ FETCHDIR }}"
 
 # Commonly defined parameters in JJOBS
-export envir=${envir:-"prod"}
 export NET="gfs"  # NET is defined in the job-card (ecf)
 export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
 
@@ -145,11 +145,7 @@ source "${EXPDIR}/config.com"
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 
-export SENDECF=${SENDECF:-"NO"}
 export SENDSDM=${SENDSDM:-"NO"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
-export SENDDBN=${SENDDBN:-"NO"}
-export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 export SENDAWIP=${SENDAWIP:-"NO"}
 
 # APP settings
