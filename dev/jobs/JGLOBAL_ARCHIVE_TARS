@@ -10,6 +10,9 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% endif %}
 
 source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
 if [[ "${DO_WAVE}" == "YES" ]]; then
     source "${EXPDIR}/config.wave"
     source "${USHglobal}/wave_domain_grid.sh"
@@ -104,10 +107,10 @@ fi
 
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
-unset_strict
+source "${USHglobal}/unset_strict.sh"
 ${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_tars.py}
 export err=$?
-set_strict
+source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit "failed to archive the COM structure"
 fi
