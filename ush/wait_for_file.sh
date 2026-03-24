@@ -36,12 +36,12 @@ wait_for_file() {
 
     for ((iter = 0; iter < max_tries; iter++)); do
         if [[ -r ${file_name} ]]; then
-            set_trace
+            set -x
             return 0
         fi
         sleep "${sleep_interval}"
     done
-    set_trace
+    set -x
     return 1
 }
 
