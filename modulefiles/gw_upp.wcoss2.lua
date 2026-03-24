@@ -13,7 +13,7 @@ load(pathJoin("cray-pals", "1.0.17"))
 -- Do not load prod_util when running ecflow
 local is_ecf = os.getenv("ECF_JOB") ~= nil
 if not is_ecf then
-    load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
+    load(pathJoin("prod_util", "2.0.9"))
 end
 load(pathJoin("python", "3.12.0"))
 load(pathJoin("libjpeg", "9c"))
