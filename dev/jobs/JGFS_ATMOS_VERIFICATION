@@ -10,6 +10,9 @@ source "${HOMEgfs}/ush/jjob_standard_vars.sh"
 #{% endif %}
 
 source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
 
 ###############################################################
 ## Abstract:
@@ -38,10 +41,11 @@ done
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
     # Override the -e in VERIF_GLOBALSH's shebang and un-export SHELLOPTS
     # TODO: clean up the verif-global script so it does not raise false-positive errors
-    set +eu
+    source "${USHgfs}/unset_strict.sh"
     export -n SHELLOPTS
     bash -x "${VERIF_GLOBALSH}"
     err=$?
+    source "${USHgfs}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
         exit "${err}"
     fi
