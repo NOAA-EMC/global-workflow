@@ -127,7 +127,9 @@ case "${MODULE_TYPE}" in
 
         module list
 
-        set -x
+        if [[ "${set_x}" == "YES" ]]; then
+            set -x
+        fi
 
         pip list
 
@@ -195,7 +197,9 @@ case "${MODULE_TYPE}" in
 
         module list
 
-        set -x
+        if [[ "${set_x}" == "YES" ]]; then
+            set -x
+        fi
         ;;
 
     *)
