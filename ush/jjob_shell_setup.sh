@@ -7,7 +7,7 @@
 #
 # Handles:
 #   - Sourcing utility functions (wait_for_file, dataroot_com_path, timer,
-#       err_exit, set_strict, postamble)
+#       err_exit, postamble)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
 #   - Activating strict mode (set -eu) and tracing (set -x)
@@ -38,10 +38,8 @@ source "${USHglobal}/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
-# Shell options, strict mode, and tracing
+# Shell options and tracing
 ##############################################
-source "${USHglobal}/set_strict.sh"
-source "${USHglobal}/unset_strict.sh"
 source "${USHglobal}/set_trace.sh"
 export SHELLOPTS
 ##############################################
@@ -50,8 +48,7 @@ export SHELLOPTS
 source "${USHglobal}/setup_data_dir.sh"
 setup_data_dir "${DATA}"
 
-# Activate strict mode and tracing
-set_strict
+# Activate tracing
 set_trace
 
 ##############################################
@@ -65,7 +62,5 @@ trap "postamble ${start_time}" EXIT
 # Temporal variables: PDY, PDYm#, PDYp# (via setpdy.sh)
 ##############################################
 # setpdy.sh may not be available in all environments; failures are non-fatal
-unset_strict
 setpdy.sh || true
 source ./PDY || true
-set_strict
