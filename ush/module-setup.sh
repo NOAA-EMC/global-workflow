@@ -94,10 +94,4 @@ else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
 
-# If this function exists in the environment, run it; else do not
-ftype=$(type -t set_strict || echo "")
-if [[ "${ftype}" == "function" ]]; then
-    set_strict
-else
-    set +u
-fi
+set +u
