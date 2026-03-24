@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 export version=v1.0.0
-export gcafs_ver=v1.0.0
 export gfs_ver=v16.3.7
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
@@ -56,4 +55,4 @@ export prepobs_run_ver=1.1.3
 export ens_tracker_ver=v1.3.0
 export fit2obs_ver=1.1.10
 
-export COMPATH="/lfs/h2/emc/ptmp/cory.r.martin/gcafs/ops/para/com/gcafs"
+export COMPATH="/lfs/h2/emc/ptmp/${USER}/gcafs/ops/para/com/gcafs"
