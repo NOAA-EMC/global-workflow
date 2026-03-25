@@ -69,6 +69,9 @@ UFS_configure() {
         local MED_history_n=1000000
 
         local histaux_enabled=".false."
+        local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
+        local MOM6_RESTART_DIR="./MOM6_RESTART"
+        local MOM6_HISTFREQ_N=${FHOUT_OCN:-6}
     fi
 
     if [[ "${cplice}" = ".true." ]]; then
