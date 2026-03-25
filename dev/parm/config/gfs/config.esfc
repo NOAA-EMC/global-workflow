@@ -26,11 +26,6 @@ if [[ "${DO_JEDIATMENS}" == "YES" || "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
-if [[ "${RUN/enkf}" == "gfs" ]]; then  
-    echo "turning off gsi soilda for gfs run"
-    DO_GSISOILDA="NO"
-fi
-
 # set up soil analysis
 if [[ ${DO_GSISOILDA} == "YES" ]]; then
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then 

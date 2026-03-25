@@ -18,11 +18,6 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
-if [[ "${RUN/enkf}" == "gfs" ]]; then  
-    echo "turning off gsi soilda for gfs run"
-    DO_GSISOILDA="NO"
-fi
-
 if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     if [[ ${DO_LAND_IAU} = ".true." ]]; then
         export GCYCLE_DO_SOILINCR=".false."
