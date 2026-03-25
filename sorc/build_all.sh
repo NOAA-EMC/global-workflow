@@ -79,6 +79,10 @@ export HOMEglobal
 
 echo "Sourcing global-workflow modules ..."
 source "${HOMEglobal}/dev/ush/gw_setup.sh"
+if [[ ${MACHINE_ID} == "derecho" ]]; then
+    # Derecho has stricter limits on head node usage
+    max_cores=4
+fi
 
 # Un-export after gw_setup.sh
 export -n HOMEglobal
