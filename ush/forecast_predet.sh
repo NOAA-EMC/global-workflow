@@ -148,6 +148,7 @@ FV3_predet() {
     if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then mkdir -p "${COMOUT_ATMOS_HISTORY}"; fi
     if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
     if [[ ! -d "${DATAoutput}/FV3ATM_OUTPUT" ]]; then mkdir -p "${DATAoutput}/FV3ATM_OUTPUT"; fi
+    if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
 
     # The $DATA/RESTART directory is used for writing FV3 restart files (it is hard-wired in the model)
     # Link the output and restart directories to the DATA directory
