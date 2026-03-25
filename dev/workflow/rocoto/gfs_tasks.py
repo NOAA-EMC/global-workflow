@@ -1056,7 +1056,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['gdas']:
+        if self.options['do_gsisoilda'] and self.run in ['gdas']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
 
