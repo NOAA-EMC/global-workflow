@@ -45,7 +45,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl.sh} && true
+${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl_regrid.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
