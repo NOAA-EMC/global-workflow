@@ -648,7 +648,7 @@ MOM6_postdet() {
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
