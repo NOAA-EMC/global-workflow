@@ -510,6 +510,10 @@ FV3_predet() {
                     break
                 fi
             done
+            if (( Syear >= 2025 )); then
+                Eyear=$(( Eyear - 5 ))
+                Syear=$(( Syear - 5 ))
+            fi
             for ((month = 1; month <= 12; month++)); do
                 mm=$(printf %02d "${month}")
                 cpreq "${FIXglobal}/aer/y${Syear}-${Eyear}/merra2_${Syear}-${Eyear}_${mm}.nc" "aeroclim.m${mm}.nc"
@@ -694,6 +698,9 @@ MOM6_predet() {
     if [[ ! -d "${COMIN_OCEAN_INPUT}" ]]; then mkdir -p "${COMIN_OCEAN_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
+
+    # rm ocean_geometry.nc as model fails if zero length exist
+    rm -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc"
 
     # Link the output and restart directories to the DATA directory
     ${NLN} "${DATAoutput}/MOM6_OUTPUT" "${DATA}/MOM6_OUTPUT"

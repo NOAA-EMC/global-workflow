@@ -175,6 +175,112 @@ class SFSTasks(Tasks):
 
         # return task
 
+    # For SFS only:
+    def atmos_post(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mem#member#'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        atmos_post_envars = self.envars.copy()
+        atmos_post_envar_dict = {'ENSMEM': '#member#',
+                                 'MEMDIR': 'mem#member#',
+                                 }
+        for key, value in atmos_post_envar_dict.items():
+            atmos_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('atmos_post')
+        task_name = f'{self.run}_atmos_post_mem#member#'
+        member_task_dict = {'task_name': task_name,
+                            'resources': resources,
+                            'envars': atmos_post_envars,
+                            'cycledef': self.run,
+                            'dependency': dependencies,
+                            'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/atmos_post.sh',
+                            'job_name': f'{self.pslot}_{task_name}_@H',
+                            'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                            'maxtries': '&MAXTRIES;'
+                            }
+
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_atmos_post',
+                                'task_dict': member_task_dict,
+                                'var_dict': member_var_dict}
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def ocn_post(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        ocn_post_envars = self.envars.copy()
+        ocn_post_envar_dict = {'ENSMEM': '#member#',
+                               'MEMDIR': 'mem#member#',
+                               }
+        for key, value in ocn_post_envar_dict.items():
+            ocn_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('ocn_post')
+        task_name = f'{self.run}_ocn_post_mem#member#'
+        member_task_dict = {'task_name': task_name,
+                            'resources': resources,
+                            'envars': ocn_post_envars,
+                            'cycledef': self.run,
+                            'dependency': dependencies,
+                            'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/ocn_post.sh',
+                            'job_name': f'{self.pslot}_{task_name}_@H',
+                            'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                            'maxtries': '&MAXTRIES;'
+                            }
+
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_ocn_post',
+                                'task_dict': member_task_dict,
+                                'var_dict': member_var_dict}
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
+    def ice_post(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        ice_post_envars = self.envars.copy()
+        ice_post_envar_dict = {'ENSMEM': '#member#',
+                               'MEMDIR': 'mem#member#',
+                               }
+        for key, value in ice_post_envar_dict.items():
+            ice_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        resources = self.get_resource('ice_post')
+        task_name = f'{self.run}_ice_post_mem#member#'
+        member_task_dict = {'task_name': task_name,
+                            'resources': resources,
+                            'envars': ice_post_envars,
+                            'cycledef': self.run,
+                            'dependency': dependencies,
+                            'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/ice_post.sh',
+                            'job_name': f'{self.pslot}_{task_name}_@H',
+                            'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                            'maxtries': '&MAXTRIES;'
+                            }
+
+        member_var_dict = {'member': ' '.join([f"{mem:03d}" for mem in range(0, self.nmem + 1)])}
+        member_metatask_dict = {'task_name': f'{self.run}_ice_post',
+                                'task_dict': member_task_dict,
+                                'var_dict': member_var_dict}
+
+        task = rocoto.create_task(member_metatask_dict)
+
+        return task
+
     def atmos_prod(self):
         return self._atmosoceaniceprod('atmos')
 
@@ -193,10 +299,10 @@ class SFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.f#fhr3_last#.grib2'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.ocean.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr3_next#.nc'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr3_next#.nc'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.ice.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr3_last#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr3_last#.nc'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -570,15 +676,21 @@ class SFSTasks(Tasks):
 
     def arch_tars(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
-        deps.append(rocoto.add_dependency(dep_dict))
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+#        deps.append(rocoto.add_dependency(dep_dict))
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+#        deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
             deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_post'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ocean']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocn_post'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_wave_post_grid'}
@@ -626,7 +738,7 @@ class SFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEglobal}/dev/jobs/globus_arch.sh',
+                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/globus_arch.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -638,9 +750,15 @@ class SFSTasks(Tasks):
 
     def cleanup(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
+#        deps.append(rocoto.add_dependency(dep_dict))
+#        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+#        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocn_post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_post'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_ice']:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}

@@ -1,0 +1,9 @@
+surface_increments:
+    mkdir:
+        - "{{ COMOUT_ATMOS_ANALYSIS }}"
+    link_req:
+        {% set FTYPES = ["increment.sfc.tile1.nc", "increment.sfc.tile2.nc", "increment.sfc.tile3.nc", "increment.sfc.tile4.nc", "increment.sfc.tile5.nc", "increment.sfc.tile6.nc"] %}
+        {% for ftype in FTYPES %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ ftype }}",
+           "{{ COMOUT_ATMOS_ANALYSIS }}/{{ ftype }}"]
+        {% endfor %}

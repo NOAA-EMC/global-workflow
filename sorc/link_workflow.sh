@@ -178,7 +178,7 @@ for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/fix/chem/${file}" .
 done
 
-for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
+for file in ice_gfs.csv ice_gefs.csv ice_sfs.csv ocean_gfs.csv ocean_gefs.csv ocean_sfs.csv ocnicepost.nml.jinja2; do
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
 done
 

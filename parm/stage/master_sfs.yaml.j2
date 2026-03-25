@@ -32,7 +32,7 @@
 {% set half_window = assim_freq // 2 %}
 {% set half_window_begin = (-half_window | string + "H") | to_timedelta %}
 {% set half_window_end = (half_window | string + "H") | to_timedelta %}
-{% if DOIAU and MODE == "cycled" %}
+{% if DOIAU or DOIAU_COLDSTART %}
     {% set model_start_date_current_cycle = current_cycle | add_to_datetime(half_window_begin) %}
 {% else %}
     {% set model_start_date_current_cycle = current_cycle %}
@@ -114,7 +114,19 @@
 {% endfilter %}
 {% endif %}
 
-{% if USE_ATM_ENS_PERTURB_FILES %}
+{% if DOIAU or DOIAU_COLDSTART %}
+{% filter indent(width=4) %}
+{% include "atmosphere_fv3_increments.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if DOIAU or DOIAU_COLDSTART %}
+{% filter indent(width=4) %}
+{% include "surface_increments.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+
+{% if USE_ATM_ENS_PERTURB_FILES and member != 0 %}
 {% filter indent(width=4) %}
 {% include "atmosphere_ens_perturbations.yaml.j2" %}
 {% endfilter %}
@@ -135,7 +147,12 @@
 {% include "ocean_rerun.yaml.j2" %}
 {% endfilter %}
 {% endif %}
-{% if USE_OCN_ENS_PERTURB_FILES %}
+{% if DOIAU or DOIAU_COLDSTART %}
+{% filter indent(width=4) %}
+{% include "ocean_mom6_increments.yaml.j2" %}
+{% endfilter %}
+{% endif %}
+{% if USE_OCN_ENS_PERTURB_FILES and member != 0 %}
 {% filter indent(width=4) %}
 {% include "ocean_ens_perturbations.yaml.j2" %}
 {% endfilter %}
