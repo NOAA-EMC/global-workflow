@@ -1390,6 +1390,21 @@ case ${step} in
     prepost=True
     ;;
 
+  "gempakmeta")
+    walltime="06:00:00"
+    threads_per_task=1
+    if [[ "${RUN}" = *gdas ]]; then
+      ntasks=2
+      tasks_per_node=2
+      memory="4GB"
+    elif [[ "${RUN}" = *gfs ]]; then
+      ntasks=28
+      tasks_per_node=28
+      memory="6GB"
+    fi
+    prepost=True
+    ;;
+
   "fbwind")
     walltime="00:05:00"
     ntasks=1

@@ -1713,11 +1713,17 @@ class GFSTasks(Tasks):
 
     def gempakmeta(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
+        #dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
+        #deps.append(rocoto.add_dependency(dep_dict))
+        history_path_tmpl='COM_ATMOS_HISTORY_TMPL'
+        history_file_tmpl = f'{self.run}.t@Hz.log.f000.txt'
+        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl])
+        data = f'{history_path}/{history_file_tmpl}'
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('gempak')
+        resources = self.get_resource('gempakmeta')
         task_name = f'{self.run}_gempakmeta'
         task_dict = {'task_name': task_name,
                      'resources': resources,
