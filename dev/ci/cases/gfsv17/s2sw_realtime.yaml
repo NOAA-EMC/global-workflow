@@ -31,6 +31,10 @@ prepoceanobs:
   # realtime
   dmpdir_exp: /lfs/h2/emc/da/noscrub/emc.da/obsForge/COMROOT/realtime
 
+prep:
+  # This can only be enabled in realtime
+  PROCESS_TROPCY: "NO"
+
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
   SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca

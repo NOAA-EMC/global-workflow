@@ -102,11 +102,11 @@ fi
 pgm=$(basename "${EXECglobal}/syndat_getjtbul.x")
 export pgm
 if [[ -s prep_step ]]; then
-    unset_strict
+    source "${USHglobal}/unset_strict.sh"
     source prep_step
-    set_strict
+    source "${USHglobal}/set_strict.sh"
 else
-    [[ -f errfile ]] && rm errfile
+    rm -f errfile
     #shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi

@@ -11,14 +11,10 @@ source "${EXPDIR}/config.resources" prep
 export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC
-export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
+# TODO Remove this functionality from the workflow
+export PROCESS_TROPCY='{{PROCESS_TROPCY}}'
 export TROPCYQCRELOSH="${SCRglobal}/exglobal_atmos_tropcy_qc_reloc.sh"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
-
-# If DOENKFONLY_ATM="YES", skip PROCESS_TROPCY
-if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
-   export PROCESS_TROPCY="NO"
-fi
 
 # Allow users to control the generation or use of either operational or
 # their processed prepbufr, prepbufr.acft_profiles, nsstbufr files

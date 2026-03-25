@@ -13,8 +13,6 @@
 # M. Klein/HPC   11/2006   Modify to run in production.
 #
 
-source "${HOMEglobal}/ush/preamble.sh"
-
 export pgm=gdplot2_nc
 source prep_step
 
