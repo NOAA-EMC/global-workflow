@@ -394,11 +394,7 @@ class GFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-<<<<<<< HEAD
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/sfcanlb.sh',
-=======
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanl_regrid.sh',
->>>>>>> 0570c2033 (rename a and b to gcycle and regrid for sfcanl jobs)
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/sfcanl_regrid.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -3088,7 +3084,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         else:
             if not self.options['do_enkfonly_atm']:
-                dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_analcalc'}
+                dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_anal'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
