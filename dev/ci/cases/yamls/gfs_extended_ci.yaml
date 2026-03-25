@@ -4,7 +4,7 @@ defaults:
 base:
   DO_GOES: "YES"
   DO_BUFRSND: "YES"
-  DO_GEMPAK: "YES"
+  DO_GEMPAK: "NO"
   DO_AWIPS: "YES"
   DO_NPOESS: "YES"
   DO_METP: "YES"
@@ -14,3 +14,7 @@ base:
   FHMAX_HF_GFS: 120
   DO_TEST_MODE: "NO"
   DO_ARCHCOM: "YES"
+
+skip_ci_on_hosts:
+  - aws-ec2
+

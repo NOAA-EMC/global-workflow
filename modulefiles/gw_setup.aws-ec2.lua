@@ -2,7 +2,7 @@ help([[
 Load environment to run GFS workflow setup scripts on AWS EC2
 ]])
 
-load("rocoto")
+-- load("rocoto")
 
 prepend_path("MODULEPATH", "/opt/spack-stack/envs/ue-oneapi-2024.2.1/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/opt/modulefiles")

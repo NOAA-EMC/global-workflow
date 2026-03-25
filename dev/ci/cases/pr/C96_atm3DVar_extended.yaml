@@ -21,6 +21,7 @@ skip_ci_on_hosts:
   - orion
   - hercules
   - awsepicglobalworkflow
+  - aws-ec2
 
 workflow:
   engine: rocoto
