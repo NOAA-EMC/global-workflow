@@ -256,9 +256,9 @@ export FSICS="0"
 #---------------------------------------------------------------------
 # Write more variables to output
 if [[ "${RUN}" == "sfs" ]]; then
-  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table_sfs"
+  export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table_sfs"
 else
-  export DIAG_TABLE="${PARMgfs}/ufs/fv3/diag_table"
+  export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table"
 fi
 
 # Write gfs restart files to rerun fcst from any break point
