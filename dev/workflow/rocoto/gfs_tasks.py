@@ -292,7 +292,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def sfcanla(self):
+    def sfcanl_gcycle(self):
 
         deps = []
         if self.options['do_jediatmvar']:
@@ -309,13 +309,13 @@ class GFSTasks(Tasks):
             dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('sfcanl')
-        task_name = f'{self.run}_sfcanla'
+        task_name = f'{self.run}_sfcanl_gcycle'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanla.sh',
+                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanl_gcycle.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -325,7 +325,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def sfcanlb(self):
+    def sfcanl_regrid(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': 'enkfgdas_eupd'}
@@ -333,13 +333,13 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('sfcanl')
-        task_name = f'{self.run}_sfcanlb'
+        task_name = f'{self.run}_sfcanl_regrid'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanlb.sh',
+                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanl_regrid.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -357,10 +357,10 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanla'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanlb'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar'] and self.run in ['gdas']:
             dep_dict = {'type': 'task', 'name': 'enkfgdas_echgres', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
@@ -999,10 +999,10 @@ class GFSTasks(Tasks):
     def _fcst_cycled(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanla'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanlb'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_wave']:

@@ -10,12 +10,12 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="sfcanla"
+export job="sfcanlr"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_SFCANLA"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_SFCANL_REGRID"
 status=$?
 
 exit "${status}"
