@@ -12,7 +12,7 @@ export GFS_CI_ROOT=null
 
 # ICSDIR root directory - Contains initial condition data
 # Used by create_experiment.py for setting up test cases
-export ICSDIR_ROOT=/gpfs/csfs1/work/huangwei/ICSDIR
+export ICSDIR_ROOT=/lustre/desc1/p/nral0032/global/data/ICSDIR
 
 
 #########################################################################
