@@ -121,7 +121,7 @@ else
 fi
 
 # Collect the dates in the window to update surface restarts
-gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
+gcycle_dates=("${PDY}${cyc}")        # Always update surface restarts at middle of window
 if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of window
     half_window=$((assim_freq / 2))
     BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
