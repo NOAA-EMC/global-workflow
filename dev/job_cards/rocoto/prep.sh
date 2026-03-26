@@ -170,10 +170,10 @@ fi
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
-    unset_strict
+    source "${USHglobal}/unset_strict.sh"
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
-    set_strict
+    source "${USHglobal}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
         err_exit "JOBSPROC_GLOBAL_PREP job failed, ABORT!"
     fi
