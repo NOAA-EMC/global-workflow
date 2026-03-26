@@ -60,7 +60,7 @@ echo "  pdym1 is    ${pdym1}"
 echo
 echo "  ymddir is   ${PDY}"
 echo
-set_trace
+set -x
 
 find="${ymd} ${cyc}"
 echo "looking for string ${find} in ${jtwcdir}/tropcyc"
@@ -123,7 +123,7 @@ set +x
 echo
 echo "The foreground exit status for SYNDAT_GETJTBUL is ${errget}"
 echo
-set_trace
+set -x
 if [[ "${errget}" -gt '0' ]]; then
     if [[ "${errget}" -eq '1' ]]; then
         msg="No JTWC bulletins in ${jtwcdir}/tropcyc, no JTWC tcvitals available for qctropcy for ${run_date}"
@@ -152,7 +152,7 @@ echo "----------------------------------------------------------"
 echo "***********  COMPLETED PROGRAM syndat_getjtbul  **********"
 echo "----------------------------------------------------------"
 echo
-set_trace
+set -x
 
 if [[ "${errget}" -eq '0' ]]; then
     echo "Completed JTWC tcvitals records are:"
