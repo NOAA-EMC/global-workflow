@@ -4,6 +4,8 @@ GEMGRD1="${RUN}_1p00_${PDY}${cyc}f"
 
 export numproc=23
 
+# fhend, fhbeg, and fhinc come from config.gempakmeta
+
 # Find the last hour available
 for ((fhr = fhend; fhr >= fhbeg; fhr = fhr - fhinc)); do
     fhr3=$(printf "%03d" "${fhr}")
@@ -22,8 +24,7 @@ max_tries=180
 first_time=0
 do_all=0
 
-# fhend comes from config.gempakmeta
-fhr3=$(printf "%03d" "${fhend}")
+fhr3=$(printf "%03d" "${fhr}")
 
 #loop through and process needed forecast hours
 fhr=0
@@ -71,7 +72,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
 
     # Do not try to run the poescript if it doesn't exist.
     # This means that there are no jobs to run for this fhr
-    if [[ ! -f "poescript" ]]; then
+    if [[ -f "poescript" ]]; then
 
         #  If this is the final fcst hour, alert the
         #  file to all centers.
@@ -79,8 +80,6 @@ while [[ ${fhr} -le ${fhend} ]]; do
         if [[ ${fhr} -ge ${fhend} ]]; then
             export DBN_ALERT_TYPE=GFS_METAFILE_LAST
         fi
-
-        cat poescript
 
         "${HOMEglobal}/ush/run_mpmd.sh" poescript && true
         export err=$?
