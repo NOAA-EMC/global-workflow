@@ -1110,6 +1110,7 @@ case ${step} in
     ntasks=1
     tasks_per_node=1
     memory="80G"
+    prepost=True
     ;;
 
   "echgres")
