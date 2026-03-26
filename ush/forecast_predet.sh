@@ -146,9 +146,11 @@ FV3_predet() {
     echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
 
     if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then mkdir -p "${COMOUT_ATMOS_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
     if [[ ! -d "${DATAoutput}/FV3ATM_OUTPUT" ]]; then mkdir -p "${DATAoutput}/FV3ATM_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
+    if [[ "${WRITE_DOPOST:-}" == ".true." ]] && [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then
+       mkdir -p "${COMOUT_ATMOS_MASTER}";
+    fi
 
     # The $DATA/RESTART directory is used for writing FV3 restart files (it is hard-wired in the model)
     # Link the output and restart directories to the DATA directory
@@ -663,7 +665,6 @@ CICE_predet() {
     echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
 
     if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
-    if [[ ! -d "${COMIN_ICE_INPUT}" ]]; then mkdir -p "${COMIN_ICE_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/CICE_OUTPUT" ]]; then mkdir -p "${DATAoutput}/CICE_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
 
@@ -687,7 +688,6 @@ MOM6_predet() {
     echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 
     if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then mkdir -p "${COMOUT_OCEAN_HISTORY}"; fi
-    if [[ ! -d "${COMIN_OCEAN_INPUT}" ]]; then mkdir -p "${COMIN_OCEAN_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
 
