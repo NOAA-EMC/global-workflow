@@ -4,7 +4,7 @@
 ####  UNIX Script Documentation Block
 #                      .                                             .
 # Script name:         exglobal_atmos_sfcanl_gcycle.sh
-# Script description:  Updates global surface analysis files 
+# Script description:  Updates global surface analysis files
 #                      with global_cycle program
 #
 # Author: Russ Treadon      Org: NCEP/EMC     Date: 2021-12-13
