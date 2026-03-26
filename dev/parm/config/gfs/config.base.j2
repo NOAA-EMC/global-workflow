@@ -518,6 +518,11 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
+   export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
+else
+   if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
+     export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
+   fi
 fi
 
 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
