@@ -44,8 +44,7 @@ export SHELLOPTS
 ##############################################
 # Create and enter the working directory
 ##############################################
-source "${USHglobal}/setup_data_dir.sh"
-setup_data_dir "${DATA}"
+source "${USHglobal}/setup_data_dir.sh" "${DATA}"
 
 # Activate tracing
 set -x
