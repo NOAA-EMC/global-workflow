@@ -122,8 +122,11 @@ fi
 
 # Collect the dates in the window to update surface restarts
 gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
+soilinc_fhrs=("${assim_freq}") # increment file at middle of window
+
 if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of window
     half_window=$((assim_freq / 2))
+    soilinc_fhrs+=("${half_window}")
     BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
     gcycle_dates+=("${BDATE}")
 fi
@@ -140,6 +143,14 @@ for hr in "${!gcycle_dates[@]}"; do
     for ((nn = 1; nn <= ntiles; nn++)); do
         cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/sfc_data_cycle.00${nn}"
     done
+
+    if [[ "${DO_LAND_IAU}" == ".false." && "${DO_GSISOILDA}" == "YES" ]];then
+    FHR="${soilinc_fhrs[hr]}"
+    for ((nn = 1; nn <= ntiles; nn++)); do
+	cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
+        "${DATA}/soil_xainc.00${nn}"
+    done
+    fi
 
     "${CYCLESH}" && true
     export err=$?
