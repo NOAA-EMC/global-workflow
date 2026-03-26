@@ -52,6 +52,8 @@ export FIXgdas="${FIXglobal}/gdas"
 # GLOBAL static environment parameters
 export PACKAGEROOT="{{ PACKAGEROOT }}"    # TODO: set via prod_envir in Ops
 export COMROOT="{{ COMROOT }}"    # TODO: set via prod_envir in Ops
+# Available for WCOSS2/realtime only
+export DCOMROOT="/lfs/h1/ops/prod/dcom"    # TODO: set via prod_envir in ops
 export COMINsyn="{{ COMINsyn }}"
 export DMPDIR="{{ DMPDIR }}"
 export IODADIR="{{ IODADIR }}"
@@ -488,6 +490,12 @@ export DO_CA="YES"
 export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
+# METplus verification is not enabled on Hera or Orion
+if [[ "${machine}" == "hera" || "${machine}" == "orion" ]] && [[ ${DO_METP} == "YES" ]]; then
+   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
+   export DO_METP="NO"
+fi
+
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
@@ -514,9 +522,7 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
 
-# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
-# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
-if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" || "${machine}" == "DERECHO" ]]; then
+if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
     export DO_METP=NO
 fi
 
@@ -536,6 +542,9 @@ export OFFSET_START_HOUR=0
 
 # Number of regional collectives to create soundings for
 export NUM_SND_COLLECTIVES=${NUM_SND_COLLECTIVES:-9}
+
+# MOM6 IC setting needed for forecast and stage ics
+export MOM6_INTERP_ICS="{{ MOM6_INTERP_ICS }}"
 
 # Set JEDI atmospheric DA increment type
 if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
