@@ -36,7 +36,6 @@ Table of Contents
 
    development.rst
    testing.rst
-   ci_cd_pipeline.rst
    components.rst
    jobs.rst
    hpc.rst
