@@ -120,9 +120,7 @@ else
 fi
 
 # Collect the dates in the window to update surface restarts
-gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
-soilinc_fhrs=("${assim_freq}") # increment file at middle of window
-
+gcycle_dates=("${PDY}${cyc}")        # Always update surface restarts at middle of window
 if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of window
     half_window=$((assim_freq / 2))
     soilinc_fhrs+=("${half_window}")
@@ -133,12 +131,7 @@ fi
 # Loop over the dates in the window to update the surface restarts
 for hr in "${!gcycle_dates[@]}"; do
 
-<<<<<<< HEAD:dev/scripts/exglobal_atmos_sfcanl.sh
     export gcycle_date="${gcycle_dates[hr]}"
-    FHR="${soilinc_fhrs[hr]}"
-=======
-    gcycle_date="${gcycle_dates[hr]}"
->>>>>>> 0570c2033 (rename a and b to gcycle and regrid for sfcanl jobs):dev/scripts/exglobal_atmos_sfcanl_gcycle.sh
     echo "Updating surface restarts for ${gcycle_date} ..."
 
     datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
