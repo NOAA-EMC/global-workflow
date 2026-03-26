@@ -274,7 +274,7 @@ case ${cmodel} in
         set +x
         echo " "
         echo " ++ operational NGM chosen"
-        set_trace
+        set -x
         fcsthrsngm='00 06 12 18 24 30 36 42 48'
         ngmdir="${COMIN}"
         ngmgfile=ngm.t${dishh}z.pgrb.f

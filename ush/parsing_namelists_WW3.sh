@@ -16,7 +16,7 @@ WW3_namelists() {
     if [[ -f "${DATA}/ww3_points.list" ]]; then
         set +x
         echo "ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
-        set_trace
+        set -x
     else
         echo "FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
         exit 12
