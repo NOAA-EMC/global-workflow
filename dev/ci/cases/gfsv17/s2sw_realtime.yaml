@@ -33,7 +33,7 @@ prepoceanobs:
 
 prep:
   # This can only be enabled in realtime
-  PROCESS_TROPCY: "YES"
+  PROCESS_TROPCY: "NO"
 
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
