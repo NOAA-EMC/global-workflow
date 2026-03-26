@@ -3084,7 +3084,7 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         else:
             if not self.options['do_enkfonly_atm']:
-                dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_anal'}
+                dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_analcalc'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
