@@ -13,7 +13,7 @@ experiment:
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/SRv1.01/C192mx025
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/sfs_full_C192mx025_REPLAY_ICS.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_full_C192mx025_REPLAY_ICS.yaml
 
 workflow:
   engine: rocoto
