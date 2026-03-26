@@ -141,12 +141,12 @@ for hr in "${!gcycle_dates[@]}"; do
         cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/sfc_data_cycle.00${nn}"
     done
 
-    if [[ "${DO_LAND_IAU}" == ".false." && "${DO_GSISOILDA}" == "YES" ]];then
-    FHR="${soilinc_fhrs[hr]}"
-    for ((nn = 1; nn <= ntiles; nn++)); do
-	cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
-        "${DATA}/soil_xainc.00${nn}"
-    done
+    if [[ "${DO_LAND_IAU}" == ".false." && "${DO_GSISOILDA}" == "YES" ]]; then
+        FHR="${soilinc_fhrs[hr]}"
+        for ((nn = 1; nn <= ntiles; nn++)); do
+            cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
+                "${DATA}/soil_xainc.00${nn}"
+        done
     fi
 
     "${CYCLESH}" && true
