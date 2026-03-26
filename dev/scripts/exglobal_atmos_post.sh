@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-set -e
-source "${USHgfs}/preamble.sh"
 #------------------------------------------------------------------------------
 # AUTO-CLEANUP: CONVERT WINDOWS (CRLF) TO UNIX (LF) FORMAT
 # This prevents the "/usr/bin/cat: invalid option -- 'm'" error.
@@ -12,9 +10,9 @@ source "${USHgfs}/preamble.sh"
 echo "INFO: Validating script line endings..."
 
 # Scripts used
-PROCESS_ATMOS_6HRLYSH=${PROCESS_ATMOS_6HRLYSH:-"${USHgfs}/process_atmos_6hrly.sh"}
-PROCESS_ATMOS_DAILYSH=${PROCESS_ATMOS_DAILYSH:-"${USHgfs}/process_atmos_daily.sh"}
-RUN_MPMDSH=${RUN_MPMDSH:-"${USHgfs}/run_mpmd.sh"}
+PROCESS_ATMOS_6HRLYSH=${PROCESS_ATMOS_6HRLYSH:-"${USHglobal}/process_atmos_6hrly.sh"}
+PROCESS_ATMOS_DAILYSH=${PROCESS_ATMOS_DAILYSH:-"${USHglobal}/process_atmos_daily.sh"}
+RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
 
 # List all scripts involved in the workflow
 workflow_scripts=(
@@ -101,7 +99,7 @@ export filename_end="${filename_end}"
 echo "Start to Process Atmospheric variables"
 
 # Remove all generated products if the previous jobs failed
-rm -rf "${OUTDIR}"/*
+#rm -rf "${OUTDIR}"/*
 
 # Determine vt_date and lastfhr (Required for all stages)
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"

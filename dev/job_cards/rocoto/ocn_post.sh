@@ -7,7 +7,7 @@ set -x
 ###############################################################
 
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if ((status != 0)); then exit "${status}"; fi
 export job="ocn_post"
@@ -18,7 +18,7 @@ jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 ###############################################################
-"${HOMEgfs}/dev/jobs/JGLOBAL_OCN_POST"
+"${HOMEglobal}/dev/jobs/JGLOBAL_OCN_POST"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

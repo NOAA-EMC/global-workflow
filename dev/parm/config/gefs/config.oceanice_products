@@ -14,7 +14,7 @@ export write_ocean_subset=False
 export write_ice_grib2=False
 export write_ice_netcdf=False
 export write_ice_subset=True
-export OCEANICEPRODUCTS_CONFIG="${PARMgfs}/post/oceanice_products_${NET}.yaml"
+export OCEANICEPRODUCTS_CONFIG="${PARMglobal}/post/oceanice_products_${NET}.yaml"
 
 # Maximum number of rocoto tasks per member
 export MAX_TASKS=25

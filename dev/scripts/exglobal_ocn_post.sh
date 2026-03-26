@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 set -e
-source "${USHgfs}/preamble.sh"
 
 #------------------------------------------------------------------------------
 # Ocean post tasks: 
@@ -19,11 +18,10 @@ source "${USHgfs}/preamble.sh"
 echo "INFO: Validating script line endings..."
 
 # Scripts used
-PROCESS_OCEAN_6HRLYSH=${PROCESS_OCEAN_6HRLYSH:-"${USHgfs}/process_ocean_6hrly.sh"}
-PROCESS_OCEAN_DAILYSH=${PROCESS_OCEAN_DAILYSH:-"${USHgfs}/process_ocean_daily.sh"}
-PROCESS_OCEAN_MONTHLYSH=${PROCESS_OCEAN_MONTHLYSH:-"${USHgfs}/process_ocean_monthly.sh"}
-RUN_MPMDSH=${RUN_MPMDSH:-"${USHgfs}/run_mpmd.sh"}
-
+PROCESS_OCEAN_6HRLYSH=${PROCESS_OCEAN_6HRLYSH:-"${USHglobal}/process_ocean_6hrly.sh"}
+PROCESS_OCEAN_DAILYSH=${PROCESS_OCEAN_DAILYSH:-"${USHglobal}/process_ocean_daily.sh"}
+PROCESS_OCEAN_MONTHLYSH=${PROCESS_OCEAN_MONTHLYSH:-"${USHglobal}/process_ocean_monthly.sh"}
+RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
 # List all scripts involved in the workflow
 workflow_scripts=(
     "${0}"
@@ -48,9 +46,9 @@ fi
 echo "INFO: Line ending validation complete."
 
 #path to python scripts to calculate depth of 20C isotherm,TCHP and OHC
-export CALC_D20="${USHgfs}/python/ocn_diag/calc_d20.py"
-export CALC_TCHP="${USHgfs}/python/ocn_diag/calc_tchp.py"
-export CALC_OHC="${USHgfs}/python/ocn_diag/calc_ohc.py"
+export CALC_D20="${USHglobal}/python/ocn_diag/calc_d20.py"
+export CALC_TCHP="${USHglobal}/python/ocn_diag/calc_tchp.py"
+export CALC_OHC="${USHglobal}/python/ocn_diag/calc_ohc.py"
 
 # Path for ocean post output
 mkdir -m 755 -p "${COMOUT_OCEAN_NETCDF}/${grid}"
@@ -80,7 +78,7 @@ if [[ "${RUN}" == sfs ]]; then
 # and merge into one single file for entire forecast length
 # -----------------------------------------------------------------------------
    # 1. Generate the command file
-   ocean_6hrly_cmdfile="${DATA}/ocean_6hrly_cmds.txt"
+   ocean_6hrly_cmdfile="${DATAjob}/ocean_6hrly_cmds.txt"
    > "${ocean_6hrly_cmdfile}"
 
    # Step by 720 hours. Each task starts at 6, 726, etc and the first start_fhr=6 for 6 hour_avg files.

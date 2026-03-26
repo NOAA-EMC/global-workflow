@@ -11,8 +11,8 @@ set -x
 #status=$?
 #if ((status != 0)); then exit "${status}"; fi
 
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/ush/detect_machine.sh"
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}";
@@ -26,7 +26,7 @@ jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 ###############################################################
-"${HOMEgfs}/dev/jobs/JGLOBAL_ICE_POST"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ICE_POST"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

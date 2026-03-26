@@ -1,21 +1,20 @@
 #! /usr/bin/env bash
-
-source "${HOMEgfs}/ush/jjob_header.sh" -e "ice_post" -c "base ice_post"
-
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ice_post" -c "base ice_post"
+export DATAjob="${DATAROOT}/ocean_post_${ENSMEM}"
+export DATA="${DATAjob}/${jobid}"
+mkdir -p ${DATA}
 if ((10#${ENSMEM:-0} > 0)); then
-    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+    export DATAoutput="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}/output"
 else
-    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+    export DATAoutput="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}/output"
 fi
 
-# Create the directory to hold output from the model in stmp
-export DATAoutput="${DATAjob}/output"
-if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
-
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ICE_HISTORY:COM_ICE_HISTORY_TMPL \
-    COMOUT_ICE_NETCDF:COM_ICE_NETCDF_TMPL
+YMD=${PDY} HH=${cyc} 
+memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
+declare -rx "COMOUT_ICE_HISTORY"="${COMOUT}/model/ice/history" 
+declare -rx "COMOUT_ICE_NETCDF"="${COMOUT}/products/ice/netcdf"
 if [[ ! -d "${COMOUT_ICE_NETCDF}" ]]; then mkdir -p "${COMOUT_ICE_NETCDF}"; fi
 
 # Define current cycle
@@ -39,7 +38,7 @@ fi
 ##############################################
 
 # Run exglobal script
-"${SCRgfs}/exglobal_ice_post.sh" && true
+"${SCRglobal}/exglobal_ice_post.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
