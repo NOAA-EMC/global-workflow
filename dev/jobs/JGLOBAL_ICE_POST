@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 source "${HOMEglobal}/ush/jjob_header.sh" -e "ice_post" -c "base ice_post"
-export DATAjob="${DATAROOT}/ocean_post_${ENSMEM}"
-export DATA="${DATAjob}/${jobid}"
+export DATA="${DATAROOT}/ocean_post_${ENSMEM}.${jobid}"
 mkdir -p ${DATA}
 if ((10#${ENSMEM:-0} > 0)); then
     export DATAoutput="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}/output"

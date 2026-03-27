@@ -1,11 +1,10 @@
 #! /usr/bin/env bash
 source "${HOMEglobal}/ush/jjob_header.sh" -e "atmos_post" -c "base atmos_post"
 
-export DATAjob="${DATAROOT}/atmos_post_${ENSMEM}"
-export DATA="${DATAjob}/${jobid}"
+export DATA="${DATAROOT}/atmos_post_${ENSMEM}.${jobid}"
 mkdir -p ${DATA}
 # Create the directory to hold output from the model in stmp
-export DATAoutput="${DATAjob}/output"
+export DATAoutput="${DATA}/output"
 if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
