@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-########## config.sfcanl ##########
+########## config.sfcanl_gcycle ##########
 # GFS surface analysis specific
 
-echo "BEGIN: config.sfcanl"
+echo "BEGIN: config.sfcanl_gcycle"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" sfcanl
+source "${EXPDIR}/config.resources" sfcanl_gcycle
 
 # Run global_cycle in coupled mode
 if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
@@ -24,7 +24,6 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     else
         export GCYCLE_DO_SOILINCR=".true."
     fi
-    export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
 fi
 
-echo "END: config.sfcanl"
+echo "END: config.sfcanl_gcycle"

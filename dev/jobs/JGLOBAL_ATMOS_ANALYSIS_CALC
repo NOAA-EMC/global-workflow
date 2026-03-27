@@ -49,7 +49,6 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
-# Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
 ###############################################################

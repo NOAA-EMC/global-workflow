@@ -17,7 +17,7 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
-    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
+    echo "anal sfcanl_regrid sfcanl_gcycle analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
@@ -780,7 +780,7 @@ case ${step} in
     memory="150GB"
     ;;
 
-  "sfcanl")
+  "sfcanl_regrid" | "sfcanl_gcycle")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
     threads_per_task=4
