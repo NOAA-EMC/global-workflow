@@ -16,7 +16,10 @@ enkf:
            {% endif %}
         {% endif %}
         {% endif %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
+            {% if DO_GSISOILDA %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfcr.log"
+            {% endif %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfcg.log"
         {% if not DO_JEDIATMENS %}
             {% for grp in range(iaufhrs_str | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"

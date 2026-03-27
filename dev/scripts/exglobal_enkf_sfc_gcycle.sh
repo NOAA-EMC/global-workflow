@@ -3,12 +3,12 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_sfc.sh
-# Script description:  generate ensemble surface analyses on tiles
+# Script name:         exglobal_enkf_sfc_gcycle.sh
+# Script description:  run global_cycle for ensemble surface analyses on tiles
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 #
-# Abstract: This script generates ensemble surface analyses on tiles
+# Abstract: This script runs global_cycle for ensemble surface analyses on tiles
 #
 # $Id$
 #
@@ -65,9 +65,6 @@ export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 export COUPLED=${COUPLED:-".false."}
-
-APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
-NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
 
 ################################################################################
 # Update surface fields in the FV3 restart's using global_cycle.
@@ -131,7 +128,7 @@ else
     export NST_FILE="NULL"
 fi
 
-export APRUNCY=${APRUN_CYCLE:-${APRUN_ESFC}}
+export APRUNCY=${APRUN_CYCLE:-${APRUN:-""}}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-${NTHREADS_ESFC}}
 export MAX_TASKS_CY=${NMEM_ENS}
 

@@ -3076,7 +3076,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def esfc(self):
+    def esfc_gcycle(self):
 
         deps = []
         if self.options['do_jediatmens']:
@@ -3086,21 +3086,50 @@ class GFSTasks(Tasks):
             if not self.options['do_enkfonly_atm']:
                 dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_anal'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
+            dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        else:
+            dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('esfc')
-        task_name = f'{self.run}_esfc'
+        resources = self.get_resource('esfc_gcycle')
+        task_name = f'{self.run}_esfc_gcycle'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/esfc.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/esfc_gcycle.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
+    def esfc_regrid(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'enkfgdas_eupd'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('esfc_regrid')
+        task_name = f'{self.run}_esfc_regrid'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/esfc_regrid.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -3120,8 +3149,11 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
             deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_gsisoilda'] and self.run in ['gdas']:
+            dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlecen'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -3266,7 +3298,7 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
                 deps.append(rocoto.add_dependency(dep_dict))
         else:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_gcycle'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -3306,7 +3338,7 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:  # early cycle enkf run (enkfgfs)
-            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_gcycle'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_ecmn'}
             deps.append(rocoto.add_dependency(dep_dict))

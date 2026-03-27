@@ -133,7 +133,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl_regrid','sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic','sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
@@ -146,7 +146,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'ediag', 'eupd', 'echgres', 'ecen']
 
-            configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
+            configs += ['esfc_gcycle', 'efcs', 'epos', 'earc_vrfy']
 
             if options['do_archcom']:
                 configs += ['earc_tars', 'earc_groups']
@@ -205,6 +205,11 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['snowanl']
             if options['do_hybvar']:
                 configs += ['esnowanl']
+
+        if options['do_gsisoilda']:
+            configs += ['sfcanl_regrid']
+            if options['do_hybvar']:
+                configs += ['esfc_regrid']
 
         if options['do_globusarch']:
             configs += ['globus']
@@ -285,7 +290,7 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_aero_anl']:
                         task_names[run] += ['aeroanlgenb']
 
-                    if options['do_gsisoilda']: 
+                    if options['do_gsisoilda']:
                         task_names[run] += ['sfcanl_regrid']
                 else:
                     if options['do_wave']:
@@ -419,7 +424,9 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
-                task_names[run] += ['esfc']
+                task_names[run] += ['esfc_gcycle']
+                if options['do_gsisoilda']:
+                    task_names[run].append('esfc_regrid') if 'gdas' in run else 0
                 task_names[run] += ['earc_vrfy']
 
                 if options['do_archcom']:

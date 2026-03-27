@@ -3,12 +3,12 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_sfc.sh
-# Script description:  generate ensemble surface analyses on tiles
+# Script name:         exglobal_enkf_sfc_regrid.sh
+# Script description:  regrid soil increments for ensemble surface analyses
 #
-# Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
+# Author:        Clara Draper       Org: NCEP/EMC     Date: 2024-12-01
 #
-# Abstract: This script generates ensemble surface analyses on tiles
+# Abstract: This script regrids soil increments for ensemble surface analyses
 #
 # $Id$
 #
