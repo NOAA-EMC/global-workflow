@@ -64,7 +64,7 @@ set +x
 if [[ ${err} -ne 0 ]]; then
     err_exit "${DATAROOT} does not exist, ABORT!"
 fi
-set_trace
+set -x
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

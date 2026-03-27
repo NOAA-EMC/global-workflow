@@ -42,7 +42,7 @@ dataroot_com_path() {
     local new_com_path="${DATAROOT}/${relative_path}"
 
     echo "${new_com_path}"
-    set_trace
+    set -x
 }
 
 declare -xf dataroot_com_path
