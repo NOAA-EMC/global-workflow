@@ -9,6 +9,7 @@ suite gcafs_v1
     edit MACHINE_SITE 'development'
     edit ENVIR 'para'
     edit EXPDIR '%PACKAGEHOME%/parm/config/gcafs'
+    edit DATAROOT '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/dataroot'
     edit ECF_INCLUDE '/lfs/h2/emc/da/noscrub/cory.r.martin/gcafs/git/release/gcafs.v1.0.0/ecf/include'
     edit DBNLOG '/lfs/h2/emc/ptmp/cory.r.martin/gcafs/com/dbnlog'
     family 00
