@@ -7,7 +7,7 @@
 #
 # Handles:
 #   - Sourcing utility functions (wait_for_file, dataroot_com_path, timer,
-#       err_exit, postamble)
+#       err_exit)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
 #   - Activating strict mode (set -eu) and tracing (set -x)
@@ -52,9 +52,8 @@ set -x
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
-source "${USHglobal}/postamble.sh"
 # shellcheck disable=SC2064
-trap "postamble ${start_time}" EXIT
+trap "${USHglobal}/postamble.sh ${start_time}" EXIT
 
 ##############################################
 # Temporal variables: PDY, PDYm#, PDYp# (via setpdy.sh)
