@@ -20,6 +20,7 @@ source "${USHglobal}/set_strict.sh"
 ##############################################
 
 # Construct COM variables
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))

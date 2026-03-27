@@ -39,7 +39,8 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-# Generate COM variables from templates
+# Generate COM variables
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMIN_OBS="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"

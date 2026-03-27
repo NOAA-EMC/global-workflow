@@ -18,6 +18,7 @@ source "${USHglobal}/set_strict.sh"
 export MP_PULSE=0
 
 # Set COM Paths
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros

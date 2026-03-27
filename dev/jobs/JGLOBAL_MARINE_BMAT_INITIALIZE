@@ -53,7 +53,8 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Generate COM variables from templates
+# Generate COM variables
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
 declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 

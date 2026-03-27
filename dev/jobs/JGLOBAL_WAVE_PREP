@@ -25,6 +25,7 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Set COM Paths
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 declare -rx COMIN_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"
 declare -rx COMOUT_WAVE_PREP="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/prep"

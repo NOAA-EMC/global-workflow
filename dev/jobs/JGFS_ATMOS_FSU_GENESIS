@@ -18,6 +18,7 @@ source "${USHglobal}/set_strict.sh"
 ##############################################
 # Define COM and Data directories
 ##############################################
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMOUT_ATMOS_GENESIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/genesis_vital"
 declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 

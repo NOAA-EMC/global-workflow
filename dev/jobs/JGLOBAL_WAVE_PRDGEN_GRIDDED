@@ -19,7 +19,7 @@ source "${USHglobal}/wave_domain_grid.sh"
 ###################################
 # Set COM Paths
 ###################################
-
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMIN_WAVE_GRID="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded"
 declare -rx COMOUT_WAVE_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/wmo"
 

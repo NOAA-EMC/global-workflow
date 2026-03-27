@@ -26,7 +26,7 @@ source "${USHglobal}/set_strict.sh"
 export CASE=${CASE_ENS}
 
 export APREFIX="${RUN}.t${cyc}z."
-
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMIN_OBS="${ROTDIR}/#${RUN/enkf/}.${PDY}/${cyc}/obs"
 declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"

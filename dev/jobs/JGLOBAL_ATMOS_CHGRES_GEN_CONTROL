@@ -22,6 +22,7 @@ BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - $((assim_freq / 2)) hours")
 export BDATE
 
 # Define COM directories
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 # TODO: uncomment when testing for realtime
 #COMINgfs=$(compath.py "${envir}/gfs/${gfs_ver}")
 declare -rx COMOUT_ATMOS_INPUT_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem000/model/atmos/input"

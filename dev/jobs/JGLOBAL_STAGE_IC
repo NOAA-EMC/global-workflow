@@ -18,7 +18,7 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
-
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 # Execute staging
 "${SCRglobal}/exglobal_stage_ic.py"
 err=$?

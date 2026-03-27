@@ -25,7 +25,8 @@ GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 
-# Generate COM variables from templates
+# Generate COM variables
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
     declare -rx COMINobsproc

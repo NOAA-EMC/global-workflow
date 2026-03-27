@@ -29,6 +29,7 @@ export GDUMP="${RUN}"
 export APREFIX_IN="gdas.t${cyc}z."
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 
 {% if RUN == "gcdas" %}
 COMINobsproc=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"

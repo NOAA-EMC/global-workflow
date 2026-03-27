@@ -18,7 +18,7 @@ source "${USHglobal}/set_strict.sh"
 ##############################################
 # Set variables used in the script
 ##############################################
-
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

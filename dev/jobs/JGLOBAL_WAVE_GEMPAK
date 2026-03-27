@@ -20,7 +20,7 @@ source "${USHglobal}/wave_domain_grid.sh"
 # Set COM Paths
 ###################################
 export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
-
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMOUT_WAVE_GEMPAK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gempak"
 
 if [[ -n "${GEMPAK_GRIDS}" ]]; then

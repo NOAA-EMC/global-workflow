@@ -17,6 +17,7 @@ source "${USHglobal}/set_strict.sh"
 source "${USHglobal}/wave_domain_grid.sh"
 
 # Set COM Paths
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMIN_ATMOS_GRIB_${grid}"
     declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"

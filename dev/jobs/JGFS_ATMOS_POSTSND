@@ -22,7 +22,7 @@ source "${USHglobal}/set_strict.sh"
 ##############################
 # Define COM Directories
 ##############################
-
+export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
 declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
 declare -rx COMIN_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
 declare -rx COMOUT_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
