@@ -27,5 +27,5 @@ nsst:
   NST_MODEL: "1"
 prepatmiodaobs:
   DO_CONVERT_IODA: "YES"
-sfcanl:
+sfcanl_gcycle:
   DONST: "NO"

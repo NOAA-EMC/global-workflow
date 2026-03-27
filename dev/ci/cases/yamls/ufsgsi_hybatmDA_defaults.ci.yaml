@@ -28,5 +28,5 @@ prep:
   CONVERT_BIASCOR: "YES"
 prepatmiodaobs:
   DO_CONVERT_IODA: "YES"
-sfcanl:
+sfcanl_gcycle:
   DONST: "NO"
