@@ -32,7 +32,6 @@ REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
 # Files.
 
 # Variables
-NMEM_ENS_MAX=${NMEM_ENS:-80}
 if [[ "${RUN}" == "enkfgfs" ]]; then
     NMEM_ENS=${NMEM_ENS_GFS:-30}
 else
