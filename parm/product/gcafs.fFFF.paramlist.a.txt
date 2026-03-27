@@ -3,5 +3,9 @@
 :SSALBK:entire atmosphere:
 :COLMD:entire atmosphere:
 :PMTC:1 hybrid level:
+:PMTC:entire atmosphere:
+:PMTC:surface:
 :PMTF:1 hybrid level:
+:PMTF:entire atmosphere:
+:PMTF:surface:
 :SCTAOTK:entire atmosphere:
