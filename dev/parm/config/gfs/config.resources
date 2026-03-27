@@ -1307,6 +1307,10 @@ case ${step} in
     walltime="01:00:00"
     ntasks=${NMEM_ENS:-80}
     threads_per_task=1
+    node_numerator=1
+    node_denominator=2
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+
     threads_per_task_cycle=${threads_per_task}
     tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
