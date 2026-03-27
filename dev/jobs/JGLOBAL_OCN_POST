@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 source "${HOMEglobal}/ush/jjob_header.sh" -e "ocn_post" -c "base ocn_post"
 
 export DATA="${DATAROOT}/ocean_post_${ENSMEM}.${jobid}"

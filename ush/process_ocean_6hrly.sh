@@ -4,7 +4,7 @@
 set -e
 
 # paths for output grid (1p00)
-r360x181="${USHgfs}/python/ocn_diag/r360x181"
+r360x181="${USHglobal}/python/ocn_diag/r360x181"
 
 # Arguments:
 start_fhr=$1

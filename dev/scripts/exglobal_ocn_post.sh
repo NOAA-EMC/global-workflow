@@ -78,7 +78,7 @@ if [[ "${RUN}" == sfs ]]; then
 # and merge into one single file for entire forecast length
 # -----------------------------------------------------------------------------
    # 1. Generate the command file
-   ocean_6hrly_cmdfile="${DATAjob}/ocean_6hrly_cmds.txt"
+   ocean_6hrly_cmdfile="${DATA}/ocean_6hrly_cmds.txt"
    > "${ocean_6hrly_cmdfile}"
 
    # Step by 720 hours. Each task starts at 6, 726, etc and the first start_fhr=6 for 6 hour_avg files.

@@ -5,9 +5,9 @@
 set -e
 
 # Scripts for computing d20/TCHP/ohc
-CALC_D20="${USHgfs}/python/ocn_diag/calc_d20.py"
-CALC_TCHP="${USHgfs}/python/ocn_diag/calc_tchp.py"
-CALC_OHC="${USHgfs}/python/ocn_diag/calc_ohc.py"
+CALC_D20="${USHglobal}/python/ocn_diag/calc_d20.py"
+CALC_TCHP="${USHglobal}/python/ocn_diag/calc_tchp.py"
+CALC_OHC="${USHglobal}/python/ocn_diag/calc_ohc.py"
 
 # Arguments: 
 YR=$1

@@ -99,7 +99,7 @@ export filename_end="${filename_end}"
 echo "Start to Process Atmospheric variables"
 
 # Remove all generated products if the previous jobs failed
-#rm -rf "${OUTDIR}"/*
+rm -rf "${OUTDIR}"/*
 
 # Determine vt_date and lastfhr (Required for all stages)
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"

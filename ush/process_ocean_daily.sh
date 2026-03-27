@@ -4,12 +4,12 @@
 set -e
 
 #paths to python script to calculate depth of 20C isotherm,TCHP and OHC
-CALC_D20="${USHgfs}/python/ocn_diag/calc_d20.py"
-CALC_TCHP="${USHgfs}/python/ocn_diag/calc_tchp.py"
-CALC_OHC="${USHgfs}/python/ocn_diag/calc_ohc.py"
+CALC_D20="${USHglobal}/python/ocn_diag/calc_d20.py"
+CALC_TCHP="${USHglobal}/python/ocn_diag/calc_tchp.py"
+CALC_OHC="${USHglobal}/python/ocn_diag/calc_ohc.py"
 
 #path to SSH output resolution (0p25: r1440x721)
-r1440x721="${USHgfs}/python/ocn_diag/r1440x721"
+r1440x721="${USHglobal}/python/ocn_diag/r1440x721"
 
 # Arguments:
 start_fhr=$1
