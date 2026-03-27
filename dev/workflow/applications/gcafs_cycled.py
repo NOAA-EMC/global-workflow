@@ -125,7 +125,7 @@ class GCAFSCycledAppConfig(AppConfig):
         #                     'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
         #                     'ecen_fv3jedi']
 
-        #     configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
+        #     configs += ['esfc_gcycle', 'efcs', 'epos', 'earc_vrfy']
 
         #     if options['do_archcom']:
         #         configs += ['earc_tars']
