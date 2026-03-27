@@ -8,7 +8,7 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHglobal}/jjob_shell_setup.sh"
+source "${USHglobal}/ush/jjob_header.sh" -e "sfcanl_regrid" -c "base sfcanl_regrid"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
 source "${USHglobal}/set_strict.sh"

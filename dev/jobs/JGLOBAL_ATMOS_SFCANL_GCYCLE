@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # for now, leave environment and config files un-changed.
-source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl_gcycle" -c "base sfcanl_gcycle"
 
 ##############################################
 # Begin JOB SPECIFIC work

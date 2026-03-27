@@ -363,7 +363,7 @@ class GFSTasks(Tasks):
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('sfcanl')
+        resources = self.get_resource('sfcanl_gcycle')
         task_name = f'{self.run}_sfcanl_gcycle'
         task_dict = {'task_name': task_name,
                      'resources': resources,
@@ -387,7 +387,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('sfcanl')
+        resources = self.get_resource('sfcanl_regrid')
         task_name = f'{self.run}_sfcanl_regrid'
         task_dict = {'task_name': task_name,
                      'resources': resources,
