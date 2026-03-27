@@ -10,12 +10,12 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="esfc"
+export job="esfcr"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_ENKF_SFC"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ENKF_SFC_REGRID"
 status=$?
 
 exit "${status}"
