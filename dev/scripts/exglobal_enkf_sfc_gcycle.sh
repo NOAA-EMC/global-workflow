@@ -51,10 +51,14 @@ else
 fi
 DOIAU=${DOIAU_ENKF:-"NO"}
 
-# Global_cycle stuff
+if [[ "${DOIAU}" == "YES" ]]; then
+    export LFHR=3 # match BDATE
+else
+    export LFHR=6 # PDYcyc
+fi
+
 CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
-REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
-export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
+export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
@@ -125,27 +129,6 @@ if [[ "${DONST}" == "YES" ]]; then
     export NST_FILE=${NST_FILE:-${COMIN_ATMOS_ANALYSIS_DET}/${APREFIX}increment.dtf.i006.nc}
 else
     export NST_FILE="NULL"
-fi
-
-# regrid the surface increment files
-if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-
-    export CASE_IN=${CASE_ENS}
-    export CASE_OUT=${CASE_ENS}
-    export OCNRES_OUT=${OCNRES}
-    export NMEM_REGRID=${NMEM_ENS}
-    if [[ "${DOIAU}" == "YES" ]]; then
-        export LFHR=3 # match BDATE
-    else              # DOSFCANL_ENKF
-        export LFHR=6 # PDYcyc
-    fi
-
-    "${REGRIDSH}" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to regrid the surface inrement file!"
-    fi
-
 fi
 
 export APRUNCY=${APRUN_CYCLE:-${APRUN_ESFC}}
