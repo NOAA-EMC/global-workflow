@@ -49,7 +49,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     export NMEM_REGRID=${NMEM_ENS}
     if [[ "${DOIAU}" == "YES" ]]; then
         export LFHR=3 # match BDATE
-    else              
+    else
         export LFHR=6 # PDYcyc
     fi
 
