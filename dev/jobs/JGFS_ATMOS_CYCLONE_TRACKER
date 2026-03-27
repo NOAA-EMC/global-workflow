@@ -23,8 +23,6 @@ declare -rx COMOUT_ATMOS_TRACK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cy
 declare -rx COMIN_ATMOS_GENESIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/genesis_vital"
 declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 
-if [[ ! -d "${COMOUT_ATMOS_TRACK}" ]]; then mkdir -p "${COMOUT_ATMOS_TRACK}"; fi
-
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time
 export COMINgfs=${COMIN_ATMOS_GRIB_0p25}
@@ -63,6 +61,9 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 #------------------------------------------------
+
+# Create output directory only after confirming input data exists
+mkdir -p "${COMOUT_ATMOS_TRACK}"
 
 "${USHens_tracker}/extrkr_gfs.sh" "${loopnum}" "${cmodel}" "${PDY}${cyc}" "${pert}" "${DATA}"
 export err=$?
