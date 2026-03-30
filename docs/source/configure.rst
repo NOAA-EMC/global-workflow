@@ -42,6 +42,16 @@ The global-workflow configs contain switches that change how the system runs. Ma
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | DO_VMINMON       | Run GSI monitor minimization job | YES           | YES         | Whether to run the GSI monitor minimization job   |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| DO_ANLSTAT       | Run analysis statistics job      | NO            | YES         | Whether to run the analysis statistics job.       |
+|                  |                                  |               |             | Automatically set to YES for JEDI-based           |
+|                  |                                  |               |             | experiments (DO_JEDIATMVAR, DO_AERO,              |
+|                  |                                  |               |             | DO_JEDIOCNVAR, or DO_JEDISNOWDA).                 |
++------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| DO_GSI_ANLSTAT   | Run GSI analysis statistics job  | NO            | NO          | Whether to include GSI-based atmospheric analysis |
+|                  |                                  |               |             | statistics when running the anlstat job. Only     |
+|                  |                                  |               |             | relevant when DO_ANLSTAT=YES and using GSI (not   |
+|                  |                                  |               |             | JEDI) for atmospheric data assimilation.          |
++------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | DO_METP          | Run METplus jobs                 | YES           | YES         | One cycle spinup                                  |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | EXP_WARM_START   | Is experiment starting warm      | .false.       | NO          | Impacts IAU settings for initial cycle. Can also  |
