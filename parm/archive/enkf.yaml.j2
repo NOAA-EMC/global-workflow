@@ -1,4 +1,4 @@
-enkf:
+:
     name: "ENKF"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
     required:
@@ -17,9 +17,9 @@ enkf:
         {% endif %}
         {% endif %}
             {% if DO_GSISOILDA %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfcr.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc_regrid.log"
             {% endif %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfcg.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc_gcycle.log"
         {% if not DO_JEDIATMENS %}
             {% for grp in range(iaufhrs_str | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
