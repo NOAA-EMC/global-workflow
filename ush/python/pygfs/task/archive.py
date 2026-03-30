@@ -578,8 +578,6 @@ class Archive(Task):
             # Do not attempt to archive the outputs
             return
 
-        mkdir_p(track_dir_out)
-
         out_track_file = track_dir_out + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
         out_track_p_file = track_dir_out + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
 

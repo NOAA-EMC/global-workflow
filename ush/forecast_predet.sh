@@ -751,8 +751,6 @@ CMEPS_predet() {
 GOCART_predet() {
     echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
 
-    if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
-
     # FHMAX gets modified when IAU is on, so keep origianl value for GOCART output
     GOCART_MAX=${FHMAX}
 

@@ -191,11 +191,9 @@ class AnalysisStats(Analysis):
         diag_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ges')
         diag_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_anl')
         diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_diags')
-        FileHandler({'mkdir': [diag_dir_path, diag_dir_ges_path, diag_dir_anl_path]}).sync()
         diag_ioda_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda_ges')
         diag_ioda_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda_anl')
         output_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda')
-        FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
             input_tar_basename = f"{self.task_config.APREFIX}{diag}.tar"
@@ -207,7 +205,9 @@ class AnalysisStats(Analysis):
                 diag_tar_copy_list.append([input_tar, dest])
             else:
                 logger.warning(f"{input_tar} does not exist to copy. Skipping ...")
-        FileHandler({'copy_opt': diag_tar_copy_list}).sync()
+        if diag_tar_copy_list:
+            FileHandler({'mkdir': [diag_dir_path]}).sync()
+            FileHandler({'copy_opt': diag_tar_copy_list}).sync()
 
         # Untar and gunzip diag files
         gsi_diag_tars = glob.glob(os.path.join(diag_dir_path, f"{self.task_config.APREFIX}*stat.tar"))
@@ -230,13 +230,19 @@ class AnalysisStats(Analysis):
         copy_anl_diags = []
         for diag in anl_diags:
             copy_anl_diags.append([diag, os.path.join(diag_dir_anl_path, os.path.basename(diag))])
-        FileHandler({'copy_opt': copy_anl_diags}).sync()
+        if copy_anl_diags:
+            FileHandler({'mkdir': [diag_dir_anl_path]}).sync()
+            FileHandler({'copy_opt': copy_anl_diags}).sync()
         copy_ges_diags = []
         for diag in ges_diags:
             copy_ges_diags.append([diag, os.path.join(diag_dir_ges_path, os.path.basename(diag))])
-        FileHandler({'copy_opt': copy_ges_diags}).sync()
+        if copy_ges_diags:
+            FileHandler({'mkdir': [diag_dir_ges_path]}).sync()
+            FileHandler({'copy_opt': copy_ges_diags}).sync()
 
         # Convert GSI diag files to ioda files using gsincdiag2ioda converter scripts
+        if diag_tar_copy_list:
+            FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         logger.info("Converting GSI guess diag files to IODA files")
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_ges_path, DiagDir=diag_dir_ges_path)
         logger.info("Converting GSI analysis diag files to IODA files")
@@ -278,9 +284,9 @@ class AnalysisStats(Analysis):
         logger.info(f"Finished compressing GSI IODA files to {iodastatzipfile}")
         # copy to COMOUT
         outdir = self.task_config.COMOUT_ATMOS_ANALYSIS
-        if not os.path.exists(outdir):
-            FileHandler({'mkdir': [outdir]}).sync()
         dest = os.path.join(outdir, os.path.basename(iodastatzipfile))
-        logger.info(f"Copying {iodastatzipfile} to {dest}")
-        FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
+        if os.path.exists(iodastatzipfile):
+            FileHandler({'mkdir': [outdir]}).sync()
+            logger.info(f"Copying {iodastatzipfile} to {dest}")
+            FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
         logger.info("Finished copying GSI IODA tar file to COMOUT")
