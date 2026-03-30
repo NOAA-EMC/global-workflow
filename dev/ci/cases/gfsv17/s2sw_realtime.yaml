@@ -24,10 +24,11 @@ base:
   DO_VERFRAD: "YES"
   EUPD_CYC: "gdas"
   INTERVAL_GFS: 6
-  SDATE_GFS: 2025111312
+  SDATE_GFS: 2026031912
   FHMAX_GFS: 384
   FHMAX_HF_GFS: 0
   CASE_HIST: "C768"
+  NMEM_ENS_GFS_OFFSET: 0
 
 prepoceanobs:
   use_exp_obs: "YES"
@@ -35,6 +36,10 @@ prepoceanobs:
   # dmpdir_exp: /lfs/h2/emc/global/noscrub/emc.global/ocean
   # realtime
   dmpdir_exp: /lfs/h2/emc/global/noscrub/emc.global/ocean
+
+prep:
+  # This can only be enabled in realtime
+  PROCESS_TROPCY: "NO"
 
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEgfs }}/fix/gdas/soca/1440x1080x75/soca
