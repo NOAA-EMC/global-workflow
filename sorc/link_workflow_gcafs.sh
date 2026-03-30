@@ -208,19 +208,19 @@ if [[ "${machine}" == "wcoss2" ]]; then
     cd crtm_aod || exit 1
     gdas_crtm_fix=/lfs/h2/emc/da/noscrub/emc.da/GDASApp/fix/crtm/2.4.0
     aod_file_list=(
-  "AerosolCoeff.bin"
-  "CloudCoeff.bin"
-  "v.viirs-m_npp.SpcCoeff.bin"
-  "v.viirs-m_npp.TauCoeff.bin"
-  "v.viirs-m_j1.SpcCoeff.bin"
-  "v.viirs-m_j1.TauCoeff.bin"
-  "v.viirs-m_j2.SpcCoeff.bin"
-  "v.viirs-m_j2.TauCoeff.bin"
-  "NPOESS.VISice.EmisCoeff.bin"
-  "NPOESS.VISland.EmisCoeff.bin"
-  "NPOESS.VISsnow.EmisCoeff.bin"
-  "NPOESS.VISwater.EmisCoeff.bin"
-)
+        "AerosolCoeff.bin"
+        "CloudCoeff.bin"
+        "v.viirs-m_npp.SpcCoeff.bin"
+        "v.viirs-m_npp.TauCoeff.bin"
+        "v.viirs-m_j1.SpcCoeff.bin"
+        "v.viirs-m_j1.TauCoeff.bin"
+        "v.viirs-m_j2.SpcCoeff.bin"
+        "v.viirs-m_j2.TauCoeff.bin"
+        "NPOESS.VISice.EmisCoeff.bin"
+        "NPOESS.VISland.EmisCoeff.bin"
+        "NPOESS.VISsnow.EmisCoeff.bin"
+        "NPOESS.VISwater.EmisCoeff.bin"
+    )
     for file in "${aod_file_list[@]}"; do
         if [[ -s "${file}" ]]; then
             rm -f "${file}"
