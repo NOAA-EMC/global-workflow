@@ -10,7 +10,7 @@
 
 # Determine if HOMEglobal is already set
 unset_homegfs=NO
-if [[ -z "${HOMEglobal:-}" ]]; then
+if [[ -z "${HOMEglobal+x}" ]]; then
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
     HOMEglobal=$(cd "${script_dir}" && git rev-parse --show-toplevel)
     export HOMEglobal
