@@ -62,9 +62,6 @@ if [[ ${err} -ne 0 ]]; then
 fi
 #------------------------------------------------
 
-# Create output directory only after confirming input data exists
-mkdir -p "${COMOUT_ATMOS_TRACK}"
-
 "${USHens_tracker}/extrkr_gfs.sh" "${loopnum}" "${cmodel}" "${PDY}${cyc}" "${pert}" "${DATA}"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
