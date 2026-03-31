@@ -63,6 +63,43 @@ case ${machine} in
               max_tasks_per_node=80
               mem_node_max="500GB"
     ;;
+  "JET")
+    case ${PARTITION_BATCH} in
+      "xjet")
+              max_tasks_per_node=24
+              mem_node_max="61GB"
+        ;;
+      "vjet")
+              max_tasks_per_node=16
+              mem_node_max="61GB"
+        ;;
+      "sjet")
+              max_tasks_per_node=16
+              mem_node_max="29GB"
+        ;;
+      "kjet")
+              max_tasks_per_node=40
+              mem_node_max="88GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
+        exit 3
+    esac
+    ;;
+  "S4")
+    case ${PARTITION_BATCH} in
+      "s4")   max_tasks_per_node=32
+              mem_node_max="168GB"
+        ;;
+      "ivy")
+              max_tasks_per_node=20
+              mem_node_max="128GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Unknown partition ${PARTITION_BATCH} specified for ${machine}"
+        exit 3
+    esac
+    ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
     npe_node_max=48
