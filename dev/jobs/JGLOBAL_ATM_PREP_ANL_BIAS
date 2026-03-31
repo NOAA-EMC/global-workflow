@@ -34,7 +34,8 @@ export gdd=${GDATE:6:2}
 export GDUMP="gdas"
 
 # Generate COM variables
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/ensstat/analysis/atmos"
 
 # Process bias corrections files grabbed from HPSS in task gdas_fetchatmanlbias

@@ -17,7 +17,8 @@ source "${USHglobal}/set_strict.sh"
 source "${USHglobal}/wave_domain_grid.sh"
 
 # Set COM Paths
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 for grid in ${wavepostGRD}; do
     process_grdID "${grid}"
     prod_dir_grid="COMOUT_WAVE_GRID_${grid}"

@@ -16,7 +16,8 @@ source "${USHglobal}/jjob_shell_setup.sh"
 source "${USHglobal}/set_strict.sh"
 
 # Set COM Paths
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMOUT_WAVE_STATION_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/station"
 if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
     mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"

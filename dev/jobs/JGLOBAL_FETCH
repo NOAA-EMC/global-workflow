@@ -18,7 +18,8 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 # Execute fetching
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS

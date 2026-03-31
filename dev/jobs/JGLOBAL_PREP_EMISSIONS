@@ -28,7 +28,8 @@ export PYTHONPATH
 # Begin JOB SPECIFIC work
 ##############################################
 # Construct COM variables
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros

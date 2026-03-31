@@ -17,7 +17,8 @@ source "${USHglobal}/set_strict.sh"
 source "${USHglobal}/wave_domain_grid.sh"
 
 # Set COM Paths
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03i" $((10#${ENSMEM})))

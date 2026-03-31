@@ -24,8 +24,8 @@ source "${USHglobal}/set_strict.sh"
 ##############################################
 
 # Construct COM variables
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
-
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 # Input directories loop over members, so this is done downstream
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"

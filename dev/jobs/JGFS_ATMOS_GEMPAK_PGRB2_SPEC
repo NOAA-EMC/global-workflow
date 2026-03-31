@@ -21,7 +21,8 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 # shellcheck disable=SC2153
 declare -rx COMIN_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
 # shellcheck disable=SC2153

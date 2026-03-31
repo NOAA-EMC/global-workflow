@@ -27,7 +27,8 @@ export PYTHONPATH
 ##############################################
 
 # Generate COM variables from templates
-export ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 declare -rx COMOUT_CHEM_BMAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem/bmatrix"
 declare -rx COMIN_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
