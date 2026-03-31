@@ -30,8 +30,6 @@ declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
 declare -rx COMIN_WAVE_HISTORY="${COMIN}/model/wave/history"
 declare -rx COMOUT_WAVE_GRID="${COMOUT}/products/wave/gridded"
 
-mkdir -p "${COMOUT_WAVE_GRID}"
-
 if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
     for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         process_grdID "${grdID}"

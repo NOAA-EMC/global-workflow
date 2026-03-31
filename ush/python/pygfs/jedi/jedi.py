@@ -362,6 +362,7 @@ class Jedi:
 
         # Create compressed tarball of obs output files in COM
         logger.info(f"Archiving observation output files to {tarball}")
+        files_added = False
         with tarfile.open(tarball, "w:gz") as archive:
             for observation_from_jcb in self.jcb_config['observations']:
                 obsdataout_file = os.path.join(self.jcb_config[f"{self.component}_obsdataout_path"],
@@ -371,11 +372,14 @@ class Jedi:
                 if os.path.exists(obsdataout_file):
                     logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")
                     archive.add(obsdataout_file, arcname=os.path.basename(obsdataout_file))
+                    files_added = True
                 else:
                     logger.warning(f"Observation output file {obsdataout_file} does not exist and will be skipped")
 
         # Copy files to COM
-        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
+        if files_added:
+            FileHandler({'mkdir': [comout]}).sync()
+            FileHandler({'copy_opt': [[tarball, comout]]}).sync()
 
     @logit(logger)
     def stage_obsbiasin(self, comin) -> None:
@@ -500,7 +504,9 @@ class Jedi:
                 bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
 
         # Copy files to COM
-        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
+        if satlist or satcovlist or tlaplist:
+            FileHandler({'mkdir': [comout]}).sync()
+            FileHandler({'copy_opt': [[tarball, comout]]}).sync()
 
     @staticmethod
     @logit(logger)
