@@ -29,7 +29,7 @@
   stage: run_tests
   script:
     - |
-      echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
+      echo "Using build directory ${GW_HOMEgfs}"
 
       # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
       # TODO: Remove this when upstream Rocoto PR is merged
@@ -55,16 +55,10 @@
     - |
       Machine="${machine^}"
       if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
-        echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
+        echo "Nightly pipeline succeeded, updating stable symlink"
         cd "${CI_BUILDS_DIR}"
         rm -f stable
-        if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" && -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
-          echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
-          mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
-          ln -sf "${WORKSPACE_DATE}" stable
-        elif [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]]; then
-          ln -sf "${WORKSPACE_DATE}" stable
-        fi
+        ln -sf "${WORKSPACE_ID}" stable
 
         # Clean up old directories from this pipeline type except stable
         echo "Cleaning up old ${GFS_CI_RUN_TYPE} directories except stable"

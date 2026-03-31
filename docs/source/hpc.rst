@@ -17,7 +17,10 @@ The following system software requirements are the minimum for any new or existi
 +==============+=============+=======================================+
 | Bash         | 4.4.20      |                                       |
 +--------------+-------------+---------------------------------------+
-| Python       | 3.11.6      |                                       |
+| Python       | * 3.8.6     | * 3.10.x is not supported by METplus  |
+|              | * 3.10.13+  |   verification software               |
+|              | * 3.11.6+   | * 3.11.6 is packaged with spack-stack |
+|              |             | * 3.9.x is untested                   |
 +--------------+-------------+---------------------------------------+
 | Spack-Stack  | 1.6.0       | * Available everywhere but WCOSS2     |
 +--------------+-------------+---------------------------------------+
@@ -103,7 +106,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
-     - X
+     -
      - X
    * - Hercules
      - 1
@@ -118,7 +121,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
-     - X
+     -
      - X
    * - Gaea C6
      - 1
@@ -133,10 +136,10 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
      - X
-     - X
+     -
      - X
    * - Hera
-     - 2
+     - 1
      - X
      - X
      - X
@@ -148,7 +151,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      -
      - X
-     -
+     - X
      - X
    * - Orion
      - 2
