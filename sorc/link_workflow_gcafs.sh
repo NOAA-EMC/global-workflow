@@ -69,10 +69,11 @@ if [[ "${RUN_ENVIR}" == "nco" ]]; then
 fi
 
 #------------------------------
-#--Remove non-WCOSS2 modulefiles
+#--Remove non-WCOSS2 modulefiles and env files
 #------------------------------
 if [[ "${RUN_ENVIR}" == "nco" ]]; then
     find "${HOMEglobal}/modulefiles" -type f -name "*.lua" ! -name "*.wcoss2.lua" -exec rm -f {} \;
+    find "${HOMEglobal}/env" -type f -name "*.env" ! -name "WCOSS2.env" -exec rm -f {} \;
 fi
 
 #------------------------------
@@ -100,7 +101,7 @@ packages=("jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEglobal}/ush/python" || exit 1
     if [[ -s "${package}" ]]; then
-        rm -f "${package}"
+        rm -rf "${package}"
     fi
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
