@@ -124,6 +124,7 @@ done
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEglobal}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
+${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" .
 
 cd "${HOMEglobal}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/parm/params_grib2_tbl_new" .
