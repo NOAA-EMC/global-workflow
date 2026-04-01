@@ -245,7 +245,7 @@ FV3_predet() {
     # <0 means older adiabatic pre-conditioning
     na_init=${na_init:-1}
 
-    local suite_file="${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites/suite_${CCPP_SUITE}.xml"
+    local suite_file="${HOMEglobal}/parm/ufs/suite_${CCPP_SUITE}.xml"
     if [[ ! -f "${suite_file}" ]]; then
         echo "FATAL ERROR: CCPP Suite file ${suite_file} does not exist, ABORT!"
         exit 2

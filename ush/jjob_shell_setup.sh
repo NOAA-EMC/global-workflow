@@ -38,18 +38,16 @@ source "${USHglobal}/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
-# Shell options and tracing
+# Shell options
 ##############################################
-source "${USHglobal}/set_trace.sh"
 export SHELLOPTS
 ##############################################
 # Create and enter the working directory
 ##############################################
-source "${USHglobal}/setup_data_dir.sh"
-setup_data_dir "${DATA}"
+source "${USHglobal}/setup_data_dir.sh" "${DATA}"
 
 # Activate tracing
-set_trace
+set -x
 
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
