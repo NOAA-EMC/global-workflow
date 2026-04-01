@@ -7,7 +7,7 @@
 #
 # Handles:
 #   - Sourcing utility functions (wait_for_file, dataroot_com_path, timer,
-#       err_exit, postamble)
+#       err_exit)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
 #   - Setting up the postamble EXIT trap for script timing and cleanup
@@ -25,7 +25,7 @@
 # (e.g. run_mpmd.sh)
 export USHglobal="${USHglobal:-${HOMEglobal}/ush}"
 export start_time=${start_time:-$(date +%s)}
-_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
+export _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
 # Utility functions
@@ -52,9 +52,8 @@ set -x
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
 if [[ "${TRAP_POSTAMBLE:-NO}" == "YES" ]]; then
-    source "${USHglobal}/postamble.sh"
     # shellcheck disable=SC2064
-    trap "postamble ${start_time} \$?" EXIT
+    trap "${USHglobal}/postamble.sh ${start_time}" EXIT
 fi
 
 ##############################################
