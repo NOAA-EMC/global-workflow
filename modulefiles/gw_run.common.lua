@@ -46,6 +46,9 @@ local common_modules = {
   "py-pandas",
   "py-python-dateutil",
   "py-xarray",
+  -- TODO: Reenable when MET/METplus and verif-global are at compatible versions
+  -- "met",
+  -- "metplus",
 }
 
 for _, name in pairs(common_modules) do

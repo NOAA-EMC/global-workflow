@@ -28,7 +28,7 @@ if __name__ == '__main__':
         config.STAT_ANALYSES.append('snow')
     if config.DO_JEDIATMVAR:
         config.STAT_ANALYSES.append('atmos')
-    else:
+    elif config.DO_GSI_ANLSTAT:
         config.STAT_ANALYSES.append('atmos_gsi')
 
     # GCDAS uses offline GDAS, remove atmos analysis

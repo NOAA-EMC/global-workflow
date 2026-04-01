@@ -92,7 +92,8 @@ export DO_GENESIS_FSU="{{ DO_GENESIS_FSU }}" # Cyclone genesis verification (FSU
 export DO_VERFOZN="YES"                  # Ozone data assimilation monitoring
 export DO_VERFRAD="YES"                  # Radiance data assimilation monitoring
 export DO_VMINMON="YES"                  # GSI minimization monitoring
-export DO_ANLSTAT="YES"                  # JEDI-based analysis statistics
+export DO_ANLSTAT="NO"                   # JEDI-based analysis statistics
+export DO_GSI_ANLSTAT="NO"               # GSI-based analysis statistics
 
 # Experiment mode (cycled or forecast-only)
 export MODE="{{ MODE }}" # cycled/forecast-only
@@ -490,12 +491,6 @@ export DO_CA="YES"
 export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
-# METplus verification is not enabled on Hera or Orion
-if [[ "${machine}" == "hera" || "${machine}" == "orion" ]] && [[ ${DO_METP} == "YES" ]]; then
-   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
-   export DO_METP="NO"
-fi
-
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
@@ -520,6 +515,17 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
+   export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
+else
+   if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
+     export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
+   fi
+fi
+
+# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
+# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
+if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
+    export DO_METP=NO
 fi
 
 if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
