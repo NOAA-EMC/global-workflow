@@ -152,12 +152,33 @@ for file in "${ufs_templates[@]}"; do
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
+# Link the CCPP suite XML files from ufs-weather-model
+if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites" ]]; then
+    for suite_file in "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites"/suite_*.xml; do
+        [[ -f "${suite_file}" ]] || continue
+        local_name=$(basename "${suite_file}")
+        if [[ -s "${local_name}" ]]; then
+            rm -f "${local_name}"
+        fi
+        ${LINK_OR_COPY} "${suite_file}" .
+    done
+fi
+
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEglobal}/ush" || exit 1
 if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/atparse.bash" .
+
+# Link UPP modulefiles for module loading
+cd "${HOMEglobal}/modulefiles" || exit 1
+if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" ]]; then
+    if [[ -d "upp" ]]; then
+        rm -rf "upp"
+    fi
+    ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" upp
+fi
 
 # add ufs_utils parm dir
 if [[ -d "${HOMEglobal}/sorc/ufs_utils.fd" ]]; then
