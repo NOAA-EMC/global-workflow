@@ -996,12 +996,17 @@ GOCART_out() {
 
         for file_type in "${file_types[@]}"; do
             if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
-                echo "${HOMEglobal}/ush/cpfsd.sh ${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4 ${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" >> "${cmdfile}"
+                echo "cpfs ${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4 ${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" >> "${cmdfile}"
             fi
         done
     done
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_CHEM_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_CHEM_HISTORY}"
+        fi
+
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
