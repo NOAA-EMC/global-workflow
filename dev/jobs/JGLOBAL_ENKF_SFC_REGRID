@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "esfc_regrid" -c "base esfc_regrid"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc_regrid" -c "base esfc_regrid"
 
 ##############################################
 # Set variables used in the script
