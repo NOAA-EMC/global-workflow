@@ -204,7 +204,7 @@ fi
 
 # Start sending DBN alerts
 # Everything below this line is for sending files to DBN (SENDDBN=YES)
-if [[ "${SENDDBN:-}" == "YES" ]]; then
+if [[ "${SENDDBN:-}" == "YES" && "${NET}" != "gcafs" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
     if [[ "${RUN}" == "gfs" ]]; then
