@@ -52,11 +52,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-<<<<<<< HEAD:dev/jobs/JGLOBAL_ENKF_SFC
-${ENKFRESFCSH:-${SCRglobal}/exglobal_enkf_sfc.sh} && true
-=======
-${ENKFSFCGCYCLESH:-${SCRgfs}/exglobal_enkf_sfc_gcycle.sh} && true
->>>>>>> 84fa361be (split out jobcards.):dev/jobs/JGLOBAL_ENKF_SFC_GCYCLE
+${ENKFSFCGCYCLESH:-${SCRglobal}/exglobal_enkf_sfc_gcycle.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
