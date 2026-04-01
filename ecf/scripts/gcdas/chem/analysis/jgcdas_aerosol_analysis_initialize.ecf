@@ -95,10 +95,6 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export HOMEglobal=${HOMEgcafs}
 
-
-#TODO fix below line properly
-export CRTM_FIX="/lfs/h2/emc/da/noscrub/emc.da/GDASApp/fix/crtm/2.4.0"
-
 ############################################################
 # CALL executable job script here
 ############################################################
