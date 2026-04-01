@@ -4,7 +4,8 @@ labels: ["nco-bug", "triage"]
 type: "bug"
 projects: ["NOAA-EMC/41"]
 assignees:
-  - aerorahul
+  - DavidHuber-NOAA
+  - TravisElless-NOAA
 
 body:
   - type: markdown
