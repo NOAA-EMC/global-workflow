@@ -61,6 +61,21 @@ ${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/ver
 ${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
 
 #------------------------------
+#--Remove machine specific build and run version files that are not linked to build.ver and run.ver to avoid confusion
+#------------------------------
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    find "${HOMEglobal}/versions" -type f -name "build.*.ver" ! -name "build.ver" -exec rm -f {} \;
+    find "${HOMEglobal}/versions" -type f -name "run.*.ver" ! -name "run.ver" -exec rm -f {} \;
+fi
+
+#------------------------------
+#--Remove non-WCOSS2 modulefiles
+#------------------------------
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    find "${HOMEglobal}/modulefiles" -type f -name "*.lua" ! -name "*.wcoss2.lua" -exec rm -f {} \;
+fi
+
+#------------------------------
 #--model fix fields
 #------------------------------
 case "${machine}" in
