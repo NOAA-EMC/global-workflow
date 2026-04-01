@@ -26,7 +26,7 @@
 # (e.g. preamble.sh callers such as run_mpmd.sh)
 export USHglobal="${USHglobal:-${HOMEglobal}/ush}"
 export start_time=${start_time:-$(date +%s)}
-_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
+export _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
 # Utility functions
