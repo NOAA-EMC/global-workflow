@@ -64,7 +64,6 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to determine the number of vertical levels in the input Guess file '${ATMGES_ENSMEAN}'"
 fi
-set_strict
 
 export LEVS
 
