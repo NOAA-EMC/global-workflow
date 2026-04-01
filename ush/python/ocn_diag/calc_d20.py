@@ -13,7 +13,7 @@ ds = xr.open_dataset(input_file)
 # Chunking by spatial/temporal dimensions, keeping the vertical (depth) dimension contiguous
 ds = xr.open_dataset(input_file)
 temp = ds.temp  # Assuming 'temp' is temperature
-depths = ds.z_l # Vertical coordinate
+depths = ds.z_l  # Vertical coordinate
 
 
 def find_iso_depth(t_profile, z_coords, iso_val=20.0):
@@ -22,9 +22,8 @@ def find_iso_depth(t_profile, z_coords, iso_val=20.0):
     # Ocean profiles usually go from warm (surface) to cold (deep)
 
     # Check if the isotherm is within the range of the profile
-    if not (np.min(t_profile) <= iso_val <= np.max(t_profile) or \
-            np.max(t_profile) <= iso_val <= np.min(t_profile)):
-        return np.nan # Isotherm not found in this profile
+    if not (np.min(t_profile) <= iso_val <= np.max(t_profile) or np.max(t_profile) <= iso_val <= np.min(t_profile)):
+        return np.nan  # Isotherm not found in this profile
 
     return np.interp(iso_val, t_profile[::-1], z_coords[::-1])
 
@@ -43,7 +42,7 @@ dt20c = xr.apply_ufunc(
 
 # 3. Trigger computation and save results
 
-dt20c.attrs["units"]="Meters"
-dt20c.attrs["name"]="Depth of 20 degC isotherm"
+dt20c.attrs["units"] = "Meters"
+dt20c.attrs["name"] = "Depth of 20 degC isotherm"
 dt20c.name = 'dt20c'
 dt20c.to_netcdf(output_file)

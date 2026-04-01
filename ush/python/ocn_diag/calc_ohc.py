@@ -9,7 +9,7 @@ output_file = sys.argv[2]
 # 1. Load 4D dataset (Time, Depth, Lat, Lon) with Dask
 ds = xr.open_dataset(input_file)
 
-#set depth limit (in meters) for ocean heat content
+# set depth limit (in meters) for ocean heat content
 depth_limit = 300
 
 # 2. Define Physical Constants

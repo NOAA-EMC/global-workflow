@@ -180,8 +180,8 @@ class OceanIceProducts(Task):
         """
 
         # Run the ocnicepost.x executable if interpolated variables are wanted
-        #localconf.write_grib2 = ".true." if config.oceanice_yaml[config.component].namelist.write_grib2 else ".false."
-        #localconf.write_netcdf = ".true." if config.oceanice_yaml[config.component].namelist.write_netcdf else ".false."
+        # localconf.write_grib2 = ".true." if config.oceanice_yaml[config.component].namelist.write_grib2 else ".false."
+        # localconf.write_netcdf = ".true." if config.oceanice_yaml[config.component].namelist.write_netcdf else ".false."
         print("write_netcdf: ", config.oceanice_yaml[config.component].namelist.write_netcdf)
         print("write_grib2: ", config.oceanice_yaml[config.component].namelist.write_grib2)
         print("write_subset: ", config.oceanice_yaml[config.component].namelist.write_subset)
@@ -310,7 +310,7 @@ class OceanIceProducts(Task):
             if config.component == 'ocean':
                 # subset ocean variables for z_levels in products
                 levels = config.oceanice_yaml.ocean.namelist.ocean_levels
-                #ds_subset = ds[varlist].sel(z_l=levels)
+                # ds_subset = ds[varlist].sel(z_l=levels)
                 ds_subset = ds[varlist]
 
             # save global attributes from the old netcdf file into new netcdf file

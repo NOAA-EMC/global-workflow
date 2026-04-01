@@ -57,7 +57,7 @@ TCHP = xr.apply_ufunc(
     calc_tchp_profile,
     temp,
     depths,
-    input_core_dims=[['z_l'], ['z_l']], # Core dimension for interpolation
+    input_core_dims=[['z_l'], ['z_l']],  # Core dimension for interpolation
     output_core_dims=[[]],
     vectorize=True,                         # Automatically loops over non-core dims
     dask="parallelized",                    # Enables Dask parallel processing
