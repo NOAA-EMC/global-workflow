@@ -488,12 +488,6 @@ export DO_CA="YES"
 export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
-# METplus verification is not enabled on Hera or Orion
-if [[ "${machine}" == "hera" || "${machine}" == "orion" ]] && [[ ${DO_METP} == "YES" ]]; then
-   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
-   export DO_METP="NO"
-fi
-
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
@@ -523,6 +517,12 @@ else
    if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
+fi
+
+# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
+# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
+if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
+    export DO_METP=NO
 fi
 
 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
