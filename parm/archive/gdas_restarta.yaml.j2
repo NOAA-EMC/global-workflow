@@ -45,6 +45,8 @@ gdas_restarta:
         ] %}
         - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}{{ suffix }}"
         {% endfor %}
+        {% else %}
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}varbc_params.tar"
         {% endif %}
 
         # Input BUFR files
@@ -52,7 +54,4 @@ gdas_restarta:
         - "{{ COMIN_OBS }}/{{ head }}{{ suffix }}"
         {% endfor %}
     optional:
-        {% if DO_JEDIATMVAR %}
-        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}varbc_params.tar"
-        {% endif %}
         - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}radstat.tar"
