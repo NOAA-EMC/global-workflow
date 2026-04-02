@@ -1,0 +1,153 @@
+#! /usr/bin/env bash
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exgdas_atmos_chgres_forenkf.sh
+# Script description:  Runs chgres on full-resolution forecast for EnKF recentering
+#
+# Author: Cory Martin      Org: NCEP/EMC     Date: 2020-06-08
+#
+# Abstract: This script runs chgres on full-resolution forecast for later
+#           use in the EnKF recentering step
+#
+# $Id$
+#
+# Attributes:
+#   Language: POSIX shell
+#
+################################################################################
+
+#  Directories.
+pwd=$(pwd)
+
+# Base variables
+GDUMP=${GDUMP:-"gdas"}
+
+# Derived base variables
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export GDATE
+BDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 3 hours")
+export bPDY=${BDATE:0:8}
+export bcyc=${BDATE:8:2}
+
+# Utilities
+export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
+export NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+
+# IAU
+DOIAU=${DOIAU:-"NO"}
+export IAUFHRS=${IAUFHRS:-"6,"}
+
+# Dependent Scripts and Executables
+export APRUN_CHGRES=${APRUN_CHGRES:-${APRUN:-""}}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${EXECgfs}/enkf_chgres_recenter_nc.x}
+export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
+APRUNCFP=${APRUNCFP:-""}
+
+# level info file
+SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS}.txt}
+
+# forecast files
+APREFIX=${APREFIX:-""}
+APREFIX_ENS=${APREFIX_ENS:-""}
+# at full resolution
+ATMF03=${ATMF03:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f003.nc}
+ATMF04=${ATMF04:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f004.nc}
+ATMF05=${ATMF05:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f005.nc}
+ATMF06=${ATMF06:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f006.nc}
+ATMF07=${ATMF07:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f007.nc}
+ATMF08=${ATMF08:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f008.nc}
+ATMF09=${ATMF09:-${COMIN_ATMOS_HISTORY}/${APREFIX}atm.f009.nc}
+# at ensemble resolution
+ATMF03ENS=${ATMF03ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f003.nc}
+ATMF04ENS=${ATMF04ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f004.nc}
+ATMF05ENS=${ATMF05ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f005.nc}
+ATMF06ENS=${ATMF06ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f006.nc}
+ATMF07ENS=${ATMF07ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f007.nc}
+ATMF08ENS=${ATMF08ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f008.nc}
+ATMF09ENS=${ATMF09ENS:-${COMOUT_ATMOS_HISTORY}/${APREFIX}ensres.atm.f009.nc}
+ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMIN_ATMOS_HISTORY_MEM}/${APREFIX_ENS}atm.f006.nc}
+
+# Set script / GSI control parameters
+DOHYBVAR=${DOHYBVAR:-"NO"}
+lrun_subdirs=${lrun_subdirs:-".true."}
+USE_CFP=${USE_CFP:-"NO"}
+CFP_MP=${CFP_MP:-"NO"}
+
+if [[ "${DOHYBVAR}" == "YES" ]]; then
+    export l_hyb_ens=.true.
+    export l4densvar=${l4densvar:-".false."}
+    export lwrite4danl=${lwrite4danl:-".false."}
+else
+    echo "DOHYBVAR != YES, this script will exit without regridding deterministic forecast"
+    exit 0
+fi
+
+################################################################################
+################################################################################
+
+# get resolution information
+LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMFCST_ENSRES}" grid_xt)} # get LONB_ENKF
+LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMFCST_ENSRES}" grid_yt)} # get LATB_ENFK
+LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} "${ATMFCST_ENSRES}" pfull)}   # get LATB_ENFK
+
+##############################################################
+# If analysis increment is written by GSI, regrid forecasts to increment resolution
+if [[ ${DO_CALC_ANALYSIS} == "YES" ]]; then
+    ${NLN} "${ATMF06}" fcst.06
+    ${NLN} "${ATMF06ENS}" fcst.ensres.06
+    ${NLN} "${ATMFCST_ENSRES}" atmens_fcst
+    if [[ "${DOHYBVAR}" == "YES" ]] && [[ "${l4densvar}" == ".true." ]] && [[ "${lwrite4danl}" == ".true." ]]; then
+        ${NLN} "${ATMF03}" fcst.03
+        ${NLN} "${ATMF03ENS}" fcst.ensres.03
+        ${NLN} "${ATMF04}" fcst.04
+        ${NLN} "${ATMF04ENS}" fcst.ensres.04
+        ${NLN} "${ATMF05}" fcst.05
+        ${NLN} "${ATMF05ENS}" fcst.ensres.05
+        ${NLN} "${ATMF07}" fcst.07
+        ${NLN} "${ATMF07ENS}" fcst.ensres.07
+        ${NLN} "${ATMF08}" fcst.08
+        ${NLN} "${ATMF08ENS}" fcst.ensres.08
+        ${NLN} "${ATMF09}" fcst.09
+        ${NLN} "${ATMF09ENS}" fcst.ensres.09
+    fi
+    export OMP_NUM_THREADS=${NTHREADS_CHGRES}
+    SIGLEVEL=${SIGLEVEL:-${FIXgfs}/am/global_hyblev.l${LEVS_ENKF}.txt}
+
+    if [[ "${USE_CFP}" == "YES" ]]; then
+        rm -f "${DATA}/mp_chgres.sh"
+    fi
+
+    nfhrs="${IAUFHRS_ENKF//,/ }"
+    for FHR in ${nfhrs}; do
+        echo "Regridding deterministic forecast for forecast hour ${FHR}"
+        rm -f "chgres_nc_gauss0${FHR}.nml"
+        cat > "chgres_nc_gauss0${FHR}.nml" << EOF
+&chgres_setup
+   i_output=${LONB_ENKF}
+   j_output=${LATB_ENKF}
+   input_file="fcst.0${FHR}"
+   output_file="fcst.ensres.0${FHR}"
+   terrain_file="atmens_fcst"
+   ref_file="atmens_fcst"
+/
+EOF
+
+        echo "${APRUN_CHGRES} ${CHGRESNCEXEC} chgres_nc_gauss0${FHR}.nml" | tee -a "${DATA}/mp_chgres.sh"
+
+    done
+
+    # Run with MPMD
+    "${USHgfs}/run_mpmd.sh" "${DATA}/mp_chgres.sh" && true
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit
+    fi
+else
+    echo "DO_CALC_ANALYSIS != YES, doing nothing"
+fi
+
+cd "${pwd}" || exit
+
+exit "${err}"

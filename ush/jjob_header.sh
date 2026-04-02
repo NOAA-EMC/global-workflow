@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 #
 # Universal header for global j-jobs
 #

@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-
+set -x
 #######
 # Preamble script to be SOURCED at the beginning of every script. Sets
 #   useful PS4 and optionally turns on set -x and set -eu. Also sets up
@@ -17,7 +17,6 @@
 #   _calling_script: The name of the calling script (optional)
 #
 #######
-set +x
 
 # Record the start time so we can calculate the elapsed time later
 start_time=$(date +%s)

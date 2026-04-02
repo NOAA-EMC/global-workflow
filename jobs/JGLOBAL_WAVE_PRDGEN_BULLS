@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawipsbulls"
+
+###################################
+# Set COM Paths
+###################################
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
+    COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
+
+mkdir -p "${COMOUT_WAVE_WMO}"
+
+###################################
+# Execute the Script
+
+"${SCRgfs}/exgfs_wave_prdgen_bulls.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+###################################
+# Remove temp directories
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
+
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
+
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL
+GRID="0p25" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+
+if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
+    mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"
+fi
+
+export pgmout=OUTPUT.$$
+
+########################################################
+# Execute the script.
+#   Forecast hours from F00 - F84  at 3-hour interval
+#   Forecast hours from F90 - F240 at 6-hour interval
+#########################################################
+
+########################################################
+# Execute the script.
+"${SCRgfs}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+cd "${DATAROOT}" || pass
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi

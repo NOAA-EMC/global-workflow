@@ -1,0 +1,40 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_atmanlprod_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=24:ompthreads=1:ncpus=24
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+source ${HOMEgfs}/ush/load_modules.sh run
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export CDATE=${PDY}${cyc}
+export FORECAST_HOUR='0'
+export FHR_LIST='-1'
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/atmos_products.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_PRODUCTS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

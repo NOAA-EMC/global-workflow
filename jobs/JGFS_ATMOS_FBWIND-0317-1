@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+set -x
+
+# TODO (#1221) This job is not part of the rocoto suite
+
+############################################
+# GFS FBWIND PRODUCT GENERATION
+############################################
+source "${HOMEglobal}/ush/jjob_header.sh" -e "fbwind" -c "base fbwind"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+
+declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
+declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+
+#### workaround for path assignment bug in declare_from_tmpl
+COMOUT=$(echo "${COMOUT}" | tr -s '/')
+if [[ ! -d "${COMOUT}" ]]; then
+    mkdir -m 775 -p "${COMOUT}"
+fi
+
+########################################################
+# Execute the script.
+"${SCRglobal}/exgfs_atmos_fbwind.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
