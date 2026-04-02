@@ -23,6 +23,7 @@ skip_ci_on_hosts:
   - orion
   - hercules
   - awsepicglobalworkflow
+  - hera
 
 workflow:
   engine: rocoto
