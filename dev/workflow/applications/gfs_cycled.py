@@ -129,7 +129,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic','sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
