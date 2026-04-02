@@ -53,10 +53,12 @@ end
 setenv("UTILROOT",(os.getenv("prod_util_ROOT") or "None"))
 setenv("I_MPI_PMI_LIBRARY", "/opt/slurm/lib/libpmi2.so")
 
--- prepend_path("MODULEPATH", pathJoin("/contrib/git/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lustre/global_externals/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+load('prepobs_aws-ec2')
 -- load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
--- prepend_path("MODULEPATH", pathJoin("/contrib/git/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lustre/global_externals/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+load('fit2obs_aws-ec2')
 -- load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 -- load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
