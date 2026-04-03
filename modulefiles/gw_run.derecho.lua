@@ -26,6 +26,6 @@ load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 -- Can likely be removed after vminmon is retired
 prepend_path("PERL5LIB", "/lustre/desc1/p/nral0032/global/perl_modules/lib/perl5")
 
-setenv("CRTM_FIX","/lustre/desc1/p/nral0032/global/data/fix/crtm/v2.4.0.2/")
+setenv("CRTM_FIX", "/lustre/desc1/p/nral0032/global/data/fix/crtm/v2.4.0.2")
 
 whatis("Description: GFS run environment")
