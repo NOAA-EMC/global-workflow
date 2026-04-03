@@ -163,9 +163,13 @@ class AnalysisStats(Analysis):
                         logger.warning(f"{textfile} does not exist to concatenate.")
                         logger.warning("Skipping this file ...")
 
-        # Save files from COM
-        logger.info(f"Saving files to COM")
-        FileHandler(self.task_config.data_out).sync()
+            # Copy stats summary file to COM only if it has content
+            outdir = self.task_config.outdir[analysis]
+            if os.path.getsize(summaryfile) > 0:
+                FileHandler({'mkdir': [outdir]}).sync()
+                FileHandler({'copy_opt': [[summaryfile, outdir]]}).sync()
+            else:
+                logger.warning(f"No content in {summaryfile}, skipping copy to {outdir}")
 
     @logit(logger)
     def convert_gsi_diags(self) -> None:
