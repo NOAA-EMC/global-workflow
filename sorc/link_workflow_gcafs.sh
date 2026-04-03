@@ -61,6 +61,22 @@ ${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/ver
 ${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
 
 #------------------------------
+#--Remove machine specific build and run version files that are not linked to build.ver and run.ver to avoid confusion
+#------------------------------
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    find "${HOMEglobal}/versions" -type f -name "build.*.ver" ! -name "build.ver" -exec rm -f {} \;
+    find "${HOMEglobal}/versions" -type f -name "run.*.ver" ! -name "run.ver" -exec rm -f {} \;
+fi
+
+#------------------------------
+#--Remove non-WCOSS2 modulefiles and env files
+#------------------------------
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    find "${HOMEglobal}/modulefiles" -type f -name "*.lua" ! -name "*.wcoss2.lua" -exec rm -f {} \;
+    find "${HOMEglobal}/env" -type f -name "*.env" ! -name "WCOSS2.env" -exec rm -f {} \;
+fi
+
+#------------------------------
 #--model fix fields
 #------------------------------
 case "${machine}" in
@@ -85,7 +101,7 @@ packages=("jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEglobal}/ush/python" || exit 1
     if [[ -s "${package}" ]]; then
-        rm -f "${package}"
+        rm -rf "${package}"
     fi
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
