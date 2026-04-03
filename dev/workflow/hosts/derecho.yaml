@@ -1,6 +1,6 @@
 # Paths
 DMPDIR: '/lustre/desc1/p/nral0032/global/dump_nr'
-IODADIR: '/scratch3/NCEPDEV/global/role.glopara/dump_ioda'
+IODADIR: '/lustre/desc1/p/nral0032/global/dump_ioda_nr'
 BASE_GIT: '/lustre/desc1/p/nral0032/global/global_externals'
 BASE_DATA: '/lustre/desc1/p/nral0032/global/data'
 BASE_IC: '/lustre/desc1/p/nral0032/global/data/ICSDIR'
