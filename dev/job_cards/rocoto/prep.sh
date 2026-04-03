@@ -189,10 +189,15 @@ else
         fi
 
     fi
-    cpreq "${PREPBUFR_DIR}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
-    cpreq "${PREPBUFR_DIR}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+    cpcmd="cpreq"
+    if [[ "${CHGRP_RSTPROD}" == "NO" ]]; then
+        # When using non-restricted dumps, the following may not be present
+        cpcmd="cp"
+    fi
+    ${cpcmd} "${PREPBUFR_DIR}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
+    ${cpcmd} "${PREPBUFR_DIR}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
     if [[ ${DONST} == "YES" ]]; then
-        cpreq "${PREPBUFR_DIR}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+        ${cpcmd} "${PREPBUFR_DIR}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
     fi
 fi
 
@@ -203,7 +208,7 @@ if [[ ${DONST} == "YES" ]]; then
 fi
 err=0
 for file in ${files}; do
-    if [[ ! -f "${COMOUT_OBS}/${OPREFIX}${file}" ]]; then
+    if [[ ! -f "${COMOUT_OBS}/${OPREFIX}${file}" && "${CHGRP_RSTPROD}" == "YES" ]]; then
         err=1
         echo "Failed to obtain/create ${file}, ABORT!"
     fi
