@@ -1715,7 +1715,6 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
         deps.append(rocoto.add_dependency(dep_dict))
-        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('gempakmeta')
