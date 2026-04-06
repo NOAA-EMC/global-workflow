@@ -8,14 +8,12 @@ source "${USHgfs}/wave_domain_grid.sh"
 ###################################
 export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_WAVE_GEMPAK:COM_WAVE_GEMPAK_TMPL
+declare -rx COMOUT_WAVE_GEMPAK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gempak"
 
 if [[ -n "${GEMPAK_GRIDS}" ]]; then
     for grdID in ${GEMPAK_GRIDS}; do
         process_grdID "${grdID}"
-        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-            "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        declare -rx "COMIN_WAVE_GRID_${GRDREGION}_${GRDRES}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/gridded/${grdNAME}"
     done
 else
     echo "'GEMPAK_GRIDS' is empty. No grids to process."

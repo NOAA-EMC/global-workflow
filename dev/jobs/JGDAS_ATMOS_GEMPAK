@@ -10,12 +10,12 @@ export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
 # Define COM directories
 ##############################################
 for grid in 0p25 1p00; do
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GRIB_${grid}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "COMIN_ATMOS_GRIB_${grid}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
 done
 
 for grid in 0p25 1p00; do
     prod_dir="COMOUT_ATMOS_GEMPAK_${grid}"
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_${grid}:COM_ATMOS_GEMPAK_TMPL"
+    declare -rx "COMOUT_ATMOS_GEMPAK_${grid}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/${grid}"
 
     if [[ ! -d "${!prod_dir}" ]]; then
         mkdir -m 775 -p "${!prod_dir}"

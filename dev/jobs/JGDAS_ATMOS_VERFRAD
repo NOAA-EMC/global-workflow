@@ -17,12 +17,9 @@ export gcyc=${GDATE:8:2}
 # COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMOUT_ATMOS_RADMON:COM_ATMOS_RADMON_TMPL
-YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_RADMON_PREV:COM_ATMOS_RADMON_TMPL
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_RADMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/radmon"
+declare -rx COMIN_ATMOS_RADMON_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/products/atmos/radmon"
 
 export biascr="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias.txt"
 export radstat="${COMIN_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat.tar"

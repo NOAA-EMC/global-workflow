@@ -5,8 +5,11 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "globus_earc" -c "base globus earc_gro
 ##############################################
 # Set variables used in the script
 ##############################################
-MEMDIR="ensstat" YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_CONF:COM_CONF_TMPL
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
 ###############################################################
 # Run globus script
