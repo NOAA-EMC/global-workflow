@@ -74,17 +74,7 @@ include:
       export GW_HOMEgfs="${GIT_CLONE_PATH}"  # This is set by GitLab for initial clone
       export RUNTESTS_DIR="${GW_RUN_PATH}/RUNTESTS"
 
-      # Create a date-based directory name for successful nightly runs
-      # on success of nightly pipelines will have the final directory name
-      # (GFS_CI_RUN_TYPE)_(SHORT_SHA)_(MMDDYY) such as nightly_affeae_061025
-      # all other pipelines will have the CI_PIPELINE_ID appended instead
-      # (GFS_CI_RUN_TYPE)_(SHORT_SHA)_(CI_PIPELINE_ID) such as pr_cases_affeae_2345
-
-      export DATE="$(date +'%m%d%y')"
-      export WORKSPACE_DATE="${GFS_CI_RUN_TYPE}_${CI_COMMIT_SHORT_SHA}_${DATE}"
-
       echo "WORKSPACE_ID: ${WORKSPACE_ID}"
-      echo "WORKSPACE_DATE: ${WORKSPACE_DATE}"
       echo "GW_RUN_PATH: ${GW_RUN_PATH}"
       echo "GIT_CLONE_PATH: ${GIT_CLONE_PATH}"
       echo "GW_HOMEgfs: ${GW_HOMEgfs}"
