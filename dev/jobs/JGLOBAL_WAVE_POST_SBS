@@ -4,18 +4,26 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsb
 source "${USHgfs}/wave_domain_grid.sh"
 
 # Set COM Paths
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_PREP:COM_WAVE_PREP_TMPL \
-    COMIN_WAVE_HISTORY:COM_WAVE_HISTORY_TMPL \
-    COMOUT_WAVE_GRID:COM_WAVE_GRID_TMPL
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
+declare -rx COMIN_WAVE_HISTORY="${COMIN}/model/wave/history"
+declare -rx COMOUT_WAVE_GRID="${COMOUT}/products/wave/gridded"
 
 mkdir -p "${COMOUT_WAVE_GRID}"
 
 if [[ -n "${wavepostGRD}" || -n "${waveinterpGRD}" ]]; then
     for grdID in ${wavepostGRD} ${waveinterpGRD}; do
         process_grdID "${grdID}"
-        YMD=${PDY} HH=${cyc} GRDRESNAME=${grdNAME} declare_from_tmpl -rx \
-            "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}:COM_WAVE_GRID_RES_TMPL"
+        declare -rx "COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"="${COMOUT}/products/wave/gridded/${grdNAME}"
         out_dir_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
         out_dir=${!out_dir_varname}
         mkdir -p "${out_dir}"
