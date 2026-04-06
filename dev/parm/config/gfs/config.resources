@@ -1391,7 +1391,7 @@ case ${step} in
     ;;
 
   "gempakmeta")
-    walltime="06:00:00"
+    walltime="00:15:00"
     threads_per_task=1
     if [[ "${RUN}" = *gdas ]]; then
       ntasks=2
