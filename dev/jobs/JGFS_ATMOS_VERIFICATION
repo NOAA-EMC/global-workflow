@@ -22,7 +22,7 @@ export CDATE=${PDY}${cyc}
 # shellcheck disable=SC2041
 for grid in '1p00'; do
     prod_dir="COM_ATMOS_GRIB_${grid}"
-    GRID=${grid} YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "${prod_dir}:COM_ATMOS_GRIB_GRID_TMPL"
+    declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
 done
 
 # TODO: If none of these are on, why are we running this job?

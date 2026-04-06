@@ -10,12 +10,11 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "postsnd" -c "base postsnd"
 # Define COM Directories
 ##############################
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL \
-    COMIN_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
-    COMOUT_ATMOS_BUFR:COM_ATMOS_BUFR_TMPL \
-    COMOUT_ATMOS_WMO:COM_ATMOS_WMO_TMPL \
-    COMOUT_ATMOS_GEMPAK:COM_ATMOS_GEMPAK_TMPL
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMIN_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
+declare -rx COMOUT_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
+declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+declare -rx COMOUT_ATMOS_GEMPAK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/"
 
 if [[ ! -d "${COMOUT_ATMOS_BUFR}" ]]; then
     mkdir -p "${COMOUT_ATMOS_BUFR}"

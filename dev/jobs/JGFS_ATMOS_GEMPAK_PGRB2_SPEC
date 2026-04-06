@@ -8,8 +8,10 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_GOES:COM_ATMOS_GOES_TMPL
-GRID=0p25 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx "COMOUT_ATMOS_GEMPAK_0p25:COM_ATMOS_GEMPAK_TMPL"
+# shellcheck disable=SC2153
+declare -rx COMIN_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
+# shellcheck disable=SC2153
+declare -rx COMOUT_ATMOS_GEMPAK_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/0p25"
 if [[ ! -d "${COMOUT_ATMOS_GEMPAK_0p25}" ]]; then
     mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_0p25}"
 fi

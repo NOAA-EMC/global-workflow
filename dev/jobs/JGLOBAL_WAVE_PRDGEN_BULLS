@@ -6,9 +6,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "waveawipsbulls" -c "base wave waveawi
 # Set COM Paths
 ###################################
 
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    COMIN_WAVE_STATION:COM_WAVE_STATION_TMPL \
-    COMOUT_WAVE_WMO:COM_WAVE_WMO_TMPL
+declare -rx COMIN_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
+declare -rx COMOUT_WAVE_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/wmo"
 
 mkdir -p "${COMOUT_WAVE_WMO}"
 
