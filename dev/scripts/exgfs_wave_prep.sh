@@ -316,8 +316,7 @@ if [[ "${WW3CURINP}" == 'YES' ]]; then
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             export pgm="run_mpmd.sh"
-            echo "run_mpmd failed while generating currents."
-            # TODO: Should this raise a fatal error whether or not rtofs files are found?
+            err_exit "run_mpmd failed while generating currents."
         fi
 
         files=$(find ./ -name "rtofs.*")
