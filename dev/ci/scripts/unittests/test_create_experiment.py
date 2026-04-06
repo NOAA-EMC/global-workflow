@@ -6,7 +6,6 @@ from wxflow import Executable, find_upward
 HOMEglobal = find_upward('.github')
 current_dir = os.path.dirname(os.path.abspath(__file__))
 RUNDIR_FAKE = os.path.join(current_dir, 'testdata/RUNTESTS')
-ICSDIR_FAKE = os.path.join(current_dir, 'testdata/ICSDIR')
 
 
 def test_create_experiment():
@@ -16,7 +15,6 @@ def test_create_experiment():
     yaml_dir = yaml_dir = os.path.join(HOMEglobal, 'dev/ci/cases/pr')
     env = os.environ.copy()
     env['RUNTESTS'] = RUNDIR_FAKE
-    env['ICSDIR_ROOT'] = ICSDIR_FAKE
 
     err = 0
     for case in os.listdir(yaml_dir):
