@@ -59,9 +59,11 @@ if [[ "${GENDIAG}" == "YES" ]]; then
     export pCOMOUT_ATMOS_ANALYSIS
 fi
 
-LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
+LEVS=$(${NCLEN} "${ATMGES_ENSMEAN}" pfull) && true
 export err=$?
-set_strict
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to determine the number of vertical levels in the input Guess file '${ATMGES_ENSMEAN}'"
+fi
 
 export LEVS
 
