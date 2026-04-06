@@ -37,7 +37,6 @@ declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/res
 
 declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
 
