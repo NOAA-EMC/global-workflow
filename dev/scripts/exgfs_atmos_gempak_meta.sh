@@ -74,6 +74,9 @@ while [[ ${fhr} -le ${fhend} ]]; do
     # This means that there are no jobs to run for this fhr
     if [[ -f "poescript" ]]; then
 
+        # Declare fend for the various gempak/ush scripts
+        export fend=${fhr}
+
         #  If this is the final fcst hour, alert the
         #  file to all centers.
         #
