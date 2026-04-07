@@ -133,7 +133,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic','sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
@@ -448,5 +448,5 @@ class GFSCycledAppConfig(AppConfig):
                             task_names[run] += ['atmensanlletkf']
                     else:
                         task_names[run] += ['eobs', 'eupd', 'ecen', 'ediag']
-                    task_names[run] += ['efcs', 'epos', 'esfc', 'earc_tars', 'cleanup']
+                    task_names[run] += ['efcs', 'epos', 'esfc_gcycle', 'earc_tars', 'cleanup']
         return task_names
