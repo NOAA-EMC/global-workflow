@@ -217,14 +217,19 @@ for file in "${ufs_templates[@]}"; do
 done
 
 # Link the CCPP suite XML files from ufs-weather-model
+declare -a ccpp_suites=(
+    "suite_FV3_global_nest_v1.xml"
+    "suite_FV3_GFS_v17_p8_ugwpv1.xml"
+    "suite_FV3_GFS_v17_coupled_p8_ugwpv1.xml"
+)
 if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites" ]]; then
-    for suite_file in "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites"/suite_*.xml; do
-        [[ -f "${suite_file}" ]] || continue
-        local_name=$(basename "${suite_file}")
-        if [[ -s "${local_name}" ]]; then
-            rm -f "${local_name}"
+    for suite_file in "${ccpp_suites[@]}"; do
+        src="${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites/${suite_file}"
+        [[ -f "${src}" ]] || continue
+        if [[ -s "${suite_file}" ]]; then
+            rm -f "${suite_file}"
         fi
-        ${LINK_OR_COPY} "${suite_file}" .
+        ${LINK_OR_COPY} "${src}" .
     done
 fi
 

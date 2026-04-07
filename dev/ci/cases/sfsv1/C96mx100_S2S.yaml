@@ -12,7 +12,7 @@ experiment:
   nens: 10
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96mx100/20240610
+  icsdir: {{ BASE_IC }}/C96mx100/20240610
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_full.yaml
 
 workflow:
