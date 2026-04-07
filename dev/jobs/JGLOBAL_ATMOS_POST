@@ -19,7 +19,7 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 YMD=${PDY} HH=${cyc}
 memdir=$(printf "mem%03i" $((10#${ENSMEM})))
 COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
-declare -rx "COMIN_ATMOS_MASTER"="${COMOUT}/model/atmos/master" 
+declare -rx "COMIN_ATMOS_MASTER"="${COMOUT}/model/atmos/master"
 declare -rx "COMOUT_ATMOS_GRIB"="${COMOUT}/products/atmos/grib2"
 if [[ ! -d "${COMOUT_ATMOS_GRIB}" ]]; then mkdir -p "${COMOUT_ATMOS_GRIB}"; fi
 # Define current cycle
