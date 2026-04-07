@@ -11,7 +11,7 @@ fi
 if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc} 
+YMD=${PDY} HH=${cyc}
 memdir=$(printf "mem%03i" $((10#${ENSMEM})))
 COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
 declare -rx "COMOUT_ICE_HISTORY"="${COMOUT}/model/ice/history" 
