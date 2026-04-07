@@ -8,7 +8,6 @@ YAML_FILE=${2:?"Name of the CI yaml file for the test"}
 # CMake to fill these variables
 HOMEglobal="@PROJECT_SOURCE_DIR@"
 RUNTESTS="@RUNTESTS@"
-ICSDIR_ROOT="@ICSDIR_ROOT@"
 HPC_ACCOUNT="@HPC_ACCOUNT@"
 
 set +x
@@ -24,7 +23,6 @@ sha=$(git rev-parse --short HEAD)
 
 pslot="${TEST_NAME}_${sha}" \
 RUNTESTS="${RUNTESTS}" \
-ICSDIR_ROOT="${ICSDIR_ROOT}" \
 HPC_ACCOUNT="${HPC_ACCOUNT}" \
 ./create_experiment.py --yaml "${YAML_FILE}" --overwrite
 rc=$?
