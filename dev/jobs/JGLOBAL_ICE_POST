@@ -14,7 +14,7 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 YMD=${PDY} HH=${cyc}
 memdir=$(printf "mem%03i" $((10#${ENSMEM})))
 COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
-declare -rx "COMOUT_ICE_HISTORY"="${COMOUT}/model/ice/history" 
+declare -rx "COMOUT_ICE_HISTORY"="${COMOUT}/model/ice/history"
 declare -rx "COMOUT_ICE_NETCDF"="${COMOUT}/products/ice/netcdf"
 if [[ ! -d "${COMOUT_ICE_NETCDF}" ]]; then mkdir -p "${COMOUT_ICE_NETCDF}"; fi
 
