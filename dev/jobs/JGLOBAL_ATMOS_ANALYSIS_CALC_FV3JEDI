@@ -47,7 +47,7 @@ EXSCRIPT=${GDASATMRUNPY:-${SCRglobal}/exglobal_atmos_analysis_calc_fv3jedi.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to calculate the atmospheric analysis with fv3jedi"
 fi
 
 # Write analysis log file

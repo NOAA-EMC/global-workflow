@@ -42,7 +42,7 @@ EXSCRIPT=${GDASATMENSFINALPY:-${SCRglobal}/exglobal_atmens_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to finalize the atmospheric ensemble analysis"
 fi
 
 ##############################################

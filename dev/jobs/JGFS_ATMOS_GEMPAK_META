@@ -65,7 +65,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 "${SCRglobal}/exgfs_atmos_gempak_meta.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate at least one GFS GEMPAK meta product"
 fi
 ########################################################
 

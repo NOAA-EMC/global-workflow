@@ -40,7 +40,7 @@ declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDA
 ${ENKFUPDSH:-${SCRglobal}/exglobal_enkf_update.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to update the ensemble"
 fi
 
 ##############################################
