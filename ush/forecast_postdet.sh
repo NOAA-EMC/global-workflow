@@ -172,11 +172,9 @@ EOF
             if [[ "${DOIAU}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
                 if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
                     IAUFHRS=0,3,6
-                else
-                    IAUFHRS=3,6,9
+                    IAU_DELTHRS=6
+                    DO_LAND_IAU=".true."
                 fi 
-                IAU_DELTHRS=6
-                DO_LAND_IAU=".true."
                 # create an array of inc_files for each IAU hour
                 IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
                 inc_files=()
@@ -240,13 +238,14 @@ EOF
                 fi
             fi
 
-            if [[ "${RUN}" == "enkfgfs" || "${RUN}" == "enkfgdas" ]] || [[ "${DOIAU_COLDSTART}" == "YES" && ${MEMBER} -gt 0 ]]; then
+            if [[ "${RUN}" == "enkfgfs" || "${RUN}" == "enkfgdas" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" && ${MEMBER} -gt 0 ]]; then
                 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
                     prefix_atminc=""
                 else
                     prefix_atminc="recentered_"
                 fi
-                prefix_atminc="recentered_"
+            else
+                prefix_atminc=""
             fi
 
             local increment_file
