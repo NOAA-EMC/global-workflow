@@ -104,12 +104,12 @@ fi
 
 # If we want to save monthly average products (atmos/ocean(1p00)/ice) for SFS
 if [[ "${RUN}" == sfs ]]; then
-   filelist_monthly_mean=( "${COMIN_OCEAN_NETCDF}/1p00/sfs.ocean."*"monthly_avg"*".nc" )
-   if (( ${#filelist_monthly_mean[@]} > 0 )); then
-      export MONTHLY_DATA_EXIST="true"
-   else
-      export MONTHLY_DATA_EXIST="false"
-   fi
+    filelist_monthly_mean=("${COMIN_OCEAN_NETCDF}/1p00/sfs.ocean."*"monthly_avg"*".nc")
+    if ((${#filelist_monthly_mean[@]} > 0)); then
+        export MONTHLY_DATA_EXIST="true"
+    else
+        export MONTHLY_DATA_EXIST="false"
+    fi
 fi
 
 ###############################################################
