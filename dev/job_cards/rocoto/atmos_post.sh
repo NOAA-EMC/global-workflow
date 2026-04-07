@@ -23,7 +23,7 @@ elif [[ "${MACHINE_ID}" == "gaeac6" ]]; then
     export GMERGE=/gpfs/f6/sfs-emc/scratch/Karina.Asmar/wgrib2/aux_progs/gmerge
     export WGRIB2=wgrib2
 else
-source "${HOMEglobal}/dev/ush/load_modules.sh" run || exit 1
+    source "${HOMEglobal}/dev/ush/load_modules.sh" run || exit 1
     export GMERGE=gmerge
     export WGRIB2=wgrib2
 fi
