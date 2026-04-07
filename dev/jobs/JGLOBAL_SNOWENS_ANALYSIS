@@ -63,7 +63,7 @@ EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snowens_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to caluclate the ensemble snow analysis"
 fi
 
 ##############################################

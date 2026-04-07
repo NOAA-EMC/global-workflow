@@ -36,7 +36,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GOES}"
 "${SCRgfs}/exgfs_atmos_grib2_special_npoess.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate simulated NPOESS products"
 fi
 #############################################################
 

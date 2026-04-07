@@ -187,7 +187,7 @@ if [[ "${err0}" -ne 0 ]]; then
     #  problem with obtaining date record so exit
     export err="${err0}"
     msg="FATAL ERROR: problem with obtaining date record"
-    err_exit "${msg}"
+    exit "${err}"
 fi
 
 modhr=$((cyc % 3))
@@ -429,7 +429,7 @@ else
         #  ------------------------------------------------
         export err
         echo "FATAL ERROR: ${USHgfs}/tropcy_relocate_extrkr.sh failed"
-        err_exit "${msg}"
+        err_exit "${err}"
     fi
 
     #  relocate model tropical cyclone vortices in ges sigma files
