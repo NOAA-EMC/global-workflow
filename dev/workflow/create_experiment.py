@@ -34,6 +34,7 @@ from wxflow import AttrDict, parse_j2yaml, Logger, logit
 
 import setup_expt
 import setup_workflow
+from hosts import Host
 
 
 _here = os.path.dirname(__file__)
@@ -85,7 +86,11 @@ if __name__ == '__main__':
     user_inputs = input_args()
 
     # Create a dictionary to pass to parse_j2yaml for parsing the yaml file
+    # Load host info first so host variables (e.g. BASE_IC) are available as
+    # template variables when the case YAML is rendered.
+    host = Host()
     data = AttrDict(HOMEglobal=_top)
+    data.update(host.info)
     data.update(os.environ)
     testconf = parse_j2yaml(path=user_inputs.yaml, data=data)
 

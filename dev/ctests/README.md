@@ -13,7 +13,6 @@ The following environment variables must be set (either in your environment or v
 ```bash
 HPC_ACCOUNT       # Your HPC allocation account
 STAGED_CTESTS     # Path to nightly baseline COMROOT
-ICSDIR_ROOT       # Path to initial condition files
 ```
 
 These are typically defined in `$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID`.
@@ -31,7 +30,6 @@ cmake ../../..
 # Or configure with explicit command-line options
 cmake -DHPC_ACCOUNT=myaccount \
       -DSTAGED_CTESTS=/path/to/baselines/RUNTESTS \
-      -DICSDIR_ROOT=/path/to/ics \
       ../../..
 ```
 
@@ -242,7 +240,7 @@ Platform-specific settings are in `$HOMEglobal/dev/ci/platforms/config.$MACHINE_
 export GFS_CI_ROOT=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT
 export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
 export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
-export ICSDIR_ROOT=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
+export BASE_IC=/scratch1/NCEPDEV/global/glopara/data/ICSDIR
 export HPC_ACCOUNT=nems
 ```
 
