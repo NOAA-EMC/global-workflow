@@ -31,7 +31,7 @@ atmos_6hrly_files=( "${COMIN_ATMOS_MASTER}/sfs.t00z.master.f"*".grib2" )
 atmos_6hrly_num=$(( FHMAX_GFS / 6 + 1 )) #expected total number of atmos master files
 echo "INFO: Found ${#atmos_6hrly_files[@]} of 6hrly atmos master files."
 
-if [[ "${#atmos_6hrly_files[@]}" -lt "${atmos_6hrly_num}" ]]; then 
+if [[ "${#atmos_6hrly_files[@]}" -lt "${atmos_6hrly_num}" ]]; then
     echo "ERROR: Atmos master file count mismatch detected!"
     echo " 6hrly atmos master files: ${#atmos_6hrly_files[@]} Found VS  ${atmos_6hrly_num} Expected "
     echo " FATAL: The 6hrly atmos master files are incomplete. Atmos post job quits!"
