@@ -15,7 +15,7 @@ source "${HOMEglobal}/ush/detect_machine.sh"
 source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    exit "${status}";
+    exit "${status}"
 fi
 
 export job="ice_post"
