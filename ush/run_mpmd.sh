@@ -116,9 +116,10 @@ chunk_mpmd() {
             local i=$((_counter - _start_line))
             # Slurm requires a counter in front of each line in the script
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
-                echo "${i} ${line}" >> "${chunk_file}"
+                # printf ensures we don't lose trailing spaces or mess up quotes
+                printf "%d %s\n" "${i}" "${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
+                printf "%s > mpmd.%d.out 2>&1\n" "${line}" "${i}" >> "${chunk_file}"
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then

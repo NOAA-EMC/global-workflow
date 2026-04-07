@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 #------------------------------------------------------------------------------
 # AUTO-CLEANUP: CONVERT WINDOWS (CRLF) TO UNIX (LF) FORMAT
 # This prevents the "/usr/bin/cat: invalid option -- 'm'" error.
@@ -13,6 +14,7 @@ echo "INFO: Validating script line endings..."
 PROCESS_ATMOS_6HRLYSH=${PROCESS_ATMOS_6HRLYSH:-"${USHglobal}/process_atmos_6hrly.sh"}
 PROCESS_ATMOS_DAILYSH=${PROCESS_ATMOS_DAILYSH:-"${USHglobal}/process_atmos_daily.sh"}
 RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
+chmod +x "${PROCESS_ATMOS_6HRLYSH}" "${PROCESS_ATMOS_DAILYSH}" "${RUN_MPMDSH}"
 
 # List all scripts involved in the workflow
 workflow_scripts=(
@@ -49,6 +51,46 @@ if [[ -z "${WGRIB2:-}" ]]; then
 fi
 
 #------------------------------------------------------------------------------
+# PRE-FLIGHT CHECK: VERIFY BINARIES AND SCRIPTS
+#------------------------------------------------------------------------------
+echo "INFO: Performing pre-flight dependency checks..."
+
+# Define the list of required executables
+declare -a required_execs=(
+    "${WGRIB2}"
+    "${GMERGE}"
+    "${PROCESS_ATMOS_6HRLYSH}"
+    "${PROCESS_ATMOS_DAILYSH}"
+    "${RUN_MPMDSH}"
+)
+
+_missing_deps=0
+for exec_path in "${required_execs[@]}"; do
+    # Check if the path is empty
+    if [[ -z "${exec_path}" ]]; then
+        echo "ERROR: Variable for a required dependency is empty."
+        ((_missing_deps++))
+        continue
+    fi
+
+    # Check if the file exists and is executable
+    if [[ ! -x "${exec_path}" ]]; then
+        # If it's not a path, check if it's a command in the system PATH
+        if ! command -v "${exec_path}" >/dev/null 2>&1; then
+            echo "ERROR: Required dependency not found or not executable: ${exec_path}"
+            ((_missing_deps++))
+        fi
+    fi
+done
+
+if [[ ${_missing_deps} -gt 0 ]]; then
+    echo "FATAL ERROR: ${_missing_deps} dependencies are missing. Exiting."
+    exit 1
+fi
+
+echo "INFO: All dependencies verified successfully."
+
+#------------------------------------------------------------------------------
 # 1. ENVIRONMENT SETUP & COMMON VARIABLES
 #------------------------------------------------------------------------------
 export USE_CFP=YES
@@ -64,7 +106,7 @@ dailyaccvars="(ACPCP|APCP|NCPCP|CPRAT|PRATE|LHTFL|SHTFL|GFLUX|SNOHF|UFLX|VFLX|WA
 
 # Variables for Stage 3 (Monthly Means)
 monthlyinstvars="(:TMP|UGRD|VGRD|STRM|VPOT):(200|850) mb|HGT:(200|500|700|850) mb|(:TMP|WEASD|CPOFP|LAND|PEVPR|ICETK):surface|(SOILW|TSOIL):(0-0.1|0.1-0.4|0.4-1|1-2)|SOILM|(:TMP|SPFH|DPT|RH):2 m above|(UGRD|VGRD):10 m above|PRMSL|PWAT"
-monthlyaccvars="(ACPCP|APCP|NCPCP|PRATE|LHTFL|SHTFL|UFLX|VFLX|CDUVB|DLWRF|USWRF|DSWRF/ULWRF|WATR):surface|TSNOWP:surface|(TMAX|TMIN|ULWRF|USWRF|DSWRF):top of atmosphere|TCDC:entire atmosphere"
+monthlyaccvars="(ACPCP|APCP|NCPCP|PRATE|LHTFL|SHTFL|UFLX|VFLX|CDUVB|DLWRF|USWRF|DSWRF|ULWRF|WATR):surface|TSNOWP:surface|TMAX|TMIN|(ULWRF|USWRF|DSWRF):top of atmosphere|TCDC:entire atmosphere"
 
 export filename_end=".grib.t${cyc}z.grb2"
 
@@ -135,29 +177,29 @@ fi
 echo "INFO: Starting Stage 1 - Variable Extraction"
 
 if [[ -f "${DATA}/mpmd_s1_extract.txt" ]]; then
-   rm -f "${DATA}/mpmd_s1_extract.txt"
+    rm -f "${DATA}/mpmd_s1_extract.txt"
 fi
 
 cmdfile_s1="${DATA}/mpmd_s1_extract.txt"
 > "${cmdfile_s1}"
 
 for (( i=0; i<${#vars[@]}; i++)); do
-  filename="${filevars[$i]}.${MEMDIR}.${vt_date}.6hourly.grb2"
-  output_path="${OUTDIR}/${filename}"
-  # CALL THE WRAPPER SCRIPT
-  echo "${PROCESS_ATMOS_6HRLYSH} '${vars[$i]}' '${output_path}'" >> "${cmdfile_s1}"
+    filename="${filevars[$i]}.${MEMDIR}.${vt_date}.6hourly.grb2"
+    output_path="${OUTDIR}/${filename}"
+    # CALL THE WRAPPER SCRIPT
+    echo "bash ${PROCESS_ATMOS_6HRLYSH} '${vars[$i]}' '${output_path}'" >> "${cmdfile_s1}"
 done
 
 if [[ -s "${cmdfile_s1}" ]]; then
-  "${RUN_MPMDSH}" "${cmdfile_s1}"
-   err=$?
+    "${RUN_MPMDSH}" "${cmdfile_s1}"
+    err=$?
 fi
 
 if [[ ${err} -ne 0 ]]; then
-   echo "FATAL ERROR: Failed to generate 6-hourly grib2 files"
-   exit "${err}"
+    echo "FATAL ERROR: Failed to generate 6-hourly grib2 files"
+    exit "${err}"
 else
-   echo "INFO: Stage 1 Complete."
+    echo "INFO: Stage 1 Complete."
 fi
 
 #--------------------------------------------------------------------------------------
@@ -170,7 +212,7 @@ echo "INFO: Starting Stage 2 - Daily Averaging"
 export dailyaccvars dailyinstvars COMIN_ATMOS_MASTER cyc OUTDIR MEMDIR lastfhr current_cycle GMERGE WGRIB2
 
 if [[ -f "${DATA}/mpmd_s2_daily.txt" ]]; then
-   rm -f "${DATA}/mpmd_s2_daily.txt"
+    rm -f "${DATA}/mpmd_s2_daily.txt"
 fi
 
 cmdfile_s2="${DATA}/mpmd_s2_daily.txt"
@@ -213,7 +255,7 @@ for (( i=0; i<exp_months; i++ )); do
 
     # Construct the command line for the MPMD file
     # Args: Index (i), TotalDays (daysf), MonthDays (actual m_days),Prefix (Filename_start), lastfhr 
-    echo "${PROCESS_ATMOS_DAILYSH} ${i} ${current_daysf} ${actual_m_days} ${filename_start} ${lastfhr}" >> "${cmdfile_s2}"
+    echo "bash ${PROCESS_ATMOS_DAILYSH} ${i} ${current_daysf} ${actual_m_days} ${filename_start} ${lastfhr}" >> "${cmdfile_s2}"
 done
 
 # 3. Dynamically count tasks and execute
@@ -240,7 +282,7 @@ fi
 echo "INFO: Starting Stage 3 - Monthly Averaging"
 
 if [[ -f "${DATA}/mpmd_s3_monthly.txt" ]]; then
-   rm -f "${DATA}/mpmd_s3_monthly.txt"
+    rm -f "${DATA}/mpmd_s3_monthly.txt"
 fi
 
 cmdfile_s3="${DATA}/mpmd_s3_monthly.txt"
@@ -291,6 +333,7 @@ fi
 #------------------------------------------------------------------------------
 rm -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f"*".grib2"
 rm -f "${DATA}"/mpmd_s*.txt
+rm -f "${DATA}"/mpmd.*.out
 find "${OUTDIR}" -type d -name "tmp_m[0-9][0-9]_${MEMDIR}" -empty -delete
 echo "INFO: Cleanup Complete. Workflow status: SUCCESS"
 

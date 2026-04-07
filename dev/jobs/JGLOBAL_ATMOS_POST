@@ -1,10 +1,18 @@
 #! /usr/bin/env bash
-source "${HOMEglobal}/ush/jjob_header.sh" -e "atmos_post" -c "base atmos_post"
+set -x
 
-export DATA="${DATAROOT}/atmos_post_${ENSMEM}.${jobid}"
-mkdir -p ${DATA}
-# Create the directory to hold output from the model in stmp
-export DATAoutput="${DATA}/output"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "atmos_post" -c "base atmos_post"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
+
+if ((10#${ENSMEM:-0} > 0)); then
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+else
+    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+fi
+
+# Create the directory to hold output for this job
+export DATAoutput="${DATAjob}/output"
 if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
@@ -24,10 +32,10 @@ atmos_6hrly_num=$(( FHMAX_GFS / 6 + 1 )) #expected total number of atmos master 
 echo "INFO: Found ${#atmos_6hrly_files[@]} of 6hrly atmos master files."
 
 if [[ "${#atmos_6hrly_files[@]}" -lt "${atmos_6hrly_num}" ]]; then 
-   echo "ERROR: Atmos master file count mismatch detected!"
-   echo " 6hrly atmos master files: ${#atmos_6hrly_files[@]} Found VS  ${atmos_6hrly_num} Expected "
-   echo " FATAL: The 6hrly atmos master files are incomplete. Atmos post job quits!"
-   exit 1
+    echo "ERROR: Atmos master file count mismatch detected!"
+    echo " 6hrly atmos master files: ${#atmos_6hrly_files[@]} Found VS  ${atmos_6hrly_num} Expected "
+    echo " FATAL: The 6hrly atmos master files are incomplete. Atmos post job quits!"
+    exit 1
 fi
 
 ##############################################

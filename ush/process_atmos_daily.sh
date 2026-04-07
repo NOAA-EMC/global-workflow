@@ -44,8 +44,8 @@ for (( d=1; d<=$month_days; d++ )); do
     
     # Skip if we exceed the total available forecast length
     if [ "$end_of_day_fhr" -gt "$lastfhr" ]; then 
-       echo "DEBUG: Skipping Day $d because $end_of_day_fhr > $lastfhr"
-       continue 
+        echo "DEBUG: Skipping Day $d because $end_of_day_fhr > $lastfhr"
+        continue
     fi
 
     # --- PART A: ACCUMULATED VARIABLES (Hours: E-18, E-12, E-6, E) ---

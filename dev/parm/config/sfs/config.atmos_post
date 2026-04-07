@@ -11,9 +11,4 @@ echo "BEGIN: config.atmos_post"
 # Maximum number of rocoto tasks per member
 export MAX_TASKS=25
 
-# Scripts used by this job
-export SFS_6HRLY_VARSSH="${USHglobal}/sfs_6hrly_vars.sh"
-export SFS_ATMOS_DAILYSH="${USHglobal}/sfs_atmos_daily.sh"
-export SFS_ATMOS_MONTHLYSH="${USHglobal}/sfs_atmos_monthly.sh"
-
 echo "END: config.atmos_post"

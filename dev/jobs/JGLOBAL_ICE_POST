@@ -1,12 +1,14 @@
 #! /usr/bin/env bash
 source "${HOMEglobal}/ush/jjob_header.sh" -e "ice_post" -c "base ice_post"
-export DATA="${DATAROOT}/ocean_post_${ENSMEM}.${jobid}"
-mkdir -p ${DATA}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
+
 if ((10#${ENSMEM:-0} > 0)); then
     export DATAoutput="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}/output"
 else
     export DATAoutput="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}/output"
 fi
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} 
@@ -26,10 +28,10 @@ ice_24hrly_num=$(( FHMAX_GFS / 24 )) #expected total number of ice 24hr_avg hist
 echo "INFO: Found ${#ice_24hrly_files[@]} of ice 24hr_avg history files."
 
 if [[ "${#ice_24hrly_files[@]}" -lt "${ice_24hrly_num}" ]]; then
-   echo "ERROR: Ice history file count mismatch detected!"
-   echo "ice 24hr_avg history files: ${#ice_24hrly_files[@]} Found VS ${ice_24hrly_num} Expected"
-   echo "FATAL: The ice history files are incomplete. Ice post job quits!"
-   exit 1
+    echo "ERROR: Ice history file count mismatch detected!"
+    echo "ice 24hr_avg history files: ${#ice_24hrly_files[@]} Found VS ${ice_24hrly_num} Expected"
+    echo "FATAL: The ice history files are incomplete. Ice post job quits!"
+    exit 1
 fi
 
 ##############################################

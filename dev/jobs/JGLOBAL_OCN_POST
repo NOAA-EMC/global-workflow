@@ -1,14 +1,18 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/ush/jjob_header.sh" -e "ocn_post" -c "base ocn_post"
 
-export DATA="${DATAROOT}/ocean_post_${ENSMEM}.${jobid}"
-mkdir -p ${DATA}
+source "${HOMEglobal}/ush/jjob_header.sh" -e "ocn_post" -c "base ocn_post"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
+
 if ((10#${ENSMEM:-0} > 0)); then
-    export DATAoutput="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}/output"
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
 else
-    export DATAoutput="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}/output"
+    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 fi
+# Create the directory to hold output for this job
+export DATAoutput="${DATAjob}/output"
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} 
@@ -31,11 +35,11 @@ echo "INFO: Found ${#ocn_24hrly_files[@]} of ocean 24hr_avg history files."
 echo "INFO: Found ${#ocn_6hrly_files[@]} of ocean 6hr_avg history files."
 
 if [[ "${#ocn_24hrly_files[@]}" -lt "${ocn_24hrly_num}" ]] || [[ "${#ocn_6hrly_files[@]}" -lt "${ocn_6hrly_num}" ]]; then
-   echo "ERROR: File count mismatch detected!"
-   echo "Ocean 24hr_avg fistory files: ${#ocn_24hrly_files[@]} Found vs ${ocn_24hrly_num} Expected"
-   echo "Ocean 6hr_avg history files:  ${#ocn_6hrly_files[@]} Found vs ${ocn_6hrly_num} Expected"
-   echo "FATAL: The ocean history files are incomplete. Ocean post job quits!"
-   exit 1
+    echo "ERROR: File count mismatch detected!"
+    echo "Ocean 24hr_avg fistory files: ${#ocn_24hrly_files[@]} Found vs ${ocn_24hrly_num} Expected"
+    echo "Ocean 6hr_avg history files:  ${#ocn_6hrly_files[@]} Found vs ${ocn_6hrly_num} Expected"
+    echo "FATAL: The ocean history files are incomplete. Ocean post job quits!"
+    exit 1
 fi
 
 ##############################################
