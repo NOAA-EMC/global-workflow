@@ -624,7 +624,7 @@ MOM6_postdet() {
         restart_date="${RERUN_DATE}"
     else # "${RERUN}" == "NO"
         restart_dir="${COMIN_OCEAN_RESTART_PREV}"
-        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then 
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             restart_date="${current_cycle_begin}"
         else
             restart_date="${model_start_date_current_cycle}"
