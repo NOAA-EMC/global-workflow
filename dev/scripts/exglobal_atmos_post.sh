@@ -183,7 +183,7 @@ fi
 cmdfile_s1="${DATA}/mpmd_s1_extract.txt"
 > "${cmdfile_s1}"
 
-for (( i=0; i<${#vars[@]}; i++)); do
+for ((i = 0; i < ${#vars[@]}; i++)); do
     filename="${filevars[$i]}.${MEMDIR}.${vt_date}.6hourly.grb2"
     output_path="${OUTDIR}/${filename}"
     # CALL THE WRAPPER SCRIPT
