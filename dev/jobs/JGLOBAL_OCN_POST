@@ -17,7 +17,7 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 # Construct COM variables from templates
 memdir=$(printf "mem%03i" $((10#${ENSMEM})))
 COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
-declare -rx "COMOUT_OCEAN_HISTORY"="${COMOUT}/model/ocean/history" 
+declare -rx "COMOUT_OCEAN_HISTORY"="${COMOUT}/model/ocean/history"
 declare -rx "COMOUT_OCEAN_NETCDF"="${COMOUT}/products/ocean/netcdf"
 if [[ ! -d "${COMOUT_OCEAN_NETCDF}" ]]; then mkdir -p "${COMOUT_OCEAN_NETCDF}"; fi
 
