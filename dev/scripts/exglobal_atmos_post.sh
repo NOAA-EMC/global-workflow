@@ -219,7 +219,7 @@ cmdfile_s2="${DATA}/mpmd_s2_daily.txt"
 > "${cmdfile_s2}"
 
 # 1. Calculate total months across year boundaries
-exp_months=$(( (yy_final - yy_init) * 12 + (mm_final - mm_init) + 1 ))
+exp_months=$(((yy_final - yy_init) * 12 + (mm_final - mm_init) + 1))
 
 # 2. Generate the MPMD command file
 total_fcst_days=$(( lastfhr / 24 ))
