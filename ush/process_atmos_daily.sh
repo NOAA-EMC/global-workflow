@@ -38,10 +38,10 @@ mkdir -p "${tmp_acc_work_dir}" "${tmp_inst_work_dir}"
 #---------------------------------------------------------
 # LOOP THROUGH EACH DAY OF THE MONTH (1 to month_days)
 #---------------------------------------------------------
-for (( d=1; d<=${month_days}; d++ )); do
-    
-    end_of_day_fhr=$(( (day_offset + d) * 24 ))
-    
+for ((d = 1; d <= ${month_days}; d++)); do
+
+    end_of_day_fhr=$(((day_offset + d) * 24))
+
     # Skip if we exceed the total available forecast length
     if [ "$end_of_day_fhr" -gt "$lastfhr" ]; then 
         echo "DEBUG: Skipping Day $d because $end_of_day_fhr > $lastfhr"
