@@ -203,7 +203,7 @@ else
 fi
 
 #--------------------------------------------------------------------------------------
-# STAGE 2: DAILY MEANS (ACCUMULATED & INSTANTANEOUS) 
+# STAGE 2: DAILY MEANS (ACCUMULATED & INSTANTANEOUS)
 # Handles 13+ months, leap years, and prevents MPMD collisions
 #--------------------------------------------------------------------------------------
 echo "INFO: Starting Stage 2 - Daily Averaging"
