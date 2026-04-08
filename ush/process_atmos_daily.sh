@@ -53,7 +53,10 @@ for ((d = 1; d <= ${month_days}; d++)); do
     list_acc=""
     for hr in $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)) ${end_of_day_fhr}; do
         fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
-        if [[ ! -f "${fpath}" ]]; then all_acc_exist=false; break; fi
+        if [[ ! -f "${fpath}" ]]; then
+            all_acc_exist=false
+            break
+        fi
         list_acc+="${fpath} "
     done
 
