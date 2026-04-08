@@ -88,3 +88,19 @@ tock() {
 
 declare -xf tick
 declare -xf tock
+
+# If the script is invoked directly (not sourced), dispatch to tick or tock
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    if [[ $# -eq 0 ]]; then
+        echo "ERROR: timer.sh requires an argument: tick or tock"
+        exit 1
+    fi
+    case "${1}" in
+        tick) tick "${@:2}" ;;
+        tock) tock "${@:2}" ;;
+        *)
+            echo "ERROR: Unknown argument '${1}'. Must be 'tick' or 'tock'."
+            exit 1
+            ;;
+    esac
+fi
