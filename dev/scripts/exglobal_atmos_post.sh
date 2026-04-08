@@ -20,7 +20,7 @@ chmod +x "${PROCESS_ATMOS_6HRLYSH}" "${PROCESS_ATMOS_DAILYSH}" "${RUN_MPMDSH}"
 workflow_scripts=(
     "${0}"
     "${PROCESS_ATMOS_6HRLYSH}"
-    "${PROCESS_ATMOS_DAILYSH}" 
+    "${PROCESS_ATMOS_DAILYSH}"
     "${RUN_MPMDSH}"
 )
 
