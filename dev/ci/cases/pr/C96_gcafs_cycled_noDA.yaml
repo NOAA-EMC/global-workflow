@@ -17,6 +17,7 @@ experiment:
 skip_ci_on_hosts:
   - orion
   - hercules
+  - derecho
   - awsepicglobalworkflow
 
 workflow:
