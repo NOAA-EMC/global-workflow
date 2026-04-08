@@ -18,7 +18,7 @@ chmod +x "${PROCESS_ATMOS_6HRLYSH}" "${PROCESS_ATMOS_DAILYSH}" "${RUN_MPMDSH}"
 
 # List all scripts involved in the workflow
 workflow_scripts=(
-    "${0}" 
+    "${0}"
     "${PROCESS_ATMOS_6HRLYSH}"
     "${PROCESS_ATMOS_DAILYSH}" 
     "${RUN_MPMDSH}"
