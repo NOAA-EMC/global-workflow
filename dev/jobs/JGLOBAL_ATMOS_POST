@@ -16,7 +16,6 @@ export DATAoutput="${DATAjob}/output"
 if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
-YMD=${PDY} HH=${cyc}
 memdir=$(printf "mem%03i" $((10#${ENSMEM})))
 COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
 declare -rx "COMIN_ATMOS_MASTER"="${COMOUT}/model/atmos/master"

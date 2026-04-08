@@ -167,7 +167,7 @@ months_in_year=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12")
 month_days_in_year=("31" "28" "31" "30" "31" "30" "31" "31" "30" "31" "30" "31")
 # Leap Year Check
 
-if [ $((yy_init % 4)) -eq 0 ] && ([ $((yy_init % 100)) -ne 0 ] || [ $((yy_init % 400)) -eq 0 ]); then
+if [[ $((yy_init % 4)) -eq 0 ]] && ([[ $((yy_init % 100)) -ne 0 ]] || [[ $((yy_init % 400)) -eq 0 ]]); then
     month_days_in_year[1]=29
 fi
 
@@ -222,9 +222,9 @@ cmdfile_s2="${DATA}/mpmd_s2_daily.txt"
 exp_months=$(((yy_final - yy_init) * 12 + (mm_final - mm_init) + 1))
 
 # 2. Generate the MPMD command file
-total_fcst_days=$(( lastfhr / 24 ))
+total_fcst_days=$((lastfhr / 24))
 current_daysf=0
-for (( i=0; i<exp_months; i++ )); do
+for ((i = 0; i < exp_months; i++ )); do
     
     # Calculate the Valid Year and Month for this forecast segment
     v_date=$(date -d "${current_cycle:0:8} +${i} months" +%Y%m%d)
@@ -233,19 +233,16 @@ for (( i=0; i<exp_months; i++ )); do
 
     # Get exact days in THIS specific month (Handles Leap Years in Year 2+)
     cal_m_days=$(date -d "${v_year}-${v_month}-01 +1 month -1 day" +%d)
-    
     # Start day of this month
-    m_start_day=$current_daysf
-    
+    m_start_day=${current_daysf}
     # Calculate how many days of this month actually exist in the forecast
     days_left=$(( total_fcst_days - m_start_day ))
     
-    if [ "$days_left" -le 0 ]; then break; fi # No more data
-    
-    if [ "$days_left" -lt "$cal_m_days" ]; then
-        actual_m_days=$days_left
+    if [[ "${days_left}" -le 0 ]]; then break; fi # No more data 
+    if [[ "${days_left}" -lt "${cal_m_days}" ]]; then
+        actual_m_days=${days_left}
     else
-        actual_m_days=$cal_m_days
+        actual_m_days=${cal_m_days}
     fi
     # Update cumulative days for the NEXT month's offset
     current_daysf=$((current_daysf + actual_m_days))
@@ -254,15 +251,14 @@ for (( i=0; i<exp_months; i++ )); do
     filename_start="${MEMDIR}.${current_cycle}.${v_year}"
 
     # Construct the command line for the MPMD file
-    # Args: Index (i), TotalDays (daysf), MonthDays (actual m_days),Prefix (Filename_start), lastfhr 
+    # Args: Index (i), TotalDays (daysf), MonthDays (actual m_days),Prefix (Filename_start), lastfhr
     echo "bash ${PROCESS_ATMOS_DAILYSH} ${i} ${current_daysf} ${actual_m_days} ${filename_start} ${lastfhr}" >> "${cmdfile_s2}"
 done
 
 # 3. Dynamically count tasks and execute
 if [[ -s "${cmdfile_s2}" ]]; then
     n_tasks=$(wc -l < "${cmdfile_s2}")
-    echo "INFO: Launching Stage 2 MPMD with ${n_tasks} months."
-    
+    echo "INFO: Launching Stage 2 MPMD with ${n_tasks} months." 
     # Update the RUN_MPMDSH call
     # Note: Ensure n_tasks matches your Slurm allocation
     "${RUN_MPMDSH}" "${cmdfile_s2}"
@@ -289,13 +285,13 @@ cmdfile_s3="${DATA}/mpmd_s3_monthly.txt"
 > "${cmdfile_s3}"
 
 # Read the files created in Stage 2
-accfilelist=( "${OUTDIR}/acc.daily.${MEMDIR}"/* )
-insfilelist=( "${OUTDIR}/inst.daily.${MEMDIR}"/* )
+accfilelist=("${OUTDIR}/acc.daily.${MEMDIR}"/*)
+insfilelist=("${OUTDIR}/inst.daily.${MEMDIR}"/*)
 
 # PARTIAL MONTH LOGIC: If dd_final != 01, the very last file in the list is
 # the partial month. We remove it from the processing array.
 if ((dd_final != 1)); then
-    echo "INFO: Final month is partial (Day $dd_final). Skipping monthly average for this month."
+    echo "INFO: Final month is partial (Day ${dd_final}). Skipping monthly average for this month."
     [[ ${#accfilelist[@]} -gt 0 ]] && unset 'accfilelist[${#accfilelist[@]}-1]'
     [[ ${#insfilelist[@]} -gt 0 ]] && unset 'insfilelist[${#insfilelist[@]}-1]'
 fi
