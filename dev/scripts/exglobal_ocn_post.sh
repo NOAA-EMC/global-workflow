@@ -224,9 +224,9 @@ if [[ "${RUN}" == sfs ]]; then
         file_list_mon=( "${file_list_mon[@]}" )
     else
         # Check if array has elements before slicing to avoid errors
-        if (( ${#file_list_mon[@]} > 0 )); then
-         # Skip the last element using array slicing
-            file_list_mon=( "${file_list_mon[@]::${#file_list_mon[@]}-1}" )
+        if ((${#file_list_mon[@]} > 0)); then
+            # Skip the last element using array slicing
+            file_list_mon=("${file_list_mon[@]::${#file_list_mon[@]}-1}")
         else
             file_list_mon=()
         fi
