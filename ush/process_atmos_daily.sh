@@ -123,7 +123,7 @@ if [ -d "${tmp_inst_work_dir}" ]; then
         echo "INFO: Task $i merging ${#inst_files[@]} days for INST using array expansion."
         ${GMERGE} "${dest_inst}" "${inst_files[@]}"
     else
-        echo "WARNING: Task $i found NO daily_inst files to merge."
+        echo "WARNING: Task ${i} found NO daily_inst files to merge."
     fi
 fi
 
