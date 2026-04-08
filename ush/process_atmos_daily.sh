@@ -38,7 +38,7 @@ mkdir -p "${tmp_acc_work_dir}" "${tmp_inst_work_dir}"
 #---------------------------------------------------------
 # LOOP THROUGH EACH DAY OF THE MONTH (1 to month_days)
 #---------------------------------------------------------
-for (( d=1; d<=$month_days; d++ )); do
+for (( d=1; d<=${month_days}; d++ )); do
     
     end_of_day_fhr=$(( (day_offset + d) * 24 ))
     
