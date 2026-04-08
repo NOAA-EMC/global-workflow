@@ -294,7 +294,7 @@ insfilelist=( "${OUTDIR}/inst.daily.${MEMDIR}"/* )
 
 # PARTIAL MONTH LOGIC: If dd_final != 01, the very last file in the list is
 # the partial month. We remove it from the processing array.
-if (( dd_final != 1 )); then
+if ((dd_final != 1)); then
     echo "INFO: Final month is partial (Day $dd_final). Skipping monthly average for this month."
     [[ ${#accfilelist[@]} -gt 0 ]] && unset 'accfilelist[${#accfilelist[@]}-1]'
     [[ ${#insfilelist[@]} -gt 0 ]] && unset 'insfilelist[${#insfilelist[@]}-1]'
