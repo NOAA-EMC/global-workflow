@@ -174,7 +174,7 @@ EOF
                     IAUFHRS=0,3,6
                     IAU_DELTHRS=6
                     DO_LAND_IAU=".true."
-                fi 
+                fi
                 # create an array of inc_files for each IAU hour
                 IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
                 inc_files=()
