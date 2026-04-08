@@ -76,7 +76,7 @@ for exec_path in "${required_execs[@]}"; do
     # Check if the file exists and is executable
     if [[ ! -x "${exec_path}" ]]; then
         # If it's not a path, check if it's a command in the system PATH
-        if ! command -v "${exec_path}" >/dev/null 2>&1; then
+        if ! command -v "${exec_path}" > /dev/null 2>&1; then
             echo "ERROR: Required dependency not found or not executable: ${exec_path}"
             ((_missing_deps++))
         fi
