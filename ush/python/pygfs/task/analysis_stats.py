@@ -76,7 +76,7 @@ class AnalysisStats(Analysis):
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self) -> None:
+    def initialize(self, analysis: str) -> None:
         """
         This method will initialize a global analysis stats task.
         This includes:
@@ -84,30 +84,29 @@ class AnalysisStats(Analysis):
         - copying stat files
         Parameters
         ----------
-        None
+        analysis
+            key specifying particular Jedi object in self.jedi_dict
         Returns
         ----------
         None
         """
 
-        for analysis in self.task_config.STAT_ANALYSES:
-            # Loop through a copy of ob space list
-            logger.info(f"Working on analysis type: {analysis}")
+        logger.info(f"Working on analysis type: {analysis}")
 
-            # Stage files from COM
-            logger.info(f"Staging files from COM and creating output directories")
-            FileHandler(self.task_config.data_in).sync()
+        # Stage files from COM
+        logger.info(f"Staging files from COM and creating output directories")
+        FileHandler(self.task_config.data_in).sync()
 
-            # Extract diag tar file
-            jcb_config = self.jedi_dict[analysis].jcb_config
-            component = self.jedi_dict[analysis].component
-            diag_archive = os.path.join(jcb_config[f"{component}_obsdatain_path"],
-                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx.tar.gz")
-            Jedi.extract_tar(diag_archive)
+        # Extract diag tar file
+        jcb_config = self.jedi_dict[analysis].jcb_config
+        component = self.jedi_dict[analysis].component
+        diag_archive = os.path.join(jcb_config[f"{component}_obsdatain_path"],
+                                    f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx.tar.gz")
+        Jedi.extract_tar(diag_archive)
 
-            # Initialize JEDI application
-            logger.info(f"Initializing JEDI ioda-stats extraction application")
-            self.jedi_dict[analysis].initialize(clean_empty_obsspaces=True)
+        # Initialize JEDI application
+        logger.info(f"Initializing JEDI ioda-stats extraction application")
+        self.jedi_dict[analysis].initialize(clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, analysis: str) -> None:
@@ -144,32 +143,35 @@ class AnalysisStats(Analysis):
         None
         """
 
-        for analysis in self.task_config.STAT_ANALYSES:
-            self.jedi_dict[analysis].save_obsdataout(self.task_config.outdir[analysis],
-                                                     f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
+        outdir = self.task_config.outdir[analysis]
+        jcb_config = self.jedi_dict[analysis].jcb_config
+        component = self.jedi_dict[analysis].component
 
-            # concatenate text files into one summary file
-            jcb_config = self.jedi_dict[analysis].jcb_config
-            component = self.jedi_dict[analysis].component
-            summaryfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{self.task_config.APREFIX}{analysis}_stats.txt")
-            with open(summaryfile, 'w') as outfile:
-                for ob in self.jedi_dict[analysis].jcb_config.observations:
-                    textfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{ob}_ioda_stats.txt")
-                    if os.path.exists(textfile):
-                        logger.info(f"Concatenating {textfile} to {summaryfile}")
-                        with open(textfile, 'r') as infile:
-                            outfile.write(infile.read())
-                    else:
-                        logger.warning(f"{textfile} does not exist to concatenate.")
-                        logger.warning("Skipping this file ...")
+        # Ensure the output COM directory exists before copying
+        if not os.path.exists(outdir):
+            FileHandler({'mkdir': [outdir]}).sync()
 
-            # Copy stats summary file to COM only if it has content
-            outdir = self.task_config.outdir[analysis]
-            if os.path.getsize(summaryfile) > 0:
-                FileHandler({'mkdir': [outdir]}).sync()
-                FileHandler({'copy_opt': [[summaryfile, outdir]]}).sync()
-            else:
-                logger.warning(f"No content in {summaryfile}, skipping copy to {outdir}")
+        # Archive obs output files to COM (creates tar.gz even if all obs files are missing)
+        self.jedi_dict[analysis].save_obsdataout(outdir,
+                                                 f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
+
+        # Concatenate per-ob text stat files into one summary file
+        summaryfile = os.path.join(jcb_config[f"{component}_obsdataout_path"],
+                                   f"{self.task_config.APREFIX}{analysis}_stats.txt")
+        with open(summaryfile, 'w') as outfile:
+            for ob in jcb_config.observations:
+                textfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{ob}_ioda_stats.txt")
+                if os.path.exists(textfile):
+                    logger.info(f"Concatenating {textfile} to {summaryfile}")
+                    with open(textfile, 'r') as infile:
+                        outfile.write(infile.read())
+                else:
+                    logger.warning(f"{textfile} does not exist to concatenate.")
+                    logger.warning("Skipping this file ...")
+
+        # Copy summary stats text file to COM
+        logger.info(f"Saving {summaryfile} to COM: {outdir}")
+        FileHandler({'copy_opt': [[summaryfile, outdir]]}).sync()
 
     @logit(logger)
     def convert_gsi_diags(self) -> None:
@@ -195,9 +197,11 @@ class AnalysisStats(Analysis):
         diag_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ges')
         diag_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_anl')
         diag_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_diags')
+        FileHandler({'mkdir': [diag_dir_path, diag_dir_ges_path, diag_dir_anl_path]}).sync()
         diag_ioda_dir_ges_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda_ges')
         diag_ioda_dir_anl_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda_anl')
         output_dir_path = os.path.join(self.task_config.DATA, 'atmos_gsi', 'atmos_gsi_ioda')
+        FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         diag_tar_copy_list = []
         for diag in diag_tars:
             input_tar_basename = f"{self.task_config.APREFIX}{diag}.tar"
@@ -209,9 +213,7 @@ class AnalysisStats(Analysis):
                 diag_tar_copy_list.append([input_tar, dest])
             else:
                 logger.warning(f"{input_tar} does not exist to copy. Skipping ...")
-        if diag_tar_copy_list:
-            FileHandler({'mkdir': [diag_dir_path]}).sync()
-            FileHandler({'copy_opt': diag_tar_copy_list}).sync()
+        FileHandler({'copy_opt': diag_tar_copy_list}).sync()
 
         # Untar and gunzip diag files
         gsi_diag_tars = glob.glob(os.path.join(diag_dir_path, f"{self.task_config.APREFIX}*stat.tar"))
@@ -234,19 +236,13 @@ class AnalysisStats(Analysis):
         copy_anl_diags = []
         for diag in anl_diags:
             copy_anl_diags.append([diag, os.path.join(diag_dir_anl_path, os.path.basename(diag))])
-        if copy_anl_diags:
-            FileHandler({'mkdir': [diag_dir_anl_path]}).sync()
-            FileHandler({'copy_opt': copy_anl_diags}).sync()
+        FileHandler({'copy_opt': copy_anl_diags}).sync()
         copy_ges_diags = []
         for diag in ges_diags:
             copy_ges_diags.append([diag, os.path.join(diag_dir_ges_path, os.path.basename(diag))])
-        if copy_ges_diags:
-            FileHandler({'mkdir': [diag_dir_ges_path]}).sync()
-            FileHandler({'copy_opt': copy_ges_diags}).sync()
+        FileHandler({'copy_opt': copy_ges_diags}).sync()
 
         # Convert GSI diag files to ioda files using gsincdiag2ioda converter scripts
-        if diag_tar_copy_list:
-            FileHandler({'mkdir': [diag_ioda_dir_ges_path, diag_ioda_dir_anl_path, output_dir_path]}).sync()
         logger.info("Converting GSI guess diag files to IODA files")
         gsid.proc_gsi_ncdiag(ObsDir=diag_ioda_dir_ges_path, DiagDir=diag_dir_ges_path)
         logger.info("Converting GSI analysis diag files to IODA files")
@@ -288,9 +284,9 @@ class AnalysisStats(Analysis):
         logger.info(f"Finished compressing GSI IODA files to {iodastatzipfile}")
         # copy to COMOUT
         outdir = self.task_config.COMOUT_ATMOS_ANALYSIS
-        dest = os.path.join(outdir, os.path.basename(iodastatzipfile))
-        if os.path.exists(iodastatzipfile):
+        if not os.path.exists(outdir):
             FileHandler({'mkdir': [outdir]}).sync()
-            logger.info(f"Copying {iodastatzipfile} to {dest}")
-            FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
+        dest = os.path.join(outdir, os.path.basename(iodastatzipfile))
+        logger.info(f"Copying {iodastatzipfile} to {dest}")
+        FileHandler({'copy_opt': [[iodastatzipfile, dest]]}).sync()
         logger.info("Finished copying GSI IODA tar file to COMOUT")
