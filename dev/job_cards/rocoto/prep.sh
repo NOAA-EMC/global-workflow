@@ -45,6 +45,9 @@ declare -rx COMOUT_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 declare -rx COMINobsproc_PREV="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
+# Prepobs still uses old HOME name
+declare -rx HOMEgfs="${HOMglobal}"
+
 mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
@@ -171,7 +174,8 @@ fi
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
     source "${USHglobal}/unset_strict.sh"
-    "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
+    # Debug level 4 looks most like the GW PS4 format (script name and line #, no secs)
+    DEBUG_LEVEL=4 "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
     source "${USHglobal}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
