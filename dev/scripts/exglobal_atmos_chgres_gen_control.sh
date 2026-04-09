@@ -77,7 +77,7 @@ cat << EOF > ./fort.41
 /
 EOF
 
-${APRUN_CHGRES} "${HOMEgfs}/sorc/ufs_utils.fd/exec/chgres_cube"
+${APRUN_CHGRES} "${EXECgfs}/chgres_cube"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "chgres_cube failed to create cold start ICs, ABORT!"
