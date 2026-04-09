@@ -1,1 +1,331 @@
-exglobal_fsm.sh-lin
+#!/bin/bash
+set -x
+
+# File Service Manager (FSM) for Global Workfow
+# WGF (Workflow Group Family Assignment) - atmos, ocean
+# RJN (Request Job Name) - prep, forecast
+previous_cycle_PDY=$(echo $($NDATE -6 ${CDATE}) | cut -c1-8)
+previous_cycle_cyc=$(echo $($NDATE -6 ${CDATE}) | cut -c9-10)
+
+# Initialize switch
+scan_release_gfs_atmos_prep="NO"
+scan_release_gdas_atmos_prep="NO"
+scan_release_gfs_marine_prepoceanobs="NO"
+scan_release_gfs_atmos_product="NO"
+scan_release_gfs_ocean_product="NO"
+scan_release_gfs_ice_product="NO"
+scan_release_gdas_atmos_product="NO"
+scan_release_gfs_wave_postsbs="NO"
+scan_release_gdas_marine_prepoceanobs="NO"
+scan_release_gdas_wave_postsbs="NO"
+scan_release_gfs_atmos_goesupp="NO"
+
+if [ ${RUN} == "gfs" ]; then
+  if [ ${RJN} == "prep" ]; then
+    if [ ${WGF} == "atmos" ]; then
+      scan_release_gfs_atmos_prep="YES"
+    elif [ ${WGF} == "marine" ]; then
+      scan_release_gfs_marine_prepoceanobs="YES"
+    fi
+  fi
+fi
+if [ ${RUN} == "gdas" ]; then
+  if [ ${RJN} == "prep" ]; then
+    if [ ${WGF} == "atmos" ]; then
+      scan_release_gdas_atmos_prep="YES"
+    elif [ ${WGF} == "marine" ]; then
+      scan_release_gdas_marine_prepoceanobs="YES"
+    fi
+  fi
+fi
+
+if [ ${RJN} == "forecast" ]; then
+  if [ ${RUN} == "gfs" ]; then
+    COMIN_ATMOS_HISTORY=${COMgfs}/gfs.${PDY}/${cyc}/model/atmos/history
+    COMIN_ATMOS_MASTER=${COMgfs}/gfs.${PDY}/${cyc}/model/atmos/master
+    COMIN_OCEAN_HISTORY=${COMgfs}/gfs.${PDY}/${cyc}/model/ocean/history
+    COMIN_WAVE_HISTORY=${COMgfs}/gfs.${PDY}/${cyc}/model/wave/history
+    COMIN_ICE_HISTORY=${COMgfs}/gfs.${PDY}/${cyc}/model/ice/history
+    scan_release_gfs_atmos_product="YES"
+    scan_release_gfs_wave_postsbs="YES"
+    scan_release_gfs_ocean_product="YES"
+    scan_release_gfs_ice_product="YES"
+    scan_release_gfs_atmos_goesupp="YES"
+    # Initialize search array
+    for fhr in $(seq 0 3 384); do
+      array_element_atmos_master[$((10#$fhr))]="NO"
+      array_element_ocean_uglo_15km[$((10#$fhr))]="NO"
+      array_element_atm_log[$((10#$fhr))]="NO"
+    done
+    for fhr in $(seq 6 6 384); do
+      array_element_ocean_6hr_avg[$((10#$fhr))]="NO"
+      array_element_ice_6hr_avg[$((10#$fhr))]="NO"
+    done
+  fi
+  if [ ${RUN} == "gdas" ]; then
+    COMIN_ATMOS_HISTORY=${COMgfs}/gdas.${PDY}/${cyc}/model/atmos/history
+    COMIN_WAVE_HISTORY=${COMgfs}/gdas.${PDY}/${cyc}/model/wave/history
+    COMIN_ATMOS_MASTER=${COMgfs}/gdas.${PDY}/${cyc}/model/atmos/master
+    scan_release_gdas_atmos_product="YES"
+    scan_release_gdas_wave_postsbs="YES"
+    for fhr in $(seq 0 9); do
+      array_element_atmos_master[$((10#$fhr))]="NO"
+      array_element_ocean_uglo_15km[$((10#$fhr))]="NO"
+    done
+  fi
+fi
+
+COMINobsproc=${COMINobsproc:-${DMPDIR}/gfs.${PDY}/${cyc}/atmos}
+COMINgdasobs=${COMINgdasobs:-${DMPDIR}/gdas.${previous_cycle_PDY}/${previous_cycle_cyc}/atmos}
+
+proceed_trigger_scan="YES"
+while [ ${proceed_trigger_scan} == "YES" ]; do
+  proceed_trigger_scan="NO"
+
+  #### release_gfs_atmos_prep
+  if [ ${scan_release_gfs_atmos_prep} == "YES" ]; then
+    echo "Proceeding with scan_release_gfs_atmos_prep"
+    if [[ -s ${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMINobsproc}/gfs.t${cyc}z.prepbufr ]]; then
+      ecflow_client --event release_gfs_atmos_prep
+      scan_release_gfs_atmos_prep="NO"
+    else
+      proceed_trigger_scan="YES"
+    fi
+  fi
+
+  #### release_gfs_marine_prepoceanobs
+  if [ ${scan_release_gfs_marine_prepoceanobs} == "YES" ]; then
+    skip_this_scan="YES"
+    echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
+    COMIN_prep_ocean_obs=${DMPDIR_ocean}/gfs.${PDY}/${cyc}/ocean
+    for ty_md in adt icec sst insitu; do
+      if [[ $(ls ${COMIN_prep_ocean_obs}/${ty_md}/*${ty_md}* | wc -l) -eq 0 ]]; then
+        skip_this_scan="NO"
+        proceed_trigger_scan="YES"
+      fi
+    done
+    if [ ${skip_this_scan} == "YES" ]; then
+      ecflow_client --event release_gfs_marine_prepoceanobs
+      scan_release_gfs_marine_prepoceanobs="NO"
+    fi
+  fi
+
+  #### release_gfs_atmos_product
+  if [ ${scan_release_gfs_atmos_product} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gfs_atmos_product="NO"
+    echo "Proceeding with scan_release_gfs_atmos_product"
+    gfs_atmos_product_group_idx_head=0
+    gfs_atmos_product_group_idx_tail=0
+
+    for fhr in $(seq 0 3 384); do
+      release_event="NO"
+      fhr_3d=$( printf "%03d" ${fhr} )
+      atmos_master=${COMIN_ATMOS_MASTER}/gfs.t${cyc}z.master.f${fhr_3d}.grib2
+      if [ ${array_element_atmos_master[$((10#$fhr))]} == "YES" ]; then
+        # If this FHR is already found and event released
+        echo "Skip found FHR${fhr_3d}"
+      else
+        if [ ${skip_this_scan} == "NO" ]; then
+          # All previous FHR were found; no need to skip
+          # Increase I/O performance by avoid redundant file search
+          if [ -s ${atmos_master} ]; then
+            # Check for the file and set ecflow event as needed
+            release_event="YES"
+            array_element_atmos_master[$((10#$fhr))]="YES"
+            ecflow_client --event release_gfs_atmos_product_f${fhr_3d}
+          fi
+        fi
+      fi
+      if [ ${skip_this_scan} == "NO" ] && [ ${release_event} == "NO" ] && [ ${array_element_atmos_master[$((10#$fhr))]} == "NO" ]; then
+        echo "FSM release_gfs_atmos_product is waiting for file: ${atmos_master}"
+        skip_this_scan="YES"
+        scan_release_gfs_atmos_product="YES"
+        proceed_trigger_scan="YES"
+      fi
+    done
+  fi
+
+  #### release_gfs_wave_postsbs
+  if [ ${scan_release_gfs_wave_postsbs} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gfs_wave_postsbs="NO"
+    echo "Proceeding with scan_release_gfs_wave_postsbs"
+    for fhr in $(seq 0 3 384); do
+      fhr_3d=$( printf "%03d" ${fhr} )
+      ocean_uglo_15km=${COMIN_WAVE_HISTORY}/gfs.t${cyc}z.uglo_15km.f${fhr_3d}.bin
+      if [ ${array_element_ocean_uglo_15km[$((10#$fhr))]} == "NO" ] && [ ${skip_this_scan} == "NO" ]; then
+        # Increase I/O performance by avoid redundant file search
+        if [ -s ${ocean_uglo_15km} ]; then
+          # Check for the file and set ecflow event as needed
+          array_element_ocean_uglo_15km[$((10#$fhr))]="YES"
+          ecflow_client --event release_gfs_wave_postsbs_f${fhr_3d}
+        fi
+      else
+        echo "FSM release_gfs_wave_postsbs is waiting for file: ${ocean_uglo_15km}"
+        # Restart the search if one of the member is not found by skip the rest
+        skip_this_scan="YES"
+        scan_release_gfs_wave_postsbs="YES"
+        proceed_trigger_scan="YES"
+      fi
+    done
+  fi
+
+  #### release_gfs_ocean_product
+  if [ ${scan_release_gfs_ocean_product} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gfs_ocean_product="NO"
+    echo "Proceeding with scan_release_gfs_ocean_product"
+    TARGET_SIZE=957349888
+    for fhr in $(seq 6 6 384); do
+      fhr_3d=$( printf "%03d" ${fhr} )
+      ocean_6hr_avg=${COMIN_OCEAN_HISTORY}/gfs.t${cyc}z.6hr_avg.f${fhr_3d}.nc
+      if [ ${array_element_ocean_6hr_avg[$((10#$fhr))]} == "NO" ] && [ ${skip_this_scan} == "NO" ]; then
+        echo "Checking on file $ocean_6hr_avg"
+        file_exist="NO"
+        if [ -s ${ocean_6hr_avg} ]; then
+          ACTUAL_SIZE=$(stat -c%s "$ocean_6hr_avg")
+          if [ "$ACTUAL_SIZE" -ge "$TARGET_SIZE" ]; then
+            file_exist="YES"
+            array_element_ocean_6hr_avg[$((10#$fhr))]="YES"
+            ecflow_client --event release_gfs_ocean_product_f${fhr_3d}
+          fi
+        fi
+        if [ ${file_exist} == "NO" ]; then
+          echo "FSM release_gfs_ocean_product is waiting for file: ${ocean_6hr_avg}"
+          skip_this_scan="YES"
+          scan_release_gfs_ocean_product="YES"
+          proceed_trigger_scan="YES"
+        fi
+      fi
+    done
+  fi
+
+  #### release_gfs_ice_product
+  if [ ${scan_release_gfs_ice_product} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gfs_ice_product="NO"
+    echo "Proceeding with scan_release_gfs_ice_product"
+    for fhr in $(seq 6 6 384); do
+      fhr_3d=$( printf "%03d" ${fhr} )
+      ice_6hr_avg=${COMIN_ICE_HISTORY}/gfs.t${cyc}z.6hr_avg.f${fhr_3d}.nc
+      if [ ${array_element_ice_6hr_avg[$((10#$fhr))]} == "NO" ] && [ ${skip_this_scan} == "NO" ]; then
+        echo "Checking on file $ice_6hr_avg"
+        if [ -s ${ice_6hr_avg} ]; then
+          array_element_ice_6hr_avg[$((10#$fhr))]="YES"
+          ecflow_client --event release_gfs_ice_product_f${fhr_3d}
+        else
+          echo "FSM release_gfs_ice_product is waiting for file: ${ice_6hr_avg}"
+          skip_this_scan="YES"
+          scan_release_gfs_ice_product="YES"
+          proceed_trigger_scan="YES"
+        fi
+      fi
+    done
+  fi
+
+  #### release_gdas_atmos_prep
+  if [ ${scan_release_gdas_atmos_prep} == "YES" ]; then
+    echo "Proceeding with scan_release_gdas_atmos_prep"
+    if [[ -s ${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMINobsproc}/gfs.t${cyc}z.prepbufr ]]; then
+      ecflow_client --event release_gdas_atmos_prep
+      scan_release_gdas_atmos_prep="NO"
+    else
+      proceed_trigger_scan="YES"
+    fi
+  fi
+
+  #### release_gdas_marine_prepoceanobs
+  if [ ${scan_release_gdas_marine_prepoceanobs} == "YES" ]; then
+    skip_this_scan="YES"
+    echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
+    COMIN_prep_ocean_obs=${DMPDIR_ocean}/gdas.${PDY}/${cyc}/ocean
+    for ty_md in adt icec sst insitu; do
+      if [[ $(ls ${COMIN_prep_ocean_obs}/${ty_md}/*${ty_md}* | wc -l) -eq 0 ]]; then
+        skip_this_scan="NO"
+        proceed_trigger_scan="YES"
+      fi
+    done
+    if [ ${skip_this_scan} == "YES" ]; then
+      ecflow_client --event release_gdas_marine_prepoceanobs
+      scan_release_gdas_marine_prepoceanobs="NO"
+    fi
+  fi
+
+  #### release_gdas_atmos_product
+  if [ ${scan_release_gdas_atmos_product} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gdas_atmos_product="NO"
+    echo "Proceeding with scan_release_gdas_atmos_product"
+    for fhr in $(seq 0 9); do
+      fhr_3d=$( printf "%03d" ${fhr} )
+      atmos_master=${COMIN_ATMOS_MASTER}/gdas.t${cyc}z.master.f${fhr_3d}.grib2
+      if [ ${array_element_atmos_master[$((10#$fhr))]} == "NO" ] && [ ${skip_this_scan} == "NO" ]; then
+        if [ -s ${atmos_master} ]; then
+          array_element_atmos_master[$((10#$fhr))]="YES"
+          ecflow_client --event release_gdas_atmos_product_f${fhr_3d}
+        else
+          echo "FSM release_gdas_atmos_product is waiting for file: ${atmos_master}"
+          # Restart the search if one of the member is not found by skip the rest
+          skip_this_scan="YES"
+          scan_release_gdas_atmos_product="YES"
+          proceed_trigger_scan="YES"
+        fi
+      fi
+    done
+  fi
+
+  #### release_gdas_wave_postsbs
+  if [ ${scan_release_gdas_wave_postsbs} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gdas_wave_postsbs="NO"
+    echo "Proceeding with scan_release_gdas_wave_postsbs"
+    for fhr in $(seq 0 9); do
+      fhr_3d=$( printf "%03d" ${fhr} )
+      ocean_uglo_15km=${COMIN_WAVE_HISTORY}/gdas.t${cyc}z.uglo_15km.f${fhr_3d}.bin
+      if [ ${array_element_ocean_uglo_15km[$((10#$fhr))]} == "NO" ] && [ ${skip_this_scan} == "NO" ]; then
+        if [ -s ${ocean_uglo_15km} ]; then 
+          array_element_ocean_uglo_15km[$((10#$fhr))]="YES"
+          ecflow_client --event release_gdas_wave_postsbs_f${fhr_3d}
+        else
+          echo "FSM release_gdas_wave_postsbs is waiting for file: ${ocean_uglo_15km}"
+          # Restart the search if one of the member is not found by skip the rest
+          skip_this_scan="YES"
+          scan_release_gdas_wave_postsbs="YES"
+          proceed_trigger_scan="YES"
+        fi
+      fi
+    done
+  fi
+
+  #### release_gfs_atmos_goesupp
+  if [ ${scan_release_gfs_atmos_goesupp} == "YES" ]; then
+    skip_this_scan="NO"
+    scan_release_gfs_atmos_goesupp="NO"
+    echo "Proceeding with scan_release_gfs_atmos_goesupp"
+    for fhr in $(seq 0 3 384); do
+      fhr_3d=$( printf "%03d" ${fhr} )
+      atm_log=${COMIN_ATMOS_HISTORY}/gfs.t${cyc}z.log.f${fhr_3d}.txt
+      if [ ${array_element_atm_log[$((10#$fhr))]} == "NO" ] && [ ${skip_this_scan} == "NO" ]; then
+        # Increase I/O performance by avoid redundant file search
+        if [ -s ${atm_log} ]; then
+          # Check for the file and set ecflow event as needed
+          array_element_atm_log[$((10#$fhr))]="YES"
+          ecflow_client --event release_gfs_atmos_goesupp_f${fhr_3d}
+        fi
+      else
+        echo "FSM release_gfs_atmos_goesupp is waiting for file: ${atm_log}"
+        # Restart the search if one of the member is not found by skip the rest
+        skip_this_scan="YES"
+        scan_release_gfs_atmos_goesupp="YES"
+        proceed_trigger_scan="YES"
+      fi
+    done
+  fi
+
+  [[ ${proceed_trigger_scan} == "YES" ]]&& sleep 30
+done		# proceed_trigger_scan
+
+
+
+exit 0
