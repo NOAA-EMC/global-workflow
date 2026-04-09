@@ -1,1 +1,0 @@
-exglobal_fsm.sh-lin

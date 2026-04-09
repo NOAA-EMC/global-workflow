@@ -1,1 +1,0 @@
-exglobal_atmos_analysis.sh-lin
