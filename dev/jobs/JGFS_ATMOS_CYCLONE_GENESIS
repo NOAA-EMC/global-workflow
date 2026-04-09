@@ -10,8 +10,8 @@ export cmodel=${RUN}
 ##############################################
 # Define COM directories
 ##############################################
-YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COMOUT_ATMOS_GENESIS:COM_ATMOS_GENESIS_TMPL
-YMD=${PDY} HH=${cyc} GRID="0p25" declare_from_tmpl -rx COMIN_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_GRID_TMPL
+declare -rx COMOUT_ATMOS_GENESIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/cyclone/genesis_vital"
+declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 
 # The following variables are used by the tracker scripts which are outside
 #   of global-workflow and therefore can't be standardized at this time
