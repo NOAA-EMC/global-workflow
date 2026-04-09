@@ -10,7 +10,10 @@ This includes:
 - Removing unused files where appropriate
 """
 import os
-from wxflow import FileHandler, Jinja
+from wxflow import FileHandler, rmdir
+# import Jinja if we add Jinja templated J-Jobs
+# from wxflow import Jinja
+import argparse
 
 # Get the absolute path of the directory containing this file
 current_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -78,18 +81,15 @@ base_job_list = [
     "JGFS_ATMOS_PGRB2_SPEC_NPOESS",
     "JGFS_ATMOS_POSTSND",
     "JGFS_ATMOS_VERIFICATION",
+    "JGLOBAL_ENKF_ARCHIVE_TARS",
+    "JGLOBAL_ENKF_ARCHIVE_VRFY",
+    "JGLOBAL_ENKF_DIAG",
+    "JGLOBAL_ENKF_ECEN",
+    "JGLOBAL_ENKF_ECEN_FV3JEDI",
+    "JGLOBAL_ENKF_SELECT_OBS",
+    "JGLOBAL_ENKF_SFC",
+    "JGLOBAL_ENKF_UPDATE",
 ]
-
-rename_job_list = {
-    "JGDAS_ENKF_ARCHIVE_TARS" : "JGLOBAL_ENKF_ARCHIVE_TARS",
-    "JGDAS_ENKF_ARCHIVE_VRFY" : "JGLOBAL_ENKF_ARCHIVE_VRFY",
-    "JGDAS_ENKF_DIAG" : "JGLOBAL_ENKF_DIAG",
-    "JGDAS_ENKF_ECEN" : "JGLOBAL_ENKF_ECEN",
-    "JGDAS_ENKF_ECEN_FV3JEDI" : "JGLOBAL_ENKF_ECEN_FV3JEDI",
-    "JGDAS_ENKF_SELECT_OBS" : "JGLOBAL_ENKF_SELECT_OBS",
-    "JGDAS_ENKF_SFC" : "JGLOBAL_ENKF_SFC",
-    "JGDAS_ENKF_UPDATE" : "JGLOBAL_ENKF_UPDATE",
-}
 
 base_script_list = [
     "exgdas_atmos_chgres_forenkf.sh",
@@ -138,17 +138,19 @@ base_script_list = [
     "exglobal_prep_sfc.sh",
     "exglobal_snow_analysis.py",
     "exglobal_snowens_analysis.py",
+    "exglobal_enkf_earc_tars.py",
+    "exglobal_enkf_earc_vrfy.py",
+    "exglobal_enkf_ecen.sh",
+    "exglobal_enkf_ecen_fv3jedi.py",
+    "exglobal_enkf_select_obs.sh",
+    "exglobal_enkf_sfc.sh",
+    "exglobal_enkf_update.sh",
 ]
 
-rename_script_list = {
-    "exgdas_enkf_earc_tars.py" : "exglobal_enkf_earc_tars.py"
-    "exgdas_enkf_earc_vrfy.py" : "exglobal_enkf_earc_vrfy.py"
-    "exgdas_enkf_ecen.sh" : "exglobal_enkf_ecen.sh"
-    "exgdas_enkf_ecen_fv3jedi.py" : "exglobal_enkf_ecen_fv3jedi.py"
-    "exgdas_enkf_select_obs.sh" : "exglobal_enkf_select_obs.sh"
-    "exgdas_enkf_sfc.sh" : "exglobal_enkf_sfc.sh"
-    "exgdas_enkf_update.sh" : "exglobal_enkf_update.sh"
-}
+# If needed, add scripts and jobs that need to be renamed when copied.
+
+rename_script_list = {}
+rename_job_list = {}
 
 def copy_files(global_workflow_dir, copy_list=[], rename_dict={}, link_or_copy='copy', file_type='job'):
     """
@@ -190,9 +192,9 @@ def copy_files(global_workflow_dir, copy_list=[], rename_dict={}, link_or_copy='
         dest_dir = os.path.join(global_workflow_dir, 'jobs')
     else:  # file_type == 'script'
         source_dir = os.path.join(global_workflow_dir, 'dev', 'scripts')
-        dest_subdir = os.path.join(global_workflow_dir, 'scripts')
-        if os.path.islink(dest_subdir):
-            os.unlink(scripts_dir)
+        dest_dir = os.path.join(global_workflow_dir, 'scripts')
+        if os.path.islink(dest_dir):
+            os.unlink(dest_dir)
 
     if not os.path.exists(source_dir):
         raise FileNotFoundError(f"Source directory not found: {source_dir}")
@@ -201,22 +203,23 @@ def copy_files(global_workflow_dir, copy_list=[], rename_dict={}, link_or_copy='
     for file in copy_list:
         if file in rename_dict:
             raise ValueError(f"File '{file}' cannot be in both copy_list and rename_dict.")
-        src_job_path = os.path.join(global_workflow_dir, 'dev', 'jobs', file)
-        if not os.path.exists(src_job_path):
-            raise FileNotFoundError(f"Source job file not found: {src_job_path}")
-        dest_job_path = os.path.join(global_workflow_dir, 'jobs', file)
-        job_file_copy_list.append((src_job_path, dest_job_path))
+        src_path = os.path.join(source_dir, file)
+        if not os.path.exists(src_path):
+            raise FileNotFoundError(f"Source job file not found: {src_path}")
+        dest_path = os.path.join(dest_dir, file)
+        job_file_copy_list.append((src_path, dest_path))
 
-    for dest_job, src_job in rename_dict.items():
-        src_job_path = os.path.join(global_workflow_dir, 'dev', 'jobs', src_job)
-        if not os.path.exists(src_job_path):
-            raise FileNotFoundError(f"Source job file not found: {src_job_path}")
-        dest_job_path = os.path.join(global_workflow_dir, 'jobs', dest_job)
-        job_file_copy_list.append((src_job_path, dest_job_path))
+    for dest_file, src_file in rename_dict.items():
+        src_path = os.path.join(source_dir, src_file)
+        if not os.path.exists(src_path):
+            raise FileNotFoundError(f"Source job file not found: {src_path}")
+        dest_path = os.path.join(dest_dir, dest_file)
+        job_file_copy_list.append((src_path, dest_path))
 
     # Create a FileHandler dictionary
+    rmdir(dest_dir, missing_ok=True)
     job_file_handler = {
-        'mkdir': [os.path.join(global_workflow_dir, 'jobs')],
+        'mkdir': [dest_dir],
         link_or_copy: job_file_copy_list,
     }
     # Execute the file operations
@@ -239,13 +242,13 @@ def remove_unused_executables(global_workflow_dir):
     list
         List of files that were successfully removed
     """
+    # TODO Expand this list to include all GFS executables
     desired_executables = [
         "calc_analysis.x",
         "calc_increment_ens_ncio.x",
         "enkf_chgres_recenter_nc.x",
         "gaussian_sfcanl.x",
         "gfs_model.x",
-        "gdas_fv3jedi_chem_diagb.x",
         "gdas_fv3jedi_error_covariance_toolbox.x",
         "gdas_ioda-stats.x",
         "gdas_obsprovider2ioda.x",
@@ -288,52 +291,32 @@ def setup_gfs_for_nco(link_or_copy='copy'):
     job_file_copy_list = copy_files(global_workflow_dir, copy_list=base_job_list, rename_dict=rename_job_list, link_or_copy=link_or_copy, file_type='job')
 
     # Next, copy ex-scripts from dev/scripts to the global workflow directory
-    ex_script_file_copy_list = copy_script_files(global_workflow_dir, copy_list=base_script_list, rename_dict=rename_script_list, link_or_copy=link_or_copy, file_type='script')
+    ex_script_file_copy_list = copy_files(global_workflow_dir, copy_list=base_script_list, rename_dict=rename_script_list, link_or_copy=link_or_copy, file_type='script')
 
     # Remove unused executables from the exec directory
-    removed_files = remove_unused_executables(global_workflow_dir)
+    # TODO Call this when the full list of exectutubles to keep is known.
+    # removed_files = remove_unused_executables(global_workflow_dir)
 
     # Go through the copied job files and replace the scripts they call as appropriate
     jobs_dir = os.path.join(global_workflow_dir, 'jobs')
-    for job_name in list(gfs_jobs.keys()) + list(gcdas_jobs.keys()):
-
-    # Render the JGLOBAL_FORECAST.j2 template for both GCDAS and GCAFS
-    template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_FORECAST.j2')
-    for RUN in ['gcafs', 'gcdas']:
-        dest_job_path = os.path.join(global_workflow_dir, 'jobs', f"J{RUN.upper()}_FORECAST")
-        Jinja(template_path, {'RUN': RUN}).save(dest_job_path)
-        print(f"Rendered template for {RUN.upper()} and saved to {dest_job_path}")
-        os.chmod(dest_job_path, 0o755)
-
-    # Render the surface analysis template
-    surface_template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_ATMOS_SFCANL.j2')
-    dest_surface_job_path = os.path.join(global_workflow_dir, 'jobs', "JGCDAS_SURFACE_INITIALIZE")
-    Jinja(surface_template_path, {'RUN': 'gcdas'}).save(dest_surface_job_path)
-    print(f"Rendered surface analysis template and saved to {dest_surface_job_path}")
-    os.chmod(dest_surface_job_path, 0o755)
-
-    # Render the offline atmospheric analysis template
-    offline_atmos_template_path = os.path.join(global_workflow_dir, 'dev', 'jobs', 'JGLOBAL_OFFLINE_ATMOS_ANALYSIS.j2')
-    dest_offline_atmos_job_path = os.path.join(global_workflow_dir, 'jobs', "JGCDAS_ATMOS_INITIALIZE")
-    Jinja(offline_atmos_template_path, {'RUN': 'gcdas'}).save(dest_offline_atmos_job_path)
-    print(f"Rendered offline atmospheric analysis template and saved to {dest_offline_atmos_job_path}")
-    os.chmod(dest_offline_atmos_job_path, 0o755)
-
-    # Now for all jobs, we need a line that exports HOMEglobal
-    for job_name in os.listdir(jobs_dir):
-        job_file_path = os.path.join(jobs_dir, job_name)
-        if not os.path.isfile(job_file_path):
-            continue
-        with open(job_file_path, 'r') as f:
-            lines = f.readlines()
-        if lines and lines[0].startswith('#!'):
-            export_line = 'export HOMEglobal="${HOMEgcafs}"\n'
-            if len(lines) < 2 or lines[1] != export_line:
-                lines.insert(1, export_line)
-                with open(job_file_path, 'w') as f:
-                    f.writelines(lines)
-                print(f"Added HOMEglobal export to {job_name}")
+    for job_name in list(rename_job_list.keys()):
+        job_path = os.path.join(jobs_dir, job_name)
+        if os.path.exists(job_path):
+            with open(job_path, 'r') as f:
+                job_contents = f.read()
+            for script_name in list(rename_script_list.keys()):
+                job_contents = job_contents.replace(rename_script_list[script_name], script_name)
+            with open(job_path, 'w') as f:
+                f.write(job_contents)
+        else:
+            print(f"Warning: Job file not found for script replacement: {job_path}")
 
 
 if __name__ == "__main__":
-    setup_gcafs_for_nco()
+    #setup_gcafs_for_nco()
+    # Get command line argument for whether to copy or link files, default to 'copy'
+    parser = argparse.ArgumentParser(description="Set up GFS workflow for NCO by copying or linking necessary files from dev to the global workflow directory.")
+    parser.add_argument('--link', action='store_true', )
+    args = parser.parse_args()
+    link_or_copy = 'link' if args.link else 'copy'
+    setup_gfs_for_nco(link_or_copy=link_or_copy)
