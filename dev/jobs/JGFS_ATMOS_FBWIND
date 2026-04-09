@@ -1,5 +1,4 @@
 #! /usr/bin/env bash
-set -x
 
 # TODO (#1221) This job is not part of the rocoto suite
 
