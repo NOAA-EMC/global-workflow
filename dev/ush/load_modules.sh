@@ -15,6 +15,7 @@ fi
 
 if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
+    set +x
 fi
 
 # Parse module type argument
