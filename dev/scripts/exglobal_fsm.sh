@@ -5,8 +5,8 @@ set -x
 # WGF (Workflow Group Family Assignment) - atmos, ocean
 # RJN (Request Job Name) - prep, forecast
 previous_cycle=$("${NDATE}" -6 "${CDATE}")
-previous_cycle_PDY=${previous_cycle:0:8}
-previous_cycle_cyc=${previous_cycle:8:2}
+previous_cycle_PDY="${previous_cycle:0:8}"
+previous_cycle_cyc="${previous_cycle:8:2}"
 
 # Initialize switch
 scan_release_gfs_atmos_prep="NO"
@@ -116,8 +116,6 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="NO"
         scan_release_gfs_atmos_product="NO"
         echo "Proceeding with scan_release_gfs_atmos_product"
-        gfs_atmos_product_group_idx_head=0
-        gfs_atmos_product_group_idx_tail=0
 
         for fhr in $(seq 0 3 384); do
             release_event="NO"
@@ -160,7 +158,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ -s "${ocean_uglo_15km}" ]]; then
                     # Check for the file and set ecflow event as needed
                     array_element_ocean_uglo_15km[fhr]="YES"
-                    ecflow_client --event release_gfs_wave_postsbs_f${fhr_3d}
+                    ecflow_client --event "release_gfs_wave_postsbs_f${fhr_3d}"
                 fi
             else
                 echo "FSM release_gfs_wave_postsbs is waiting for file: ${ocean_uglo_15km}"
@@ -189,7 +187,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ "${ACTUAL_SIZE}" -ge "${TARGET_SIZE}" ]]; then
                         file_exist="YES"
                         array_element_ocean_6hr_avg[fhr]="YES"
-                        ecflow_client --event release_gfs_ocean_product_f${fhr_3d}
+                        ecflow_client --event "release_gfs_ocean_product_f${fhr_3d}"
                     fi
                 fi
                 if [[ "${file_exist}" == "NO" ]]; then
@@ -214,7 +212,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 echo "Checking on file ${ice_6hr_avg}"
                 if [[ -s "${ice_6hr_avg}" ]]; then
                     array_element_ice_6hr_avg[fhr]="YES"
-                    ecflow_client --event release_gfs_ice_product_f${fhr_3d}
+                    ecflow_client --event "release_gfs_ice_product_f${fhr_3d}"
                 else
                     echo "FSM release_gfs_ice_product is waiting for file: ${ice_6hr_avg}"
                     skip_this_scan="YES"
@@ -264,7 +262,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             if [[ "${array_element_atmos_master[fhr]}" == "NO" ]] && [[ "${skip_this_scan}" == "NO" ]]; then
                 if [[ -s "${atmos_master}" ]]; then
                     array_element_atmos_master[fhr]="YES"
-                    ecflow_client --event release_gdas_atmos_product_f${fhr_3d}
+                    ecflow_client --event "release_gdas_atmos_product_f${fhr_3d}"
                 else
                     echo "FSM release_gdas_atmos_product is waiting for file: ${atmos_master}"
                     # Restart the search if one of the member is not found by skip the rest
@@ -287,7 +285,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             if [[ "${array_element_ocean_uglo_15km[fhr]}" == "NO" ]] && [[ "${skip_this_scan}" == "NO" ]]; then
                 if [[ -s "${ocean_uglo_15km}" ]]; then
                     array_element_ocean_uglo_15km[fhr]="YES"
-                    ecflow_client --event release_gdas_wave_postsbs_f${fhr_3d}
+                    ecflow_client --event "release_gdas_wave_postsbs_f${fhr_3d}"
                 else
                     echo "FSM release_gdas_wave_postsbs is waiting for file: ${ocean_uglo_15km}"
                     # Restart the search if one of the member is not found by skip the rest
@@ -312,7 +310,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ -s "${atm_log}" ]]; then
                     # Check for the file and set ecflow event as needed
                     array_element_atm_log[fhr]="YES"
-                    ecflow_client --event release_gfs_atmos_goesupp_f${fhr_3d}
+                    ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
                 fi
             else
                 echo "FSM release_gfs_atmos_goesupp is waiting for file: ${atm_log}"
@@ -324,7 +322,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         done
     fi
 
-    [[ "${proceed_trigger_scan}" == "YES" ]] && sleep 30
+    if [[ "${proceed_trigger_scan}" == "YES" ]]; then
+        sleep 30
+    fi
 done # proceed_trigger_scan
 
 exit 0
