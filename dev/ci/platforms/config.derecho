@@ -1,57 +1,58 @@
 #!/usr/bin/bash
 
 #########################################################################
-# config.ursa - Platform-specific configuration for Ursa
+# config.derecho - Platform-specific configuration for Derecho
 #
 # This file contains environment variables used by CI/CD scripts,
-# directories, and settings specific to the Ursa platform.
+# directories, and settings specific to the Derecho platform.
 #########################################################################
 
 # Main CI root directory - Base directory for all CI/CD operations
-export GFS_CI_ROOT=null
+export GFS_CI_ROOT="/glade/derecho/scratch/epicufsrt/GFS_CI_CD"
 
-# ICSDIR root directory - Contains initial condition data
-# Used by create_experiment.py for setting up test cases
-export ICSDIR_ROOT=/lustre/desc1/p/nral0032/global/data/ICSDIR
-
+# BASE_IC directory - Platform home for staged initial conditions
+# Used by case yaml files for setting up the IC path
+export BASE_IC="/lustre/desc1/p/nral0032/global/data/ICSDIR"
 
 #########################################################################
 # Jenkins configuration settings
 #########################################################################
 
 # JENKINS launch directory for agent - Where Jenkins agents are launched from
-export JENKINS_AGENT_LAUNCH_DIR=${GFS_CI_ROOT}/Jenkins/agent
+export JENKINS_AGENT_LAUNCH_DIR="${GFS_CI_ROOT}/Jenkins/agent"
 
 # JENKINS internal working directories for CI jobs (not for users use)
 # Where Jenkins stores temporary files during CI job execution
-export JENKINS_WORK_DIR=${GFS_CI_ROOT}/Jenkins/workspace
+export JENKINS_WORK_DIR="${GFS_CI_ROOT}/Jenkins/workspace"
 
 # NOTE: JENKINS custom_workspace directory where CI jobs are run
-# and is defined in $HOMEglobal/dev/ci/Jenkinsfile as custom_workspace
-# /scratch3/NCEPDEV/global/role.glopara/CI
+# /gpfs/f6/drsa-precip3/proj-shared/global/CI
+# and is defined in $HOMEglobal/dev/ci/Jenkinsfile
 
 
 #########################################################################
 # GitLab CI configuration
 # These variables are referenced directly by launch_gitlab_runner.sh
 #########################################################################
-
 # Used in the 'register' step of launch_gitlab_runner.sh for --url parameter
 export GITLAB_URL=https://vlab.noaa.gov/gitlab-community
-export GITLAB_RUNNER_NAME="RDHPCS Derecho Runner"
+export GITLAB_RUNNER_NAME="global-workflow-gitlab-runner-derecho"
 
 # Directory for GitLab builds
-# Used in launch_gitlab_runner.sh for the --builds-dir parameter
-# This works with --custom_build_dir-enabled=true to allow GIT_CLONE_PATH override
-# from .gitlab-ci.yml to specify exact clone locations within this directory
-export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+# Used in launch_gitlab_runner.sh for location of builds
+export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/DERECHO/Gitlab/BUILD
 
 # Directory for GitLab runner used by launch_gitlab_runner.sh
-# This is where runner state/config files are stored (--working-directory parameter)
 export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
 
+# Port for GitLab Runner's embedded Prometheus metrics endpoint
+# Used by launch_gitlab_runner.sh for liveness health checks
+# Default: 9252 (IANA-allocated for GitLab Runner in Prometheus port registry)
+# Bound to localhost only — not exposed to the network
+export GITLAB_RUNNER_METRICS_PORT=9252
+
 #########################################################################
-# CTest functional test directories for pre stagged input data
+# CTest functional test directories for pre-staged input data
 #########################################################################
 export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 
@@ -59,12 +60,12 @@ export STAGED_CTESTS=${GITLAB_BUILDS_DIR}/stable/RUNTESTS
 #########################################################################
 # CI CRON system configuration
 #########################################################################
-export GW_BASH_CI_ROOT=${GFS_CI_ROOT}/GFS_BASH_CI
-export max_concurrent_cases=5
-export max_concurrent_pr=4
+export GFS_BASH_CI_ROOT="${GFS_CI_ROOT}/GFS_BASH_CI"
+export max_concurrent_cases=5 # number of concurrent cases that can run simultaneously
+export max_concurrent_pr=4    # number of concurrent pull requests
 
-# HPC account which overides the default account
-export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
+# HPC account information - For job submission
+export HPC_ACCOUNT=${HPC_ACCOUNT:-nral0032}
 
 #########################################################################
 # System-specific settings
@@ -72,7 +73,7 @@ export HPC_ACCOUNT=${HPC_ACCOUNT:-fv3-cpu}
 #########################################################################
 
 # Utilities path for custom builds and role account tools
-export GFS_CI_UTIL_PATH="null"
+export GFS_CI_UTIL_PATH="/lustre/desc1/p/nral0032/global/utils"
 
-# used for CI jobs requiring Rocoto with dry_run support
-export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/src/rocoto-1.3.7-dryrun_nodaemon/bin"
+# Custom Rocoto build path for testing
+export GFS_CI_ROCOTO_PATH="${GFS_CI_UTIL_PATH}/rocoto_dryrun_nodaemon/bin"
