@@ -608,15 +608,15 @@ suite gfs_v17
             edit WGF 'wave'
             task jgfs_wave_postsbs_f000
               edit FHR '000'
-              edit FHR_LIST '0' 
+              edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f000
             task jgfs_wave_postsbs_f003
-              edit FHR '003'    
-              edit FHR_LIST '3' 
+              edit FHR '003'
+              edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f003
             task jgfs_wave_postsbs_f006
               edit FHR '006'
-              edit FHR_LIST '6' 
+              edit FHR_LIST '6'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f006
             task jgfs_wave_postsbs_f009
               edit FHR '009'
@@ -1138,11 +1138,11 @@ suite gfs_v17
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_product_f000
-              edit FHR '000'    
+              edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_product_f003
-              edit FHR '003'    
+              edit FHR '003'
               edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f003
             task jgfs_atmos_product_f006
@@ -3972,7 +3972,7 @@ suite gfs_v17
               edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
-            task jgdas_atmos_product_f001 
+            task jgdas_atmos_product_f001
               edit FHR '001'
               edit FHR_LIST '1'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f001
@@ -4350,7 +4350,7 @@ suite gfs_v17
           task jenkfgdas_fcst_mem079
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
-          task jenkfgdas_fcst_mem080              
+          task jenkfgdas_fcst_mem080
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
         endfamily		//forecast
@@ -4980,15 +4980,15 @@ suite gfs_v17
             edit WGF 'wave'
             task jgfs_wave_postsbs_f000
               edit FHR '000'
-              edit FHR_LIST '0' 
+              edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f000
             task jgfs_wave_postsbs_f003
-              edit FHR '003'    
-              edit FHR_LIST '3' 
+              edit FHR '003'
+              edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f003
             task jgfs_wave_postsbs_f006
               edit FHR '006'
-              edit FHR_LIST '6' 
+              edit FHR_LIST '6'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f006
             task jgfs_wave_postsbs_f009
               edit FHR '009'
@@ -5510,11 +5510,11 @@ suite gfs_v17
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_product_f000
-              edit FHR '000'    
+              edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_product_f003
-              edit FHR '003'    
+              edit FHR '003'
               edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f003
             task jgfs_atmos_product_f006
@@ -8344,7 +8344,7 @@ suite gfs_v17
               edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
-            task jgdas_atmos_product_f001 
+            task jgdas_atmos_product_f001
               edit FHR '001'
               edit FHR_LIST '1'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f001
@@ -8722,7 +8722,7 @@ suite gfs_v17
           task jenkfgdas_fcst_mem079
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
-          task jenkfgdas_fcst_mem080              
+          task jenkfgdas_fcst_mem080
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
         endfamily		//forecast
@@ -9352,15 +9352,15 @@ suite gfs_v17
             edit WGF 'wave'
             task jgfs_wave_postsbs_f000
               edit FHR '000'
-              edit FHR_LIST '0' 
+              edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f000
             task jgfs_wave_postsbs_f003
-              edit FHR '003'    
-              edit FHR_LIST '3' 
+              edit FHR '003'
+              edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f003
             task jgfs_wave_postsbs_f006
               edit FHR '006'
-              edit FHR_LIST '6' 
+              edit FHR_LIST '6'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f006
             task jgfs_wave_postsbs_f009
               edit FHR '009'
@@ -9882,11 +9882,11 @@ suite gfs_v17
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_product_f000
-              edit FHR '000'    
+              edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_product_f003
-              edit FHR '003'    
+              edit FHR '003'
               edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f003
             task jgfs_atmos_product_f006
@@ -12716,7 +12716,7 @@ suite gfs_v17
               edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
-            task jgdas_atmos_product_f001 
+            task jgdas_atmos_product_f001
               edit FHR '001'
               edit FHR_LIST '1'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f001
@@ -13094,7 +13094,7 @@ suite gfs_v17
           task jenkfgdas_fcst_mem079
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
-          task jenkfgdas_fcst_mem080              
+          task jenkfgdas_fcst_mem080
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
         endfamily		//forecast
@@ -13724,15 +13724,15 @@ suite gfs_v17
             edit WGF 'wave'
             task jgfs_wave_postsbs_f000
               edit FHR '000'
-              edit FHR_LIST '0' 
+              edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f000
             task jgfs_wave_postsbs_f003
-              edit FHR '003'    
-              edit FHR_LIST '3' 
+              edit FHR '003'
+              edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f003
             task jgfs_wave_postsbs_f006
               edit FHR '006'
-              edit FHR_LIST '6' 
+              edit FHR_LIST '6'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_wave_postsbs_f006
             task jgfs_wave_postsbs_f009
               edit FHR '009'
@@ -14254,11 +14254,11 @@ suite gfs_v17
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_product_f000
-              edit FHR '000'    
+              edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_product_f003
-              edit FHR '003'    
+              edit FHR '003'
               edit FHR_LIST '3'
               trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f003
             task jgfs_atmos_product_f006
@@ -17088,7 +17088,7 @@ suite gfs_v17
               edit FHR '000'
               edit FHR_LIST '0'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
-            task jgdas_atmos_product_f001 
+            task jgdas_atmos_product_f001
               edit FHR '001'
               edit FHR_LIST '1'
               trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f001
@@ -17466,7 +17466,7 @@ suite gfs_v17
           task jenkfgdas_fcst_mem079
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
-          task jenkfgdas_fcst_mem080              
+          task jenkfgdas_fcst_mem080
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
         endfamily		//forecast
