@@ -128,6 +128,7 @@ base_script_list = [
     "exglobal_fetch.py",
     "exglobal_forecast.sh",
     "exglobal_marine_analysis_checkpoint.py",
+    "exglobal_marine_analysis_ecen.py",
     "exglobal_marine_analysis_finalize.py",
     "exglobal_marine_analysis_initialize.py",
     "exglobal_marine_analysis_variational.py",
