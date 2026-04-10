@@ -18,7 +18,8 @@
 # Environment variables:
 #           USE_CFP: If set to YES, run in MPMD mode, else run in serial mode. Default is 'NO'.
 #           launcher: Command to launch the MPMD job. Default is empty.
-#                     Supported launchers are 'srun' and 'mpiexec'.
+#                     Supported launchers are 'srun', 'mpiexec', and 'mpirun'. See note below
+#                     about difference between mpiexec and mpirun.
 #           mpmd_opt: Additional options to pass to the launcher. Default is empty.
 #                     Example:
 #                            srun: "--multi-prog --output=mpmd.%j.%t.out"
@@ -30,6 +31,13 @@
 # Command line:
 #           run_mpmd.sh cmdfile
 #
+# Implementation note:
+#           On most machines, mpiexec and mpirun are aliased to the same command. However,
+#           the way MPMD is implemented varies across machines, even when both use mpiexec.
+#           To accomodate this, mpiexec is used for the variant used on WCOSS where redirects
+#           are permitted in the configfile, and mpirun is used for the variant used on Derecho
+#           where a wrapper is needed for redirects.
+#
 ################################################################################
 
 cmdfile=${1:?"run_mpmd requires an input file containing commands to execute in MPMD/serial mode"}
@@ -39,14 +47,18 @@ if [[ "${launcher:-}" =~ ^srun.* ]]; then #  srun-based system e.g. Hera, Orion,
     _mpmd_launcher=srun
 elif [[ "${launcher:-}" =~ ^mpiexec.* ]]; then # mpiexec-based system e.g. WCOSS2
     _mpmd_launcher=mpiexec
+elif [[ "${launcher:-}" =~ ^mpirun.* ]]; then # mpiexec-based system e.g. Derecho
+    _mpmd_launcher=mpirun
 else
     echo "WARNING: Unsupported or empty launcher: '${launcher:-}', using serial mode instead"
-    echo "         Supported launchers are 'srun' and 'mpiexec'"
+    echo "         Supported launchers are 'srun', 'mpiexec', and 'mpirun'"
     _mpmd_launcher=unsupported
 fi
 
 # Check if we are running a supported launcher
-if [[ "${_mpmd_launcher}" == "srun" || "${_mpmd_launcher}" == "mpiexec" ]]; then
+if [[ "${_mpmd_launcher}" == "unsupported" ]]; then
+    USE_CFP="NO"
+else
     echo "INFO: Detected launcher '${_mpmd_launcher}', will attempt to run in MPMD mode if USE_CFP is set to YES"
     if [[ -z "${max_tasks_per_node:-}" || -z "${ntasks:-}" ]]; then
         echo "WARNING: max_tasks_per_node and/or ntasks is not set, disabling MPMD mode."
@@ -55,8 +67,6 @@ if [[ "${_mpmd_launcher}" == "srun" || "${_mpmd_launcher}" == "mpiexec" ]]; then
         USE_CFP=${USE_CFP:-"NO"}
         max_tasks_per_node=$((ntasks < max_tasks_per_node ? ntasks : max_tasks_per_node))
     fi
-else
-    USE_CFP="NO"
 fi
 
 # If USE_CFP is not set or is not YES, run in serial mode
@@ -70,8 +80,8 @@ if [[ "${USE_CFP}" != "YES" ]]; then
 fi
 
 # Some mpiexec implementations do not respect stdout redirection so make
-# a wrapper. This method should be valid across all implementations
-if [[ ${_mpmd_launcher} == mpiexec ]]; then
+# a wrapper. This alternative is used when mpirun alias is launcher.
+if [[ ${_mpmd_launcher} == mpirun ]]; then
     wrapper_script="stdout_wrapper.sh"
     rm -f "${wrapper_script}"
     cat << 'EOF' > "${wrapper_script}"
@@ -133,7 +143,9 @@ chunk_mpmd() {
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
                 echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${wrapper_script} ${line} mpmd.${i}.out" >> "${chunk_file}"
+                echo "${line} > mpmd.${i}.out" 2>&1 >> "${chunk_file}"
+            elif [[ "${_mpmd_launcher}" == "mpirun" ]]; then
+                echo "-n 1 ${wrapper_script} ${line} mpmd.${i}.out" >> "${chunk_file}"
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then
@@ -217,7 +229,10 @@ for ((i = 0; i < nm; i += chunk_size)); do
         source "${USHglobal}/set_strict.sh"
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # shellcheck disable=SC2086
-        ${launcher:-} -np 1 ${mpmd_opt:-} "${chunk_file}"
+        ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+    elif [[ "${_mpmd_launcher}" == "mpirun" ]]; then
+        # shellcheck disable=SC2086
+        ${launcher:-} ${mpmd_opt:-} "${chunk_file}"
     fi
     err=$?
     if [[ ${err} -ne 0 ]]; then
