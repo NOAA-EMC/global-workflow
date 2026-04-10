@@ -143,7 +143,7 @@ chunk_mpmd() {
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
                 echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${line} > mpmd.${i}.out" 2>&1 >> "${chunk_file}"
+                echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpirun" ]]; then
                 echo "-n 1 ${wrapper_script} ${line} mpmd.${i}.out" >> "${chunk_file}"
             fi
