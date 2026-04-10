@@ -74,7 +74,7 @@ rm -f jgfs_ocean_product_f*.ecf
 fhr_end=384
 fhr_start=6
 while [ ${fhr_start} -le ${fhr_end} ]; do
-    head_3d=$(printf "%03d" "${fhr_start})"
+    head_3d=$(printf "%03d" "${fhr_start}")
     cp jgfs_ocean_product_master.ecf "jgfs_ocean_product_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 6))
     add_to_tmpfile "${ECF_DIR}/scripts/gfs/product/ocean/jgfs_ocean_product_f${head_3d}.ecf"
@@ -87,7 +87,7 @@ rm -f jgfs_ice_product_f*.ecf
 fhr_end=384
 fhr_start=6
 while [ ${fhr_start} -le ${fhr_end} ]; do
-    head_3d=$(printf "%03d" "${fhr_start})"
+    head_3d=$(printf "%03d" "${fhr_start}")
     cp jgfs_ice_product_master.ecf "jgfs_ice_product_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 6))
     add_to_tmpfile "${ECF_DIR}/scripts/gfs/product/ice/jgfs_ice_product_f${head_3d}.ecf"
