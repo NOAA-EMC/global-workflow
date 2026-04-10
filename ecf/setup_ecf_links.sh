@@ -51,7 +51,7 @@ while [ $fhr_start -le $fhr_end ]; do
   head_3d=$( printf "%03d" ${fhr_start} )
   cp jgfs_wave_postsbs_master.ecf jgfs_wave_postsbs_f${head_3d}.ecf
   fhr_start=$(( fhr_start+3 ))
-  add_to_tmpfile "$ECF_DIR/scripts/gfs/post/wave/jgfs_wave_postsbs_f${$head_3d}.ecf
+  add_to_tmpfile "${ECF_DIR}/scripts/gfs/post/wave/jgfs_wave_postsbs_f${head_3d}.ecf
 done
 
 # gfs atmos product files
