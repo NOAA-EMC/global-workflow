@@ -4,7 +4,6 @@ set -eux
 module load prod_util
 
 # GFS ecflow workflow resource configuration
-resource_config="EMC"
 ECF_DIR=$(pwd)
 
 # Create tmp file for git exclude
@@ -15,7 +14,7 @@ tmp_exclude="${ECF_DIR}/exclude_list.tmp"
 function link_master_to_fhr() {
     tmpl=${1} # Name of the master template
     fhrs=${2} # Array of forecast hours
-    for fhr in ${fhrs[@]}; do
+    for fhr in "${fhrs[@]}"; do
         fhrchar=$(printf %03d "${fhr}")
         master="${tmpl}_master.ecf"
         target="${tmpl}_f${fhrchar}.ecf"
