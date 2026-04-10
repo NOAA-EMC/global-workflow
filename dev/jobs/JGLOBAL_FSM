@@ -11,17 +11,18 @@ set -xue
 export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
+mkdir -p "${DATA}"
 cd "${DATA}"
 export cycle="t${cyc}z"
 setpdy.sh
 source ./PDY
 export CDATE="${PDY}${cyc}"
 
-${HOMEgfs}/scripts/exglobal_fsm.sh
+"${HOMEgfs}"/scripts/exglobal_fsm.sh
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-  err_exit "Failed to run the files system manager for!"
+    err_exit "Failed to run the files system manager for!"
+fi
 
 ##################################################
 # Remove the Temporary working directory
