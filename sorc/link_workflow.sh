@@ -156,6 +156,7 @@ fi
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEgfs}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
+${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" .
 
 cd "${HOMEgfs}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/parm/params_grib2_tbl_new" .
@@ -208,12 +209,38 @@ for file in "${ufs_templates[@]}"; do
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
+# Link the CCPP suite XML files from ufs-weather-model
+declare -a ccpp_suites=(
+    "suite_FV3_global_nest_v1.xml"
+    "suite_FV3_GFS_v17_p8_ugwpv1.xml"
+    "suite_FV3_GFS_v17_coupled_p8_ugwpv1.xml"
+)
+if [[ -d "${HOMEgfs}/sorc/ufs_model.fd/UFSATM/ccpp/suites" ]]; then
+    for suite_file in "${ccpp_suites[@]}"; do
+        src="${HOMEgfs}/sorc/ufs_model.fd/UFSATM/ccpp/suites/${suite_file}"
+        [[ -f "${src}" ]] || continue
+        if [[ -s "${suite_file}" ]]; then
+            rm -f "${suite_file}"
+        fi
+        ${LINK_OR_COPY} "${src}" .
+    done
+fi
+
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEgfs}/ush" || exit 1
 if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/tests/atparse.bash" .
+
+# Link UPP modulefiles for module loading
+cd "${HOMEgfs}/modulefiles" || exit 1
+if [[ -d "${HOMEgfs}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" ]]; then
+    if [[ -d "upp" ]]; then
+        rm -rf "upp"
+    fi
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" upp
+fi
 
 # add ufs_utils parm dir
 if [[ -d "${HOMEgfs}/sorc/ufs_utils.fd" ]]; then
@@ -406,7 +433,7 @@ if [[ -s "upp.x" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEgfs}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
+for ufs_utilsexe in chgres_cube emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
     if [[ -s "${ufs_utilsexe}" ]]; then
         rm -f "${ufs_utilsexe}"
     fi
