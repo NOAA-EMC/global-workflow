@@ -1,5 +1,3 @@
-#!/bin/bash -l
-
 model=gfs
 %include <head.h>
 %include <envir-p1.h>
