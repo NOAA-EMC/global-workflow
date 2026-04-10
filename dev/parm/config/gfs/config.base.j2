@@ -488,7 +488,13 @@ export binary_diag=".false."
 export DO_CA="YES"
 
 # Verification options
-export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
+# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
+# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
+# export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
+case "${machine}" in
+    URSA | GAEAC6 | ORION | HERCULES | DERECHO) export DO_METP=NO;;
+    *) export DO_METP="{{ DO_METP }}";;
+esac
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
 #--online archive of netcdf files for fit2obs verification
@@ -520,16 +526,6 @@ else
    if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
-fi
-
-# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
-# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
-if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
-    export DO_METP=NO
-fi
-
-if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" || "${machine}" == "DERECHO" ]]; then
-    export DO_METP=NO
 fi
 
 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
