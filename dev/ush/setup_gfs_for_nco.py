@@ -152,6 +152,7 @@ base_script_list = [
 rename_script_list = {}
 rename_job_list = {}
 
+
 def copy_files(global_workflow_dir, copy_list=[], rename_dict={}, link_or_copy='copy', file_type='job'):
     """
     Copy or link job files from dev/jobs to jobs directory with optional renaming.
@@ -291,7 +292,11 @@ def setup_gfs_for_nco(link_or_copy='copy'):
     job_file_copy_list = copy_files(global_workflow_dir, copy_list=base_job_list, rename_dict=rename_job_list, link_or_copy=link_or_copy, file_type='job')
 
     # Next, copy ex-scripts from dev/scripts to the global workflow directory
-    ex_script_file_copy_list = copy_files(global_workflow_dir, copy_list=base_script_list, rename_dict=rename_script_list, link_or_copy=link_or_copy, file_type='script')
+    ex_script_file_copy_list = copy_files(
+            global_workflow_dir, copy_list=base_script_list,
+            rename_dict=rename_script_list,
+            link_or_copy=link_or_copy,
+            file_type='script')
 
     # Remove unused executables from the exec directory
     # TODO Call this when the full list of exectutubles to keep is known.
@@ -313,7 +318,6 @@ def setup_gfs_for_nco(link_or_copy='copy'):
 
 
 if __name__ == "__main__":
-    #setup_gcafs_for_nco()
     # Get command line argument for whether to copy or link files, default to 'copy'
     parser = argparse.ArgumentParser(description="Set up GFS workflow for NCO by copying or linking necessary files from dev to the global workflow directory.")
     parser.add_argument('--link', action='store_true', )
