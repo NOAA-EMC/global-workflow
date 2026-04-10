@@ -16,7 +16,8 @@ export cyc="%CYC%"
 ############################################################
 # Load modules
 ############################################################
-source ${HOMEgfs}/ush/load_modules.sh ufswm
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
 
 module list
 ############################################################
