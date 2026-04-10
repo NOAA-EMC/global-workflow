@@ -100,7 +100,10 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
         COMIN_prep_ocean_obs="${DMPDIR_ocean}/gfs.${PDY}/${cyc}/ocean"
         for ty_md in adt icec sst insitu; do
-            if [[ $(ls "${COMIN_prep_ocean_obs}/${ty_md}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
+            # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
+            tty_files=( "${COMIN_prep_ocean_obs}/${ty_md}"/*"${ty_md}"* )
+            count_tty=${#tty_files[@]}
+            if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
                 proceed_trigger_scan="YES"
             fi
@@ -240,7 +243,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
         COMIN_prep_ocean_obs="${DMPDIR_ocean}/gdas.${PDY}/${cyc}/ocean"
         for ty_md in adt icec sst insitu; do
-            if [[ $(ls ${COMIN_prep_ocean_obs}/${ty_md}/*${ty_md}* | wc -l) -eq 0 ]]; then
+            tty_files=( "${COMIN_prep_ocean_obs}/${ty_md}"/*"${ty_md}"* )
+            count_tty=${#tty_files[@]}
+            if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
                 proceed_trigger_scan="YES"
             fi
