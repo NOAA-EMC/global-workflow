@@ -293,10 +293,10 @@ def setup_gfs_for_nco(link_or_copy='copy'):
 
     # Next, copy ex-scripts from dev/scripts to the global workflow directory
     ex_script_file_copy_list = copy_files(
-            global_workflow_dir, copy_list=base_script_list,
-            rename_dict=rename_script_list,
-            link_or_copy=link_or_copy,
-            file_type='script')
+        global_workflow_dir, copy_list=base_script_list,
+        rename_dict=rename_script_list,
+        link_or_copy=link_or_copy,
+        file_type='script')
 
     # Remove unused executables from the exec directory
     # TODO Call this when the full list of exectutubles to keep is known.
