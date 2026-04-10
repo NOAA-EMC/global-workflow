@@ -21,6 +21,10 @@ case ${step} in
         export tasks_per_node=${max_tasks_per_node}
         ;;
 
+    "offlineanl")
+        export is_exclusive="True"
+        ;;
+
     "snowanl" | "esnowanl")
         export is_exclusive="True"
         ;;
