@@ -23,6 +23,5 @@ load("py-jinja2")
 load("py-pyyaml")
 load("py-numpy")
 load("py-netcdf4")
-load("gh")
 
 whatis("Description: GFS run setup environment")
