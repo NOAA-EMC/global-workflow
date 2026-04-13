@@ -10,6 +10,9 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% endif %}
 
 source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
 
 ##############################################
 # Set variables used in the script
@@ -35,10 +38,10 @@ mkdir -p "${COMIN_CONF}"
 
 # Calls an external bash command; do not fail on unassigned/error
 export -n SHELLOPTS
-unset_strict
+source "${USHglobal}/unset_strict.sh"
 "${SCRglobal}/exglobal_enkf_earc_tars.py"
 export err=$?
-set_strict
+source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to archive the ensemble COM structure"
 fi

@@ -128,7 +128,7 @@ UFS_configure() {
     echo "Rendered ufs.configure:"
     cat ufs.configure
 
-    cpreq "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
+    cpreq "${HOMEglobal}/parm/ufs/fd_ufs.yaml" fd_ufs.yaml
 
     echo "SUB ${FUNCNAME[0]}: ufs.configure ends"
 

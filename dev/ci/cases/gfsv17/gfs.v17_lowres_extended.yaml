@@ -2,23 +2,28 @@ experiment:
   net: gfs
   mode: cycled
   pslot: {{ 'pslot' | getenv }}
-  app: ATM
+  app: S2SW
   resdetatmos: 96
   resensatmos: 48
+  resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ BASE_IC }}/C96C48/20250808
-  idate: 2022051506
-  edate: 2022051518
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
+  idate: 2021122012
+  edate: 2021122200
   nens: 2
   interval: 6
-  start: warm
-  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/atmsoilDA_defaults_ci.yaml
+  start: cold
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_cyc_extended_ci.yaml
 
 skip_ci_on_hosts:
+  - ursa
+  - gaeac5
+  - gaeac6
   - orion
   - hercules
   - awsepicglobalworkflow
+  - hera
 
 workflow:
   engine: rocoto

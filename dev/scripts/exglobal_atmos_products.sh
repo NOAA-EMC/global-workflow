@@ -90,10 +90,10 @@ for ((nset = 1; nset <= downset; nset++)); do
         # if final record of is u-component, add next record v-component
         # if final record is land, add next record icec
         # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
-        unset_strict
+        source "${USHglobal}/unset_strict.sh"
         ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw"
         rc=$?
-        set_strict
+        source "${USHglobal}/set_strict.sh"
         if [[ ${rc} == 0 ]]; then # Matched the grep
             last=$((last + 1))
         fi
@@ -204,7 +204,7 @@ fi
 
 # Start sending DBN alerts
 # Everything below this line is for sending files to DBN (SENDDBN=YES)
-if [[ "${SENDDBN:-}" == "YES" ]]; then
+if [[ "${SENDDBN:-}" == "YES" && "${NET}" != "gcafs" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
     if [[ "${RUN}" == "gfs" ]]; then

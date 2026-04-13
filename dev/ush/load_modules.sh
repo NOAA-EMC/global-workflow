@@ -130,10 +130,7 @@ case "${MODULE_TYPE}" in
 
         module list
 
-        ftype=$(type -t set_trace || echo "")
-        if [[ "${ftype}" == "function" ]]; then
-            set_trace
-        elif [[ "${set_x}" == "YES" ]]; then
+        if [[ "${set_x}" == "YES" ]]; then
             set -x
         fi
 
@@ -203,11 +200,7 @@ case "${MODULE_TYPE}" in
 
         module list
 
-        # If this function exists in the environment, run it; else set -x if it was set on entering this script
-        ftype=$(type -t set_trace || echo "")
-        if [[ "${ftype}" == "function" ]]; then
-            set_trace
-        elif [[ "${set_x}" == "YES" ]]; then
+        if [[ "${set_x}" == "YES" ]]; then
             set -x
         fi
         ;;

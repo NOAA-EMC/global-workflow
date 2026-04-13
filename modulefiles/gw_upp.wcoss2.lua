@@ -3,7 +3,7 @@ Load environment to run the UPP on WCOSS2
 ]])
 
 local homeglobal=os.getenv("HOMEglobal") or ""
-prepend_path("MODULEPATH", pathJoin(homeglobal,"/sorc/ufs_model.fd/UFSATM/upp/modulefiles"))
+prepend_path("MODULEPATH", pathJoin(homeglobal,"/modulefiles/upp"))
 -- Load UPP modules
 load("wcoss2_intel")
 
