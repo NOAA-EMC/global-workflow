@@ -13,7 +13,7 @@
 source "${USHgfs}/wave_domain_grid.sh"
 source "${USHgfs}/atparse.bash"
 
-NAGRIB="nagrib2"
+NAGRIB="nagrib2_nc"
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 cpreq "${HOMEgfs}/gempak/fix/g2varswmo2.tbl" "${DATA}/"
