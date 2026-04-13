@@ -129,9 +129,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     fi
 
     # We are in a loop over downset, save output from mpmd into nset specific output
-    if [[ -f mpmd.out ]]; then
-        mv mpmd.out "mpmd_${nset}.out"
-    fi
+    mv mpmd.out "mpmd_${nset}.out"
 
     # Concatenate grib files from each processor into a single one
     # and clean-up as you go
