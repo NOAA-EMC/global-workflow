@@ -16,6 +16,7 @@
 #   _calling_script: The name of the calling script (optional)
 #
 #######
+set +x
 
 # Record the start time so we can calculate the elapsed time later
 start_time=$(date +%s)
