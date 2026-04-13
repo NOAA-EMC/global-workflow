@@ -174,8 +174,8 @@ fi
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
     source "${USHglobal}/unset_strict.sh"
-    # Debug level 4 looks most like the GW PS4 format (script name and line #, no secs)
-    DEBUG_LEVEL=4 "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
+    # Debug level < 0 stops obsproc from changing the PS4 format
+    DEBUG_LEVEL=-1 "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
     source "${USHglobal}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
