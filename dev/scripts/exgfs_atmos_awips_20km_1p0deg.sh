@@ -36,7 +36,7 @@ fi
 cd "${DATA}" || exit 2
 
 # "Import" functions used in this script
-source "${USHgfs}/product_functions.sh"
+source "${USHglobal}/product_functions.sh"
 
 ###############################################
 # Wait for the availability of the pgrb file
