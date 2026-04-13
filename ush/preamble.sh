@@ -32,7 +32,7 @@ echo "Begin ${_calling_script} at ${start_time_human}"
 declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'
 
 set_strict() {
-    if [[ ${STRICT:-"YES"} == "YES" ]]; then
+    if [[ ${STRICT:-"NO"} == "YES" ]]; then
         # Exit on error or undefined variable
         set -eu
         # Exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
