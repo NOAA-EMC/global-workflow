@@ -86,7 +86,7 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
 
 elif [[ ${MACHINE_ID} = derecho ]]; then
     # We are on NSF NCAR Derecho
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
+    if (! eval module help > /dev/null 2>&1); then
         source /glade/u/apps/derecho/24.12/spack/opt/spack/lmod/8.7.37/gcc/12.4.0/nr3e/lmod/lmod/init/bash
     fi
     module --force purge

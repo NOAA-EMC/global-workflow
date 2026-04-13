@@ -35,7 +35,7 @@ case $(hostname -f) in
     uecflow01) MACHINE_ID=ursa ;; ### ursaecflow01
 
     derecho[1-8].hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho1-8
-    dec*) MACHINE_ID=derecho ;; ### derech compute node
+    dec*) MACHINE_ID=derecho ;;                             ### derech compute node
 
     Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
