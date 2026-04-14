@@ -61,6 +61,22 @@ ${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/ver
 ${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
 
 #------------------------------
+#--Remove machine specific build and run version files that are not linked to build.ver and run.ver to avoid confusion
+#------------------------------
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    find "${HOMEglobal}/versions" -type f -name "build.*.ver" ! -name "build.ver" -exec rm -f {} \;
+    find "${HOMEglobal}/versions" -type f -name "run.*.ver" ! -name "run.ver" -exec rm -f {} \;
+fi
+
+#------------------------------
+#--Remove non-WCOSS2 modulefiles and env files
+#------------------------------
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    find "${HOMEglobal}/modulefiles" -type f -name "*.lua" ! -name "*.wcoss2.lua" -exec rm -f {} \;
+    find "${HOMEglobal}/env" -type f -name "*.env" ! -name "WCOSS2.env" -exec rm -f {} \;
+fi
+
+#------------------------------
 #--model fix fields
 #------------------------------
 case "${machine}" in
@@ -85,7 +101,7 @@ packages=("jcb")
 for package in "${packages[@]}"; do
     cd "${HOMEglobal}/ush/python" || exit 1
     if [[ -s "${package}" ]]; then
-        rm -f "${package}"
+        rm -rf "${package}"
     fi
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
@@ -124,6 +140,7 @@ done
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEglobal}/parm/ufs" || exit 1
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
+${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" .
 
 cd "${HOMEglobal}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/parm/params_grib2_tbl_new" .
@@ -152,12 +169,33 @@ for file in "${ufs_templates[@]}"; do
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/${file}" .
 done
 
+# Link the CCPP suite XML files from ufs-weather-model
+if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites" ]]; then
+    for suite_file in "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/ccpp/suites"/suite_*.xml; do
+        [[ -f "${suite_file}" ]] || continue
+        local_name=$(basename "${suite_file}")
+        if [[ -s "${local_name}" ]]; then
+            rm -f "${local_name}"
+        fi
+        ${LINK_OR_COPY} "${suite_file}" .
+    done
+fi
+
 # Link the script from ufs-weather-model that parses the templates
 cd "${HOMEglobal}/ush" || exit 1
 if [[ -s "atparse.bash" ]]; then
     rm -f "atparse.bash"
 fi
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/atparse.bash" .
+
+# Link UPP modulefiles for module loading
+cd "${HOMEglobal}/modulefiles" || exit 1
+if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" ]]; then
+    if [[ -d "upp" ]]; then
+        rm -rf "upp"
+    fi
+    ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" upp
+fi
 
 # add ufs_utils parm dir
 if [[ -d "${HOMEglobal}/sorc/ufs_utils.fd" ]]; then
@@ -196,6 +234,36 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd" ]]; then
             rm -rf "${comp}"
         fi
         ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/parm/${comp}" .
+    done
+fi
+
+#------------------------------
+#--add coefficient files needed for aerosol DA
+#------------------------------
+if [[ "${machine}" == "wcoss2" ]]; then
+    cd "${HOMEglobal}/fix/gdas" || exit 1
+    mkdir -p crtm_aod
+    cd crtm_aod || exit 1
+    gdas_crtm_fix=/lfs/h2/emc/da/noscrub/emc.da/GDASApp/fix/crtm/2.4.0
+    aod_file_list=(
+        "AerosolCoeff.bin"
+        "CloudCoeff.bin"
+        "v.viirs-m_npp.SpcCoeff.bin"
+        "v.viirs-m_npp.TauCoeff.bin"
+        "v.viirs-m_j1.SpcCoeff.bin"
+        "v.viirs-m_j1.TauCoeff.bin"
+        "v.viirs-m_j2.SpcCoeff.bin"
+        "v.viirs-m_j2.TauCoeff.bin"
+        "NPOESS.VISice.EmisCoeff.bin"
+        "NPOESS.VISland.EmisCoeff.bin"
+        "NPOESS.VISsnow.EmisCoeff.bin"
+        "NPOESS.VISwater.EmisCoeff.bin"
+    )
+    for file in "${aod_file_list[@]}"; do
+        if [[ -s "${file}" ]]; then
+            rm -f "${file}"
+        fi
+        ${LINK_OR_COPY} "${gdas_crtm_fix}/${file}" .
     done
 fi
 
