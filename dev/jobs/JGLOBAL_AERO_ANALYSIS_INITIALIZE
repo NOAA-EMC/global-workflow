@@ -22,7 +22,7 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${HOMEglobal}/lib"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}
