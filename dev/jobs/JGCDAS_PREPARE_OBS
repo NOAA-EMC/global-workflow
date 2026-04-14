@@ -19,6 +19,8 @@ source "${USHglobal}/jjob_shell_setup.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 export COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs/chem"
 
 ##############################################

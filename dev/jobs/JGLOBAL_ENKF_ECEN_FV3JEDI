@@ -32,7 +32,9 @@ GDUMP_ENS="enkfgdas"
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Generate COM variables from templates
+# Generate COM variables
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMIN_ATMOS_ANALYSIS_ENSSTAT="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"

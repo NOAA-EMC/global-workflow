@@ -23,9 +23,10 @@ source "${USHglobal}/set_strict.sh"
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Construct COM variables from templates
+# Construct COM variables
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 # Input directories loop over members, so this is done downstream
-
 for grid in '0p25' '0p50' '1p00'; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
     declare -rx "${prod_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/atmos/grib2/${grid}"

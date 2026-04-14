@@ -19,6 +19,8 @@ source "${USHglobal}/set_strict.sh"
 # Begin JOB SPECIFIC work
 ##############################################
 
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 export PROCESS_TROPCY=${PROCESS_TROPCY:-YES} # Turn on tropical cyclone tcvitals QC proc. if YES
 export DO_RELOCATE=${DO_RELOCATE:-NO}        # Turn on tropical cyclone relocation proc. if YES
 

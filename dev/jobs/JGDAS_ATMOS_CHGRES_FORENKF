@@ -26,7 +26,8 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
-
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
 declare -rx COMOUT_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
 
