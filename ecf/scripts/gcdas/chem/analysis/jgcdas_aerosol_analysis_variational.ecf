@@ -22,8 +22,6 @@ export RUN=%RUN%
 ############################################################
 #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
 export LMOD_TMOD_FIND_FIRST=yes
-# TODO: Add path to GDASApp libraries and cray-mpich as temporary patches
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEgcafs}/sorc/gdas.cd/build/lib"
 # TODO: Remove LD_LIBRARY_PATH line as soon as permanent solution is available
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/cray/pe/mpich/8.1.29/ofi/intel/2022.1/lib"
 
