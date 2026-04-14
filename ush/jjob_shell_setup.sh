@@ -15,39 +15,39 @@
 #   - Running setpdy.sh and sourcing PDY date variables
 #
 # Requires in environment:
-#   HOMEglobal (mandatory)
-#   USHglobal, start_time (defaulted here if not already set)
+#   HOMEgfs (mandatory)
+#   USHgfs, start_time (defaulted here if not already set)
 #######
 
 ##############################################
 # Shell defaults (allow sourcing without jjob_standard_vars.sh)
 ##############################################
-# Ensure USHglobal is set for scripts that source this file directly
+# Ensure USHgfs is set for scripts that source this file directly
 # (e.g. preamble.sh callers such as run_mpmd.sh)
-export USHglobal="${USHglobal:-${HOMEglobal}/ush}"
+export USHgfs="${USHgfs:-${HOMEgfs}/ush}"
 export start_time=${start_time:-$(date +%s)}
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
 # Utility functions
 ##############################################
-source "${USHglobal}/wait_for_file.sh"
-source "${USHglobal}/dataroot_com_path.sh"
-source "${USHglobal}/timer.sh"
-source "${USHglobal}/err_exit.sh"
+source "${USHgfs}/wait_for_file.sh"
+source "${USHgfs}/dataroot_com_path.sh"
+source "${USHgfs}/timer.sh"
+source "${USHgfs}/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
 # Shell options, strict mode, and tracing
 ##############################################
-source "${USHglobal}/set_strict.sh"
-source "${USHglobal}/unset_strict.sh"
-source "${USHglobal}/set_trace.sh"
+source "${USHgfs}/set_strict.sh"
+source "${USHgfs}/unset_strict.sh"
+source "${USHgfs}/set_trace.sh"
 export SHELLOPTS
 ##############################################
 # Create and enter the working directory
 ##############################################
-source "${USHglobal}/setup_data_dir.sh"
+source "${USHgfs}/setup_data_dir.sh"
 setup_data_dir "${DATA}"
 
 # Activate strict mode and tracing
@@ -57,7 +57,7 @@ set_trace
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
-source "${USHglobal}/postamble.sh"
+source "${USHgfs}/postamble.sh"
 # shellcheck disable=SC2064
 trap "postamble ${start_time}" EXIT
 

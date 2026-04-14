@@ -4,7 +4,7 @@
 # Defines the unset_strict function for use in J-jobs and ex-scripts.
 #
 # Source this file to load the function into the current shell:
-#   source "${USHglobal}/unset_strict.sh"
+#   source "${USHgfs}/unset_strict.sh"
 #######
 
 unset_strict() {
