@@ -168,7 +168,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
             fi
 
             if [[ ${TILE_NUM} -eq 1 ]]; then
-                mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
+                if [[ ! -d "${COMOUT_ATMOS_RESTART_MEM}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"; fi
             fi
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/sfc_data_cycle.${cmem}"
@@ -203,7 +203,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
             declare -x COMOUT_ATMOS_RESTART_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart
 
             if [[ ${TILE_NUM} -eq 1 ]]; then
-                mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"
+                if [[ ! -d "${COMOUT_ATMOS_RESTART_MEM}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART_MEM}"; fi
             fi
 
             cpfs "${DATA}/sfc_data_cycle.${cmem}" "${COMOUT_ATMOS_RESTART_MEM}/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc"

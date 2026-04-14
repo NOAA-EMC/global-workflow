@@ -8,7 +8,7 @@ experiment:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
+  icsdir: {{ BASE_IC }}/C96C48/20250808
   idate: 2021122018
   edate: 2021122106
   nens: 2

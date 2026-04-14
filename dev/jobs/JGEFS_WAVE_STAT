@@ -21,14 +21,7 @@ for grid in ${wavepostGRD}; do
     process_grdID "${grid}"
     prod_dir_grid="COMOUT_WAVE_GRID_${grid}"
     declare -rx "${prod_dir_grid}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/gridded"
-    if [[ ! -d "${!prod_dir_grid}" ]]; then
-        mkdir -m 775 -p "${!prod_dir_grid}"
-    fi
 done
-declare -rx COMOUT_WAVE_STATION_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/products/wave/station"
-if [[ ! -d "${COMOUT_WAVE_STATION_ENS}" ]]; then
-    mkdir -m 775 -p "${COMOUT_WAVE_STATION_ENS}"
-fi
 
 # Execute the Script
 #"${SCRglobal}/exgefs_wave_stat.sh"

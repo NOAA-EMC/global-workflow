@@ -34,11 +34,6 @@ case $(hostname -f) in
     ufe1[0-6]) MACHINE_ID=ursa ;; ### ursa10-16
     uecflow01) MACHINE_ID=ursa ;; ### ursaecflow01
 
-    s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
-
-    fe[1-8]) MACHINE_ID=jet ;; ### jet01-8
-    tfe[12]) MACHINE_ID=jet ;; ### tjet1-2
-
     Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
     [Hh]ercules-login-[1-4].[Hh][Pp][Cc].[Mm]s[Ss]tate.[Ee]du) MACHINE_ID=hercules ;; ### hercules1-4
@@ -74,9 +69,6 @@ if [[ -d /lfs/h3 ]]; then
 elif [[ -d /lfs/h1 && ! -d /lfs/h3 ]]; then
     # We are on NOAA TDS Acorn
     MACHINE_ID=acorn
-elif [[ -d /mnt/lfs5 ]]; then
-    # We are on NOAA Jet
-    MACHINE_ID=jet
 elif [[ -d /scratch3 ]]; then
     # We are on NOAA Hera or Ursa
     mount=$(findmnt -n -o SOURCE /apps) || true # /home doesn't exist on the GitHub runners

@@ -499,7 +499,8 @@ class Jedi:
                 logger.info(f"Adding temperature lapse rate file {tlapfile_rename} to {tarball}")
                 bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
 
-        # Copy files to COM
+        # Always copy the tarball to COM; it is always created above and required by the archive step
+        FileHandler({'mkdir': [comout]}).sync()
         FileHandler({'copy_opt': [[tarball, comout]]}).sync()
 
     @staticmethod

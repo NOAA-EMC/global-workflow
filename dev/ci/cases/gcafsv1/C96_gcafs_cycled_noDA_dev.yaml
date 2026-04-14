@@ -6,7 +6,7 @@ experiment:
   resdetatmos: 96
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
+  icsdir: {{ BASE_IC }}/C96C48/20250808
   idate: 2021122012
   edate: 2021122200
   nens: 0

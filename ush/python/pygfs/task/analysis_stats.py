@@ -76,7 +76,7 @@ class AnalysisStats(Analysis):
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
-    def initialize(self) -> None:
+    def initialize(self, analysis: str) -> None:
         """
         This method will initialize a global analysis stats task.
         This includes:
@@ -84,30 +84,29 @@ class AnalysisStats(Analysis):
         - copying stat files
         Parameters
         ----------
-        None
+        analysis
+            key specifying particular Jedi object in self.jedi_dict
         Returns
         ----------
         None
         """
 
-        for analysis in self.task_config.STAT_ANALYSES:
-            # Loop through a copy of ob space list
-            logger.info(f"Working on analysis type: {analysis}")
+        logger.info(f"Working on analysis type: {analysis}")
 
-            # Stage files from COM
-            logger.info(f"Staging files from COM and creating output directories")
-            FileHandler(self.task_config.data_in).sync()
+        # Stage files from COM
+        logger.info(f"Staging files from COM and creating output directories")
+        FileHandler(self.task_config.data_in).sync()
 
-            # Extract diag tar file
-            jcb_config = self.jedi_dict[analysis].jcb_config
-            component = self.jedi_dict[analysis].component
-            diag_archive = os.path.join(jcb_config[f"{component}_obsdatain_path"],
-                                        f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx.tar.gz")
-            Jedi.extract_tar(diag_archive)
+        # Extract diag tar file
+        jcb_config = self.jedi_dict[analysis].jcb_config
+        component = self.jedi_dict[analysis].component
+        diag_archive = os.path.join(jcb_config[f"{component}_obsdatain_path"],
+                                    f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx.tar.gz")
+        Jedi.extract_tar(diag_archive)
 
-            # Initialize JEDI application
-            logger.info(f"Initializing JEDI ioda-stats extraction application")
-            self.jedi_dict[analysis].initialize(clean_empty_obsspaces=True)
+        # Initialize JEDI application
+        logger.info(f"Initializing JEDI ioda-stats extraction application")
+        self.jedi_dict[analysis].initialize(clean_empty_obsspaces=True)
 
     @logit(logger)
     def execute(self, analysis: str) -> None:
@@ -144,28 +143,35 @@ class AnalysisStats(Analysis):
         None
         """
 
-        for analysis in self.task_config.STAT_ANALYSES:
-            self.jedi_dict[analysis].save_obsdataout(self.task_config.outdir[analysis],
-                                                     f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
+        outdir = self.task_config.outdir[analysis]
+        jcb_config = self.jedi_dict[analysis].jcb_config
+        component = self.jedi_dict[analysis].component
 
-            # concatenate text files into one summary file
-            jcb_config = self.jedi_dict[analysis].jcb_config
-            component = self.jedi_dict[analysis].component
-            summaryfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{self.task_config.APREFIX}{analysis}_stats.txt")
-            with open(summaryfile, 'w') as outfile:
-                for ob in self.jedi_dict[analysis].jcb_config.observations:
-                    textfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{ob}_ioda_stats.txt")
-                    if os.path.exists(textfile):
-                        logger.info(f"Concatenating {textfile} to {summaryfile}")
-                        with open(textfile, 'r') as infile:
-                            outfile.write(infile.read())
-                    else:
-                        logger.warning(f"{textfile} does not exist to concatenate.")
-                        logger.warning("Skipping this file ...")
+        # Ensure the output COM directory exists before copying
+        if not os.path.exists(outdir):
+            FileHandler({'mkdir': [outdir]}).sync()
 
-        # Save files from COM
-        logger.info(f"Saving files to COM")
-        FileHandler(self.task_config.data_out).sync()
+        # Archive obs output files to COM (creates tar.gz even if all obs files are missing)
+        self.jedi_dict[analysis].save_obsdataout(outdir,
+                                                 f"{self.task_config.APREFIX}{analysis}_analysis.ioda_hofx_stats")
+
+        # Concatenate per-ob text stat files into one summary file
+        summaryfile = os.path.join(jcb_config[f"{component}_obsdataout_path"],
+                                   f"{self.task_config.APREFIX}{analysis}_stats.txt")
+        with open(summaryfile, 'w') as outfile:
+            for ob in jcb_config.observations:
+                textfile = os.path.join(jcb_config[f"{component}_obsdataout_path"], f"{ob}_ioda_stats.txt")
+                if os.path.exists(textfile):
+                    logger.info(f"Concatenating {textfile} to {summaryfile}")
+                    with open(textfile, 'r') as infile:
+                        outfile.write(infile.read())
+                else:
+                    logger.warning(f"{textfile} does not exist to concatenate.")
+                    logger.warning("Skipping this file ...")
+
+        # Copy summary stats text file to COM
+        logger.info(f"Saving {summaryfile} to COM: {outdir}")
+        FileHandler({'copy_opt': [[summaryfile, outdir]]}).sync()
 
     @logit(logger)
     def convert_gsi_diags(self) -> None:
