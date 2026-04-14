@@ -41,8 +41,18 @@ GDUMP="${GDUMP/gcafs/gcdas}"
 declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 declare -rx COMOUT_CHEM_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/chem"
 
-declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
+# For Aerosol Coldstart - pull GDAS restart files and add tracers 
+if [[ $"COLDSTART" == "TRUE" ]]; then   
+    GDDUMP="gdas"
+    declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
+else
+    declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
+fi
+
+# Set BMAT COMIN PREV Path
 declare -rx COMIN_CHEM_BMAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/chem/bmatrix"
+
+# Set CHEM Analysis COMIN PREV
 declare -rx COMIN_CHEM_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/chem"
 
 ###############################################################
