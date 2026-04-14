@@ -11,7 +11,7 @@
 
 mkdir:
     - "{{ ARCDIR }}"
-{% if DO_FIT2OBS == True %}
+{% if RUN == "gcafs" and DO_FIT2OBS == True %}
     - "{{ VFYARC }}/{{ RUN }}.{{ cycle_YMD }}/{{ cycle_HH }}"
 {% endif %}
 

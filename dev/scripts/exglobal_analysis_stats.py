@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Initialize JEDI variational analysis
     if 'atmos_gsi' in config.STAT_ANALYSES:
         AnlStats.convert_gsi_diags()
-    AnlStats.initialize()
     for anl in config.STAT_ANALYSES:
+        AnlStats.initialize(anl)
         AnlStats.execute(anl)
         AnlStats.finalize(anl)
