@@ -30,10 +30,6 @@ export MP_DEBUG_NOTIMEOUT=yes
 
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
-if [[ "${fhend}" -gt "${FHMAX_GFS}" ]]; then
-    export fhend="${FHMAX_GFS}"
-fi
-
 export COMPONENT="atmos"
 
 ##############################################
