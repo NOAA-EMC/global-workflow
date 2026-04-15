@@ -23,7 +23,7 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
