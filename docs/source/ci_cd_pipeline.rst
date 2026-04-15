@@ -564,8 +564,13 @@ The ``launch_gitlab_runner.sh`` Script
 ======================================
 
 The ``dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh`` script is the primary
-tool for managing GitLab runners on each RDHPCS system. It supports three
-operations: **register**, **run**, and **unregister**.
+tool for managing GitLab runners on each RDHPCS system. It supports four
+operations: **register**, **run**, **unregister**, and **status**.
+
+The ``run`` command is **idempotent** — it performs a 3-tier health check and
+only (re)launches the runner if it is unhealthy or offline. This makes it safe
+to call from a cron job for automated recovery without risking duplicate
+processes.
 
 Setup Prerequisites
 -------------------
@@ -600,18 +605,6 @@ To register a new runner on an RDHPCS system:
    # Register the runner (token can also be in GITLAB_RUNNER_TOKEN or gitlab_token file)
    dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh register <GITLAB_RUNNER_TOKEN>
 
-The registration command configures the runner with:
-
-- **Executor**: ``shell`` (runs directly in the HPC environment)
-- **Shell**: ``bash``
-- **Builds directory**: ``${GITLAB_BUILDS_DIR}`` (from platform config)
-- **Custom build directory**: enabled (allowing ``.gitlab-ci.yml`` to override
-  the clone path via ``GIT_CLONE_PATH``)
-- **Concurrency**: 24 concurrent requests
-
-After registration, the script updates the runner's ``config.toml`` to set
-``concurrent = 24``.
-
 Starting a Runner
 -----------------
 
@@ -621,9 +614,75 @@ To start a registered runner:
 
    dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run
 
-This launches the runner as a background process using ``nohup``. The runner's
-working directory is set to ``${GITLAB_RUNNER_DIR}`` from the platform config.
-Logs are written to a date-stamped log file in the working directory.
+The ``run`` command is idempotent. It first performs a 3-tier health check:
+
+1. **Tier 1 — Process**: Is the ``gitlab-runner`` process alive? (``pgrep``)
+2. **Tier 2 — Metrics**: Is the Prometheus metrics endpoint responding? (``curl``)
+3. **Tier 3 — Server**: Can the runner reach the GitLab server? (``gitlab-runner verify``)
+
+If all three tiers pass, the command exits immediately with no changes. If the
+runner is offline or unhealthy, it waits 5 minutes (configurable) and re-checks
+before relaunching to avoid reacting to transient network issues.
+
+On launch, the runner starts as a background process using ``nohup`` with a
+Prometheus metrics endpoint on ``localhost:${GITLAB_RUNNER_METRICS_PORT}``
+(default 9252). A **state file** (``runner.state``) is written to the runner
+directory recording the PID, metrics port, start time, and host node.
+
+**Command-line flags:**
+
+* ``-f`` — Force launch, skip all health checks
+* ``-n`` — Skip the 5-minute wait period before relaunch
+
+.. code-block:: bash
+
+   # Normal idempotent run (safe for cron)
+   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run
+
+   # Force relaunch immediately
+   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run -f
+
+   # Skip wait period (useful in interactive sessions)
+   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run -n
+
+Checking Runner Status
+-----------------------
+
+To get a health report without taking any action:
+
+.. code-block:: bash
+
+   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh status
+
+This runs the same 3-tier health check as ``run`` and prints a summary:
+
+.. code-block:: text
+
+   Runner host: gaea51 (current node: gaea68, remote: True)
+   Process alive: True (PID: 12345)
+   Metrics endpoint: True (port: 9252)
+   Server verified: True
+   GitLab Runner is healthy (all 3 tiers passed)
+
+Exit codes: ``0`` if all tiers pass, ``1`` otherwise.
+
+Cross-Node Health Checks
+-------------------------
+
+On multi-head-node RDHPCS clusters (Hera, Ursa, Gaea), cron jobs can execute on
+**any** login node, but the runner process and its metrics port are only visible
+on the node where it was launched. The script handles this transparently:
+
+1. When the runner launches, it records the host node in ``runner.state``.
+2. On subsequent ``run`` or ``status`` calls, if the current node differs from
+   the recorded host, the script SSH-es to the runner's node for Tier 1 and
+   Tier 2 checks (passwordless SSH between head nodes is standard for service
+   accounts).
+3. Tier 3 (``gitlab-runner verify``) works from any node since it contacts the
+   GitLab server directly.
+
+This ensures that a cron-based health check on ``gaea68`` can correctly assess
+a runner launched on ``gaea51``.
 
 Unregistering a Runner
 ----------------------
@@ -650,26 +709,65 @@ Each platform follows a common directory structure under its ``GFS_CI_ROOT``:
     │       ├── pr_cases_<sha>_<id>/
     │       ├── nightly_<sha>_<date>/
     │       └── stable -> nightly_<sha>_<date>/
-    ├── GitLab/
-    │   └── Runner/             # Runner working directory
-    │       ├── gitlab-runner   # Runner binary
-    │       ├── config.toml     # Runner configuration (auto-generated)
-    │       ├── gitlab_token    # Optional token file
-    │       └── launched_gitlab_runner-*.log  # Runner logs
-    └── Jenkins/                # Legacy Jenkins directories
-        ├── agent/
-        └── workspace/
+    └── GitLab/
+        └── Runner/             # Runner working directory
+            ├── gitlab-runner   # Runner binary
+            ├── config.toml     # Runner configuration (auto-generated)
+            ├── runner.state    # Runtime state (PID, port, host, start time)
+            ├── gitlab_token    # Optional token file
+            └── launched_gitlab_runner-*.log  # Runner logs
+
+The ``runner.state`` file is written on each launch and contains:
+
+.. code-block:: bash
+
+   RUNNER_PID=12345
+   RUNNER_METRICS_PORT=9252
+   RUNNER_STARTED="2026-04-15 08:00:00"
+   RUNNER_HOST=gaea51
+   GITLAB_RUNNER_DIR=/gpfs/f6/drsa-precip3/proj-shared/user/GFS_CI_CD/GitLab/Runner
+
+This file is sourced by subsequent ``run`` and ``status`` invocations to locate
+the runner process across head nodes and determine the correct metrics port.
 
 Runner Maintenance
 ==================
 
-Common maintenance tasks:
+Automated Health Checks (Cron)
+------------------------------
 
-**Check if a runner is active:**
+The recommended way to keep runners alive is a cron job (or Slurm scron) that
+calls ``launch_gitlab_runner.sh run`` periodically. Because ``run`` is idempotent,
+it safely no-ops when the runner is healthy:
 
 .. code-block:: bash
 
-   ps aux | grep gitlab-runner
+   # Cron: check runner health every 10 minutes
+   */10 * * * * /path/to/global-workflow/dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run -n >> ~/.ci_gfs/logs/runner_healthcheck_$(date +\%Y\%m\%d).log 2>&1
+
+The ``-n`` flag skips the 5-minute wait so cron checks complete quickly. If the
+runner is found offline, it is relaunched automatically.
+
+.. note::
+
+   On multi-head-node clusters, the cron job may fire on a different login node
+   than where the runner is running. The script's cross-node health check
+   (described above) handles this transparently via SSH.
+
+Common Maintenance Tasks
+-------------------------
+
+**Check runner health (3-tier report):**
+
+.. code-block:: bash
+
+   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh status
+
+**Inspect the state file:**
+
+.. code-block:: bash
+
+   cat ${GFS_CI_ROOT}/GitLab/Runner/runner.state
 
 **View runner logs:**
 
@@ -677,16 +775,13 @@ Common maintenance tasks:
 
    tail -f ${GFS_CI_ROOT}/GitLab/Runner/launched_gitlab_runner-*.log
 
-**Restart a runner (e.g., after system maintenance):**
+**Force restart a runner (e.g., after system maintenance):**
 
 .. code-block:: bash
 
-   # Stop any existing runner
-   pkill -f "gitlab-runner run"
-
-   # Start fresh
+   # Force relaunch — kills any existing process and starts fresh
    cd /path/to/global-workflow
-   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run
+   dev/ci/scripts/utils/gitlab/launch_gitlab_runner.sh run -f
 
 **Re-register after token rotation:**
 
@@ -730,7 +825,8 @@ The ``run_check_gitlab_ci.sh`` script manages each experiment's lifecycle:
 2. Enters a monitoring loop that alternates between ``rocotorun`` and
    ``rocotostat`` calls.
 3. Tracks Rocoto state through completion (``DONE``) or failure
-   (``FAIL``, ``UNAVAILABLE``, ``UNKNOWN``, ``STALLED``).
+   (``FAIL``, ``UNAVAILABLE``, ``UNKNOWN``, ``STALLED``) by utilizing
+   the python ``rocotostat.py`` utility for parsing and reporting.
 4. On failure: extracts error logs from failed/dead tasks, uploads them as
    GitHub Gists, and posts a comment to the PR.
 5. Exits with ``rc=0`` for success or ``rc=1`` for failure.
@@ -738,12 +834,9 @@ The ``run_check_gitlab_ci.sh`` script manages each experiment's lifecycle:
 Test Execution (CTests)
 ========================
 
-CTest execution (defined in ``.run_ctests_template`` in ``gitlab-ci-ctests.yml``):
-
-1. Changes to the CTest build directory.
-2. Runs ``ctest -L "${CTEST_NAME}"`` to execute tests for a specific label.
-3. Publishes JUnit XML results as GitLab artifacts.
-4. Examines both the ``ctest`` exit code and the JUnit XML for failure indicators.
+CTest execution is defined in ``.run_ctests_template`` in ``gitlab-ci-ctests.yml``.
+For full details on the CTest framework, including test case configuration, YAML
+definitions, running tests, and adding new tests, see :doc:`testing`.
 
 Finalize Stage
 ==============
