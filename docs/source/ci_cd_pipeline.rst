@@ -292,6 +292,23 @@ To add or remove a test case from a platform, edit the corresponding anchor
 array. The authoritative source for which tests run where is always
 ``dev/ci/gitlab-ci-hosts.yml`` — do not duplicate this information elsewhere.
 
+Additionally, individual test case YAML files in ``dev/ci/cases/pr/`` can
+declare a ``skip_ci_on_hosts`` list to exclude themselves from specific
+platforms without modifying the host matrix:
+
+.. code-block:: yaml
+
+   # Example: dev/ci/cases/pr/C48_ATM_ecflow.yaml
+   skip_ci_on_hosts:
+     - wcoss2
+     - hera
+     - orion
+
+This is useful when a test case is defined globally but should not run on
+certain hosts — for example, a workflow engine that is only supported on a
+subset of platforms. The pipeline checks this list at runtime and skips the
+case on any matching host.
+
 Pipeline Variables
 ==================
 
