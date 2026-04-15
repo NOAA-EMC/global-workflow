@@ -6,9 +6,9 @@ experiment:
   resdetatmos: 384
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ BASE_IC }}/C96C48/20250327
-  idate: 2021122012
-  edate: 2021122100
+  icsdir: {{ BASE_IC }}/C384C192/20240610
+  idate: 2023040118
+  edate: 2023040206
   nens: 0
   interval: 0
   start: cold

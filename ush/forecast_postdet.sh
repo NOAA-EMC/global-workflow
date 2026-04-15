@@ -361,6 +361,7 @@ EOF
         FV3_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${restart_interval}" "${restart_interval_end}")"
     fi
     export FV3_RESTART_FH
+    if [[ -n "${FV3_RESTART_FH}" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
     #============================================================================
 }
 
@@ -432,13 +433,20 @@ FV3_out() {
             done
         done
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
-        export err=$?
-        if [[ ${err} -ne 0 ]]; then
-            err_exit "run_mpmd.sh failed to copy FV3 restart files!"
-        fi
+        if [[ -s "${cmdfile}" ]]; then
+            if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then
+                echo "INFO: Directory ${COMOUT_ATMOS_RESTART} does not exist, creating..."
+                mkdir -p "${COMOUT_ATMOS_RESTART}"
+            fi
 
-        echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+            "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "run_mpmd.sh failed to copy FV3 restart files!"
+            fi
+
+            echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+        fi
     fi
 }
 
@@ -592,6 +600,11 @@ WW3_out() {
     fi
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then
+            echo "INFO: Directory ${COMOUT_WAVE_RESTART} does not exist, creating..."
+            mkdir -p "${COMOUT_WAVE_RESTART}"
+        fi
+
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -604,6 +617,10 @@ WW3_out() {
 CPL_out() {
     echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
     if [[ "${esmf_profile:-.false.}" == ".true." ]]; then
+        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_ATMOS_HISTORY}"
+        fi
         cpfs "${DATA}/ESMF_Profile.summary" "${COMOUT_ATMOS_HISTORY}/ESMF_Profile.summary"
     fi
 }
@@ -760,6 +777,11 @@ MOM6_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_OCEAN_RESTART}" ]]; then
+            echo "INFO: Directory ${COMOUT_OCEAN_RESTART} does not exist, creating..."
+            mkdir -p "${COMOUT_OCEAN_RESTART}"
+        fi
+
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -886,6 +908,11 @@ CICE_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_ICE_RESTART}" ]]; then
+            echo "INFO: Directory ${COMOUT_ICE_RESTART} does not exist, creating..."
+            mkdir -p "${COMOUT_ICE_RESTART}"
+        fi
+
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -966,6 +993,7 @@ GOCART_out() {
 
     for fhr in $(GOCART_output_fh); do
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+
         for file_type in "${file_types[@]}"; do
             if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
                 echo "cpfs ${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4 ${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" >> "${cmdfile}"
@@ -974,6 +1002,11 @@ GOCART_out() {
     done
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_CHEM_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_CHEM_HISTORY}"
+        fi
+
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -1094,6 +1127,8 @@ CMEPS_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
+
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
