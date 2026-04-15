@@ -23,7 +23,7 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
-runscript="${USHgfs}/gfs_bufr.sh"
+runscript="${USHglobal}/gfs_bufr.sh"
 
 cd "${DATA}" || exit 2
 
@@ -45,7 +45,7 @@ export NINT1=${FHOUT_HF_GFS:-1}
 export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
 
-GETDIM="${USHgfs}/getncdimlen"
+GETDIM="${USHglobal}/getncdimlen"
 LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f000.${atmfm}" pfull)
 declare -x LEVS
 
@@ -114,7 +114,7 @@ for fhr in "${hour_list[@]}"; do
 done
 
 # Run with MPMD
-"${USHgfs}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
+"${USHglobal}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "One or more BUFR MPMD tasks failed!"
@@ -172,7 +172,7 @@ fi
 ########################################
 rm -rf poe_col
 for ((m = 1; m <= NUM_SND_COLLECTIVES; m++)); do
-    echo "${USHgfs}/gfs_sndp.sh ${m} " >> poe_col
+    echo "${USHglobal}/gfs_sndp.sh ${m} " >> poe_col
 done
 
 if [[ "${CFP_MP:-"NO"}" == "YES" ]]; then
@@ -191,7 +191,7 @@ ${APRUN_POSTSNDCFP} cmdfile
 # GEMPAK surface and sounding data files
 ########################################
 if [[ "${DO_GEMPAK:-"NO"}" == "YES" ]]; then
-    sh "${USHgfs}/gfs_bfr2gpk.sh"
+    sh "${USHglobal}/gfs_bfr2gpk.sh"
 fi
 
 ############## END OF SCRIPT #######################

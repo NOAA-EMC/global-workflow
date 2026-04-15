@@ -12,11 +12,11 @@ pslot=${2:-${pslot:-?}}                  # Name of the experiment being tested b
 SYSTEM_BUILD_DIR=${3:-"global-workflow"} # Name of the system build directory, default is "global-workflow
 
 # TEST_DIR contains 2 directories;
-# 1. HOMEgfs: clone of the global-workflow
+# 1. HOMEglobal: clone of the global-workflow
 # 2. RUNTESTS: A directory containing EXPDIR and COMROOT for experiments
 # # e.g. $> tree ./TEST_DIR
 # ./TEST_DIR
-# ├── HOMEgfs
+# ├── HOMEglobal
 # └── RUNTESTS
 #     ├── COMROOT
 #     │   └── ${pslot}
@@ -24,13 +24,13 @@ SYSTEM_BUILD_DIR=${3:-"global-workflow"} # Name of the system build directory, d
 #         └── ${pslot}
 # Two system build directories created at build time gfs, and gdas
 # TODO: Make this configurable (for now all scripts run from gfs for CI at runtime)
-HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
+HOMEglobal="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
 # Source modules and setup logging
 echo "Source modules."
-source "${HOMEgfs}/dev/ush/gw_setup.sh"
+source "${HOMEglobal}/dev/ush/gw_setup.sh"
 
 # cd into the experiment directory
 echo "cd ${RUNTESTS}/EXPDIR/${pslot}"
@@ -71,7 +71,7 @@ while true; do
 
     # Get job statistics
     echo "Gather Rocoto statistics"
-    full_state=$("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
+    full_state=$("${HOMEglobal}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
     error_stat=$?
 
     for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do

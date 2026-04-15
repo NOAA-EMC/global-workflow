@@ -64,9 +64,9 @@ FV3_model_configure() {
     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
         local NEST_IMO=${npx_nest}
         local NEST_JMO=${npy_nest}
-        template="${PARMgfs}/ufs/input_global_nest.nml.IN"
+        template="${PARMglobal}/ufs/input_global_nest.nml.IN"
     else
-        template="${PARMgfs}/ufs/model_configure.IN"
+        template="${PARMglobal}/ufs/model_configure.IN"
     fi
     if [[ ! -f ${template} ]]; then
         echo "FATAL ERROR: template '${template}' does not exist, ABORT!"

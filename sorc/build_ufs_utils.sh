@@ -2,7 +2,7 @@
 set -eux
 
 # shellcheck disable=SC2155
-readonly HOMEgfs_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
+readonly HOMEglobal_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
 
 OPTIND=1
 while getopts ":j:dv" option; do
@@ -20,12 +20,12 @@ while getopts ":j:dv" option; do
 done
 shift $((OPTIND - 1))
 
-source "${HOMEgfs_}/ush/detect_machine.sh"
+source "${HOMEglobal_}/ush/detect_machine.sh"
 
 CMAKE_OPTS="-DGFS=ON" \
     BUILD_TYPE=${BUILD_TYPE:-"Release"} \
     BUILD_JOBS=${BUILD_JOBS:-8} \
     BUILD_VERBOSE=${BUILD_VERBOSE:-} \
-    "${HOMEgfs_}/sorc/ufs_utils.fd/build_all.sh"
+    "${HOMEglobal_}/sorc/ufs_utils.fd/build_all.sh"
 
 exit

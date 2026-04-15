@@ -9,12 +9,12 @@ set -x
 ###############################################################
 
 # Source FV3GFS workflow modules
-#source "${HOMEgfs}/dev/ush/load_modules.sh" run
+#source "${HOMEglobal}/dev/ush/load_modules.sh" run
 #status=$?
 #if (( status != 0 )); then exit "${status}"; fi
 # Temporarily load modules from UPP on WCOSS2
-source "${HOMEgfs}/ush/detect_machine.sh"
-source "${HOMEgfs}/dev/ush/load_modules.sh" upp
+source "${HOMEglobal}/ush/detect_machine.sh"
+source "${HOMEglobal}/dev/ush/load_modules.sh" upp
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -28,6 +28,6 @@ export FORECAST_HOUR=$((10#${FHR3}))
 ###############################################################
 # Execute the JJOB
 ###############################################################
-"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_UPP"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_UPP"
 
 exit $?

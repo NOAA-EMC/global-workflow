@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 ((status != 0)) && exit "${status}"
 
@@ -14,7 +14,7 @@ export jobid="${job}.$$"
 ###############################################################
 # Execute the JJOB
 
-"${HOMEgfs}/dev/jobs/JGFS_ATMOS_FSU_GENESIS"
+"${HOMEglobal}/dev/jobs/JGFS_ATMOS_FSU_GENESIS"
 status=$?
 
 exit "${status}"

@@ -15,10 +15,10 @@ mkdir -p "${DATA_RUN}"
 cd "${DATA_RUN}" || exit 1
 
 # "Import" functions used in this script
-source "${USHgfs}/product_functions.sh"
+source "${USHglobal}/product_functions.sh"
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
-    source_table="${HOMEgfs}/gempak/fix/${table}"
+    source_table="${HOMEglobal}/gempak/fix/${table}"
     if [[ ! -f "${source_table}" ]]; then
         err_exit "${table} is missing"
     fi
@@ -38,7 +38,7 @@ output=T
 pdsext=no
 
 GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
-source_dirvar="COMOUT_ATMOS_GRIB_${grid}"
+source_dirvar="COMIN_ATMOS_GRIB_${grid}"
 export GRIBIN="${!source_dirvar}/${RUN}.${cycle}.pres_a.${grid}.f${fhr3}.grib2"
 GRIBIN_chk="${GRIBIN}.idx"
 

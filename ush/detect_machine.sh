@@ -23,9 +23,6 @@ case $(hostname -f) in
     dlogin0[1-9].dogwood.wcoss2.ncep.noaa.gov) MACHINE_ID=wcoss2 ;; ### dogwood01-9
     dlogin10.dogwood.wcoss2.ncep.noaa.gov) MACHINE_ID=wcoss2 ;;     ### dogwood10
 
-    gaea5[1-8]) MACHINE_ID=gaeac5 ;;          ### gaea51-58
-    gaea5[1-8].ncrc.gov) MACHINE_ID=gaeac5 ;; ### gaea51-58
-
     gaea6[1-8]) MACHINE_ID=gaeac6 ;;          ### gaea61-68
     gaea6[1-8].ncrc.gov) MACHINE_ID=gaeac6 ;; ### gaea61-68
 
@@ -36,11 +33,6 @@ case $(hostname -f) in
     ufe0[1-9]) MACHINE_ID=ursa ;; ### ursa01-09
     ufe1[0-6]) MACHINE_ID=ursa ;; ### ursa10-16
     uecflow01) MACHINE_ID=ursa ;; ### ursaecflow01
-
-    s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
-
-    fe[1-8]) MACHINE_ID=jet ;; ### jet01-8
-    tfe[12]) MACHINE_ID=jet ;; ### tjet1-2
 
     Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
@@ -77,9 +69,6 @@ if [[ -d /lfs/h3 ]]; then
 elif [[ -d /lfs/h1 && ! -d /lfs/h3 ]]; then
     # We are on NOAA TDS Acorn
     MACHINE_ID=acorn
-elif [[ -d /mnt/lfs5 ]]; then
-    # We are on NOAA Jet
-    MACHINE_ID=jet
 elif [[ -d /scratch3 ]]; then
     # We are on NOAA Hera or Ursa
     mount=$(findmnt -n -o SOURCE /apps) || true # /home doesn't exist on the GitHub runners
@@ -98,9 +87,6 @@ elif [[ -d /work ]]; then
     else
         MACHINE_ID=orion
     fi
-elif [[ -d /gpfs/f5 ]]; then
-    # We are on GAEAC5.
-    MACHINE_ID=gaeac5
 elif [[ -d /gpfs/f6 ]]; then
     # We are on GAEAC6.
     MACHINE_ID=gaeac6

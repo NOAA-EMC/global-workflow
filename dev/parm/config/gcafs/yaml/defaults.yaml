@@ -42,7 +42,7 @@ atmanl:
   LAYOUT_Y_ATMANL: 8
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
-  OBS_LIST_YAML: "${PARMgfs}/gdas/atm/atm_obs_list.yaml.j2"
+  OBS_LIST_YAML: "${PARMglobal}/gdas/atm/atm_obs_list.yaml.j2"
   VAR_JEDI_TEST_YAML: ""
   FV3INC_JEDI_TEST_YAML: ""
 
@@ -51,7 +51,7 @@ atmensanl:
   LAYOUT_Y_ATMENSANL: 8
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
-  OBS_LIST_YAML: "${PARMgfs}/gdas/atm/atm_obs_list.yaml.j2"
+  OBS_LIST_YAML: "${PARMglobal}/gdas/atm/atm_obs_list.yaml.j2"
   LETKF_JEDI_TEST_YAML: ""
   OBS_JEDI_TEST_YAML: ""
   SOL_JEDI_TEST_YAML: ""
@@ -66,23 +66,23 @@ snowanl:
   IO_LAYOUT_Y: 1
 
 marinebmat:
-  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_INPUT_FIX_DIR: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
 
 marineanl:
-  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
+  SOCA_INPUT_FIX_DIR: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_OBS_LIST: "${PARMglobal}/gdas/marine/obs/obs_list.yaml"  # TODO: This is also repeated in oceanprepobs
   SOCA_NINNER: 100
 
 marineanlecen:
-  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
+  SOCA_INPUT_FIX_DIR: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
 
 marineanlletkf:
-  SOCA_INPUT_FIX_DIR: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_ANL_GEOM: "${FIXgfs}/gdas/soca/72x35x25/soca"
-  SOCA_OBS_LIST: "${PARMgfs}/gdas/marine/obs/obs_list.yaml.j2"
+  SOCA_INPUT_FIX_DIR: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_OBS_LIST: "${PARMglobal}/gdas/marine/obs/obs_list.yaml.j2"
 
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"

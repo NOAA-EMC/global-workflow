@@ -68,7 +68,7 @@ Configuration Management
 
 Platform-specific configuration is defined in::
 
-    $HOMEgfs/dev/ci/platforms/config.$MACHINE_ID
+    $HOMEglobal/dev/ci/platforms/config.$MACHINE_ID
 
 **Key Variables**:
 
@@ -90,7 +90,7 @@ These variables define:
 CMake Integration
 =================
 
-The framework uses CMake to configure and manage test execution. The main CMakeLists.txt file is located at ``$HOMEgfs/dev/ctests/CMakeLists.txt``.
+The framework uses CMake to configure and manage test execution. The main CMakeLists.txt file is located at ``$HOMEglobal/dev/ctests/CMakeLists.txt``.
 
 **AddJJOBTest Function**:
 
@@ -166,7 +166,7 @@ Each test case is defined by a YAML file using Jinja2 templating. The YAML file 
         mkdir:
             - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input
             - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/history
-        
+
         copy:
             - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc,
                {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc]
@@ -211,15 +211,15 @@ Some tests require data from multiple cycles (e.g., coupled forecasts needing re
         mkdir:
             # Current cycle (12Z)
             - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/input
-            
+
             # Previous cycle (06Z)
             - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart
-        
+
         copy:
             # Current cycle ICs
             - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/input/gfs_ctrl.nc,
                {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/input/gfs_ctrl.nc]
-            
+
             # Previous cycle restarts
             - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart/MOM.res.nc,
                {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart/MOM.res.nc]
@@ -324,7 +324,7 @@ Environment Setup
 
 Before running tests, ensure the required environment variables are set. These can be provided via:
 
-1. Platform configuration files (``$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID``)
+1. Platform configuration files (``$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID``)
 2. Command-line CMake options (``-DVARIABLE=value``)
 3. Environment variables exported in shell
 
@@ -337,7 +337,7 @@ Before running tests, ensure the required environment variables are set. These c
 **Optional Variables**:
 
 * ``RUNTESTS``: Test execution directory (defaults to ``${CMAKE_BINARY_DIR}/RUNTESTS``)
-* ``HOMEgfs``: Global workflow root (defaults to ``${PROJECT_SOURCE_DIR}``)
+* ``HOMEglobal``: Global workflow root (defaults to ``${PROJECT_SOURCE_DIR}``)
 
 Configuration
 =============
@@ -346,13 +346,13 @@ Configure the CTest framework using CMake from the ctests directory:
 
 .. code-block:: bash
 
-    cd $HOMEgfs/dev/ctests
+    cd $HOMEglobal/dev/ctests
     mkdir -p build
     cd build
-    
+
     # Configure with environment variables
     cmake ../..
-    
+
     # Or configure with command-line options
     cmake -DHPC_ACCOUNT=myaccount \
           -DSTAGED_CTESTS=/path/to/baselines/RUNTESTS \
@@ -374,7 +374,7 @@ Running Tests
 
 .. code-block:: bash
 
-    cd $HOMEgfs/dev/ctests/build
+    cd $HOMEglobal/dev/ctests/build
     ctest
 
 **Run Tests by Label** (all tests for a specific case):
@@ -383,16 +383,16 @@ Running Tests
 
     # Run all C48_ATM tests (trailing hyphen prevents partial matches)
     ctest -L "C48_ATM-"
-    
+
     # Run all C48_S2SW tests (excludes C48_S2SWA_gefs tests)
     ctest -L "C48_S2SW-"
-    
+
     # Run all C48_S2SWA_gefs ensemble tests
     ctest -L "C48_S2SWA_gefs-"
 
 .. note::
 
-    The trailing hyphen in the label pattern is important! Labels use binomial 
+    The trailing hyphen in the label pattern is important! Labels use binomial
     nomenclature (``CASE-JOB``), and the hyphen acts as a natural delimiter.
     Without it, ``ctest -L C48_S2SW`` would also match ``C48_S2SWA_gefs`` tests
     due to CTest's regex-based label matching.
@@ -403,7 +403,7 @@ Running Tests
 
     # Run specific test with detailed logging
     ctest -R test_C48_ATM-gfs_fcst_seg0_execute -V
-    
+
     # Run entire test sequence for one case
     ctest -R C48_S2SW-gfs_fcst_seg0 -V
 
@@ -413,7 +413,7 @@ Running Tests
 
     # Run only setup phase
     ctest -R test_C48_ATM-gfs_fcst_seg0_setup
-    
+
     # Run only validation phase
     ctest -R test_C48_ATM-gfs_fcst_seg0_validate
 
@@ -468,7 +468,7 @@ Step-by-Step Procedure
 
 **Step 1: Add Test Definition to CMakeLists.txt**
 
-Add the test at the end of ``$HOMEgfs/dev/ctests/CMakeLists.txt``:
+Add the test at the end of ``$HOMEglobal/dev/ctests/CMakeLists.txt``:
 
 .. code-block:: cmake
 
@@ -480,7 +480,7 @@ Add the test at the end of ``$HOMEgfs/dev/ctests/CMakeLists.txt``:
 
 **Step 2: Create YAML Case File**
 
-Create a YAML file following the naming convention in ``$HOMEgfs/dev/ctests/cases/``:
+Create a YAML file following the naming convention in ``$HOMEglobal/dev/ctests/cases/``:
 
 **Filename**: ``${CASE}-${JOB}.yaml``
 
@@ -494,10 +494,10 @@ For the example above: ``C48_ATM-gfs_analysis.yaml``
 
     # Navigate to stable baseline COMROOT
     cd ${STAGED_CTESTS}/COMROOT/${PSLOT}
-    
+
     # List atmosphere input files
     ls gfs.20210323/12/model/atmos/input/
-    
+
     # List restart files from previous cycle
     ls gfs.20210323/06/model/ocean/restart/
 
@@ -526,7 +526,7 @@ Create the YAML file with proper input staging configuration:
             # Create all necessary directory structures
             - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input
             - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/analysis
-        
+
         copy:
             # Stage all required input files from baseline
             - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/atmos/input/gfs_ctrl.nc,
@@ -544,7 +544,7 @@ Create the YAML file with proper input staging configuration:
 
 .. code-block:: bash
 
-    cd $HOMEgfs/dev/ctests/build
+    cd $HOMEglobal/dev/ctests/build
     cmake ../..
     ctest -R test_C48_ATM-gfs_analysis_execute -V
 
@@ -641,7 +641,7 @@ Missing Input Files
 
     # Compare stable baseline
     ls ${STAGED_CTESTS}/COMROOT/${PSLOT}/gfs.${PDY}/${cyc}/
-    
+
     # With test environment
     ls ${RUNTESTS}/COMROOT/${TEST_NAME}/gfs.${PDY}/${cyc}/
 
@@ -678,7 +678,7 @@ Cycle Offset Issues
     {% set H_offset = '-6H' %}
     {% set TEST_DATE_offset = TEST_DATE + H_offset %}
     {% set cyc_offset = TEST_DATE_offset | strftime('%H') %}
-    
+
     # Stage files using cyc_offset for previous cycle paths
     - {{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc_offset }}/model/ocean/restart/...
 
@@ -703,7 +703,7 @@ Missing Baseline Data
 
 **Diagnosis**: Nightly baseline runs incomplete or configuration incorrect
 
-**Solution**: 
+**Solution**:
 
 1. Verify ``STAGED_CTESTS`` path in ``config.$MACHINE_ID``
 2. Check nightly CI runs completed successfully
@@ -723,7 +723,7 @@ HPC Account Issues
 
     # Set correct account
     cmake -DHPC_ACCOUNT=correct_account ../..
-    
+
     # Or export before cmake
     export HPC_ACCOUNT=correct_account
     cmake ../..
@@ -745,7 +745,7 @@ Debugging Strategies
 
     # Test experiment directory
     cd ${RUNTESTS}/COMROOT/${TEST_NAME}_${HASH}
-    
+
     # Check logs
     tail -f EXPDIR/logs/test_name.log
 
@@ -754,7 +754,7 @@ Debugging Strategies
 .. code-block:: bash
 
     # Run test phases manually
-    cd $HOMEgfs/dev/ctests/build/scripts
+    cd $HOMEglobal/dev/ctests/build/scripts
     ./setup.sh TEST_NAME CASE_YAML TEST_DATE
     ./stage.sh CASE_NAME TEST_NAME TEST_DATE
     ./execute.sh TEST_NAME JOB_NAME TEST_DATE
@@ -766,7 +766,7 @@ Debugging Strategies
 
     # Test YAML parsing
     from wxflow import parse_j2yaml, to_datetime
-    
+
     data = {
         'TEST_DATE': to_datetime('2021032312'),
         'STAGED_CTESTS': '/path/to/baselines',
@@ -774,7 +774,7 @@ Debugging Strategies
         'PSLOT': 'C48_ATM_baseline',
         'TEST_NAME': 'C48_ATM-gfs_fcst_seg0_hash'
     }
-    
+
     config = parse_j2yaml('cases/C48_ATM-gfs_fcst_seg0.yaml', data)
     print(config)
 
@@ -794,18 +794,18 @@ Directory Reference
 
 **Key Directories**:
 
-* ``$HOMEgfs/dev/ctests/`` - CTest framework root
-* ``$HOMEgfs/dev/ctests/cases/`` - YAML test case definitions
-* ``$HOMEgfs/dev/ctests/build/`` - CMake build directory
+* ``$HOMEglobal/dev/ctests/`` - CTest framework root
+* ``$HOMEglobal/dev/ctests/cases/`` - YAML test case definitions
+* ``$HOMEglobal/dev/ctests/build/`` - CMake build directory
 * ``${STAGED_CTESTS}/COMROOT/`` - Stable baseline outputs
 * ``${RUNTESTS}/COMROOT/`` - Test execution environments
-* ``$HOMEgfs/jobs/JGLOBAL_*`` - Production job scripts
+* ``$HOMEglobal/jobs/JGLOBAL_*`` - Production job scripts
 
 **Configuration Files**:
 
-* ``$HOMEgfs/dev/ci/platforms/config.$MACHINE_ID`` - Platform settings
-* ``$HOMEgfs/dev/ctests/CMakeLists.txt`` - Test definitions
-* ``$HOMEgfs/dev/ci/gitlab-ci-hosts.yml`` - CI/CD pipeline
+* ``$HOMEglobal/dev/ci/platforms/config.$MACHINE_ID`` - Platform settings
+* ``$HOMEglobal/dev/ctests/CMakeLists.txt`` - Test definitions
+* ``$HOMEglobal/dev/ci/gitlab-ci-hosts.yml`` - CI/CD pipeline
 
 Development History
 ===================

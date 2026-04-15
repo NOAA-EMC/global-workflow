@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
-HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
-declare -rx HOMEgfs
+HOMEglobal=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" && git rev-parse --show-toplevel)
+declare -rx HOMEglobal
 
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 set +eu
 module load "nccmp/${nccmp_ver:-"1.9.0.1"}"
 

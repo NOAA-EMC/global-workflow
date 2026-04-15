@@ -6,10 +6,10 @@ echo "BEGIN: config.verfrad"
 # Get task specific resources
 . "${EXPDIR}/config.resources" verfrad
 
-export satype_file=${PARMgfs}/monitor/gdas_radmon_satype.txt
+export satype_file=${PARMglobal}/monitor/gdas_radmon_satype.txt
 
 # Source the parm file
-. "${PARMgfs}/monitor/da_mon.parm"
+. "${PARMglobal}/monitor/da_mon.parm"
 
 # Other variables
 export RAD_AREA="glb"

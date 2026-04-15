@@ -28,7 +28,7 @@ if __name__ == '__main__':
         config.STAT_ANALYSES.append('snow')
     if config.DO_JEDIATMVAR:
         config.STAT_ANALYSES.append('atmos')
-    else:
+    elif config.DO_GSI_ANLSTAT:
         config.STAT_ANALYSES.append('atmos_gsi')
 
     # GCDAS uses offline GDAS, remove atmos analysis
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Initialize JEDI variational analysis
     if 'atmos_gsi' in config.STAT_ANALYSES:
         AnlStats.convert_gsi_diags()
-    AnlStats.initialize()
     for anl in config.STAT_ANALYSES:
+        AnlStats.initialize(anl)
         AnlStats.execute(anl)
         AnlStats.finalize(anl)

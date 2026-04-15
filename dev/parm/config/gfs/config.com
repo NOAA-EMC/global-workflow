@@ -3,6 +3,8 @@
 # shellcheck disable=SC2016
 echo "BEGIN: config.com"
 
+# TODO remove this config file. This will require removing all references to COM_*_TMPL variables in the workflow setup scripts.
+
 # These are just templates. All templates must use single quotations so variable
 #   expansion does not occur when this file is sourced. Substitution happens later
 #   during runtime. It is recommended to use the helper function `declare_from_tmpl()`,

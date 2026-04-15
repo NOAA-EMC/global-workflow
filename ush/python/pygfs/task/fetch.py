@@ -50,7 +50,7 @@ class Fetch(Task):
         """
 
         fetch_yaml = fetch_dict.FETCH_YAML_TMPL
-        fetch_parm = os.path.join(fetch_dict.PARMgfs, "fetch")
+        fetch_parm = os.path.join(fetch_dict.PARMglobal, "fetch")
 
         parsed_fetch = parse_j2yaml(os.path.join(fetch_parm, fetch_yaml),
                                     fetch_dict)

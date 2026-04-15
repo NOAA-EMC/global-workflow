@@ -121,7 +121,7 @@ class ArchiveVrfyVars:
                 config_dict[key] = f"{config_dict[key]:03d}"
 
         # Configuration keys to extract (if present)
-        config_keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMgfs',
+        config_keys = ['current_cycle', 'RUN', 'PSLOT', 'ROTDIR', 'PARMglobal',
                        'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR',
                        'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET',
                        'FHOUT_GFS', 'FHMAX_HF_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT',
@@ -139,7 +139,6 @@ class ArchiveVrfyVars:
                 logger.warning(f"Config key '{key}' not found in config_dict; skipping.")
 
         # Import COM* directory and template variables created by job scripts
-        # Job scripts use declare_from_tmpl -rx which exports variables to environment
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
                 general_dict[key] = config_dict.get(key)

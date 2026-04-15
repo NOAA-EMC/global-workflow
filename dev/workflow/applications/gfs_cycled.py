@@ -73,6 +73,7 @@ class GFSCycledAppConfig(AppConfig):
 
             run_options[run]['do_hybvar'] = base.get('DOHYBVAR', False)
             run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
+            run_options[run]['do_enkfonly_atm'] = base.get('DOENKFONLY_ATM', False)
             run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
@@ -103,6 +104,11 @@ class GFSCycledAppConfig(AppConfig):
         options = self.run_options[run]
 
         configs = ['prep']
+
+        if options['do_enkfonly_atm']:
+            configs += ['fetch', 'prepatmanlbias']
+            if options['do_archcom']:
+                configs += ['earc_tars', 'earc_groups']
 
         if options['do_prep_sfc']:
             configs += ['prep_sfc']
@@ -376,6 +382,12 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['cleanup']
 
+                # Reset tasks to run enkf-only for atm if do_enkfonly_atm=true
+                if options['do_enkfonly_atm']:
+                    if run == 'gdas':
+                        task_names[run] = []
+                        task_names[run] += ['prep', 'fetchatmanlbias', 'prepatmanlbias']
+
             # Ensemble tasks
             elif 'enkf' in run:
 
@@ -414,4 +426,17 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['cleanup']
 
+                # Reset tasks to run enkf-only for atm if do_enkfonly_atm=true
+                if options['do_enkfonly_atm']:
+                    task_names[run] = []
+                    task_names[run] += ['stage_ic']
+                    if options['do_jediatmens']:
+                        task_names[run] += ['atmensanlinit', 'atmensanlfv3inc', 'atmensanlfinal']
+                        if options['do_jediatmens_split_obssol']:
+                            task_names[run] += ['atmensanlobs', 'atmensanlsol']
+                        else:
+                            task_names[run] += ['atmensanlletkf']
+                    else:
+                        task_names[run] += ['eobs', 'eupd', 'ecen', 'ediag']
+                    task_names[run] += ['efcs', 'epos', 'esfc', 'earc_tars', 'cleanup']
         return task_names

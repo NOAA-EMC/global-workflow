@@ -5,11 +5,9 @@
 # Set up Local Variables
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/VER"
 cd "${DATA}/VER" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 MDL=GFS
 metaname="gfsver_${cyc}.meta"
@@ -55,7 +53,7 @@ for lookback in "${lookbacks[@]}"; do
     # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     HPCGFS="${RUN}.${init_time}"
     if [[ ! -L "${HPCGFS}" ]]; then
-        YMD=${init_PDY} HH=${init_cyc} GRID="1p00" declare_from_tmpl source_dir:COM_ATMOS_GEMPAK_TMPL
+        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
         ${NLN} "${source_dir}" "${HPCGFS}"
     fi
 

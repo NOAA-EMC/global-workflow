@@ -60,7 +60,7 @@ if [[ -s "${com_dir}/${outfile}" ]] && [[ -s "${com_dir}/${outfile}.idx" ]]; the
 fi
 
 # Copy template files to grib_DATA (required for ww3_grib.x)
-cpreq "${PARMgfs}/wave/ww3_grib2.${grdID}.inp.tmpl" "./ww3_grib2.${grdID}.inp.tmpl"
+cpreq "${PARMglobal}/wave/ww3_grib2.${grdID}.inp.tmpl" "./ww3_grib2.${grdID}.inp.tmpl"
 
 # Link mod_def files from DATA into grib_DATA
 ${NLN} "${DATA}/mod_def.${grdID}" "./mod_def.ww3"
@@ -85,7 +85,7 @@ cat ww3_grib.inp
 # Run the ww3_grib generation code
 export pgm="${NET,,}_ww3_grib.x"
 source prep_step
-"${EXECgfs}/${pgm}" > "grib2_${grid_region}_${FH3}.out" 2>&1
+"${EXECglobal}/${pgm}" > "grib2_${grid_region}_${FH3}.out" 2>&1
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: ${pgm} returned non-zero status: ${err}; exiting!"
@@ -98,14 +98,22 @@ if [[ ! -s gribfile ]]; then
     exit 2
 fi
 
+outfiletmp="${outfile}.tmp"
 if [[ ${fhr} -gt 0 ]]; then
-    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${outfile}"
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
+        -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
+    err=$?
+    [[ ${err} -eq 0 ]] && ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
     err=$?
 else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-        -set table_1.4 1 -set table_1.2 1 -grib "${outfile}"
+        -set table_1.4 1 -set table_1.2 1 \
+        -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
+    err=$?
+    [[ ${err} -eq 0 ]] && ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
     err=$?
 fi
+rm -f "${outfiletmp}"
 
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: Error creating '${outfile}' with '${WGRIB2}'"

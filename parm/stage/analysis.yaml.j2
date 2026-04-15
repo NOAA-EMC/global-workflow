@@ -56,11 +56,45 @@ analysis:
             {% endif %}
 
                 {# Bias Correction Files #}
-                {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt", "rad_varbc_params.tar"] %}
+                {#TODO: remove abias files when JEDI can cycle bias correction files #}
+                {% for ftype in ["varbc_params.tar", "abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt"] %}
                     {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                     {% endif %}
                 {% endfor %}
+
+        {# -------------------------------------------------------------------- #}
+        {# JEDI Atmospheric Ensemble Data Assimilation                          #}
+        {# -------------------------------------------------------------------- #}
+        {% elif DO_JEDIATMENS %}
+
+            {# Cubed Sphere Grid Configuration #}
+
+            {% for itile in range(ntiles) %}
+
+                {# Ensemble Members (member != -1) #}
+                {% if not DOENKFONLY_ATM %}
+                    {% if DOIAU_ENKF %}
+                        {% set ftypes = ["recentered_jedi_increment.atm.i003", "recentered_jedi_increment.atm.i006", "recentered_jedi_increment.atm.i009" ] %}
+                    {% else %}
+                        {% set ftypes = ["recentered_jedi_increment.atm.i006" ] %}
+                    {% endif %}
+                {% else %}
+                    {% if DOIAU_ENKF %}
+                        {% set ftypes = ["jedi_increment.atm.i003", "jedi_increment.atm.i006", "jedi_increment.atm.i009" ] %}
+                    {% else %}
+                        {% set ftypes = ["jedi_increment.atm.i006" ] %}
+                    {% endif %}
+                {% endif %}
+
+                {% for ftype in ftypes %}
+                    {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype ~ ".tile" ~ (itile+1) ~ ".nc") %}
+        - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}.tile{{ itile+1 }}.nc", "{{ COMOUT_ATMOS_ANALYSIS }}"]
+                    {% endif %}
+                {% endfor %}
+
+            {% endfor %}
+
         {# -------------------------------------------------------------------- #}
         {# GSI Data Assimilation (Non-JEDI)                                     #}
         {# -------------------------------------------------------------------- #}
@@ -69,7 +103,7 @@ analysis:
             {# All GSI Analysis Files #}
             {% for ftype in ["abias.txt", "abias_air.txt", "abias_int.txt", "abias_pc.txt",
                              "increment.atm.i006.nc", "increment.atm.i009.nc", "increment.atm.i003.nc", "radstat.tar",
-                             "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc", "rad_varbc_params.tar"] %}
+                             "recentered_increment.atm.i006.nc", "recentered_increment.atm.i009.nc", "recentered_increment.atm.i003.nc"] %}
                 {% if path_exists(ICSDIR ~ "/" ~ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) ~ "/" ~ RUN ~ ".t" ~ current_cycle_HH ~ "z." ~ ftype) %}
         - ["{{ ICSDIR }}/{{ COMOUT_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ RUN }}.t{{ current_cycle_HH }}z.{{ ftype }}", "{{ COMOUT_ATMOS_ANALYSIS }}"]
                 {% endif %}

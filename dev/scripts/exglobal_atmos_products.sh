@@ -37,8 +37,11 @@ fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
 
-# Files needed by ${USHgfs}/interp_atmos_master.sh
+# Files needed by ${USHglobal}/interp_atmos_master.sh
 MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
+
+# Create an index file for the master
+${WGRIB2} -s "${MASTER_FILE}" > "${MASTER_FILE}.idx"
 
 for ((nset = 1; nset <= downset; nset++)); do
 
@@ -87,10 +90,10 @@ for ((nset = 1; nset <= downset; nset++)); do
         # if final record of is u-component, add next record v-component
         # if final record is land, add next record icec
         # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
-        unset_strict
+        source "${USHglobal}/unset_strict.sh"
         ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw"
         rc=$?
-        set_strict
+        source "${USHglobal}/set_strict.sh"
         if [[ ${rc} == 0 ]]; then # Matched the grep
             last=$((last + 1))
         fi
@@ -106,7 +109,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         fi
         input_file="${tmpfile}_${iproc}"
         output_file_prefix="pgb2${grp}file_${fhr3}_${iproc}"
-        echo "${USHgfs}/interp_atmos_master.sh ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/cmdfile"
+        echo "${USHglobal}/interp_atmos_master.sh ${input_file} ${output_file_prefix} ${grid_string}" >> "${DATA}/cmdfile"
 
         # if at final record and have not reached the final processor then write echo's to
         # cmdfile for remaining processors
@@ -119,7 +122,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     done # for (( iproc = 1 ; iproc <= nproc ; iproc++ )); do
 
     # Run with MPMD or serial
-    "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
+    "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "FATAL ERROR: Some or all interpolations of the master grib file failed during MPMD execution!"
@@ -170,7 +173,7 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
     input_file="${FLUX_FILE}"
     output_file_prefix="sflux_${fhr3}"
     grid_string="1p00"
-    "${USHgfs}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
+    "${USHglobal}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         err_exit "FATAL ERROR: Unable to interpolate the surface flux grib2 files!"
@@ -201,7 +204,7 @@ fi
 
 # Start sending DBN alerts
 # Everything below this line is for sending files to DBN (SENDDBN=YES)
-if [[ "${SENDDBN:-}" == "YES" ]]; then
+if [[ "${SENDDBN:-}" == "YES" && "${NET}" != "gcafs" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
     if [[ "${RUN}" == "gfs" ]]; then

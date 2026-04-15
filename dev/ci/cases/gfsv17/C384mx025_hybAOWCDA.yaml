@@ -12,10 +12,12 @@ experiment:
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2025101000
-    #edate: 2025103118
   edate: 2025101118
   icsdir: /scratch4/NCEPDEV/global/John.Steffen/hpss_arch/cp4.03-parallel-hybrid/rst/
-  yaml: {{ HOMEgfs }}/dev/ci/cases/gfsv17/marinehyb.yaml
+#idate: 2021063018
+#edate: 2021070306
+#icsdir: 
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/marinehyb.yaml
 
 workflow:
   engine: rocoto

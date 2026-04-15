@@ -2,7 +2,7 @@
 
 set -x
 
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ################################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGFS_ATMOS_POSTSND"
+"${HOMEglobal}/dev/jobs/JGFS_ATMOS_POSTSND"
 err=$?
 exit "${err}"

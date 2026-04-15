@@ -49,9 +49,9 @@ fi
 
 export CASE=${CASE_HIST:-${CASE}}
 
-if [[ -s "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" ]]; then
+if [[ -s "${PARMglobal}/product/bufr_ij_gfs_${CASE}.txt" ]]; then
     # use predetermined grid point(i,j) in bufr_gfs_${CASE}.txt
-    ${NLN} "${PARMgfs}/product/bufr_ij_gfs_${CASE}.txt" fort.7
+    ${NLN} "${PARMglobal}/product/bufr_ij_gfs_${CASE}.txt" fort.7
     np1=0
 else
     # find the nearest neighbor grid point(i,j) in the code
@@ -97,11 +97,11 @@ cpreq "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr}.${atmfm}" "flxf${fhr}"
 cpreq "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr_p}.${atmfm}" "flxf${fhr_p}"
 
 #  define input BUFR table file.
-${NLN} "${PARMgfs}/product/bufr_gfs_${CLASS}.tbl" fort.1
-${NLN} "${STNLIST:-${PARMgfs}/product/bufr_stalist.meteo.gfs}" fort.8
+${NLN} "${PARMglobal}/product/bufr_gfs_${CLASS}.tbl" fort.1
+${NLN} "${STNLIST:-${PARMglobal}/product/bufr_stalist.meteo.gfs}" fort.8
 
 #------------------------------------------------------------------
-"${EXECgfs}/${pgm}" < gfsparm > "out_gfs_bufr_${fhr}"
+"${EXECglobal}/${pgm}" < gfsparm > "out_gfs_bufr_${fhr}"
 
 export err=$?
 

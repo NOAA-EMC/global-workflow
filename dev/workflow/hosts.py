@@ -16,7 +16,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
-                       'GAEAC5', 'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
+                       'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
 
@@ -32,6 +32,7 @@ class Host:
             self.detect()
 
         self.info = self._get_info
+        self._apply_env_overrides(self.info)
         self.scheduler = self.info['SCHEDULER']
 
     def __str__(self) -> str:
@@ -84,8 +85,6 @@ class Host:
             self.machine = socket.gethostname().split("-", 1)[0].upper()
         elif os.path.exists('/lfs/f1'):
             self.machine = 'WCOSS2'
-        elif os.path.exists('/gpfs/f5'):
-            self.machine = 'GAEAC5'
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
         elif container is not None:
@@ -104,6 +103,19 @@ class Host:
         raise NotImplementedError('Unable to detect a supported host.\n' +
                                   'Currently supported hosts are:\n' +
                                   f'{" | ".join(Host.SUPPORTED_HOSTS)}')
+
+    def _apply_env_overrides(self, info: dict) -> None:
+        """Override host configuration values with environment variables.
+
+        Parameters
+        ----------
+        info : dict
+            Host configuration dictionary to update in-place.
+        """
+        # Allow BASE_IC to be overridden via the environment
+        # (e.g. from the -I flag in generate_workflows.sh)
+        if 'BASE_IC' in os.environ:
+            info['BASE_IC'] = os.environ['BASE_IC']
 
     @property
     def _get_info(self) -> dict:

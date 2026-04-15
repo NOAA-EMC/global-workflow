@@ -274,7 +274,7 @@ case ${cmodel} in
         set +x
         echo " "
         echo " ++ operational NGM chosen"
-        set_trace
+        set -x
         fcsthrsngm='00 06 12 18 24 30 36 42 48'
         ngmdir="${COMIN}"
         ngmgfile=ngm.t${dishh}z.pgrb.f
@@ -1436,9 +1436,9 @@ ${NLN} "${vdir}/trak.${cmodel}.radii.${symdh}" fort.63
 ${NLN} "${vdir}/trak.${cmodel}.atcfunix.${symdh}" fort.64
 
 if [[ "${BKGFREQ}" -eq 1 ]]; then
-    ${NLN} "${FIXgfs}/am/${cmodel}.tracker_leadtimes_hrly" "fort.15"
+    ${NLN} "${FIXglobal}/am/${cmodel}.tracker_leadtimes_hrly" "fort.15"
 elif [[ "${BKGFREQ}" -eq 3 ]]; then
-    ${NLN} "${FIXgfs}/am/${cmodel}.tracker_leadtimes" "fort.15"
+    ${NLN} "${FIXglobal}/am/${cmodel}.tracker_leadtimes" "fort.15"
 fi
 
 ${TIMEIT} "${APRNGETTX}" "${GETTX}" < "${namelist}" > outout 2> errfile

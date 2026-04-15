@@ -3,8 +3,8 @@
 set -x
 
 ###############################################################
-#source "${HOMEgfs}/dev/ush/load_modules.sh" run
-source "${HOMEgfs}/dev/ush/load_modules.sh" ufswm
+#source "${HOMEglobal}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufswm
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_INIT"
+"${HOMEglobal}/dev/jobs/JGLOBAL_WAVE_INIT"
 status=$?
 
 exit "${status}"

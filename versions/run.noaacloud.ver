@@ -7,7 +7,7 @@ export stack_mpi_ver=2021.13
 
 spack_stack_root="/contrib/spack-stack-rocky8"
 
-source "${HOMEgfs:-}/versions/spack.ver"
+source "${HOMEglobal:-}/versions/spack.ver"
 
 export cdo_ver=2.3.0
 export perl_ver=5.38.0

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
 
-source "${HOMEgfs}/ush/detect_machine.sh"
+source "${HOMEglobal}/ush/detect_machine.sh"
 
 if [[ ${MACHINE_ID} = hera* ]]; then
     # We are on NOAA Hera
@@ -63,17 +63,6 @@ elif [[ ${MACHINE_ID} = stampede* ]]; then
     fi
     module purge
 
-elif [[ ${MACHINE_ID} = gaeac5 ]]; then
-    # We are on GAEA C5.
-    if (! eval module help > /dev/null 2>&1); then
-        # We cannot simply load the module command.  The GAEA
-        # /etc/profile modifies a number of module-related variables
-        # before loading the module command.  Without those variables,
-        # the module command fails.  Hence we actually have to source
-        # /etc/profile here.
-        source /etc/profile
-    fi
-    module reset
 elif [[ ${MACHINE_ID} = gaeac6 ]]; then
     # We are on GAEA C6.
     if (! eval module help > /dev/null 2>&1); then
@@ -105,10 +94,4 @@ else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
 
-# If this function exists in the environment, run it; else do not
-ftype=$(type -t set_strict || echo "")
-if [[ "${ftype}" == "function" ]]; then
-    set_strict
-else
-    set +u
-fi
+set +u

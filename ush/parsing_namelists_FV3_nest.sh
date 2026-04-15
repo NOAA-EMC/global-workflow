@@ -20,10 +20,10 @@ FV3_namelists_nest() {
     fi
 
     # setup the tables
-    DIAG_TABLE=${DIAG_TABLE:-${PARMgfs}/ufs/fv3/diag_table}
-    DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMgfs}/ufs/fv3/diag_table_aod}
-    DATA_TABLE=${DATA_TABLE:-${PARMgfs}/ufs/MOM6_data_table.IN}
-    FIELD_TABLE=${FIELD_TABLE:-${PARMgfs}/ufs/fv3/field_table}
+    DIAG_TABLE=${DIAG_TABLE:-${PARMglobal}/ufs/fv3/diag_table}
+    DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMglobal}/ufs/fv3/diag_table_aod}
+    DATA_TABLE=${DATA_TABLE:-${PARMglobal}/ufs/MOM6_data_table.IN}
+    FIELD_TABLE=${FIELD_TABLE:-${PARMglobal}/ufs/fv3/field_table}
 
     # set cdmbgwd
     if ((gwd_opt == 2)) && [[ ${do_gsl_drag_ls_bl} == ".true." ]]; then

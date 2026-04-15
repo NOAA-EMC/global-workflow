@@ -33,7 +33,7 @@ input_files:
 
     copy:
         # No input files required from COMROOT for waveinit
-        # The job reads from FIXgfs wave grids and creates mod_def files
+        # The job reads from FIXglobal wave grids and creates mod_def files
         # This is a generation job, not a processing job
 
 output_files:

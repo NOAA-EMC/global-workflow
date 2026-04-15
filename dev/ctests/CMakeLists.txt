@@ -17,9 +17,9 @@ function(set_from_env_or_default VAR_NAME ENV_VAR DEFAULT_VALUE)
   endif()
 endfunction()
 
-# Set HOMEgfs
-if (NOT DEFINED HOMEgfs)
-  set(HOMEgfs ${PROJECT_SOURCE_DIR})
+# Set HOMEglobal
+if (NOT DEFINED HOMEglobal)
+  set(HOMEglobal ${PROJECT_SOURCE_DIR})
 endif()
 
 # Set RUNTESTS
@@ -39,17 +39,10 @@ if (NOT DEFINED STAGED_CTESTS)
   return()
 endif()
 
-# Set ICSDIR_ROOT
-set_from_env_or_default(ICSDIR_ROOT ICSDIR_ROOT "")
-if (NOT DEFINED ICSDIR_ROOT)
-  message(WARNING "ICSDIR_ROOT must be set. CTests will not be created.")
-  return()
-endif()
 
-message(STATUS "gw: global-workflow baselines will be used from: '${HOMEgfs}'")
+message(STATUS "gw: global-workflow baselines will be used from: '${HOMEglobal}'")
 message(STATUS "gw: global-workflow tests will be run at: '${RUNTESTS}'")
 message(STATUS "gw: global-workflow tests will use the allocation: '${HPC_ACCOUNT}'")
-message(STATUS "gw: global-workflow tests will use ICSDIR_ROOT: '${ICSDIR_ROOT}'")
 
 # Prepare test scripts
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/setup.sh.in
@@ -73,7 +66,7 @@ function(AddJJOBTest)
                         ${ARGN})
 
   set(TEST_NAME ${ARG_CASE}-${ARG_JOB})
-  set(CASE_PATH ${HOMEgfs}/dev/ci/cases/pr)
+  set(CASE_PATH ${HOMEglobal}/dev/ci/cases/pr)
   set(CASE_YAML ${CASE_PATH}/${ARG_CASE}.yaml)
 
   # Labels use binomial nomenclature: CASE-JOB (e.g., C48_S2SW-gfs_fcst_seg0)

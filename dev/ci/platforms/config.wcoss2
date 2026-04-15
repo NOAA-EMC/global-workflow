@@ -1,9 +1,26 @@
 #!/usr/bin/bash
 
 export GFS_CI_ROOT=/lfs/h2/emc/global/noscrub/globalworkflow.ci/GFS_CI_ROOT
-export ICSDIR_ROOT=/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR
+export BASE_IC=/lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR
 # HPC account which overides the default account
 export HPC_ACCOUNT=${HPC_ACCOUNT:-GFS-DEV}
+
+#########################################################################
+# GitLab CI configuration
+# These variables are referenced directly by launch_gitlab_runner.sh
+#########################################################################
+
+# TODO: Populate GitLab CI variables for WCOSS2 when runners are deployed
+# export GITLAB_URL=https://vlab.noaa.gov/gitlab-community
+# export GITLAB_RUNNER_NAME="WCOSS2"
+# export GITLAB_BUILDS_DIR=${GFS_CI_ROOT}/BUILDS/GITLAB
+# export GITLAB_RUNNER_DIR="${GFS_CI_ROOT}/GitLab/Runner"
+
+# Port for GitLab Runner's embedded Prometheus metrics endpoint
+# Used by launch_gitlab_runner.sh for liveness health checks
+# Default: 9252 (IANA-allocated for GitLab Runner in Prometheus port registry)
+# Bound to localhost only — not exposed to the network
+export GITLAB_RUNNER_METRICS_PORT=9252
 
 #########################################################################
 # System-specific settings
