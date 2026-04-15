@@ -10,7 +10,6 @@
 #       err_exit, postamble)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
-#   - Activating strict mode (set -eu) and tracing (set -x)
 #   - Setting up the postamble EXIT trap for script timing and cleanup
 #   - Running setpdy.sh and sourcing PDY date variables
 #

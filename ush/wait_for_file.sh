@@ -20,7 +20,7 @@
 #     file_name=/path/to/foo
 #     sleep_interval=60
 #     max_tries=30
-#     if wait_for_file; then
+#     if ${USHgfs}/wait_for_file.sh ${file_name} ${sleep_interval} ${max_tries}; then
 #       echo "FATAL ERROR: ${file_name} still does not exist after waiting one-half hour."
 #       exit 1
 #     fi

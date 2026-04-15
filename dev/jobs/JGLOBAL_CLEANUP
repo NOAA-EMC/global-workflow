@@ -3,7 +3,6 @@ set -x
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "cleanup" -c "base cleanup"
 
-"${SCRgfs}/exglobal_cleanup.sh" && true
 #{% if false %}
 source "${HOMEgfs}/ush/jjob_standard_vars.sh"
 #{% else %}

@@ -3,8 +3,6 @@
 # Universal header for global j-jobs
 #
 # Sets up and completes actions common to all j-jobs:
-# - Creates and moves to $DATA after removing any
-#     existing one unless $WIPE_DATA is set to "NO"
 # - Sources configs provided as arguments
 # - Sources machine environment script
 #
