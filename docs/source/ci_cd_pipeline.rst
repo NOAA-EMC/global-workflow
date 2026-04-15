@@ -268,44 +268,29 @@ definitions, running tests, validation modes, and adding new tests — see
 Per-Host Test Matrices
 ======================
 
-Each HPC platform runs a specific subset of test cases, defined in
-``dev/ci/gitlab-ci-hosts.yml``. The matrices reflect the software and data
-availability on each system:
+Each HPC platform runs a specific subset of test cases. Not every platform
+supports every test — the matrix for each machine is determined by software
+availability (e.g., Spack-Stack module coverage), data staging (initial
+conditions and baseline outputs), and platform-specific limitations (e.g.,
+TC Tracker not available on Hercules, GSI performance issues on Orion).
 
-.. list-table:: Test Cases by Platform
-   :widths: 15 85
-   :header-rows: 1
+Test matrices are defined as YAML anchors in ``dev/ci/gitlab-ci-hosts.yml``,
+one per platform. Each anchor lists the ``caseName`` values that platform will
+run:
 
-   * - Platform
-     - Test Cases
-   * - **Hera**
-     - C48_ATM, C48_S2SW, C48_S2SWA_gefs, C48mx500_3DVarAOWCDA,
-       C48mx500_hybAOWCDA, C96C48_hybatmDA, C96C48_hybatmsnowDA,
-       C96C48_hybatmsoilDA, C96C48_ufsgsi_hybatmDA, C96C48_ufs_hybatmDA,
-       C96C48mx500_S2SW_cyc_gfs, C96_atm3DVar, C96_gcafs_cycled,
-       C96_gcafs_cycled_noDA, C96mx100_S2S, C48_gsienkf_atmDA,
-       C48_ufsenkf_atmDA
-   * - **Gaea C6**
-     - C48_ATM, C48_S2SW, C48_S2SWA_gefs, C48mx500_3DVarAOWCDA,
-       C48mx500_hybAOWCDA, C96C48_hybatmDA, C96C48_hybatmsnowDA,
-       C96C48_hybatmsoilDA, C96C48mx500_S2SW_cyc_gfs, C96_atm3DVar,
-       C96_gcafs_cycled, C96_gcafs_cycled_noDA, C96mx100_S2S,
-       C48_gsienkf_atmDA, C48_ufsenkf_atmDA
-   * - **Orion**
-     - C48_ATM, C48_S2SW, C48_S2SWA_gefs, C96C48_hybatmDA,
-       C96C48mx500_S2SW_cyc_gfs, C96_atm3DVar, C96mx100_S2S,
-       C96_gcafs_cycled
-   * - **Hercules**
-     - C48_ATM, C48_S2SW, C48_S2SWA_gefs, C48mx500_3DVarAOWCDA,
-       C48mx500_hybAOWCDA, C96C48_hybatmDA, C96C48mx500_S2SW_cyc_gfs,
-       C96_atm3DVar, C96mx100_S2S, C96_gcafs_cycled
-   * - **Ursa**
-     - C48_ATM, C48_S2SW, C48_S2SWA_gefs, C48mx500_3DVarAOWCDA,
-       C48mx500_hybAOWCDA, C96C48_hybatmDA, C96C48_hybatmsnowDA,
-       C96C48_hybatmsoilDA, C96C48_ufsgsi_hybatmDA, C96C48_ufs_hybatmDA,
-       C96C48mx500_S2SW_cyc_gfs, C96_atm3DVar, C96mx100_S2S,
-       C96_gcafs_cycled, C96_gcafs_cycled_noDA, C48_gsienkf_atmDA,
-       C48_ufsenkf_atmDA
+.. code-block:: yaml
+
+   # Example from dev/ci/gitlab-ci-hosts.yml
+   .hera_cases_matrix: &hera_cases
+     - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", ...]
+
+   .orion_cases_matrix: &orion_cases
+     - caseName: ["C48_ATM", "C48_S2SW", ...]
+
+These anchors are referenced by the per-host job definitions in the same file.
+To add or remove a test case from a platform, edit the corresponding anchor
+array. The authoritative source for which tests run where is always
+``dev/ci/gitlab-ci-hosts.yml`` — do not duplicate this information elsewhere.
 
 Pipeline Variables
 ==================
