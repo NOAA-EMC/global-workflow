@@ -22,6 +22,8 @@ export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GDAS_GEMPAK}
 ##############################################
 # Define COM directories
 ##############################################
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 for grid in 0p25 1p00; do
     declare -rx "COMIN_ATMOS_GRIB_${grid}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/${grid}"
 done

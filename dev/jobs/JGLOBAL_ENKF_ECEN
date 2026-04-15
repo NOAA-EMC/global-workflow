@@ -36,7 +36,8 @@ export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
-
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
 
 declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"

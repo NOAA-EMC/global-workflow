@@ -27,7 +27,8 @@ export RUN=${RUN:-gfs}
 # Set up EXT variable
 ###########################
 export EXT_FCST=NO
-
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
 
 ########################################################

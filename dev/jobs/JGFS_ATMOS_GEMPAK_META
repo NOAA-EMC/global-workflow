@@ -52,6 +52,8 @@ export DBN_ALERT_TYPE=GFS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 export COMINukmet=${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}
 export COMINecmwf=${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}
 export COMINnam=${COMINnam:-$(compath.py "${envir}/nam/${nam_ver}")/nam}

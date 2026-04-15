@@ -26,7 +26,8 @@ BKG_RUN="gdas"
 if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
     BKG_RUN="gcdas"
 fi
-
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 declare -rx COMIN_OBS_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/obs"
 declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart"
 

@@ -20,6 +20,8 @@ source "${USHglobal}/jjob_shell_setup.sh"
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
+ROTDIR=$(compath.py "${envir}/${NET}/${gcafs_ver}")
+export ROTDIR
 export COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs/chem"
 
 ##############################################
