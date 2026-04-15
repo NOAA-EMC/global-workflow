@@ -69,10 +69,11 @@ if [[ "${RUN_ENVIR}" == "nco" ]]; then
 fi
 
 #------------------------------
-#--Remove non-WCOSS2 modulefiles and env files
+#--Remove non-WCOSS2 env files and modulefiles with hardcoded paths
 #------------------------------
 if [[ "${RUN_ENVIR}" == "nco" ]]; then
-    find "${HOMEglobal}/modulefiles" -type f -name "*.lua" ! -name "*.wcoss2.lua" -exec rm -f {} \;
+    rm -rf "${HOMEglobal}/modulefiles"
+    rm -rf "${HOMEglobal}/sorc/gdas.cd/modulefiles" 
     find "${HOMEglobal}/env" -type f -name "*.env" ! -name "WCOSS2.env" -exec rm -f {} \;
 fi
 
@@ -125,9 +126,9 @@ for dir in aer \
     ugwd \
     verif; do
     if [[ -d "${dir}" ]]; then
-        if [[ "${RUN_ENVIR}" == "nco" ]]; then
-            chmod -R 755 "${dir}"
-        fi
+        #if [[ "${RUN_ENVIR}" == "nco" ]]; then
+        #    chmod -R 755 "${dir}"
+        #fi
         rm -rf "${dir}"
     fi
     fix_ver="${dir}_ver"
@@ -189,12 +190,14 @@ fi
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/atparse.bash" .
 
 # Link UPP modulefiles for module loading
-cd "${HOMEglobal}/modulefiles" || exit 1
-if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" ]]; then
-    if [[ -d "upp" ]]; then
-        rm -rf "upp"
+if [[ "${RUN_ENVIR}" == "nco" ]]; then
+    cd "${HOMEglobal}/modulefiles" || exit 1
+    if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" ]]; then
+        if [[ -d "upp" ]]; then
+            rm -rf "upp"
+        fi
+        ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" upp
     fi
-    ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" upp
 fi
 
 # add ufs_utils parm dir
