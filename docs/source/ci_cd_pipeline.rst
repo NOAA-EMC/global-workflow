@@ -257,17 +257,13 @@ CTests (``PIPELINE_TYPE=ctests``)
 
 Fast, focused unit-level testing using the CMake/CTest framework. These tests
 exercise individual Rocoto jobs (JJOBS) with predefined, pre-staged input data
-and verify their outputs against baselines from nightly stable runs.
+and verify their outputs against baselines from nightly stable runs. CTests
+provide rapid developer feedback (minutes instead of hours) and are ideal for
+targeted validation of specific job changes.
 
-The CTest flow:
-
-1. ``cmake -S "${GW_HOMEgfs}"`` — Configure the CTest build
-2. ``ctest -N`` — List available tests
-3. ``ctest -L "${CTEST_NAME}"`` — Run tests matching a specific label
-4. JUnit XML results are published as GitLab artifacts
-
-CTests provide rapid developer feedback (minutes instead of hours) and are ideal
-for targeted validation of specific job changes.
+For full details on the CTest framework — including test case configuration, YAML
+definitions, running tests, validation modes, and adding new tests — see
+:doc:`testing`.
 
 Per-Host Test Matrices
 ======================
