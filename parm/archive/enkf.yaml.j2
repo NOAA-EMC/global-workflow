@@ -149,6 +149,8 @@ enkf:
         # End of analysis mean increments/analyses
 
         {% if DOHYBVAR_OCN %}
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensmean.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensmean.nc"
         - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
         - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
         {% endif %}
