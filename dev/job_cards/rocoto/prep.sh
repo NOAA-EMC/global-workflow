@@ -46,7 +46,7 @@ declare -rx COMINobsproc_PREV="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
 # Prepobs still uses old HOME name
-declare -rx HOMEgfs="${HOMglobal}"
+declare -rx HOMEgfs="${HOMEglobal}"
 
 mkdir -p "${COMOUT_OBS}"
 
