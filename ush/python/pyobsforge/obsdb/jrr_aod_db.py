@@ -8,7 +8,7 @@ class JrrAodDatabase(BaseDatabase):
     """Class to manage an observation file database for JRR-AOD data."""
 
     def __init__(self, db_name="jrr_aod_obs.db",
-                 dcom_dir=self.task_config.DCOMROOT,
+                 dcom_dir=os.getenv("DCOMROOT"),
                  obs_dir="jrr_aod"):
         base_dir = os.path.join(dcom_dir, '*', obs_dir)
         super().__init__(db_name, base_dir)
