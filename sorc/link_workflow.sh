@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
-#shellcheck disable=sc2312
+# shellcheck disable=SC2312
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" > /dev/null 2>&1 && git rev-parse --show-toplevel)
 
 function usage() {
