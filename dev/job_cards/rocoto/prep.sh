@@ -17,7 +17,7 @@ source "${HOMEgfs}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
-source "${HOMEgfs}/dev/ush/jjob_shell_setup.sh"
+source "${HOMEgfs}/ush/jjob_shell_setup.sh"
 
 # Strip 'enkf' from RUN for pulling data
 RUN_local="${RUN/enkf/}"
