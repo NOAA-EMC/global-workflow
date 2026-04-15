@@ -126,9 +126,9 @@ for dir in aer \
     ugwd \
     verif; do
     if [[ -d "${dir}" ]]; then
-        #if [[ "${RUN_ENVIR}" == "nco" ]]; then
-        #    chmod -R 755 "${dir}"
-        #fi
+        if [[ "${RUN_ENVIR}" == "nco" ]]; then
+            chmod -R 755 "${dir}"
+        fi
         rm -rf "${dir}"
     fi
     fix_ver="${dir}_ver"
@@ -190,7 +190,7 @@ fi
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/atparse.bash" .
 
 # Link UPP modulefiles for module loading
-if [[ "${RUN_ENVIR}" == "nco" ]]; then
+if [[ "${RUN_ENVIR}" == "emc" ]]; then
     cd "${HOMEglobal}/modulefiles" || exit 1
     if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/UFSATM/upp/modulefiles" ]]; then
         if [[ -d "upp" ]]; then
