@@ -72,7 +72,7 @@ class JrrAodDatabase(BaseDatabase):
 
 
 if __name__ == "__main__":
-    db = JrrAodDatabase
+    db = JrrAodDatabase()
 
     # Check for new files
     db.ingest_files()
