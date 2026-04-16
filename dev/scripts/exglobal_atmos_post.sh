@@ -168,10 +168,7 @@ dd_final=$((10#${vt_final:13:2}))
 
 month_days_in_year=("31" "28" "31" "30" "31" "30" "31" "31" "30" "31" "30" "31")
 # Leap Year Check
-
-if [[ $((yy_init % 4)) -eq 0 ]] && ([[ $((yy_init % 100)) -ne 0 ]] || [[ $((yy_init % 400)) -eq 0 ]]); then
-    month_days_in_year[1]=29
-fi
+(( (yy_init % 4 == 0 && yy_init % 100 != 0) || (yy_init % 400 == 0) )) && month_days_in_year[1]=29
 
 #------------------------------------------------------------------------------
 # STAGE 1: VARIABLE EXTRACTION (6-HOURLY)
