@@ -52,7 +52,7 @@ if [[ "${RUN}" == sfs ]]; then
 
     # 4. Compression
     for f in "${out_file}" "${out_ssh}" "${out_dt20c}" "${out_tchp}" "${out_ocnheat}"; do
-        nccopy -k 4 -d 5 "$f" "${f}.tmp" && mv "${f}.tmp" "${f}"
+        nccopy -k 4 -d 5 "${f}" "${f}.tmp" && mv "${f}.tmp" "${f}"
     done
 
     # 5. Cleanup temporary files

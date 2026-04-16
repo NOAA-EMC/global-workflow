@@ -11,7 +11,7 @@ start_fhr=$1
 interval=6  # Fixed 6-hour interval
 fhr_inc=120 # Number of 6-hour jobs per task
 
-for ((i = 0; i < $fhr_inc; i++)); do
+for ((i = 0; i < fhr_inc; i++)); do
     # Calculate current fhr: start + (0, 6, 12, 18)and the first start_fhr=6
     current_fhr=$((start_fhr + i * interval))
 

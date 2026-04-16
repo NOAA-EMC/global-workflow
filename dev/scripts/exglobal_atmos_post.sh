@@ -304,7 +304,7 @@ for file in "${insfilelist[@]}"; do
 done
 
 if [[ -s "${cmdfile_s3}" ]]; then
-    echo ""INFO: Launching $(wc -l < ${cmdfile_s3}) monthly mean tasks in parallel.""
+    echo "INFO: Launching \"$(wc -l < "${cmdfile_s3}")\" monthly mean tasks in parallel."
     ${RUN_MPMDSH} "${cmdfile_s3}"
     err=$?
 else
