@@ -69,11 +69,11 @@ if [[ "${RUN_ENVIR}" == "nco" ]]; then
 fi
 
 #------------------------------
-#--Remove non-WCOSS2 env files and modulefiles with hardcoded paths
+#--Remove non-WCOSS2 env files and modulefile directories
 #------------------------------
 if [[ "${RUN_ENVIR}" == "nco" ]]; then
     rm -rf "${HOMEglobal}/modulefiles"
-    rm -rf "${HOMEglobal}/sorc/gdas.cd/modulefiles" 
+    rm -rf "${HOMEglobal}/sorc/gdas.cd/modulefiles"
     find "${HOMEglobal}/env" -type f -name "*.env" ! -name "WCOSS2.env" -exec rm -f {} \;
 fi
 
