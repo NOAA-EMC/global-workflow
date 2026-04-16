@@ -182,7 +182,7 @@ for hr in "${!gcycle_dates[@]}"; do
 
     # Copy outputs from DATA to COMOUT
     for ((nn = 1; nn <= ntiles; nn++)); do
-        cpfs "${DATA}/sfc_data_cycle.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+        "${HOMEglobal}/ush/cpfsd.sh" "${DATA}/sfc_data_cycle.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
     done
 
 done

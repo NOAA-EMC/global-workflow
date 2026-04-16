@@ -46,3 +46,4 @@ Table of Contents
    errors_faq.rst
    globus_arch.rst
    gcafs.rst
+   ci_cd_pipeline.rst

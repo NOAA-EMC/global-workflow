@@ -33,7 +33,6 @@ declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
 
 mkdir -m 755 -p "${COMOUT_CHEM_ANALYSIS}"
-mkdir -m 755 -p "${COMOUT_ATMOS_RESTART}"
 mkdir -m 755 -p "${COMOUT_CONF}"
 
 ###############################################################

@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+# shellcheck disable=SC1064,SC1065,SC1072,SC1073,SC1083
 
 ########## config.arch_tars ##########
 # Archive specific
@@ -6,18 +7,22 @@
 echo "BEGIN: config.arch_tars"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" arch_tars
+. "${EXPDIR}/config.resources" "arch_tars"
 
 export ARCH_CYC=00           # Archive data at this cycle for warm start and/or forecast-only capabilities
-export ARCH_WARMICFREQ=4     # Archive frequency in days for warm start capability
+export ARCH_WARMICFREQ={{ ARCH_WARMICFREQ | default(4) }} # Archive frequency in days for warm start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 export ARCH_EXPDIR='YES'     # Archive the EXPDIR configs, XML, and database
 export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for first and last cycle only
 export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
 export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
+export ARCH_MARINE_ENS='NO'  # Archive additional marine ensemble stats when runing hybrid/letkf
 
 export ARCH_GAUSSIAN="YES"
-export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS:-}
+export ARCH_GAUSSIAN_FHMAX=0
+if [[ -n "${FHMAX_GFS:-}" ]]; then
+    export ARCH_GAUSSIAN_FHMAX=$(( FHMAX_GFS < 24 ? FHMAX_GFS : 24 ))
+fi
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS:-}
 
 # If we are running globus archiving, create tarballs in a temporary location

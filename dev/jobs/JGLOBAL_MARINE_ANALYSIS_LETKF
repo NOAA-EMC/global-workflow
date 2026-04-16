@@ -55,7 +55,6 @@ declare -rx COMOUT_ICE_LETKF="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/letkf"
 
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
-if [[ ! -d "${COMOUT_OCEAN_LETKF}" ]]; then mkdir -p "${COMOUT_OCEAN_LETKF}"; fi
 if [[ ! -d "${COMOUT_ICE_LETKF}" ]]; then mkdir -p "${COMOUT_ICE_LETKF}"; fi
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ##############################################

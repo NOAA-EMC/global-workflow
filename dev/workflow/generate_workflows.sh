@@ -127,7 +127,7 @@ _nonflag_option_count=0
 
 function _set_yaml_list_from_arg() {
     # Start over with an empty list and normalize names to no .yaml suffix.
-    declare -a _yaml_list=()
+    _yaml_list=()
     for _yaml in ${OPTARG}; do
         _yaml_list+=("${_yaml//.yaml/}")
     done

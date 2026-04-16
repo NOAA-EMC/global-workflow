@@ -38,7 +38,6 @@ declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 mkdir -m 775 -p "${COMOUT_OCEAN_ANALYSIS}"
 mkdir -m 775 -p "${COMOUT_ICE_ANALYSIS}"
-mkdir -m 775 -p "${COMOUT_ICE_RESTART}"
 mkdir -m 775 -p "${COMOUT_CONF}"
 
 ###############################################################
