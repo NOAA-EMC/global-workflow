@@ -51,7 +51,7 @@ class AerosolAnalysis(Analysis):
             _anl_time = self.task_config.current_cycle
 
         _coldstart = self.task_config.get('COLDSTART', False)
-
+        _fixaer = self.task_config.get('FIXaer', False)
 
         _bkg_times = []
         for hour in self.task_config.aero_bkg_times:
@@ -73,6 +73,7 @@ class AerosolAnalysis(Analysis):
                 'anl_time': _anl_time,
                 'bkg_times': _bkg_times,
                 'coldstart': _coldstart,
+                'fixaer': _fixaer,
             }
         ))
 
@@ -195,12 +196,12 @@ class AerosolAnalysis(Analysis):
         else:
             bkgtime = self.task_config.current_cycle
 
-        current_month = anl_time.strftime('%m')
+        current_month = bkgtime.strftime('%m')
 
         # Common arguments for all tiles
         # Note: core_file is likely gfs_ctrl.nc in the same directory
         core_file = os.path.join(self.task_config.DATA, 'anl', 'gfs_ctrl.nc')
-        merra_file = f"merra2.aerclim.2014-2023.m{current_month}.nc"
+        merra_file = os.path.join(self.task_config.DATA, 'bkg', f"merra2.aerclim.2014-2023.m{current_month}.nc")
 
         for itile in range(1, self.task_config.ntiles + 1):
             tracer_file = os.path.join(self.task_config.DATA, 'anl', f'{to_fv3time(bkgtime)}.fv_tracer.res.tile{itile}.nc')
