@@ -226,8 +226,8 @@ exp_months=$(((yy_final - yy_init) * 12 + (mm_final - mm_init) + 1))
 # 2. Generate the MPMD command file
 total_fcst_days=$((lastfhr / 24))
 current_daysf=0
-for ((i = 0; i < exp_months; i++ )); do
-    
+for ((i = 0; i < exp_months; i++)); do
+
     # Calculate the Valid Year and Month for this forecast segment
     v_date=$(date -d "${current_cycle:0:8} +${i} months" +%Y%m%d)
     v_year=${v_date:0:4}
@@ -240,7 +240,7 @@ for ((i = 0; i < exp_months; i++ )); do
     # Calculate how many days of this month actually exist in the forecast
     days_left=$((total_fcst_days - m_start_day))
 
-    if [[ "${days_left}" -le 0 ]]; then break; fi # No more data 
+    if [[ "${days_left}" -le 0 ]]; then break; fi # No more data
     if [[ "${days_left}" -lt "${cal_m_days}" ]]; then
         actual_m_days=${days_left}
     else

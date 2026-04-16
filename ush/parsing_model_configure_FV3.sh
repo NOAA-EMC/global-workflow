@@ -11,13 +11,13 @@ FV3_model_configure() {
     # The ones already defined are left commented as a reminder
 
     local model_start_date
-        if [[ "${DOIAU:-NO}" == "YES" ]]; then
-            local model_start_time="${previous_cycle}"
-        elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
-            local model_start_time="${model_start_date_current_cycle}"
-        else
-            local model_start_time="${current_cycle}"
-        fi
+    if [[ "${DOIAU:-NO}" == "YES" ]]; then
+        local model_start_time="${previous_cycle}"
+    elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+        local model_start_time="${model_start_date_current_cycle}"
+    else
+        local model_start_time="${current_cycle}"
+    fi
     if [[ "${DOIAU}" == "YES" ]]; then
         model_start_date="${previous_cycle}"
     elif [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then

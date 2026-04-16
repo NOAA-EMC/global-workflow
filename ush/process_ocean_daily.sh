@@ -49,9 +49,9 @@ for ((j = 0; j < $fhr_inc; j++)); do
     rm -f "${temp3d_file}" "${temp3d_300m}"
 
     #2. Extract SSH from ocean history files and then conduct CDO remapping to get 0p25 SSH files
-    ncks -O -v geolon,geolat,SSH "${in_hist_file}" "${in_ssh_file}"  # extract SSH, geolon, geolat variables into one new file
-    ncatted -a coordinates,SSH,c,c,"geolon geolat" "${in_ssh_file}"  # reedit SSH cooridinates information "geolon geolat"
-    cdo remapbil,"${r1440x721}" -setgridtype,curvilinear "${in_ssh_file}" "${output_ssh}"  # remap from mx025 to 0p25
+    ncks -O -v geolon,geolat,SSH "${in_hist_file}" "${in_ssh_file}"                       # extract SSH, geolon, geolat variables into one new file
+    ncatted -a coordinates,SSH,c,c,"geolon geolat" "${in_ssh_file}"                       # reedit SSH cooridinates information "geolon geolat"
+    cdo remapbil,"${r1440x721}" -setgridtype,curvilinear "${in_ssh_file}" "${output_ssh}" # remap from mx025 to 0p25
 
     rm -f "${in_ssh_file}"
 
