@@ -69,6 +69,9 @@ UFS_configure() {
         local MED_history_n=1000000
 
         local histaux_enabled=".false."
+        local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
+        local MOM6_RESTART_DIR="./MOM6_RESTART"
+        local MOM6_HISTFREQ_N=${FHOUT_OCN:-6}
     fi
 
     if [[ "${cplice}" = ".true." ]]; then
@@ -125,7 +128,7 @@ UFS_configure() {
     echo "Rendered ufs.configure:"
     cat ufs.configure
 
-    cpreq "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" fd_ufs.yaml
+    cpreq "${HOMEgfs}/parm/ufs/fd_ufs.yaml" fd_ufs.yaml
 
     echo "SUB ${FUNCNAME[0]}: ufs.configure ends"
 

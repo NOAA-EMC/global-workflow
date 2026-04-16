@@ -1,74 +1,5 @@
 #! /usr/bin/env bash
 
-function declare_from_tmpl() {
-    #
-    # Define variables from corresponding templates by substituting in env variables.
-    #
-    # Each template must already be defined. Any variables in the template are replaced
-    #   with their values. Undefined variables are just removed WITHOUT raising an error.
-    #
-    # Template can be used implicitly, however, all declared COM variables must be
-    #   defined as either COMIN or COMOUT, therefore the template should be explicit
-    #
-    # Accepts as options `-r` and `-x`, which do the same thing as the same options in
-    #   `declare`. Variables are automatically marked as `-g` so the variable is visible
-    #   in the calling script.
-    #
-    # Syntax:
-    #   declare_from_tmpl [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
-    #
-    #   options:
-    #       -r: Make variable read-only (same as `declare -r`)
-    #       -x: Mark variable for export (same as `declare -x`)
-    #   var1, var2, etc: Variable names whose values will be generated from a template
-    #                    and declared
-    #   tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
-    #
-    #   Examples:
-    #       # Current cycle and RUN, implicitly using template COM_ATMOS_ANALYSIS_TMPL
-    #       YMD=${PDY} HH=${cyc} declare_from_tmpl -rx COM_ATMOS_ANALYSIS
-    #
-    #       # Previous cycle and gdas using an explicit template
-    #       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} declare_from_tmpl -rx \
-    #           COMIN_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
-    #
-    #       # Current cycle and COM for first member using an explicit template
-    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    #           COMOUT_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
-    #
-    if [[ ${DEBUG_WORKFLOW:-"NO"} == "NO" ]]; then
-        set +x
-    fi
-    local opts="-g"
-    local OPTIND=1
-    while getopts "rx" option; do
-        opts="${opts}${option}"
-    done
-    shift $((OPTIND - 1))
-
-    for input in "$@"; do
-        IFS=':' read -ra args <<< "${input}"
-        local com_var="${args[0]}"
-        local template
-        local value
-        if ((${#args[@]} > 1)); then
-            template="${args[1]}"
-        else
-            template="${com_var}_TMPL"
-        fi
-        if [[ ! -v "${template}" ]]; then
-            echo "FATAL ERROR in declare_from_tmpl: Requested template ${template} not defined!"
-            exit 2
-        fi
-        value=$(echo "${!template}" | envsubst)
-        # shellcheck disable=SC2086
-        declare ${opts} "${com_var}"="${value}"
-        # shellcheck disable=
-        echo "declare_from_tmpl :: ${com_var}=${value}"
-    done
-    set_trace
-}
-
 function wait_for_file() {
     #
     # Wait for a file to exist and return the status.
@@ -129,9 +60,7 @@ function dataroot_com_path() {
     #   original_com_path: The original COM path to be transformed.
     #
     # Example:
-    #   # Declare COMOUT_ATMOS_ANALYSIS using template
-    #   YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
-    #       COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+    #   COMOUT_ATMOS_ANALYSIS="${COMIN}/analysis/atmos
     #   # Get the DATAROOT version of the COM path
     #   pCOMOUT_ATMOS_ANALYSIS=$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")
     #   echo "New COM path in DATAROOT: ${pCOMOUT_ATMOS_ANALYSIS}"
@@ -245,7 +174,6 @@ tock() {
 
 # shellcheck disable=
 
-declare -xf declare_from_tmpl
 declare -xf wait_for_file
 declare -xf dataroot_com_path
 declare -xf tick
