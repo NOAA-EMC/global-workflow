@@ -50,6 +50,9 @@ class AerosolAnalysis(Analysis):
         else:
             _anl_time = self.task_config.current_cycle
 
+        _coldstart = self.task_config.get('COLDSTART', False)
+
+
         _bkg_times = []
         for hour in self.task_config.aero_bkg_times:
             _bkg_times.append(self.task_config.WINDOW_BEGIN + to_timedelta(f"{str(hour)}H") - to_timedelta(f"{self.task_config.assim_freq}H") / 2)
@@ -69,6 +72,7 @@ class AerosolAnalysis(Analysis):
                 'AERO_BMATRIX_RESCALE_YAML': 'aero_gen_bmatrix_rescale_default.yaml.j2',
                 'anl_time': _anl_time,
                 'bkg_times': _bkg_times,
+                'coldstart': _coldstart,
             }
         ))
 
@@ -135,7 +139,6 @@ class AerosolAnalysis(Analysis):
             self.task_config.use_merra2_climo = True
             return
 
-        self.task_config.use_merra2_climo = False
         self.jedi_dict[jedi_dict_key].execute()
 
     @logit(logger)
@@ -153,24 +156,24 @@ class AerosolAnalysis(Analysis):
         -------
         None
         """
-
-        if getattr(self.task_config, 'use_merra2_climo', False):
+        # if coldstart add aerosols from the merra2 climatology
+        if getattr(self.task_config, 'COLDSTART', True):
             logger.info('Using MERRA2 climatology for aerosol analysis')
             self._apply_merra2_climo()
-        else:
-            # ---- add increments to RESTART files
-            logger.info('Adding increments to RESTART files')
-            self._add_fms_cube_sphere_increments()
 
-            # Archive, compress, and save diag files in COM directory
-            logger.info(f"Saving observation diag files to COM")
-            self.jedi_dict['aeroanlvar'].save_obsdataout(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                                         f"{self.task_config.APREFIX}aero_analysis.ioda_hofx")
+        # ---- add increments to RESTART files
+        logger.info('Adding increments to RESTART files')
+        self._add_fms_cube_sphere_increments()
 
-            # Archive and save radiative bias correction files into COM directory
-            logger.info(f"Saving radiative bias correction files to COM")
-            self.jedi_dict['aeroanlvar'].save_obsbiasout(self.task_config.COMOUT_CHEM_ANALYSIS,
-                                                         f"{self.task_config.APREFIX}aero_varbc_params")
+        # Archive, compress, and save diag files in COM directory
+        logger.info(f"Saving observation diag files to COM")
+        self.jedi_dict['aeroanlvar'].save_obsdataout(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                        f"{self.task_config.APREFIX}aero_analysis.ioda_hofx")
+
+        # Archive and save radiative bias correction files into COM directory
+        logger.info(f"Saving radiative bias correction files to COM")
+        self.jedi_dict['aeroanlvar'].save_obsbiasout(self.task_config.COMOUT_CHEM_ANALYSIS,
+                                                        f"{self.task_config.APREFIX}aero_varbc_params")
 
         # Save files from COM
         logger.info(f"Saving files to COM")
@@ -192,10 +195,12 @@ class AerosolAnalysis(Analysis):
         else:
             bkgtime = self.task_config.current_cycle
 
+        current_month = anl_time.strftime('%m')
+
         # Common arguments for all tiles
         # Note: core_file is likely gfs_ctrl.nc in the same directory
         core_file = os.path.join(self.task_config.DATA, 'anl', 'gfs_ctrl.nc')
-        merra_file = self.task_config.get('MERRA2_CLIMO_FILE') # Should be defined in config
+        merra_file = f"merra2.aerclim.2014-2023.m{current_month}.nc"
 
         for itile in range(1, self.task_config.ntiles + 1):
             tracer_file = os.path.join(self.task_config.DATA, 'anl', f'{to_fv3time(bkgtime)}.fv_tracer.res.tile{itile}.nc')
