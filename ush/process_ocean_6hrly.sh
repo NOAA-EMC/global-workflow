@@ -9,19 +9,19 @@ r360x181="${USHglobal}/python/ocn_diag/r360x181"
 # Arguments:
 start_fhr=$1
 interval=6  # Fixed 6-hour interval
-fhr_inc=120   # Number of 6-hour jobs per task
+fhr_inc=120 # Number of 6-hour jobs per task
 
-for (( i=0; i<${fhr_inc}; i++ )); do
+for ((i = 0; i < ${fhr_inc}; i++)); do
     # Calculate current fhr: start + (0, 6, 12, 18)and the first start_fhr=6
-    current_fhr=$(( start_fhr + i * interval ))
-    
+    current_fhr=$((start_fhr + i * interval))
+
     # Safety check: don't exceed the total forecast length (8784)
     if [ "${current_fhr}" -gt "${FHMAX_GFS}" ]; then break; fi
-    
+
     fhr3=$(printf %03i "${current_fhr}")
 
     # Calculate midpoint for date string
-    (( midpoint = current_fhr - interval / 2 ))
+    ((midpoint = current_fhr - interval / 2))
     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
     vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
 
@@ -38,7 +38,7 @@ for (( i=0; i<${fhr_inc}; i++ )); do
         ncks -A -v geolon,geolat "${input_file}" "${output_native_file}"
 
         ncatted -a coordinates,temp,c,c,"geolon geolat" "${output_native_file}"
-        cdo remapbil,${r360x181} -setgridtype,curvilinear "${output_native_file}" "${output_1p00_file}"
+        cdo remapbil,"${r360x181}" -setgridtype,curvilinear "${output_native_file}" "${output_1p00_file}"
         ncatted -a long_name,temp,o,c,"Potential Temperature at 5m below sea level" "${output_1p00_file}"
 
         rm -f "${tmp_file}" "${output_native_file}"

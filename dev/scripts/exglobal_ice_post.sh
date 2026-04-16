@@ -8,7 +8,7 @@
 rm -f "${COMOUT_ICE_NETCDF}/native/"*".monthly_avg."*"nc"
 
 #LINK NEW FILE NAMES TO THE OUTPUT DAILY ICE HISTORY FILES FOR MONTHLY AVERAGING
-CICE_OUTPUT_FH=($(seq -s ' ' "${FHMIN_GFS}" "${FHOUT_ICE}" "${FHMAX_GFS}"))
+mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN_GFS}" "${FHOUT_ICE}" "${FHMAX_GFS}") || exit 10
 if [[ "${RUN}" == sfs ]]; then
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
         if [[ -z ${last_fhr:-} ]]; then
@@ -16,8 +16,8 @@ if [[ "${RUN}" == sfs ]]; then
             continue
         fi
         fhr3=$(printf %03i "${fhr}")
-        (( interval = fhr - last_fhr ))
-        (( midpoint = last_fhr + interval/2 ))
+        ((interval = fhr - last_fhr))
+        ((midpoint = last_fhr + interval / 2))
         vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
         vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
         new_file="iceh_24h_${vdate_mid_str}.nc"
@@ -31,8 +31,8 @@ fi
 if [[ "${RUN}" == sfs ]]; then
     # Obain the information of the last fcst file
     last_fh_output="${COMOUT_ICE_NETCDF}/native/${RUN}.t${cyc}z.native.f${FHMAX_GFS}.nc"
-    (( interval = 24 ))
-    (( midpoint = FHMAX_GFS - interval/2 ))
+    ((interval = 24))
+    ((midpoint = FHMAX_GFS - interval / 2))
     last_fhr_vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
 
     # Extract the last fcst date (Year/Month/Day from YYYYMMDD format):
@@ -40,7 +40,7 @@ if [[ "${RUN}" == sfs ]]; then
     mm=${last_fhr_vdate_mid:4:2}
     dd=${last_fhr_vdate_mid:6:2}
     # Check leap or non-year for the last month of the year:
-    if (( (${yyyy} % 4 == 0 && ${yyyy} % 100 != 0) || (${yyyy} % 400 == 0) )); then
+    if (((yyyy % 4 == 0 && yyyy % 100 != 0) || (yyyy % 400 == 0))); then
         leap_yr="true"
     else
         leap_yr="false"
@@ -62,24 +62,24 @@ if [[ "${RUN}" == sfs ]]; then
     fi
 
     # Expand the wildcard directly into an array (Avoids 'ls' issues)
-    file_list_mon=( "${DATAoutput}"/CICE_OUTPUT/iceh_24h_????_??_01_12.nc )
+    file_list_mon=("${DATAoutput}"/CICE_OUTPUT/iceh_24h_????_??_01_12.nc)
     if [[ -f "${last_fh_output}" ]] && [[ "${full_month}" == "true" ]]; then
         # Keep the full list if it's a complete month
-        file_list_mon=( "${file_list_mon[@]}" )
+        file_list_mon=("${file_list_mon[@]}")
     else
         # Check if array has elements before slicing to avoid errors
-        if (( ${#file_list_mon[@]} > 0 )); then
-        # Skip the last element using array slicing
-            file_list_mon=( "${file_list_mon[@]::${#file_list_mon[@]}-1}" )
+        if ((${#file_list_mon[@]} > 0)); then
+            # Skip the last element using array slicing
+            file_list_mon=("${file_list_mon[@]::${#file_list_mon[@]}-1}")
         else
             file_list_mon=()
         fi
     fi
 
     # Start to process monthly averaging based on the above file_list_month if not empty
-    if (( ${#file_list_mon[@]} > 0 )); then
+    if ((${#file_list_mon[@]} > 0)); then
         for f in "${file_list_mon[@]}"; do
-            f_name=$( basename "${f}" )
+            f_name=$(basename "${f}")
             YR="${f_name:9:4}"
             MN="${f_name:14:2}"
             cdo mergetime "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_??_12.nc" "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"

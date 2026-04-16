@@ -32,9 +32,12 @@ for script in "${workflow_scripts[@]}"; do
 done
 
 # Ensure any existing task files are cleaned
-if [[ -s "${DATA}"/mpmd_s*.txt ]]; then
-    sed -i 's/\r//g' "${DATA}"/mpmd_s*.txt
-fi
+for file in "${DATA}"/mpmd_s*.txt; do
+    # Check if the file exists and is not empty before running sed
+    if [[ -s "${file}" ]]; then
+        sed -i 's/\r//g' "${file}"
+    fi
+done
 
 echo "INFO: Line ending validation complete."
 
@@ -141,7 +144,7 @@ export filename_end="${filename_end}"
 echo "Start to Process Atmospheric variables"
 
 # Remove all generated products if the previous jobs failed
-rm -rf "${OUTDIR}"/*
+rm -rf "${OUTDIR:?}/"*
 
 # Determine vt_date and lastfhr (Required for all stages)
 firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
@@ -150,7 +153,7 @@ vt_date=${vt_init:7:10}
 yy_init=${vt_init:7:4}
 mm_init=$((10#${vt_init:11:2})) # Force base-10 to avoid '08' octal errors
 
-lastfile=$(ls "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f*.grib2 | sort -V | tail -1)
+lastfile=$(find "${COMIN_ATMOS_MASTER}" -maxdepth 1 -name "sfs.t${cyc}z.master.f*.grib2" | sort -V | tail -1)
 echo "${lastfile}"
 
 lastftimemsg=$(${WGRIB2} "${lastfile}" -d 1 -ftime2)
@@ -163,7 +166,6 @@ yy_final=${vt_final:7:4}
 mm_final=$((10#${vt_final:11:2}))
 dd_final=$((10#${vt_final:13:2}))
 
-months_in_year=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12")
 month_days_in_year=("31" "28" "31" "30" "31" "30" "31" "31" "30" "31" "30" "31")
 # Leap Year Check
 
@@ -181,13 +183,13 @@ if [[ -f "${DATA}/mpmd_s1_extract.txt" ]]; then
 fi
 
 cmdfile_s1="${DATA}/mpmd_s1_extract.txt"
-> "${cmdfile_s1}"
+true > "${cmdfile_s1}"
 
 for ((i = 0; i < ${#vars[@]}; i++)); do
-    filename="${filevars[$i]}.${MEMDIR}.${vt_date}.6hourly.grb2"
+    filename="${filevars[${i}]}.${MEMDIR}.${vt_date}.6hourly.grb2"
     output_path="${OUTDIR}/${filename}"
     # CALL THE WRAPPER SCRIPT
-    echo "bash ${PROCESS_ATMOS_6HRLYSH} '${vars[$i]}' '${output_path}'" >> "${cmdfile_s1}"
+    echo "bash ${PROCESS_ATMOS_6HRLYSH} '${vars[${i}]}' '${output_path}'" >> "${cmdfile_s1}"
 done
 
 if [[ -s "${cmdfile_s1}" ]]; then
@@ -216,7 +218,7 @@ if [[ -f "${DATA}/mpmd_s2_daily.txt" ]]; then
 fi
 
 cmdfile_s2="${DATA}/mpmd_s2_daily.txt"
-> "${cmdfile_s2}"
+true > "${cmdfile_s2}"
 
 # 1. Calculate total months across year boundaries
 exp_months=$(((yy_final - yy_init) * 12 + (mm_final - mm_init) + 1))
@@ -236,8 +238,8 @@ for ((i = 0; i < exp_months; i++ )); do
     # Start day of this month
     m_start_day=${current_daysf}
     # Calculate how many days of this month actually exist in the forecast
-    days_left=$(( total_fcst_days - m_start_day ))
-    
+    days_left=$((total_fcst_days - m_start_day))
+
     if [[ "${days_left}" -le 0 ]]; then break; fi # No more data 
     if [[ "${days_left}" -lt "${cal_m_days}" ]]; then
         actual_m_days=${days_left}
@@ -258,7 +260,7 @@ done
 # 3. Dynamically count tasks and execute
 if [[ -s "${cmdfile_s2}" ]]; then
     n_tasks=$(wc -l < "${cmdfile_s2}")
-    echo "INFO: Launching Stage 2 MPMD with ${n_tasks} months." 
+    echo "INFO: Launching Stage 2 MPMD with ${n_tasks} months."
     # Update the RUN_MPMDSH call
     # Note: Ensure n_tasks matches your Slurm allocation
     "${RUN_MPMDSH}" "${cmdfile_s2}"
@@ -282,7 +284,7 @@ if [[ -f "${DATA}/mpmd_s3_monthly.txt" ]]; then
 fi
 
 cmdfile_s3="${DATA}/mpmd_s3_monthly.txt"
-> "${cmdfile_s3}"
+true > "${cmdfile_s3}"
 
 # Read the files created in Stage 2
 accfilelist=("${OUTDIR}/acc.daily.${MEMDIR}"/*)

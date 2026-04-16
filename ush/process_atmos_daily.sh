@@ -4,7 +4,7 @@
 
 set -e
 
-lastfile=$(ls "${COMIN_ATMOS_MASTER}"/sfs.t"${cyc}"z.master.f*.grib2 | sort -V | tail -1)
+lastfile=$(find "${COMIN_ATMOS_MASTER}" -maxdepth 1 -name "sfs.t${cyc}z.master.f*.grib2" | sort -V | tail -1)
 lastftimemsg=$(${WGRIB2} "${lastfile}" -d 1 -ftime2)
 lastftime="${lastftimemsg% hour fcst}"
 export lastfhr=${lastftime:4:4}
@@ -38,51 +38,51 @@ mkdir -p "${tmp_acc_work_dir}" "${tmp_inst_work_dir}"
 #---------------------------------------------------------
 # LOOP THROUGH EACH DAY OF THE MONTH (1 to month_days)
 #---------------------------------------------------------
-for ((d = 1; d <= ${month_days}; d++)); do
+for ((d = 1; d <= month_days; d++)); do
 
     end_of_day_fhr=$(((day_offset + d) * 24))
 
     # Skip if we exceed the total available forecast length
-    if [[ "$end_of_day_fhr" -gt "$lastfhr" ]]; then 
-        echo "DEBUG: Skipping Day $d because $end_of_day_fhr > $lastfhr"
+    if [[ "${end_of_day_fhr}" -gt "${lastfhr}" ]]; then 
+        echo "DEBUG: Skipping Day ${d} because ${end_of_day_fhr} > ${lastfhr}"
         continue
     fi
 
     # --- PART A: ACCUMULATED VARIABLES (Hours: E-18, E-12, E-6, E) ---
     all_acc_exist=true
-    list_acc=""
+    list_acc=()
     for hr in $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)) ${end_of_day_fhr}; do
         fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
         if [[ ! -f "${fpath}" ]]; then
             all_acc_exist=false
             break
         fi
-        list_acc+="${fpath} "
+        list_acc+=("${fpath}")
     done
 
-    if [[ "$all_acc_exist" = true ]]; then
+    if [[ "${all_acc_exist}" = true ]]; then
         raw_tmp_acc="${tmp_acc_work_dir}/day_${d}_raw.grb"
         # Process from physical file (fixes "cannot random access stdin" error)
-        ${GMERGE} "${raw_tmp_acc}" "${list_acc}"
+        ${GMERGE} "${raw_tmp_acc}" "${list_acc[@]}"
         ${WGRIB2} "${raw_tmp_acc}" -match "${dailyaccvars}" -merge_fcst 4 "${tmp_acc_work_dir}/daily_acc${d}.grb"
         rm -f "${raw_tmp_acc}"
     fi
 
     # --- PART B: INSTANTANEOUS VARIABLES (Hours: E-24, E-18, E-12, E-6, E) ---
     all_inst_exist=true
-    list_inst=""
+    list_inst=()
     for hr in $((end_of_day_fhr - 24)) $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)) $((end_of_day_fhr)); do
-        fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" $hr).grib2"
+        fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" ${hr}).grib2"
         if [[ ! -f "${fpath}" ]]; then
             all_inst_exist=false
             break
         fi
-        list_inst+="${fpath} "
+        list_inst+=("${fpath}")
     done
 
     if [[ "${all_inst_exist}" = true ]]; then
         raw_tmp_inst="${tmp_inst_work_dir}/day_${d}_raw.grb"
-        ${GMERGE} "${raw_tmp_inst}" ${list_inst}
+        ${GMERGE} "${raw_tmp_inst}" "${list_inst[@]}"
         ${WGRIB2} "${raw_tmp_inst}" -match "${dailyinstvars}" -fcst_ave 6hr "${tmp_inst_work_dir}/daily_inst${d}.grb"
         rm -f "${raw_tmp_inst}"
     fi
@@ -106,7 +106,7 @@ if [[ -d "${tmp_acc_work_dir}" ]]; then
     mapfile -t acc_files < <(ls -v "${tmp_acc_work_dir}"/daily_acc*.grb 2> /dev/null)
 
     if [[ ${#acc_files[@]} -gt 0 ]]; then
-        echo "INFO: Task $i merging ${#acc_files[@]} days for ACC using array expansion."
+        echo "INFO: Task ${i} merging ${#acc_files[@]} days for ACC using array expansion."
         # Use "${acc_files[@]}" to pass each file as a unique argument
         ${GMERGE} "${dest_acc}" "${acc_files[@]}"
     else
@@ -120,7 +120,7 @@ if [[ -d "${tmp_inst_work_dir}" ]]; then
     mapfile -t inst_files < <(ls -v "${tmp_inst_work_dir}"/daily_inst*.grb 2> /dev/null)
 
     if [[ ${#inst_files[@]} -gt 0 ]]; then
-        echo "INFO: Task $i merging ${#inst_files[@]} days for INST using array expansion."
+        echo "INFO: Task ${i} merging ${#inst_files[@]} days for INST using array expansion."
         ${GMERGE} "${dest_inst}" "${inst_files[@]}"
     else
         echo "WARNING: Task ${i} found NO daily_inst files to merge."

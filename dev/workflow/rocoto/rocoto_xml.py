@@ -177,7 +177,7 @@ class RocotoXML(WorkflowSuite, ABC):
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
-        replyto = os.environ.get('REPLYTO', None)
+        replyto = os.environ.get('REPLYTO', "")
         crontab_strings = [
             '',
             f'#################### {self.pslot} ####################'

@@ -9,7 +9,7 @@ CALC_D20="${USHglobal}/python/ocn_diag/calc_d20.py"
 CALC_TCHP="${USHglobal}/python/ocn_diag/calc_tchp.py"
 CALC_OHC="${USHglobal}/python/ocn_diag/calc_ohc.py"
 
-# Arguments: 
+# Arguments:
 YR=$1
 MN=$2
 

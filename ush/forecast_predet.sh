@@ -510,9 +510,9 @@ FV3_predet() {
                     break
                 fi
             done
-            if (( Syear >= 2025 )); then
-                Eyear=$(( Eyear - 5 ))
-                Syear=$(( Syear - 5 ))
+            if ((Syear >= 2025)); then
+                Eyear=$((Eyear - 5))
+                Syear=$((Syear - 5))
             fi
             for ((month = 1; month <= 12; month++)); do
                 mm=$(printf %02d "${month}")

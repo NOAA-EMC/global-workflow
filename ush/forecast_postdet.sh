@@ -789,7 +789,7 @@ CICE_postdet() {
         seconds=$(to_seconds "${restart_date:8:2}0000") # convert HHMMSS to seconds
         cice_restart_file="${DATArestart}/CICE_RESTART/cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
     else # "${RERUN}" == "NO"
-        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then 
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             restart_date="${current_cycle_begin}"
         else
             restart_date="${model_start_date_current_cycle}"
