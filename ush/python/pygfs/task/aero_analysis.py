@@ -158,7 +158,7 @@ class AerosolAnalysis(Analysis):
         None
         """
         # if coldstart add aerosols from the merra2 climatology
-        if getattr(self.task_config, 'COLDSTART', True):
+        if self.task_config.coldstart:
             logger.info('Using MERRA2 climatology for aerosol analysis')
             self._apply_merra2_climo()
 
