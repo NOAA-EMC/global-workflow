@@ -187,6 +187,7 @@ if [[ "${err0}" -ne 0 ]]; then
     #  problem with obtaining date record so exit
     export err="${err0}"
     msg="FATAL ERROR: problem with obtaining date record"
+    echo "${msg}"
     exit "${err}"
 fi
 
