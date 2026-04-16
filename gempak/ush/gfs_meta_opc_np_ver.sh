@@ -163,7 +163,7 @@ if [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit 100
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}ver_${PDY}_${cyc}_np_mar"

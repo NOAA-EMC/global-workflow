@@ -113,7 +113,7 @@ for metaname in Nmeta_nh Nmeta_sh; do
         exit $((err + 100))
     fi
 
-    mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_/}"
+    cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_/}"
     if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
             "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_${metaname/Nmeta_/}"

@@ -157,7 +157,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s ukmetver_12.meta ]]; then
     exit "${err}"
 fi
 
-mv ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
+cpfs ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 export err=$?
 if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"

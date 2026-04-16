@@ -210,7 +210,7 @@ EOFplt
 
 done
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"

@@ -346,7 +346,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]]; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
