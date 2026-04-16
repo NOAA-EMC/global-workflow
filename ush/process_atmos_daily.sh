@@ -43,7 +43,7 @@ for ((d = 1; d <= month_days; d++)); do
     end_of_day_fhr=$(((day_offset + d) * 24))
 
     # Skip if we exceed the total available forecast length
-    if [[ "${end_of_day_fhr}" -gt "${lastfhr}" ]]; then 
+    if [[ "${end_of_day_fhr}" -gt "${lastfhr}" ]]; then
         echo "DEBUG: Skipping Day ${d} because ${end_of_day_fhr} > ${lastfhr}"
         continue
     fi
@@ -72,7 +72,7 @@ for ((d = 1; d <= month_days; d++)); do
     all_inst_exist=true
     list_inst=()
     for hr in $((end_of_day_fhr - 24)) $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)) $((end_of_day_fhr)); do
-        fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" ${hr}).grib2"
+        fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
         if [[ ! -f "${fpath}" ]]; then
             all_inst_exist=false
             break

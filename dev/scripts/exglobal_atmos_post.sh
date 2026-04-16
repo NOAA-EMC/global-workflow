@@ -240,7 +240,7 @@ for ((i = 0; i < exp_months; i++)); do
     # Calculate how many days of this month actually exist in the forecast
     days_left=$((total_fcst_days - m_start_day))
 
-    if [[ "${days_left}" -le 0 ]]; then break; fi # No more data 
+    if [[ "${days_left}" -le 0 ]]; then break; fi # No more data
     if [[ "${days_left}" -lt "${cal_m_days}" ]]; then
         actual_m_days=${days_left}
     else
