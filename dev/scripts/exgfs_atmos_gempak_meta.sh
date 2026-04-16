@@ -27,7 +27,6 @@ do_all=0
 fhr3=$(printf "%03d" "${fhr}")
 
 #loop through and process needed forecast hours
-fhr=0
 while [[ ${fhr} -le ${fhend} ]]; do
     #
     # First check to see if this is a rerun.  If so make all Meta files
