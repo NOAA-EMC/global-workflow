@@ -16,7 +16,6 @@
 #       $4 - SOURCE_DIR : (Optional) Override for the source dump directory.
 #       $5 - TARGET_DIR : (Optional) Override for the target runtime directory.
 
-
 COMPONENT=${COMPONENT:-atmos}
 
 YMD=${1:-""}

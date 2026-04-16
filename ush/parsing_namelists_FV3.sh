@@ -14,7 +14,6 @@
 #                into the base `global_control.nml.IN` template using the 
 #                `atparse` utility to yield a fully rendered `input.nml`.
 
-
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 FV3_namelists() {
