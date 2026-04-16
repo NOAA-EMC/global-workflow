@@ -43,7 +43,7 @@ if [[ "${RUN}" == sfs ]]; then
     # 2. Extract Temp and interpolate to 300m depth exactly for 0-300m OHC calculation
     levels="1,3,5,7,9,15,25,35,45,55,65,75,85,95,105,115,125,135,145,155,165,175,185,195,205,215,225.8694,241.0626,266.5239,300"
     ncks -v temp "${out_file}" "${temp3d_file}"
-    cdo intlevel,"$levels" "${temp3d_file}" "${temp3d_300m}"
+    cdo intlevel,"${levels}" "${temp3d_file}" "${temp3d_300m}"
 
     # 3. Python Diagnostics
     python3 "${CALC_D20}" "${out_file}" "${out_dt20c}"
@@ -52,7 +52,7 @@ if [[ "${RUN}" == sfs ]]; then
 
     # 4. Compression
     for f in "${out_file}" "${out_ssh}" "${out_dt20c}" "${out_tchp}" "${out_ocnheat}"; do
-        nccopy -k 4 -d 5 "$f" "${f}.tmp" && mv "${f}.tmp" "$f"
+        nccopy -k 4 -d 5 "$f" "${f}.tmp" && mv "${f}.tmp" "${f}"
     done
 
     # 5. Cleanup temporary files

@@ -11,12 +11,12 @@ start_fhr=$1
 interval=6  # Fixed 6-hour interval
 fhr_inc=120 # Number of 6-hour jobs per task
 
-for ((i = 0; i < ${fhr_inc}; i++)); do
+for ((i = 0; i < $fhr_inc; i++)); do
     # Calculate current fhr: start + (0, 6, 12, 18)and the first start_fhr=6
     current_fhr=$((start_fhr + i * interval))
 
     # Safety check: don't exceed the total forecast length (8784)
-    if [ "${current_fhr}" -gt "${FHMAX_GFS}" ]; then break; fi
+    if [[ "${current_fhr}" -gt "${FHMAX_GFS}" ]]; then break; fi
 
     fhr3=$(printf %03i "${current_fhr}")
 
@@ -32,7 +32,7 @@ for ((i = 0; i < ${fhr_inc}; i++)); do
     output_1p00_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${interval}hr_avg.f${fhr3}.nc"
 
     # Processing (ncks/ncwa/cdo)
-    if [ -f "${input_file}" ]; then
+    if [[ -f "${input_file}" ]]; then
         ncks -O -d z_l,2,2 -v temp "${input_file}" "${tmp_file}"
         ncwa -a z_l -O "${tmp_file}" "${output_native_file}"
         ncks -A -v geolon,geolat "${input_file}" "${output_native_file}"
