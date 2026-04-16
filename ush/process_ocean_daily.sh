@@ -19,7 +19,7 @@ fhr_inc=30 # Process 30 files per task
 varslist=("SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so")
 levels="1,3,5,7,9,15,25,35,45,55,65,75,85,95,105,115,125,135,145,155,165,175,185,195,205,215,225.8694,241.0626,266.5239,300"
 
-for ((j = 0; j < $fhr_inc; j++)); do
+for ((j = 0; j < fhr_inc; j++)); do
     current_fhr=$((start_fhr + j * fhout_ocn))
     if [[ "${current_fhr}" -gt "${FHMAX_GFS}" ]]; then break; fi
     fhr3=$(printf %03i "${current_fhr}")

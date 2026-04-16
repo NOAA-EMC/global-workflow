@@ -7,4 +7,4 @@ var_string="$1"
 output_file="$2"
 
 # Note: COMIN_ATMOS_MASTER must be exported from the master script
-cat $(eval ls -v ${COMIN_ATMOS_MASTER}/*) | ${WGRIB2} - -match "${var_string}" -grib "${output_file}"
+${WGRIB2} - -match "${var_string}" -grib "${output_file}" < <(ls -v "${COMIN_ATMOS_MASTER}"/* | xargs cat)
