@@ -58,7 +58,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || true
+cd "${DATAROOT}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to change directory to ${DATAROOT}"
