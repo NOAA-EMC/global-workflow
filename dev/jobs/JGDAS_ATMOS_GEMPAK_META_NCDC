@@ -80,13 +80,13 @@ if [[ "${cyc}" == '06' ]]; then
     "${HOMEglobal}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit
+        err_exit "Failed to generate ECMWF meta gempak products"
     fi
 
     "${HOMEglobal}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit
+        err_exit "Failed to generate UKMET meta gempak products"
     fi
 fi
 ########################################################

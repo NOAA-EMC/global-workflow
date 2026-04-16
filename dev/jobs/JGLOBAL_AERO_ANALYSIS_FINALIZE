@@ -62,7 +62,7 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to navigate to DATAROOT!"
 fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
