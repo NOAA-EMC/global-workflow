@@ -20,11 +20,9 @@ QUEUE: develop
 QUEUE_EXCLUSIVE: main
 QUEUE_SERVICE: develop
 # HPSS properties
-HPSS_PROJECT: null
-ARCHCOM_TO: null
-ATARDIR: null
+ARCHCOM_TO: 'local'
+ATARDIR: '${COMROOT}/ARCHIVE/${PSLOT}'
 CHGRP_RSTPROD: 'NO'
-CHGRP_CMD: 'chgrp rstprod'
 # Features
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 DO_ARCHCOM: 'NO'
