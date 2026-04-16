@@ -3,11 +3,11 @@
 #===============================================================================
 #
 #   FILE: getdump.sh
-# 
-#   DESCRIPTION: This script copies observational data dump files from a source 
-#                dump directory to a target runtime directory for a specific 
-#                model run, cycle time, and component. It strictly requires the 
-#                presence of the status file (updated.status.tm00.bufr_d) to 
+#
+#   DESCRIPTION: This script copies observational data dump files from a source
+#                dump directory to a target runtime directory for a specific
+#                model run, cycle time, and component. It strictly requires the
+#                presence of the status file (updated.status.tm00.bufr_d) to
 #                ensure the dump is complete before initiating the copy process.
 #    ARGUMENTS:
 #       $1 - YMD        : Date of the cycle in YYYYMMDD format.

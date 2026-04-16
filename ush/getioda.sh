@@ -3,15 +3,15 @@
 #===============================================================================
 #
 #   FILE: get_ioda.sh
-# 
-#   DESCRIPTION: This script transfers multi-component observational data dumps 
-#                (e.g., IODA files) from a source staging directory to the target 
-#                model runtime directory. It dynamically loops through all 
-#                available component subdirectories (e.g., atmos, ocean, land), 
-#                verifies the presence of a completion status log (*status.log) 
+#
+#   DESCRIPTION: This script transfers multi-component observational data dumps
+#                (e.g., IODA files) from a source staging directory to the target
+#                model runtime directory. It dynamically loops through all
+#                available component subdirectories (e.g., atmos, ocean, land),
+#                verifies the presence of a completion status log (*status.log)
 #                for each component, and copies the relevant cycle-prefixed files.
-# 
-# 
+#
+#
 #    ARGUMENTS:
 #       $1 - YMD        : Date of the cycle in YYYYMMDD format.
 #       $2 - HH         : Hour of the cycle (e.g., 00, 06, 12, 18).

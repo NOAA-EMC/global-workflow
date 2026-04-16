@@ -3,12 +3,12 @@
 #===============================================================================
 #
 #   FILE: forecast_predet.sh
-# 
-#   DESCRIPTION: A library of utility functions for the Unified Forecast System (UFS). 
-#                This script defines date/time calculation utilities and component-specific setup 
-#                functions. These setup functions initialize environment variables, configure directory 
-#                structures, establish temporal domains (e.g., forecast hours, 
-#                output frequencies), and stage requisite static/fix files 
+#
+#   DESCRIPTION: A library of utility functions for the Unified Forecast System (UFS).
+#                This script defines date/time calculation utilities and component-specific setup
+#                functions. These setup functions initialize environment variables, configure directory
+#                structures, establish temporal domains (e.g., forecast hours,
+#                output frequencies), and stage requisite static/fix files
 #                prior to the run-type determination (warm vs. cold start).
 
 to_seconds() {

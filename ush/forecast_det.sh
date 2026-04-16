@@ -3,11 +3,11 @@
 #===============================================================================
 #
 #   FILE: forecast_det.sh
-# 
-#   DESCRIPTION: Determines the run type (Cold Start, Warm Start, or Re-run) 
-#                for the Unified Forecast System (UFS). It evaluates the 
-#                availability of required restart files across all coupled model 
-#                components and atmospheric initial conditions. Based on this availability, it sets the 
+#
+#   DESCRIPTION: Determines the run type (Cold Start, Warm Start, or Re-run)
+#                for the Unified Forecast System (UFS). It evaluates the
+#                availability of required restart files across all coupled model
+#                components and atmospheric initial conditions. Based on this availability, it sets the
 #                appropriate logical flags and environment variables to guide downstream model initialization.
 
 # Disable variable not used warnings

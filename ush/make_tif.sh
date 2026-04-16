@@ -2,12 +2,12 @@
 #===============================================================================
 #
 #   FILE: make_tif.sh
-# 
-#   DESCRIPTION: This script converts an input GIF graphic into a FAX/TIFF format 
-#                using ImageMagick. If configured, it then prepends a standard 
-#                NOAA Telecommunications (NTC) header (WMO: QTUA11, ORIG: KWBC) 
-#                using a Perl utility. Finally, it copies the formatted file to 
-#                the operational WMO COM directory and issues a DBN alert for 
+#
+#   DESCRIPTION: This script converts an input GIF graphic into a FAX/TIFF format
+#                using ImageMagick. If configured, it then prepends a standard
+#                NOAA Telecommunications (NTC) header (WMO: QTUA11, ORIG: KWBC)
+#                using a Perl utility. Finally, it copies the formatted file to
+#                the operational WMO COM directory and issues a DBN alert for
 #                downstream distribution.
 cd "${DATA}" || exit 2
 

@@ -3,12 +3,12 @@
 #===============================================================================
 #
 #   FILE: atmos_ensstat.sh
-# 
-#   DESCRIPTION: This script processes ensemble forecast output for a specific 
-#                grid and forecast hour. It collects atmospheric GRIB2 files 
-#                for all ensemble members, dynamically generates a namelist, 
-#                and executes `ensstat.x` to compute the ensemble mean and 
-#                spread. Finally, it indexes the outputs using wgrib2, moves 
+#
+#   DESCRIPTION: This script processes ensemble forecast output for a specific
+#                grid and forecast hour. It collects atmospheric GRIB2 files
+#                for all ensemble members, dynamically generates a namelist,
+#                and executes `ensstat.x` to compute the ensemble mean and
+#                spread. Finally, it indexes the outputs using wgrib2, moves
 #                them to the designated COM directory, and issues DBN alerts.
 #    ARGUMENTS:
 #       $1 - grid      : The grid resolution/identifier (e.g., 0p25, 1p00).

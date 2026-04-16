@@ -2,14 +2,14 @@
 #===============================================================================
 #
 #          FILE: parsing_namelists_GOCART.sh
-# 
-#   DESCRIPTION: Prepares and renders the configuration files  
-#                required by the GOCART aerosol model component. The function 
-#                calculates output frequencies (e.g., instantaneous AOD) based 
-#                on the FHOUT_AERO environment variable. 
-#                Additionally, it dynamically constructs the external data 
-#                configuration file (AERO_ExtData.rc) if it is not already 
-#                present, combining general settings with specific fire emission 
+#
+#   DESCRIPTION: Prepares and renders the configuration files
+#                required by the GOCART aerosol model component. The function
+#                calculates output frequencies (e.g., instantaneous AOD) based
+#                on the FHOUT_AERO environment variable.
+#                Additionally, it dynamically constructs the external data
+#                configuration file (AERO_ExtData.rc) if it is not already
+#                present, combining general settings with specific fire emission
 #                datasets.
 
 # Disable variable not used warnings
