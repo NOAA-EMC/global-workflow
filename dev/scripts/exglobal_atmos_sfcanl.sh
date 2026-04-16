@@ -183,7 +183,10 @@ for hr in "${!gcycle_dates[@]}"; do
 
     # Copy outputs from DATA to COMOUT
     for ((nn = 1; nn <= ntiles; nn++)); do
-        cpfs "${DATA}/fnbgso.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+        if [[ -f "${DATA}/fnbgso.00${nn}" ]]; then
+            [[ -d "${COMOUT_ATMOS_RESTART}" ]] || mkdir -p "${COMOUT_ATMOS_RESTART}"
+            cpfs "${DATA}/fnbgso.00${nn}" "${COMOUT_ATMOS_RESTART}/${datestr}.sfcanl_data.tile${nn}.nc"
+        fi
     done
 
 done

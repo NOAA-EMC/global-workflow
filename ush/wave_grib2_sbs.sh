@@ -98,14 +98,22 @@ if [[ ! -s gribfile ]]; then
     exit 2
 fi
 
+outfiletmp="${outfile}.tmp"
 if [[ ${fhr} -gt 0 ]]; then
-    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" -grib "${outfile}"
+    ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
+        -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
+    err=$?
+    [[ ${err} -eq 0 ]] && ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
     err=$?
 else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-        -set table_1.4 1 -set table_1.2 1 -grib "${outfile}"
+        -set table_1.4 1 -set table_1.2 1 \
+        -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
+    err=$?
+    [[ ${err} -eq 0 ]] && ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
     err=$?
 fi
+rm -f "${outfiletmp}"
 
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: Error creating '${outfile}' with '${WGRIB2}'"
