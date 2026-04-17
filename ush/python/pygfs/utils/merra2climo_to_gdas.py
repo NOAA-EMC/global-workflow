@@ -15,6 +15,10 @@ def horizontal_interp(source: xr.Dataset, target: xr.Dataset) -> xr.Dataset:
     """
     Regrid horizontally using xarray's interp.
 
+    Handles longitude convention mismatches: MERRA2 uses -180 to 180, while
+    FV3 oro_data tiles use 0 to 360.  The source grid is normalised to match
+    the target convention before interpolation to avoid wrap-around artefacts.
+
     Parameters
     ----------
     source : xr.Dataset
@@ -25,12 +29,29 @@ def horizontal_interp(source: xr.Dataset, target: xr.Dataset) -> xr.Dataset:
     Returns
     -------
     xr.Dataset
-        The horizontally interpolated dataset.
+        The horizontally interpolated dataset on the target grid.
     """
-    # Create lat/lon coordinates for interpolation
-    # MERRA2 is typically on a regular lat/lon grid
-    # Target (GFS tile) has geolon and geolat
-    out = source.interp(lon=target.geolon, lat=target.geolat, method='linear')
+    target_lon = target.geolon
+
+    # Detect target convention from the range of its longitudes
+    if float(target_lon.min()) >= 0:
+        # Target is 0->360; convert source lon coordinate to match
+        source = source.assign_coords(lon=(source.lon % 360))
+        source = source.sortby('lon')
+    else:
+        # Target is -180->180; ensure source lon is in the same range
+        source = source.assign_coords(lon=((source.lon + 180) % 360 - 180))
+        source = source.sortby('lon')
+
+    # Pad a one-point wrap on each end so interp has data across the seam
+    # and doesn't produce NaNs at exactly 0° or 360° (-180°/180°).
+    lon_coord = source.lon.values
+    lon_step = lon_coord[1] - lon_coord[0]
+    pad_left = source.isel(lon=-1).assign_coords(lon=lon_coord[0] - lon_step)
+    pad_right = source.isel(lon=0).assign_coords(lon=lon_coord[-1] + lon_step)
+    source = xr.concat([pad_left, source, pad_right], dim='lon')
+
+    out = source.interp(lon=target_lon, lat=target.geolat, method='linear')
     return out
 
 def vertical_interp(source: xr.Dataset, source_plevs: np.ndarray, target_plevs: np.ndarray) -> xr.Dataset:
@@ -130,10 +151,16 @@ def get_fv3_plevs(gfs_ctrl: xr.Dataset, return_akbk: bool = False) -> Union[np.n
     """
     Return the FV3 pressure levels using the fv3_core file and 1013.25 mb as the reference.
 
+    Supports two file formats:
+    - ``gfs_ctrl.nc``: contains a ``vcoord`` variable of shape (2, nlevs+1) where
+      row 0 is ak (Pa) and row 1 is bk (dimensionless).
+    - ``akbk.nc4`` (GDAS JEDI fix file): contains ``ak`` and ``bk`` as separate 1-D variables.
+
     Parameters
     ----------
     gfs_ctrl : xr.Dataset
-        Dataset containing vertical coordinate coefficients 'vcoord'.
+        Dataset containing vertical coordinate coefficients, either as ``vcoord``
+        or as separate ``ak`` / ``bk`` variables.
     return_akbk : bool, optional
         If True, returns the raw ak and bk coefficients. Default is False.
 
@@ -142,8 +169,12 @@ def get_fv3_plevs(gfs_ctrl: xr.Dataset, return_akbk: bool = False) -> Union[np.n
     Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]
         The mid-level pressure array (hPa) or a tuple of (ak, bk) coefficients.
     """
-    ak = gfs_ctrl.vcoord.values[0, :]
-    bk = gfs_ctrl.vcoord.values[1, :]
+    if 'vcoord' in gfs_ctrl:
+        ak = gfs_ctrl.vcoord.values[0, :]
+        bk = gfs_ctrl.vcoord.values[1, :]
+    else:
+        ak = gfs_ctrl.ak.values.squeeze()
+        bk = gfs_ctrl.bk.values.squeeze()
 
     # ak is in Pa, we need phalf in hPa
     phalf_fv3 = (ak + bk * 101325.) / 100.
