@@ -27,10 +27,10 @@ set -x
 CNVSTAT="${RUN}.t${cyc}z.cnvstat.tar"
 
 # Input files from CNVSTAT fed to wdqms.py
-INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4" \
-            "diag_conv_t_ges.${PDY}${cyc}.nc4" \
-            "diag_conv_q_ges.${PDY}${cyc}.nc4" \
-            "diag_conv_uv_ges.${PDY}${cyc}.nc4")
+INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4"
+    "diag_conv_t_ges.${PDY}${cyc}.nc4"
+    "diag_conv_q_ges.${PDY}${cyc}.nc4"
+    "diag_conv_uv_ges.${PDY}${cyc}.nc4")
 
 # Observation types being processed by wdqms.py
 OTYPES=(SYNOP TEMP MARINE)
