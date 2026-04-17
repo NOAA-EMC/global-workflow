@@ -102,11 +102,12 @@ for otype in "${OTYPES[@]}"; do
   fi
   #=============================================================================
 
-  #=============================================================================
-  # Send DBN alerts
-  if [[ "${SENDDBN:-}" == "YES" ]]; then
-    if [[ -f "${COMOUT}/${csvfileout}" ]]; then
-      "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WDQMS" "${job}" "${COMOUT}/${csvfileout}"
+    #=============================================================================
+    # Send DBN alerts
+    if [[ "${SENDDBN:-}" == "YES" ]]; then
+        if [[ -f "${COMOUT}/${csvfileout}" ]]; then
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WDQMS" "${job}" "${COMOUT}/${csvfileout}"
+        fi
     fi
   fi
   #=============================================================================
