@@ -273,9 +273,6 @@ class GFSCycledAppConfig(AppConfig):
                 wave_prep_tasks = ['waveinit']
                 wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
 
-                print('****** run, do_wdqms = ',run,options['do_wdqms'])
-
-
                 # gdas- and gfs-specific analysis tasks
                 if run == 'gdas':
                     if not options['do_jediatmvar']:
