@@ -521,9 +521,16 @@ class WDQMS:
             q_df = q_df.loc[conditions]
             q_df['Obs_Minus_Forecast_adjusted'] = bg_dep
 
-            df_list.append(pd.concat([t_df, q_df]))
 
-        df = pd.concat(df_list)
+            frames = [t_df, q_df]
+            frames = [
+                d for d in frames
+                if d is not None and not d.empty and not d.isna().all().all()
+            ]
+            if frames:
+                df_list.append(pd.concat(frames, ignore_index=True))
+
+        df = pd.concat(df_list, ignore_index=True) if df_list else pd.DataFrame()
 
         logging.info("Exiting genqstat()")
 
