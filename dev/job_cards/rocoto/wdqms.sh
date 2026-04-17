@@ -1,13 +1,21 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
+
+set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+source "${HOMEgfs}/dev/ush/load_modules.sh" gsi
 status=$?
-(( status != 0 )) && exit "${status}"
+if [[ ${status} -ne 0 ]]; then
+    exit "${status}"
+fi
+
+export job="wdqms"
+export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS"
+"${HOMEgfs}/dev/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS"
 status=$?
+
 exit "${status}"

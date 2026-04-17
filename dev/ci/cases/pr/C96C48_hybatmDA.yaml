@@ -1,14 +1,14 @@
 experiment:
   net: gfs
   mode: cycled
-  pslot: {{ 'pslot' | getenv }}
+  pslot: wdqms
   app: ATM
   resdetatmos: 96
   resdetocean: 5.0
   resensatmos: 48
-  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
-  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
+  comroot: /lfs/h2/emc/ptmp/andrew.collard/COMROOT
+  expdir: /lfs/h2/emc/ptmp/andrew.collard/EXPDIR
+  icsdir: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48/20250808
   idate: 2021122018
   edate: 2021122106
   nens: 2

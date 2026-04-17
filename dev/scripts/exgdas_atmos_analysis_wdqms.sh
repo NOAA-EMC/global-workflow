@@ -24,7 +24,7 @@ set -x
 ################################################################################
 
 # Input GSI diagnostic file containing inputs to wdqms.py
-CNVSTAT="${RUN}.t${cyc}z.cnvstat"
+CNVSTAT="${RUN}.t${cyc}z.cnvstat.tar"
 
 # Input files from CNVSTAT fed to wdqms.py
 INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4" \
