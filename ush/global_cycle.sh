@@ -127,8 +127,6 @@
 #     DO_SFCCYCLE   Call sfcsub routine
 #     GCYCLE_DO_SOILINCR   Call routine to add soil increments
 #     GCYCLE_DO_SNOWINCR   Call routine to add snow inrcements
-#     GCYCLE_INTERP_LANDINCR  Flag to regrid input land increment from Gaus to native model
-#                   grid inside gcycle
 #
 #     zsea1/zsea2   When running with NST model, this is the lower/upper bound
 #                   of depth of sea temperature.  In whole mm.
@@ -230,7 +228,6 @@ if [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]] || [[ "${GCYCLE_DO_SNOWINCR}" == ".
 else
     DO_LANDINCR=".false."
 fi
-GCYCLE_INTERP_LANDINCR=${GCYCLE_INTERP_LANDINCR:-.false.}
 zsea1=${zsea1:-0}
 zsea2=${zsea2:-0}
 MAX_TASKS_CY=${MAX_TASKS_CY:-99999}
@@ -335,7 +332,6 @@ cat << EOF > fort.37
   NST_FILE="${NST_FILE}",
   DO_SOILINCR=${GCYCLE_DO_SOILINCR},
   DO_SNOWINCR=${GCYCLE_DO_SNOWINCR},
-  INTERP_LANDINCR=${GCYCLE_INTERP_LANDINCR},
   lsoil_incr=${LSOIL_INCR},
  /
 EOF

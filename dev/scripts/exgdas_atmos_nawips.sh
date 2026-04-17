@@ -25,7 +25,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
     cpreq "${source_table}" "${table}"
 done
 
-NAGRIB="${GEMEXE}/nagrib2"
+NAGRIB="${GEMEXE}/nagrib2_nc"
 
 cpyfil=gds
 garea=dset
@@ -48,7 +48,7 @@ fi
 
 cpreq "${GRIBIN}" "grib${fhr3}"
 
-export pgm="nagrib2 F${fhr3}"
+export pgm="nagrib2_nc F${fhr3}"
 startmsg
 
 ${NAGRIB} << EOF
@@ -79,7 +79,5 @@ if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${destination}/${GEMGRD}"
 fi
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

@@ -273,7 +273,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     cd "${HOMEgfs}/parm" || exit 1
     mkdir -p gdas
     cd gdas || exit 1
-    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+    declare -a gdasapp_comps=("aero" "atm" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
     for comp in "${gdasapp_comps[@]}"; do
         if [[ -d "${comp}" ]]; then
             rm -rf "${comp}"
@@ -312,7 +312,6 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     cd "${HOMEgfs}/ush" || exit 1
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py" .
 fi
 
 #------------------------------
