@@ -26,6 +26,7 @@ skip_ci_on_hosts:
   - hera
   - ursa
   - orion
+  - derecho
   - awsepicglobalworkflow
 
 workflow:

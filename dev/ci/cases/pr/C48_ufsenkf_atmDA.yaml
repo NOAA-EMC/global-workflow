@@ -19,6 +19,7 @@ skip_ci_on_hosts:
   - gaeac5
   - orion
   - hercules
+  - derecho
   - awsepicglobalworkflow
 
 workflow:

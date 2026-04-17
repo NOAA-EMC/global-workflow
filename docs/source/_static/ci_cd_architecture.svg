@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" font-family="'Segoe UI', Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="820" fill="#f8fafc" rx="12"/>
+
+  <!-- Title -->
+  <text x="550" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">Global Workflow CI/CD Architecture</text>
+  <text x="550" y="60" text-anchor="middle" font-size="13" fill="#64748b">Repository Mirroring &amp; Pipeline Execution Flow</text>
+
+  <!-- ===== ROW 1: Repositories ===== -->
+
+  <!-- GitHub (Authoritative) -->
+  <rect x="60" y="90" width="280" height="110" rx="10" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="60" y="90" width="280" height="32" rx="10" fill="#1e293b"/>
+  <rect x="60" y="112" width="280" height="10" fill="#1e293b"/>
+  <text x="200" y="112" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">GitHub (Authoritative)</text>
+  <text x="200" y="146" text-anchor="middle" font-size="11" fill="#475569">github.com/NOAA-EMC/global-workflow</text>
+  <text x="200" y="165" text-anchor="middle" font-size="10" fill="#64748b">Development &#x2022; Code Review &#x2022; PRs</text>
+  <text x="200" y="185" text-anchor="middle" font-size="10" fill="#64748b">Issues &#x2022; Releases</text>
+
+  <!-- Licensed GitLab -->
+  <rect x="420" y="90" width="280" height="110" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="420" y="90" width="280" height="32" rx="10" fill="#7c3aed"/>
+  <rect x="420" y="112" width="280" height="10" fill="#7c3aed"/>
+  <text x="560" y="112" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Licensed GitLab Instance</text>
+  <text x="560" y="146" text-anchor="middle" font-size="11" fill="#475569">GitLab Premium</text>
+  <text x="560" y="165" text-anchor="middle" font-size="10" fill="#64748b">Pull Mirror &#x2022; Push Mirror</text>
+  <text x="560" y="185" text-anchor="middle" font-size="10" fill="#64748b">Mirroring Only (No CI)</text>
+
+  <!-- VLab Community GitLab -->
+  <rect x="780" y="90" width="260" height="110" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="780" y="90" width="260" height="32" rx="10" fill="#16a34a"/>
+  <rect x="780" y="112" width="260" height="10" fill="#16a34a"/>
+  <text x="910" y="112" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">VLab Community GitLab</text>
+  <text x="910" y="146" text-anchor="middle" font-size="11" fill="#475569">vlab.noaa.gov/gitlab-community</text>
+  <text x="910" y="165" text-anchor="middle" font-size="10" fill="#64748b">CI/CD Pipeline Execution</text>
+  <text x="910" y="185" text-anchor="middle" font-size="10" fill="#64748b">Runners &#x2022; NOAA-Wide Access</text>
+
+  <!-- Pull Mirror Arrow -->
+  <line x1="340" y1="140" x2="418" y2="140" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <rect x="348" y="124" width="68" height="18" rx="4" fill="#dbeafe"/>
+  <text x="382" y="136" text-anchor="middle" font-size="9" font-weight="bold" fill="#2563eb">PULL</text>
+
+  <!-- Push Mirror Arrow -->
+  <line x1="700" y1="140" x2="778" y2="140" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <rect x="708" y="124" width="68" height="18" rx="4" fill="#dcfce7"/>
+  <text x="742" y="136" text-anchor="middle" font-size="9" font-weight="bold" fill="#16a34a">PUSH</text>
+
+  <!-- ===== Trigger &amp; Feedback Arrows ===== -->
+
+  <!-- GitHub Actions Trigger (GitHub -> VLab Community GitLab) -->
+  <path d="M 260 200 C 260 250, 910 250, 910 200" stroke="#ea580c" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrowOrange)"/>
+  <rect x="520" y="248" width="130" height="18" rx="4" fill="#fff7ed"/>
+  <text x="585" y="260" text-anchor="middle" font-size="9" font-weight="bold" fill="#ea580c">GitHub Actions Trigger</text>
+
+  <!-- Feedback Loop (VLab Community GitLab -> GitHub) -->
+  <path d="M 850 90 C 850 50, 260 50, 260 90" stroke="#6b7280" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+  <rect x="490" y="38" width="148" height="16" rx="4" fill="#f1f5f9"/>
+  <text x="564" y="49" text-anchor="middle" font-size="8" fill="#6b7280">Labels &#x2022; Comments &#x2022; Badges</text>
+
+  <!-- ===== ROW 2: Pipeline Stages ===== -->
+
+  <!-- Pipeline box -->
+  <rect x="100" y="280" width="660" height="130" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,3" filter="url(#shadow)"/>
+  <text x="430" y="300" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">GitLab CI/CD Pipeline Stages</text>
+
+  <!-- Stage 1: Build -->
+  <rect x="120" y="315" width="140" height="75" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="190" y="340" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b21b6">1. Build</text>
+  <text x="190" y="358" text-anchor="middle" font-size="9" fill="#6d28d9">Clone &amp; checkout PR</text>
+  <text x="190" y="372" text-anchor="middle" font-size="9" fill="#6d28d9">Compile codebase</text>
+  <text x="190" y="386" text-anchor="middle" font-size="9" fill="#6d28d9">Link workflow</text>
+
+  <!-- Stage 2: Setup Tests -->
+  <rect x="280" y="315" width="140" height="75" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="350" y="340" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">2. Setup</text>
+  <text x="350" y="358" text-anchor="middle" font-size="9" fill="#2563eb">Create experiments</text>
+  <text x="350" y="372" text-anchor="middle" font-size="9" fill="#2563eb">or CMake/CTest config</text>
+
+  <!-- Stage 3: Run Tests -->
+  <rect x="440" y="315" width="140" height="75" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="510" y="340" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">3. Run Tests</text>
+  <text x="510" y="358" text-anchor="middle" font-size="9" fill="#16a34a">Rocoto experiments</text>
+  <text x="510" y="372" text-anchor="middle" font-size="9" fill="#16a34a">or CTest execution</text>
+  <text x="510" y="386" text-anchor="middle" font-size="9" fill="#16a34a">Monitor &amp; report</text>
+
+  <!-- Stage 4: Finalize -->
+  <rect x="600" y="315" width="140" height="75" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="670" y="340" text-anchor="middle" font-size="13" font-weight="bold" fill="#c2410c">4. Finalize</text>
+  <text x="670" y="358" text-anchor="middle" font-size="9" fill="#ea580c">Update PR labels</text>
+  <text x="670" y="372" text-anchor="middle" font-size="9" fill="#ea580c">Manage nightlies</text>
+  <text x="670" y="386" text-anchor="middle" font-size="9" fill="#ea580c">Update badges</text>
+
+  <!-- Arrows between stages -->
+  <line x1="260" y1="352" x2="278" y2="352" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <line x1="420" y1="352" x2="438" y2="352" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <line x1="580" y1="352" x2="598" y2="352" stroke="#475569" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- Pipeline modes -->
+  <rect x="790" y="290" width="240" height="108" rx="8" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="910" y="312" text-anchor="middle" font-size="12" font-weight="bold" fill="#a16207">Pipeline Modalities</text>
+  <line x1="810" y1="320" x2="1010" y2="320" stroke="#ca8a04" stroke-width="0.5"/>
+  <circle cx="820" cy="340" r="5" fill="#7c3aed"/>
+  <text x="830" y="344" font-size="11" fill="#475569" font-weight="bold">PR Cases</text>
+  <text x="833" y="358" font-size="9" fill="#64748b">Full Rocoto experiments</text>
+  <circle cx="820" cy="378" r="5" fill="#2563eb"/>
+  <text x="830" y="382" font-size="11" fill="#475569" font-weight="bold">CTests</text>
+  <text x="833" y="396" font-size="9" fill="#64748b">Fast CMake/CTest checks</text>
+
+  <!-- ===== ROW 3: RDHPCS Runners ===== -->
+
+  <!-- Runner section background -->
+  <rect x="60" y="440" width="980" height="180" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="550" y="465" text-anchor="middle" font-size="15" font-weight="bold" fill="#15803d">RDHPCS GitLab Shell Runners</text>
+  <text x="550" y="482" text-anchor="middle" font-size="10" fill="#16a34a">Deployed via launch_gitlab_runner.sh on each HPC system</text>
+
+  <!-- Hera -->
+  <rect x="85" y="498" width="160" height="100" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="165" y="520" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Hera</text>
+  <text x="165" y="538" text-anchor="middle" font-size="9" fill="#475569">NOAA RDHPCS</text>
+  <text x="165" y="554" text-anchor="middle" font-size="8" fill="#64748b">17 test cases</text>
+  <text x="165" y="568" text-anchor="middle" font-size="7" fill="#94a3b8">/scratch3/.../GFS_CI_CD/HERA</text>
+  <text x="165" y="586" text-anchor="middle" font-size="8" fill="#6b7280">Tag: hera</text>
+
+  <!-- Gaea C6 -->
+  <rect x="270" y="498" width="160" height="100" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="350" y="520" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Gaea C6</text>
+  <text x="350" y="538" text-anchor="middle" font-size="9" fill="#475569">DOE/ORNL</text>
+  <text x="350" y="554" text-anchor="middle" font-size="8" fill="#64748b">15 test cases</text>
+  <text x="350" y="568" text-anchor="middle" font-size="7" fill="#94a3b8">/gpfs/f6/.../GFS_CI_CD</text>
+  <text x="350" y="586" text-anchor="middle" font-size="8" fill="#6b7280">Tag: gaeac6</text>
+
+  <!-- Orion -->
+  <rect x="455" y="498" width="160" height="100" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="535" y="520" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Orion</text>
+  <text x="535" y="538" text-anchor="middle" font-size="9" fill="#475569">MSU RDHPCS</text>
+  <text x="535" y="554" text-anchor="middle" font-size="8" fill="#64748b">8 test cases</text>
+  <text x="535" y="568" text-anchor="middle" font-size="7" fill="#94a3b8">/work2/.../GFS_CI_CD/ORION</text>
+  <text x="535" y="586" text-anchor="middle" font-size="8" fill="#6b7280">Tag: orion</text>
+
+  <!-- Hercules -->
+  <rect x="640" y="498" width="160" height="100" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="720" y="520" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Hercules</text>
+  <text x="720" y="538" text-anchor="middle" font-size="9" fill="#475569">MSU RDHPCS</text>
+  <text x="720" y="554" text-anchor="middle" font-size="8" fill="#64748b">10 test cases</text>
+  <text x="720" y="568" text-anchor="middle" font-size="7" fill="#94a3b8">/work2/.../GFS_CI_CD/HERCULES</text>
+  <text x="720" y="586" text-anchor="middle" font-size="8" fill="#6b7280">Tag: hercules</text>
+
+  <!-- Ursa -->
+  <rect x="825" y="498" width="160" height="100" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="905" y="520" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Ursa</text>
+  <text x="905" y="538" text-anchor="middle" font-size="9" fill="#475569">NOAA RDHPCS</text>
+  <text x="905" y="554" text-anchor="middle" font-size="8" fill="#64748b">17 test cases</text>
+  <text x="905" y="568" text-anchor="middle" font-size="7" fill="#94a3b8">/scratch3/.../GFS_CI_CD/URSA</text>
+  <text x="905" y="586" text-anchor="middle" font-size="8" fill="#6b7280">Tag: ursa</text>
+
+  <!-- Connection lines from pipeline to runners -->
+  <line x1="430" y1="410" x2="165" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="430" y1="410" x2="350" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="430" y1="410" x2="535" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="430" y1="410" x2="720" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="430" y1="410" x2="905" y2="496" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Connection from VLab Community GitLab to Pipeline -->
+  <line x1="910" y1="200" x2="530" y2="278" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowGray)"/>
+
+  <!-- ===== ROW 4: Key Configuration Files ===== -->
+
+  <rect x="60" y="650" width="980" height="150" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+  <text x="550" y="674" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e293b">Key Configuration Files</text>
+
+  <!-- File boxes -->
+  <rect x="85" y="690" width="185" height="42" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="177" y="708" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">.gitlab-ci.yml</text>
+  <text x="177" y="722" text-anchor="middle" font-size="8" fill="#64748b">Main orchestration</text>
+
+  <rect x="290" y="690" width="185" height="42" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="382" y="708" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">gitlab-ci-hosts.yml</text>
+  <text x="382" y="722" text-anchor="middle" font-size="8" fill="#64748b">Host configs &amp; test matrices</text>
+
+  <rect x="495" y="690" width="185" height="42" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="587" y="708" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">gitlab-ci-cases.yml</text>
+  <text x="587" y="722" text-anchor="middle" font-size="8" fill="#64748b">Experiment templates</text>
+
+  <rect x="700" y="690" width="185" height="42" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="792" y="708" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">gitlab-ci-ctests.yml</text>
+  <text x="792" y="722" text-anchor="middle" font-size="8" fill="#64748b">CTest framework</text>
+
+  <rect x="85" y="745" width="185" height="42" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="177" y="763" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">config.&lt;MACHINE_ID&gt;</text>
+  <text x="177" y="777" text-anchor="middle" font-size="8" fill="#64748b">Platform CI paths &amp; settings</text>
+
+  <rect x="290" y="745" width="185" height="42" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="382" y="763" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">launch_gitlab_runner.sh</text>
+  <text x="382" y="777" text-anchor="middle" font-size="8" fill="#64748b">Runner register/run/unregister</text>
+
+  <rect x="495" y="745" width="185" height="42" rx="6" fill="#fff7ed" stroke="#fdba74" stroke-width="1"/>
+  <text x="587" y="763" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">trigger-gitlab-pipelines.yml</text>
+  <text x="587" y="777" text-anchor="middle" font-size="8" fill="#64748b">GitHub Actions trigger</text>
+
+  <rect x="700" y="745" width="185" height="42" rx="6" fill="#fff7ed" stroke="#fdba74" stroke-width="1"/>
+  <text x="792" y="763" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">run_check_gitlab_ci.sh</text>
+  <text x="792" y="777" text-anchor="middle" font-size="8" fill="#64748b">Experiment monitor &amp; report</text>
+
+  <!-- Legend -->
+  <rect x="815" y="440" width="225" height="50" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="927" y="456" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">Legend</text>
+  <line x1="830" y1="470" x2="860" y2="470" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="866" y="474" font-size="9" fill="#475569">Mirror sync</text>
+  <line x1="940" y1="470" x2="970" y2="470" stroke="#ea580c" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="976" y="474" font-size="9" fill="#475569">API trigger</text>
+</svg>

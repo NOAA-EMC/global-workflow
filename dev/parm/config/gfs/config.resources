@@ -61,6 +61,11 @@ case ${machine} in
               max_tasks_per_node=80
               mem_node_max="500GB"
     ;;
+  "DERECHO")
+              max_tasks_per_node=128
+              mem_node_max="230GB"
+    ;;
+
   "AWSPW")
     export PARTITION_BATCH="compute"
     npe_node_max=48
