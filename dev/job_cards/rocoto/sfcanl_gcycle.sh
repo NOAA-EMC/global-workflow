@@ -3,19 +3,19 @@
 set -x
 
 ###############################################################
-# Source GSI workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" gsi
+# Source FV3GFS workflow modules
+source "${HOMEgfs}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="esfc"
+export job="sfcanlg"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_ENKF_SFC"
+"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_SFCANL_GCYCLE"
 status=$?
 
 exit "${status}"
