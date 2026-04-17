@@ -25,7 +25,7 @@ status=$?
 ##########################################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p "${DATA}"
-cd "${DATA}"
+cd "${DATA}" || exit
 
 ######################################
 # Set up the cycle variable
