@@ -7,4 +7,5 @@ var_string="$1"
 output_file="$2"
 
 # Note: COMIN_ATMOS_MASTER must be exported from the master script
-${WGRIB2} - -match "${var_string}" -grib "${output_file}" < <(ls -v "${COMIN_ATMOS_MASTER}"/* | xargs cat)
+# Safely stream the files into cat, then into wgrib2
+find "${COMIN_ATMOS_MASTER}" -maxdepth 1 -type f -print0 | sort -zV | xargs -0 cat | ${WGRIB2} - -match "${var_string}" -grib "${output_file}"
