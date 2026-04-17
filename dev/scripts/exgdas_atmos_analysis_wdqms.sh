@@ -90,17 +90,17 @@ for otype in "${OTYPES[@]}"; do
     fi
     #=============================================================================
 
-  #=============================================================================
-  # Copy to COMOUT if wdqms.py created the output file
-  csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
-  csvfileout="${RUN}.t${cyc}z.${otype,,}.csv"
-  if [[ -f "${csvfile}" ]]; then
-    cp "./${csvfile}" "${COMOUT}/${csvfileout}" || ( echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'" )
-  else
-    echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
-    error=$((error + 1))
-  fi
-  #=============================================================================
+    #=============================================================================
+    # Copy to COMOUT if wdqms.py created the output file
+    csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
+    csvfileout="${RUN}.t${cyc}z.${otype,,}.csv"
+    if [[ -f "${csvfile}" ]]; then
+        cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+    else
+        echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
+        error=$((error + 1))
+    fi
+    #=============================================================================
 
     #=============================================================================
     # Send DBN alerts
