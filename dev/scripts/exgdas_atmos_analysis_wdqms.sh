@@ -80,15 +80,15 @@ for otype in "${OTYPES[@]}"; do
 
     echo "Processing ... ${otype}"
 
-  #=============================================================================
-  # Process with wdqms.py
-  ${WDQMSPY} -i ${INPUT_LIST[@]} -t "${otype}" -o "${DATA}"
-  rc=$?
-  if (( rc != 0 )); then
-    echo "WARNING: wdqms.py failed to process observation type '${otype}'"
-    error=$((error + 1))
-  fi
-  #=============================================================================
+    #=============================================================================
+    # Process with wdqms.py
+    ${WDQMSPY} -i ${INPUT_LIST[@]} -t "${otype}" -o "${DATA}"
+    rc=$?
+    if ((rc != 0)); then
+        echo "WARNING: wdqms.py failed to process observation type '${otype}'"
+        error=$((error + 1))
+    fi
+    #=============================================================================
 
   #=============================================================================
   # Copy to COMOUT if wdqms.py created the output file
