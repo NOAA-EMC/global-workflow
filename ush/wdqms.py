@@ -474,7 +474,7 @@ class WDQMS:
         # Get variable type specific to WDQMS type
         q_id = self.wdqms_type_dict[self.wdqms_type]['variable_ids']['q']
         t_id = self.wdqms_type_dict[self.wdqms_type]['variable_ids']['t']
- 
+
         df_list = []
 
         # Groupby Station_ID
@@ -484,7 +484,7 @@ class WDQMS:
             q_df = stn_df[stn_df['var_id'] == q_id]
             t_df = stn_df[stn_df['var_id'] == t_id]
 
-            # Make sure there are no duplicates in q_df and t_df before merging 
+            # Make sure there are no duplicates in q_df and t_df before merging
             columns_to_compare = ['Station_ID', 'Latitude', 'Longitude', 'Pressure', 'Time']
             q_df = q_df.drop_duplicates(subset=columns_to_compare)
             t_df = t_df.drop_duplicates(subset=columns_to_compare)
@@ -520,7 +520,6 @@ class WDQMS:
             # Update the background departure values for q_df
             q_df = q_df.loc[conditions]
             q_df['Obs_Minus_Forecast_adjusted'] = bg_dep
-
 
             frames = [t_df, q_df]
             frames = [
