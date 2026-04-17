@@ -1,5 +1,4 @@
 #! /usr/bin/env bash
-
 #######
 # Preamble script to be SOURCED at the beginning of every script. Sets
 #   useful PS4 and optionally turns on set -x and set -eu. Also sets up
