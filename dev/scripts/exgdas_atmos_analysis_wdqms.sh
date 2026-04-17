@@ -78,7 +78,7 @@ done
 error=0
 for otype in "${OTYPES[@]}"; do
 
-  echo "Processing ... ${otype}"
+    echo "Processing ... ${otype}"
 
   #=============================================================================
   # Process with wdqms.py
