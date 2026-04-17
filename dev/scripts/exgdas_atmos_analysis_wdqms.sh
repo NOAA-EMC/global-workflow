@@ -40,7 +40,10 @@ echo "Begin job ${job:-}"
 
 #-------------------------------------------------------------------------------
 # Enter working directory
-cd "${DATA}" || ( echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"; exit 2 )
+cd "${DATA}" || (
+    echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"
+    exit 2
+)
 
 #-------------------------------------------------------------------------------
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
