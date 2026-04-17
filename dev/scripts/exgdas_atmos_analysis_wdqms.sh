@@ -55,12 +55,18 @@ export err=$?
     err_exit "${msg}"
 )
 for diagfile in "${INPUT_LIST[@]}"; do
-  tar -xvf "${CNVSTAT}" "${diagfile}.gz"
-  export err=$?
-  (( err != 0 )) && ( msg="FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"; err_exit "${msg}" )
-  gunzip "${diagfile}.gz"
-  export err=$?
-  (( err != 0 )) && ( msg="FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"; err_exit "${msg}" )
+    tar -xvf "${CNVSTAT}" "${diagfile}.gz"
+    export err=$?
+    ((err != 0)) && (
+        msg="FATAL ERROR: Unable to extract '${diagfile}.gz' from '${CNVSTAT}', ABORT!"
+        err_exit "${msg}"
+    )
+    gunzip "${diagfile}.gz"
+    export err=$?
+    ((err != 0)) && (
+        msg="FATAL ERROR: Unable to gunzip '${diagfile}.gz', ABORT!"
+        err_exit "${msg}"
+    )
 done
 
 #-------------------------------------------------------------------------------
