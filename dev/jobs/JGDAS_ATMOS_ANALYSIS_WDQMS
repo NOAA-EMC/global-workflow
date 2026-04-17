@@ -10,9 +10,9 @@ date
 configs="base wdqms"
 export EXPDIR=${EXPDIR:-${HOMEgfs}/dev/parm/config/gfs}
 for config in ${configs}; do
-  source "${EXPDIR}/config.${config}"
-  status=$?
-  (( status != 0 )) && exit "${status}"
+    source "${EXPDIR}/config.${config}"
+    status=$?
+    ((status != 0)) && exit "${status}"
 done
 
 ###############################################################
