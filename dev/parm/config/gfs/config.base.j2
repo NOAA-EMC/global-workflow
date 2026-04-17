@@ -15,13 +15,16 @@ export RUN_ENVIR="emc"
 export ACCOUNT="{{ ACCOUNT }}"
 export QUEUE="{{ QUEUE }}"
 export QUEUE_SERVICE="{{ QUEUE_SERVICE | default('${QUEUE}') }}"
+export QUEUE_EXCLUSIVE="{{ QUEUE_EXCLUSIVE | default('${QUEUE}') }}"
 export QUEUE_DTN="{{ QUEUE_DTN | default('${QUEUE_SERVICE}') }}"
 export PARTITION_BATCH="{{ PARTITION_BATCH }}"
 export PARTITION_SERVICE="{{ PARTITION_SERVICE | default() }}"
+export PARTITION_EXCLUSIVE="{{ PARTITION_EXCLUSIVE | default() }}"
 export PARTITION_DTN="{{ PARTITION_DTN | default() }}"
 export RESERVATION="{{ RESERVATION | default() }}"
 export CLUSTERS="{{ CLUSTERS | default() }}"
 export CLUSTERS_SERVICE="{{ CLUSTERS_SERVICE | default('${CLUSTERS}') }}"
+export CLUSTERS_EXCLUSIVE="{{ CLUSTERS_EXCLUSIVE | default('${CLUSTERS}') }}"
 export CLUSTERS_DTN="{{ CLUSTERS_DTN | default('${CLUSTERS_SERVICE}') }}"
 
 # Project to use in mass store:
@@ -485,7 +488,13 @@ export binary_diag=".false."
 export DO_CA="YES"
 
 # Verification options
-export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
+# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
+# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
+# export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
+case "${machine}" in
+    URSA | GAEAC6 | ORION | HERCULES | DERECHO) export DO_METP=NO;;
+    *) export DO_METP="{{ DO_METP }}";;
+esac
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
 #--online archive of netcdf files for fit2obs verification
@@ -517,12 +526,6 @@ else
    if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
      export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
    fi
-fi
-
-# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
-# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
-if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
-    export DO_METP=NO
 fi
 
 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then

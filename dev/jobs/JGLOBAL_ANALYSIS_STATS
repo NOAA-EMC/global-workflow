@@ -33,7 +33,6 @@ declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_ATMOS_ANLMON="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/anlmon"
 mkdir -m 755 -p "${COMOUT_ATMOS_ANALYSIS}"
-mkdir -m 755 -p "${COMOUT_ATMOS_ANLMON}"
 mkdir -m 755 -p "${COMOUT_CONF}"
 
 if [[ "${DO_AERO_ANL:-NO}" == "YES" ]]; then

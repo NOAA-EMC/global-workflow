@@ -7,7 +7,7 @@ experiment:
   resensatmos: 48
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C96C48/20250808
+  icsdir: {{ BASE_IC }}/C96C48/20250808
   idate: 2024022318
   edate: 2024022406
   nens: 2
@@ -19,6 +19,7 @@ skip_ci_on_hosts:
   - gaeac5
   - orion
   - hercules
+  - derecho
   - awsepicglobalworkflow
 
 workflow:

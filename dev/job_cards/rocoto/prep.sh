@@ -45,6 +45,9 @@ declare -rx COMOUT_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 declare -rx COMINobsproc_PREV="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
+# Prepobs still uses old HOME name
+declare -rx HOMEgfs="${HOMEglobal}"
+
 mkdir -p "${COMOUT_OBS}"
 
 ###############################################################
@@ -171,7 +174,8 @@ fi
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
     source "${USHglobal}/unset_strict.sh"
-    "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
+    # Debug level < 0 stops obsproc from changing the PS4 format
+    DEBUG_LEVEL=-1 "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
     source "${USHglobal}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
@@ -189,10 +193,15 @@ else
         fi
 
     fi
-    cpreq "${PREPBUFR_DIR}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
-    cpreq "${PREPBUFR_DIR}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
+    cpcmd="cpreq"
+    if [[ "${CHGRP_RSTPROD}" == "NO" ]]; then
+        # When using non-restricted dumps, the following may not be present
+        cpcmd="cp"
+    fi
+    ${cpcmd} "${PREPBUFR_DIR}/${OPREFIX}prepbufr" "${COMOUT_OBS}/${OPREFIX}prepbufr"
+    ${cpcmd} "${PREPBUFR_DIR}/${OPREFIX}prepbufr.acft_profiles" "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
     if [[ ${DONST} == "YES" ]]; then
-        cpreq "${PREPBUFR_DIR}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
+        ${cpcmd} "${PREPBUFR_DIR}/${OPREFIX}nsstbufr" "${COMOUT_OBS}/${OPREFIX}nsstbufr"
     fi
 fi
 
@@ -203,7 +212,7 @@ if [[ ${DONST} == "YES" ]]; then
 fi
 err=0
 for file in ${files}; do
-    if [[ ! -f "${COMOUT_OBS}/${OPREFIX}${file}" ]]; then
+    if [[ ! -f "${COMOUT_OBS}/${OPREFIX}${file}" && "${CHGRP_RSTPROD}" == "YES" ]]; then
         err=1
         echo "Failed to obtain/create ${file}, ABORT!"
     fi
