@@ -59,8 +59,8 @@ echo "JOB ${job:-} HAS COMPLETED NORMALLY!"
 ############################################
 # print exec I/O output
 ############################################
-if [[ -e "${pgmout:-}" ]] ; then
-  cat "${pgmout}"
+if [[ -e "${pgmout:-}" ]]; then
+    cat "${pgmout}"
 fi
 
 ###################################
