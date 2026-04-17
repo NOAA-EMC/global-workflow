@@ -109,8 +109,8 @@ done  # for otype
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-if (( error == 0 )); then
-  echo "Job completed normally."
+if ((error == 0)); then
+    echo "Job completed normally."
 else
     echo "WARNING: Job completed with non-fatal errors."
 fi
