@@ -6,8 +6,6 @@
 # comparisons to the ecmwf and ukmet
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir SA2
 cd SA2 || exit 1
 
