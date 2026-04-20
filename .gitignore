@@ -45,6 +45,10 @@ fix/ugwd_nest
 fix/verif
 fix/wave
 
+# Ignore modulefile symlinks
+#--------------------------
+modulefiles/upp
+
 # Ignore parm file symlinks
 #--------------------------
 parm/gdas/aero
@@ -100,6 +104,7 @@ parm/ufs/post_itag_gfs
 parm/ufs/post_itag_gcafs
 parm/ufs/ww3_shel.nml.IN
 parm/ufs/global_control.nml.IN
+parm/ufs/fd_ufs.yaml
 parm/ufs/suite_FV3_global_nest_v1.xml
 parm/ufs/suite_FV3_GFS_v17_p8_ugwpv1.xml
 parm/ufs/suite_FV3_GFS_v17_coupled_p8_ugwpv1.xml

@@ -97,7 +97,7 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - 1
      - X
      - X
-     - x
+     - X
      - X
      - X
      - X
@@ -168,6 +168,21 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      -
      - X
+   * - Derecho
+     - 1
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     -
+     - X
+     -
+     -
    * - AWS (PW)
      - 3
      - X
@@ -226,6 +241,7 @@ HPC helpdesks
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
 * Cloud: rdhpcs.cloud.help@noaa.gov
+* Derecho: https://rchelp.ucar.edu
 
 ======================
 Restricted data access

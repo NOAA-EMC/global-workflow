@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+export stack_compiler=oneapi
+export stack_compiler_ver=2024.2.1
+
+export stack_mpi=cray-mpich
+export stack_mpi_ver=8.1.29
+
+spack_stack_root="/glade/work/epicufsrt/contrib/spack-stack/derecho"
+
+source "${HOMEglobal:-}/versions/spack.ver"
+
+# There is no separate imagemagick module on Derecho
+export imagemagick_ver=null

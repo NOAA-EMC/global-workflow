@@ -1,0 +1,29 @@
+# Paths
+DMPDIR: '/lustre/desc1/p/nral0032/global/dump_nr'
+IODADIR: '/lustre/desc1/p/nral0032/global/dump_ioda_nr'
+BASE_GIT: '/lustre/desc1/p/nral0032/global/global_externals'
+BASE_DATA: '/lustre/desc1/p/nral0032/global/data'
+BASE_IC: '/lustre/desc1/p/nral0032/global/data/ICSDIR'
+AERO_INPUTS_DIR: '/lustre/desc1/p/nral0032/global/data/GEFS_ExtData/20250310'
+PACKAGEROOT: '/lustre/desc1/p/nral0032/global/data/nwpara'
+HOMEDIR: '/gpfs/csfs1/work/${USER}'
+STMP: '/lustre/desc1/scratch/${USER}/stmp'
+PTMP: '/lustre/desc1/scratch/${USER}/ptmp'
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/lustre/desc1/p/nral0032/global/data/syndat'
+COMINecmwf: '/lustre/desc1/p/nral0032/global/data/external_gempak/ecmwf'
+COMINnam: '/lustre/desc1/p/nral0032/global/data/external_gempak/nam'
+COMINukmet: '/lustre/desc1/p/nral0032/global/data/external_gempak/ukmet'
+# BQS properties
+SCHEDULER: pbspro
+QUEUE: develop
+QUEUE_EXCLUSIVE: main
+QUEUE_SERVICE: develop
+# HPSS properties
+ARCHCOM_TO: 'local'
+ATARDIR: '${COMROOT}/ARCHIVE/${PSLOT}'
+CHGRP_RSTPROD: 'NO'
+# Features
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'NO'
+FETCH_GCDAS_YAML_TMPL_LIST: '${PARMglobal}/fetch/${NET}_${APP}_gdas-anl_derecho.yaml.j2,'
