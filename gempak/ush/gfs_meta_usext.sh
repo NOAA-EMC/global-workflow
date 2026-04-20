@@ -3,8 +3,6 @@
 # Metafile Script : gfs_meta_usext.sh
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/mrfus"
 cd "${DATA}/mrfus" || exit 2
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl

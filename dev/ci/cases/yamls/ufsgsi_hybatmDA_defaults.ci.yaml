@@ -18,7 +18,7 @@ atmanl:
   NUMBER_OUTER_LOOPS: 2
   NINNER_LOOP1: 2
   NINNER_LOOP2: 4
-esfc:
+esfc_gcycle:
   DONST: "NO"
 nsst:
   NST_MODEL: "1"
@@ -28,5 +28,5 @@ prep:
   CONVERT_BIASCOR: "YES"
 prepatmiodaobs:
   DO_CONVERT_IODA: "YES"
-sfcanl:
+sfcanl_gcycle:
   DONST: "NO"

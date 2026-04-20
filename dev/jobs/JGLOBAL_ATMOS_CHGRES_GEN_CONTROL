@@ -1,6 +1,18 @@
 #! /usr/bin/env bash
+set -x
 # shellcheck disable=SC2153  # PDY is always set in environment
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
+
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
 
 # Initial conditions are from previous GFS cycle, but valid at the end of the cycle
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
