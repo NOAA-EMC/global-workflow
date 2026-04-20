@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 # Create the directory to hold the BMAT initialization data
@@ -13,9 +14,24 @@ if [[ ! -d "${DATAstaticb}" ]]; then mkdir -p "${DATAstaticb}"; fi
 # and pass marinebmat to ${machine}.env
 source "${HOMEgfs}/ush/jjob_header.sh" -e "marinebmatinit" -c "base marinebmat marinebmatinit"
 
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
+
 ##############################################
 # Set variables used in the script
 ##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
 # shellcheck disable=SC2153
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
 gPDY=${GDATE:0:8}

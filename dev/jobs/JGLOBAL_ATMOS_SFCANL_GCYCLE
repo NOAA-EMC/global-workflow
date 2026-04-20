@@ -1,7 +1,19 @@
 #! /usr/bin/env bash
+set -x
 
 # for now, leave environment and config files un-changed.
 source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl_gcycle" -c "base sfcanl_gcycle"
+
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
 
 ##############################################
 # Begin JOB SPECIFIC work
