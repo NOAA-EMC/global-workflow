@@ -61,7 +61,7 @@ echo "#######################################"
 echo " Process GRIB AWIP GRIB2 PRODUCTS      "
 echo "#######################################"
 echo " "
-set_trace
+set -x
 
 # Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '

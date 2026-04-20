@@ -218,9 +218,9 @@ class GCAFSTasks(Tasks):
 
         return task
 
-    def sfcanl(self):
+    def sfcanl_gcycle(self):
         """
-        Create a task for surface analysis (sfcanl).
+        Create a task for surface analysis (sfcanl_gcycle).
 
         This task performs the surface analysis step in the workflow, depending on whether JEDI atmospheric variational analysis is enabled.
 
@@ -237,14 +237,14 @@ class GCAFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('sfcanl')
-        task_name = f'{self.run}_sfcanl'
+        resources = self.get_resource('sfcanl_gcycle')
+        task_name = f'{self.run}_sfcanl_gcycle'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': self.envars,
                      'cycledef': 'gcdas',
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanl.sh',
+                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/sfcanl_gcycle.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -689,7 +689,7 @@ class GCAFSTasks(Tasks):
 
         # Always group sfcanl and aeroanlfinal together with AND
         sfcanl_aero_deps = []
-        dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl'}
+        dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl_gcycle'}
         sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
         if self.options['use_aero_anl']:
             dep_dict = {'type': 'task', 'name': f'{anldep}_aeroanlfinal'}

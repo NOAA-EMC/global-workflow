@@ -3,8 +3,6 @@
 # Metafile Script : gdas_meta_na
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 device="nc | gdas.meta"
 
 #
