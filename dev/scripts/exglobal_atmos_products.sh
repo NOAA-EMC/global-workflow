@@ -223,7 +223,7 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
             "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2"
             "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2.idx"
         fi
-	fi 
+    fi
 
 fi # end if SENDDBN=YES
 
