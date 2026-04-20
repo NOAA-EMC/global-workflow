@@ -73,7 +73,10 @@ case "${MODULE_TYPE}" in
             echo "FATAL ERROR: Failed to load ufs_${MACHINE_ID}.intel"
             exit 1
         fi
-        module load prod_util
+        # Do not load prod_util on an ecflow system
+        if [[ -z "${ECF_JOB:-}" ]]; then
+            module load prod_util
+        fi
         if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
             module load cray-pals
             module load cfp
@@ -98,7 +101,7 @@ case "${MODULE_TYPE}" in
         module use "${HOMEglobal}/sorc/gdas.cd/modulefiles"
 
         case "${MACHINE_ID}" in
-            "hera" | "orion" | "hercules" | "wcoss2" | "gaeac6" | "ursa" | "noaacloud")
+            "hera" | "orion" | "hercules" | "wcoss2" | "gaeac6" | "ursa" | "derecho" | "noaacloud")
                 #TODO: Remove LMOD_TMOD_FIND_FIRST line when spack-stack on WCOSS2
                 if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
                     export LMOD_TMOD_FIND_FIRST=yes

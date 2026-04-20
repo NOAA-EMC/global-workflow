@@ -60,6 +60,7 @@ The above script creates directories <b>\c EXPDIR</b> and <b>\c ROTDIR</b>. It w
 Sample initial conditions for a few resolutions are available at:<br>
 <b>Ursa/Hera:</b> /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR<br>
 <b>Orion/Hercules:</b> /work2/noaa/global/role_glopara/data/ICSDIR<br>
+<b>Derecho:</b> /lustre/desc1/p/nral0032/global/data/ICSDIR<br>
 
 Next step is for the user to go through the individual config files (atleast <b>\c config.base</b>) and customize the experiment configuration based on user needs. A stock configuration will be provided at a later stage, but it is imperative that the user understand the steps involved in the system.
 

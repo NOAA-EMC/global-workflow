@@ -17,12 +17,8 @@ if [[ "${PDY}${cyc}" -gt "${SDATE}" ]]; then
        gdas_version="prod"
    fi
    export gdas_version
-   if [[ "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
-       FETCH_YAML_TMPL_LIST="${PARMglobal}/fetch/${NET}_${APP}_gdas-anl_msu.yaml.j2,"
-   else
-       FETCH_YAML_TMPL_LIST="${PARMglobal}/fetch/${NET}_${APP}_gdas-anl.yaml.j2,"
-   fi
-   export FETCH_YAML_TMPL_LIST
+   # TODO: Move default value to defaults.yaml if it becomes lower priority than the host yaml
+   export FETCH_YAML_TMPL_LIST="{{ FETCH_GCDAS_YAML_TMPL_LIST | default('${PARMglobal}/fetch/${NET}_${APP}_gdas-anl.yaml.j2,') }}"
 else
    # fetch based on first cycle
    # Determine start type
