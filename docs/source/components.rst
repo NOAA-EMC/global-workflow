@@ -61,6 +61,7 @@ Observation data, also known as dump data, is prepared in production and then ar
 * Ursa/Hera: ``/scratch3/NCEPDEV/global/role.glopara/dump``
 * Orion/Hercules: ``/work/noaa/rstprod/dump``
 * WCOSS2: ``/lfs/h2/emc/global/noscrub/emc.global/dump``
+* Derecho: ``/lustre/desc1/p/nral0032/global/dump_nr`` (unrestricted)
 
 -----------------------------
 Global Dump Archive Structure

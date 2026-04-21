@@ -1,0 +1,91 @@
+#! /usr/bin/env bash
+# shellcheck disable=SC2034
+
+# Derecho-specific job resources
+
+step=$1
+
+case ${step} in
+    "prep_emissions")
+        export walltime="01:40:00" # TODO Revist why this is so much longer than other machines
+        ;;
+
+    "stage_ic") ;;
+
+    "fcst" | "efcs" | "wavepostpnt")
+        export tasks_per_nodes=${max_tasks_per_node}
+        ;;
+
+    "anal" | "analcalc" | "analdiag")
+        export threads_per_task=1
+        export tasks_per_node=${max_tasks_per_node}
+        ;;
+
+    "offlineanl")
+        export is_exclusive="True"
+        ;;
+
+    "snowanl" | "esnowanl")
+        export is_exclusive="True"
+        ;;
+
+    "echgres")
+        export is_exclusive="True"
+        ;;
+
+    "sfcanl")
+        export is_exclusive="False"
+        export threads_per_task=1
+        export tasks_per_node=${ntiles:-6}
+        ;;
+
+    "eobs")
+        walltime="00:20:00"
+        # NOTE The number of tasks and cores used must be the same for eobs
+        # See https://github.com/NOAA-EMC/global-workflow/issues/2092 for details
+        export threads_per_task=1
+        export tasks_per_node=20
+        ;;
+
+    "ediag")
+        export is_exclusive="True"
+        ;;
+
+    "eupd")
+        export threads_per_task=1
+        export tasks_per_node=${max_tasks_per_node}
+        ;;
+
+    "esfc")
+        export is_exclusive="True"
+        export tasks_per_node=40
+        ;;
+
+    "upp")
+        export tasks_per_node=${max_tasks_per_node}
+        ;;
+
+    "fit2obs")
+        case "${CASE}" in
+            "C1152")
+                export tasks_per_node=1
+                ;;
+            "C768")
+                export tasks_per_node=1
+                ;;
+            *)
+                export tasks_per_node=3
+                ;;
+        esac
+        ;;
+
+    "atmos_products")
+        max_tasks_per_node=24
+        tasks_per_node=24
+        export is_exclusive="False"
+        ;;
+
+    *)
+        # No overrides
+        ;;
+esac

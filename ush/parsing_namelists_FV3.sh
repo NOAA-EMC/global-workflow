@@ -1,6 +1,18 @@
 #! /usr/bin/env bash
 
-# parsing namelist of FV3, diag_table, etc.
+#===============================================================================
+#
+#   FILE: parsing_namelists_CICE.sh
+#   DESCRIPTION: Prepares the environment and generates the configuration
+#                files (namelists and tables) required by the FV3 atmospheric
+#                model component. This function consolidates templates for
+#                diagnostics (diag_table), data fields (data_table), and tracer
+#                fields (field_table). It then evaluates a set of
+#                environment variables—controlling physics options, grid
+#                resolutions, stochastic perturbations, tuning parameters,
+#                and incremental analysis updates (IAU)—and injects them
+#                into the base `global_control.nml.IN` template using the
+#                `atparse` utility to yield a fully rendered `input.nml`.
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034

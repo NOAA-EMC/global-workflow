@@ -79,6 +79,18 @@ export HOMEglobal
 
 echo "Sourcing global-workflow modules ..."
 source "${HOMEglobal}/dev/ush/gw_setup.sh"
+if [[ ${MACHINE_ID} == "derecho" ]]; then
+    # Derecho has stricter limits on head node usage
+    cat << 'EOF'
+WARNING: Interactive build on Derecho is limited to four cores to comply
+         with login node policies. Consider killing (CTRL+C) and retrying
+         using compute build:
+
+         ./build_all.sh -A <HPC_ACCOUNT> -c [gfs] [gefs] [sfs] [gcafs] [gsi] [gdas] [all]
+
+EOF
+    max_cores=4
+fi
 
 # Un-export after gw_setup.sh
 export -n HOMEglobal

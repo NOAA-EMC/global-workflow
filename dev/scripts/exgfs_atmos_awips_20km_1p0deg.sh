@@ -61,7 +61,6 @@ echo "#######################################"
 echo " Process GRIB AWIP GRIB2 PRODUCTS      "
 echo "#######################################"
 echo " "
-set -x
 
 # Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -82,6 +81,7 @@ export opt28=' -new_grid_interpolation budget -fi '
 cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_a.0p25.f${fcsthr}.grib2" "tmpfile2${fcsthr}"
 cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_b.0p25.f${fcsthr}.grib2" "tmpfile2b${fcsthr}"
 cat "tmpfile2${fcsthr}" "tmpfile2b${fcsthr}" > "tmpfile${fcsthr}"
+# shellcheck disable=SC2312
 ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMglobal}/product/gfs_awips_parmlist_g2" |
     ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
 export err=$?
@@ -90,6 +90,7 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 ${WGRIB2} masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
+# shellcheck disable=SC2312
 ${WGRIB2} masterfile | grep -v ":PWAT:entire atmosphere" | ${WGRIB2} -i -grib temp_gfs masterfile
 ##################################################################
 #  Process to change PWAT from level 200 to 10 (Entire Atmosphere)
@@ -154,6 +155,7 @@ for GRID in conus ak prico pac 003; do
     # NOTE: numparm is the total of fields in grib2_awpgfs_20km_conusf000 file
     ###########################################################################
     numparm=247
+    # shellcheck disable=SC2312
     numrec=$(${WGRIB2} "awps_file_f${fcsthr}_${GRID}" | wc -l)
 
     if [[ ${numrec} -lt ${numparm} ]]; then
@@ -180,6 +182,14 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to generate the awips Grib2 file!"
+        fi
+        echo "Complex2 compression/packing for grib2.awpgfs${fcsthr}.${GRID}"
+        cpreq "grib2.awpgfs${fcsthr}.${GRID}" "tmp_grib2_${fcsthr}_${GRID}"
+        ${WGRIB2} "tmp_grib2_${fcsthr}_${GRID}" -set_grib_type complex2 \
+            -grib_out "grib2.awpgfs${fcsthr}.${GRID}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to compress and repack the awips Grib2 file!"
         fi
 
         ##############################
@@ -210,6 +220,14 @@ for GRID in conus ak prico pac 003; do
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to write the AWIPS grib2 file"
+        fi
+        echo "Complex2 compression/packing for grib2.awpgfs_20km_${GRID}_f${fcsthr}"
+        cpreq "grib2.awpgfs_20km_${GRID}_f${fcsthr}" "tmp_grib2_${GRID}_f${fcsthr}"
+        ${WGRIB2} "tmp_grib2_${GRID}_f${fcsthr}" -set_grib_type complex2 \
+            -grib_out "grib2.awpgfs_20km_${GRID}_f${fcsthr}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to compress and repack the AWIPS grib2 file!"
         fi
 
         ##############################

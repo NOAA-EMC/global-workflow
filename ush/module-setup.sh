@@ -1,4 +1,16 @@
 #!/bin/bash
+
+#===============================================================================
+#
+#   FILE: module-setup.sh
+#
+#   DESCRIPTION: This script initializes the environment module system (e.g., Lmod)
+#                and establishes a clean baseline by purging or resetting currently
+#                loaded modules. It dynamically adapts to the host machine by
+#                sourcing a detection script and applying the correct initialization
+#                paths and default module parameters for various supported HPC
+#                and cloud platforms.
+
 set -u
 
 source "${HOMEglobal}/ush/detect_machine.sh"
@@ -47,7 +59,10 @@ elif [[ ${MACHINE_ID} = wcoss2 ]]; then
     # We are on WCOSS2
     # Ignore default modules of the same version lower in the search path (req'd by spack-stack)
     #export LMOD_TMOD_FIND_FIRST=yes #TODO: Uncomment this when using spack-stack for the entire workflow
-    module reset
+    # Do not reset on an ecflow system
+    if [[ -z "${ECF_JOB:-}" ]]; then
+        module reset
+    fi
 
 elif [[ ${MACHINE_ID} = cheyenne* ]]; then
     # We are on NCAR Cheyenne
@@ -83,6 +98,13 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
     export SPACK_ROOT=/discover/nobackup/mapotts1/spack
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
+
+elif [[ ${MACHINE_ID} = derecho ]]; then
+    # We are on NSF NCAR Derecho
+    if (! eval module help > /dev/null 2>&1); then
+        source /glade/u/apps/derecho/24.12/spack/opt/spack/lmod/8.7.37/gcc/12.4.0/nr3e/lmod/lmod/init/bash
+    fi
+    module --force purge
 
 # TODO: This can likely be made more general once other cloud
 # platforms come online.

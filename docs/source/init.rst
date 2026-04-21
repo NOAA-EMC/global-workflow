@@ -52,6 +52,7 @@ Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs ar
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C96C48
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C96C48
+   NSF/NCAR Derecho: /lustre/desc1/p/nral0032/global/data/ICSDIR/C96C48
 
 Start date = 2021122018
 
@@ -112,6 +113,8 @@ Warm-start cycled w/ coupled (S2S) model C48 atmosphere C48 enkf (80 members) 5 
    Orion/Hercules: /work/noaa/global/glopara/data/ICSDIR/C48C48mx500
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48C48mx500
    AWS: https://noaa-nws-global-pds.s3.amazonaws.com/index.html#data/ICSDIR/C48C48mx500
+   NSF/NCAR Derecho: /lustre/desc1/p/nral0032/global/data/ICSDIR/C48C48mx500
+
 
 Start date = 2021032312
 
@@ -236,7 +239,7 @@ Not yet supported. See the UFS_UTILS documentation on the gdas_init utility to g
 ---------------------
 Forecast-only coupled
 ---------------------
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Ursa, Orion/Hercules, and WCOSS2 for CI testing.  The paths on each machine can be found in ``dev/ci/platforms/config.<host>``.
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Sample copies of initial conditions from the prototype runs are currently maintained on Ursa, Orion/Hercules, Derecho, and WCOSS2 for CI testing.  The paths on each machine can be found in ``dev/ci/platforms/config.<host>``.
 
 .. _forecastonly-atmonly:
 
