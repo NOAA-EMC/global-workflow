@@ -26,9 +26,9 @@ modelhome=%PACKAGEHOME:%
 eval "export HOME${model:?'model undefined'}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
 if [ -f "$versionfile" ]; then . $versionfile ; fi
-modelver=$(echo ${modelhome} | perl -pe "s:.*?/${model}\.(v[\d\.a-z]+).*:\1:")
+#modelver=$(echo ${modelhome} | perl -pe "s:.*?/${model}\.(v[\d\.a-z]+).*:\1:")
 #eval "export ${model}_ver=$modelver"
-export gcafs_ver=v1.0
+if [[ ${model} == "gcafs" ]]; then export ${model}_ver=%gcafs_ver:%; fi
 
 export envir=%ENVIR%
 export MACHINE_SITE=%MACHINE_SITE%
