@@ -538,9 +538,10 @@ fi
 
 ##############################################################
 # Required bias guess files
-cpreq "${GBIAS}" satbias_in
-cpreq "${GBIASPC}" satbias_pc
-cpreq "${GBIASAIR}" aircftbias_in
+${NLN} "${GBIAS}" satbias_in
+${NLN} "${GBIASPC}" satbias_pc
+${NLN} "${GBIASAIR}" aircftbias_in
+${NLN} "${GRADSTAT}" radstat.tar
 
 ##############################################################
 # Required model guess files
@@ -696,8 +697,12 @@ EOF
     chmod 755 "${DATA}/unzip_diag.sh"
 
     rm -f "${DATA}/cmdfile"
-    cpreq "${GRADSTAT}" radstat.tar
-    tar -xvf radstat.tar
+    tar -xvf radstat.tar && true
+    err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "Failed to untar radstat file!"
+    fi
+
     listdiag=$(find ./ -maxdepth 1 -path "./diag_*_ges.*" -type f)
     for type in ${listdiag}; do
         diag_file=$(basename "${type}")
@@ -707,7 +712,7 @@ EOF
     "${USHgfs}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to unzip rad diag file!"
+        err_exit "Failed to unzip at least one rad diag file!"
     fi
 fi # if [[ $USE_RADSTAT == "YES" ]
 
