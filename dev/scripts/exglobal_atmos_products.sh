@@ -89,11 +89,9 @@ for ((nset = 1; nset <= downset; nset++)); do
 
         # if final record of is u-component, add next record v-component
         # if final record is land, add next record icec
-        # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
-        unset_strict
-        ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw"
+        # grep returns 1 if no match is found (not an error)
+        ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw" && true
         rc=$?
-        source "${USHgfs}/set_strict.sh"
         if [[ ${rc} == 0 ]]; then # Matched the grep
             last=$((last + 1))
         fi
