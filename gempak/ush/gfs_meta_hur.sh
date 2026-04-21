@@ -5,6 +5,7 @@
 # Set up Local Variables
 #
 
+rm -rf "${DATA}/hur"
 mkdir -p -m 775 "${DATA}/hur"
 cd "${DATA}/hur" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl

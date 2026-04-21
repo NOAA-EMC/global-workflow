@@ -5,6 +5,7 @@
 # Set up Local Variables
 #
 
+rm -rf "${DATA}/OPC_NP_VER_F${fend}"
 mkdir -p -m 775 "${DATA}/OPC_NP_VER_F${fend}"
 cd "${DATA}/OPC_NP_VER_F${fend}" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl

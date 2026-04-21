@@ -6,8 +6,9 @@
 # comparisons to the ecmwf and ukmet
 #
 
-mkdir SA2
-cd SA2 || exit 1
+rm -rf "${DATA}/SA2"
+mkdir -p -m 775 "${DATA}/SA2"
+cd "${DATA}/SA2" || exit 1
 
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
