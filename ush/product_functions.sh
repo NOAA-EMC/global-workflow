@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: product_functions.sh
+#
+#   DESCRIPTION: A library of utility functions designed to post-process and
+#                apply quality control to GRIB2 files.
+
 function trim_rh() {
     # trim RH values larger than 100.
     local filename=$1

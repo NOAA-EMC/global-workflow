@@ -105,6 +105,7 @@ build:
     command: "./build_gdas.sh"
     cores: 40
     walltime: "01:45:00"
+    memory: "40G"
 
   nexus:
     command: "./build_nexus.sh"
