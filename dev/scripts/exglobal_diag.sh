@@ -64,7 +64,6 @@ fi
 
 ################################################################################
 # Link to the gsidiags directory if it is populated
-# shellcheck disable=SC2312
 count_dirs=$(find "${GSIDIAGDIR}" -maxdepth 1 -type d -name "dir.*" | wc -l)
 if [[ ${count_dirs} -eq 0 ]]; then
     export err=1
@@ -73,7 +72,6 @@ fi
 
 # Continue if there is at least one file to process
 # Note -quit stops find after the first match
-# shellcheck disable=SC2312
 count_files=$(find "${GSIDIAGDIR}"/dir.* -maxdepth 1 -type f -printf '.' -quit | wc -c)
 if [[ ${count_files} -eq 0 ]]; then
     echo "WARNING: No diagnostic files found to process!"
