@@ -104,9 +104,9 @@ fi
 pgm=$(basename "${EXECglobal}/syndat_getjtbul.x")
 export pgm
 if [[ -s prep_step ]]; then
-    source "${USHgfs}/unset_strict.sh"
+    source "${USHglobal}/unset_strict.sh"
     source prep_step
-    source "${USHgfs}/set_strict.sh"
+    source "${USHglobal}/set_strict.sh"
 else
     rm -f errfile
     # shellcheck disable=SC2046,SC2312

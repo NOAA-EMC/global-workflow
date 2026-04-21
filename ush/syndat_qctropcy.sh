@@ -206,9 +206,9 @@ cpreq "${slmask}" slmask.126
 pgm=$(basename "${EXECglobal}/syndat_qctropcy.x")
 export pgm
 if [[ -s prep_step ]]; then
-    source "${USHgfs}/unset_strict.sh"
+    source "${USHglobal}/unset_strict.sh"
     source prep_step
-    source "${USHgfs}/set_strict.sh"
+    source "${USHglobal}/set_strict.sh"
 else
     rm -f errfile
     # shellcheck disable=SC2046,SC2312

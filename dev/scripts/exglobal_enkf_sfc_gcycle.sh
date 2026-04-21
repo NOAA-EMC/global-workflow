@@ -59,7 +59,7 @@ fi
 
 # Global_cycle stuff
 CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
+export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}

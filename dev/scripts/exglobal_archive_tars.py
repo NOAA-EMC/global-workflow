@@ -27,7 +27,7 @@ def main():
     # Pull out all the configuration keys needed to run the rest of archive steps
     keys = ['ATARDIR', 'current_cycle', 'FHMIN', 'FHMAX', 'FHOUT', 'RUN', 'PDY',
             'DO_VERFRAD', 'DO_VMINMON', 'DO_VERFOZN', 'DO_ICE', 'DO_PREP_OBS_AERO',
-            'PARMgfs', 'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT',
+            'PARMglobal', 'DO_OCN', 'DO_WAVE', 'WRITE_DOPOST', 'PSLOT',
             'DO_JEDISNOWDA', 'DO_ARCHCOM', 'ARCHCOM_TO', 'ROTDIR', 'ARCH_WARMICFREQ',
             'ARCH_FCSTICFREQ', 'ARCH_CYC', 'assim_freq', 'ARCDIR', 'SDATE',
             'FHMIN_GFS', 'FHMAX_GFS', 'FHOUT_GFS', 'ARCH_GAUSSIAN', 'MODE',
@@ -40,7 +40,7 @@ def main():
             'DOLETKF_OCN', 'NMEM_ENS', 'DO_JEDIATMVAR', 'FHMAX_FITS', 'waveGRD',
             'IAUFHRS', 'DO_FIT2OBS', 'NET', 'FHOUT_HF_GFS', 'FHMAX_HF_GFS',
             'OFFSET_START_HOUR', 'ARCH_EXPDIR', 'EXPDIR', 'ARCH_EXPDIR_FREQ', 'ARCH_HASHES',
-            'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEgfs', 'DO_GEMPAK', 'DATASETS_YAML',
+            'ARCH_DIFFS', 'SDATE', 'EDATE', 'HOMEglobal', 'DO_GEMPAK', 'DATASETS_YAML',
             'WAVE_OUT_GRIDS', 'DO_GSISOILDA', 'DO_LAND_IAU', 'TARBALL_TYPE', 'ATMINC_GRID']
 
     archive_dict = AttrDict()

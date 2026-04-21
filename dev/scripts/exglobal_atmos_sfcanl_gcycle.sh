@@ -21,7 +21,7 @@
 
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-"${USHglobal}/global_cycle.sh"}
-export CYCLEXEC=${CYCLEXEC:-"${EXECgfs}/global_cycle"}
+export CYCLEXEC=${CYCLEXEC:-"${EXECglobal}/global_cycle"}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 

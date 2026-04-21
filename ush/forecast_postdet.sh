@@ -411,7 +411,7 @@ FV3_out() {
             done
         done
 
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy FV3 restart files!"
@@ -571,7 +571,7 @@ WW3_out() {
     fi
 
     if [[ -s "${cmdfile}" ]]; then
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy WW3 restart files!"
@@ -743,7 +743,7 @@ MOM6_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
@@ -869,7 +869,7 @@ CICE_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CICE restart files!"
@@ -956,7 +956,7 @@ GOCART_out() {
     done
 
     if [[ -s "${cmdfile}" ]]; then
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy GOCART output files!"
@@ -1076,7 +1076,7 @@ CMEPS_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CMEPS mediator restart files!"

@@ -191,11 +191,11 @@ case "${MODULE_TYPE}" in
             export netcdf_ver="4.7.4"
             export g2tmpl_ver="1.16.0"
             export crtm_ver="2.4.0.1" #### gfs_goesupp
-            #### Workaround for access ${HOMEgfs}/sorc location
-            export PYTHONPATH=${HOMEgfs}/sorc/wxflow/src:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEgfs}/ush/python
+            #### Workaround for access ${HOMEglobal}/sorc location
+            export PYTHONPATH=${HOMEglobal}/sorc/wxflow/src:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEglobal}/ush/python
         fi
         if [[ "${mod_type}" == "run" ]]; then
-            export PYTHONPATH=${HOMEgfs}/sorc/wxflow/src:/apps/ops/prod/nco/core/prod_util.v2.0.9/ush:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEgfs}/ush/python
+            export PYTHONPATH=${HOMEglobal}/sorc/wxflow/src:/apps/ops/prod/nco/core/prod_util.v2.0.9/ush:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEglobal}/ush/python
         fi
 
         if [[ -n "${target_module}" ]]; then
