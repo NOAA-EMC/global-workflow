@@ -1,73 +1,52 @@
-#!/bin/bash
-
+#! /usr/bin/env bash
 set -x
-export PS4='$SECONDS + '
-date
 
-##############################
-# Source relevant config files
-##############################
-configs="base wdqms"
-export EXPDIR=${EXPDIR:-${HOMEgfs}/dev/parm/config/gfs}
-for config in ${configs}; do
-    source "${EXPDIR}/config.${config}"
-    status=$?
-    ((status != 0)) && exit "${status}"
-done
+source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base wdqms"
 
-###############################################################
-source "${BASE_ENV}/${machine}.env" wdqms
-status=$?
-((status != 0)) && exit "${status}"
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
 
-##########################################################
-# obtain unique process id (pid) and make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p "${DATA}"
-cd "${DATA}" || exit
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-source ./PDY
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
 
 ##############################################
-# Define COM directories
+# Begin JOB SPECIFIC work
 ##############################################
-export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
-export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos/wdqms"
 
+declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos/wdqms"
 mkdir -m 775 -p "${COMOUT}"
 
-########################################################
-# Execute the script for generating WDQMS products
-"${HOMEgfs}/scripts/exgdas_atmos_analysis_wdqms.sh"
+###############################################################
+# Run relevant script
+${WDQMSSH:-${SCRgfs}/exgdas_atmos_analysis_wdqms.sh} && true
 export err=$?
-err_chk
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
 
-########################################################
+##############################################
+# End JOB SPECIFIC work
+##############################################
 
-echo "JOB ${job:-} HAS COMPLETED NORMALLY!"
-
-############################################
-# print exec I/O output
-############################################
-if [[ -e "${pgmout:-}" ]]; then
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
     cat "${pgmout}"
 fi
 
-###################################
-# Remove temp directories
-###################################
-if [[ "${KEEPDATA}" != "YES" ]]; then
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi
 
-date
+exit 0
