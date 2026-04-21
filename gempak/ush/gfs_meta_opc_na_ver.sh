@@ -15,9 +15,8 @@ cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 mdl=gfs
 MDL="GFS"
@@ -63,10 +62,9 @@ for lookback in "${lookbacks[@]}"; do
     # TODO: Add only necessary files and remove unneeded ones to minimize data volume
     # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     HPCGFS="${RUN}.${init_time}"
-    if [[ ! -L ${HPCGFS} ]]; then
-        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
-        ${NLN} "${source_dir}" "${HPCGFS}"
-    fi
+    rm -f "${HPCGFS}"
+    source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
+    ${NLN} "${source_dir}" "${HPCGFS}"
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 
