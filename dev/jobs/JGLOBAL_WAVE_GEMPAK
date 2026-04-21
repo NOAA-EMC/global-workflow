@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 set -x
 
-<<<<<<< HEAD
 source "${HOMEglobal}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
 
 #{% if false %}
@@ -15,10 +14,6 @@ source "${USHglobal}/jjob_shell_setup.sh"
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
 source "${USHglobal}/set_strict.sh"
 source "${USHglobal}/wave_domain_grid.sh"
-=======
-source "${HOMEglobal}/ush/jjob_header.sh" -e "wavegempak" -c "base wave wavegempak"
-source "${USHglobal}/wave_domain_grid.sh"
->>>>>>> 202c5ff92 (Rename EE2 Environment Variables: Replace NET-Specific (VARgfs) with Global (VARglobal) Naming (#4540))
 
 ###################################
 # Set COM Paths

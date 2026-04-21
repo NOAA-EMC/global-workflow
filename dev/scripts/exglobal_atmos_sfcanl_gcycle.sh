@@ -152,15 +152,6 @@ for hr in "${!gcycle_dates[@]}"; do
         done
     fi
 
-<<<<<<< HEAD:dev/scripts/exglobal_atmos_sfcanl_gcycle.sh
-=======
-    # Copy inputs from COMIN to DATA
-    for ((nn = 1; nn <= ntiles; nn++)); do
-        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/sfc_data_cycle.00${nn}"
-    done
-
->>>>>>> 202c5ff92 (Rename EE2 Environment Variables: Replace NET-Specific (VARgfs) with Global (VARglobal) Naming (#4540)):dev/scripts/exglobal_atmos_sfcanl.sh
     "${CYCLESH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
