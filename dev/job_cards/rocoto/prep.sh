@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-
+set -x
 ###############################################################
 # Source FV3GFS workflow modules
 source "${HOMEgfs}/dev/ush/load_modules.sh" run
@@ -12,6 +12,12 @@ fi
 export job="prep"
 export jobid="${job}.$$"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+source "${HOMEgfs}/ush/jjob_shell_setup.sh"
 
 # Strip 'enkf' from RUN for pulling data
 RUN_local="${RUN/enkf/}"
@@ -153,9 +159,10 @@ export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
-    set +eu
+    source "${USHgfs}/unset_strict.sh"
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
+    source "${USHgfs}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
         err_exit "JOBSPROC_GLOBAL_PREP job failed, ABORT!"
     fi

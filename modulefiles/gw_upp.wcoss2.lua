@@ -3,14 +3,18 @@ Load environment to run the UPP on WCOSS2
 ]])
 
 local homegfs=os.getenv("HOMEgfs") or ""
-prepend_path("MODULEPATH", pathJoin(homegfs,"/sorc/ufs_model.fd/UFSATM/upp/modulefiles"))
+prepend_path("MODULEPATH", pathJoin(homegfs,"/modulefiles/upp"))
 -- Load UPP modules
 load("wcoss2_intel")
 
 load(pathJoin("cray-pals", "1.0.17"))
 
 -- Load workflow modules
-load(pathJoin("prod_util", "2.0.9"))
+-- Do not load prod_util when running ecflow
+local is_ecf = os.getenv("ECF_JOB") ~= nil
+if not is_ecf then
+    load(pathJoin("prod_util", "2.0.9"))
+end
 load(pathJoin("python", "3.12.0"))
 load(pathJoin("libjpeg", "9c"))
 load(pathJoin("wgrib2", "2.0.8"))

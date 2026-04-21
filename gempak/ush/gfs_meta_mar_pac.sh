@@ -5,8 +5,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/MAR_PAC"
 cd "${DATA}/MAR_PAC" || exit 2
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl

@@ -1,6 +1,18 @@
 #! /usr/bin/env bash
+set -x
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "earc_tars" -c "base arch_tars earc_tars earc_groups"
+
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
 
 ##############################################
 # Set variables used in the script
@@ -25,16 +37,14 @@ mkdir -p "${COMIN_CONF}"
 ###############################################################
 
 # Calls an external bash command; do not fail on unassigned/error
-set +eu
+source "${USHgfs}/unset_strict.sh"
 export -n SHELLOPTS
 "${SCRgfs}/exglobal_enkf_earc_tars.py"
 export err=$?
-set +x
+source "${USHgfs}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to archive the ensemble COM structure"
 fi
-set_trace
-set_strict
 
 ###############################################################
 
