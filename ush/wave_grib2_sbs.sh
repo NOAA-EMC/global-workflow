@@ -110,7 +110,12 @@ else
         -set table_1.4 1 -set table_1.2 1 \
         -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
     err=$?
-    [[ ${err} -eq 0 ]] && ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
+    if [[ ${err} -eq 0 ]]; then
+        ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
+    else
+        echo "wgrib2 failed to create the intermediate file ${outfiletmp}"
+        exit "${err}"
+    fi
     err=$?
 fi
 rm -f "${outfiletmp}"
