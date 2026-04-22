@@ -169,7 +169,8 @@ for loop in ${loops}; do
             if [[ "${dtype}" == *"avhrr"* ]]; then # recast dtype in avhrr form
                 dtype="avhrr${dtype##avhrr[23]}"
             fi
-            count=$(ls dir.*/"${type}_${loop}"* 2> /dev/null | wc -l)
+            # -L to follow symlinks, as dir.* are symlinks to gsidiags/dir.*
+            count=$(find -L ./dir.* -path "./dir.*/${dtype}_${loop}*" -type f -printf "." | wc -c)
             if [[ ${count} -eq 0 ]]; then
                 continue
             fi
