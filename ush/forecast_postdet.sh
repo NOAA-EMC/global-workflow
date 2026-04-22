@@ -1105,7 +1105,9 @@ CMEPS_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
-        if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
+        if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then
+            mkdir -p "${COMOUT_MED_RESTART}"
+        fi
         "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
