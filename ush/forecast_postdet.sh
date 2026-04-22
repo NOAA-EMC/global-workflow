@@ -340,7 +340,9 @@ EOF
         FV3_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${restart_interval}" "${restart_interval_end}")"
     fi
     export FV3_RESTART_FH
-    if [[ -n "${FV3_RESTART_FH}" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
+    if [[ -n "${FV3_RESTART_FH}" ]];
+        then mkdir -p "${DATArestart}/FV3_RESTART";
+    fi
     #============================================================================
 }
 
