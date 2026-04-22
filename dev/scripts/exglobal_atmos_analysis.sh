@@ -919,17 +919,6 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
 fi
 
-# Diagnostic files
-# if requested, GSI diagnostic file directories for use later
-if [[ "${GENDIAG}" == "YES" ]]; then
-    tar -cvf gsidiags.tar dir.????
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to tar GSI diagnostic directories!"
-    fi
-    cpfs gsidiags.tar "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}gsidiags${DIAG_SUFFIX:-}.tar"
-fi
-
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
 
 ################################################################################
