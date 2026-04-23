@@ -985,6 +985,17 @@ case ${step} in
     unset NTASKS_TOT
     ;;
 
+  "fcst_mgr")
+    # Forecast manager: one lightweight process per active component (ATM + WW3).
+    # Polls DATAoutput for sentinel log files and copies products to COM in real time.
+    # Walltime must be long enough to cover the full forecast run.
+    ntasks=2
+    tasks_per_node=2
+    threads_per_task=1
+    memory="8GB"
+    walltime="12:00:00"
+    ;;
+
   "oceanice_products")
     # Walltime is per forecast hour; will be multipled by group size
     walltime="00:15:00"
