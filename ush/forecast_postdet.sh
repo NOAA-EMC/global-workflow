@@ -304,25 +304,65 @@ EOF
     #============================================================================
     if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
         local FH2 FH3
+        # For GFS/GEFS/SFS/GCAFS: build a product table consumed by the forecast manager.
+        # The model writes real files to DATAoutput; the manager copies them to COM.
+        # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
+        local use_mgr="NO"
+        case "${RUN}" in
+            gfs | gefs | sfs | gcafs) use_mgr="YES" ;;
+        esac
+
+        local atm_table="${DATA}/atm_products.txt"
+        [[ "${use_mgr}" == "YES" ]] && rm -f "${atm_table}"
+
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
-            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
-            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-            if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
-            fi
-            if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
-                if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+            if [[ "${use_mgr}" == "YES" ]]; then
+                # Product table entries: local_data  local_log  com_data  com_log
+                # log.atm.fHHH is the sentinel written by the write component after
+                # atmfHHH.nc and sfcfHHH.nc are fully flushed to disk.
+                local local_log="${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+                local com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt"
+                echo "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc ${com_log}" >> "${atm_table}"
+                echo "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc ${com_log}" >> "${atm_table}"
+                if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc ${com_log}" >> "${atm_table}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc ${com_log}" >> "${atm_table}"
+                fi
+                if [[ "${WRITE_DOPOST}" == ".true." ]]; then
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
+                    fi
+                fi
+            else
+                # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
+                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
+                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
+                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+                if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
+                    ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
+                    ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
+                fi
+                if [[ "${WRITE_DOPOST}" == ".true." ]]; then
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                    fi
                 fi
             fi
         done
+
+        if [[ "${use_mgr}" == "YES" ]]; then
+            # Publish product table to COM_CONF so the manager job can pick it up
+            mkdir -p "${COMOUT_CONF}"
+            cpfs "${atm_table}" "${COMOUT_CONF}/atm_products.txt"
+        fi
     fi
     #============================================================================
     restart_interval=${restart_interval:-${FHMAX}}
@@ -499,8 +539,20 @@ WW3_postdet() {
     #fi
     cd "${cwd}" || exit 1
 
-    # Link output files
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    # For GFS/GEFS/SFS/GCAFS: build product tables for the forecast manager.
+    # For GDAS: keep NLN symlinks so downstream analysis jobs can read WW3 outputs.
+    local use_mgr_ww3="NO"
+    case "${RUN}" in
+        gfs | gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
+    esac
+
+    # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
+    # (copied to COM in WW3_out). For GDAS it is symlinked to COM here.
+    if [[ "${use_mgr_ww3}" == "YES" ]]; then
+        : # log.ww3 will be a real file in DATA; WW3_out copies it after the run
+    else
+        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    fi
 
     # Loop for gridded output (uses FHINC)
     local fhr fhr3 FHINC
@@ -511,11 +563,18 @@ WW3_postdet() {
     else
         fhinc=${FHOUT_WAV}
     fi
+    local ww3_table="${DATA}/ww3_products.txt"
+    [[ "${use_mgr_ww3}" == "YES" ]] && rm -f "${ww3_table}"
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+        if [[ "${use_mgr_ww3}" == "YES" ]]; then
+            # Each WW3 gridded file has its own per-file sentinel log
+            echo "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3 ${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" >> "${ww3_table}"
+        else
+            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+        fi
 
         if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
             fhinc=${FHOUT_WAV}
@@ -529,11 +588,22 @@ WW3_postdet() {
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+        if [[ "${use_mgr_ww3}" == "YES" ]]; then
+            # Each WW3 point file has its own per-file sentinel log
+            echo "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc ${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" >> "${ww3_table}"
+        else
+            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+        fi
 
         fhr=$((fhr + fhinc))
     done
+
+    if [[ "${use_mgr_ww3}" == "YES" ]]; then
+        # Publish product table to COM_CONF for the manager job
+        mkdir -p "${COMOUT_CONF}"
+        cpfs "${ww3_table}" "${COMOUT_CONF}/ww3_products.txt"
+    fi
 }
 
 WW3_nml() {
@@ -547,6 +617,17 @@ WW3_out() {
 
     # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
+
+    # Copy WW3 run log for GFS/GEFS/SFS/GCAFS (no pre-run symlink; model writes a real
+    # file in DATA which is copied to COM here at end of run)
+    case "${RUN}" in
+        gfs | gefs | sfs | gcafs)
+            if [[ -f "${DATA}/log.ww3" ]]; then
+                mkdir -p "${COMOUT_WAVE_HISTORY}"
+                cpfs "${DATA}/log.ww3" "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log"
+            fi
+            ;;
+    esac
 
     # Build MPMD cmdfile to copy WW3 restarts in parallel
     local cmdfile="${DATA}/cmdfile_ww3_out"
@@ -664,9 +745,13 @@ MOM6_postdet() {
                 ihour=$(printf %02i "${interval}")
                 source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
+                # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput; MOM6_out copies them to COM.
+                # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ocean backgrounds during the run.
+                case "${RUN}" in
+                    gdas | enkfgdas)
+                        ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                        ;;
+                esac
 
                 last_fhr=${fhr}
 
@@ -679,6 +764,7 @@ MOM6_postdet() {
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+                # NLN symlink: GDAS analysis jobs need ocean backgrounds during the run
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
             done
             ;;
@@ -760,6 +846,47 @@ MOM6_out() {
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
         fi
     fi
+
+    # Copy MOM6 history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks; model writes
+    # real files to DATAoutput/MOM6_OUTPUT which are copied here at the end of the run)
+    case "${RUN}" in
+        gfs | enkfgfs | gefs | sfs | gcafs)
+            local cmdfile_mom6_hist="${DATA}/cmdfile_mom6_hist"
+            rm -f "${cmdfile_mom6_hist}"
+            local last_fhr_hist fhr_hist fhr3_hist interval_hist midpoint_hist vdate_hist vdate_mid_hist source_file_hist dest_file_hist
+            for fhr_hist in ${MOM6_OUTPUT_FH}; do
+                fhr3_hist=$(printf %03i "${fhr_hist}")
+                if [[ -z ${last_fhr_hist:-} ]]; then
+                    last_fhr_hist=${fhr_hist}
+                    continue
+                fi
+                (( interval_hist = fhr_hist - last_fhr_hist ))
+                (( midpoint_hist = last_fhr_hist + interval_hist / 2 ))
+                vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
+                if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
+                    vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint_hist + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
+                else
+                    vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint_hist} hours" +%Y%m%d%H)
+                fi
+                if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
+                    source_file_hist="ocn_lead1_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
+                else
+                    source_file_hist="ocn_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
+                fi
+                dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
+                echo "cpfs ${DATAoutput}/MOM6_OUTPUT/${source_file_hist} ${COMOUT_OCEAN_HISTORY}/${dest_file_hist}" >> "${cmdfile_mom6_hist}"
+                last_fhr_hist=${fhr_hist}
+            done
+            if [[ -s "${cmdfile_mom6_hist}" ]]; then
+                mkdir -p "${COMOUT_OCEAN_HISTORY}"
+                "${USHglobal}/run_mpmd.sh" "${cmdfile_mom6_hist}" && true
+                export err=$?
+                if [[ ${err} -ne 0 ]]; then
+                    err_exit "run_mpmd.sh failed to copy MOM6 history files!"
+                fi
+            fi
+            ;;
+    esac
 }
 
 CICE_postdet() {
@@ -788,12 +915,17 @@ CICE_postdet() {
     # Copy CICE ICs
     cpreq "${cice_restart_file}" "${DATA}/cice_model.res.nc"
 
-    # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
+    # Link iceh_ic file to COM for GDAS only.
+    # For GFS/GEFS/SFS/GCAFS: model writes a real file to DATAoutput; CICE_out copies it to COM.
     # TODO: Is this file needed in COM? Is this going to be used for generating any products?
     local vdate seconds vdatestr fhr fhr3 interval last_fhr
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-    ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    case "${RUN}" in
+        gdas | enkfgdas)
+            ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+            ;;
+    esac
 
     # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
     local source_file dest_file
@@ -830,7 +962,13 @@ CICE_postdet() {
                 ;;
         esac
 
-        ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+        # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput; CICE_out copies them to COM.
+        # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ice backgrounds during the run.
+        case "${RUN}" in
+            gdas | enkfgdas)
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                ;;
+        esac
 
         last_fhr=${fhr}
     done
@@ -886,6 +1024,52 @@ CICE_out() {
             err_exit "run_mpmd.sh failed to copy CICE restart files!"
         fi
     fi
+
+    # Copy CICE history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks; model writes
+    # real files to DATAoutput/CICE_OUTPUT which are copied here at the end of the run)
+    case "${RUN}" in
+        gfs | enkfgfs | gefs | sfs | gcafs)
+            local cmdfile_cice_hist="${DATA}/cmdfile_cice_hist"
+            rm -f "${cmdfile_cice_hist}"
+            local last_fhr_hist fhr_hist fhr3_hist interval_hist vdate_hist seconds_hist vdatestr_hist source_file_hist dest_file_hist
+            for fhr_hist in "${CICE_OUTPUT_FH[@]}"; do
+                if [[ -z ${last_fhr_hist:-} ]]; then
+                    last_fhr_hist=${fhr_hist}
+                    continue
+                fi
+                fhr3_hist=$(printf %03i "${fhr_hist}")
+                (( interval_hist = fhr_hist - last_fhr_hist ))
+                vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
+                seconds_hist=$(to_seconds "${vdate_hist:8:2}0000")
+                vdatestr_hist="${vdate_hist:0:4}-${vdate_hist:4:2}-${vdate_hist:6:2}-${seconds_hist}"
+                case "${RUN}" in
+                    gfs | enkfgfs | sfs | gcafs)
+                        source_file_hist="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr_hist}.nc"
+                        dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
+                        ;;
+                    gefs)
+                        source_file_hist="iceh.${vdatestr_hist}.nc"
+                        dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
+                        ;;
+                esac
+                echo "cpfs ${DATAoutput}/CICE_OUTPUT/${source_file_hist} ${COMOUT_ICE_HISTORY}/${dest_file_hist}" >> "${cmdfile_cice_hist}"
+                last_fhr_hist=${fhr_hist}
+            done
+            # Copy iceh_ic file (CICE initial condition at f000)
+            local seconds_ic vdatestr_ic
+            seconds_ic=$(to_seconds "${model_start_date_current_cycle:8:2}0000")
+            vdatestr_ic="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds_ic}"
+            echo "cpfs ${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr_ic}.nc ${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" >> "${cmdfile_cice_hist}"
+            if [[ -s "${cmdfile_cice_hist}" ]]; then
+                mkdir -p "${COMOUT_ICE_HISTORY}"
+                "${USHglobal}/run_mpmd.sh" "${cmdfile_cice_hist}" && true
+                export err=$?
+                if [[ ${err} -ne 0 ]]; then
+                    err_exit "run_mpmd.sh failed to copy CICE history files!"
+                fi
+            fi
+            ;;
+    esac
 }
 
 GOCART_rc() {

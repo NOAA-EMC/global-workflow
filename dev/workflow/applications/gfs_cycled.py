@@ -131,6 +131,9 @@ class GFSCycledAppConfig(AppConfig):
 
         configs += ['stage_ic', 'sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
+        if run == 'gfs':
+            configs += ['fcst_mgr']
+
         if options['do_archcom']:
             configs += ['arch_tars']
 
@@ -303,6 +306,8 @@ class GFSCycledAppConfig(AppConfig):
 
                 # gfs-specific products
                 if run == 'gfs':
+                    task_names[run] += ['fcst_mgr']
+
                     if options['do_ocean']:
                         task_names[run] += ['ocean_prod']
 

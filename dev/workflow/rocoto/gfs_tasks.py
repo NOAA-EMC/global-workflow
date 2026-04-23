@@ -1083,6 +1083,30 @@ class GFSTasks(Tasks):
 
         return task
 
+    def fcst_mgr(self):
+        # The manager depends on the ATM product table appearing in COM_CONF.
+        # This table is written during the forecast job's pre-run setup (FV3_postdet),
+        # which runs before the UFS model executable is launched.
+        conf_path = self._template_to_rocoto_cycstring(self._base['COM_CONF_TMPL'])
+        dep_dict = {'type': 'data', 'data': f'{conf_path}/atm_products.txt', 'age': 60}
+        dependencies = rocoto.create_dependency(dep=rocoto.add_dependency(dep_dict))
+
+        resources = self.get_resource('fcst_mgr')
+        task_name = f'{self.run}_fcst_mgr'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_mgr.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+        return task
+
     def atmanlupp(self):
         postenvars = self.envars.copy()
         postenvar_dict = {'FHR3': '000',
