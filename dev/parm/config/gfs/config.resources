@@ -993,7 +993,7 @@ case ${step} in
     tasks_per_node=2
     threads_per_task=1
     memory="8GB"
-    walltime="12:00:00"
+    walltime="08:00:00"
     ;;
 
   "oceanice_products")
