@@ -1313,7 +1313,10 @@ class GFSTasks(Tasks):
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        if 'fcst_mgr' in self._configs:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mgr'}
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
@@ -1421,7 +1424,10 @@ class GFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        if 'fcst_mgr' in self._configs:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mgr'}
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1546,7 +1552,10 @@ class GFSTasks(Tasks):
 
     def postsnd(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        if 'fcst_mgr' in self._configs:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mgr'}
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
