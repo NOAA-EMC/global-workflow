@@ -227,12 +227,19 @@ check_builds() {
 # shellcheck disable=SC2329
 function cleanup() {
     echo "Exiting build script. Terminating subprocesses..."
+    err=0
     for pid in "${build_ids[@]}"; do
         if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
             kill "${pid}"
+            err=$((err + 1))
         fi
     done
-    exit 0
+
+    if [[ ${err} -gt 0 ]]; then
+        echo "Terminated ${err} subprocess(es)."
+    fi
+
+    exit "${err}"
 }
 
 trap cleanup ERR
