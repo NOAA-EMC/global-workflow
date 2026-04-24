@@ -338,7 +338,7 @@ cat << EOF > fort.37
  /
 EOF
 
-${APRUNCY} "${CYCLEXEC}" 1>> "${PGMOUT}" 2>> "${PGMERR}"
+${APRUNCY} "${CYCLEXEC}" 1>&1 2>&2
 
 export err=$?
 
