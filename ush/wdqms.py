@@ -272,6 +272,7 @@ class WDQMS:
         # Loop through stations and create individual dataframes
         # that grabs average stats from surface, troposphere, and
         # stratosphere
+        missing_surface_position_count = 0
         for stn in stn_ids:
             logging.debug(f"Station ID: {stn}")
 
@@ -412,7 +413,22 @@ class WDQMS:
 
             sub_df = pd.DataFrame.from_dict(d)
             sub_df['Station_id'] = stn
+
             # Add lats and lons
+            # Count missing explicit surface positions
+            if surf_lat is None or surf_lon is None:
+                missing_surface_position_count += 1
+            
+            # Prefer explicit surface lat/lon if present
+            if surf_lat is not None and surf_lon is not None:
+                lat = surf_lat
+                lon = surf_lon
+            else:
+                # Fall back to location closest to surface: maximum pressure
+                closest_surface = tmp.sort_values("Pressure", ascending=False).iloc[0]
+                lat = closest_surface["Latitude"]
+                lon = closest_surface["Longitude"]
+
             lat = surf_lat if surf_lat else tmp['Latitude'].value_counts(
             ).index[0]
             lon = surf_lon if surf_lon else tmp['Longitude'].value_counts(
@@ -442,6 +458,11 @@ class WDQMS:
         # Round given columns to four decimal places
         for col in ['latitude', 'Longitude', 'Mean_Bg_dep', 'Std_Bg_dep', 'LastRepLevel']:
             df = self._round_column(df, col)
+
+        logging.info(
+            "Number of stations with missing surf_lat and/or surf_lon: %d",
+            missing_surface_position_count
+        )
 
         logging.info("Exiting create_sondes_df()")
 
