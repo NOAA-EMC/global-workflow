@@ -429,10 +429,6 @@ class WDQMS:
                 lat = closest_surface["Latitude"]
                 lon = closest_surface["Longitude"]
 
-            lat = surf_lat if surf_lat else tmp['Latitude'].value_counts(
-            ).index[0]
-            lon = surf_lon if surf_lon else tmp['Longitude'].value_counts(
-            ).index[0]
             sub_df['latitude'] = lat
             sub_df['Longitude'] = lon
             # add datetime
