@@ -299,9 +299,9 @@ case ${cmodel} in
         ;;
     other)
         cat << EOF
-Model selected by user is ${cmodel}, which is a 
+Model selected by user is ${cmodel}, which is a
 user-defined model, NOT operational....
- 
+
 EOF
         model=9
         ;;
@@ -417,7 +417,7 @@ EOF
 
 !!! FATAL ERROR in $(basename "$0"):
 !!! Input analysis file cannot be found.
-!!! The tracker is looking for this file in:  
+!!! The tracker is looking for this file in:
 !!! ---->  ${otherdir}/${fnamebeg}00${fnameend}
 !!! Please check the directory to make sure the file
 !!! is there and then submit this job again.
@@ -456,7 +456,6 @@ fi
 
 cpfs "${DATA}/tcvitals" "${vdir}/vitals.${symd}${dishh}"
 
-# shellcheck disable=SC2312
 grep -v TEST "${vdir}/vitals.${symd}${dishh}" |
     awk 'substr($0,6,1) !~ /[8-9]/ {print $0}' > "${vdir}/tempvit.nonameless"
 
@@ -558,7 +557,7 @@ if [[ -s "${DATA}/prep_step" ]]; then
 else
     [[ -f errfile ]] && rm errfile
     export XLFUNITS=0
-    # shellcheck disable=SC2046,SC2312
+    # shellcheck disable=SC2046
     unset $(env | grep XLFUNIT | awk -F= '{print $1}')
     export XLFRTEOPTS="${XLFRTEOPTS:+${XLFRTEOPTS}:}unit_vars=yes"
 fi
@@ -592,7 +591,7 @@ else
     msg=$(
         cat << EOF
 
-!!! FATAL ERROR: An error occurred while running supvitql, 
+!!! FATAL ERROR: An error occurred while running supvitql,
 !!! which is the program that updates the TC Vitals file.
 !!! Return code from supvitql = ${err}
 !!! model= ${cmodel}, forecast initial time = ${symd}${dishh}
@@ -614,18 +613,17 @@ fi
 numvitrecs=$(wc -l "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}")
 if [[ "${numvitrecs}" -eq 0 ]]; then
     cat << EOF
- 
-!!! ERROR -- There are no vitals records for this time period 
+
+!!! ERROR -- There are no vitals records for this time period
 !!! in the UPDATED vitals file.
 !!! File ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} is empty.
 !!! Please check the dates and submit this job again....
- 
+
 EOF
     err=8
     err_exit
 fi
 
-# shellcheck disable=SC2312
 cat << EOF | tee stormlist
 
 
@@ -634,7 +632,7 @@ cat << EOF | tee stormlist
 |        STORM SELECTION         |
 *--------------------------------*
 
-Below is a list of the storms to be processed: 
+Below is a list of the storms to be processed:
 
 $(cat "${vdir}/vitals.upd.${cmodel}.${symd}${dishh}")
 
@@ -680,8 +678,8 @@ done
 cat << EOF
 
 -----------------------------------------
-  NOW CUTTING APART INPUT GRIB FILES TO 
-  CREATE 1 BIG GRIB INPUT FILE 
+  NOW CUTTING APART INPUT GRIB FILES TO
+  CREATE 1 BIG GRIB INPUT FILE
 -----------------------------------------
 
 EOF
@@ -706,8 +704,8 @@ if [[ "${model}" -eq 5 ]]; then
 *******************************************************************
 !!! NGM model has been selected, but there are no storms in the
 !!! TC Vitals file that are from NHC.  Therefore, unless you have
-!!! entered your own auxiliary TC vitals file that has a storm 
-!!! within the NGM domain, the tracker will exit after reading 
+!!! entered your own auxiliary TC vitals file that has a storm
+!!! within the NGM domain, the tracker will exit after reading
 !!! in the analysis data.
 *******************************************************************
 
@@ -764,9 +762,9 @@ EOF
                 cat << EOF
 
 !!! FATAL ERROR using ${COPYGB} to interpolate ngm data.  We will stop execution because
-!!! some variables may have been copied okay, while some obviously have not, 
+!!! some variables may have been copied okay, while some obviously have not,
 !!! and that could lead to unreliable results from the tracker.  Check to make
-!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is 
+!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is
 !!! typically due to using more memory than you've allocated).  Exiting.....
 
 EOF
@@ -804,8 +802,8 @@ if [[ "${model}" -eq 6 ]]; then
 *******************************************************************
 !!! NAM model has been selected, but there are no storms in the
 !!! TC Vitals file that are from NHC.  Therefore, unless you have
-!!! entered your own auxiliary TC vitals file that has a storm 
-!!! within the NAM domain, the tracker will exit after reading 
+!!! entered your own auxiliary TC vitals file that has a storm
+!!! within the NAM domain, the tracker will exit after reading
 !!! in the analysis data.
 *******************************************************************
 
@@ -861,9 +859,9 @@ EOF
             cat << EOF
 
 !!! FATAL ERROR using ${COPYGB} to interpolate nam data.  We will stop execution because
-!!! some variables may have been copied okay, while some obviously have not, 
+!!! some variables may have been copied okay, while some obviously have not,
 !!! and that could lead to unreliable results from the tracker.  Check to make
-!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is 
+!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is
 !!! typically due to using more memory than you've allocated).  Exiting.....
 
 EOF
@@ -963,7 +961,6 @@ EOF
                 "SurfaceV") parm="VGRD:10 m" ;;
                 *) ;;
             esac
-            # shellcheck disable=SC2312
             grep "${parm}" "${TMPDIR}/gfs.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
                 -o "${vdir}/gfsgribfile.${symd}${dishh}"
         done
@@ -1025,7 +1022,6 @@ EOF
                     "SurfaceV") parm="VGRD:10 m" ;;
                     *) ;;
                 esac
-                # shellcheck disable=SC2312
                 grep "${parm}" "${TMPDIR}/gdas.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
                     -o "${vdir}/gdasgribfile.${symd}${dishh}"
             done
@@ -1067,7 +1063,6 @@ EOF
                     "SurfaceV") parm="VGRD:10 m" ;;
                     *) ;;
                 esac
-                # shellcheck disable=SC2312
                 grep "${parm}" "${TMPDIR}/gdas.ix" | ${WGRIB2:?} -i "${gfile}" -append -grib \
                     "${vdir}/gdasgribfile.${symd}${dishh}"
             done
@@ -1116,7 +1111,6 @@ EOF
                 "SurfaceV") parm="VGRD:10 m" ;;
                 *) ;;
             esac
-            # shellcheck disable=SC2312
             grep "${parm}" "${TMPDIR}/mrf.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
                 -o "${vdir}/mrfgribfile.${symd}${dishh}"
         done
@@ -1155,7 +1149,6 @@ EOF
         ${WGRIB:?} -s "${gfile}" > "${TMPDIR}/ukmet.ix"
 
         for parm in ${wgrib_parmlist}; do
-            # shellcheck disable=SC2312
             grep "${parm}" "${TMPDIR}/ukmet.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
                 -o "${vdir}/ukmetgribfile.${symd}${dishh}"
         done
@@ -1208,7 +1201,6 @@ EOF
                 "SurfaceV") parm="VGRD:19 m" ;;
                 *) ;;
             esac
-            # shellcheck disable=SC2312
             grep "${parm}" "${TMPDIR}/ngps.ix" | grep "${vtstring}" |
                 ${WGRIB:?} -s "${gfile}" -i -grib -append -o "${vdir}/ngpsgribfile.${symd}${dishh}"
         done
@@ -1235,7 +1227,6 @@ if [[ "${model}" -eq 9 ]]; then
 
     rm -f "${vdir}/otherlatlon.pgrb.${symdh}"
 
-    # shellcheck disable=SC2312
     gridtyp=$(${WGRIB:?} -GDS10 "${otherdir}/${fnamebeg}00${fnameend}" |
         awk -FGDS10= '{print $2}' | awk '{print $6}' | sed -n 1p)
 
@@ -1266,7 +1257,6 @@ EOF
                     "SurfaceV") parm="VGRD:10 m" ;;
                     *) ;;
                 esac
-                # shellcheck disable=SC2312
                 grep "${parm}" "${TMPDIR}/other.ix" | ${WGRIB:?} -s "${gfile}" -i -grib -append \
                     -o "${vdir}/otherlatlon.pgrb.${symdh}"
             done
@@ -1325,9 +1315,9 @@ EOF
                     cat << EOF
 
 !!! FATAL ERROR using ${COPYGB} to interpolate data.  We will stop execution because
-!!! some variables may have been copied okay, while some obviously have not, 
+!!! some variables may have been copied okay, while some obviously have not,
 !!! and that could lead to unreliable results from the tracker.  Check to make
-!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is 
+!!! sure you've allocated enough memory for this job (error 134 using ${COPYGB} is
 !!! typically due to using more memory than you've allocated).  Exiting.....
 
 EOF
@@ -1425,7 +1415,7 @@ if [[ -s "${DATA}/prep_step" ]]; then
 else
     rm -f errfile
     export XLFUNITS=0
-    # shellcheck disable=SC2046,SC2312
+    # shellcheck disable=SC2046
     unset $(env | grep XLFUNIT | awk -F= '{print $1}')
     export XLFRTEOPTS="${XLFRTEOPTS:+${XLFRTEOPTS}:}unit_vars=yes"
 fi

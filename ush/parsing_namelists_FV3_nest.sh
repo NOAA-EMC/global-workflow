@@ -15,7 +15,6 @@
 
 # Disable variable not used warnings and 'masking return value' warnings
 # shellcheck disable=SC2034
-# shellcheck disable=SC2312
 FV3_namelists_nest() {
 
     # First argument tells us which namelist we're writing:
