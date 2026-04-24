@@ -92,7 +92,6 @@ for ((nset = 1; nset <= downset; nset++)); do
         # grep returns 1 if no match is found (not an error)
         ${WGRIB2} -d "${last}" "${tmpfile}" | grep -E -i "ugrd|ustm|uflx|u-gwd|land|maxuw" && true
         rc=$?
-        source "${USHglobal}/set_strict.sh"
         if [[ ${rc} == 0 ]]; then # Matched the grep
             last=$((last + 1))
         fi
