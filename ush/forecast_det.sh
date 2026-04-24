@@ -58,7 +58,7 @@ UFS_det() {
     local ii filepath filename
     local rdate seconds
     local fv3_rst_ok cmeps_rst_ok mom6_rst_ok cice6_rst_ok ww3_rst_ok
-    local ihour
+    local hdate hdatep1 fhout_ocn_by_2
     for ((ii = nrestarts - 1; ii >= 0; ii--)); do
 
         filepath="${file_array[ii]}"
@@ -88,13 +88,20 @@ UFS_det() {
             if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
                 mom6_rst_ok="NO"
             else
-                # Also check for MOM6 history file availability by checking for log file 
+                # Also check for MOM6 history file availability
                 # TODO: SFS runs with 24-hr averaging of ocean output, which causes issues with restart checks,
                 # TODO: so we will skip them for now, and revisit this logic later
                 if [[ "${FHOUT_OCN}" -le 6 ]]; then
-                    ihour=$(printf %02i "${FHOUT_OCN}")
-                    if [[ ! -f "${DATA}/${rdate:0:8}.${rdate:8:2}0000.mom6.${ihour}h" ]]; then
+                    fhout_ocn_by_2=$((FHOUT_OCN / 2))
+                    hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")
+                    if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}_00.nc" ]]; then
                         mom6_rst_ok="NO"
+                    else
+                        # Also check for the next MOM6 history file (hdate + FHOUT_OCN hours)
+                        hdatep1=$(date -u -d "${hdate:0:8} ${hdate:8:2} + ${FHOUT_OCN} hours" +"%Y%m%d%H")
+                        if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}_00.nc" ]]; then
+                            mom6_rst_ok="NO"
+                        fi
                     fi
                 fi
             fi
