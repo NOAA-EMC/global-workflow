@@ -89,6 +89,9 @@ UFS_det() {
                 mom6_rst_ok="NO"
             else
                 # Also check for MOM6 history file availability
+		# This is done because MOM6 output and restart files are asynchronous 
+		# TODO: We now have MOM6 log files, and so this logic can be updated to only check that 1 time level is written
+		# and confirm that the file is fully written via the log file. 
                 # TODO: SFS runs with 24-hr averaging of ocean output, which causes issues with restart checks,
                 # TODO: so we will skip them for now, and revisit this logic later
                 if [[ "${FHOUT_OCN}" -le 6 ]]; then
