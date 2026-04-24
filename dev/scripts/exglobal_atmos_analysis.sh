@@ -383,7 +383,6 @@ ${NLN} "${FIXglobal}/gsi/IASI_CLDDET.NL" IASI_CLDDET.NL
 #If using correlated error, link to the covariance files
 if [[ "${USE_CORRELATED_OBERRS}" == "YES" ]]; then
     if grep -q "Rcov" "${ANAVINFO}"; then
-        # shellcheck disable=SC2312
         mapfile -t covfile_array < <(find "${FIXglobal}/gsi/" -name "Rcov*")
         if ((${#covfile_array[@]} > 0)); then
             for covfile in "${covfile_array[@]}"; do
@@ -425,7 +424,6 @@ fi
 ##############################################################
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
-# shellcheck disable=SC2312
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
     if [[ ${file:0:4} == "hirs" ]]; then
         ${NLN} "${HIRS_FIX}/${file}.SpcCoeff.bin" "./crtm_coeffs/${file}.SpcCoeff.bin"
@@ -543,7 +541,7 @@ fi
 ${NLN} "${GBIAS}" satbias_in
 ${NLN} "${GBIASPC}" satbias_pc
 ${NLN} "${GBIASAIR}" aircftbias_in
-${NLN} "${GRADSTAT}" radstat.gdas
+${NLN} "${GRADSTAT}" radstat.tar
 
 ##############################################################
 # Required model guess files
@@ -656,7 +654,6 @@ fi
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
 if [[ "${USE_SELECT}" == "YES" ]]; then
     rm -f obs_input.*
-    # shellcheck disable=SC2312
     nl=$(file "${SELECT_OBS}" | cut -d: -f2 | grep -c tar)
     if [[ ${nl} -eq 1 ]]; then
         rm -f obsinput.tar
@@ -686,8 +683,8 @@ fi
 ##############################################################
 # If requested, copy and de-tar guess radstat file
 if [[ "${USE_RADSTAT}" == "YES" ]]; then
-    rm -f "${DATA}/unzip_radstat.sh"
-    cat > "${DATA}/unzip_radstat.sh" << EOF
+    rm -f "${DATA}/unzip_diag.sh"
+    cat > "${DATA}/unzip_diag.sh" << EOF
 #!/bin/bash
 diag_file=\$1
 diag_suffix=\$2
@@ -697,20 +694,25 @@ ${UNCOMPRESS} \$diag_file
 fnameges=\$(echo \$fname | sed 's/_ges//g')
 ${NMV} \$fname.\$fdate\$diag_suffix \$fnameges
 EOF
-    chmod 755 "${DATA}/unzip_radstat.sh"
+    chmod 755 "${DATA}/unzip_diag.sh"
 
     rm -f "${DATA}/cmdfile"
-    #shellcheck disable=SC2312
-    listdiag=$(tar -xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
+    tar -xvf radstat.tar && true
+    err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "Failed to untar radstat file!"
+    fi
+
+    listdiag=$(find ./ -maxdepth 1 -path "./diag_*_ges.*" -type f)
     for type in ${listdiag}; do
-        diag_file=$(echo "${type}" | cut -d',' -f1)
-        echo "${DATA}/unzip_radstat.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
+        diag_file=$(basename "${type}")
+        echo "${DATA}/unzip_diag.sh ${diag_file} ${DIAG_SUFFIX:-}.nc4" >> "${DATA}/cmdfile"
     done
 
     "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to unzip radstat.gdas file!"
+        err_exit "Failed to unzip at least one rad diag file!"
     fi
 fi # if [[ $USE_RADSTAT == "YES" ]
 
@@ -883,7 +885,6 @@ cat fort.2* > "${GSISTAT}"
 
 # If requested, create obsinput tarball from obs_input.* files
 if [[ ${RUN_SELECT} == "YES" ]]; then
-    # shellcheck disable=SC2312
     echo "$(date) START tar obs_input" >&2
     if [[ -s obsinput.tar ]]; then
         rm -f obsinput.tar
@@ -894,7 +895,6 @@ if [[ ${RUN_SELECT} == "YES" ]]; then
     chmod 750 "${SELECT_OBS}"
     ${CHGRP_CMD} "${SELECT_OBS}"
     rm -f obsinput.tar
-    # shellcheck disable=SC2312
     echo "$(date) END tar obs_input" >&2
 fi
 
@@ -919,7 +919,6 @@ if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
     ecflow_client --event release_fcst
 fi
 
-# shellcheck disable=SC2312
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
 
 ################################################################################

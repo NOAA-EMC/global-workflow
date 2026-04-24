@@ -61,7 +61,6 @@ fi
 ##########################################
 cd "${DATAROOT}" && true
 export err=$?
-source "${USHglobal}"/unset_strict.sh
 if [[ ${err} -ne 0 ]]; then
     err_exit "${DATAROOT} does not exist, ABORT!"
 fi

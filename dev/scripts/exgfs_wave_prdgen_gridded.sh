@@ -98,12 +98,9 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
             echo "${nip} ${prepar} ${paridx} ${npart}"
             rm -f temp.grib2
             if [[ ${npart} -eq 0 ]]; then
-                #shellcheck disable=SC2312
                 ${WGRIB2} "${GRIBIN}" -s | grep ":${nip}" | "${WGRIB2}" -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1
-                #shellcheck disable=SC2312
                 ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"
             else
-                #shellcheck disable=SC2312
                 ${WGRIB2} "${GRIBIN}" -s | grep ":${prepar}" | grep "${paridx} in sequence" |
                     ${WGRIB2} -i "${GRIBIN}" -grib temp.grib2 > wgrib.out 2>&1
                 ${WGRIB2} temp.grib2 -append -grib "${GRIBOUT}"

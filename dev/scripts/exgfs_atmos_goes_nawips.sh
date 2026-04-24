@@ -21,8 +21,7 @@ done
 NAGRIB_TABLE="${HOMEglobal}/gempak/fix/nagrib.tbl"
 NAGRIB="${GEMEXE}/nagrib2_nc"
 
-# shellcheck disable=SC2312
-entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}')
+entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}' || echo "")
 
 if [[ "${entry}" != "" ]]; then
     cpyfil=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $2}')

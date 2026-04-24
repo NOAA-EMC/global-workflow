@@ -34,7 +34,6 @@ for ((nh = FHOUT_WAV_EXTRACT; nh <= FHMAX_WAV; nh = nh + FHOUT_WAV_EXTRACT)); do
             echo "FATAL ERROR: Failed to copy ${infile} to ${new_infile}."
             exit 1
         fi
-        # shellcheck disable=SC2312
         ${WGRIB2} "${new_infile}" | grep -F -f "${varlist_wav}" | ${WGRIB2} -i "${new_infile}" -append -grib "${outfile}"
     else
         echo "WARNING: ${infile} does not exist in ${com_dir}."

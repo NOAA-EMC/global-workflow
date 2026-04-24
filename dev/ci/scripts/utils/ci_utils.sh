@@ -253,7 +253,6 @@ function delete_dataroot() {
     _runtests="${1}"
     _pslot="${2}"
 
-    # shellcheck disable=SC2312
     eval "$(
         PDY=0 cyc=0 source "${_runtests}/EXPDIR/${_pslot}/config.base" >&/dev/null
         echo _dataroot="${STMP}/RUNDIRS/${_pslot}"
