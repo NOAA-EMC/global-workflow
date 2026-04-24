@@ -67,59 +67,93 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
 fi
 
+if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+    declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+fi
+
+if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+    declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Load manager functions
-source "${USHglobal}/forecast_mgr.sh"
-
-# Wait for the ATM product table to arrive in COM_CONF. The forecast job
-# writes this during its pre-run setup phase (FV3_postdet), which occurs
-# before the model executable is launched.
-MGR_INIT_TIMEOUT="${FCST_MGR_INIT_TIMEOUT:-7200}"
-ATM_TABLE="${COMOUT_CONF}/atm_products.txt"
-elapsed=0
-echo "INFO: Waiting for ATM product table at ${ATM_TABLE}"
-while [[ ! -f "${ATM_TABLE}" ]]; do
-    if [[ ${elapsed} -ge ${MGR_INIT_TIMEOUT} ]]; then
-        err_exit "Timed out after ${elapsed}s waiting for ${ATM_TABLE}"
-    fi
-    sleep 30
-    (( elapsed += 30 )) || true
-done
-echo "INFO: ATM product table found after ${elapsed}s"
-
-# Launch component managers as background processes so they run concurrently
-mgr_pids=()
-
-fcst_mgr_wait_and_copy "${ATM_TABLE}" "atm" &
-mgr_pids+=($!)
-
-if [[ "${DO_WAVE}" == "YES" ]]; then
-    WW3_TABLE="${COMOUT_CONF}/ww3_products.txt"
-    elapsed=0
-    echo "INFO: Waiting for WW3 product table at ${WW3_TABLE}"
-    while [[ ! -f "${WW3_TABLE}" ]]; do
-        if [[ ${elapsed} -ge ${MGR_INIT_TIMEOUT} ]]; then
-            err_exit "Timed out after ${elapsed}s waiting for ${WW3_TABLE}"
+# Wait for a product table to appear in COMOUT_CONF; used for each component.
+# Arguments: <label> <table_path> <timeout_seconds>
+wait_for_table() {
+    local label="$1" table="$2" timeout="$3"
+    local elapsed=0
+    echo "INFO: Waiting for ${label} product table at ${table}"
+    while [[ ! -f "${table}" ]]; do
+        if [[ ${elapsed} -ge ${timeout} ]]; then
+            err_exit "Timed out after ${elapsed}s waiting for ${table}"
         fi
         sleep 30
         (( elapsed += 30 )) || true
     done
-    echo "INFO: WW3 product table found after ${elapsed}s"
-    fcst_mgr_wait_and_copy "${WW3_TABLE}" "ww3" &
-    mgr_pids+=($!)
+    echo "INFO: ${label} product table found after ${elapsed}s"
+}
+
+MGR_INIT_TIMEOUT="${FCST_MGR_INIT_TIMEOUT:-7200}"
+
+# Collect active component tables in order: ATM, WW3, OCN, ICE.
+# Each active component gets one MPMD rank; the wrapper script sources
+# forecast_mgr.sh and calls fcst_mgr_wait_and_copy for that component.
+declare -a mgr_components mgr_tables
+mgr_rank=0
+
+ATM_TABLE="${COMOUT_CONF}/atm_products.txt"
+wait_for_table "ATM" "${ATM_TABLE}" "${MGR_INIT_TIMEOUT}"
+mgr_components[mgr_rank]="atm"
+mgr_tables[mgr_rank]="${ATM_TABLE}"
+(( mgr_rank++ )) || true
+
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    WW3_TABLE="${COMOUT_CONF}/ww3_products.txt"
+    wait_for_table "WW3" "${WW3_TABLE}" "${MGR_INIT_TIMEOUT}"
+    mgr_components[mgr_rank]="ww3"
+    mgr_tables[mgr_rank]="${WW3_TABLE}"
+    (( mgr_rank++ )) || true
 fi
 
-# Wait for all manager processes and collect errors
-manager_err=0
-for pid in "${mgr_pids[@]}"; do
-    wait "${pid}" || manager_err=$?
+if [[ "${DO_OCN:-NO}" == "YES" && -f "${COMOUT_CONF}/ocn_products.txt" ]]; then
+    OCN_TABLE="${COMOUT_CONF}/ocn_products.txt"
+    mgr_components[mgr_rank]="ocn"
+    mgr_tables[mgr_rank]="${OCN_TABLE}"
+    (( mgr_rank++ )) || true
+    echo "INFO: OCN product table found; adding OCN manager rank"
+fi
+
+if [[ "${DO_ICE:-NO}" == "YES" && -f "${COMOUT_CONF}/ice_products.txt" ]]; then
+    ICE_TABLE="${COMOUT_CONF}/ice_products.txt"
+    mgr_components[mgr_rank]="ice"
+    mgr_tables[mgr_rank]="${ICE_TABLE}"
+    (( mgr_rank++ )) || true
+    echo "INFO: ICE product table found; adding ICE manager rank"
+fi
+
+num_ranks=${mgr_rank}
+echo "INFO: Launching ${num_ranks} MPMD component manager rank(s): ${mgr_components[*]}"
+
+# Build the MPMD configuration file: one rank per component.
+MPMD_CONF="${DATA}/fcst_mgr_mpmd.conf"
+rm -f "${MPMD_CONF}"
+for (( r = 0; r < num_ranks; r++ )); do
+    echo "${r} ${USHglobal}/fcst_mgr_component.sh ${mgr_components[r]} ${mgr_tables[r]}" >> "${MPMD_CONF}"
 done
 
+# Run all component managers concurrently, each on its own SLURM task.
+export USHglobal COMOUT_CONF COMOUT_ATMOS_HISTORY COMOUT_ATMOS_MASTER
+[[ "${DO_WAVE}" == "YES" ]] && export COMOUT_WAVE_HISTORY
+[[ "${DO_OCN:-NO}" == "YES" ]] && export COMOUT_OCEAN_HISTORY
+[[ "${DO_ICE:-NO}" == "YES" ]] && export COMOUT_ICE_HISTORY
+
+srun --ntasks="${num_ranks}" --multi-prog "${MPMD_CONF}"
+manager_err=$?
+
 if [[ ${manager_err} -ne 0 ]]; then
-    err_exit "One or more forecast manager processes failed (last err=${manager_err})"
+    err_exit "One or more forecast manager MPMD ranks failed (err=${manager_err})"
 fi
 
 ##############################################

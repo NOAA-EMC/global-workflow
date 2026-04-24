@@ -329,7 +329,7 @@ EOF
         # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
         local use_mgr="NO"
         case "${RUN}" in
-            gfs | gefs | sfs | gcafs) use_mgr="YES" ;;
+            gfs | gefs | sfs | gcafs | gdas | enkfgdas) use_mgr="YES" ;;
         esac
 
         local atm_table="${DATA}/atm_products.txt"
@@ -571,7 +571,7 @@ WW3_postdet() {
     # For GDAS: keep NLN symlinks so downstream analysis jobs can read WW3 outputs.
     local use_mgr_ww3="NO"
     case "${RUN}" in
-        gfs | gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
+        gfs | gefs | sfs | gcafs | gdas | enkfgdas) use_mgr_ww3="YES" ;;
     esac
 
     # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
@@ -754,6 +754,8 @@ MOM6_postdet() {
         gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
             # Looping over MOM6 output hours
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+            local ocn_table="${DATA}/ocn_products.txt"
+            rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -780,17 +782,26 @@ MOM6_postdet() {
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 fi
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput; MOM6_out copies them to COM.
+                # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput;
+                # MOM6_out copies them to COM, or the manager handles it for GFS.
                 # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ocean backgrounds during the run.
                 case "${RUN}" in
                     gdas | enkfgdas)
                         ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                        ;;
+                    gfs)
+                        # Add product table entry: manager copies when ocn_ready sentinel appears
+                        echo "${DATAoutput}/MOM6_OUTPUT/${source_file} ${DATAoutput}/ocn_ready.txt ${COMOUT_OCEAN_HISTORY}/${dest_file} ${COMOUT_CONF}/ocn_complete.txt" >> "${ocn_table}"
                         ;;
                 esac
 
                 last_fhr=${fhr}
 
             done
+            if [[ -s "${ocn_table}" ]]; then
+                mkdir -p "${COMOUT_CONF}"
+                cpfs "${ocn_table}" "${COMOUT_CONF}/ocn_products.txt"
+            fi
             ;;
 
         gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
@@ -887,46 +898,62 @@ MOM6_out() {
         fi
     fi
 
-    # Copy MOM6 history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks; model writes
-    # real files to DATAoutput/MOM6_OUTPUT which are copied here at the end of the run)
-    case "${RUN}" in
-        gfs | enkfgfs | gefs | sfs | gcafs)
-            local cmdfile_mom6_hist="${DATA}/cmdfile_mom6_hist"
-            rm -f "${cmdfile_mom6_hist}"
-            local last_fhr_hist fhr_hist fhr3_hist interval_hist midpoint_hist vdate_hist vdate_mid_hist source_file_hist dest_file_hist
-            for fhr_hist in ${MOM6_OUTPUT_FH}; do
-                fhr3_hist=$(printf %03i "${fhr_hist}")
-                if [[ -z ${last_fhr_hist:-} ]]; then
-                    last_fhr_hist=${fhr_hist}
-                    continue
-                fi
-                (( interval_hist = fhr_hist - last_fhr_hist ))
-                (( midpoint_hist = last_fhr_hist + interval_hist / 2 ))
-                vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
-                if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
-                    vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint_hist + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
-                else
-                    vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint_hist} hours" +%Y%m%d%H)
-                fi
-                if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
-                    source_file_hist="ocn_lead1_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
-                else
-                    source_file_hist="ocn_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
-                fi
-                dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
-                echo "cpfs ${DATAoutput}/MOM6_OUTPUT/${source_file_hist} ${COMOUT_OCEAN_HISTORY}/${dest_file_hist}" >> "${cmdfile_mom6_hist}"
+    # Copy MOM6 history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks;
+    # model writes real files to DATAoutput/MOM6_OUTPUT).
+    # For GFS: if the OCN product table was written during pre-run, the
+    # forecast manager handles copy in real-time; write the ready sentinel here.
+    # For other systems (enkfgfs/gefs/sfs/gcafs): copy directly as before.
+    local mom6_hist_helper
+    mom6_hist_helper() {
+        local cmdfile_mom6_hist="${DATA}/cmdfile_mom6_hist"
+        rm -f "${cmdfile_mom6_hist}"
+        local last_fhr_hist fhr_hist fhr3_hist interval_hist midpoint_hist vdate_hist vdate_mid_hist source_file_hist dest_file_hist
+        for fhr_hist in ${MOM6_OUTPUT_FH}; do
+            fhr3_hist=$(printf %03i "${fhr_hist}")
+            if [[ -z ${last_fhr_hist:-} ]]; then
                 last_fhr_hist=${fhr_hist}
-            done
-            if [[ -s "${cmdfile_mom6_hist}" ]]; then
-                mkdir -p "${COMOUT_OCEAN_HISTORY}"
-                "${USHglobal}/run_mpmd.sh" "${cmdfile_mom6_hist}" && true
-                export err=$?
-                if [[ ${err} -ne 0 ]]; then
-                    err_exit "run_mpmd.sh failed to copy MOM6 history files!"
-                fi
+                continue
+            fi
+            (( interval_hist = fhr_hist - last_fhr_hist ))
+            (( midpoint_hist = last_fhr_hist + interval_hist / 2 ))
+            vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
+            if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
+                vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint_hist + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
+            else
+                vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint_hist} hours" +%Y%m%d%H)
+            fi
+            if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
+                source_file_hist="ocn_lead1_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
+            else
+                source_file_hist="ocn_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
+            fi
+            dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
+            echo "cpfs ${DATAoutput}/MOM6_OUTPUT/${source_file_hist} ${COMOUT_OCEAN_HISTORY}/${dest_file_hist}" >> "${cmdfile_mom6_hist}"
+            last_fhr_hist=${fhr_hist}
+        done
+        if [[ -s "${cmdfile_mom6_hist}" ]]; then
+            mkdir -p "${COMOUT_OCEAN_HISTORY}"
+            "${USHglobal}/run_mpmd.sh" "${cmdfile_mom6_hist}" && true
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "run_mpmd.sh failed to copy MOM6 history files!"
+            fi
+        fi
+    }
+    case "${RUN}" in
+        gfs)
+            if [[ -f "${COMOUT_CONF}/ocn_products.txt" ]]; then
+                echo "INFO: OCN product table found; signalling forecast manager"
+                echo "model OCN ready at $(date --utc)" > "${DATAoutput}/ocn_ready.txt"
+            else
+                mom6_hist_helper
             fi
             ;;
+        enkfgfs | gefs | sfs | gcafs)
+            mom6_hist_helper
+            ;;
     esac
+    unset -f mom6_hist_helper
 }
 
 CICE_postdet() {
@@ -969,6 +996,8 @@ CICE_postdet() {
 
     # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
     local source_file dest_file
+    local ice_table="${DATA}/ice_products.txt"
+    rm -f "${ice_table}"
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
         if [[ -z ${last_fhr:-} ]]; then
@@ -1002,16 +1031,23 @@ CICE_postdet() {
                 ;;
         esac
 
-        # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput; CICE_out copies them to COM.
+        # For GFS: add product table entry for forecast manager real-time copy.
         # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ice backgrounds during the run.
         case "${RUN}" in
             gdas | enkfgdas)
                 ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
                 ;;
+            gfs)
+                echo "${DATAoutput}/CICE_OUTPUT/${source_file} ${DATAoutput}/ice_ready.txt ${COMOUT_ICE_HISTORY}/${dest_file} ${COMOUT_CONF}/ice_complete.txt" >> "${ice_table}"
+                ;;
         esac
 
         last_fhr=${fhr}
     done
+    if [[ -s "${ice_table}" ]]; then
+        mkdir -p "${COMOUT_CONF}"
+        cpfs "${ice_table}" "${COMOUT_CONF}/ice_products.txt"
+    fi
 
 }
 
@@ -1070,51 +1106,67 @@ CICE_out() {
         fi
     fi
 
-    # Copy CICE history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks; model writes
-    # real files to DATAoutput/CICE_OUTPUT which are copied here at the end of the run)
-    case "${RUN}" in
-        gfs | enkfgfs | gefs | sfs | gcafs)
-            local cmdfile_cice_hist="${DATA}/cmdfile_cice_hist"
-            rm -f "${cmdfile_cice_hist}"
-            local last_fhr_hist fhr_hist fhr3_hist interval_hist vdate_hist seconds_hist vdatestr_hist source_file_hist dest_file_hist
-            for fhr_hist in "${CICE_OUTPUT_FH[@]}"; do
-                if [[ -z ${last_fhr_hist:-} ]]; then
-                    last_fhr_hist=${fhr_hist}
-                    continue
-                fi
-                fhr3_hist=$(printf %03i "${fhr_hist}")
-                (( interval_hist = fhr_hist - last_fhr_hist ))
-                vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
-                seconds_hist=$(to_seconds "${vdate_hist:8:2}0000")
-                vdatestr_hist="${vdate_hist:0:4}-${vdate_hist:4:2}-${vdate_hist:6:2}-${seconds_hist}"
-                case "${RUN}" in
-                    gfs | enkfgfs | sfs | gcafs)
-                        source_file_hist="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr_hist}.nc"
-                        dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
-                        ;;
-                    gefs)
-                        source_file_hist="iceh.${vdatestr_hist}.nc"
-                        dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
-                        ;;
-                esac
-                echo "cpfs ${DATAoutput}/CICE_OUTPUT/${source_file_hist} ${COMOUT_ICE_HISTORY}/${dest_file_hist}" >> "${cmdfile_cice_hist}"
+    # Copy CICE history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks;
+    # model writes real files to DATAoutput/CICE_OUTPUT).
+    # For GFS: if the ICE product table was written during pre-run, the
+    # forecast manager handles copy in real-time; write the ready sentinel here.
+    # For other systems (enkfgfs/gefs/sfs/gcafs): copy directly as before.
+    local cice_hist_helper
+    cice_hist_helper() {
+        local cmdfile_cice_hist="${DATA}/cmdfile_cice_hist"
+        rm -f "${cmdfile_cice_hist}"
+        local last_fhr_hist fhr_hist fhr3_hist interval_hist vdate_hist seconds_hist vdatestr_hist source_file_hist dest_file_hist
+        for fhr_hist in "${CICE_OUTPUT_FH[@]}"; do
+            if [[ -z ${last_fhr_hist:-} ]]; then
                 last_fhr_hist=${fhr_hist}
-            done
-            # Copy iceh_ic file (CICE initial condition at f000)
-            local seconds_ic vdatestr_ic
-            seconds_ic=$(to_seconds "${model_start_date_current_cycle:8:2}0000")
-            vdatestr_ic="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds_ic}"
-            echo "cpfs ${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr_ic}.nc ${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" >> "${cmdfile_cice_hist}"
-            if [[ -s "${cmdfile_cice_hist}" ]]; then
-                mkdir -p "${COMOUT_ICE_HISTORY}"
-                "${USHglobal}/run_mpmd.sh" "${cmdfile_cice_hist}" && true
-                export err=$?
-                if [[ ${err} -ne 0 ]]; then
-                    err_exit "run_mpmd.sh failed to copy CICE history files!"
-                fi
+                continue
+            fi
+            fhr3_hist=$(printf %03i "${fhr_hist}")
+            (( interval_hist = fhr_hist - last_fhr_hist ))
+            vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
+            seconds_hist=$(to_seconds "${vdate_hist:8:2}0000")
+            vdatestr_hist="${vdate_hist:0:4}-${vdate_hist:4:2}-${vdate_hist:6:2}-${seconds_hist}"
+            case "${RUN}" in
+                gfs | enkfgfs | sfs | gcafs)
+                    source_file_hist="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr_hist}.nc"
+                    dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
+                    ;;
+                gefs)
+                    source_file_hist="iceh.${vdatestr_hist}.nc"
+                    dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
+                    ;;
+            esac
+            echo "cpfs ${DATAoutput}/CICE_OUTPUT/${source_file_hist} ${COMOUT_ICE_HISTORY}/${dest_file_hist}" >> "${cmdfile_cice_hist}"
+            last_fhr_hist=${fhr_hist}
+        done
+        # Copy iceh_ic file (CICE initial condition at f000)
+        local seconds_ic vdatestr_ic
+        seconds_ic=$(to_seconds "${model_start_date_current_cycle:8:2}0000")
+        vdatestr_ic="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds_ic}"
+        echo "cpfs ${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr_ic}.nc ${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" >> "${cmdfile_cice_hist}"
+        if [[ -s "${cmdfile_cice_hist}" ]]; then
+            mkdir -p "${COMOUT_ICE_HISTORY}"
+            "${USHglobal}/run_mpmd.sh" "${cmdfile_cice_hist}" && true
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "run_mpmd.sh failed to copy CICE history files!"
+            fi
+        fi
+    }
+    case "${RUN}" in
+        gfs)
+            if [[ -f "${COMOUT_CONF}/ice_products.txt" ]]; then
+                echo "INFO: ICE product table found; signalling forecast manager"
+                echo "model ICE ready at $(date --utc)" > "${DATAoutput}/ice_ready.txt"
+            else
+                cice_hist_helper
             fi
             ;;
+        enkfgfs | gefs | sfs | gcafs)
+            cice_hist_helper
+            ;;
     esac
+    unset -f cice_hist_helper
 }
 
 GOCART_rc() {

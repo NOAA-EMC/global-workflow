@@ -986,11 +986,11 @@ case ${step} in
     ;;
 
   "fcst_mgr")
-    # Forecast manager: one lightweight process per active component (ATM + WW3).
+    # Forecast manager: one MPMD rank per active component (ATM, WW3, OCN, ICE).
     # Polls DATAoutput for sentinel log files and copies products to COM in real time.
     # Walltime must be long enough to cover the full forecast run.
-    ntasks=2
-    tasks_per_node=2
+    ntasks=4
+    tasks_per_node=4
     threads_per_task=1
     memory="8GB"
     walltime="08:00:00"
