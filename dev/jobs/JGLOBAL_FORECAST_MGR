@@ -124,7 +124,7 @@ echo "INFO: Launching ${num_ranks} MPMD component manager rank(s): ${mgr_compone
 MPMD_CONF="${DATA}/fcst_mgr_mpmd.conf"
 rm -f "${MPMD_CONF}"
 for (( r = 0; r < num_ranks; r++ )); do
-    echo "${r} ${USHglobal}/fcst_mgr_component.sh ${mgr_components[r]} ${mgr_tables[r]}" >> "${MPMD_CONF}"
+    echo "${r} ${USHglobal}/forecast_mgr.sh ${mgr_components[r]} ${mgr_tables[r]}" >> "${MPMD_CONF}"
 done
 
 # Run all component managers concurrently, each on its own SLURM task.
