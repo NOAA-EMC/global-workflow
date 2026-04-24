@@ -1,6 +1,16 @@
 #! /usr/bin/env bash
 
-# parsing namelist of CICE
+#===============================================================================
+#
+#   FILE: parsing_namelists_CICE.sh
+#
+#   DESCRIPTION: Prepares the environment and dynamically renders the namelist
+#                (ice_in) for the CICE (Sea Ice) model component. The function
+#                determines the start type (warm/continue vs. cold/initial),
+#                calculates the MPI processor decomposition (NPX, NPY, and block
+#                sizes based on the chosen processor shape), and establishes
+#                output/diagnostic frequencies dependent on the specific RUN
+#                type (e.g., instantaneous for GDAS vs. time-averaged for GFS).
 
 # Disable variable not used warnings
 # shellcheck disable=SC2034

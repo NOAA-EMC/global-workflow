@@ -1,5 +1,15 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: parsing_namelists_MOM6.sh
+#
+#   DESCRIPTION: Prepares the environment and dynamically renders the configuration
+#                files required by the MOM6 ocean model component.
+#                The function sets up variables to handle ocean
+#                initialization strategies, wave coupling, Ocean Data Assimilation increments,
+#                and stochastic physics perturbations (SPPT and EPBL).
+
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 MOM6_namelists() {

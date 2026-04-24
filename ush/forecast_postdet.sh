@@ -1,5 +1,16 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: forecast_postdet.sh
+#
+#   DESCRIPTION: A suite of handler functions for managing the data flow and
+#                configuration of various Unified Forecast System (UFS)
+#                coupled components. It handles the staging of initial conditions,
+#                namelist generation, and output/restart file management for:
+#                FV3 (Atmosphere), WW3 (Waves), MOM6 (Ocean), CICE (Sea Ice),
+#                GOCART (Aerosols), and CMEPS (Coupler/Mediator)
+
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 # shellcheck disable=SC2178
