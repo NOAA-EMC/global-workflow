@@ -103,7 +103,12 @@ if [[ ${fhr} -gt 0 ]]; then
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
         -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
     err=$?
-    [[ ${err} -eq 0 ]] && ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
+    if [[ ${err} -eq 0 ]]; then
+        ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
+    else
+        echo "wgrib2 failed to create the file ${outfile}"
+        exit "${err}"
+    fi
     err=$?
 else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
