@@ -418,7 +418,7 @@ class WDQMS:
             # Count missing explicit surface positions
             if surf_lat is None or surf_lon is None:
                 missing_surface_position_count += 1
-            
+
             # Prefer explicit surface lat/lon if present
             if surf_lat is not None and surf_lon is not None:
                 lat = surf_lat
