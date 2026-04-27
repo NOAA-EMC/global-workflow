@@ -41,7 +41,7 @@ mkdir -p "${COMOUT_WAVE_PREP}"
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to prepare RTOFS data for WW3 inputs!"
 fi
 
 ##########################################

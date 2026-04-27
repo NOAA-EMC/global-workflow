@@ -17,7 +17,7 @@ source "${USHglobal}/set_strict.sh"
 "${SCRglobal}/exglobal_cleanup.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to cleanup for ${RUN} at ${PDY}${cyc}"
 fi
 
 #################################################

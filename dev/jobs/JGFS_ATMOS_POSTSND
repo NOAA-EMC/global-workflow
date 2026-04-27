@@ -43,7 +43,7 @@ fi
 "${SCRglobal}/exgfs_atmos_postsnd.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate GFS BUFR soundings and/or associated WMO products"
 fi
 
 ##############################################

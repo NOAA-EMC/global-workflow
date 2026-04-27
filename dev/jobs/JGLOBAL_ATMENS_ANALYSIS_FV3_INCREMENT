@@ -34,7 +34,7 @@ EXSCRIPT=${GDASATMENSRUNSH:-${SCRglobal}/exglobal_atmens_analysis_fv3_increment.
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate the atmospheric ensemble analysis FV3 increment"
 fi
 
 ##############################################

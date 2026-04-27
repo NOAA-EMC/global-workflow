@@ -45,7 +45,7 @@ if [[ ! -d ${TANKverf_rad} ]]; then mkdir -p "${TANKverf_rad}"; fi
 "${SCRglobal}/exgdas_atmos_verfrad.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate radiance monitor products"
 fi
 
 ################################

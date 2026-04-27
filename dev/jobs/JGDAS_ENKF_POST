@@ -33,7 +33,7 @@ export LEVS=$((LEVS - 1))
 ${ENKFPOSTSH:-${SCRglobal}/exgdas_enkf_post.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run ensemble post processing"
 fi
 
 ##############################################

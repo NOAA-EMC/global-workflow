@@ -48,7 +48,7 @@ export PREFIX="${RUN}.t${cyc}z."
 "${SCRglobal}/exglobal_atmos_products.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate atmospheric GRIB2 products"
 fi
 
 ##############################################
