@@ -121,6 +121,8 @@ _cwd=$(pwd)
 _runtests="${RUNTESTS:-${_runtests:-}}"
 _auto_del=false
 _nonflag_option_count=0
+_use_scron=false
+declare -a _scron_sh_files=()
 # --------------------------------------------------------------------------- #
 # Argument Parsing
 # --------------------------------------------------------------------------- #
@@ -696,16 +698,61 @@ for _case in "${_yaml_list[@]}"; do
     fi
 
     if [[ "${_use_scron}" == true ]]; then
-        {
-            grep "^####" "${cron_file}"
-            grep "^#SCRON" "${cron_file}"
-            grep "${scron_sh_file}" "${cron_file}"
-        } >> tests.cron
+        # Collect this experiment's scron script path; the master runner script
+        # will call them all sequentially to reduce simultaneous rocoto instances.
+        _scron_sh_files+=("${scron_sh_file}")
     else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
     fi
 done
 echo
+
+# --------------------------------------------------------------------------- #
+# Build Master Runner Script for scrontab (if using scron)
+# --------------------------------------------------------------------------- #
+
+# When running on a SLURM-managed scron system (e.g. Gaea), running all rocoto
+# instances simultaneously can exhaust head-node memory.  Instead, generate a
+# single master script that cycles through every experiment scron script
+# sequentially, and place only that one entry in the scrontab.
+if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
+    _master_script="${_runtests}/EXPDIR/rocoto_master_run.sh"
+    {
+        printf '%s\n' '#!/usr/bin/env bash'
+        printf '%s\n' '# Master runner script - cycles through all experiments sequentially'
+        printf '%s\n' '# to reduce simultaneous rocoto instances on the head node.'
+        for _scron_sh in "${_scron_sh_files[@]}"; do
+            printf 'if [[ -x "%s" ]]; then\n' "${_scron_sh}"
+            printf '    "%s"\n' "${_scron_sh}"
+            printf '%s\n' 'fi'
+        done
+    } > "${_master_script}"
+    chmod +x "${_master_script}"
+
+    # Compute wall time: allow 10 minutes per experiment
+    _num_expts=${#_scron_sh_files[@]}
+    _wall_minutes=$(( _num_expts * 10 ))
+    _wall_time=$(printf "%02d:%02d:00" $(( _wall_minutes / 60 )) $(( _wall_minutes % 60 )))
+
+    # Pull partition and account from the first experiment's crontab
+    _first_pslot="${_yaml_list[0]}${_tag}"
+    _first_cron_file="${_runtests}/EXPDIR/${_first_pslot}/${_first_pslot}.crontab"
+    _master_log="${_runtests}/EXPDIR/rocoto_master_run.log"
+
+    {
+        printf "\n"
+        printf "#################### master_run ####################\n"
+        grep "^#SCRON --partition=" "${_first_cron_file}" | head -1
+        grep "^#SCRON --account=" "${_first_cron_file}" | head -1
+        printf "#SCRON --job-name=master_scron\n"
+        printf "#SCRON --output=%s\n" "${_master_log}"
+        printf "#SCRON --time=%s\n" "${_wall_time}"
+        printf "#SCRON --dependency=singleton\n"
+        printf "*/5 * * * * %s\n" "${_master_script}"
+        printf "#################################################################\n"
+        printf "\n"
+    } >> tests.cron
+fi
 
 # --------------------------------------------------------------------------- #
 # Configure Mail Behavior
