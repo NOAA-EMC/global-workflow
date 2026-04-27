@@ -338,43 +338,49 @@ EOF
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
+
+            # Build (local_file, com_file) pairs once; used for both the manager
+            # product table and the NLN symlink paths.
+            local local_files=() com_files=()
+            local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc" )
+            com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" )
+            local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc" )
+            com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" )
+            if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
+                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc" )
+                com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" )
+                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc" )
+                com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" )
+            fi
+            if [[ "${WRITE_DOPOST}" == ".true." ]]; then
+                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}" )
+                com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" )
+                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}" )
+                com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" )
+                if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                    local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02" )
+                    com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" )
+                    local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02" )
+                    com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" )
+                fi
+            fi
+
+            # log.atm.fHHH is the sentinel written by the write component after
+            # atmfHHH.nc and sfcfHHH.nc are fully flushed to disk.
+            local local_log="${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+            local com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt"
+            local i
             if [[ "${use_mgr}" == "YES" ]]; then
                 # Product table entries: local_data  local_log  com_data  com_log
-                # log.atm.fHHH is the sentinel written by the write component after
-                # atmfHHH.nc and sfcfHHH.nc are fully flushed to disk.
-                local local_log="${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-                local com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt"
-                echo "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc ${com_log}" >> "${atm_table}"
-                echo "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc ${com_log}" >> "${atm_table}"
-                if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc ${com_log}" >> "${atm_table}"
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc ${com_log}" >> "${atm_table}"
-                fi
-                if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
-                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
-                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2 ${com_log}" >> "${atm_table}"
-                    fi
-                fi
+                for (( i = 0; i < ${#local_files[@]}; i++ )); do
+                    echo "${local_files[i]} ${local_log} ${com_files[i]} ${com_log}" >> "${atm_table}"
+                done
             else
                 # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-                if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                    ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-                    ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
-                fi
-                if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
-                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
-                    fi
-                fi
+                for (( i = 0; i < ${#local_files[@]}; i++ )); do
+                    ${NLN} "${com_files[i]}" "${local_files[i]}"
+                done
+                ${NLN} "${com_log}" "${local_log}"
             fi
         done
 
