@@ -771,8 +771,9 @@ MOM6_postdet() {
                         ${NLN} "${ocn_com}" "${ocn_local}"
                         ;;
                     gfs)
-                        # Add product table entry: manager copies when ocn_ready sentinel appears
-                        echo "${ocn_local} ${DATAoutput}/ocn_ready.txt ${ocn_com} ${COMOUT_CONF}/ocn_complete.txt" >> "${ocn_table}"
+                        # Self-sentinel: MOM6 writes complete netCDF files atomically per output
+                        # period. The file itself signals readiness; no separate log needed.
+                        echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
                         ;;
                 esac
 
@@ -919,8 +920,7 @@ MOM6_out() {
     case "${RUN}" in
         gfs)
             if [[ -f "${COMOUT_CONF}/ocn_products.txt" ]]; then
-                echo "INFO: OCN product table found; signalling forecast manager"
-                echo "model OCN ready at $(date --utc)" > "${DATAoutput}/ocn_ready.txt"
+                echo "INFO: OCN product table found; forecast manager handles history copy"
             else
                 mom6_hist_helper
             fi
@@ -1016,7 +1016,9 @@ CICE_postdet() {
                 ${NLN} "${ice_com}" "${ice_local}"
                 ;;
             gfs)
-                echo "${ice_local} ${DATAoutput}/ice_ready.txt ${ice_com} ${COMOUT_CONF}/ice_complete.txt" >> "${ice_table}"
+                # Self-sentinel: CICE writes complete netCDF files atomically per output
+                # period. The file itself signals readiness; no separate log needed.
+                echo "${ice_local} ${ice_local} ${ice_com} ${ice_com}" >> "${ice_table}"
                 ;;
         esac
 
@@ -1129,8 +1131,7 @@ CICE_out() {
     case "${RUN}" in
         gfs)
             if [[ -f "${COMOUT_CONF}/ice_products.txt" ]]; then
-                echo "INFO: ICE product table found; signalling forecast manager"
-                echo "model ICE ready at $(date --utc)" > "${DATAoutput}/ice_ready.txt"
+                echo "INFO: ICE product table found; forecast manager handles history copy"
             else
                 cice_hist_helper
             fi
