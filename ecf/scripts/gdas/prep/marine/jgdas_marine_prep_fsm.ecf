@@ -26,6 +26,7 @@ module list
 export WGF="%WGF%"
 export RJN="%RJN%"
 
+export HOMEglobal=${HOMEgfs}
 ${HOMEgfs}/jobs/JGLOBAL_FSM
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

@@ -30,6 +30,7 @@ export FHMIN_ECEN="${FHRLST}"
 export FHMAX_ECEN="${FHRLST}"
 export FHOUT_ECEN="${FHRLST}"
 export CDATE=${PDY}${cyc}
+export HOMEglobal=${HOMEgfs}
 export COMPONENT=${WGF}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/ecen.sh
