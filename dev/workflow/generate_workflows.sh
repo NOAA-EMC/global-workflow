@@ -733,8 +733,8 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
     # per experiment so the master job has enough time to run all experiments.
     _scron_min_per_expt="${SCRON_MINUTES_PER_EXPERIMENT:-10}"
     _num_expts=${#_scron_sh_files[@]}
-    _wall_minutes=$(( _num_expts * _scron_min_per_expt ))
-    _wall_time=$(printf "%02d:%02d:00" $(( _wall_minutes / 60 )) $(( _wall_minutes % 60 )))
+    _wall_minutes=$((_num_expts * _scron_min_per_expt))
+    _wall_time=$(printf "%02d:%02d:00" $((_wall_minutes / 60)) $((_wall_minutes % 60)))
 
     # Guard: _yaml_list must be non-empty if _scron_sh_files is non-empty,
     # but verify explicitly to surface any unexpected state.
