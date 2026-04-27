@@ -534,6 +534,6 @@ fi
 # Set to "DEBUG" to get debug-level logging from Python scripts, otherwise set to "INFO" or higher
 export PYTHON_LOG_LEVEL="DEBUG"
 # Control which python module paths are excluded from tracing (everything in spack-stack, /apps, and /usr)
-export PYTHON_EXCLUDE_TRACE_PATHS="{{ PYTHON_EXCLUDE_TRACE_PATHS }},/usr"
+export PYTHON_EXCLUDE_TRACE_PATHS="{{ PYTHON_EXCLUDE_TRACE_PATHS }},/usr,${HOMEglobal}/sorc/wxflow,${HOMEglobal}/ush/wxflow
 
 echo "END: config.base"
