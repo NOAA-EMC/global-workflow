@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exglobal_snow_analysis.py
 # This script creates an SnowAnalysis class
 # and runs the initialize, execute and finalize methods

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exglobal_snowens_analysis.py
 # This script creates an SnowEnsAnalysis class,
 # which will compute the ensemble mean of the snow forecast,

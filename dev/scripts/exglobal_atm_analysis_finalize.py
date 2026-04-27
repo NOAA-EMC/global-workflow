@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exglobal_atm_analysis_finalize.py
 # This script creates an AtmAnalysis class
 # and runs the finalize method

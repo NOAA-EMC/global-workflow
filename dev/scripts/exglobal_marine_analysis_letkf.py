@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exgdas_global_marine_analysis_letkf.py
 # This script creates an MarineLETKF class
 # and runs the initialize, run, and finalize methods

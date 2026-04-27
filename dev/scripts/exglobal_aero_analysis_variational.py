@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exglobal_aero_analysis_variational.py
 # This script creates an AerosolAnalysis object
 # and runs the variational method

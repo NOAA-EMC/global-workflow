@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exglobal_prep_emissions.py
 # This script creates a emissions object
 # which perform the pre-processing for aerosol emissions

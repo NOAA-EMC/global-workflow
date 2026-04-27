@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
 # exglobal_atm_analysis_fv3_increment.py
 # This script creates an AtmAnalysis object
 # and runs the execute method which runs the JEDI
