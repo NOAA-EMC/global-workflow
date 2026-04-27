@@ -82,7 +82,6 @@ export opt28=' -new_grid_interpolation budget -fi '
 cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_a.0p25.f${fcsthr}.grib2" "tmpfile2${fcsthr}"
 cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_b.0p25.f${fcsthr}.grib2" "tmpfile2b${fcsthr}"
 cat "tmpfile2${fcsthr}" "tmpfile2b${fcsthr}" > "tmpfile${fcsthr}"
-# shellcheck disable=SC2312
 ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMgfs}/product/gfs_awips_parmlist_g2" |
     ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
 export err=$?
@@ -91,7 +90,6 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 ${WGRIB2} masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
-# shellcheck disable=SC2312
 ${WGRIB2} masterfile | grep -v ":PWAT:entire atmosphere" | ${WGRIB2} -i -grib temp_gfs masterfile
 ##################################################################
 #  Process to change PWAT from level 200 to 10 (Entire Atmosphere)
@@ -156,7 +154,6 @@ for GRID in conus ak prico pac 003; do
     # NOTE: numparm is the total of fields in grib2_awpgfs_20km_conusf000 file
     ###########################################################################
     numparm=247
-    # shellcheck disable=SC2312
     numrec=$(${WGRIB2} "awps_file_f${fcsthr}_${GRID}" | wc -l)
 
     if [[ ${numrec} -lt ${numparm} ]]; then

@@ -2,7 +2,7 @@
 
 # Compare two F90 namelists (forward and backward)
 
-# shellcheck disable=SC2155,SC2312
+# shellcheck disable=SC2155
 HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
 declare -rx HOMEgfs
 
