@@ -39,16 +39,16 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     echo "${USHglobal}/forecast_mgr.sh ww3 ${WW3_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi
 
-if [[ "${DO_OCN:-NO}" == "YES" && -f "${COMOUT_CONF}/ocn_products.txt" ]]; then
+if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     OCN_TABLE="${COMOUT_CONF}/ocn_products.txt"
+    "${USHglobal}/wait_for_table.sh" "OCN" "${OCN_TABLE}" "${MGR_INIT_TIMEOUT}"
     echo "${USHglobal}/forecast_mgr.sh ocn ${OCN_TABLE}" >> "${FCST_MGR_CMDFILE}"
-    echo "INFO: OCN product table found; adding OCN manager rank"
 fi
 
-if [[ "${DO_ICE:-NO}" == "YES" && -f "${COMOUT_CONF}/ice_products.txt" ]]; then
+if [[ "${DO_ICE:-NO}" == "YES" ]]; then
     ICE_TABLE="${COMOUT_CONF}/ice_products.txt"
+    "${USHglobal}/wait_for_table.sh" "ICE" "${ICE_TABLE}" "${MGR_INIT_TIMEOUT}"
     echo "${USHglobal}/forecast_mgr.sh ice ${ICE_TABLE}" >> "${FCST_MGR_CMDFILE}"
-    echo "INFO: ICE product table found; adding ICE manager rank"
 fi
 
 num_ranks=$(wc -l < "${FCST_MGR_CMDFILE}")
