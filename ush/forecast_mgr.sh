@@ -92,14 +92,18 @@ while [[ ${remaining} -gt 0 ]]; do
             fi
         done
 
-        # Copy sentinel log last
-        cl_dir=$(dirname "${this_cl}")
-        if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
-        cpfs "${this_ll}" "${this_cl}"
-        log_err=$?
-        if [[ ${log_err} -ne 0 ]]; then
-            echo "FATAL ERROR [${component}]: cpfs sentinel '${this_ll}' -> '${this_cl}' failed (err=${log_err})" >&2
-            exit "${log_err}"
+        # Copy sentinel log last.
+        # Skip if already in COM (self-sentinel pattern: local_log == local_data means
+        # com_log == com_data, which was already copied in the data step above).
+        if [[ ! -f "${this_cl}" ]]; then
+            cl_dir=$(dirname "${this_cl}")
+            if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
+            cpfs "${this_ll}" "${this_cl}"
+            log_err=$?
+            if [[ ${log_err} -ne 0 ]]; then
+                echo "FATAL ERROR [${component}]: cpfs sentinel '${this_ll}' -> '${this_cl}' failed (err=${log_err})" >&2
+                exit "${log_err}"
+            fi
         fi
         echo "INFO [${component}]: Copied sentinel $(basename "${this_cl}") and its data files to COM"
 
