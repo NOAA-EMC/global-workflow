@@ -729,21 +729,37 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
     } > "${_master_script}"
     chmod +x "${_master_script}"
 
-    # Compute wall time: allow 10 minutes per experiment
+    # Compute wall time: allow SCRON_MINUTES_PER_EXPERIMENT (default 10) minutes
+    # per experiment so the master job has enough time to run all experiments.
+    _scron_min_per_expt="${SCRON_MINUTES_PER_EXPERIMENT:-10}"
     _num_expts=${#_scron_sh_files[@]}
-    _wall_minutes=$(( _num_expts * 10 ))
+    _wall_minutes=$(( _num_expts * _scron_min_per_expt ))
     _wall_time=$(printf "%02d:%02d:00" $(( _wall_minutes / 60 )) $(( _wall_minutes % 60 )))
+
+    # Guard: _yaml_list must be non-empty if _scron_sh_files is non-empty,
+    # but verify explicitly to surface any unexpected state.
+    if [[ ${#_yaml_list[@]} -eq 0 ]]; then
+        echo "ERROR: _yaml_list is empty but scron scripts were collected. This is unexpected."
+        exit 14
+    fi
 
     # Pull partition and account from the first experiment's crontab
     _first_pslot="${_yaml_list[0]}${_tag}"
     _first_cron_file="${_runtests}/EXPDIR/${_first_pslot}/${_first_pslot}.crontab"
     _master_log="${_runtests}/EXPDIR/rocoto_master_run.log"
 
+    _scron_partition=$(grep "^#SCRON --partition=" "${_first_cron_file}" | head -1)
+    _scron_account=$(grep "^#SCRON --account=" "${_first_cron_file}" | head -1)
+    if [[ -z "${_scron_partition}" || -z "${_scron_account}" ]]; then
+        echo "ERROR: Could not find #SCRON --partition= or #SCRON --account= in ${_first_cron_file}"
+        exit 15
+    fi
+
     {
         printf "\n"
         printf "#################### master_run ####################\n"
-        grep "^#SCRON --partition=" "${_first_cron_file}" | head -1
-        grep "^#SCRON --account=" "${_first_cron_file}" | head -1
+        printf "%s\n" "${_scron_partition}"
+        printf "%s\n" "${_scron_account}"
         printf "#SCRON --job-name=master_scron\n"
         printf "#SCRON --output=%s\n" "${_master_log}"
         printf "#SCRON --time=%s\n" "${_wall_time}"
