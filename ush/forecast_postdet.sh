@@ -574,12 +574,16 @@ WW3_postdet() {
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
+        local ww3_grd_local="${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+        local ww3_grd_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+        local ww3_grd_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin"
+        local ww3_grd_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log"
         if [[ "${use_mgr_ww3}" == "YES" ]]; then
             # Each WW3 gridded file has its own per-file sentinel log
-            echo "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3 ${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" >> "${ww3_table}"
+            echo "${ww3_grd_local} ${ww3_grd_local_log} ${ww3_grd_com} ${ww3_grd_com_log}" >> "${ww3_table}"
         else
-            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
-            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+            ${NLN} "${ww3_grd_com}" "${ww3_grd_local}"
+            ${NLN} "${ww3_grd_com_log}" "${ww3_grd_local_log}"
         fi
 
         if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
@@ -594,12 +598,16 @@ WW3_postdet() {
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
+        local ww3_pnt_local="${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+        local ww3_pnt_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+        local ww3_pnt_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"
+        local ww3_pnt_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log"
         if [[ "${use_mgr_ww3}" == "YES" ]]; then
             # Each WW3 point file has its own per-file sentinel log
-            echo "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc ${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc ${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" >> "${ww3_table}"
+            echo "${ww3_pnt_local} ${ww3_pnt_local_log} ${ww3_pnt_com} ${ww3_pnt_com_log}" >> "${ww3_table}"
         else
-            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
-            ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+            ${NLN} "${ww3_pnt_com}" "${ww3_pnt_local}"
+            ${NLN} "${ww3_pnt_com_log}" "${ww3_pnt_local_log}"
         fi
 
         fhr=$((fhr + fhinc))
@@ -756,13 +764,15 @@ MOM6_postdet() {
                 # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput;
                 # MOM6_out copies them to COM, or the manager handles it for GFS.
                 # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ocean backgrounds during the run.
+                local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
                 case "${RUN}" in
                     gdas | enkfgdas)
-                        ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                        ${NLN} "${ocn_com}" "${ocn_local}"
                         ;;
                     gfs)
                         # Add product table entry: manager copies when ocn_ready sentinel appears
-                        echo "${DATAoutput}/MOM6_OUTPUT/${source_file} ${DATAoutput}/ocn_ready.txt ${COMOUT_OCEAN_HISTORY}/${dest_file} ${COMOUT_CONF}/ocn_complete.txt" >> "${ocn_table}"
+                        echo "${ocn_local} ${DATAoutput}/ocn_ready.txt ${ocn_com} ${COMOUT_CONF}/ocn_complete.txt" >> "${ocn_table}"
                         ;;
                 esac
 
@@ -999,12 +1009,14 @@ CICE_postdet() {
 
         # For GFS: add product table entry for forecast manager real-time copy.
         # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ice backgrounds during the run.
+        local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
+        local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
         case "${RUN}" in
             gdas | enkfgdas)
-                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                ${NLN} "${ice_com}" "${ice_local}"
                 ;;
             gfs)
-                echo "${DATAoutput}/CICE_OUTPUT/${source_file} ${DATAoutput}/ice_ready.txt ${COMOUT_ICE_HISTORY}/${dest_file} ${COMOUT_CONF}/ice_complete.txt" >> "${ice_table}"
+                echo "${ice_local} ${DATAoutput}/ice_ready.txt ${ice_com} ${COMOUT_CONF}/ice_complete.txt" >> "${ice_table}"
                 ;;
         esac
 
