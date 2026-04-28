@@ -19,22 +19,22 @@ set -x
 
 export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 export DATA="${DATAjob}/mgr.${jobid}"
-source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_mgr" -c "base fcst"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst_mgr" -c "base fcst"
 
 #{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
 #{% if false %}
 # When running the workflow in development, source jjob_standard_vars.sh #}
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{# When rendered for operations, place the contents of jjob_var_setup.j2 here #}
 #{# Note that the first line of jjob_var_setup.j2 will be commented #}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHglobal}/jjob_shell_setup.sh"
-source "${USHglobal}/set_strict.sh"
+source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHgfs}/set_strict.sh"
 
-PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # The manager shares DATAjob with the forecast job; DATAoutput is created
