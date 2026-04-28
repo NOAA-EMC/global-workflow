@@ -105,7 +105,7 @@ for otype in "${OTYPES[@]}"; do
                 $REJECTLIST ${csvfile} > ${csvfileout}
             cp "./${csvfileout}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
         else
-	    cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+            cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
         fi
     else
         echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
