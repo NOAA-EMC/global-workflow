@@ -97,7 +97,7 @@ WW3_postdet() {
     local ww3_table="${DATA}/ww3_products.txt"
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
         rm -f "${ww3_table}"
-        rm -f "${COMOUT_CONF}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+        rm -f "${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     fi
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
@@ -142,8 +142,7 @@ WW3_postdet() {
     done
 
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        mkdir -p "${COMOUT_CONF}"
-        cpfs "${ww3_table}" "${COMOUT_CONF}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+        cp "${ww3_table}" "${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     fi
 }
 

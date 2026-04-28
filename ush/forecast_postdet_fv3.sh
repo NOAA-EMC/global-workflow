@@ -326,7 +326,7 @@ EOF
         local atm_table="${DATA}/atm_products.txt"
         if [[ "${use_mgr}" == "YES" ]]; then
             rm -f "${atm_table}"
-            rm -f "${COMOUT_CONF}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+            rm -f "${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         fi
 
         for fhr in ${FV3_OUTPUT_FH}; do
@@ -379,8 +379,7 @@ EOF
         done
 
         if [[ "${use_mgr}" == "YES" ]]; then
-            mkdir -p "${COMOUT_CONF}"
-            cpfs "${atm_table}" "${COMOUT_CONF}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+            cp "${atm_table}" "${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         fi
     fi
     #============================================================================

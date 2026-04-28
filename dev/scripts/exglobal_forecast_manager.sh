@@ -29,24 +29,24 @@ MGR_INIT_TIMEOUT="${FCST_MGR_INIT_TIMEOUT:-7200}"
 FCST_MGR_CMDFILE="${DATA}/fcst_mgr_cmdfile"
 rm -f "${FCST_MGR_CMDFILE}"
 
-ATM_TABLE="${COMOUT_CONF}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+ATM_TABLE="${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
 "${USHglobal}/wait_for_table.sh" "ATM" "${ATM_TABLE}" "${MGR_INIT_TIMEOUT}"
 echo "${USHglobal}/forecast_mgr.sh atm ${ATM_TABLE}" >> "${FCST_MGR_CMDFILE}"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    WW3_TABLE="${COMOUT_CONF}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+    WW3_TABLE="${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     "${USHglobal}/wait_for_table.sh" "WW3" "${WW3_TABLE}" "${MGR_INIT_TIMEOUT}"
     echo "${USHglobal}/forecast_mgr.sh ww3 ${WW3_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi
 
 if [[ "${DO_OCN:-NO}" == "YES" ]]; then
-    OCN_TABLE="${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+    OCN_TABLE="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
     "${USHglobal}/wait_for_table.sh" "OCN" "${OCN_TABLE}" "${MGR_INIT_TIMEOUT}"
     echo "${USHglobal}/forecast_mgr.sh ocn ${OCN_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi
 
 if [[ "${DO_ICE:-NO}" == "YES" ]]; then
-    ICE_TABLE="${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+    ICE_TABLE="${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     "${USHglobal}/wait_for_table.sh" "ICE" "${ICE_TABLE}" "${MGR_INIT_TIMEOUT}"
     echo "${USHglobal}/forecast_mgr.sh ice ${ICE_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi

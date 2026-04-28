@@ -52,7 +52,7 @@ CICE_postdet() {
     local ice_table="${DATA}/ice_products.txt"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
         rm -f "${ice_table}"
-        rm -f "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+        rm -f "${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     fi
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
@@ -106,8 +106,7 @@ CICE_postdet() {
         last_fhr=${fhr}
     done
     if [[ "${use_mgr_ice}" == "YES" ]] && [[ -s "${ice_table}" ]]; then
-        mkdir -p "${COMOUT_CONF}"
-        cpfs "${ice_table}" "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+        cp "${ice_table}" "${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     fi
 
 }
@@ -216,7 +215,7 @@ CICE_out() {
     }
     case "${RUN}" in
         gfs)
-            if [[ -f "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
+            if [[ -f "${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
                 echo "INFO: ICE product table found; forecast manager handles history copy"
             else
                 cice_hist_helper
