@@ -79,8 +79,10 @@ MOM6_postdet() {
                     # Self-sentinel: MOM6 writes complete netCDF files atomically per output
                     # period. The file itself signals readiness; no separate log needed.
                     echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
+                else
+                    # enkfgfs/gefs/sfs/gcafs: NLN symlinks so model writes directly to COM
+                    ${NLN} "${ocn_com}" "${ocn_local}"
                 fi
-                # For enkfgfs/gefs/sfs/gcafs: MOM6_out copies files to COM after the run.
 
                 last_fhr=${fhr}
 
@@ -229,7 +231,7 @@ MOM6_out() {
             fi
             ;;
         enkfgfs | gefs | sfs | gcafs)
-            mom6_hist_helper
+            : # NLN symlinks were created in MOM6_postdet; files are already in COM via symlink
             ;;
     esac
     unset -f mom6_hist_helper
