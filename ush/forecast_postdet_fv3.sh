@@ -323,10 +323,9 @@ EOF
             # gefs | sfs | gcafs) use_mgr="YES" ;;
         esac
 
-        local atm_table="${DATA}/atm_products.txt"
+        local atm_table="${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         if [[ "${use_mgr}" == "YES" ]]; then
             rm -f "${atm_table}"
-            rm -f "${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         fi
 
         for fhr in ${FV3_OUTPUT_FH}; do
@@ -378,9 +377,6 @@ EOF
             fi
         done
 
-        if [[ "${use_mgr}" == "YES" ]]; then
-            cp "${atm_table}" "${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
-        fi
     fi
     #============================================================================
     restart_interval=${restart_interval:-${FHMAX}}

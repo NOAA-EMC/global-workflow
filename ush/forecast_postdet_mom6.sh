@@ -47,10 +47,9 @@ MOM6_postdet() {
                 # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
                 # enkfgfs | gefs | sfs | gcafs) use_mgr_ocn="YES" ;;
             esac
-            local ocn_table="${DATA}/ocn_products.txt"
+            local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             if [[ "${use_mgr_ocn}" == "YES" ]]; then
                 rm -f "${ocn_table}"
-                rm -f "${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             fi
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
@@ -64,17 +63,13 @@ MOM6_postdet() {
                 ((midpoint = last_fhr + interval / 2))
 
                 vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-                #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
+                # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
+                # Native model uses midpoint in filename; we map that to the end of the period for COM.
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
-                else
-                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-                fi
-
-                # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
-                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
+                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 fi
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
@@ -90,9 +85,6 @@ MOM6_postdet() {
                 last_fhr=${fhr}
 
             done
-            if [[ "${use_mgr_ocn}" == "YES" ]] && [[ -s "${ocn_table}" ]]; then
-                cp "${ocn_table}" "${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
-            fi
             ;;
 
         gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
@@ -210,12 +202,9 @@ MOM6_out() {
             vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
             if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
                 vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint_hist + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
-            else
-                vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint_hist} hours" +%Y%m%d%H)
-            fi
-            if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
                 source_file_hist="ocn_lead1_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
             else
+                vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint_hist} hours" +%Y%m%d%H)
                 source_file_hist="ocn_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
             fi
             dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
