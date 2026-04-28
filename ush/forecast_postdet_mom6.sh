@@ -38,19 +38,14 @@ MOM6_postdet() {
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
-            # Looping over MOM6 output hours
+        gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
+            # GFS: forecast manager copies outputs after the run; register each file in the product table.
+            # Others: NLN symlinks from DATA to COM so model writes directly into COM.
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
-            local use_mgr_ocn="NO"
-            case "${RUN}" in
-                gfs) use_mgr_ocn="YES" ;;
-                # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
-                # enkfgfs | gefs | sfs | gcafs) use_mgr_ocn="YES" ;;
-            esac
+            # GFS-only: initialise the product table
             local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
-            if [[ "${use_mgr_ocn}" == "YES" ]]; then
-                rm -f "${ocn_table}"
-            fi
+            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+            [[ "${RUN}" == "gfs" ]] && rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -75,12 +70,11 @@ MOM6_postdet() {
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                 local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
-                if [[ "${use_mgr_ocn}" == "YES" ]]; then
-                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output
-                    # period. The file itself signals readiness; no separate log needed.
+
+                if [[ "${RUN}" == "gfs" ]]; then
+                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
                     echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
                 else
-                    # enkfgfs/gefs/sfs/gcafs: NLN symlinks so model writes directly to COM
                     ${NLN} "${ocn_com}" "${ocn_local}"
                 fi
 
