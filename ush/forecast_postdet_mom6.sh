@@ -39,13 +39,7 @@ MOM6_postdet() {
     # Link output files
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
-            # GFS: forecast manager copies outputs after the run; register each file in the product table.
-            # Others: NLN symlinks from DATA to COM so model writes directly into COM.
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
-            # GFS-only: initialise the product table
-            local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
-            [[ "${RUN}" == "gfs" ]] && rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -71,16 +65,44 @@ MOM6_postdet() {
                 local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
-                if [[ "${RUN}" == "gfs" ]]; then
-                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
-                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
-                else
-                    ${NLN} "${ocn_com}" "${ocn_local}"
-                fi
+                ${NLN} "${ocn_com}" "${ocn_local}"
 
                 last_fhr=${fhr}
-
             done
+            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+            if [[ "${RUN}" == "gfs" ]]; then
+                local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+                rm -f "${ocn_table}"
+                last_fhr=
+                for fhr in ${MOM6_OUTPUT_FH}; do
+                    fhr3=$(printf %03i "${fhr}")
+
+                    if [[ -z ${last_fhr:-} ]]; then
+                        last_fhr=${fhr}
+                        continue
+                    fi
+
+                    ((interval = fhr - last_fhr))
+                    ((midpoint = last_fhr + interval / 2))
+
+                    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+                    if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
+                        source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                    else
+                        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+                        source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                    fi
+                    dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                    local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                    local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
+
+                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
+                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
+
+                    last_fhr=${fhr}
+                done
+            fi
             ;;
 
         gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
@@ -177,56 +199,9 @@ MOM6_out() {
         fi
     fi
 
-    # Copy MOM6 history files for GFS/GEFS/SFS/GCAFS (no pre-run symlinks;
-    # model writes real files to DATAoutput/MOM6_OUTPUT).
-    # For GFS: if the OCN product table was written during pre-run, the
-    # forecast manager handles copy in real-time; write the ready sentinel here.
-    # For other systems (enkfgfs/gefs/sfs/gcafs): copy directly as before.
-    local mom6_hist_helper
-    mom6_hist_helper() {
-        local cmdfile_mom6_hist="${DATA}/cmdfile_mom6_hist"
-        rm -f "${cmdfile_mom6_hist}"
-        local last_fhr_hist fhr_hist fhr3_hist interval_hist midpoint_hist vdate_hist vdate_mid_hist source_file_hist dest_file_hist
-        for fhr_hist in ${MOM6_OUTPUT_FH}; do
-            fhr3_hist=$(printf %03i "${fhr_hist}")
-            if [[ -z ${last_fhr_hist:-} ]]; then
-                last_fhr_hist=${fhr_hist}
-                continue
-            fi
-            (( interval_hist = fhr_hist - last_fhr_hist ))
-            (( midpoint_hist = last_fhr_hist + interval_hist / 2 ))
-            vdate_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr_hist} hours" +%Y%m%d%H)
-            if (( OFFSET_START_HOUR > 0 )) && (( fhr_hist == FHOUT_OCN )); then
-                vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $(( midpoint_hist + OFFSET_START_HOUR )) hours" +%Y%m%d%H)
-                source_file_hist="ocn_lead1_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
-            else
-                vdate_mid_hist=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint_hist} hours" +%Y%m%d%H)
-                source_file_hist="ocn_${vdate_mid_hist:0:4}_${vdate_mid_hist:4:2}_${vdate_mid_hist:6:2}_${vdate_mid_hist:8:2}.nc"
-            fi
-            dest_file_hist="${RUN}.t${cyc}z.${interval_hist}hr_avg.f${fhr3_hist}.nc"
-            echo "cpfs ${DATAoutput}/MOM6_OUTPUT/${source_file_hist} ${COMOUT_OCEAN_HISTORY}/${dest_file_hist}" >> "${cmdfile_mom6_hist}"
-            last_fhr_hist=${fhr_hist}
-        done
-        if [[ -s "${cmdfile_mom6_hist}" ]]; then
-            mkdir -p "${COMOUT_OCEAN_HISTORY}"
-            "${USHglobal}/run_mpmd.sh" "${cmdfile_mom6_hist}" && true
-            export err=$?
-            if [[ ${err} -ne 0 ]]; then
-                err_exit "run_mpmd.sh failed to copy MOM6 history files!"
-            fi
-        fi
-    }
     case "${RUN}" in
-        gfs)
-            if [[ -f "${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
-                echo "INFO: OCN product table found; forecast manager handles history copy"
-            else
-                mom6_hist_helper
-            fi
-            ;;
-        enkfgfs | gefs | sfs | gcafs)
+        gfs | enkfgfs | gefs | sfs | gcafs)
             : # NLN symlinks were created in MOM6_postdet; files are already in COM via symlink
             ;;
     esac
-    unset -f mom6_hist_helper
 }
