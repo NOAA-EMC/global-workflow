@@ -40,11 +40,13 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
-            local ocn_local ocn_com
+            local ocn_local ocn_com ocn_table
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             # GFS: initialise product table; others use NLN only.
-            local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
-            [[ "${RUN}" == "gfs" ]] && rm -f "${ocn_table}"
+            ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+            if [[ "${RUN}" == "gfs" ]]; then
+                rm -f "${ocn_table}"
+            fi
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -72,7 +74,9 @@ MOM6_postdet() {
 
                 ${NLN} "${ocn_com}" "${ocn_local}"
                 # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
-                [[ "${RUN}" == "gfs" ]] && echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
+                if [[ "${RUN}" == "gfs" ]]; then
+                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
+                fi
 
                 last_fhr=${fhr}
             done
