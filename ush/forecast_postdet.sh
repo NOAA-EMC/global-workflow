@@ -329,7 +329,9 @@ EOF
         # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
         local use_mgr="NO"
         case "${RUN}" in
-            gfs | gefs | sfs | gcafs) use_mgr="YES" ;;
+            gfs) use_mgr="YES" ;;
+            # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+            # gefs | sfs | gcafs) use_mgr="YES" ;;
         esac
 
         local atm_table="${DATA}/atm_products.txt"
@@ -579,7 +581,9 @@ WW3_postdet() {
     # For GDAS: keep NLN symlinks so downstream analysis jobs can read WW3 outputs.
     local use_mgr_ww3="NO"
     case "${RUN}" in
-        gfs | gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
+        gfs) use_mgr_ww3="YES" ;;
+        # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+        # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
     esac
 
     # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
