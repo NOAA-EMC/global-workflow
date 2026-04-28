@@ -1,4 +1,4 @@
-#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}
+#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}"
 # exglobal_aero_analysis_finalize.py
 # This script creates an AerosolAnalysis class
 # and runs the finalize method

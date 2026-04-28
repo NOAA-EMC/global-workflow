@@ -1,4 +1,4 @@
-#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}
+#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}"
 # exgdas_enkf_ecen_fv3jedi.py
 # This script creates an EnsembleRecenter object
 # and runs the initialize, execute, and finalize
