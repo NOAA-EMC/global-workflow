@@ -365,9 +365,8 @@ EOF
         done
 
         if [[ "${use_mgr}" == "YES" ]]; then
-            # Publish product table to COM_CONF so the manager job can pick it up
             mkdir -p "${COMOUT_CONF}"
-            cpfs "${atm_table}" "${COMOUT_CONF}/atm_products.txt"
+            cpfs "${atm_table}" "${COMOUT_CONF}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         fi
     fi
     #============================================================================
@@ -614,9 +613,8 @@ WW3_postdet() {
     done
 
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        # Publish product table to COM_CONF for the manager job
         mkdir -p "${COMOUT_CONF}"
-        cpfs "${ww3_table}" "${COMOUT_CONF}/ww3_products.txt"
+        cpfs "${ww3_table}" "${COMOUT_CONF}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     fi
 }
 
@@ -782,7 +780,7 @@ MOM6_postdet() {
             done
             if [[ -s "${ocn_table}" ]]; then
                 mkdir -p "${COMOUT_CONF}"
-                cpfs "${ocn_table}" "${COMOUT_CONF}/ocn_products.txt"
+                cpfs "${ocn_table}" "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             fi
             ;;
 
@@ -919,7 +917,7 @@ MOM6_out() {
     }
     case "${RUN}" in
         gfs)
-            if [[ -f "${COMOUT_CONF}/ocn_products.txt" ]]; then
+            if [[ -f "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
                 echo "INFO: OCN product table found; forecast manager handles history copy"
             else
                 mom6_hist_helper
@@ -1026,7 +1024,7 @@ CICE_postdet() {
     done
     if [[ -s "${ice_table}" ]]; then
         mkdir -p "${COMOUT_CONF}"
-        cpfs "${ice_table}" "${COMOUT_CONF}/ice_products.txt"
+        cpfs "${ice_table}" "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     fi
 
 }
@@ -1130,7 +1128,7 @@ CICE_out() {
     }
     case "${RUN}" in
         gfs)
-            if [[ -f "${COMOUT_CONF}/ice_products.txt" ]]; then
+            if [[ -f "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
                 echo "INFO: ICE product table found; forecast manager handles history copy"
             else
                 cice_hist_helper

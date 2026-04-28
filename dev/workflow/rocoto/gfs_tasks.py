@@ -1084,19 +1084,24 @@ class GFSTasks(Tasks):
         return task
 
     def fcst_mgr(self):
-        # The manager depends on the ATM product table appearing in COM_CONF.
-        # This table is written during the forecast job's pre-run setup (FV3_postdet),
-        # which runs before the UFS model executable is launched.
         conf_path = self._template_to_rocoto_cycstring(self._base['COM_CONF_TMPL'])
-        dep_dict = {'type': 'data', 'data': f'{conf_path}/atm_products.txt', 'age': 60}
+        dep_dict = {'type': 'data', 'data': f'{conf_path}/atm_products_seg#seg#.txt', 'age': 60}
         dependencies = rocoto.create_dependency(dep=rocoto.add_dependency(dep_dict))
 
+        if self.run in ['gfs']:
+            num_fcst_segments = len(self.options['fcst_segments']) - 1
+        else:
+            num_fcst_segments = 1
+
+        mgr_vars = self.envars.copy()
+        mgr_vars.append(rocoto.create_envar(name='FCST_SEGMENT', value='#seg#'))
+
         resources = self.get_resource('fcst_mgr')
-        task_name = f'{self.run}_fcst_mgr'
+        task_name = f'{self.run}_fcst_mgr_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': mgr_vars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_mgr.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -1104,7 +1109,14 @@ class GFSTasks(Tasks):
                      'maxtries': '&MAXTRIES;'
                      }
 
-        task = rocoto.create_task(task_dict)
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'{self.run}_fcst_mgr',
+                         'is_serial': False,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        task = rocoto.create_task(metatask_dict)
         return task
 
     def atmanlupp(self):
@@ -1294,7 +1306,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         if 'fcst_mgr' in self._configs:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mgr'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mgr'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1405,7 +1417,7 @@ class GFSTasks(Tasks):
     def wavepostpnt(self):
         deps = []
         if 'fcst_mgr' in self._configs:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mgr'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mgr'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1533,7 +1545,7 @@ class GFSTasks(Tasks):
     def postsnd(self):
         deps = []
         if 'fcst_mgr' in self._configs:
-            dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mgr'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mgr'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
