@@ -49,10 +49,9 @@ CICE_postdet() {
         # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
         # enkfgfs | gefs | sfs | gcafs) use_mgr_ice="YES" ;;
     esac
-    local ice_table="${DATA}/ice_products.txt"
+    local ice_table="${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
         rm -f "${ice_table}"
-        rm -f "${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     fi
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
@@ -105,10 +104,6 @@ CICE_postdet() {
 
         last_fhr=${fhr}
     done
-    if [[ "${use_mgr_ice}" == "YES" ]] && [[ -s "${ice_table}" ]]; then
-        cp "${ice_table}" "${DATA}/ice_products_seg${FCST_SEGMENT:-0}.txt"
-    fi
-
 }
 
 CICE_nml() {
@@ -227,4 +222,3 @@ CICE_out() {
     esac
     unset -f cice_hist_helper
 }
-

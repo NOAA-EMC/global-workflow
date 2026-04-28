@@ -94,10 +94,9 @@ WW3_postdet() {
     else
         fhinc=${FHOUT_WAV}
     fi
-    local ww3_table="${DATA}/ww3_products.txt"
+    local ww3_table="${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
         rm -f "${ww3_table}"
-        rm -f "${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     fi
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
@@ -141,9 +140,6 @@ WW3_postdet() {
         fhr=$((fhr + fhinc))
     done
 
-    if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        cp "${ww3_table}" "${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
-    fi
 }
 
 WW3_nml() {
@@ -216,4 +212,3 @@ WW3_out() {
     fi
 
 }
-
