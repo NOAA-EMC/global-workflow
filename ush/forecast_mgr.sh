@@ -36,18 +36,35 @@ if [[ ! -f "${table_file}" ]]; then
     exit 1
 fi
 
-# Load table into indexed arrays
+# Indexed arrays holding all known product entries across all forecast segments.
 declare -a local_data local_log com_data com_log done_flag
 count=0
-while read -r ld ll cd cl; do
-    [[ -z "${ld}" || "${ld:0:1}" == "#" ]] && continue
-    local_data[count]="${ld}"
-    local_log[count]="${ll}"
-    com_data[count]="${cd}"
-    com_log[count]="${cl}"
-    done_flag[count]="NO"
-    (( count++ )) || true
-done < "${table_file}"
+remaining=0
+table_line_count=0  # physical lines consumed from the table file (tracks position for incremental loads)
+
+# Load any new entries from the table file that have not been read yet.
+# Uses table_line_count to skip already-processed lines so this function is
+# safe to call repeatedly as subsequent forecast segments append to the file.
+_load_new_entries() {
+    local lineno=0 raw_line ld ll cd cl
+    while IFS= read -r raw_line; do
+        (( lineno++ )) || true
+        [[ ${lineno} -le ${table_line_count} ]] && continue
+        read -r ld ll cd cl <<< "${raw_line}"
+        [[ -z "${ld}" || "${ld:0:1}" == "#" ]] && continue
+        local_data[count]="${ld}"
+        local_log[count]="${ll}"
+        com_data[count]="${cd}"
+        com_log[count]="${cl}"
+        done_flag[count]="NO"
+        (( count++ )) || true
+        (( remaining++ )) || true
+    done < "${table_file}"
+    table_line_count=${lineno}
+}
+
+# Initial load
+_load_new_entries
 
 if [[ ${count} -eq 0 ]]; then
     echo "WARN [${component}]: Product table '${table_file}' contains no entries; nothing to do"
@@ -55,10 +72,12 @@ if [[ ${count} -eq 0 ]]; then
 fi
 echo "INFO [${component}]: Loaded ${count} product entries"
 
-remaining=${count}
+# seen_end becomes YES when forecast_postdet.sh writes #END to the table,
+# indicating that the last forecast segment has published all its entries.
+seen_end="NO"
 start_time=$(date +%s)
 
-while [[ ${remaining} -gt 0 ]]; do
+while true; do
     for (( i = 0; i < count; i++ )); do
         [[ "${done_flag[i]}" == "YES" ]] && continue
         [[ ! -f "${local_log[i]}" ]] && continue
@@ -116,16 +135,29 @@ while [[ ${remaining} -gt 0 ]]; do
         done
     done
 
-    [[ ${remaining} -eq 0 ]] && break
+    # Check whether the last forecast segment has signalled completion
+    grep -q '^#END' "${table_file}" 2>/dev/null && seen_end="YES"
+
+    # Exit when all known entries are processed and no more will arrive
+    if [[ ${remaining} -eq 0 && "${seen_end}" == "YES" ]]; then
+        break
+    fi
 
     # Timeout check
     elapsed=$(( $(date +%s) - start_time ))
     if [[ ${FCST_MGR_TIMEOUT:-0} -gt 0 && ${elapsed} -gt ${FCST_MGR_TIMEOUT} ]]; then
-        echo "FATAL ERROR [${component}]: Timed out after ${elapsed}s with ${remaining} sentinels still pending" >&2
+        echo "FATAL ERROR [${component}]: Timed out after ${elapsed}s with ${remaining} entries pending (end_marker=${seen_end})" >&2
         exit 1
     fi
 
     sleep "${FCST_MGR_SLEEP:-30}"
+
+    # Reload table to pick up entries appended by subsequent forecast segments
+    prev_count=${count}
+    _load_new_entries
+    if [[ ${count} -gt ${prev_count} ]]; then
+        echo "INFO [${component}]: Loaded $((count - prev_count)) new entries from next forecast segment (total=${count})"
+    fi
 done
 
 echo "INFO [${component}]: All ${count} product entries processed"
