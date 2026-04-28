@@ -41,7 +41,6 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
 done
 
 export HPCNAM="nam.${PDY}"
-rm -f "${HPCNAM}"
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 
