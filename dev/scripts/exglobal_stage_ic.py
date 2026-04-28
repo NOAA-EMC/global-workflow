@@ -1,4 +1,4 @@
-#!/usr/bin/env -S python3 -m trace --trace --ignore-dir=${PYTHON_EXCLUDE_TRACE_PATHS}
+#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}
 import os
 
 from pygfs.task.stage_ic import Stage
