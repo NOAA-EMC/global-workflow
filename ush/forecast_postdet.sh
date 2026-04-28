@@ -313,7 +313,10 @@ EOF
         esac
 
         local atm_table="${DATA}/atm_products.txt"
-        [[ "${use_mgr}" == "YES" ]] && rm -f "${atm_table}"
+        if [[ "${use_mgr}" == "YES" ]]; then
+            rm -f "${atm_table}"
+            rm -f "${COMOUT_CONF}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+        fi
 
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
@@ -569,7 +572,10 @@ WW3_postdet() {
         fhinc=${FHOUT_WAV}
     fi
     local ww3_table="${DATA}/ww3_products.txt"
-    [[ "${use_mgr_ww3}" == "YES" ]] && rm -f "${ww3_table}"
+    if [[ "${use_mgr_ww3}" == "YES" ]]; then
+        rm -f "${ww3_table}"
+        rm -f "${COMOUT_CONF}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+    fi
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
@@ -731,6 +737,7 @@ MOM6_postdet() {
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
             local ocn_table="${DATA}/ocn_products.txt"
             rm -f "${ocn_table}"
+            rm -f "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -972,6 +979,7 @@ CICE_postdet() {
     local source_file dest_file
     local ice_table="${DATA}/ice_products.txt"
     rm -f "${ice_table}"
+    rm -f "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
         if [[ -z ${last_fhr:-} ]]; then
