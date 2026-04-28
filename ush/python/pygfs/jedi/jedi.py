@@ -121,7 +121,6 @@ class Jedi:
         self._jcb_config = self.jcb_config.deepcopy()
 
     @staticmethod
-    @logit(logger)
     def get_jedi_dict(jedi_config_dict: dict, task_config: AttrDict, expected_block_names: Optional[list] = None):
         """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
 
