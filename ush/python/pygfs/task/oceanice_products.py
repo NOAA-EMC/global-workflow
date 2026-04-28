@@ -282,8 +282,9 @@ class OceanIceProducts(Task):
         logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
 
         try:
-            # open the netcdf file
-            ds = xr.open_dataset(input_file)
+            # open the netcdf file; use_cftime=True handles non-standard calendars
+            # (e.g. julian) that pandas cannot decode
+            ds = xr.open_dataset(input_file, use_cftime=True)
             if config.component == 'ice':
                 # subset the variables
                 ds_subset = ds[varlist]
