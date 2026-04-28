@@ -1,4 +1,4 @@
-]633;E;header;936e5b1b-1969-4a90-a522-9ec636a0d59b]633;C#! /usr/bin/env bash
+#! /usr/bin/env bash
 
 # shellcheck disable=SC2034
 # shellcheck disable=SC2178
