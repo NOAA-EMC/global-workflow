@@ -739,9 +739,17 @@ MOM6_postdet() {
         gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
             # Looping over MOM6 output hours
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+            local use_mgr_ocn="NO"
+            case "${RUN}" in
+                gfs) use_mgr_ocn="YES" ;;
+                # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+                # enkfgfs | gefs | sfs | gcafs) use_mgr_ocn="YES" ;;
+            esac
             local ocn_table="${DATA}/ocn_products.txt"
-            rm -f "${ocn_table}"
-            rm -f "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+            if [[ "${use_mgr_ocn}" == "YES" ]]; then
+                rm -f "${ocn_table}"
+                rm -f "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+            fi
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -770,26 +778,19 @@ MOM6_postdet() {
                 ihour=$(printf %02i "${interval}")
                 source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                # For GFS/GEFS/SFS/GCAFS: model writes real files to DATAoutput;
-                # MOM6_out copies them to COM, or the manager handles it for GFS.
-                # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ocean backgrounds during the run.
                 local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
-                case "${RUN}" in
-                    gdas | enkfgdas)
-                        ${NLN} "${ocn_com}" "${ocn_local}"
-                        ;;
-                    gfs)
-                        # Self-sentinel: MOM6 writes complete netCDF files atomically per output
-                        # period. The file itself signals readiness; no separate log needed.
-                        echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
-                        ;;
-                esac
+                if [[ "${use_mgr_ocn}" == "YES" ]]; then
+                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output
+                    # period. The file itself signals readiness; no separate log needed.
+                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
+                fi
+                # For enkfgfs/gefs/sfs/gcafs: MOM6_out copies files to COM after the run.
 
                 last_fhr=${fhr}
 
             done
-            if [[ -s "${ocn_table}" ]]; then
+            if [[ "${use_mgr_ocn}" == "YES" ]] && [[ -s "${ocn_table}" ]]; then
                 mkdir -p "${COMOUT_CONF}"
                 cpfs "${ocn_table}" "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             fi
@@ -981,9 +982,17 @@ CICE_postdet() {
 
     # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
     local source_file dest_file
+    local use_mgr_ice="NO"
+    case "${RUN}" in
+        gfs) use_mgr_ice="YES" ;;
+        # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+        # enkfgfs | gefs | sfs | gcafs) use_mgr_ice="YES" ;;
+    esac
     local ice_table="${DATA}/ice_products.txt"
-    rm -f "${ice_table}"
-    rm -f "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+    if [[ "${use_mgr_ice}" == "YES" ]]; then
+        rm -f "${ice_table}"
+        rm -f "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+    fi
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
         if [[ -z ${last_fhr:-} ]]; then
@@ -1017,24 +1026,25 @@ CICE_postdet() {
                 ;;
         esac
 
-        # For GFS: add product table entry for forecast manager real-time copy.
-        # For GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ice backgrounds during the run.
         local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
         local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
-        case "${RUN}" in
-            gdas | enkfgdas)
-                ${NLN} "${ice_com}" "${ice_local}"
-                ;;
-            gfs)
-                # Self-sentinel: CICE writes complete netCDF files atomically per output
-                # period. The file itself signals readiness; no separate log needed.
-                echo "${ice_local} ${ice_local} ${ice_com} ${ice_com}" >> "${ice_table}"
-                ;;
-        esac
+        if [[ "${use_mgr_ice}" == "YES" ]]; then
+            # Self-sentinel: CICE writes complete netCDF files atomically per output
+            # period. The file itself signals readiness; no separate log needed.
+            echo "${ice_local} ${ice_local} ${ice_com} ${ice_com}" >> "${ice_table}"
+        else
+            # GDAS/enkfGDAS: NLN symlinks so analysis jobs can read ice backgrounds during the run.
+            case "${RUN}" in
+                gdas | enkfgdas)
+                    ${NLN} "${ice_com}" "${ice_local}"
+                    ;;
+            esac
+        fi
+        # For enkfgfs/gefs/sfs/gcafs: CICE_out copies files to COM after the run.
 
         last_fhr=${fhr}
     done
-    if [[ -s "${ice_table}" ]]; then
+    if [[ "${use_mgr_ice}" == "YES" ]] && [[ -s "${ice_table}" ]]; then
         mkdir -p "${COMOUT_CONF}"
         cpfs "${ice_table}" "${COMOUT_CONF}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     fi
