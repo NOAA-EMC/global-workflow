@@ -102,7 +102,7 @@ for otype in "${OTYPES[@]}"; do
             awk -F, 'NR==FNR{ id=$0; gsub(/\r/,"",id); sub(/^[ \t]+/,"",id); sub(/[ \t]+$/,"",id); if (id ~ /^[0-9]{5}$/) drop[id]=1; next }
                      /^#/{print; next}
                      { id=$1; gsub(/^[ \t]+|[ \t]+$/,"",id); if (!(id in drop)) print }' \
-                $REJECTLIST ${csvfile} > ${csvfileout}
+                "${REJECTLIST}" "${csvfile}" > "${csvfileout}"
             cp "./${csvfileout}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
         else
             cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
