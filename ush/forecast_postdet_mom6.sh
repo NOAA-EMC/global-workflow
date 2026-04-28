@@ -198,10 +198,4 @@ MOM6_out() {
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
         fi
     fi
-
-    case "${RUN}" in
-        gfs | enkfgfs | gefs | sfs | gcafs)
-            : # NLN symlinks were created in MOM6_postdet; files are already in COM via symlink
-            ;;
-    esac
 }
