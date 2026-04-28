@@ -40,6 +40,11 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+            local ocn_local ocn_com
+            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+            # GFS: initialise product table; others use NLN only.
+            local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+            [[ "${RUN}" == "gfs" ]] && rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -62,47 +67,15 @@ MOM6_postdet() {
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 fi
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
-                local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
+                ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
                 ${NLN} "${ocn_com}" "${ocn_local}"
+                # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
+                [[ "${RUN}" == "gfs" ]] && echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
 
                 last_fhr=${fhr}
             done
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
-            if [[ "${RUN}" == "gfs" ]]; then
-                local ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
-                rm -f "${ocn_table}"
-                unset last_fhr
-                for fhr in ${MOM6_OUTPUT_FH}; do
-                    fhr3=$(printf %03i "${fhr}")
-
-                    if [[ -z ${last_fhr:-} ]]; then
-                        last_fhr=${fhr}
-                        continue
-                    fi
-
-                    ((interval = fhr - last_fhr))
-                    ((midpoint = last_fhr + interval / 2))
-
-                    vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-                    if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
-                        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
-                        source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-                    else
-                        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-                        source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-                    fi
-                    dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                    local ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
-                    local ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
-
-                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
-                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
-
-                    last_fhr=${fhr}
-                done
-            fi
             ;;
 
         gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
