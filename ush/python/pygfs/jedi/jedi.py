@@ -25,7 +25,6 @@ class Jedi:
     Class for initializing and executing JEDI applications
     """
 
-    @logit(logger, name="Jedi")
     def __init__(self, config: Dict[str, Any], task_config: AttrDict) -> None:
         """Constructor for JEDI objects
 
