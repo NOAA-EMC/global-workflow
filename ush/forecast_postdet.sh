@@ -14,6 +14,31 @@
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 # shellcheck disable=SC2178
+
+# Publish a component product table to COMOUT_CONF in a segment-aware way.
+# Segment 0 creates a fresh table; subsequent segments append their entries.
+# The last segment appends a "#END" marker so forecast_mgr.sh knows the full
+# set of entries has been published and it is safe to exit.
+# Usage: _publish_product_table <local_table> <com_table_path>
+_publish_product_table() {
+    local local_table="${1}"
+    local com_table="${2}"
+    mkdir -p "$(dirname "${com_table}")"
+    if [[ "${FCST_SEGMENT:-0}" -eq 0 ]]; then
+        cat "${local_table}" > "${com_table}"
+    else
+        cat "${local_table}" >> "${com_table}"
+    fi
+    # Append #END after the last segment so the manager knows no more entries
+    # will be written.  For single-segment runs FCST_SEGMENT=0 is always last.
+    local n_commas n_segs
+    n_commas="${FCST_SEGMENTS//[^,]/}"
+    n_segs="${#n_commas}"
+    if (( n_segs - 1 == ${FCST_SEGMENT:-0} )); then
+        echo "#END" >> "${com_table}"
+    fi
+}
+
 FV3_postdet() {
     echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
@@ -365,9 +390,7 @@ EOF
         done
 
         if [[ "${use_mgr}" == "YES" ]]; then
-            # Publish product table to COM_CONF so the manager job can pick it up
-            mkdir -p "${COMOUT_CONF}"
-            cpfs "${atm_table}" "${COMOUT_CONF}/atm_products.txt"
+            _publish_product_table "${atm_table}" "${COMOUT_CONF}/atm_products.txt"
         fi
     fi
     #============================================================================
@@ -614,9 +637,7 @@ WW3_postdet() {
     done
 
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        # Publish product table to COM_CONF for the manager job
-        mkdir -p "${COMOUT_CONF}"
-        cpfs "${ww3_table}" "${COMOUT_CONF}/ww3_products.txt"
+        _publish_product_table "${ww3_table}" "${COMOUT_CONF}/ww3_products.txt"
     fi
 }
 
@@ -781,8 +802,7 @@ MOM6_postdet() {
 
             done
             if [[ -s "${ocn_table}" ]]; then
-                mkdir -p "${COMOUT_CONF}"
-                cpfs "${ocn_table}" "${COMOUT_CONF}/ocn_products.txt"
+                _publish_product_table "${ocn_table}" "${COMOUT_CONF}/ocn_products.txt"
             fi
             ;;
 
@@ -1025,8 +1045,7 @@ CICE_postdet() {
         last_fhr=${fhr}
     done
     if [[ -s "${ice_table}" ]]; then
-        mkdir -p "${COMOUT_CONF}"
-        cpfs "${ice_table}" "${COMOUT_CONF}/ice_products.txt"
+        _publish_product_table "${ice_table}" "${COMOUT_CONF}/ice_products.txt"
     fi
 
 }
