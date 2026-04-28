@@ -17,9 +17,8 @@ device="nc | ecmwfver.meta"
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMIN="gdas.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"
 
@@ -42,9 +41,8 @@ for area in ${areas}; do
         dgdattim=$(printf "f%03d" "${fhr}")
         sdatenum=$(date --utc +%y%m%d -d "${PDY} ${cyc2} - ${fhr} hours")
 
-        if [[ ! -L "ecmwf.20${sdatenum}" ]]; then
-            ${NLN} "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
-        fi
+        rm -f "ecmwf.20${sdatenum}"
+        ${NLN} "${COMINecmwf}/ecmwf.20${sdatenum}/gempak" "ecmwf.20${sdatenum}"
         gdfile="ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
 
         # 500 MB HEIGHT METAFILE
@@ -146,7 +144,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s ecmwfver.meta ]]; then
     exit "${err}"
 fi
 
-mv ecmwfver.meta "${COMOUT_ATMOS_GEMPAK_META}/ecmwfver_${PDY}_${cyc2}"
+cpfs ecmwfver.meta "${COMOUT_ATMOS_GEMPAK_META}/ecmwfver_${PDY}_${cyc2}"
 export err=$?
 if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ecmwfver_${PDY}_${cyc2}"

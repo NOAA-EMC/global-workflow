@@ -6,8 +6,9 @@
 # comparisons to the ecmwf and ukmet
 #
 
-mkdir SA2
-cd SA2 || exit 1
+rm -rf "${DATA}/SA2"
+mkdir -p -m 775 "${DATA}/SA2"
+cd "${DATA}/SA2" || exit 1
 
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 
@@ -16,9 +17,7 @@ cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Replace this
 #
 export HPCGFS="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${HPCGFS} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
-fi
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 
 mdl=gfs
 MDL=GFS
@@ -34,12 +33,9 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
-if [[ ! -L "${HPCECMWF}" ]]; then
-    ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
-fi
-if [[ ! -L "${HPCUKMET}" ]]; then
-    ${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
-fi
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
+${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
 
 "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
@@ -341,7 +337,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
