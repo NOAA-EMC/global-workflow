@@ -40,8 +40,12 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
-            local ocn_local ocn_com ocn_table
+            local ocn_local ocn_com ocn_table use_mgr_ocn
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+            case "${RUN}" in
+                gfs) use_mgr_ocn="YES" ;;
+                *)   use_mgr_ocn="NO"  ;;
+            esac
             ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
@@ -69,9 +73,9 @@ MOM6_postdet() {
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
-                # GFS: forecast manager copies from DATA to COM; register in product table.
+                # Forecast manager copies from DATA to COM; register in product table.
                 # Others: NLN so model writes directly into COM.
-                if [[ "${RUN}" == "gfs" ]]; then
+                if [[ "${use_mgr_ocn}" == "YES" ]]; then
                     # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
                     echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
                 else
