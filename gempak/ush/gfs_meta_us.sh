@@ -14,9 +14,8 @@ cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 device="nc | gfs.meta"
 
@@ -159,7 +158,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s gfs.meta ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv gfs.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
+cpfs gfs.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_us"

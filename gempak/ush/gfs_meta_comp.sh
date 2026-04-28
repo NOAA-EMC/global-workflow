@@ -41,10 +41,9 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
 done
 
 export HPCNAM="nam.${PDY}"
-if [[ ! -L ${HPCNAM} ]]; then
-    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
-    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
-fi
+rm -f "${HPCNAM}"
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 
 #
 # DEFINE YESTERDAY
@@ -108,10 +107,9 @@ for gareas in US NP; do
         HPCGFS="${RUN}.${init_time}"
         # TODO: Add only necessary files and remove unneeded ones to minimize data volume
         # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
-        if [[ ! -L ${HPCGFS} ]]; then
-            source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
-            ${NLN} "${source_dir}" "${HPCGFS}"
-        fi
+        rm -f "${HPCGFS}"
+        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
+        ${NLN} "${source_dir}" "${HPCGFS}"
 
         if [[ ${init_PDY} == "${PDY}" ]]; then
             desc="T"
@@ -241,9 +239,8 @@ EOF
         ukmet_PDY=${ukmet_date:0:8}
         ukmet_cyc=${ukmet_date:8:2}
         export HPCUKMET=ukmet.${ukmet_PDY}
-        if [[ ! -L "${HPCUKMET}" ]]; then
-            ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
-        fi
+        rm -f "${HPCUKMET}"
+        ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
         grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
 
         for fhr in 0 12 24 84 108; do
@@ -504,7 +501,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"

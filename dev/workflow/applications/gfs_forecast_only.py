@@ -106,7 +106,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
                 configs += ['postsnd']
 
             if options['do_gempak']:
-                configs += ['gempak']
+                configs += ['gempak', 'gempakmeta']
 
             if options['do_awips']:
                 configs += ['awips', 'fbwind']

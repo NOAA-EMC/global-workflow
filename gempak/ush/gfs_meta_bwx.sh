@@ -5,6 +5,7 @@
 # Set up Local Variables
 #
 
+rm -rf "${DATA}/BWX"
 mkdir -p -m 775 "${DATA}/BWX"
 cd "${DATA}/BWX" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -18,9 +19,8 @@ device="nc | ${metaname}"
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L "${COMIN}" ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 fend=F180
 
@@ -346,7 +346,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]]; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${metaname}"

@@ -36,10 +36,9 @@ done
 # TODO: Replace this
 #
 export HPCNAM="nam.${PDY}"
-if [[ ! -L ${HPCNAM} ]]; then
-    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
-    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
-fi
+rm -f "${HPCNAM}"
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 
 mdl=gfs
 MDL="GFS"
@@ -85,10 +84,9 @@ for garea in NAtl NPac; do
         # TODO: Add only necessary files and remove unneeded ones to minimize data volume
         # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         HPCGFS="${RUN}.${init_time}"
-        if [[ ! -L ${HPCGFS} ]]; then
-            source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
-            ${NLN} "${source_dir}" "${HPCGFS}"
-        fi
+        rm -f "${HPCGFS}"
+        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
+        ${NLN} "${source_dir}" "${HPCGFS}"
 
         case ${cyc} in
             00 | 12)
@@ -496,7 +494,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert MODEL" "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_mar_comp"

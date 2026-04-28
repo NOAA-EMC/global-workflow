@@ -3,6 +3,7 @@
 # Metafile Script : gfs_meta_hi.sh
 #
 
+rm -rf "${DATA}/mrfhi"
 mkdir -p -m 775 "${DATA}/mrfhi"
 cd "${DATA}/mrfhi" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -14,9 +15,8 @@ device="nc | mrfhi.meta"
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 if [[ "${envir}" = "prod" ]]; then
     export m_title="GFS"
@@ -180,7 +180,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s mrfhi.meta ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv mrfhi.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
+cpfs mrfhi.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_hi"

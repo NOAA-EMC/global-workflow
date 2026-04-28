@@ -3,6 +3,7 @@
 # Metafile Script : gfs_meta_usext.sh
 #
 
+rm -rf "${DATA}/mrfus"
 mkdir -p -m 775 "${DATA}/mrfus"
 cd "${DATA}/mrfus" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -13,9 +14,8 @@ cpreq "${HOMEglobal}/gempak/fix/ak_sfstns.tbl" alaska.tbl
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 device="nc | mrf.meta"
 
@@ -230,7 +230,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s mrf.meta ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv mrf.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
+cpfs mrf.meta "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_usext"

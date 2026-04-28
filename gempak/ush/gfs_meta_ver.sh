@@ -5,6 +5,7 @@
 # Set up Local Variables
 #
 
+rm -rf "${DATA}/VER"
 mkdir -p -m 775 "${DATA}/VER"
 cd "${DATA}/VER" || exit 2
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
@@ -18,9 +19,8 @@ device="nc | ${metaname}"
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 vergrid="F-${MDL} | ${PDY:2}/${cyc}00"
@@ -52,10 +52,9 @@ for lookback in "${lookbacks[@]}"; do
     # TODO: Add only necessary files and remove unneeded ones to minimize data volume
     # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
     HPCGFS="${RUN}.${init_time}"
-    if [[ ! -L "${HPCGFS}" ]]; then
-        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
-        ${NLN} "${source_dir}" "${HPCGFS}"
-    fi
+    rm -f "${HPCGFS}"
+    source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
+    ${NLN} "${source_dir}" "${HPCGFS}"
 
     grid="F-${MDL2} | ${init_PDY}/${init_cyc}00"
 
@@ -210,7 +209,7 @@ EOFplt
 
 done
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/gfsver_${PDY}_${cyc}"
