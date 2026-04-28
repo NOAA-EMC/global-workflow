@@ -97,7 +97,7 @@ for otype in "${OTYPES[@]}"; do
     csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
     csvfileout="${RUN}.t${cyc}z.${otype,,}.csv"
     if [[ -f "${csvfile}" ]]; then
-    # Apply REJECTLIST if present
+        # Apply REJECTLIST if present
         if [[ -f "${REJECTLIST}" ]]; then
             awk -F, 'NR==FNR{ id=$0; gsub(/\r/,"",id); sub(/^[ \t]+/,"",id); sub(/[ \t]+$/,"",id); if (id ~ /^[0-9]{5}$/) drop[id]=1; next }
                      /^#/{print; next}
