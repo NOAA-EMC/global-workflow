@@ -118,7 +118,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-    source "${USHglobal}/parsing_namelists_MOM6.sh"
+    source "${USHgfs}/parsing_namelists_MOM6.sh"
     MOM6_namelists
 }
 
@@ -183,7 +183,7 @@ MOM6_out() {
             mkdir -p "${COMOUT_OCEAN_RESTART}"
         fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
@@ -225,7 +225,7 @@ MOM6_out() {
         done
         if [[ -s "${cmdfile_mom6_hist}" ]]; then
             mkdir -p "${COMOUT_OCEAN_HISTORY}"
-            "${USHglobal}/run_mpmd.sh" "${cmdfile_mom6_hist}" && true
+            "${USHgfs}/run_mpmd.sh" "${cmdfile_mom6_hist}" && true
             export err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "run_mpmd.sh failed to copy MOM6 history files!"

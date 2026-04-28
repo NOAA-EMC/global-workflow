@@ -114,7 +114,7 @@ CICE_postdet() {
 
 CICE_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-    source "${USHglobal}/parsing_namelists_CICE.sh"
+    source "${USHgfs}/parsing_namelists_CICE.sh"
     CICE_namelists
 }
 
@@ -160,7 +160,7 @@ CICE_out() {
             mkdir -p "${COMOUT_ICE_RESTART}"
         fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CICE restart files!"
@@ -207,7 +207,7 @@ CICE_out() {
         echo "cpfs ${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr_ic}.nc ${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" >> "${cmdfile_cice_hist}"
         if [[ -s "${cmdfile_cice_hist}" ]]; then
             mkdir -p "${COMOUT_ICE_HISTORY}"
-            "${USHglobal}/run_mpmd.sh" "${cmdfile_cice_hist}" && true
+            "${USHgfs}/run_mpmd.sh" "${cmdfile_cice_hist}" && true
             export err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "run_mpmd.sh failed to copy CICE history files!"

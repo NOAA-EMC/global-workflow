@@ -107,7 +107,7 @@ FV3_postdet() {
     # Check for consistency
     # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
     if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
-        "${USHglobal}/check_land_input_orography.py" \
+        "${USHgfs}/check_land_input_orography.py" \
             --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
         err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -418,12 +418,12 @@ FV3_nml() {
     # namelist output for a certain component
     echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
 
-    source "${USHglobal}/parsing_namelists_FV3.sh"
-    source "${USHglobal}/parsing_model_configure_FV3.sh"
+    source "${USHgfs}/parsing_namelists_FV3.sh"
+    source "${USHgfs}/parsing_model_configure_FV3.sh"
 
     # Call the appropriate namelist functions
     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-        source "${USHglobal}/parsing_namelists_FV3_nest.sh"
+        source "${USHgfs}/parsing_namelists_FV3_nest.sh"
         FV3_namelists_nest global
         FV3_namelists_nest nest
     else
@@ -488,7 +488,7 @@ FV3_out() {
                 mkdir -p "${COMOUT_ATMOS_RESTART}"
             fi
 
-            "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+            "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
             export err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "run_mpmd.sh failed to copy FV3 restart files!"

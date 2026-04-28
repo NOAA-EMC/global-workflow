@@ -129,7 +129,7 @@ CMEPS_out() {
     if [[ -s "${cmdfile}" ]]; then
         if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CMEPS mediator restart files!"

@@ -149,7 +149,7 @@ WW3_postdet() {
 
 WW3_nml() {
     echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-    source "${USHglobal}/parsing_namelists_WW3.sh"
+    source "${USHgfs}/parsing_namelists_WW3.sh"
     WW3_namelists
 }
 
@@ -209,7 +209,7 @@ WW3_out() {
             mkdir -p "${COMOUT_WAVE_RESTART}"
         fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy WW3 restart files!"

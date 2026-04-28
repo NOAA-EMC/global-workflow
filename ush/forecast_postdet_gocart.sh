@@ -18,7 +18,7 @@ GOCART_rc() {
         fi
     fi
 
-    source "${USHglobal}/parsing_namelists_GOCART.sh"
+    source "${USHgfs}/parsing_namelists_GOCART.sh"
     GOCART_namelists
 }
 
@@ -89,7 +89,7 @@ GOCART_out() {
             mkdir -p "${COMOUT_CHEM_HISTORY}"
         fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy GOCART output files!"

@@ -10,9 +10,9 @@
 #                GOCART (Aerosols), and CMEPS (Coupler/Mediator)
 
 # shellcheck disable=SC1091
-source "${USHglobal}/forecast_postdet_fv3.sh"
-source "${USHglobal}/forecast_postdet_ww3.sh"
-source "${USHglobal}/forecast_postdet_mom6.sh"
-source "${USHglobal}/forecast_postdet_cice.sh"
-source "${USHglobal}/forecast_postdet_gocart.sh"
-source "${USHglobal}/forecast_postdet_cmeps.sh"
+source "${USHgfs}/forecast_postdet_fv3.sh"
+source "${USHgfs}/forecast_postdet_ww3.sh"
+source "${USHgfs}/forecast_postdet_mom6.sh"
+source "${USHgfs}/forecast_postdet_cice.sh"
+source "${USHgfs}/forecast_postdet_gocart.sh"
+source "${USHgfs}/forecast_postdet_cmeps.sh"
