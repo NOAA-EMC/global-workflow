@@ -35,6 +35,9 @@ INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4"
 # Observation types being processed by wdqms.py
 OTYPES=(SYNOP TEMP MARINE)
 
+# Location of Reject List
+REJECTLIST=${REJECTLIST:-${HOMEgfs}/parm/wdqms/reject_list.txt}
+
 ################################################################################
 echo "Begin job ${job:-}"
 
@@ -88,14 +91,22 @@ for otype in "${OTYPES[@]}"; do
         echo "WARNING: wdqms.py failed to process observation type '${otype}'"
         error=$((error + 1))
     fi
-    #=============================================================================
 
     #=============================================================================
     # Copy to COMOUT if wdqms.py created the output file
     csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
     csvfileout="${RUN}.t${cyc}z.${otype,,}.csv"
     if [[ -f "${csvfile}" ]]; then
-        cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+    # Apply REJECTLIST if present
+        if [[ -f "${REJECTLIST}" ]]; then
+            awk -F, 'NR==FNR{ id=$0; gsub(/\r/,"",id); sub(/^[ \t]+/,"",id); sub(/[ \t]+$/,"",id); if (id ~ /^[0-9]{5}$/) drop[id]=1; next }
+                     /^#/{print; next}
+                     { id=$1; gsub(/^[ \t]+|[ \t]+$/,"",id); if (!(id in drop)) print }' \
+                $REJECTLIST ${csvfile} > ${csvfileout} 
+            cp "./${csvfileout}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+        else
+	    cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+        fi
     else
         echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
         error=$((error + 1))
