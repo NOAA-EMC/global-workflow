@@ -50,7 +50,7 @@ MOM6_postdet() {
             local ocn_table="${DATA}/ocn_products.txt"
             if [[ "${use_mgr_ocn}" == "YES" ]]; then
                 rm -f "${ocn_table}"
-                rm -f "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+                rm -f "${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             fi
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
@@ -91,8 +91,7 @@ MOM6_postdet() {
 
             done
             if [[ "${use_mgr_ocn}" == "YES" ]] && [[ -s "${ocn_table}" ]]; then
-                mkdir -p "${COMOUT_CONF}"
-                cpfs "${ocn_table}" "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+                cp "${ocn_table}" "${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             fi
             ;;
 
@@ -234,7 +233,7 @@ MOM6_out() {
     }
     case "${RUN}" in
         gfs)
-            if [[ -f "${COMOUT_CONF}/ocn_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
+            if [[ -f "${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt" ]]; then
                 echo "INFO: OCN product table found; forecast manager handles history copy"
             else
                 mom6_hist_helper
@@ -246,4 +245,3 @@ MOM6_out() {
     esac
     unset -f mom6_hist_helper
 }
-
