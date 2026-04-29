@@ -15,7 +15,6 @@ cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-rm -f "${COMIN}"
 ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 mdl=gfs

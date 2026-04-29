@@ -17,7 +17,6 @@ cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export HPCGFS="${RUN}.${PDY}${cyc}"
-rm -f "${HPCGFS}"
 ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"
 
 mdl=gfs
@@ -34,10 +33,8 @@ PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
 
 HPCECMWF="ecmwf.${PDYm1}"
 HPCUKMET="ukmet.${PDY}"
-rm -f "${HPCECMWF}"
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
-rm -f "${HPCUKMET}"
 ${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
 
 "${GEMEXE}/gdplot2_nc" << EOF
