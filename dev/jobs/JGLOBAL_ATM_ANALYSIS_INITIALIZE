@@ -48,6 +48,11 @@ if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to initialize the atmospheric analysis"
 fi
 
+#TODO - implement beter way to set the number of ensembles in gsibec namelist
+if [[ "${LOCALIZATION_TYPE}" == "gsibec" ]]; then
+    sed -i "s/NMEM_ENS/${NMEM_ENS}/g" ${DATA}/berror/gfs_gsi_global.nml
+fi
+
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
