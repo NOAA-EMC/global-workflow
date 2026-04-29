@@ -29,15 +29,7 @@ CICE_postdet() {
     # Copy CICE ICs
     cpreq "${cice_restart_file}" "${DATA}/cice_model.res.nc"
 
-    # NLN iceh_ic: model writes the initial condition snapshot directly into COM via symlink.
-    # TODO: Is this file needed in COM for GFS/GEFS/SFS/GCAFS? Is it used for any products?
-    local vdate seconds vdatestr fhr fhr3 interval last_fhr
-    seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
-    vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-    ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
-
-    # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
-    local source_file dest_file
+    # Determine whether to use the forecast manager for CICE output.
     local use_mgr_ice="NO"
     case "${RUN}" in
         gfs) use_mgr_ice="YES" ;;
@@ -46,6 +38,26 @@ CICE_postdet() {
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     rm -f "${ice_table}"
+
+    # Register/link iceh_ic (f000 initial condition snapshot written by CICE at start of run).
+    local vdate seconds vdatestr fhr fhr3 interval last_fhr
+    seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
+    vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
+    local ic_local="${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    local ic_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc"
+    if [[ "${use_mgr_ice}" == "YES" ]]; then
+        # Add to product table; forecast manager will copy the real file to COM after the run.
+        echo "${ic_local} ${ic_local} ${ic_com} ${ic_com}" >> "${ice_table}"
+    else
+        # NLN: model writes directly into COM via symlink; create the directory first.
+        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then
+            mkdir -p "${COMOUT_ICE_HISTORY}"
+        fi
+        ${NLN} "${ic_com}" "${ic_local}"
+    fi
+
+    # Link/register regular CICE forecast output files.
+    local source_file dest_file
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
         if [[ -z ${last_fhr:-} ]]; then
