@@ -94,7 +94,7 @@ WW3_postdet() {
     else
         fhinc=${FHOUT_WAV}
     fi
-    local ww3_table="${DATA}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+    local ww3_table="${DATAjob}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
         rm -f "${ww3_table}"
     fi
