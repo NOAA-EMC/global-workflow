@@ -704,7 +704,7 @@ MOM6_postdet() {
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                 dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
-		${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
 
                 last_fhr=${fhr}
 
