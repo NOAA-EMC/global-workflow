@@ -699,8 +699,8 @@ MOM6_postdet() {
                 else
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
-		ihour=$(printf %02i "${interval}")
-		source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                ihour=$(printf %02i "${interval}")
+                source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
 		dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
