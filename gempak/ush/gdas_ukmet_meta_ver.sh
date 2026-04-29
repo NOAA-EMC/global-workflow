@@ -23,9 +23,8 @@ cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="gdas.${PDY}${cyc}"
-if [[ ! -L "${COMIN}" ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 vergrid="F-GDAS | ${PDY:2}/0600"
 fcsthr="0600f006"
 
@@ -54,10 +53,9 @@ for area in ${areas}; do
         sdatenum=${stime:0:6}
         cyclenum=${stime:6}
 
-        if [[ ! -L "ukmet.20${sdatenum}" ]]; then
-            # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
-            ${NLN} "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
-        fi
+        rm -f "ukmet.20${sdatenum}"
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+        ${NLN} "${COMINukmet}/ukmet.20${sdatenum}/gempak" "ukmet.20${sdatenum}"
         gdfile="ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
 
         # 500 MB HEIGHT METAFILE
@@ -157,7 +155,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s ukmetver_12.meta ]]; then
     exit "${err}"
 fi
 
-mv ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
+cpfs ukmetver_12.meta "${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"
 export err=$?
 if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/ukmetver_${PDY}_12"

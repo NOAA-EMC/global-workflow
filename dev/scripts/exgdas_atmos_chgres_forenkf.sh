@@ -142,7 +142,7 @@ EOF
     "${USHglobal}/run_mpmd.sh" "${DATA}/mp_chgres.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit
+        err_exit "Failed to run chgres on one or more forecast hours!"
     fi
 else
     echo "DO_CALC_ANALYSIS != YES, doing nothing"

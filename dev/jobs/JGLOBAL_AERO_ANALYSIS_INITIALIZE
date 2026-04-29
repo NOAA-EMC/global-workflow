@@ -52,7 +52,7 @@ EXSCRIPT=${GDASAEROINITPY:-${SCRglobal}/exglobal_aero_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to initialize aerosol analysis"
 fi
 
 ##############################################

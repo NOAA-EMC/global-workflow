@@ -9,9 +9,8 @@ device="nc | gdasloop.meta"
 # Link data into DATA to sidestep gempak path limits
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L "${COMIN}" ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 if [[ "${envir}" == "para" ]]; then
     export m_title="GDASP"
@@ -40,9 +39,8 @@ for ((fhr = 24; fhr <= 144; fhr += 24)); do
         # TODO: Add only necessary files and remove unneeded ones to minimize data volume
         # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
         export COMIN="${RUN}.${day}${cycle}"
-        if [[ ! -L "${COMIN}" ]]; then
-            ${NLN} "${COMIN_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
-        fi
+        rm -f "${COMIN}"
+        ${NLN} "${COMIN_ATMOS_GEMPAK_1p00_past}" "${COMIN}"
         gdfile="${COMIN}/gdas_1p00_${day}${cycle}f000"
 
         "${GEMEXE}/gdplot2_nc" << EOF
@@ -228,7 +226,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s gdasloop.meta ]]; then
     exit "${err}"
 fi
 
-mv gdasloop.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
+cpfs gdasloop.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"
 export err=$?
 if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_loop"

@@ -63,7 +63,7 @@ export LEVS
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to get LEVS from ${ATMGES}"
 fi
 
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
@@ -74,7 +74,7 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 ${ANALCALCSH:-${SCRglobal}/exglobal_atmos_analysis_calc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate gaussian gridded analysis for ${RUN} ${PDY}${cyc}"
 fi
 
 ##############################################

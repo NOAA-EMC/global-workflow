@@ -34,6 +34,7 @@ if not is_ecf then
     load(pathJoin("prod_util", (os.getenv("prod_util_ver") or "None")))
 end
 load(pathJoin("grib_util", (os.getenv("grib_util_ver") or "None")))
+setenv("WGRIB", "wgrib")
 load(pathJoin("bufr_dump", (os.getenv("bufr_dump_ver") or "None")))
 load(pathJoin("util_shared", (os.getenv("util_shared_ver") or "None")))
 load(pathJoin("g2tmpl", (os.getenv("g2tmpl_ver") or "None")))

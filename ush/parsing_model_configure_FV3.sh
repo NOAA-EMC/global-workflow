@@ -1,5 +1,17 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: parsing_model_configure_FV3.sh
+#
+#   DESCRIPTION: This function prepares and renders the model_configure file
+#                required by the Unified Forecast System Weather Model (UFSWM)
+#                for the FV3 atmospheric component. It defines local variables
+#                for grid resolution, start times, output frequencies, data
+#                compression, and quilting tasks. It then injects these local
+#                variables into a base template (model_configure.IN or
+#                input_global_nest.nml.IN) using the 'atparse' utility.
+
 # parsing model_configure for UFSWM FV3
 
 # shellcheck disable=SC2034

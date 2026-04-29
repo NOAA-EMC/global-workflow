@@ -41,7 +41,7 @@ EXSCRIPT=${GDASATMFINALPY:-${SCRglobal}/exglobal_atm_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to finalize the atmospheric analysis"
 fi
 
 ##############################################

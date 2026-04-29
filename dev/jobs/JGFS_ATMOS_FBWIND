@@ -36,7 +36,7 @@ fi
 "${SCRglobal}/exgfs_atmos_fbwind.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate Pacific WMO wind products"
 fi
 ########################################################
 

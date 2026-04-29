@@ -315,7 +315,8 @@ Model= ---> ${cmodel} <--- ..... Please submit the script again....
 EOF
         )
         err=8
-        err_exit "${msg}"
+        echo "${msg}"
+        exit "${err}"
         ;;
 
 esac
@@ -374,7 +375,8 @@ replace the forecast hour characters 00 with XX.  Please check the
 name in the kickoff script and qsub it again.
 EOF
         err=8
-        err_exit "${msg}"
+        echo "${msg}"
+        exit "${err}"
     fi
 
     fflag='y'
@@ -425,7 +427,8 @@ EOF
 EOF
         )
         err=8
-        err_exit "${msg}"
+        echo "${msg}"
+        exit "${err}"
     fi
 
     cat << EOF
@@ -510,7 +513,8 @@ if [[ ${numvitrecs} -eq 0 ]]; then
 EOF
     )
     err=8
-    err_exit "${msg}"
+    echo "${msg}"
+    exit "${err}"
 fi
 
 # - - - - - - - - - - - - -
@@ -600,7 +604,8 @@ else
 EOF
     )
     err=9
-    err_exit "${msg}"
+    echo "${msg}"
+    exit "${err}"
 fi
 
 #------------------------------------------------------------------#
@@ -621,7 +626,7 @@ if [[ "${numvitrecs}" -eq 0 ]]; then
 
 EOF
     err=8
-    err_exit
+    exit "${err}"
 fi
 
 cat << EOF | tee stormlist
@@ -770,7 +775,8 @@ EOF
 EOF
             )
             err=8
-            err_exit "${msg}"
+            echo "${msg}"
+            exit "${err}"
         fi
 
         cat "${TMPDIR}/ngmllu850.grb.f${fhour}" "${TMPDIR}/ngmllu700.grb.f${fhour}" \
@@ -866,7 +872,7 @@ EOF
 
 EOF
             err=8
-            err_exit
+            exit "${err}"
         fi
 
         cat "${TMPDIR}/namllu850.grb.f${fhour}" "${TMPDIR}/namllu700.grb.f${fhour}" \
@@ -915,7 +921,8 @@ if [[ "${model}" -eq 4 ]]; then
 EOF
         )
         err=8
-        err_exit "${msg}"
+        echo "${msg}"
+        exit "${err}"
     fi
 
     ${GRBINDEX:?} "${ecmwfdir}/${ecmwfgfile}" "${TMPDIR}/${ecmwfgfile}.ix"
@@ -1182,7 +1189,8 @@ if [[ "${model}" -eq 7 ]]; then
 EOF
         )
         err=8
-        err_exit "${msg}"
+        echo "${msg}"
+        exit "${err}"
     fi
 
     gfile="${ngpsdir}/${ngpsgfile}"
@@ -1323,7 +1331,8 @@ EOF
 EOF
                 )
                 err=8
-                err_exit "${msg}"
+                echo "${msg}"
+                exit "${err}"
             fi
 
             cat "${TMPDIR}/otherllu850.grb.f${fhour}" "${TMPDIR}/otherllu700.grb.f${fhour}" \
@@ -1457,7 +1466,7 @@ EOF
 
 if [[ "${err}" -gt 0 ]]; then
     err=9
-    err_exit
+    exit "${err}"
 fi
 
 rm -f fort.*

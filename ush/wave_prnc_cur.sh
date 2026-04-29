@@ -76,7 +76,6 @@ source prep_step
 
 "${EXECglobal}/${pgm}" 1> "prnc_${WAVECUR_FID}_${ymdh_rtofs}.out" 2>&1
 export err=$?
-err_chk
 if [[ "${err}" -ne 0 ]]; then
     cat "prnc_${WAVECUR_FID}_${ymdh_rtofs}.out"
     echo "WARNING: NON-FATAL ERROR IN ${pgm}."
