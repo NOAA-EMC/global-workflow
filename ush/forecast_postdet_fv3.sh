@@ -319,8 +319,8 @@ EOF
         local use_mgr="NO"
         case "${RUN}" in
             gfs) use_mgr="YES" ;;
-            # TODO: enable forecast manager for gefs, sfs, gcafs once tested
-            # gefs | sfs | gcafs) use_mgr="YES" ;;
+                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+                # gefs | sfs | gcafs) use_mgr="YES" ;;
         esac
 
         local atm_table="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
@@ -338,26 +338,26 @@ EOF
             # Build (local_file, com_file) pairs once; used for both the manager
             # product table and the NLN symlink paths.
             local local_files=() com_files=()
-            local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc" )
-            com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" )
-            local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc" )
-            com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" )
+            local_files+=("${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc")
+            com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc")
+            local_files+=("${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc")
+            com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc")
             if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc" )
-                com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" )
-                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc" )
-                com_files+=( "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" )
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc")
+                com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc")
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc")
+                com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc")
             fi
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}" )
-                com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" )
-                local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}" )
-                com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" )
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}")
+                com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2")
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}")
+                com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2")
                 if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02" )
-                    com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" )
-                    local_files+=( "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02" )
-                    com_files+=( "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" )
+                    local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02")
+                    com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2")
+                    local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02")
+                    com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2")
                 fi
             fi
 
@@ -368,12 +368,12 @@ EOF
             local i
             if [[ "${use_mgr}" == "YES" ]]; then
                 # Product table entries: local_data  local_log  com_data  com_log
-                for (( i = 0; i < ${#local_files[@]}; i++ )); do
+                for ((i = 0; i < ${#local_files[@]}; i++)); do
                     echo "${local_files[i]} ${local_log} ${com_files[i]} ${com_log}" >> "${atm_table}"
                 done
             else
                 # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
-                for (( i = 0; i < ${#local_files[@]}; i++ )); do
+                for ((i = 0; i < ${#local_files[@]}; i++)); do
                     ${NLN} "${com_files[i]}" "${local_files[i]}"
                 done
                 ${NLN} "${com_log}" "${local_log}"

@@ -79,7 +79,7 @@ while [[ ${remaining} -gt 0 ]]; do
         fi
 
         # Copy all data files that share this sentinel (data first, log last)
-        for (( j = 0; j < count; j++ )); do
+        for ((j = 0; j < count; j++)); do
             [[ "${done_flag[j]}" == "YES" ]] && continue
             [[ "${local_log[j]}" != "${this_ll}" ]] && continue
             com_dir=$(dirname "${com_data[j]}")
@@ -108,10 +108,10 @@ while [[ ${remaining} -gt 0 ]]; do
         echo "INFO [${component}]: Copied sentinel $(basename "${this_cl}") and its data files to COM"
 
         # Mark all rows for this sentinel as done
-        for (( j = 0; j < count; j++ )); do
+        for ((j = 0; j < count; j++)); do
             if [[ "${done_flag[j]}" == "NO" && "${local_log[j]}" == "${this_ll}" ]]; then
                 done_flag[j]="YES"
-                (( remaining-- )) || true
+                ((remaining--)) || true
             fi
         done
     done
@@ -119,7 +119,7 @@ while [[ ${remaining} -gt 0 ]]; do
     [[ ${remaining} -eq 0 ]] && break
 
     # Timeout check
-    elapsed=$(( $(date +%s) - start_time ))
+    elapsed=$(($(date +%s) - start_time))
     if [[ ${FCST_MGR_TIMEOUT:-0} -gt 0 && ${elapsed} -gt ${FCST_MGR_TIMEOUT} ]]; then
         echo "FATAL ERROR [${component}]: Timed out after ${elapsed}s with ${remaining} sentinels still pending" >&2
         exit 1
