@@ -73,8 +73,8 @@ WW3_postdet() {
     local use_mgr_ww3="NO"
     case "${RUN}" in
         gfs) use_mgr_ww3="YES" ;;
-        # TODO: enable forecast manager for gefs, sfs, gcafs once tested
-        # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
+            # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+            # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
     esac
 
     # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file

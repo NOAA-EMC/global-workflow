@@ -27,6 +27,6 @@ while [[ ! -f "${table}" ]]; do
         exit 1
     fi
     sleep 30
-    (( elapsed += 30 )) || true
+    ((elapsed += 30)) || true
 done
 echo "INFO: ${label} product table found after ${elapsed}s"

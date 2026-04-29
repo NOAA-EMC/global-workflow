@@ -44,7 +44,7 @@ MOM6_postdet() {
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             case "${RUN}" in
                 gfs) use_mgr_ocn="YES" ;;
-                *)   use_mgr_ocn="NO"  ;;
+                *) use_mgr_ocn="NO" ;;
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             rm -f "${ocn_table}"
