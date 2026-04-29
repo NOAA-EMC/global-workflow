@@ -321,6 +321,7 @@ EOF
             gfs) use_mgr="YES" ;;
                 # TODO: enable forecast manager for gefs, sfs, gcafs once tested
                 # gefs | sfs | gcafs) use_mgr="YES" ;;
+            *) ;;
         esac
 
         local atm_table="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"

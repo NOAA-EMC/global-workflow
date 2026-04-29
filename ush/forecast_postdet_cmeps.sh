@@ -14,7 +14,6 @@ CPL_out() {
     fi
 }
 
-
 # shellcheck disable=SC2178
 CMEPS_postdet() {
     echo "SUB ${FUNCNAME[0]}: Linking output data for CMEPS mediator"

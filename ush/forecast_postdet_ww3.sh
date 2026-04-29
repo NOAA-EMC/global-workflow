@@ -75,6 +75,7 @@ WW3_postdet() {
         gfs) use_mgr_ww3="YES" ;;
             # TODO: enable forecast manager for gefs, sfs, gcafs once tested
             # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
+        *) ;;
     esac
 
     # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
@@ -163,6 +164,7 @@ WW3_out() {
                 cpfs "${DATA}/log.ww3" "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log"
             fi
             ;;
+        *) ;;
     esac
 
     # Build MPMD cmdfile to copy WW3 restarts in parallel

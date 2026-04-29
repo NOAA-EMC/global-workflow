@@ -35,6 +35,7 @@ CICE_postdet() {
         gfs) use_mgr_ice="YES" ;;
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             # enkfgfs | gefs | sfs | gcafs) use_mgr_ice="YES" ;;
+        *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     rm -f "${ice_table}"
