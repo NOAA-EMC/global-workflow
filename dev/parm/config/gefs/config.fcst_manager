@@ -5,7 +5,7 @@
 
 echo "BEGIN: config.fcst_manager"
 
-# Maximum time (seconds) to wait for product tables to appear in COMOUT_CONF.
+# Maximum time (seconds) to wait for product tables to appear in DATAjob.
 # Must be less than the batch walltime of the fcst_manager job.
 export FCST_MANAGER_INIT_TIMEOUT=7200
 
