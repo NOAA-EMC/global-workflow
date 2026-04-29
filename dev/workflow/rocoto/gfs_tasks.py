@@ -1106,11 +1106,10 @@ class GFSTasks(Tasks):
     def fcst_mgr(self):
         # Product tables are written to DATAjob (shared between fcst and fcst_mgr jobs).
         # DATAjob = ${DATAROOT}/${RUN}fcst.${PDY}${cyc}
+        # Use bare @Y@m@d@H so _add_data_tag wraps the whole path in one <cyclestr>.
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
-        datajob = (f"{stmp}/RUNDIRS/{pslot}/{self.run}."
-                   f"<cyclestr>@Y@m@d@H</cyclestr>"
-                   f"/{self.run}fcst.<cyclestr>@Y@m@d@H</cyclestr>")
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}fcst.@Y@m@d@H"
         dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
         dependencies = rocoto.create_dependency(dep=rocoto.add_dependency(dep_dict))
 
