@@ -59,7 +59,7 @@ remaining=${count}
 start_time=$(date +%s)
 
 while [[ ${remaining} -gt 0 ]]; do
-    for (( i = 0; i < count; i++ )); do
+    for ((i = 0; i < count; i++)); do
         [[ "${done_flag[i]}" == "YES" ]] && continue
         [[ ! -f "${local_log[i]}" ]] && continue
 
