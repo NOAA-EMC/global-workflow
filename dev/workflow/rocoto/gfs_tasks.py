@@ -1084,8 +1084,14 @@ class GFSTasks(Tasks):
         return task
 
     def fcst_mgr(self):
-        conf_path = self._template_to_rocoto_cycstring(self._base['COM_CONF_TMPL'])
-        dep_dict = {'type': 'data', 'data': f'{conf_path}/atm_products_seg#seg#.txt', 'age': 60}
+        # Product tables are written to DATAjob (shared between fcst and fcst_mgr jobs).
+        # DATAjob = ${DATAROOT}/${RUN}fcst.${PDY}${cyc}
+        stmp = self._base.get('STMP')
+        pslot = self._base.get('PSLOT')
+        datajob = (f"{stmp}/RUNDIRS/{pslot}/{self.run}."
+                   f"<cyclestr>@Y@m@d@H</cyclestr>"
+                   f"/{self.run}fcst.<cyclestr>@Y@m@d@H</cyclestr>")
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
         dependencies = rocoto.create_dependency(dep=rocoto.add_dependency(dep_dict))
 
         if self.run in ['gfs']:

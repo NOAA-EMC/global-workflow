@@ -323,7 +323,7 @@ EOF
             # gefs | sfs | gcafs) use_mgr="YES" ;;
         esac
 
-        local atm_table="${DATA}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+        local atm_table="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         if [[ "${use_mgr}" == "YES" ]]; then
             rm -f "${atm_table}"
         fi

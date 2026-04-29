@@ -46,7 +46,7 @@ MOM6_postdet() {
                 gfs) use_mgr_ocn="YES" ;;
                 *)   use_mgr_ocn="NO"  ;;
             esac
-            ocn_table="${DATA}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+            ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
             rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
