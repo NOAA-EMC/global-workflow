@@ -1150,7 +1150,7 @@ class GFSTasks(Tasks):
             task_lines.extend(rocoto.create_task(task_dict))
         task_lines.append('</metatask>\n')
 
-        return task_lines
+        return ''.join(task_lines)
 
     def atmanlupp(self):
         postenvars = self.envars.copy()
