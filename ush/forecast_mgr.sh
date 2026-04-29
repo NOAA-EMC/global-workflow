@@ -93,15 +93,23 @@ while [[ ${remaining} -gt 0 ]]; do
         done
 
         # Copy sentinel log last.
-        # Skip if already in COM (self-sentinel pattern: local_log == local_data means
-        # com_log == com_data, which was already copied in the data step above).
+        # FV3/WW3 pattern: local_log is a separate file written by the model after each
+        # output period; copy it to COM as the completion signal.
+        # MOM6/CICE pattern: local_log == local_data (no separate model-written sentinel);
+        # the manager writes a small text marker to com_log after the data copy to confirm
+        # the copy completed successfully and to provide a clean downstream dependency.
         if [[ ! -f "${this_cl}" ]]; then
             cl_dir=$(dirname "${this_cl}")
             if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
-            cpfs "${this_ll}" "${this_cl}"
-            log_err=$?
+            if [[ "${this_ll}" == "${local_data[i]}" ]]; then
+                echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
+                log_err=$?
+            else
+                cpfs "${this_ll}" "${this_cl}"
+                log_err=$?
+            fi
             if [[ ${log_err} -ne 0 ]]; then
-                echo "FATAL ERROR [${component}]: cpfs sentinel '${this_ll}' -> '${this_cl}' failed (err=${log_err})" >&2
+                echo "FATAL ERROR [${component}]: writing sentinel '${this_cl}' failed (err=${log_err})" >&2
                 exit "${log_err}"
             fi
         fi

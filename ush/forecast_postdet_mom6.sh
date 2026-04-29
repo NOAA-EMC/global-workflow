@@ -76,8 +76,10 @@ MOM6_postdet() {
                 # Forecast manager copies from DATA to COM; register in product table.
                 # Others: NLN so model writes directly into COM.
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
-                    # Self-sentinel: MOM6 writes complete netCDF files atomically per output period.
-                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}" >> "${ocn_table}"
+                    # Data-triggered: local_log == local_data so the manager waits for the .nc
+                    # file to appear, then copies it to COM and writes a small .log marker
+                    # to confirm the copy completed successfully.
+                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}.log" >> "${ocn_table}"
                 else
                     ${NLN} "${ocn_com}" "${ocn_local}"
                 fi

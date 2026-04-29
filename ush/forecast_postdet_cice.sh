@@ -47,8 +47,10 @@ CICE_postdet() {
     local ic_local="${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
     local ic_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
-        # Add to product table; forecast manager will copy the real file to COM after the run.
-        echo "${ic_local} ${ic_local} ${ic_com} ${ic_com}" >> "${ice_table}"
+        # Data-triggered: local_log == local_data so the manager waits for the .nc
+        # file to appear, then copies it to COM and writes a small .log marker
+        # to confirm the copy completed successfully.
+        echo "${ic_local} ${ic_local} ${ic_com} ${ic_com}.log" >> "${ice_table}"
     else
         # NLN: model writes directly into COM via symlink; create the directory first.
         if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then
@@ -95,8 +97,10 @@ CICE_postdet() {
         local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
         local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
         if [[ "${use_mgr_ice}" == "YES" ]]; then
-            # Self-sentinel: CICE writes complete netCDF files atomically per output period.
-            echo "${ice_local} ${ice_local} ${ice_com} ${ice_com}" >> "${ice_table}"
+            # Data-triggered: local_log == local_data so the manager waits for the .nc
+            # file to appear, then copies it to COM and writes a small .log marker
+            # to confirm the copy completed successfully.
+            echo "${ice_local} ${ice_local} ${ice_com} ${ice_com}.log" >> "${ice_table}"
         else
             ${NLN} "${ice_com}" "${ice_local}"
         fi
