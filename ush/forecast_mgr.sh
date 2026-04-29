@@ -72,7 +72,7 @@ while [[ ${remaining} -gt 0 ]]; do
             for (( j = 0; j < count; j++ )); do
                 if [[ "${done_flag[j]}" == "NO" && "${local_log[j]}" == "${this_ll}" ]]; then
                     done_flag[j]="YES"
-                    (( remaining-- )) || true
+                    ((remaining--)) || true
                 fi
             done
             continue
