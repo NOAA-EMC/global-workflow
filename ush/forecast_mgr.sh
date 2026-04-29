@@ -102,8 +102,8 @@ while [[ ${remaining} -gt 0 ]]; do
             cl_dir=$(dirname "${this_cl}")
             if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
             if [[ "${this_ll}" == "${local_data[i]}" ]]; then
-                echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
-                log_err=$?
+                log_err=0
+                echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}" || log_err=$?
             else
                 cpfs "${this_ll}" "${this_cl}"
                 log_err=$?
