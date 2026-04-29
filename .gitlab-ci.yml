@@ -157,6 +157,17 @@ include:
         git remote add github "${GW_REPO_URL}"
         git fetch github
         ${GH} pr checkout "${PR_NUMBER}"
+        # Workaround for git <= 2.45 (e.g. Gaea Spack git 2.43.x):
+        # `gh pr checkout` repoints branch.<name>.remote to the PR author's fork.
+        # git submodule--helper then builds an unadvertised-SHA fallback fetch URL
+        # from that upstream, producing "<author-fork>.git <gdas-sha>" -> "not our ref".
+        # Re-pin the current branch upstream to NOAA-EMC/global-workflow so the
+        # fallback URL is correct. Remove once Gaea ships git >= 2.47.
+        git remote set-url origin "${GW_REPO_URL}"
+        _br=$(git branch --show-current)
+        git config "branch.${_br}.remote"     origin
+        git config "branch.${_br}.pushRemote" origin
+        unset _br
         git submodule update --init --recursive -j 8
       fi
 
