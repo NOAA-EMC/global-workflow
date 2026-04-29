@@ -1090,8 +1090,15 @@ class GFSTasks(Tasks):
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
         datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}fcst.@Y@m@d@H"
+        # Require both the product table (written at postdet) AND the started sentinel
+        # (written just before model launch). The sentinel prevents stale product tables
+        # from triggering manager segments immediately after a rewind.
+        deps = []
         dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
-        dependencies = rocoto.create_dependency(dep=rocoto.add_dependency(dep_dict))
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_started_seg#seg#', 'age': 5}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         if self.run in ['gfs']:
             num_fcst_segments = len(self.options['fcst_segments']) - 1
