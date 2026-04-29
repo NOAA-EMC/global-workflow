@@ -96,4 +96,3 @@ GOCART_out() {
         fi
     fi
 }
-
