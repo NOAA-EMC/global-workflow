@@ -25,7 +25,8 @@ suite gcafs_v1
               family init
                 task jgcdas_atmos_initialize
                   # TODO trigger gdas analysis == complete
-                  time 07:00
+                  trigger :TIME >= 0700 and :TIME <= 1359
+                  #trigger /gcafs_v1/primary/00/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_surface_initialize
                   trigger ./jgcdas_atmos_initialize == complete
               endfamily
@@ -38,7 +39,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../../chem/jgcdas_aerosol_analysis_post == complete
                   edit FORECAST_HOUR '-3'
 		  edit FHRGRP '000'
                   edit FHRLST 'anl'
@@ -77,7 +78,8 @@ suite gcafs_v1
             family chem
               family analysis
                 task jgcdas_prepare_obs
-                  time 07:00
+                  trigger :TIME >= 0700 and :TIME <= 1359
+                  #trigger /gcafs_v1/primary/00/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_aerosol_analysis_initialize
                   trigger ./jgcdas_prepare_obs == complete
                 task jgcdas_aerosol_analysis_variational
@@ -92,7 +94,8 @@ suite gcafs_v1
                   trigger ../../jgcdas_forecast == complete
               endfamily
               task jgcdas_prep_emissions
-                time 07:00
+                trigger :TIME >= 0700 and :TIME <= 1359
+                #trigger /gcafs_v1/primary/00/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
               task jgcdas_aerosol_analysis_post
                 trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
             endfamily
@@ -438,10 +441,11 @@ suite gcafs_v1
             endfamily # gcafs gcafs atmos
             family chem
               task jgcafs_prep_emissions
-                time 07:00
+                trigger :TIME >= 0700 and :TIME <= 1359
+                #trigger /gcafs_v1/primary/00/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
             endfamily
             task jgcafs_forecast
-              trigger /gcafs_v1/primary/00/gcafs/v1.0/gcdas/atmos/init/jgcdas_surface_initialize == complete and /gcafs_v1/primary/00/gcafs/v1.0/gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
+              trigger ../gcdas/atmos/init/jgcdas_surface_initialize == complete and ../gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
           endfamily # gcafs gcafs
         endfamily # gcafs v1.0
       endfamily # gcafs
@@ -459,7 +463,8 @@ suite gcafs_v1
               family init
                 task jgcdas_atmos_initialize
                   # TODO trigger gdas analysis == complete
-                  time 13:00
+                  trigger :TIME >= 1300 and :TIME <= 1959
+                  #trigger /gcafs_v1/primary/06/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_surface_initialize
                   trigger ./jgcdas_atmos_initialize == complete
               endfamily
@@ -472,7 +477,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../../chem/jgcdas_aerosol_analysis_post == complete
                   edit FORECAST_HOUR '-3'
 		  edit FHRGRP '000'
                   edit FHRLST 'anl'
@@ -511,7 +516,8 @@ suite gcafs_v1
             family chem
               family analysis
                 task jgcdas_prepare_obs
-                  time 13:00
+                  trigger :TIME >= 1300 and :TIME <= 1959
+                  #trigger /gcafs_v1/primary/06/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_aerosol_analysis_initialize
                   trigger ./jgcdas_prepare_obs == complete
                 task jgcdas_aerosol_analysis_variational
@@ -528,7 +534,8 @@ suite gcafs_v1
               task jgcdas_aerosol_analysis_post
                 trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
               task jgcdas_prep_emissions
-                time 13:00
+                trigger :TIME >= 1300 and :TIME <= 1959
+                #trigger /gcafs_v1/primary/06/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
             endfamily
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
@@ -549,7 +556,8 @@ suite gcafs_v1
               family init
                 task jgcdas_atmos_initialize
                   # TODO trigger gdas analysis == complete
-                  time 19:00
+                  trigger :TIME >= 1900 or :TIME <= 0059
+                  #trigger /gcafs_v1/primary/12/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_surface_initialize
                   trigger ./jgcdas_atmos_initialize == complete
               endfamily
@@ -562,7 +570,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../../chem/jgcdas_aerosol_analysis_post == complete
                   edit FORECAST_HOUR '-3'
 		  edit FHRGRP '000'
                   edit FHRLST 'anl'
@@ -601,7 +609,8 @@ suite gcafs_v1
             family chem
               family analysis
                 task jgcdas_prepare_obs
-                  time 19:00
+                  trigger :TIME >= 1900 or :TIME <= 0059
+                  #trigger /gcafs_v1/primary/12/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_aerosol_analysis_initialize
                   trigger ./jgcdas_prepare_obs == complete
                 task jgcdas_aerosol_analysis_variational
@@ -618,7 +627,8 @@ suite gcafs_v1
               task jgcdas_aerosol_analysis_post
                 trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
               task jgcdas_prep_emissions
-                time 19:00
+                trigger :TIME >= 1900 or :TIME <= 0059
+                #trigger /gcafs_v1/primary/12/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
             endfamily
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
@@ -962,10 +972,11 @@ suite gcafs_v1
             endfamily # gcafs gcafs atmos
             family chem
               task jgcafs_prep_emissions
-                time 19:00
+                #trigger :TIME >= 1900 or :TIME <= 0059
+                trigger /gcafs_v1/primary/12/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
             endfamily
             task jgcafs_forecast
-              trigger /gcafs_v1/primary/12/gcafs/v1.0/gcdas/atmos/init/jgcdas_surface_initialize == complete and /gcafs_v1/primary/12/gcafs/v1.0/gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
+              trigger ../gcdas/atmos/init/jgcdas_surface_initialize == complete and ../gcdas/chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcafs_prep_emissions == complete
           endfamily # gcafs gcafs
         endfamily # gcafs v1.0
       endfamily # gcafs
@@ -983,7 +994,8 @@ suite gcafs_v1
               family init
                 task jgcdas_atmos_initialize
                   # TODO trigger gdas analysis == complete
-                  time 01:00
+                  #trigger :TIME >= 0100 and :TIME <= 0659
+                  trigger /gcafs_v1/primary/18/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_surface_initialize
                   trigger ./jgcdas_atmos_initialize == complete
               endfamily
@@ -996,7 +1008,7 @@ suite gcafs_v1
                   event 4 release_post006
                   event 5 release_post009
                 task jgcdas_atmos_post_anl
-                  trigger ./jgcdas_atmos_post_manager:release_postanl
+                  trigger ./jgcdas_atmos_post_manager:release_postanl and ../../chem/jgcdas_aerosol_analysis_post == complete
                   edit FORECAST_HOUR '-3'
 		  edit FHRGRP '000'
                   edit FHRLST 'anl'
@@ -1035,7 +1047,8 @@ suite gcafs_v1
             family chem
               family analysis
                 task jgcdas_prepare_obs
-                  time 01:00
+                  #trigger :TIME >= 0100 and :TIME <= 0659
+                  trigger /gcafs_v1/primary/18/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
                 task jgcdas_aerosol_analysis_initialize
                   trigger ./jgcdas_prepare_obs == complete
                 task jgcdas_aerosol_analysis_variational
@@ -1052,7 +1065,8 @@ suite gcafs_v1
               task jgcdas_aerosol_analysis_post
                 trigger ./analysis/jgcdas_aerosol_analysis_calc == complete
               task jgcdas_prep_emissions
-                time 01:00
+                #trigger :TIME >= 0100 and :TIME <= 0659
+                trigger /gcafs_v1/primary/18/gfs/v16.3/gdas/atmos/analysis/jgdas_atmos_analysis_calc == complete
             endfamily
             task jgcdas_forecast
               trigger ./atmos/init/jgcdas_surface_initialize == complete and ./chem/analysis/jgcdas_aerosol_analysis_finalize == complete and ./chem/jgcdas_prep_emissions == complete
@@ -1062,4 +1076,3 @@ suite gcafs_v1
     endfamily # 18
   endfamily # primary
 endsuite # prod
-
