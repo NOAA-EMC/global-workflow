@@ -2,10 +2,10 @@
 
 ################################################################################
 # UNIX Script Documentation Block
-# Script name:         forecast_mgr.sh
+# Script name:         forecast_manager.sh
 # Script description:  Forecast manager for a single model component
 #
-# Abstract: Called by JGLOBAL_FORECAST_MGR via "srun --multi-prog" (MPMD mode)
+# Abstract: Called by JGLOBAL_FORECAST_MANAGER via "srun --multi-prog" (MPMD mode)
 #           with one SLURM task per active model component. Reads a product
 #           table listing local output files and their COM destinations. Monitors
 #           for per-file sentinel log files and copies data then log to COM in
@@ -19,14 +19,14 @@
 #           automatically: all data files for a given sentinel are copied before
 #           the sentinel log is written to COM.
 #
-# Usage:    forecast_mgr.sh <component> <table_file>
+# Usage:    forecast_manager.sh <component> <table_file>
 #             component  - short name used in log output, e.g. "atm", "ww3",
 #                          "ocn", or "ice"
 #             table_file - absolute path to the 4-column product table file
 ################################################################################
 
-component="${1:?Usage: forecast_mgr.sh <component> <table_file>}"
-table_file="${2:?Usage: forecast_mgr.sh <component> <table_file>}"
+component="${1:?Usage: forecast_manager.sh <component> <table_file>}"
+table_file="${2:?Usage: forecast_manager.sh <component> <table_file>}"
 
 echo "INFO [${component}]: Starting manager"
 echo "INFO [${component}]: Reading product table from '${table_file}'"
@@ -130,12 +130,12 @@ while [[ ${remaining} -gt 0 ]]; do
 
     # Timeout check
     elapsed=$(($(date +%s) - start_time))
-    if [[ ${FCST_MGR_TIMEOUT:-0} -gt 0 && ${elapsed} -gt ${FCST_MGR_TIMEOUT} ]]; then
+    if [[ ${FCST_MANAGER_TIMEOUT:-0} -gt 0 && ${elapsed} -gt ${FCST_MANAGER_TIMEOUT} ]]; then
         echo "FATAL ERROR [${component}]: Timed out after ${elapsed}s with ${remaining} sentinels still pending" >&2
         exit 1
     fi
 
-    sleep "${FCST_MGR_SLEEP:-30}"
+    sleep "${FCST_MANAGER_SLEEP:-30}"
 done
 
 echo "INFO [${component}]: All ${count} product entries processed"

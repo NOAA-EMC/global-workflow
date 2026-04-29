@@ -1103,8 +1103,8 @@ class GFSTasks(Tasks):
 
         return task
 
-    def fcst_mgr(self):
-        # Product tables are written to DATAjob (shared between fcst and fcst_mgr jobs).
+    def fcst_manager(self):
+        # Product tables are written to DATAjob (shared between fcst and fcst_manager jobs).
         # DATAjob = ${DATAROOT}/${RUN}fcst.${PDY}${cyc}
         # Use bare @Y@m@d@H so _add_data_tag wraps the whole path in one <cyclestr>.
         stmp = self._base.get('STMP')
@@ -1130,21 +1130,21 @@ class GFSTasks(Tasks):
         mgr_vars = self.envars.copy()
         mgr_vars.append(rocoto.create_envar(name='FCST_SEGMENT', value='#seg#'))
 
-        resources = self.get_resource('fcst_mgr')
-        task_name = f'{self.run}_fcst_mgr_seg#seg#'
+        resources = self.get_resource('fcst_manager')
+        task_name = f'{self.run}_fcst_manager_seg#seg#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': mgr_vars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_mgr.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
         seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
-        metatask_dict = {'task_name': f'{self.run}_fcst_mgr',
+        metatask_dict = {'task_name': f'{self.run}_fcst_manager',
                          'is_serial': True,
                          'var_dict': seg_var_dict,
                          'task_dict': task_dict
@@ -1338,8 +1338,8 @@ class GFSTasks(Tasks):
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        if 'fcst_mgr' in self._configs:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mgr'}
+        if 'fcst_manager' in self._configs:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1449,8 +1449,8 @@ class GFSTasks(Tasks):
 
     def wavepostpnt(self):
         deps = []
-        if 'fcst_mgr' in self._configs:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mgr'}
+        if 'fcst_manager' in self._configs:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1577,8 +1577,8 @@ class GFSTasks(Tasks):
 
     def postsnd(self):
         deps = []
-        if 'fcst_mgr' in self._configs:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_mgr'}
+        if 'fcst_manager' in self._configs:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))

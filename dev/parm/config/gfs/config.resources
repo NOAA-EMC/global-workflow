@@ -985,7 +985,7 @@ case ${step} in
     unset NTASKS_TOT
     ;;
 
-  "fcst_mgr")
+  "fcst_manager")
     # Forecast manager: one MPMD rank per active component (ATM, WW3, OCN, ICE).
     # Polls DATAoutput for sentinel log files and copies products to COM in real time.
     # Walltime must be long enough to cover the full forecast run.
