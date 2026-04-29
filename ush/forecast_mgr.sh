@@ -46,7 +46,7 @@ while read -r ld ll cd cl; do
     com_data[count]="${cd}"
     com_log[count]="${cl}"
     done_flag[count]="NO"
-    (( count++ )) || true
+    ((count++)) || true
 done < "${table_file}"
 
 if [[ ${count} -eq 0 ]]; then
