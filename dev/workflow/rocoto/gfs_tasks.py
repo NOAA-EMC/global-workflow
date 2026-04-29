@@ -1090,47 +1090,47 @@ class GFSTasks(Tasks):
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
         datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}fcst.@Y@m@d@H"
+        # Require both the product table (written at postdet) AND the started sentinel
+        # (written just before model launch). The sentinel prevents stale product tables
+        # from triggering manager segments immediately after a rewind.
+        # is_serial=True ensures seg1 only starts after seg0's manager finishes (i.e.
+        # after all seg0 products are copied to COM, which is after fcst_seg0 completes).
+        deps = []
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_started_seg#seg#', 'age': 5}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         if self.run in ['gfs']:
             num_fcst_segments = len(self.options['fcst_segments']) - 1
         else:
             num_fcst_segments = 1
 
+        mgr_vars = self.envars.copy()
+        mgr_vars.append(rocoto.create_envar(name='FCST_SEGMENT', value='#seg#'))
+
         resources = self.get_resource('fcst_mgr')
+        task_name = f'{self.run}_fcst_mgr_seg#seg#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': mgr_vars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_mgr.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
 
-        # Generate one task per segment. seg0 carries only the data dependency;
-        # segN (N>0) additionally requires the previous forecast segment to be done
-        # so that managers start in order and do not race on a rewound cycle.
-        task_lines = [f'<metatask name="{self.run}_fcst_mgr">\n']
-        for seg in range(num_fcst_segments):
-            deps = []
-            dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg{seg}.txt', 'age': 60}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_started_seg{seg}', 'age': 5}
-            deps.append(rocoto.add_dependency(dep_dict))
-            if seg > 0:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_seg{seg - 1}'}
-                deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
-
-            mgr_vars = self.envars.copy()
-            mgr_vars.append(rocoto.create_envar(name='FCST_SEGMENT', value=str(seg)))
-
-            task_name = f'{self.run}_fcst_mgr_seg{seg}'
-            task_dict = {'task_name': task_name,
-                         'resources': resources,
-                         'dependency': dependencies,
-                         'envars': mgr_vars,
-                         'cycledef': self.run,
-                         'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_mgr.sh',
-                         'job_name': f'{self.pslot}_{task_name}_@H',
-                         'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                         'maxtries': '&MAXTRIES;'
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'{self.run}_fcst_mgr',
+                         'is_serial': True,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
                          }
-            task_lines.extend(rocoto.create_task(task_dict))
-        task_lines.append('</metatask>\n')
 
-        return ''.join(task_lines)
+        return rocoto.create_task(metatask_dict)
 
     def atmanlupp(self):
         postenvars = self.envars.copy()
