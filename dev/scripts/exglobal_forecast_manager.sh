@@ -31,10 +31,6 @@ source "${USHglobal}/wait_for_file.sh"
 
 cd "${DATA}" || exit 8
 
-# Remove the started sentinel left by the forecast segment job.
-# This ensures a rewound segment does not re-trigger the manager from a stale sentinel.
-rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"
-
 MGR_INIT_TIMEOUT="${FCST_MANAGER_INIT_TIMEOUT:-7200}"
 # Poll every 30 seconds up to the timeout.
 mgr_sleep_interval=30
@@ -118,3 +114,6 @@ else
     echo "INFO: Launching single serial manager on combined table ($(wc -l < "${COMBINED_TABLE}") entries)"
     "${USHglobal}/forecast_manager.sh" "all" "${COMBINED_TABLE}"
 fi
+
+# Segment copy complete — remove the sentinel so a rewound forecast can write a fresh one.
+rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"

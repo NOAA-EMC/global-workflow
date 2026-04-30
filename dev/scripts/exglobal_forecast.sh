@@ -177,7 +177,6 @@ fi
 
 cpreq "${EXECglobal}/${FCSTEXEC}" "${DATA}/"
 # Signal to the forecast manager that this segment's model run is about to start.
-# The manager clears this sentinel on startup to guard against stale triggers on rewind.
 echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} started" > "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
