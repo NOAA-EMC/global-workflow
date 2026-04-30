@@ -5,6 +5,7 @@
 # Set Up Local Variables
 #
 
+rm -rf "${DATA}/crb"
 mkdir -p -m 775 "${DATA}/crb"
 cd "${DATA}/crb" || exit 2
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
@@ -20,9 +21,7 @@ device="nc | ${metaname}"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 fend=F126
 
@@ -327,7 +326,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_${metatype}"
