@@ -7,18 +7,17 @@ set -x
 # Script description:  Forecast manager job
 #
 # Abstract: Runs alongside the UFS model (JGLOBAL_FORECAST) to transfer
-#           output products to COM as they are written by the model. Shares
-#           the DATAjob umbrella directory with the forecast job and reads
-#           product tables from COMOUT_CONF that were written by the forecast
-#           job pre-run setup phase.
+#           output products to COM as they are written by the model. Reads
+#           product tables written by the forecast job from the shared DATAjob
+#           directory (${RUN}forecast.${PDY}${cyc}).
 #
 #           Currently manages real-time copy for components that emit per-file
 #           sentinel log files (FV3ATM and WW3). Ocean and ice history files
 #           are copied at the end of the forecast job by JGLOBAL_FORECAST.
 #############################################################################
 
-export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
-export DATA="${DATAjob}/mgr.${jobid}"
+export DATAjob="${DATAROOT}/${RUN}forecast.${PDY:-}${cyc}"
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst"
 
 #{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
@@ -37,8 +36,8 @@ source "${USHglobal}/set_strict.sh"
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-# The manager shares DATAjob with the forecast job; DATAoutput is created
-# by the forecast job before the model is launched.
+# DATAjob is the shared space written by the forecast job before model launch.
+# DATAoutput and DATArestart are read-only from the manager's perspective.
 export DATArestart="${DATAjob}/restart"
 export DATAoutput="${DATAjob}/output"
 
