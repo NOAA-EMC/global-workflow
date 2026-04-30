@@ -11,9 +11,9 @@ set -x
 #           product tables written by the forecast job from the shared DATAjob
 #           directory (${RUN}forecast.${PDY}${cyc}).
 #
-#           Currently manages real-time copy for components that emit per-file
-#           sentinel log files (FV3ATM and WW3). Ocean and ice history files
-#           are copied at the end of the forecast job by JGLOBAL_FORECAST.
+#           Currently manages real-time copy for FV3ATM, WW3, CICE (gfs only),
+#           and GOCART/aerosol (gfs only). Ocean history files are copied at the
+#           end of the forecast job by JGLOBAL_FORECAST.
 #############################################################################
 
 export DATAjob="${DATAROOT}/${RUN}forecast.${PDY:-}${cyc}"
@@ -74,11 +74,16 @@ if [[ "${DO_ICE:-NO}" == "YES" ]]; then
     declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
 fi
 
+if [[ "${DO_AERO_FCST:-NO}" == "YES" ]]; then
+    declare -rx COMOUT_CHEM_HISTORY="${COMOUT}/model/chem/history"
+fi
+
 # Export COM variables needed by each forecast_manager.sh rank
 export COMOUT_CONF COMOUT_ATMOS_HISTORY COMOUT_ATMOS_MASTER
 [[ "${DO_WAVE}" == "YES" ]] && export COMOUT_WAVE_HISTORY
 [[ "${DO_OCN:-NO}" == "YES" ]] && export COMOUT_OCEAN_HISTORY
 [[ "${DO_ICE:-NO}" == "YES" ]] && export COMOUT_ICE_HISTORY
+[[ "${DO_AERO_FCST:-NO}" == "YES" ]] && export COMOUT_CHEM_HISTORY
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
