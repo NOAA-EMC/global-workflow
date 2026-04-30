@@ -11,9 +11,10 @@ set -x
 #           product tables written by the forecast job from the shared DATAjob
 #           directory (${RUN}forecast.${PDY}${cyc}).
 #
-#           Currently manages real-time copy for FV3ATM, WW3, CICE (gfs only),
-#           and GOCART/aerosol (gfs only). Ocean history files are copied at the
-#           end of the forecast job by JGLOBAL_FORECAST.
+#           Currently manages real-time copy for FV3ATM, MOM6 ocean history,
+#           WW3, CICE, and GOCART/aerosol (all gfs only). MOM6 restarts and
+#           config files are still copied at the end of the forecast job by
+#           JGLOBAL_FORECAST.
 #############################################################################
 
 export DATAjob="${DATAROOT}/${RUN}forecast.${PDY:-}${cyc}"
