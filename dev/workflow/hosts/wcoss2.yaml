@@ -11,9 +11,7 @@ STMP: '/lfs/h2/emc/stmp/${USER}'
 PTMP: '/lfs/h2/emc/ptmp/${USER}'
 NOSCRUB: '${HOMEDIR}'
 COMINsyn: '/lfs/h1/ops/prod/com/gfs/v16.3/syndat'
-COMINecmwf: '/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ecmwf'
 COMINnam: '/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam'
-COMINukmet: '/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: pbspro
 QUEUE: 'dev'
