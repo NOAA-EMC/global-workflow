@@ -203,26 +203,15 @@ EOF
 
     if ((10#${cyc} % 12 == 0)); then
 
-        #
-        # There are some differences between 00z and 12z
-        # The YEST string makes sense (but is inconsistently used)
-        # The others I'm not sure why they differ. - WCK
-        #
         case ${cyc} in
             00)
                 type_param="TYPE"
                 hlsym="1.2;1.2//21//hw"
-                wind=""
-                yest=" YEST"
-                run_cmd="run"
                 extra_cmd="\nHLSYM   = 1.2;1.2//21//hw\nTEXT    = s/21//hw"
                 ;;
             12)
                 type_param="CTYPE"
                 hlsym="1;1//21//hw"
-                wind="0"
-                yest=""
-                run_cmd="ru"
                 extra_cmd=""
                 ;;
             *)

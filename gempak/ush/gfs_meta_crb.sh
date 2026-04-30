@@ -24,9 +24,6 @@ if [[ ! -L ${COMIN} ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
-# DEFINE YESTERDAY
-PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
-
 fend=F126
 
 export pgm=gdplot2_nc

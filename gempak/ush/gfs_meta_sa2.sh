@@ -28,9 +28,6 @@ device="nc | ${metaname}"
 
 grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
 
-# DEFINE YESTERDAY
-PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
-
 "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
 GDFILE	= ${grid1}
