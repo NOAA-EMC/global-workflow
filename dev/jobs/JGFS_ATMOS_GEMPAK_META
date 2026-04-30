@@ -6,7 +6,7 @@ set -x
 ############################################
 # GFS GEMPAK META PRODUCT GENERATION
 ############################################
-source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempakmeta"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -29,17 +29,6 @@ export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
-
-#############################################
-#set the fcst hrs for all the cycles
-#############################################
-export fhbeg=0
-export fhend=384
-export fhinc=12
-
-if [[ "${fhend}" -gt "${FHMAX_GFS}" ]]; then
-    export fhend="${FHMAX_GFS}"
-fi
 
 export COMPONENT="atmos"
 
