@@ -19,7 +19,7 @@ PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Execute staging
-"${SCRglobal}/exglobal_stage_ic.py"
+"${SCRglobal}/exglobal_stage_ic.py" && true
 err=$?
 
 ###############################################################
