@@ -38,7 +38,7 @@ rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"
 MGR_INIT_TIMEOUT="${FCST_MANAGER_INIT_TIMEOUT:-7200}"
 # Poll every 30 seconds up to the timeout.
 mgr_sleep_interval=30
-mgr_max_tries=$(( MGR_INIT_TIMEOUT / mgr_sleep_interval ))
+mgr_max_tries=$((MGR_INIT_TIMEOUT / mgr_sleep_interval))
 
 # Build a command file with one line per active component.
 # Each line is a complete command passed to run_mpmd.sh for MPMD execution.
