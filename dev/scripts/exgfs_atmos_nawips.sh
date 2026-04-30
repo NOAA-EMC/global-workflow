@@ -22,7 +22,7 @@ cd "${DATA_RUN}" || exit 1
 # "Import" functions used in this script
 source "${USHglobal}/product_functions.sh"
 
-NAGRIB="${GEMEXE}/nagrib2"
+NAGRIB="${GEMEXE}/nagrib2_nc"
 
 cpyfil=gds
 garea=dset
@@ -92,7 +92,7 @@ else
     cpreq "${GRIBIN}" "grib${fhr3}"
 fi
 
-export pgm="nagrib2 F${fhr3}"
+export pgm="nagrib2_nc F${fhr3}"
 startmsg
 
 ${NAGRIB} << EOF
@@ -115,13 +115,7 @@ EOF
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
-fi
-
-"${GEMEXE}/gpend"
-export err=$?
-if [[ ${err} -ne 0 ]]; then
-    err_exit "${GEMEXE}/gpend failed!"
+    err_exit "Failed to convert ${grid} grid from GRIB to GEMPAK for forecast hour ${fhr3}"
 fi
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"

@@ -42,7 +42,7 @@ if [[ ! -d ${TANKverf_ozn} ]]; then mkdir -p "${TANKverf_ozn}"; fi
 "${SCRglobal}/exgdas_atmos_verfozn.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate ozone monitor products"
 fi
 
 ################################

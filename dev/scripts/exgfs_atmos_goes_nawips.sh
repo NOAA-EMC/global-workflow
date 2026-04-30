@@ -19,7 +19,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
 done
 
 NAGRIB_TABLE="${HOMEglobal}/gempak/fix/nagrib.tbl"
-NAGRIB="${GEMEXE}/nagrib2"
+NAGRIB="${GEMEXE}/nagrib2_nc"
 
 entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}' || echo "")
 
@@ -86,7 +86,5 @@ if [[ ${SENDDBN} == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 fi
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

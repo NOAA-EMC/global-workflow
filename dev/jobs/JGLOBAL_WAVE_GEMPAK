@@ -38,7 +38,7 @@ if [[ ! -d ${COMOUT_WAVE_GEMPAK} ]]; then mkdir -p "${COMOUT_WAVE_GEMPAK}"; fi
 "${SCRglobal}/exgfs_wave_nawips.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate wave gempak/AWIPS products."
 fi
 ###################################
 

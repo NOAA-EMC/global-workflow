@@ -47,7 +47,7 @@ EXSCRIPT=${SNOWANLPY:-${SCRglobal}/exglobal_snow_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to calculate the snow analysis for ${RUN} at ${PDY}${cyc}"
 fi
 
 ##############################################
@@ -67,7 +67,7 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to change directory to ${DATAROOT}"
 fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

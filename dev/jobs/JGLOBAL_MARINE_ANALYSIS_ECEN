@@ -58,7 +58,7 @@ EXSCRIPT=${GDASOCNCENPY:-${HOMEglobal}/scripts/exglobal_marine_analysis_ecen.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to recenter the ocean and/or ice analyses"
 fi
 
 ##############################################
@@ -78,7 +78,7 @@ fi
 cd "${DATAROOT/enkf/}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to change directory to navigate to DATAROOT!"
 fi
 
 exit 0

@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+########## config.gempakmeta ##########
+# GFS gempakmeta step specific
+
+echo "BEGIN: config.gempakmeta"
+
+#############################################
+#set the fcst hrs for all the cycles
+#############################################
+# The meta task has a maximum forecast hour to process of 384.
+fhend_max=384
+
+if [[ ${FHMAX_GFS} -lt ${fhend_max} ]]; then
+  fhend=${FHMAX_GFS}
+else
+  fhend=${fhend_max}
+fi
+
+export fhend
+export fhbeg=0
+export fhinc=12
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" gempakmeta
+
+echo "END: config.gempakmeta"

@@ -46,7 +46,7 @@ export USE_CFP=YES
 ${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to calculate the surface analysis"
 fi
 
 ##############################################

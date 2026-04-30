@@ -47,7 +47,7 @@ export BKGFREQ=1 # for hourly relocation
 ${TROPCYQCRELOSH:-${SCRglobal}/exglobal_atmos_tropcy_qc_reloc.sh}
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run tropical cyclone QC and/or relocation"
 fi
 
 ##############################################
