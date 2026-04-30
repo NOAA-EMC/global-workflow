@@ -51,30 +51,6 @@ export SLEEP_INT=${SLEEP_TIME:-5}
 
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
-# TODO: Does this section do anything? I retained if for clarity of
-# changes/updates, but it does not appear to do anything.
-
-####################################
-# Check if this is a restart
-####################################
-if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
-    modelrecvy=$(cat < "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
-    recvy_cyc="${modelrecvy:8:2}"
-    recvy_shour="${modelrecvy:10:13}"
-
-    if [[ ${RERUN} == "NO" ]]; then
-        NEW_SHOUR=$((recvy_shour + FHINC))
-        if ((NEW_SHOUR >= SHOUR)); then
-            export SHOUR="${NEW_SHOUR}"
-        fi
-        if ((recvy_shour >= FHOUR)); then
-            echo "Forecast Pgrb Generation Already Completed to ${FHOUR}"
-        else
-            echo "Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}"
-        fi
-    fi
-fi
-
 ##############################################################################
 # Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
 ##############################################################################
