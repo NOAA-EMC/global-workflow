@@ -24,10 +24,6 @@ if [[ ! -L ${COMIN} ]]; then
     ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 fi
 
-#
-# DEFINE YESTERDAY
-PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
-#
 case ${cyc} in
     00)
         gdat="F000-F126-06"
