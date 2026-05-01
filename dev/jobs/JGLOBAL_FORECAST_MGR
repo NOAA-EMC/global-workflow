@@ -84,7 +84,7 @@ export COMOUT_CONF COMOUT_ATMOS_HISTORY COMOUT_ATMOS_MASTER
 # Begin JOB SPECIFIC work
 ##############################################
 
-: "${FORECASTMGRSH:=${SCRglobal}/exglobal_forecast_manager.sh}"
+: "${FORECASTMGRSH:=${SCRgfs}/exglobal_forecast_manager.sh}"
 "${FORECASTMGRSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
