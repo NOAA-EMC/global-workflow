@@ -111,7 +111,7 @@ class GCAFSCycledAppConfig(AppConfig):
             # Don't include aerosol_init for cycled runs
             # aerosol_init is only needed for forecast-only mode
 
-        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'fcst', 'fcst_manager', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
@@ -217,6 +217,7 @@ class GCAFSCycledAppConfig(AppConfig):
                     task_names[run] += ['prep_emissions']
 
                 task_names[run] += ['fcst']
+                task_names[run] += ['fcst_manager']
 
                 if options['do_upp']:
                     task_names[run] += ['atmupp']

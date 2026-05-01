@@ -28,8 +28,8 @@ GOCART_postdet() {
     # Determine whether to use the forecast manager for GOCART output.
     local use_mgr_aer="NO"
     case "${RUN}" in
-        gfs) use_mgr_aer="YES" ;;
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+        gfs | gcafs) use_mgr_aer="YES" ;;
+            # TODO: enable forecast manager for enkfgfs, gefs, sfs once tested
         *) ;;
     esac
     local aer_table="${DATAjob}/aer_products_seg${FCST_SEGMENT:-0}.txt"
@@ -76,9 +76,9 @@ GOCART_output_fh() {
 GOCART_out() {
     echo "SUB ${FUNCNAME[0]}: Copying output data for GOCART"
 
-    # When the forecast manager handles GOCART history (gfs), skip the copy here.
+    # When the forecast manager handles GOCART history (gfs, gcafs), skip the copy here.
     case "${RUN}" in
-        gfs)
+        gfs | gcafs)
             echo "INFO: GOCART history files are managed by the forecast manager; skipping copy."
             return 0
             ;;

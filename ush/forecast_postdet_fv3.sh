@@ -318,9 +318,9 @@ EOF
         # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
         local use_mgr="NO"
         case "${RUN}" in
-            gfs) use_mgr="YES" ;;
-                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
-                # gefs | sfs | gcafs) use_mgr="YES" ;;
+            gfs | gcafs) use_mgr="YES" ;;
+                # TODO: enable forecast manager for gefs, sfs once tested
+                # gefs | sfs) use_mgr="YES" ;;
             *) ;;
         esac
 

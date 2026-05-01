@@ -777,6 +777,49 @@ class GCAFSTasks(Tasks):
 
         return task
 
+    def fcst_manager(self):
+        # Product tables are written to DATAjob (shared between fcst and fcst_manager jobs).
+        # DATAjob = ${DATAROOT}/${RUN}forecast.${PDY}${cyc}
+        stmp = self._base.get('STMP')
+        pslot = self._base.get('PSLOT')
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}forecast.@Y@m@d@H"
+        deps = []
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_started_seg#seg#', 'age': 5}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        if self.run in ['gcafs']:
+            num_fcst_segments = len(self.options['fcst_segments']) - 1
+        else:
+            num_fcst_segments = 1
+
+        mgr_vars = self.envars.copy()
+        mgr_vars.append(rocoto.create_envar(name='FCST_SEGMENT', value='#seg#'))
+
+        resources = self.get_resource('fcst_manager')
+        task_name = f'{self.run}_fcst_manager_seg#seg#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': mgr_vars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'{self.run}_fcst_manager',
+                         'is_serial': True,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        return rocoto.create_task(metatask_dict)
+
     def efcs(self):
         """
         Create tasks for the ensemble forecast members.
@@ -1351,6 +1394,9 @@ class GCAFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
+        if 'fcst_manager' in self._configs:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if int(self.options['nens'] > 0):
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_ensstat'}
             deps.append(rocoto.add_dependency(dep_dict))
