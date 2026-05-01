@@ -8,7 +8,6 @@
 #                components: FV3 (Atmosphere), WW3 (Waves), MOM6 (Ocean),
 #                CICE (Sea Ice), GOCART (Aerosols), and CMEPS (Coupler).
 
-
 ################################################################################
 # forecast_postdet_fv3.sh
 ################################################################################
