@@ -1105,11 +1105,11 @@ class GFSTasks(Tasks):
 
     def fcst_manager(self):
         # Product tables are written to DATAjob (shared between fcst and fcst_manager jobs).
-        # DATAjob = ${DATAROOT}/${RUN}forecast.${PDY}${cyc}
+        # DATAjob = ${DATAROOT}/${RUN}_forecast.${PDY}${cyc}
         # Use bare @Y@m@d@H so _add_data_tag wraps the whole path in one <cyclestr>.
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
-        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}forecast.@Y@m@d@H"
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}_forecast.@Y@m@d@H"
         # Require both the product table (written at postdet) AND the started sentinel
         # (written just before model launch). The sentinel prevents stale product tables
         # from triggering manager segments immediately after a rewind.

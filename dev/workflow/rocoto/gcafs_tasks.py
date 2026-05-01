@@ -779,10 +779,10 @@ class GCAFSTasks(Tasks):
 
     def fcst_manager(self):
         # Product tables are written to DATAjob (shared between fcst and fcst_manager jobs).
-        # DATAjob = ${DATAROOT}/${RUN}forecast.${PDY}${cyc}
+        # DATAjob = ${DATAROOT}/${RUN}_forecast.${PDY}${cyc}
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
-        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}forecast.@Y@m@d@H"
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}_forecast.@Y@m@d@H"
         deps = []
         dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))

@@ -9,7 +9,7 @@ set -x
 # Abstract: Runs alongside the UFS model (JGLOBAL_FORECAST) to transfer
 #           output products to COM as they are written by the model. Reads
 #           product tables written by the forecast job from the shared DATAjob
-#           directory (${RUN}forecast.${PDY}${cyc}).
+#           directory (${RUN}_forecast.${PDY}${cyc}).
 #
 #           Currently manages real-time copy for FV3ATM, MOM6 ocean history,
 #           WW3, CICE, and GOCART/aerosol (all gfs only). MOM6 restarts and
@@ -17,7 +17,7 @@ set -x
 #           JGLOBAL_FORECAST.
 #############################################################################
 
-export DATAjob="${DATAROOT}/${RUN}forecast.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
 export DATA="${DATA:-${DATAROOT}/${jobid}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst"
 
