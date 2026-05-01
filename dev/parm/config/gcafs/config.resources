@@ -19,7 +19,7 @@ if (( $# != 1 )); then
     echo "prep_emissions"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "offlineanl"
-    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
+    echo "anal sfcanl analcalc analdiag anlstat fcst echgres fcst_manager"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
@@ -1352,6 +1352,17 @@ case ${step} in
     threads_per_task=1
     memory="4GB"
     tasks_per_node=1
+    ;;
+
+  "fcst_manager")
+    # Forecast manager: one MPMD rank per active component (ATM, GOCART).
+    # Polls DATAoutput for sentinel log files and copies products to COM in real time.
+    # Walltime must be long enough to cover the full forecast run.
+    ntasks=2
+    tasks_per_node=2
+    threads_per_task=1
+    memory="8GB"
+    walltime="08:00:00"
     ;;
 
   *)
