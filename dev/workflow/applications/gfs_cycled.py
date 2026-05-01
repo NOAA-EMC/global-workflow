@@ -178,7 +178,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['metp']
 
         if options['do_gempak']:
-            configs += ['gempak']
+            configs += ['gempak', 'gempakmeta']
             if options['do_goes']:
                 configs += ['npoess']
 
