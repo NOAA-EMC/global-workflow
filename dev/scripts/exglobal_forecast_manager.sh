@@ -94,6 +94,10 @@ if [[ "${DO_AERO_FCST:-NO}" == "YES" ]]; then
     echo "${USHglobal}/forecast_manager.sh aer ${AER_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
 fi
 
+# Tell forecast_manager.sh where to find the model-completion sentinel so it can
+# exit gracefully when the model is done but some product files were not produced.
+export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+
 FCST_MANAGER_MPMD="${FCST_MANAGER_MPMD:-YES}"
 
 if [[ "${FCST_MANAGER_MPMD}" == "YES" ]]; then
@@ -115,5 +119,5 @@ else
     "${USHglobal}/forecast_manager.sh" "all" "${COMBINED_TABLE}"
 fi
 
-# Segment copy complete — remove the sentinel so a rewound forecast can write a fresh one.
-rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"
+# Segment copy complete — remove sentinels so a rewound forecast can write fresh ones.
+rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}" "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"

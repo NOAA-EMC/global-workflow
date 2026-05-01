@@ -183,6 +183,8 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "The forecast failed to run to completion!"
 fi
+# Signal to the forecast manager that the model run has completed successfully for this segment.
+echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} done" > "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
 
 FV3_out
 if [[ "${cplflx}" == ".true." ]]; then
