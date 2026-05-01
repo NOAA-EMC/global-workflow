@@ -30,30 +30,37 @@ FCST_MGR_CMDFILE="${DATA}/fcst_mgr_cmdfile"
 rm -f "${FCST_MGR_CMDFILE}"
 
 ATM_TABLE="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
-"${USHglobal}/wait_for_table.sh" "ATM" "${ATM_TABLE}" "${MGR_INIT_TIMEOUT}"
-echo "${USHglobal}/forecast_mgr.sh atm ${ATM_TABLE}" >> "${FCST_MGR_CMDFILE}"
+"${USHgfs}/wait_for_table.sh" "ATM" "${ATM_TABLE}" "${MGR_INIT_TIMEOUT}"
+echo "${USHgfs}/forecast_mgr.sh atm ${ATM_TABLE}" >> "${FCST_MGR_CMDFILE}"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
-    "${USHglobal}/wait_for_table.sh" "WW3" "${WW3_TABLE}" "${MGR_INIT_TIMEOUT}"
-    echo "${USHglobal}/forecast_mgr.sh ww3 ${WW3_TABLE}" >> "${FCST_MGR_CMDFILE}"
+    "${USHgfs}/wait_for_table.sh" "WW3" "${WW3_TABLE}" "${MGR_INIT_TIMEOUT}"
+    echo "${USHgfs}/forecast_mgr.sh ww3 ${WW3_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi
 
 if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
-    "${USHglobal}/wait_for_table.sh" "OCN" "${OCN_TABLE}" "${MGR_INIT_TIMEOUT}"
-    echo "${USHglobal}/forecast_mgr.sh ocn ${OCN_TABLE}" >> "${FCST_MGR_CMDFILE}"
+    "${USHgfs}/wait_for_table.sh" "OCN" "${OCN_TABLE}" "${MGR_INIT_TIMEOUT}"
+    echo "${USHgfs}/forecast_mgr.sh ocn ${OCN_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi
 
 if [[ "${DO_ICE:-NO}" == "YES" ]]; then
     ICE_TABLE="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
-    "${USHglobal}/wait_for_table.sh" "ICE" "${ICE_TABLE}" "${MGR_INIT_TIMEOUT}"
-    echo "${USHglobal}/forecast_mgr.sh ice ${ICE_TABLE}" >> "${FCST_MGR_CMDFILE}"
+    "${USHgfs}/wait_for_table.sh" "ICE" "${ICE_TABLE}" "${MGR_INIT_TIMEOUT}"
+    echo "${USHgfs}/forecast_mgr.sh ice ${ICE_TABLE}" >> "${FCST_MGR_CMDFILE}"
 fi
 
 num_ranks=$(wc -l < "${FCST_MGR_CMDFILE}")
 echo "INFO: Launching ${num_ranks} MPMD component manager rank(s)"
 
+# Tell forecast_mgr.sh where to find the model-completion sentinel so it can
+# exit gracefully when the model is done but some product files were not produced.
+export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
 "${USHgfs}/run_mpmd.sh" "${FCST_MGR_CMDFILE}"
+
+# Segment copy complete — remove sentinels so a rewound forecast can write fresh ones.
+rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}" "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"

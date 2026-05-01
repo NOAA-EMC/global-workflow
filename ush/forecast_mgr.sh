@@ -57,8 +57,10 @@ echo "INFO [${component}]: Loaded ${count} product entries"
 
 remaining=${count}
 start_time=$(date +%s)
+fcst_done_idle=0
 
 while [[ ${remaining} -gt 0 ]]; do
+    remaining_before=${remaining}
     for (( i = 0; i < count; i++ )); do
         [[ "${done_flag[i]}" == "YES" ]] && continue
         [[ ! -f "${local_log[i]}" ]] && continue
@@ -118,14 +120,35 @@ while [[ ${remaining} -gt 0 ]]; do
 
     [[ ${remaining} -eq 0 ]] && break
 
-    # Timeout check
+    # Timeout check (fatal — hard wall enforced by batch scheduler walltime).
     elapsed=$(($(date +%s) - start_time))
     if [[ ${FCST_MGR_TIMEOUT:-0} -gt 0 && ${elapsed} -gt ${FCST_MGR_TIMEOUT} ]]; then
         echo "FATAL ERROR [${component}]: Timed out after ${elapsed}s with ${remaining} sentinels still pending" >&2
         exit 1
     fi
 
+    # Graceful exit: once the model has finished (fcst_done sentinel present), count
+    # consecutive poll cycles where no new files were processed. After
+    # FCST_MGR_DONE_IDLE_MAX idle cycles (default 3) exit with a warning for any
+    # entries the model never produced (e.g. optional GOCART output types).
+    if [[ -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" ]]; then
+        if [[ ${remaining} -lt ${remaining_before} ]]; then
+            fcst_done_idle=0
+        else
+            ((fcst_done_idle++)) || true
+            idle_max=${FCST_MGR_DONE_IDLE_MAX:-3}
+            if [[ ${fcst_done_idle} -ge ${idle_max} ]]; then
+                echo "WARN [${component}]: Model run complete; no new files for ${fcst_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model — skipping."
+                break
+            fi
+        fi
+    fi
+
     sleep "${FCST_MGR_SLEEP:-30}"
 done
 
-echo "INFO [${component}]: All ${count} product entries processed"
+if [[ ${remaining} -eq 0 ]]; then
+    echo "INFO [${component}]: All ${count} product entries processed"
+else
+    echo "INFO [${component}]: Manager exiting: $((count - remaining)) of ${count} entries processed; ${remaining} skipped (not produced by model)"
+fi
