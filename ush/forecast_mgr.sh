@@ -95,8 +95,7 @@ while [[ ${remaining} -gt 0 ]]; do
         done
 
         # Copy sentinel log last.
-        # Skip if already in COM (self-sentinel pattern: local_log == local_data means
-        # com_log == com_data, which was already copied in the data step above).
+        # Skip if already in COM (e.g. RERUN scenario where data was already copied).
         if [[ ! -f "${this_cl}" ]]; then
             cl_dir=$(dirname "${this_cl}")
             if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
