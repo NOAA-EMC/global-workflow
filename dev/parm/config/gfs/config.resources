@@ -989,6 +989,9 @@ case ${step} in
     # Forecast manager: one MPMD rank per active component (ATM, WW3, OCN, ICE).
     # Polls DATAoutput for sentinel log files and copies products to COM in real time.
     # Walltime must be long enough to cover the full forecast run.
+    # is_exclusive must be reset here because config.fcst (loaded before this file)
+    # exports is_exclusive=True; the manager does not need exclusive node access.
+    export is_exclusive=False
     ntasks=4
     tasks_per_node=4
     threads_per_task=1
