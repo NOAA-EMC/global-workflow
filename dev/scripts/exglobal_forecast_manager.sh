@@ -22,7 +22,7 @@
 #  Set environment.
 cd "${DATA}" || exit 8
 
-MANAGER_INIT_TIMEOUT="${FCST_MGR_INIT_TIMEOUT:-${FCST_MGR_INIT_TIMEOUT:-7200}}"
+MANAGER_INIT_TIMEOUT="${FCST_MGR_INIT_TIMEOUT:-7200}"
 
 # Build a command file with one line per active component.
 # Each line is a complete command passed to run_mpmd.sh for MPMD execution.
