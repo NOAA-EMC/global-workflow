@@ -43,7 +43,7 @@ else
 fi
 
 # Execute the Script
-"${SCRgfs}/exgfs_wave_post_gridded_sbs.sh" && true
+"${SCRgfs}/exglobal_wave_post_gridded.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "ex-script of gridded wave post failed!"
