@@ -3,7 +3,7 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         exwave_init.sh
+# Script name:         exglobal_wave_init.sh
 # Script description:  Creates model definition files for WW3
 #
 # Abstract: This script is the init config for the global multi_grid wave model.

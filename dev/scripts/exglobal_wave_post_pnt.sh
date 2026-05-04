@@ -3,7 +3,7 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         exgfs_wave_post_pnt.sh
+# Script name:         exglobal_wave_post_pnt.sh 
 # Script description:  Creates point output products from NetCDF WW3 point data
 #
 # Abstract: This script is the point postprocessor for the wave component in GFS.

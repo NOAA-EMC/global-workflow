@@ -3,7 +3,7 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         exgfs_wave_post_gridded_sbs.sh
+# Script name:         exglobal_wave_post_gridded.sh 
 # Script description:  Creates output products from gridded binary WW3 data
 #
 # Abstract: This script is the postprocessor for the wave component in GFS.
