@@ -291,8 +291,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.anal', 'config.eupd']
             elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
-            elif config in ['fcst_mgr']:
-                files += ['config.fcst', 'config.fcst_mgr']
+            elif config in ['fcst_manager']:
+                files += ['config.fcst', 'config.fcst_manager']
             elif config in ['atmanlinit', 'atmanlvar', 'atmanlfv3inc']:
                 files += ['config.atmanl', f'config.{config}']
             elif config in ['atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc']:

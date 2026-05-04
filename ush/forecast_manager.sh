@@ -2,7 +2,7 @@
 
 ################################################################################
 # UNIX Script Documentation Block
-# Script name:         forecast_mgr.sh
+# Script name:         forecast_manager.sh
 # Script description:  Forecast manager for a single model component
 #
 # Abstract: Called by JGLOBAL_FORECAST_MGR via "srun --multi-prog" (MPMD mode)
@@ -19,14 +19,14 @@
 #           automatically: all data files for a given sentinel are copied before
 #           the sentinel log is written to COM.
 #
-# Usage:    forecast_mgr.sh <component> <table_file>
+# Usage:    forecast_manager.sh <component> <table_file>
 #             component  - short name used in log output, e.g. "atm", "ww3",
 #                          "ocn", or "ice"
 #             table_file - absolute path to the 4-column product table file
 ################################################################################
 
-component="${1:?Usage: forecast_mgr.sh <component> <table_file>}"
-table_file="${2:?Usage: forecast_mgr.sh <component> <table_file>}"
+component="${1:?Usage: forecast_manager.sh <component> <table_file>}"
+table_file="${2:?Usage: forecast_manager.sh <component> <table_file>}"
 
 echo "INFO [${component}]: Starting manager"
 echo "INFO [${component}]: Reading product table from '${table_file}'"

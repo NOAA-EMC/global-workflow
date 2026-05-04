@@ -4,7 +4,7 @@
 ####  UNIX Script Documentation Block
 #                      .                                             .
 # Script name:         exglobal_forecast_manager.sh
-# Script description:  Launches MPMD component managers for JGLOBAL_FORECAST_MGR
+# Script description:  Launches MPMD component managers for JGLOBAL_FORECAST_MANAGER
 #
 # Abstract: Waits for product tables written by JGLOBAL_FORECAST during its
 #           pre-run setup phase, then launches one forecast_manager.sh process per
@@ -22,7 +22,7 @@
 #  Set environment.
 cd "${DATA}" || exit 8
 
-MANAGER_INIT_TIMEOUT="${FCST_MANAGER_INIT_TIMEOUT:-${FCST_MGR_INIT_TIMEOUT:-7200}}"
+MANAGER_INIT_TIMEOUT="${FCST_MGR_INIT_TIMEOUT:-${FCST_MGR_INIT_TIMEOUT:-7200}}"
 
 # Build a command file with one line per active component.
 # Each line is a complete command passed to run_mpmd.sh for MPMD execution.

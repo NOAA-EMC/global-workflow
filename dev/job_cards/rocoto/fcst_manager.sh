@@ -15,11 +15,11 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="fcst_mgr"
+export job="fcst_manager"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_FORECAST_MGR"
+"${HOMEgfs}/dev/jobs/JGLOBAL_FORECAST_MANAGER"
 status=$?
 
 exit "${status}"

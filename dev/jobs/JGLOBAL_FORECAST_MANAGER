@@ -3,7 +3,7 @@ set -x
 
 #############################################################################
 # UNIX Script Documentation Block
-# Script name:         JGLOBAL_FORECAST_MGR
+# Script name:         JGLOBAL_FORECAST_MANAGER
 # Script description:  Forecast manager job
 #
 # Abstract: Runs alongside the UFS model (JGLOBAL_FORECAST) to transfer
@@ -18,8 +18,8 @@ set -x
 #############################################################################
 
 export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
-export DATA="${DATAjob}/mgr.${jobid}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst_mgr" -c "base fcst"
+export DATA="${DATAjob}/manager.${jobid}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst"
 
 #{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
 #{% if false %}
@@ -75,7 +75,7 @@ if [[ "${DO_ICE:-NO}" == "YES" ]]; then
     declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
 fi
 
-# Export COM variables needed by each forecast_mgr.sh rank
+# Export COM variables needed by each forecast_manager.sh rank
 export COMOUT_CONF COMOUT_ATMOS_HISTORY COMOUT_ATMOS_MASTER
 [[ "${DO_WAVE}" == "YES" ]] && export COMOUT_WAVE_HISTORY
 [[ "${DO_OCN:-NO}" == "YES" ]] && export COMOUT_OCEAN_HISTORY

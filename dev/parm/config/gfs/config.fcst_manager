@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-########## config.fcst_mgr ##########
+########## config.fcst_manager ##########
 # Forecast manager specific configuration
 
-echo "BEGIN: config.fcst_mgr"
+echo "BEGIN: config.fcst_manager"
 
 # Maximum time (seconds) to wait for product tables to appear in COMOUT_CONF.
-# Must be less than the batch walltime of the fcst_mgr job.
+# Must be less than the batch walltime of the fcst_manager job.
 export FCST_MGR_INIT_TIMEOUT=7200
 
 # Maximum time (seconds) to wait for the model to finish before the manager
@@ -17,6 +17,6 @@ export FCST_MGR_TIMEOUT=0
 export FCST_MGR_SLEEP=30
 
 # Get task specific resources
-. "${EXPDIR}/config.resources" "fcst_mgr"
+. "${EXPDIR}/config.resources" "fcst_manager"
 
-echo "END: config.fcst_mgr"
+echo "END: config.fcst_manager"
