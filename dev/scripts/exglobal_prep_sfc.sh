@@ -123,9 +123,9 @@ fi
 export SNOW2MDLEXEC="${EXECgfs}/emcsfc_snow2mdl"
 
 res=${CASE_HIST:1}
-JCAP_CASE=$(($res * 2 - 2))
-LONB_CASE=$((4 * $res))
-LATB_CASE=$((2 * $res))
+JCAP_CASE=$((${res} * 2 - 2))
+LONB_CASE=$((4 * ${res}))
+LATB_CASE=$((2 * ${res}))
 
 export MODEL_SLMASK_FILE=${SLMASK:-${FIXgfs}/am/global_slmask.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
 export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXgfs}/am/global_latitudes.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
