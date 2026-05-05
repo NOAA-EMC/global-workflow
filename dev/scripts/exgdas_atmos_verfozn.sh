@@ -36,8 +36,7 @@ if [[ -s "${oznstat}" ]]; then
     fi
 
 else
-    # oznstat file not found
-    export err=1
-    err_exit "${oznstat} does not exist!"
+    echo "Warning: Oznstat file not found"
+    echo "Warning: Exiting without performing ozone verification"
 fi
 exit 0
