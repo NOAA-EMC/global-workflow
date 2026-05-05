@@ -25,8 +25,7 @@ function _usage() {
     -u Update submodules before building and/or generating experiments.
 
     -y "list of YAMLs to run"
-       If this option is not specified, the default case (C48_ATM) will be
-       run.  This option is incompatible with -G, -E, or -S.
+       This option is incompatible with -G, -E, -S, or -C.
        Example: -y "C48_ATM C48_S2SW C96C48_hybatmDA"
 
     -D Delete the RUNTESTS and DATAROOT directories if they already exist
@@ -97,7 +96,7 @@ _build=false
 _compute_build=false
 _build_flags=""
 _update_submods=false
-declare -a _yaml_list=("C48_ATM")
+declare -a _yaml_list=()
 _specified_yaml_list=false
 _yaml_dir="" # Will be set based off of HOMEglobal if not specified explicitly
 _specified_yaml_dir=false
@@ -314,6 +313,17 @@ fi
 # Resolve Initial Case Selection
 # --------------------------------------------------------------------------- #
 
+# Check that at least one case was selected via -y or -G, -E, -S, -C
+if [[ "${_specified_yaml_list}" == "false" && "${_run_all_gfs}" == "false" &&
+    "${_run_all_gefs}" == "false" && "${_run_all_gcafs}" == "false" &&
+    "${_run_all_sfs}" == "false" ]]; then
+
+    echo "No cases selected to run!"
+    echo "Please select which case(s) to run explicitly with -y \"list of case(s)\" or"
+    echo "by specifying -G (all GFS), -E (all GEFS), -C (all GCAFS) and/or -S (all SFS)."
+    exit 3
+fi
+
 # Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" ||
     "${_run_all_gefs}" == "true" ||
@@ -328,7 +338,6 @@ if [[ "${_run_all_gfs}" == "true" ||
         exit 3
     fi
 
-    _yaml_list=()
 fi
 
 # Set HOMEglobal if it wasn't set by the user
@@ -736,8 +745,10 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
         exit 14
     fi
 
-    # Pull partition and account from the first experiment's crontab
-    _first_pslot="${_yaml_list[0]}${_tag}"
+    # Pull partition and account from the first experiment's crontab (note that cases can be removed, so we must search)
+    _indexes=("${!_yaml_list[@]}")
+    _first_index="${_indexes[0]}"
+    _first_pslot="${_yaml_list[${_first_index}]}${_tag}"
     _first_cron_file="${_runtests}/EXPDIR/${_first_pslot}/${_first_pslot}.crontab"
     _master_log="${_runtests}/EXPDIR/rocoto_master_run.log"
 
