@@ -41,7 +41,7 @@ EXSCRIPT=${GDASAEROBMATPY:-${SCRglobal}/exgdas_aero_analysis_generate_bmatrix.py
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate bmatrix for aerosol analysis"
 fi
 
 ##############################################
@@ -61,7 +61,7 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to change directory to ${DATAROOT}"
 fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

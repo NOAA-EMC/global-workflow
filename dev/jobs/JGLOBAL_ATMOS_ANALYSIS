@@ -68,7 +68,7 @@ export LEVS
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to get LEVS from ${ATMGES}"
 fi
 
 if [[ "${DOHYBVAR}" == "YES" ]]; then
@@ -102,7 +102,7 @@ fi
 ${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run the GSI atmospheric analysis"
 fi
 
 ##############################################

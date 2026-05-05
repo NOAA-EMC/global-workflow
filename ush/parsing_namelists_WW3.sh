@@ -1,5 +1,14 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: parsing_namelists_WW3.sh
+#
+#   DESCRIPTION: Prepares the environment and dynamically renders the configuration
+#                file required by the WAVEWATCH III (WW3) model.
+#                The function stages the required buoy location file
+#                and parses the desired input methods for ice and current coupling.
+
 WW3_namelists() {
 
     # WW3 namelists/input generation

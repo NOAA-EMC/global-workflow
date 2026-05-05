@@ -1,4 +1,16 @@
 #!/bin/bash
+
+#===============================================================================
+#
+#   FILE: module-setup.sh
+#
+#   DESCRIPTION: This script initializes the environment module system (e.g., Lmod)
+#                and establishes a clean baseline by purging or resetting currently
+#                loaded modules. It dynamically adapts to the host machine by
+#                sourcing a detection script and applying the correct initialization
+#                paths and default module parameters for various supported HPC
+#                and cloud platforms.
+
 set -u
 
 source "${HOMEglobal}/ush/detect_machine.sh"

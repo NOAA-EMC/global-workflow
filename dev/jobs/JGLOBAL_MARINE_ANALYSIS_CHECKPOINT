@@ -35,7 +35,7 @@ EXSCRIPT=${GDASMARINEANALYSIS:-${SCRglobal}/exglobal_marine_analysis_checkpoint.
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to update the ocean increment and/or ice restarts"
 fi
 
 ##############################################
