@@ -119,7 +119,7 @@ cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${ABIASe}" "satbias_in"
 flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
 for ftype in ${flist}; do
     fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}"
-    if [[ -f "${fname}" ]]; then
+    if [[ -s "${fname}" ]]; then
         tar -xvf "${fname}"
     fi
 done
