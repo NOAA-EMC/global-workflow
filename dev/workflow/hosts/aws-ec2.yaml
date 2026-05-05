@@ -1,5 +1,5 @@
 # Paths
-IODADIR: '/lustre/sharedGWdata/global/dump_nr'
+IODADIR: '/lustre/sharedGWdata/global/dump_ioda_nr'
 DMPDIR: '/lustre/sharedGWdata/global/dump_nr'
 BASE_GIT: '/lustre/global_externals'
 BASE_DATA: '/lustre/data'
