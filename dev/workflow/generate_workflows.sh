@@ -764,15 +764,15 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
 
     {
         printf "\n"
-        printf "#################### ${master_job_name} ####################\n"
+        echo "#################### ${master_job_name} ####################\n"
         printf "%s\n" "${_scron_partition}"
         printf "%s\n" "${_scron_account}"
-        printf "#SCRON --job-name=${master_job_name}\n"
-        printf "#SCRON --output=%s\n" "${_master_log}"
-        printf "#SCRON --time=00:10:00\n"
-        printf "#SCRON --dependency=singleton\n"
+        echo "#SCRON --job-name=${master_job_name}\n"
+        echo "#SCRON --output=%s\n" "${_master_log}"
+        echo "#SCRON --time=00:10:00\n"
+        echo "#SCRON --dependency=singleton\n"
         printf "*/5 * * * * %s\n" "${_master_script}"
-        printf "#################################################################\n"
+        echo "#################################################################\n"
         printf "\n"
     } >> tests.cron
 fi
