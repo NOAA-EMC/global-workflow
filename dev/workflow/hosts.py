@@ -16,7 +16,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'URSA', 'ORION', 'HERCULES', 'WCOSS2', 'CONTAINER',
-                       'GAEAC6', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
+                       'GAEAC6', 'DERECHO', 'AWSPW', 'AZUREPW', 'GOOGLEPW']
 
     def __init__(self, host=None):
 
@@ -87,6 +87,8 @@ class Host:
             self.machine = 'WCOSS2'
         elif os.path.exists('/gpfs/f6'):
             self.machine = 'GAEAC6'
+        elif os.path.exists('/gpfs/csfs1'):
+            self.machine = 'DERECHO'
         elif container is not None:
             self.machine = 'CONTAINER'
         elif pw_csp != "UNKNOWN":

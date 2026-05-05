@@ -1,4 +1,17 @@
 #!/usr/bin/env perl
+
+#===============================================================================
+#
+#  FILE: WAM_XML_to_ASCII.pl
+#
+#  DESCRIPTION: Parses space weather data (F10.7 and Kp indices) from an XML
+#               input file (wam_input2.xsd) and converts it into a formatted
+#               ASCII text file (wam_input.asc) suitable for downstream processing.
+#
+#  INPUT: wam_input2.xsd (Expected to contain 'issue-date',
+#        'f10-81-avg-currentday', and an array of 'data-item' nodes).
+#  OUTPUT: wam_input.asc (Formatted ASCII table containing 56 records of
+#          Date_Time, F10, Kp, F10Flag, and KpFlag).
 use strict;
 use warnings;
 

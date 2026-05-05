@@ -42,7 +42,7 @@ EXSCRIPT=${GDASAEROFINALPY:-${SCRglobal}/exglobal_aero_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to finalize aerosol analysis"
 fi
 
 ##############################################
@@ -62,7 +62,7 @@ fi
 cd "${DATAROOT}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to navigate to DATAROOT!"
 fi
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

@@ -33,7 +33,7 @@ EXSCRIPT=${GDASPREPOCNOBSPY:-${SCRglobal}/exglobal_prep_ocean_obs.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to prepare ocean observations for assimilation"
 fi
 
 ##############################################

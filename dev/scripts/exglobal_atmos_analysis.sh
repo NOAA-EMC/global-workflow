@@ -889,10 +889,14 @@ if [[ ${RUN_SELECT} == "YES" ]]; then
         rm -f obsinput.tar
     fi
     ${NLN} "${SELECT_OBS}" obsinput.tar
-    ${CHGRP_CMD} obs_input.*
+    if [[ "${CHGRP_RSTPROD:-YES}" != "NO" ]]; then
+        ${CHGRP_CMD} obs_input.*
+    fi
     tar -cvf obsinput.tar obs_input.*
-    chmod 750 "${SELECT_OBS}"
-    ${CHGRP_CMD} "${SELECT_OBS}"
+    if [[ "${CHGRP_RSTPROD:-YES}" != "NO" ]]; then
+        chmod 750 "${SELECT_OBS}"
+        ${CHGRP_CMD} "${SELECT_OBS}"
+    fi
     rm -f obsinput.tar
     echo "$(date) END tar obs_input" >&2
 fi

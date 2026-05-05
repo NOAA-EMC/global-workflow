@@ -62,10 +62,14 @@ case ${machine} in
               mem_node_max="500GB"
     ;;
   "AWS-EC2")
-    export PARTITION_BATCH="compute"
-    npe_node_max=48
-    max_tasks_per_node=48
-    mem_node_max="192GB"
+              export PARTITION_BATCH="compute"
+              npe_node_max=48
+              max_tasks_per_node=48
+              mem_node_max="192GB"
+    ;;
+  "DERECHO")
+              max_tasks_per_node=128
+              mem_node_max="230GB"
     ;;
   "AWSPW")
     export PARTITION_BATCH="compute"
@@ -1382,7 +1386,7 @@ case ${step} in
 
   "gempak")
     # Walltime is per forecast hour; will be multipled by group size
-    walltime="00:05:00"
+    walltime="00:10:00"
     threads_per_task=1
     if [[ "${RUN}" = *gdas ]]; then
       ntasks=2
@@ -1393,6 +1397,15 @@ case ${step} in
       tasks_per_node=28
       memory="8GB"
     fi
+    prepost=True
+    ;;
+
+  "gempakmeta")
+    walltime="00:15:00"
+    threads_per_task=1
+    ntasks=28
+    tasks_per_node=28
+    memory="40GB"
     prepost=True
     ;;
 

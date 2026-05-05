@@ -75,6 +75,7 @@ case "${machine}" in
     "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
     "gaeac6") FIX_DIR="/gpfs/f6/drsa-precip3/world-shared/role.glopara/fix" ;;
     "aws-ec2") FIX_DIR="/lustre/sharedGWdata/fix" ;;
+    "derecho") FIX_DIR="/lustre/desc1/p/nral0032/global/data/fix" ;;
     "noaacloud") FIX_DIR="/lustre/fix" ;;
     *)
         echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"

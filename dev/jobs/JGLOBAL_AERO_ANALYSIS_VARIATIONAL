@@ -34,7 +34,7 @@ EXSCRIPT=${GDASAEROVARSH:-${SCRglobal}/exglobal_aero_analysis_variational.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run variational aerosol analysis"
 fi
 
 ##############################################

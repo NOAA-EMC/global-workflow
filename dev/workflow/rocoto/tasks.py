@@ -107,6 +107,7 @@ class Tasks:
         # Check the system configuration
         base = self._base
         self.clusters_batch = _validate_system_key(base, 'CLUSTERS')
+        self.clusters_exclusive = _validate_system_key(base, 'CLUSTERS_EXCLUSIVE')
         self.clusters_service = _validate_system_key(base, 'CLUSTERS_SERVICE')
         self.clusters_dtn = _validate_system_key(base, 'CLUSTERS_DTN')
 
@@ -114,14 +115,17 @@ class Tasks:
         self.reservation_batch = _validate_system_key(base, 'RESERVATION')
 
         self.partition_batch = _validate_system_key(base, 'PARTITION_BATCH')
+        self.partition_exclusive = _validate_system_key(base, 'PARTITION_EXCLUSIVE')
         self.partition_service = _validate_system_key(base, 'PARTITION_SERVICE')
         self.partition_dtn = _validate_system_key(base, 'PARTITION_DTN')
 
         self.queue_batch = _validate_system_key(base, 'QUEUE')
+        self.queue_exclusive = _validate_system_key(base, 'QUEUE_EXCLUSIVE')
         self.queue_service = _validate_system_key(base, 'QUEUE_SERVICE')
         self.queue_dtn = _validate_system_key(base, 'QUEUE_DTN')
 
         self.constraint_batch = _validate_system_key(base, 'CONSTRAINT')
+        self.constraint_exclusive = _validate_system_key(base, 'CONSTRAINT_EXCLUSIVE')
         self.constraint_service = _validate_system_key(base, 'CONSTRAINT_SERVICE')
         self.constraint_dtn = _validate_system_key(base, 'CONSTRAINT_DTN')
 
@@ -413,6 +417,7 @@ class Tasks:
 
         dtn_task = task_name in Tasks.DTN_TASKS
         service_task = task_name in Tasks.SERVICE_TASKS
+        exclusive_task = task_config.get('is_exclusive', False)
 
         if task_name not in Tasks.VALID_TASKS:
             raise KeyError(f"ERROR {task_name} is not a valid task!")
@@ -424,6 +429,14 @@ class Tasks:
             task_clusters = self.clusters_service if self.clusters_service else self.clusters_batch
             task_constraint = self.constraint_service if self.constraint_service else self.constraint_batch
             task_reservation = None  # Reservations are only for batch nodes
+
+        elif exclusive_task:
+            task_queue = self.queue_exclusive if self.queue_exclusive else self.queue_batch
+            task_partition = self.partition_exclusive if self.partition_exclusive else self.partition_batch
+            task_clusters = self.clusters_exclusive if self.clusters_exclusive else self.clusters_batch
+            task_constraint = self.constraint_exclusive if self.constraint_exclusive else self.constraint_batch
+            task_reservation = self.reservation_batch
+
         elif dtn_task:
             # First check if there is a DTN queue, partition, or clusters
             # If not, then try SERVICE queue, partition, clusters
@@ -483,13 +496,13 @@ class Tasks:
                 native = '-l place=vscatter'
 
             # Set either exclusive or shared - default on WCOSS2 is exclusive when not set
-            if task_config.get('is_exclusive', False):
+            if exclusive_task:
                 native += ':exclhost'
             else:
                 native += ':shared'
 
         elif scheduler in ['slurm']:
-            if task_config.get('is_exclusive', False):
+            if exclusive_task:
                 native = '--exclusive'
             else:
                 native = '--export=NONE'

@@ -56,7 +56,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "1p00" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 1 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -68,7 +68,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "1p00" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 1 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -83,7 +83,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "0p50" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p50}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 0.5 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -95,7 +95,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "0p50" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p50}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 0.5 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -107,7 +107,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "0p50" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p50}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 0.5 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -122,7 +122,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 0.25 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -134,7 +134,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 0.25 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -146,7 +146,7 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "0p25" "${FHR3}" "GFS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 0.25 degree GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi
@@ -161,19 +161,19 @@ if [[ "${fhr}" -ge "${fhmin}" ]] && [[ "${fhr}" -le "${fhmax}" ]]; then
         "${SCRglobal}/exgfs_atmos_nawips.sh" "35km_pac" "${FHR3}" "GFS_GEMPAK_WWB" "${COMOUT_ATMOS_GEMPAK_35km_pac}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 35km Pacific GEMPAK products for forecast hour ${FHR3}"
         fi
 
         "${SCRglobal}/exgfs_atmos_nawips.sh" "35km_atl" "${FHR3}" "GFS_GEMPAK_WWB" "${COMOUT_ATMOS_GEMPAK_35km_atl}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 35km Atlantic GEMPAK products for forecast hour ${FHR3}"
         fi
 
         "${SCRglobal}/exgfs_atmos_nawips.sh" "40km" "${FHR3}" "GFS_GEMPAK_WWB" "${COMOUT_ATMOS_GEMPAK_40km}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            err_exit
+            err_exit "Failed to generate 40km global ocean GEMPAK products for forecast hour ${FHR3}"
         fi
     fi
 fi

@@ -34,7 +34,8 @@ case $(hostname -f) in
     ufe1[0-6]) MACHINE_ID=ursa ;; ### ursa10-16
     uecflow01) MACHINE_ID=ursa ;; ### ursaecflow01
 
-    s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
+    derecho[1-8].hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho1-8
+    dec*) MACHINE_ID=derecho ;;                             ### derech compute node
 
     ip-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
     compute-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
@@ -102,6 +103,9 @@ elif [[ -d /data/prod ]]; then
 elif [[ -d /opt/spack-stack && -d /lustre ]]; then
     # We are on AWS EC2.
     MACHINE_ID=aws-ec2
+elif [[ -d /glade/u ]]; then
+    # We are on DERECHO.
+    MACHINE_ID=derecho
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

@@ -55,7 +55,7 @@ export USE_CFP=YES
 ${ENKFRESFCSH:-${SCRglobal}/exglobal_enkf_sfc.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to calculate the ensemble surface analysis"
 fi
 
 ##############################################

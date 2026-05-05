@@ -58,7 +58,7 @@ EXSCRIPT=${ANLSTATSPY:-${SCRglobal}/exglobal_analysis_stats.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate analysis statistics for ${RUN} ${PDY}${cyc}"
 fi
 
 ##############################################

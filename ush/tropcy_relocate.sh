@@ -187,7 +187,8 @@ if [[ "${err0}" -ne 0 ]]; then
     #  problem with obtaining date record so exit
     export err="${err0}"
     msg="FATAL ERROR: problem with obtaining date record"
-    err_exit "${msg}"
+    echo "${msg}"
+    exit "${err}"
 fi
 
 modhr=$((cyc % 3))
@@ -232,9 +233,8 @@ if [[ "${modhr}" -ne 0 ]]; then
 
     #  if center date/time for relocation processing isn't a multiple of 3-hrs, exit
     #  -----------------------------------------------------------------------------
-    export err=9
-    msg="FATAL ERROR: cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs"
-    err_exit "${msg}"
+    echo "FATAL ERROR: cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs"
+    exit 9
 fi
 
 for fhr in 6 12; do
@@ -312,9 +312,8 @@ EOF
         errges=$?
         if [[ "${errges}" -ne 0 ]]; then
             #  problem obtaining global sigma first guess so exit
-            export err="${errges}"
-            msg="FATAL ERROR: problem obtaining global sigma guess valid ${fhr} hrs relative to center relocation date/time"
-            err_exit "${msg}"
+            echo "FATAL ERROR: problem obtaining global sigma guess valid ${fhr} hrs relative to center relocation date/time"
+            exit "${errges}"
         fi
 
         #  For center time sigma guess file obtained via getges, store pathname from
@@ -355,9 +354,8 @@ EOF
         errges=$?
         if [[ "${errges}" -ne 0 ]]; then
             #  problem obtaining global pressure grib guess so exit
-            export err="${errges}"
-            msg="FATAL ERROR: problem obtaining global pressure grib guess valid ${fhr} hrs relative to center relocation date/time;"
-            err_exit "${msg}"
+            echo "FATAL ERROR: problem obtaining global pressure grib guess valid ${fhr} hrs relative to center relocation date/time;"
+            exit "${errges}"
         fi
         cat << EOF
 
@@ -427,9 +425,8 @@ else
 
         #  problem: script tropcy_relocate_extrkr.sh failed
         #  ------------------------------------------------
-        export err
         echo "FATAL ERROR: ${USHglobal}/tropcy_relocate_extrkr.sh failed"
-        err_exit "${msg}"
+        exit "${err}"
     fi
 
     #  relocate model tropical cyclone vortices in ges sigma files
@@ -501,7 +498,7 @@ else
     echo
     if [[ "${errSTATUS}" -gt '0' ]]; then
         export err="${errSTATUS}"
-        err_exit
+        exit "${err}"
     fi
 
     #  further check for success
@@ -525,9 +522,8 @@ else
             #  problem: $sges.relocate does not exist
             #  --------------------------------------
 
-            export err=9
-            msg="FATAL ERROR: The file ${sges}.relocate does not exist"
-            err_exit "${msg}"
+            echo "FATAL ERROR: The file ${sges}.relocate does not exist"
+            exit 9
         fi
     done
 

@@ -34,7 +34,7 @@ EXSCRIPT=${GDASATMRUNSH:-${SCRglobal}/exglobal_atm_analysis_fv3_increment.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to calculate the atmospheric FV3 increment"
 fi
 
 ##############################################

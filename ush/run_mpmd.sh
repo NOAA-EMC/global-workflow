@@ -46,7 +46,9 @@ else
 fi
 
 # Check if we are running a supported launcher
-if [[ "${_mpmd_launcher}" == "srun" || "${_mpmd_launcher}" == "mpiexec" ]]; then
+if [[ "${_mpmd_launcher}" == "unsupported" ]]; then
+    USE_CFP="NO"
+else
     echo "INFO: Detected launcher '${_mpmd_launcher}', will attempt to run in MPMD mode if USE_CFP is set to YES"
     if [[ -z "${max_tasks_per_node:-}" || -z "${ntasks:-}" ]]; then
         echo "WARNING: max_tasks_per_node and/or ntasks is not set, disabling MPMD mode."
@@ -55,8 +57,6 @@ if [[ "${_mpmd_launcher}" == "srun" || "${_mpmd_launcher}" == "mpiexec" ]]; then
         USE_CFP=${USE_CFP:-"NO"}
         max_tasks_per_node=$((ntasks < max_tasks_per_node ? ntasks : max_tasks_per_node))
     fi
-else
-    USE_CFP="NO"
 fi
 
 # If USE_CFP is not set or is not YES, run in serial mode
@@ -67,6 +67,21 @@ if [[ "${USE_CFP}" != "YES" ]]; then
     rc=$?
     cat mpmd.out
     exit "${rc}"
+fi
+
+# the Derecho mpiexec implementations does not respect stdout redirection,
+# so make a wrapper script.
+if [[ "${machine}" == "DERECHO" ]]; then
+    wrapper_script="stdout_wrapper.sh"
+    rm -f "${wrapper_script}"
+    cat << 'EOF' > "${wrapper_script}"
+#! /usr/bin/bash
+# Run the rest of the args and redirect stdout and stderr to the
+# file named by the last argument
+${@: 1:$#-1} > ${@: -1} 2>&1
+exit $?
+EOF
+    chmod 755 "${wrapper_script}"
 fi
 
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
@@ -118,7 +133,13 @@ chunk_mpmd() {
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
                 echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
+                # The MPMD implemtation is different between WCOSS and Derecho, but both
+                # use mpiexec
+                if [[ "${machine}" == "DERECHO" ]]; then
+                    echo "-n 1 ${wrapper_script} ${line} mpmd.${i}.out" >> "${chunk_file}"
+                else
+                    echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
+                fi
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then
@@ -201,8 +222,15 @@ for ((i = 0; i < nm; i += chunk_size)); do
         ${launcher:-} ${mpmd_opt:-} -n "${n_mpmd_tasks}" "${chunk_file}"
         source "${USHglobal}/set_strict.sh"
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-        # shellcheck disable=SC2086
-        ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+        # The MPMD implemtation is different between WCOSS and Derecho, but both
+        # use mpiexec
+        if [[ "${machine}" == "DERECHO" ]]; then
+            # shellcheck disable=SC2086
+            ${launcher:-} ${mpmd_opt:-} "${chunk_file}"
+        else
+            # shellcheck disable=SC2086
+            ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+        fi
     fi
     err=$?
     if [[ ${err} -ne 0 ]]; then
@@ -222,6 +250,7 @@ done
 # On success remove the command file and any chunk files.
 if [[ ${err} -eq 0 ]]; then
     rm -f "${mpmd_cmdfile}.chunk"*
+    rm -f "${wrapper_script:-}"
 fi
 
 # Concatenate any remaining output files if they exist

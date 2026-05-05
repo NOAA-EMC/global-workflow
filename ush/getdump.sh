@@ -1,5 +1,21 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: getdump.sh
+#
+#   DESCRIPTION: This script copies observational data dump files from a source
+#                dump directory to a target runtime directory for a specific
+#                model run, cycle time, and component. It strictly requires the
+#                presence of the status file (updated.status.tm00.bufr_d) to
+#                ensure the dump is complete before initiating the copy process.
+#    ARGUMENTS:
+#       $1 - YMD        : Date of the cycle in YYYYMMDD format.
+#       $2 - HH         : Hour of the cycle (e.g., 00, 06, 12, 18).
+#       $3 - RUN        : Model run identifier (e.g., gfs, gdas).
+#       $4 - SOURCE_DIR : (Optional) Override for the source dump directory.
+#       $5 - TARGET_DIR : (Optional) Override for the target runtime directory.
+
 COMPONENT=${COMPONENT:-atmos}
 
 YMD=${1:-""}
