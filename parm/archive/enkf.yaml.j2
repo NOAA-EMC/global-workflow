@@ -74,7 +74,6 @@ enkf:
             {% set da_stat_files = ["enkfstat.txt",
                                     "gsistat_ensmean.txt",
                                     "cnvstat_ensmean.tar",
-                                    "oznstat_ensmean.tar",
                                     "radstat_ensmean.tar"] %}
             {% set da_conf_files = [] %}
         {% else %}
@@ -140,3 +139,8 @@ enkf:
         - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}bg_ensvar.nc"
         - "{{ COMIN_ICE_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}bg_ensvar.nc"
         {% endif %}
+    optional:
+        {% if not DO_JEDIATMENS %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}oznstat_ensmean.tar"
+        {% endif %}
+
