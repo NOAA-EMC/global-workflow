@@ -36,7 +36,7 @@ if [[ -s "${oznstat}" ]]; then
     fi
 
 else
-    echo "Warning: Oznstat file not found"
-    echo "Warning: Exiting without performing ozone verification"
+    echo "WARNING: Oznstat file not found"
+    echo "WARNING: Exiting without performing ozone verification"
 fi
 exit 0

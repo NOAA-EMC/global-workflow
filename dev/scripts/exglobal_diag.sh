@@ -230,8 +230,8 @@ if [[ "${DIAG_TARBALL}" == "YES" ]]; then
                 err_exit "Unable to create ${diagfile[n]}!"
             fi
         else
-	    echo "No diagnostic files found for ntype=${n}"	
-	    echo "Unable to create ${diagfile[n]}"	
+	    echo "WARNING: No diagnostic files found for ntype=${n}"	
+	    echo "WARNING: Unable to create ${diagfile[n]}"	
         fi
     done
     echo "END tar diagnostic files"
