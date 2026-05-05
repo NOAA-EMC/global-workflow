@@ -762,17 +762,17 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
     master_job_name="master_scron${_tag}"
 
     {
-        printf "\n"
-        echo "#################### ${master_job_name} ####################\n"
-        printf "%s\n" "${_scron_partition}"
-        printf "%s\n" "${_scron_account}"
-        echo "#SCRON --job-name=${master_job_name}\n"
-        echo "#SCRON --output=%s\n" "${_master_log}"
-        echo "#SCRON --time=00:10:00\n"
-        echo "#SCRON --dependency=singleton\n"
-        printf "*/5 * * * * %s\n" "${_master_script}"
-        echo "#################################################################\n"
-        printf "\n"
+        echo
+        echo "#################### ${master_job_name} ####################"
+        echo "${_scron_partition}"
+        echo "${_scron_account}"
+        echo "#SCRON --job-name=${master_job_name}"
+        echo "#SCRON --output=${_master_log}"
+        echo "#SCRON --time=00:10:00"
+        echo "#SCRON --dependency=singleton"
+        echo "*/5 * * * * ${_master_script}"
+        echo "#################################################################"
+        echo
     } >> tests.cron
 fi
 
