@@ -115,7 +115,7 @@ RUNNER_HOST_NODE="${host}"
 HOMEglobal="${HOMEglobal_}" source "${HOMEglobal_}/ush/detect_machine.sh"
 # Check the MACHINE_ID and set up the environment accordingly
 case "${MACHINE_ID}" in
-    ursa | hera | orion | hercules | wcoss2 | gaeac6)
+    ursa | hera | orion | hercules | wcoss2 | gaeac6 | derecho)
         echo "Running GitLab Runner script on ${MACHINE_ID}"
         ;;
     noaacloud)

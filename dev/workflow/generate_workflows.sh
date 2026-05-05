@@ -759,12 +759,15 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
         exit 15
     fi
 
+
+    master_job_name="master_scron${_tag}"
+
     {
         printf "\n"
-        printf "#################### master_run ####################\n"
+        printf "#################### ${master_job_name} ####################\n"
         printf "%s\n" "${_scron_partition}"
         printf "%s\n" "${_scron_account}"
-        printf "#SCRON --job-name=master_scron\n"
+        printf "#SCRON --job-name=${master_job_name}\n"
         printf "#SCRON --output=%s\n" "${_master_log}"
         printf "#SCRON --time=00:10:00\n"
         printf "#SCRON --dependency=singleton\n"
