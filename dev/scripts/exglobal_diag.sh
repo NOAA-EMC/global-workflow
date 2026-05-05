@@ -230,7 +230,7 @@ if [[ "${DIAG_TARBALL}" == "YES" ]]; then
                 err_exit "Unable to create ${diagfile[n]}!"
             fi
         else
-	    echo "WARNING: No diagnostic files found for type ${n} = ${diaglist[n]#list}"
+            echo "WARNING: No diagnostic files found for type ${n} = ${diaglist[n]#list}"
             echo "WARNING: Unable to create ${diagfile[n]}"
         fi
     done
