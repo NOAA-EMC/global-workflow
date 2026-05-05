@@ -759,7 +759,6 @@ if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
         exit 15
     fi
 
-
     master_job_name="master_scron${_tag}"
 
     {
