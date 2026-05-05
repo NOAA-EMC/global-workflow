@@ -27,6 +27,7 @@ skip_ci_on_hosts:
   - ursa
   - orion
   - awsepicglobalworkflow
+  - aws-ec2
 
 workflow:
   engine: rocoto
