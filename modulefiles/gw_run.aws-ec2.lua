@@ -22,7 +22,7 @@ load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 -- load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
 
-setenv("CRTM_FIX", "/lustre/lustre/sharedGWdata/fix/crtm/v2.4.0.2")
+setenv("CRTM_FIX", "/lustre/sharedGWdata/fix/crtm/v2.4.0.2")
 
 prepend_path("LD_LIBRARY_PATH", "/opt/amazon/efa/lib")
 prepend_path("LD_LIBRARY_PATH", "/opt/amazon/openmpi/lib")
