@@ -501,7 +501,7 @@ else
     echo
     if [[ "${errSTATUS}" -gt '0' ]]; then
         export err="${errSTATUS}"
-        err_exit
+        err_exit "FATAL ERROR: tropical cyclone relocation processing failed with error code ${errSTATUS}"
     fi
 
     #  further check for success
