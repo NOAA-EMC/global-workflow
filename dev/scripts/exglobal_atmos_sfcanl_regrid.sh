@@ -37,7 +37,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     export CASE_OUT="${CASE}"
     export OCNRES_OUT="${OCNRES}"
     export LFHR
-
+    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
     "${REGRIDSH}"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
