@@ -60,13 +60,12 @@ echo "  pdym1 is    ${pdym1}"
 echo
 echo "  ymddir is   ${PDY}"
 echo
-set_trace
+set -x
 
 find="${ymd} ${cyc}"
 echo "looking for string ${find} in ${jtwcdir}/tropcyc"
 
 rm -f jtwcbul
-# shellcheck disable=SC2312
 grep "${ymd} ${cyc}" "${jtwcdir}/tropcyc" | grep JTWC > jtwcbul
 if [[ -s jtwcbul ]]; then
     echo "String found: contents of JTWC bulletin are:"
@@ -76,7 +75,6 @@ else
 fi
 
 if [[ "${cyc}" == "00" ]]; then
-    # shellcheck disable=SC2312
     grep "${ymd} ${cyc}" "${jtwcdirm1}/tropcyc" | grep JTWC >> jtwcbul
     if [[ -s jtwcbul ]]; then
         echo "String found: contents of JTWC bulletin are:"
@@ -104,12 +102,12 @@ fi
 pgm=$(basename "${EXECgfs}/syndat_getjtbul.x")
 export pgm
 if [[ -s prep_step ]]; then
-    set +u
+    source "${USHgfs}/unset_strict.sh"
     source prep_step
-    set -u
+    source "${USHgfs}/set_strict.sh"
 else
     rm -f errfile
-    # shellcheck disable=SC2046,SC2312
+    # shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 
@@ -117,7 +115,6 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-# shellcheck disable=SC2312
 time -p "${EXECgfs}/${pgm}" 2> errfile
 errget=$?
 cat errfile
@@ -126,7 +123,7 @@ set +x
 echo
 echo "The foreground exit status for SYNDAT_GETJTBUL is ${errget}"
 echo
-set_trace
+set -x
 if [[ "${errget}" -gt '0' ]]; then
     if [[ "${errget}" -eq '1' ]]; then
         msg="No JTWC bulletins in ${jtwcdir}/tropcyc, no JTWC tcvitals available for qctropcy for ${run_date}"
@@ -155,7 +152,7 @@ echo "----------------------------------------------------------"
 echo "***********  COMPLETED PROGRAM syndat_getjtbul  **********"
 echo "----------------------------------------------------------"
 echo
-set_trace
+set -x
 
 if [[ "${errget}" -eq '0' ]]; then
     echo "Completed JTWC tcvitals records are:"

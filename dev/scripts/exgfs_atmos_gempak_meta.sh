@@ -49,7 +49,6 @@ while [[ ${fhr} -le ${fhend} ]]; do
 
     if [[ ${do_all} -eq 1 ]]; then
         do_all=0
-        # shellcheck disable=SC2312
         awk '{print $1}' "${HOMEgfs}/gempak/fix/gfs_meta" | envsubst > "poescript"
     else
         #
@@ -57,7 +56,6 @@ while [[ ${fhr} -le ${fhend} ]]; do
         #    This will work as long as we don't need 12 fhr metafiles
         #
         if [[ ${fhr} -ne 12 ]]; then
-            # shellcheck disable=SC2312
             grep "${fhr}" "${HOMEgfs}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
         fi
     fi

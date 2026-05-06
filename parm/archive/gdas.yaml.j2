@@ -37,8 +37,9 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_snowanl.log"
             {% endif %}
             {% if DO_GSISOILDA %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl_regrid.log"
             {% endif %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl_gcycle.log"
 
         # Analysis Master GRIB2 data
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"
@@ -117,16 +118,6 @@ gdas:
         - "{{ COMIN_SNOW_ANLMON | relpath(ROTDIR) }}/{{ head }}snow_analysis.ioda_hofx_stats.tar.gz"
             {% endif %}
 
-        # Ozone verification
-            {% if DO_VERFOZN %}
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
-        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfozn.log"
-            {% endif %}
-
         # Radiance verification
             {% if DO_VERFRAD %}
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_angle.tar.gz"
@@ -193,6 +184,12 @@ gdas:
             {% endif %}
 
             {% if DO_VERFOZN %}
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_cnt.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_diag.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
+        - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfozn.log"
                 # Not all of these ozone instruments always produce data
                 {% set oznmon_types = [
                    "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",

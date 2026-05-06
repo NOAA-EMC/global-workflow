@@ -1,5 +1,14 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: parsing_namelists_WW3.sh
+#
+#   DESCRIPTION: Prepares the environment and dynamically renders the configuration
+#                file required by the WAVEWATCH III (WW3) model.
+#                The function stages the required buoy location file
+#                and parses the desired input methods for ice and current coupling.
+
 WW3_namelists() {
 
     # WW3 namelists/input generation
@@ -16,7 +25,7 @@ WW3_namelists() {
     if [[ -f "${DATA}/ww3_points.list" ]]; then
         set +x
         echo "ww3_points.list copied (${PARMgfs}/wave/wave_${NET}.buoys)."
-        set_trace
+        set -x
     else
         echo "FATAL ERROR : ww3_points.list (${PARMgfs}/wave/wave_${NET}.buoys) NOT FOUND"
         exit 12

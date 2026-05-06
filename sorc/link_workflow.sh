@@ -1,9 +1,8 @@
 #!/bin/bash
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
-
-HOMEgfs="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." > /dev/null 2>&1 && pwd)"
-TRACE=NO source "${HOMEgfs}/ush/preamble.sh"
+# shellcheck disable=SC2312
+HOMEgfs=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" > /dev/null 2>&1 && git rev-parse --show-toplevel)
 
 function usage() {
     cat << EOF
@@ -95,6 +94,15 @@ for package in "${packages[@]}"; do
     fi
     ${LINK} "${HOMEgfs}/sorc/gdas.cd/sorc/${package}/src/${package}" .
 done
+
+# Link wxflow to ush/python
+cd "${HOMEgfs}/ush/python" || exit 1
+if [[ -d "${HOMEgfs}/sorc/wxflow/src/wxflow" ]]; then
+    if [[ -s "wxflow" ]]; then
+        rm -f "wxflow"
+    fi
+    ${LINK} "${HOMEgfs}/sorc/wxflow/src/wxflow" .
+fi
 
 # Link fix directories
 if [[ -n "${FIX_DIR}" ]]; then
@@ -273,7 +281,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
     cd "${HOMEgfs}/parm" || exit 1
     mkdir -p gdas
     cd gdas || exit 1
-    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+    declare -a gdasapp_comps=("aero" "atm" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
     for comp in "${gdasapp_comps[@]}"; do
         if [[ -d "${comp}" ]]; then
             rm -rf "${comp}"
@@ -312,7 +320,6 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     cd "${HOMEgfs}/ush" || exit 1
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
-    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py" .
 fi
 
 #------------------------------

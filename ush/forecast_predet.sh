@@ -1,5 +1,16 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: forecast_predet.sh
+#
+#   DESCRIPTION: A library of utility functions for the Unified Forecast System (UFS).
+#                This script defines date/time calculation utilities and component-specific setup
+#                functions. These setup functions initialize environment variables, configure directory
+#                structures, establish temporal domains (e.g., forecast hours,
+#                output frequencies), and stage requisite static/fix files
+#                prior to the run-type determination (warm vs. cold start).
+
 to_seconds() {
     # Function to convert HHMMSS to seconds since 00Z
     local hhmmss hh mm ss seconds padded_seconds
@@ -676,7 +687,6 @@ CICE_predet() {
 
     # CICE does not have a concept of high frequency output like FV3
     # Convert output settings into an explicit list for CICE
-    # shellcheck disable=SC2312
     mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN}" "${FHOUT_ICE}" "${FHMAX}") || exit 10
 
     # Fix files

@@ -1,6 +1,18 @@
 #! /usr/bin/env bash
+set -x
 
 source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_vrfy" -c "base arch_tars"
+
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
 if [[ "${DO_WAVE}" == "YES" ]]; then
     source "${EXPDIR}/config.wave"
     source "${USHgfs}/wave_domain_grid.sh"
@@ -93,17 +105,15 @@ fi
 # Run archive script
 ###############################################################
 
-set +eu
+source "${USHgfs}/unset_strict.sh"
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_tars.py}
 export err=$?
-set +x
+source "${USHgfs}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit "failed to archive the COM structure"
 fi
-set_trace
-set_strict
 
 ##############################################
 # End JOB SPECIFIC work
@@ -119,10 +129,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || (
-    echo "${DATAROOT} does not exist. ABORT!"
-    exit 1
-)
+cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
 fi

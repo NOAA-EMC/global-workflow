@@ -73,7 +73,9 @@ case "${MODULE_TYPE}" in
             echo "FATAL ERROR: Failed to load ufs_${MACHINE_ID}.intel"
             exit 1
         fi
-        module load prod_util
+        if [[ -z "${ECF_JOB:-}" ]]; then
+            module load prod_util
+        fi
         if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
             module load cray-pals
             module load cfp
@@ -127,10 +129,7 @@ case "${MODULE_TYPE}" in
 
         module list
 
-        ftype=$(type -t set_trace || echo "")
-        if [[ "${ftype}" == "function" ]]; then
-            set_trace
-        elif [[ "${set_x}" == "YES" ]]; then
+        if [[ "${set_x}" == "YES" ]]; then
             set -x
         fi
 
@@ -138,7 +137,6 @@ case "${MODULE_TYPE}" in
 
         # Detect the Python major.minor version
         _regex="[0-9]+\.[0-9]+"
-        # shellcheck disable=SC2312
         if [[ $(python --version) =~ ${_regex} ]]; then
             export PYTHON_VERSION="${BASH_REMATCH[0]}"
         else
@@ -182,9 +180,21 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
+        #### Work around for upp module loading issues that is inconsistance with run.ver
         # Source versions file (except for upp)
         if [[ "${mod_type}" != "upp" ]]; then
             source "${HOMEgfs}/versions/run.ver"
+        fi
+        if [[ "${mod_type}" == "upp" ]]; then
+            export hdf5_ver="1.10.6"
+            export netcdf_ver="4.7.4"
+            export g2tmpl_ver="1.16.0"
+            export crtm_ver="2.4.0.1" #### gfs_goesupp
+            #### Workaround for access ${HOMEgfs}/sorc location
+            export PYTHONPATH=${HOMEgfs}/sorc/wxflow/src:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEgfs}/ush/python
+        fi
+        if [[ "${mod_type}" == "run" ]]; then
+            export PYTHONPATH=${HOMEgfs}/sorc/wxflow/src:/apps/ops/prod/nco/core/prod_util.v2.0.9/ush:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEgfs}/ush/python
         fi
 
         if [[ -n "${target_module}" ]]; then
@@ -201,11 +211,7 @@ case "${MODULE_TYPE}" in
 
         module list
 
-        # If this function exists in the environment, run it; else set -x if it was set on entering this script
-        ftype=$(type -t set_trace || echo "")
-        if [[ "${ftype}" == "function" ]]; then
-            set_trace
-        elif [[ "${set_x}" == "YES" ]]; then
+        if [[ "${set_x}" == "YES" ]]; then
             set -x
         fi
         ;;
@@ -216,15 +222,6 @@ case "${MODULE_TYPE}" in
         ;;
 
 esac
-
-# Set up the PYTHONPATH to include wxflow from HOMEgfs
-if [[ -d "${HOMEgfs}/sorc/wxflow/src" ]]; then
-    PYTHONPATH="${HOMEgfs}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
-fi
-
-# Add HOMEgfs/ush/python to PYTHONPATH
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/ush/python"
-export PYTHONPATH
 
 # Restore stack soft limit:
 ulimit -S -s "${ulimit_s}"

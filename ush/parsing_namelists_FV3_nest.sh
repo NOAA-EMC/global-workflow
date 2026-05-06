@@ -1,10 +1,20 @@
 #! /usr/bin/env bash
 
-# parsing namelist of FV3, diag_table, etc.
+#===============================================================================
+#
+#   FILE: parsing_namelists_FV3_nest.sh
+#
+#   DESCRIPTION: Prepares the environment and generates the configuration
+#                files (namelists and tables) required by the FV3 atmospheric
+#                model running in a nested configuration. The function accepts
+#                an argument to dictate whether it is rendering the global
+#                domain configuration (`input.nml`) or the nested domain
+#                configuration (`input_nest02.nml`). When generating the global
+#                configuration, it also builds the required diagnostic, data,
+#                and field tables using the `atparse` utility.
 
 # Disable variable not used warnings and 'masking return value' warnings
 # shellcheck disable=SC2034
-# shellcheck disable=SC2312
 FV3_namelists_nest() {
 
     # First argument tells us which namelist we're writing:

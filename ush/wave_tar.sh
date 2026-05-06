@@ -87,7 +87,6 @@ tardone='no'
 sleep_interval=10
 
 while [[ "${tardone}" == "no" ]]; do
-    # shellcheck disable=SC2312
     nf=$(find . -maxdepth 1 -type f -name "*.${filext}" -printf '.' | wc -c)
     nbm2=$((nb - 2))
     if [[ ${nf} -ge ${nbm2} ]]; then

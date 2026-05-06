@@ -5,8 +5,6 @@
 # Set up Local Variables
 #
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 mkdir -p -m 775 "${DATA}/OPC_NA_VER_F${fend}"
 cd "${DATA}/OPC_NA_VER_F${fend}" || exit 2
 cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
@@ -31,7 +29,7 @@ fcsthr="f00"
 
 # SET WHAT RUNS TO COMPARE AGAINST BASED ON MODEL CYCLE TIME.
 # seq won't give us any splitting problems, ignore warnings
-# shellcheck disable=SC2207,SC2312
+# shellcheck disable=SC2207
 case ${cyc} in
     00 | 12) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 96 12 120)) ;;
     06 | 18) lookbacks=($(IFS=$'\n' seq 6 6 84) $(IFS=$'\n' seq 90 12 126)) ;;

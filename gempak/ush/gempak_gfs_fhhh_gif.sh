@@ -7,8 +7,6 @@
 #
 #########################################################################
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 LATVAL="1/1/1/1/5;5"
 pixels="1728;1472"
 cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp

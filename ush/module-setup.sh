@@ -1,4 +1,16 @@
 #!/bin/bash
+
+#===============================================================================
+#
+#   FILE: module-setup.sh
+#
+#   DESCRIPTION: This script initializes the environment module system (e.g., Lmod)
+#                and establishes a clean baseline by purging or resetting currently
+#                loaded modules. It dynamically adapts to the host machine by
+#                sourcing a detection script and applying the correct initialization
+#                paths and default module parameters for various supported HPC
+#                and cloud platforms.
+
 set -u
 
 source "${HOMEgfs}/ush/detect_machine.sh"
@@ -47,7 +59,10 @@ elif [[ ${MACHINE_ID} = wcoss2 ]]; then
     # We are on WCOSS2
     # Ignore default modules of the same version lower in the search path (req'd by spack-stack)
     #export LMOD_TMOD_FIND_FIRST=yes #TODO: Uncomment this when using spack-stack for the entire workflow
-    module reset
+    # Do not reset on an ecflow system
+    if [[ -z "${ECF_JOB:-}" ]]; then
+        module reset
+    fi
 
 elif [[ ${MACHINE_ID} = cheyenne* ]]; then
     # We are on NCAR Cheyenne
@@ -105,10 +120,4 @@ else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
 
-# If this function exists in the environment, run it; else do not
-ftype=$(type -t set_strict || echo "")
-if [[ "${ftype}" == "function" ]]; then
-    set_strict
-else
-    set +u
-fi
+set +u

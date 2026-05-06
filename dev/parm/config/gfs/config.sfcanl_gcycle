@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+
+########## config.sfcanl_gcycle ##########
+# GFS surface analysis specific
+
+echo "BEGIN: config.sfcanl_gcycle"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" sfcanl_gcycle
+
+# Run global_cycle in coupled mode
+if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
+   export COUPLED=".true."
+fi
+
+# Turn off NST in JEDIATMVAR
+if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
+   export DONST="NO"
+fi
+
+if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+    if [[ ${DO_LAND_IAU} = ".true." ]]; then
+        export GCYCLE_DO_SOILINCR=".false."
+    else
+        export GCYCLE_DO_SOILINCR=".true."
+    fi
+fi
+
+echo "END: config.sfcanl_gcycle"

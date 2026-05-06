@@ -19,10 +19,9 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
 done
 
 NAGRIB_TABLE="${HOMEgfs}/gempak/fix/nagrib.tbl"
-NAGRIB="${GEMEXE}/nagrib2"
+NAGRIB="${GEMEXE}/nagrib2_nc"
 
-# shellcheck disable=SC2312
-entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}')
+entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}' || echo "")
 
 if [[ "${entry}" != "" ]]; then
     cpyfil=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $2}')
@@ -56,12 +55,12 @@ fi
 
 cpreq "${GRIBIN}" "grib${fhr3}"
 
-export pgm="nagrib_nc F${fhr3}"
+export pgm="nagrib2_nc F${fhr3}"
 startmsg
 
 ${NAGRIB} << EOF
 GBFILE   = grib${fhr3}
-INDXFL   = 
+INDXFL   =
 GDOUTF   = ${GEMGRD}
 PROJ     = ${proj}
 GRDAREA  = ${grdarea}
@@ -71,7 +70,7 @@ CPYFIL   = ${cpyfil}
 GAREA    = ${garea}
 OUTPUT   = ${output}
 GBTBLS   = ${gbtbls}
-GBDIAG   = 
+GBDIAG   =
 PDSEXT   = ${pdsext}
 l
 r
@@ -87,7 +86,5 @@ if [[ ${SENDDBN} == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 fi
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################
