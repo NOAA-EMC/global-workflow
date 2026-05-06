@@ -187,6 +187,7 @@ if [[ "${err0}" -ne 0 ]]; then
     #  problem with obtaining date record so exit
     export err="${err0}"
     msg="FATAL ERROR: problem with obtaining date record"
+    echo "${msg}"
     exit "${err}"
 fi
 
@@ -234,7 +235,7 @@ if [[ "${modhr}" -ne 0 ]]; then
     #  -----------------------------------------------------------------------------
     export err=9
     msg="FATAL ERROR: cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs"
-    err_exit "${msg}"
+    exit 9
 fi
 
 for fhr in 6 12; do
@@ -312,9 +313,8 @@ EOF
         errges=$?
         if [[ "${errges}" -ne 0 ]]; then
             #  problem obtaining global sigma first guess so exit
-            export err="${errges}"
-            msg="FATAL ERROR: problem obtaining global sigma guess valid ${fhr} hrs relative to center relocation date/time"
-            err_exit "${msg}"
+            echo "FATAL ERROR: problem obtaining global sigma guess valid ${fhr} hrs relative to center relocation date/time"
+            exit "${errges}"
         fi
 
         #  For center time sigma guess file obtained via getges, store pathname from
