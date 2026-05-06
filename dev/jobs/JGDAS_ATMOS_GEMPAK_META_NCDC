@@ -56,9 +56,6 @@ if ((cyc % 12 == 0)); then
     fi
 fi
 
-export COMINecmwf="${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}"
-export COMINukmet="${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}"
-
 export pgmout=OUTPUT.$$
 
 ########################################################
@@ -75,19 +72,6 @@ if [[ ${err} -ne 0 ]]; then
     err_exit
 fi
 
-if [[ "${cyc}" == '06' ]]; then
-    "${HOMEglobal}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit
-    fi
-
-    "${HOMEglobal}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit
-    fi
-fi
 ########################################################
 
 ############################################

@@ -115,7 +115,7 @@ EOF
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to convert ${grid} grid from GRIB to GEMPAK for forecast hour ${fhr3}"
 fi
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"

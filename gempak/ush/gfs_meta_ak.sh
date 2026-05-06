@@ -17,9 +17,7 @@ device="nc | gfs.meta.ak"
 # TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L ${COMIN} ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 fend=F216
 
@@ -218,7 +216,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s gfs.meta.ak ]]; then
     exit "${err}"
 fi
 
-mv gfs.meta.ak "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
+cpfs gfs.meta.ak "${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"
 export err=$?
 if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gfs_${PDY}_${cyc}_ak"

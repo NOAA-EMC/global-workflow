@@ -351,6 +351,9 @@ EOF
         FV3_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${restart_interval}" "${restart_interval_end}")"
     fi
     export FV3_RESTART_FH
+    if [[ -n "${FV3_RESTART_FH}" ]]; then
+        mkdir -p "${DATArestart}/FV3_RESTART"
+    fi
     #============================================================================
 }
 
@@ -422,13 +425,19 @@ FV3_out() {
             done
         done
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
-        export err=$?
-        if [[ ${err} -ne 0 ]]; then
-            err_exit "run_mpmd.sh failed to copy FV3 restart files!"
-        fi
+        if [[ -s "${cmdfile}" ]]; then
+            if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then
+                echo "INFO: Directory ${COMOUT_ATMOS_RESTART} does not exist, creating..."
+                mkdir -p "${COMOUT_ATMOS_RESTART}"
+            fi
+            "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+            export err=$?
+            if [[ ${err} -ne 0 ]]; then
+                err_exit "run_mpmd.sh failed to copy FV3 restart files!"
+            fi
 
-        echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+            echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+        fi
     fi
 }
 
@@ -582,6 +591,10 @@ WW3_out() {
     fi
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then
+            echo "INFO: Directory ${COMOUT_WAVE_RESTART} does not exist, creating..."
+            mkdir -p "${COMOUT_WAVE_RESTART}"
+        fi
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -603,6 +616,10 @@ MOM6_postdet() {
 
     local restart_dir restart_date
     if [[ "${RERUN}" == "YES" ]]; then
+        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_ATMOS_HISTORY}"
+        fi
         restart_dir="${DATArestart}/MOM6_RESTART"
         restart_date="${RERUN_DATE}"
     else # "${RERUN}" == "NO"
@@ -754,6 +771,10 @@ MOM6_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_OCEAN_RESTART}" ]]; then
+            echo "INFO: Directory ${COMOUT_OCEAN_RESTART} does not exist, creating..."
+            mkdir -p "${COMOUT_OCEAN_RESTART}"
+        fi
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -880,6 +901,10 @@ CICE_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_ICE_RESTART}" ]]; then
+            echo "INFO: Directory ${COMOUT_ICE_RESTART} does not exist, creating..."
+            mkdir -p "${COMOUT_ICE_RESTART}"
+        fi
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -967,6 +992,10 @@ GOCART_out() {
     done
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_CHEM_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_CHEM_HISTORY}"
+        fi
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -1087,6 +1116,9 @@ CMEPS_out() {
     esac
 
     if [[ -s "${cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then
+            mkdir -p "${COMOUT_MED_RESTART}"
+        fi
         "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
