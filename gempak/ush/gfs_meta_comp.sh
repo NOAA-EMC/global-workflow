@@ -2,9 +2,7 @@
 # Metafile Script : gfs_meta_comp.sh
 #
 # This is a script which creates a metafile that runs a comparison of 500 MB
-# heights and PMSL between the older GFS model run and the newer one. The
-# metafile also generates a comparison between the UKMET older run and the newer
-# GFS model run.
+# heights and PMSL between the older GFS model run and the newer one.
 #
 # Set up Local Variables
 #
@@ -41,9 +39,8 @@ for cycle in $(seq -f "%02g" -s ' ' 0 "${INTERVAL_GFS}" "${cyc}"); do
 done
 
 export HPCNAM="nam.${PDY}"
-if [[ ! -L ${HPCNAM} ]]; then
-    ${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
-fi
+# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+${NLN} "${COMINnam}/nam.${PDY}/gempak" "${HPCNAM}"
 
 #
 # DEFINE YESTERDAY
@@ -105,10 +102,10 @@ for gareas in US NP; do
 
         # Create symlink in DATA to sidestep gempak path limits
         HPCGFS="${RUN}.${init_time}"
-        if [[ ! -L ${HPCGFS} ]]; then
-            source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
-            ${NLN} "${source_dir}" "${HPCGFS}"
-        fi
+        # TODO: Add only necessary files and remove unneeded ones to minimize data volume
+        # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
+        source_dir="${ROTDIR}/${RUN}.${init_PDY}/${init_cyc}/products/atmos/gempak/1p00"
+        ${NLN} "${source_dir}" "${HPCGFS}"
 
         if [[ ${init_PDY} == "${PDY}" ]]; then
             desc="T"
@@ -205,26 +202,15 @@ EOF
 
     if ((10#${cyc} % 12 == 0)); then
 
-        #
-        # There are some differences between 00z and 12z
-        # The YEST string makes sense (but is inconsistently used)
-        # The others I'm not sure why they differ. - WCK
-        #
         case ${cyc} in
             00)
                 type_param="TYPE"
                 hlsym="1.2;1.2//21//hw"
-                wind=""
-                yest=" YEST"
-                run_cmd="run"
                 extra_cmd="\nHLSYM   = 1.2;1.2//21//hw\nTEXT    = s/21//hw"
                 ;;
             12)
                 type_param="CTYPE"
                 hlsym="1;1//21//hw"
-                wind="0"
-                yest=""
-                run_cmd="ru"
                 extra_cmd=""
                 ;;
             *)
@@ -232,181 +218,6 @@ EOF
                 exit 100
                 ;;
         esac
-
-        # COMPARE THE GFS MODEL TO THE UKMET MODEL 12-HOURS PRIOR
-        ukmet_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - 12 hours")
-        ukmet_PDY=${ukmet_date:0:8}
-        ukmet_cyc=${ukmet_date:8:2}
-        export HPCUKMET=ukmet.${ukmet_PDY}
-        if [[ ! -L "${HPCUKMET}" ]]; then
-            ${NLN} "${COMINukmet}/ukmet.${ukmet_PDY}/gempak" "${HPCUKMET}"
-        fi
-        grid2="F-UKMETHPC | ${ukmet_PDY:2}/${ukmet_date}"
-
-        for fhr in 0 12 24 84 108; do
-            gfsfhr=F$(printf "%02g" "${fhr}")
-            ukmetfhr=F$(printf "%02g" $((fhr + 12)))
-
-            export pgm=gdplot2_nc
-            source prep_step
-            "${GEMEXE}/gdplot2_nc" << EOF
-\$MAPFIL= mepowo.gsf
-DEVICE  = ${device}
-MAP     = 1/1/1/yes
-CLEAR   = yes
-GAREA   = ${garea}
-PROJ    = ${proj}
-LATLON  = ${latlon}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-
-SKIP    = 0
-PANEL   = 0
-CONTUR  = 2
-CLRBAR  =
-GLEVEL  = 500
-GVCORD  = PRES
-GDPFUN  = sm5s(hght)
-LINE    = 5/1/3/2
-SCALE   = -1
-${type_param}   = c
-CINT    = 6
-FINT    =
-FLINE   =
-HLSYM   = ${hlsym}
-TEXT    = s/21//hw
-WIND    = ${wind}
-REFVEC  =
-HILO    = 5/H#;L#//5/5;5/y
-TITLE   = 5/-1/~ ? ${MDL} @ HGT (${cyc}Z YELLOW)|~${gareas} ${cyc}Z VS UK ${ukmet_cyc}Z 500 HGT!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDATTIM = ${ukmetfhr}
-GDPFUN  = sm5s(hght)
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 6/-2/~ ? UKMET @ HGT (${ukmet_cyc}Z${yest} CYAN)!0
-l
-${run_cmd}
-
-CLEAR   = yes
-GLEVEL  = 0
-GVCORD  = none
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)
-CINT    = 4${extra_cmd}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-LINE    = 5/1/3/2
-HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 5/-1/~ ? ${MDL} PMSL (${cyc}Z YELLOW)|~${gareas} ${cyc}Z VS UK ${ukmet_cyc}Z PMSL!0
-l
-${run_cmd}
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ukmetfhr}
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 6/-2/~ ? UKMET PMSL (00Z CYAN)!0
-l
-${run_cmd}
-
-EOF
-
-            export err=$?
-            err_chk
-        done
-
-        # COMPARE THE GFS MODEL TO THE 12 UTC ECMWF FROM YESTERDAY
-        offset=$(((10#${cyc} + 12) % 24 + 12))
-        ecmwf_date=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${offset} hours")
-        ecmwf_PDY=${ecmwf_date:0:8}
-        # ecmwf_cyc=${ecmwf_date:8:2}
-        grid2=${COMINecmwf}/ecmwf.${ecmwf_PDY}/gempak/ecmwf_glob_${ecmwf_date}
-
-        for fhr in $(seq -s ' ' $((offset % 24)) 24 120); do
-            gfsfhr=F$(printf "%02g" "${fhr}")
-            ecmwffhr=F$(printf "%02g" $((fhr + 24)))
-
-            export pgm=gdplot2_nc
-            source prep_step
-            "${GEMEXE}/gdplot2_nc" << EOF
-\$MAPFIL= mepowo.gsf
-DEVICE  = ${device}
-MAP     = 1/1/1/yes
-CLEAR   = yes
-GAREA   = ${garea}
-PROJ    = ${proj}
-LATLON  = ${latlon}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-
-SKIP    = 0
-PANEL   = 0
-CONTUR  = 2
-CLRBAR  =
-GLEVEL  = 500
-GVCORD  = PRES
-GDPFUN  = sm5s(hght)
-LINE    = 5/1/3/2
-SCALE   = -1
-${type_param}   = c
-CINT    = 6
-FINT    =
-FLINE   =
-HLSYM   = ${hlsym}
-TEXT    = s/21//hw
-WIND    = ${wind}
-REFVEC  =
-HILO    = 5/H#;L#//5/5;5/y
-TITLE   = 5/-1/~ ? ${MDL} @ HGT (${cyc}Z YELLOW)|~${gareas} ${cyc}Z VS EC Y 12Z 500 HGT!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDATTIM = ${ecmwffhr}
-GDPFUN  = sm5s(hght)
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 6/-2/~ ? ECMWF @ HGT (12Z YEST CYAN)!0
-l
-run
-
-CLEAR   = yes
-GLEVEL  = 0
-GVCORD  = none
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)
-CINT    = 4         ${extra_cmd}
-GDFILE  = ${grid}
-GDATTIM = ${gfsfhr}
-LINE    = 5/1/3/2
-HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 5/-1/~ ? ${MDL} PMSL (${cyc}Z YELLOW)|~${gareas} ${cyc}Z VS EC Y 12Z PMSL!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ecmwffhr}
-LINE    = 6/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 6/-2/~ ? ECMWF PMSL (12Z YEST CYAN)!0
-l
-run
-
-EOF
-
-            export err=$?
-            err_chk
-        done
 
         # COMPARE THE GFS MODEL TO THE NAM and NGM
         grid2="F-NAMHPC | ${PDY:2}/${cyc}00"
@@ -501,7 +312,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s "${metaname}" ]] &> /dev/null; then
     exit $((err + 100))
 fi
 
-mv "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
+cpfs "${metaname}" "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_META}/${mdl}_${PDY}_${cyc}_us_${metatype}"
