@@ -539,7 +539,7 @@ class GCAFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_offlineanl'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -715,7 +715,7 @@ class GCAFSTasks(Tasks):
         # Create the nested dependency structure
         or_dependencies = []
 
-        # Always group sfcanl and aeroanlfinal together with AND
+        # Always group sfcanl_gcycle and aeroanlfinal together with AND
         sfcanl_aero_deps = []
         dep_dict = {'type': 'task', 'name': f'{anldep}_sfcanl_gcycle'}
         sfcanl_aero_deps.append(rocoto.add_dependency(dep_dict))
@@ -1410,6 +1410,8 @@ class GCAFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
             if self.run in ['gcdas'] and self.options['do_aero_anl']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlgenb'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         # Post job dependencies
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
