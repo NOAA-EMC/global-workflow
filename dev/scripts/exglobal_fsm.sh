@@ -31,7 +31,6 @@ if [[ "${RUN}" == "gfs" ]]; then
             scan_release_gfs_marine_prepoceanobs="YES"
         fi
     fi
-  fi
 fi
 
 if [[ "${RUN}" == "gdas" ]]; then
@@ -42,7 +41,6 @@ if [[ "${RUN}" == "gdas" ]]; then
             scan_release_gdas_marine_prepoceanobs="YES"
         fi
     fi
-  fi
 fi
 
 if [[ "${RJN}" == "forecast" ]]; then
@@ -186,7 +184,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="YES"
         scan_release_gfs_wave_postsbs="YES"
         proceed_trigger_scan="YES"
-      fi 
+      fi
       if [[ "${fhr}" -lt 120 ]]; then
         fhr=$((fhr+1))
       else
@@ -357,7 +355,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     while [ ${fhr} -le ${fhr_max} ]; do
       release_event="NO"
       fhr_3d=$( printf "%03d" ${fhr} )
-      atm_log=${COMIN_ATMOS_HISTORY}/gfs.t${cyc}z.log.f${fhr_3d}.txt 
+      atm_log=${COMIN_ATMOS_HISTORY}/gfs.t${cyc}z.log.f${fhr_3d}.txt
       if [ ${array_element_atm_log[$((10#$fhr))]} == "YES" ]; then
         echo "Skip found FHR${fhr_3d}"
       else
