@@ -129,7 +129,7 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
         {
             echo "#!/bin/bash"
 
-            if [[ "${DO_LAND_IAU}" = ".false."  ]]; then
+            if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
                 # copy regridded increments for restarts
                 for FHR in "${soilinc_fhrs[@]}"; do
                     for n in $(seq 1 "${ntiles}"); do
@@ -156,10 +156,12 @@ else # deterministic member only (NMEM_REGRID=1)
     # Create commands to stage input files and append to the cmdfile.0
     {
         # copy increments for restarts
-        for FHR in "${soilinc_fhrs[@]}"; do
-            echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
-                        ${DATA}/sfci00${FHR}.nc"
-        done
+        if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
+	    for FHR in "${soilinc_fhrs[@]}"; do
+	        echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
+				${DATA}/sfci00${FHR}.nc"
+            done
+        fi
 
         if [[ "${DO_LAND_IAU}" = ".true." ]]; then
             # copy increments for land IAU, if don't have already
