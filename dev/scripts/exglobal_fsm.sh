@@ -61,7 +61,6 @@ if [[ "${RJN}" == "forecast" ]]; then
         for fhr in $(seq 6 6 384); do
             array_element_ocean_6hr_avg[fhr]="NO"
             array_element_ice_6hr_avg[fhr]="NO"
-            array_element_ocn_log[fhr]="NO"
         done
     fi
     if [[ "${RUN}" == "gdas" ]]; then
@@ -179,16 +178,23 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="NO"
         scan_release_gfs_ocean_product="NO"
         echo "Proceeding with scan_release_gfs_ocean_product"
+        TARGET_SIZE=957349888
         for fhr in $(seq 6 6 384); do
             fhr_3d=$(printf "%03d" "${fhr}")
-            ocn_log="${COMIN_OCEAN_HISTORY}/gfs.t${cyc}z.ocn.log.f${fhr_3d}.txt"
-            if [[ "${array_element_ocn_log[fhr]}" == "NO" ]] && [[ "${skip_this_scan}" == "NO" ]]; then
-                if [[ -s "${ocn_log}" ]]; then
-                    array_element_ocean_6hr_avg[fhr]="YES"
-                    array_element_ocn_log[fhr]="YES"
-                    ecflow_client --event "release_gfs_ocean_product_f${fhr_3d}"
-                else
-                    echo "FSM release_gfs_ocean_product is waiting for file: ${ocn_log}"
+            ocean_6hr_avg="${COMIN_OCEAN_HISTORY}/gfs.t${cyc}z.6hr_avg.f${fhr_3d}.nc"
+            if [[ "${array_element_ocean_6hr_avg[fhr]}" == "NO" ]] && [[ "${skip_this_scan}" == "NO" ]]; then
+                echo "Checking on file ${ocean_6hr_avg}"
+                file_exist="NO"
+                if [[ -s "${ocean_6hr_avg}" ]]; then
+                    ACTUAL_SIZE=$(stat -c%s "${ocean_6hr_avg}")
+                    if [[ "${ACTUAL_SIZE}" -ge "${TARGET_SIZE}" ]]; then
+                        file_exist="YES"
+                        array_element_ocean_6hr_avg[fhr]="YES"
+                        ecflow_client --event "release_gfs_ocean_product_f${fhr_3d}"
+                    fi
+                fi
+                if [[ "${file_exist}" == "NO" ]]; then
+                    echo "FSM release_gfs_ocean_product is waiting for file: ${ocean_6hr_avg}"
                     skip_this_scan="YES"
                     scan_release_gfs_ocean_product="YES"
                     proceed_trigger_scan="YES"
