@@ -498,6 +498,9 @@ export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 export DO_ARCHCOM="{{ DO_ARCHCOM }}"    # Tar and archive the COM directories
 export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, and local
 
+# Execute the postamble (disable for production)
+export TRAP_POSTAMBLE=YES
+
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
 
