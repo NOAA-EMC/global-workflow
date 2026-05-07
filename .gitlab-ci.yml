@@ -157,6 +157,14 @@ include:
         git remote add github "${GW_REPO_URL}"
         git fetch github
         ${GH} pr checkout "${PR_NUMBER}"
+        # Re-pin branch upstream to NOAA-EMC after `gh pr checkout` (which points it
+        # at the author's fork). Fixes submodule "not our ref" on git <= 2.45.
+        # Remove once Gaea ships git >= 2.47.
+        git remote set-url origin "${GW_REPO_URL}"
+        _br=$(git branch --show-current)
+        git config "branch.${_br}.remote"     origin
+        git config "branch.${_br}.pushRemote" origin
+        unset _br
         git submodule update --init --recursive -j 8
       fi
 
