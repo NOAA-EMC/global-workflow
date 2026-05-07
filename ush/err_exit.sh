@@ -18,6 +18,9 @@ err_exit() {
     # Do not fail in err_exit
     set +eux
 
+    # Nullify any traps
+    trap - EXIT
+
     msg1=${*:-Job ${jobid} failed}
     if [[ -n "${pgm}" ]]; then
         msg1+=", ERROR IN ${pgm}"
