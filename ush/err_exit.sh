@@ -55,7 +55,9 @@ err_exit() {
             echo "----- contents of errfile -----" >> "${pgmout}"
             cat errfile >> "${pgmout}"
         fi
-        >&2 cat "${pgmout}"
+        if [[ -s "${pgmout}" ]]; then
+            >&2 cat "${pgmout}"
+        fi
     elif [[ -s errfile ]]; then
         >&2 cat errfile
     fi
