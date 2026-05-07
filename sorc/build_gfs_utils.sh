@@ -49,7 +49,5 @@ BUILD_TYPE=${BUILD_TYPE:-"Release"} \
     BUILD_JOBS=${BUILD_JOBS:-8} \
     "${HOMEglobal_}/sorc/gfs_utils.fd/ush/build.sh"
 
-echo "Back from ${HOMEglobal_}/sorc/gfs_utils.fd/ush/build.sh"
-
-exit 0
+exit
 

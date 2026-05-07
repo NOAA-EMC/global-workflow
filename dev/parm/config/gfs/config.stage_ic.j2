@@ -24,7 +24,7 @@ if [[ ${EXP_WARM_START} = ".false." ]] ; then
 fi
 
 # Set ICSDIR (if not defined)
-if [[ -z "${ICSDIR}" || ! -d "${ICSDIR}" ]] ; then
+if [[ -z "${ICSDIR}" ]] ; then
 
   if (( NMEM_ENS > 0 )) ; then
     ensic="${CASE_ENS}"
