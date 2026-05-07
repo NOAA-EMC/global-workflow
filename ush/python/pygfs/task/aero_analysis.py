@@ -22,7 +22,6 @@ class AerosolAnalysis(Analysis):
     """
     Class for JEDI-based global aerosol analysis tasks
     """
-    @logit(logger, name="AerosolAnalysis")
     def __init__(self, config):
         """Constructor global aero analysis task
 

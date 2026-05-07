@@ -12,7 +12,6 @@ class AerosolBMatrix(Analysis):
     """
     Class for global aerosol BMatrix tasks
     """
-    @logit(logger, name="AerosolBMatrix")
     def __init__(self, config):
         """Constructor global aero analysis bmatrix task
 
