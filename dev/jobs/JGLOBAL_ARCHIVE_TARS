@@ -55,7 +55,6 @@ declare -rx COMIN_SNOW_ANLMON="${COMIN}/products/snow/anlmon"
 declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
 declare -rx COMIN_ICE_BMATRIX="${COMIN}/bmatrix/ice"
 declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
-declare -rx COMIN_ICE_INPUT="${COMIN}/model/ice/input"
 declare -rx COMIN_ICE_RESTART="${COMIN}/model/ice/restart"
 declare -rx COMIN_ICE_GRIB="${COMIN}/products/ice/grib2"
 declare -rx COMIN_ICE_NETCDF="${COMIN}/products/ice/netcdf"
@@ -79,7 +78,6 @@ declare -rx COMOUT_CONF="${COMOUT}/conf"
 declare -rx COMOUT_ATMOS_TRACK="${COMOUT}/products/atmos/cyclone/tracks"
 
 mkdir -p "${COMOUT_CONF}"
-mkdir -p "${COMOUT_ATMOS_TRACK}"
 
 for grid in "0p25" "0p50" "1p00"; do
     declare -rx "COMIN_ATMOS_GRIB_${grid}"="${COMIN}/products/atmos/grib2/${grid}"
