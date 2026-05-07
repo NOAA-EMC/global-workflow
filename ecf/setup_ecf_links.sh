@@ -4,7 +4,6 @@ set -eux
 module load prod_util
 
 # GFS ecflow workflow resource configuration
-resource_config="EMC"
 ECF_DIR=$(pwd)
 
 # Create tmp file for git exclude
@@ -15,12 +14,12 @@ tmp_exclude="${ECF_DIR}/exclude_list.tmp"
 function link_master_to_fhr() {
     tmpl=$1 # Name of the master template
     fhrs=$2 # Array of forecast hours
-    for fhr in ${fhrs[@]}; do
-        fhrchar=$(printf %03d $fhr)
+    for fhr in "${fhrs[@]}"; do
+        fhrchar=$(printf %03d "${fhr}")
         master=${tmpl}_master.ecf
         target=${tmpl}_f${fhrchar}.ecf
-        rm -f $target
-        ln -sf $master $target
+        rm -f "${target}"
+        ln -sf "${master}" "${target}"
     done
 }
 
@@ -35,22 +34,22 @@ create_ecf_file() {
 
 add_to_tmpfile() {
     local exclude_file="$1"
-    echo ${exclude_file} >> ${tmp_exclude}
+    echo "${exclude_file}" >> "${tmp_exclude}"
     echo "Added ${exclude_file} to ${tmp_exclude}"
 }
 
 ################################################################################################
 ################################################################################################
 # gfs wave postsbs files
-cd ${ECF_DIR}/scripts/gfs/product/wave/sbs
+cd "${ECF_DIR}/scripts/gfs/product/wave/sbs"
 echo "Copy gfs wave postsbs files ..."
 rm -f jgfs_wave_postsbs_f*.ecf
 fhr_end=384
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_wave_postsbs_master.ecf jgfs_wave_postsbs_f${head_3d}.ecf
-    if [ $fhr_start -lt 120 ]; then
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_wave_postsbs_master.ecf "jgfs_wave_postsbs_f${head_3d}.ecf"
+    if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
@@ -59,15 +58,15 @@ while [ $fhr_start -le $fhr_end ]; do
 done
 
 # gfs atmos product files
-cd ${ECF_DIR}/scripts/gfs/product/atmos/product
+cd "${ECF_DIR}/scripts/gfs/product/atmos/product"
 echo "Copy gfs atmos product files ..."
 rm -f jgfs_atmos_product_f*.ecf
 fhr_end=384
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_atmos_product_master.ecf jgfs_atmos_product_f${head_3d}.ecf
-    if [ $fhr_start -lt 120 ]; then
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_atmos_product_master.ecf "jgfs_atmos_product_f${head_3d}.ecf"
+    if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
@@ -76,111 +75,111 @@ while [ $fhr_start -le $fhr_end ]; do
 done
 
 # gfs ocean product files
-cd ${ECF_DIR}/scripts/gfs/product/ocean
+cd "${ECF_DIR}/scripts/gfs/product/ocean"
 echo "Copy gfs ocean product files ..."
 rm -f jgfs_ocean_product_f*.ecf
 fhr_end=384
 fhr_start=6
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_ocean_product_master.ecf jgfs_ocean_product_f${head_3d}.ecf
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_ocean_product_master.ecf "jgfs_ocean_product_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 6))
     add_to_tmpfile "scripts/gfs/product/ocean/jgfs_ocean_product_f${head_3d}.ecf"
 done
 
 # gfs ice product files
-cd ${ECF_DIR}/scripts/gfs/product/ice
+cd "${ECF_DIR}/scripts/gfs/product/ice"
 echo "Copy gfs ice product files ..."
 rm -f jgfs_ice_product_f*.ecf
 fhr_end=384
 fhr_start=6
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_ice_product_master.ecf jgfs_ice_product_f${head_3d}.ecf
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_ice_product_master.ecf "jgfs_ice_product_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 6))
     add_to_tmpfile "scripts/gfs/product/ice/jgfs_ice_product_f${head_3d}.ecf"
 done
 
 # gdas atmos product files
-cd ${ECF_DIR}/scripts/gdas/product/atmos/product
+cd "${ECF_DIR}/scripts/gdas/product/atmos/product"
 echo "Copy gdas atmos product files ..."
 rm -f jgdas_atmos_product_f???.ecf
 fhr_end=9
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=1
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgdas_atmos_product_master.ecf jgdas_atmos_product_f${head_3d}.ecf
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgdas_atmos_product_master.ecf "jgdas_atmos_product_f${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
     add_to_tmpfile "scripts/gdas/product/atmos/product/jgdas_atmos_product_f${head_3d}.ecf"
 done
 
 # gdas wave postsbs files
-cd ${ECF_DIR}/scripts/gdas/product/wave/sbs
+cd "${ECF_DIR}/scripts/gdas/product/wave/sbs"
 echo "Copy gdas wave postsbs files ..."
 rm -f jgdas_wave_postsbs_f???.ecf
 fhr_end=9
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=1
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgdas_wave_postsbs_master.ecf jgdas_wave_postsbs_f${head_3d}.ecf
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgdas_wave_postsbs_master.ecf "jgdas_wave_postsbs_f${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
     add_to_tmpfile "scripts/gdas/post/wave/jgdas_wave_postsbs_f${head_3d}.ecf"
 done
 
 # enkfgdas ens recenter files
-cd ${ECF_DIR}/scripts/enkfgdas/analysis/recenter
+cd "${ECF_DIR}/scripts/enkfgdas/analysis/recenter"
 echo "Copy enkfgdas ecen files ..."
 rm -f jenkfgdas_atmos_ens_recenter00?.ecf
 fhr_end=2
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=1
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jenkfgdas_atmos_ens_recenter_master.ecf jenkfgdas_atmos_ens_recenter${head_3d}.ecf
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jenkfgdas_atmos_ens_recenter_master.ecf "jenkfgdas_atmos_ens_recenter${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
     add_to_tmpfile "scripts/enkfgdas/analysis/recenter/jenkfgdas_atmos_ens_recenter${head_3d}.ecf"
 done
 
 # enkfgdas fcst files
-cd ${ECF_DIR}/scripts/enkfgdas/forecast
+cd "${ECF_DIR}/scripts/enkfgdas/forecast"
 echo "Copy enkfgdas fcst files ..."
 rm -f jenkfgdas_fcst_mem0??.ecf
 fhr_end=80
 fhr_start=1
-while [ $fhr_start -le $fhr_end ]; do
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=1
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jenkfgdas_fcst_master.ecf jenkfgdas_fcst_mem${head_3d}.ecf
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jenkfgdas_fcst_master.ecf "jenkfgdas_fcst_mem${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
     add_to_tmpfile "scripts/enkfgdas/forecast/jenkfgdas_fcst_mem${head_3d}.ecf"
 done
 
 # enkfgdas post files
-cd ${ECF_DIR}/scripts/enkfgdas/ensstat
+cd "${ECF_DIR}/scripts/enkfgdas/ensstat"
 echo "Copy enkfgdas post files ..."
 rm -f jenkfgdas_ens_post0??.ecf
 fhr_end=6
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=1
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jenkfgdas_ens_post_master.ecf jenkfgdas_ens_post${head_3d}.ecf
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jenkfgdas_ens_post_master.ecf "jenkfgdas_ens_post${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
     add_to_tmpfile "scripts/enkfgdas/ensstat/jenkfgdas_ens_post${head_3d}.ecf"
 done
 
 # gfs atmos gempak files
-cd ${ECF_DIR}/scripts/gfs/product/atmos/gempak/gempak
+cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/gempak"
 echo "Copy gfs atmos gempak files ..."
 rm -f jgfs_atmos_gempak_f*.ecf
 fhr_end=384
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_atmos_gempak_master.ecf jgfs_atmos_gempak_f${head_3d}.ecf
-    if [ $fhr_start -lt 120 ]; then
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_atmos_gempak_master.ecf "jgfs_atmos_gempak_f${head_3d}.ecf"
+    if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
@@ -189,43 +188,43 @@ while [ $fhr_start -le $fhr_end ]; do
 done
 
 # gfs weav gempak files
-cd ${ECF_DIR}/scripts/gfs/product/wave/gempak
+cd "${ECF_DIR}/scripts/gfs/product/wave/gempak"
 echo "Copy gfs weav gempak files ..."
 rm -f jgfs_wave_gempak_f*.ecf
 fhr_end=180
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=3
-    [[ $fhr_start -ge 72 ]] && step=6
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_wave_gempak_master.ecf jgfs_wave_gempak_f${head_3d}.ecf
+    [[ "${fhr_start}" -ge 72 ]] && step=6
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_wave_gempak_master.ecf "jgfs_wave_gempak_f${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
     add_to_tmpfile "scripts/gfs/product/wave/gempak/jgfs_wave_gempak_f${head_3d}.ecf"
 done
 
 # gdas atmos gempak files
-cd ${ECF_DIR}/scripts/gdas/product/atmos/gempak/gempak
+cd "${ECF_DIR}/scripts/gdas/product/atmos/gempak/gempak"
 echo "Copy gfs atmos gempak files ..."
 rm -f jgdas_atmos_gempak_f*.ecf
 fhr_end=9
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgdas_atmos_gempak_master.ecf jgdas_atmos_gempak_f${head_3d}.ecf
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgdas_atmos_gempak_master.ecf "jgdas_atmos_gempak_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 1))
     add_to_tmpfile "scripts/gdas/product/atmos/gempak/gempak/jgdas_atmos_gempak_f${head_3d}.ecf"
 done
 
 # gfs atmos goesupp files
-cd ${ECF_DIR}/scripts/gfs/product/atmos/gempak/goesupp
+cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/goesupp"
 echo "Copy gfs atmos goesupp files ..."
 rm -f jgfs_atmos_goesupp_f*.ecf
 fhr_end=384
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_atmos_goesupp_master.ecf jgfs_atmos_goesupp_f${head_3d}.ecf
-    if [ $fhr_start -lt 120 ]; then
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_atmos_goesupp_master.ecf "jgfs_atmos_goesupp_f${head_3d}.ecf"
+    if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
@@ -234,15 +233,15 @@ while [ $fhr_start -le $fhr_end ]; do
 done
 
 # gfs atmos 20km 1p0 files
-cd ${ECF_DIR}/scripts/gfs/product/atmos/awips_20km_1p0
+cd "${ECF_DIR}/scripts/gfs/product/atmos/awips_20km_1p0"
 echo "Copy gfs atmos 20km 1p0 files ..."
 rm -f jgfs_atmos_awips_20km_1p0_f*.ecf
 fhr_end=240
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_atmos_awips_20km_1p0_master.ecf jgfs_atmos_awips_20km_1p0_f${head_3d}.ecf
-    if [ $fhr_start -lt 120 ]; then
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_atmos_awips_20km_1p0_master.ecf "jgfs_atmos_awips_20km_1p0_f${head_3d}.ecf"
+    if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
@@ -251,14 +250,14 @@ while [ $fhr_start -le $fhr_end ]; do
 done
 
 # gfs atmos grb2spec files
-cd ${ECF_DIR}/scripts/gfs/product/atmos/gempak/grb2spec
+cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/grb2spec"
 echo "Copy gfs atmos grb2spec files ..."
 rm -f jgfs_atmos_grb2spec_f*.ecf
 fhr_end=180
 fhr_start=0
-while [ $fhr_start -le $fhr_end ]; do
-    head_3d=$(printf "%03d" ${fhr_start})
-    cp jgfs_atmos_grb2spec_master.ecf jgfs_atmos_grb2spec_f${head_3d}.ecf
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jgfs_atmos_grb2spec_master.ecf "jgfs_atmos_grb2spec_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 3))
     add_to_tmpfile "scripts/gfs/product/atmos/gempak/grb2spec/jgfs_atmos_grb2spec_f${head_3d}.ecf"
 done
