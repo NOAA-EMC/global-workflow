@@ -4,7 +4,7 @@ defaults:
 base:
   DO_GOES: "YES"
   DO_BUFRSND: "YES"
-  DO_GEMPAK: "NO"
+  DO_GEMPAK: "YES"
   DO_AWIPS: "YES"
   DO_NPOESS: "YES"
   DO_METP: "YES"
