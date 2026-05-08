@@ -17,7 +17,6 @@
 err_exit() {
     # Do not fail in err_exit
     set +eux
-    set -x
 
     # Nullify any traps
     trap - EXIT
