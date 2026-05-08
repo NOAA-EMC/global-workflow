@@ -32,11 +32,12 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     fi
 
     export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
-    export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
+    export COMOUT_ATMOS_ANALYSIS_MEM="${COMOUT_ATMOS_ANALYSIS}"
     export CASE_IN="${CASE_ENS}"
     export CASE_OUT="${CASE}"
     export OCNRES_OUT="${OCNRES}"
     export LFHR
+
     mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
     "${REGRIDSH}"
     export err=$?
