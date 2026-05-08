@@ -89,8 +89,12 @@ while [[ ${remaining} -gt 0 ]]; do
 
         # Copy all data files that share this sentinel (data first, log last)
         for ((j = 0; j < count; j++)); do
-            [[ "${done_flag[j]}" == "YES" ]] && continue
-            [[ "${local_log[j]}" != "${this_ll}" ]] && continue
+            if [[ "${done_flag[j]}" == "YES" ]]; then
+                continue
+            fi
+            if [[ "${local_log[j]}" != "${this_ll}" ]]; then
+                continue
+            fi
             com_dir=$(dirname "${com_data[j]}")
             if [[ ! -d "${com_dir}" ]]; then mkdir -p "${com_dir}"; fi
             cpfs "${local_data[j]}" "${com_data[j]}"
