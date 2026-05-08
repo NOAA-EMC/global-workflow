@@ -16,7 +16,6 @@ class FV3AnalysisCalc(Analysis):
     """
     Class for analysis calculation
     """
-    @logit(logger, name="FV3AnalysisCalc")
     def __init__(self, config: Dict[str, Any]):
         """Constructor for analysis calculation task
 

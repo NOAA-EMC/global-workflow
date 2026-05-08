@@ -30,7 +30,6 @@ class SnowEnsAnalysis(Analysis):
     Class for JEDI-based global snow ensemble analysis tasks
     """
 
-    @logit(logger, name="SnowEnsAnalysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global snow ensemble analysis task
 
