@@ -12,7 +12,6 @@ UFS_VARIANTS = ['GFS']
 
 class UFS:
 
-    @logit(logger, name="UFS")
     def __init__(self, model_name: str, config: Dict[str, Any]):
         """Initialize the UFS-weather-model generic class and check if the model_name is a valid variant
 

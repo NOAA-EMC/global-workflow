@@ -13,7 +13,6 @@ class AtmAnalysis(Analysis):
     """
     Class for JEDI-based global atm deterministic analysis tasks
     """
-    @logit(logger, name="AtmAnalysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global atm analysis task
 
