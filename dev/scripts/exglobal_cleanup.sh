@@ -19,7 +19,7 @@ rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 for _sentinel_log in \
     "${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"/*.nc.log \
     "${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"/*.nc.log; do
-    [[ -f "${_sentinel_log}" ]] && rm -f "${_sentinel_log}"
+    rm -f "${_sentinel_log}"
 done
 unset _sentinel_log
 ###############################################################
