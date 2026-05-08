@@ -37,11 +37,12 @@ _get_cycle_vars(config_dict):
 
 Logging
 -------
-All public operational functions are decorated with @logit(logger).
+All public operational functions are decorated with @logit (TODO) to log entry, exit, and return values.
 """
 import os
 from logging import getLogger
-from wxflow import AttrDict, logit, to_YMD, to_YMDH
+from wxflow import AttrDict, to_YMD, to_YMDH
+# from wxflow import logit  # Uncomment if logit decorator is available
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -60,8 +61,11 @@ class ArchiveVrfyVars:
     generation logic. This class only provides the variables they need.
     """
 
+    # TODO: Convert these to instance methods so we aren't passing config_dict around.
+    #       Add an __init__ method to accept and store config_dict.
+    #       Then add logit decorators to the instance methods and remove debug prints of
+    #       return dicts (since the logit decorator will log the return values).
     @staticmethod
-    @logit(logger)
     def get_all_yaml_vars(config_dict: AttrDict) -> AttrDict:
         """Collect all variables needed for YAML templates.
 
@@ -91,12 +95,11 @@ class ArchiveVrfyVars:
         arch_dict.update(ArchiveVrfyVars._get_cycle_vars(config_dict))
 
         logger.info(f"Collected {len(arch_dict)} variables for YAML templates")
-        logger.debug(f"arch_dict keys: {list(arch_dict.keys())}")
+        logger.debug(f"Returning dictionary {arch_dict}")
 
         return arch_dict
 
     @staticmethod
-    @logit(logger)
     def add_config_vars(config_dict: AttrDict) -> AttrDict:
         """Collect configuration keys and COM* variables for archive operations.
 
@@ -144,12 +147,11 @@ class ArchiveVrfyVars:
                 general_dict[key] = config_dict.get(key)
 
         logger.info(f"Collected {len(general_dict)} general archive variables")
-        logger.debug(f"General variables: {list(general_dict.keys())}")
+        logger.debug(f"General dictionary: {general_dict}")
 
         return general_dict
 
     @staticmethod
-    @logit(logger)
     def _get_cycle_vars(config_dict: AttrDict) -> AttrDict:
         """Calculate cycle-specific variables.
 
@@ -176,9 +178,12 @@ class ArchiveVrfyVars:
         # Archive directory (used by all systems)
         VFYARC = os.path.join(config_dict.ROTDIR, "vrfyarch")
 
-        return {
+        cycle_vars = {
             'cycle_HH': cycle_HH,
             'cycle_YMDH': cycle_YMDH,
             'cycle_YMD': cycle_YMD,
             'VFYARC': VFYARC
         }
+
+        logger.debug(f"Calculated cycle variables: {cycle_vars}")
+        return cycle_vars

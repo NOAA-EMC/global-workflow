@@ -24,7 +24,6 @@ class UPP(Task):
 
     VALID_UPP_RUN = ['analysis', 'forecast', 'goes']
 
-    @logit(logger, name="UPP")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the UPP task
         The constructor is responsible for resolving the "UPP_CONFIG" based in the run-type "upp_run"
