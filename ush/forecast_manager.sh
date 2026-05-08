@@ -113,7 +113,9 @@ while [[ ${remaining} -gt 0 ]]; do
         # the copy completed successfully and to provide a clean downstream dependency.
         if [[ ! -f "${this_cl}" ]]; then
             cl_dir=$(dirname "${this_cl}")
-            if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
+            if [[ ! -d "${cl_dir}" ]]; then
+                mkdir -p "${cl_dir}"
+            fi
             if [[ "${this_ll}" == "${local_data[i]}" ]]; then
                 log_err=0
                 if ! echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"; then
