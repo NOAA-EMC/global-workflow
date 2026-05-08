@@ -4,12 +4,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEglobal}/ush/detect_machine.sh"
-if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
-    source "${HOMEglobal}/dev/ush/load_modules.sh" ufswm
-else
-    source "${HOMEglobal}/dev/ush/load_modules.sh" run
-fi
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
