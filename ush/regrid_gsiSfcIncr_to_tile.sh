@@ -151,27 +151,19 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
 
 else # deterministic member only (NMEM_REGRID=1)
 
-    echo "CSD: Preparing to regrid surface increments for deterministic member."
-
     # Create commands to stage input files and append to the cmdfile.0
     {
         # copy increments for restarts
-        if [[ "${DO_LAND_IAU}" = ".false." ]]; then
-            echo "CSD: overlap check enabled for deterministic member; soilinc_fhrs=(${soilinc_fhrs[*]}), landifhrs=(${landifhrs[*]})" >&2
-            for FHR in "${soilinc_fhrs[@]}"; do
-                echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
-				${DATA}/sfci00${FHR}.nc"
-            done
-	else
+        for FHR in "${soilinc_fhrs[@]}"; do
+	    echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
+			${DATA}/sfci00${FHR}.nc"
+        done
+        if [[ "${DO_LAND_IAU}" = ".true." ]]; then
             # copy increments for land IAU, if don't have already
-            echo "CSD: overlap check enabled for deterministic member; soilinc_fhrs=(${soilinc_fhrs[*]}), landifhrs=(${landifhrs[*]})" >&2
             for FHI in "${landifhrs[@]}"; do
                 if [[ ! " ${soilinc_fhrs[*]} " =~ [[:space:]]${FHI}[[:space:]] ]]; then
-                    echo "CSD: adding land-IAU increment copy for FHI=${FHI} (not present in soilinc_fhrs)" >&2
                     echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHI}.nc \
                           ${DATA}/sfci00${FHI}.nc"
-                else
-                    echo "CSD: skipping land-IAU increment copy for FHI=${FHI} (already present in soilinc_fhrs)" >&2
                 fi
             done
         fi
@@ -225,9 +217,6 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
         fi
     done
 fi
-
-echo "CSD - forcing exit" 
-exit 10
 
 # Run MPMD to stage input files
 "${USHgfs}/run_mpmd.sh" "cmdfile_in" && true
