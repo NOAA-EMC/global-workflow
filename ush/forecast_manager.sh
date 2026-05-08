@@ -63,9 +63,21 @@ while [[ ${remaining} -gt 0 ]]; do
     remaining_before=${remaining}
     for (( i = 0; i < count; i++ )); do
         [[ "${done_flag[i]}" == "YES" ]] && continue
-        [[ ! -f "${local_log[i]}" ]] && continue
 
-        # Sentinel exists; process all rows that share this sentinel
+        if [[ ! -f "${local_log[i]}" ]]; then
+            # Fallback: if the model has finished and the data file is present,
+            # copy it even if the period-start sentinel was never written
+            # (MOM6 does not flush the sentinel for the last period at FHMAX).
+            if [[ -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" \
+                  && "${local_log[i]}" != "${local_data[i]}" \
+                  && -f "${local_data[i]}" ]]; then
+                local_log[i]="${local_data[i]}"
+            else
+                continue
+            fi
+        fi
+
+        # Sentinel exists (or data-as-sentinel fallback); process all rows that share this sentinel
         this_ll="${local_log[i]}"
         this_cl="${com_log[i]}"
 
