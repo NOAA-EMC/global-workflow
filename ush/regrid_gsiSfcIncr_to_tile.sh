@@ -115,9 +115,9 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
                 for FHR in "${soilinc_fhrs[@]}"; do
                     echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
 		                ${DATA}/${memdir}/sfci00${FHR}.nc"
-		    done
+                done
             else
-            	# copy ensemble increments for land-IAU
+                # copy ensemble increments for land-IAU
                 for FHI in "${landifhrs[@]}"; do
                     echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHI}.nc \
                                 ${DATA}/${memdir}/sfci00${FHI}.nc"
@@ -137,7 +137,7 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
                               ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${FHR}.tile${n}.nc"
                     done
                 done
-	    else
+            else
                 # copy regridded increments for land IAU
                 for n in $(seq 1 "${ntiles}"); do
                     echo "cpfs ${DATA}/${memdir}/sfci.mem${imem}.tile${n}.nc \
@@ -157,8 +157,8 @@ else # deterministic member only (NMEM_REGRID=1)
     {
         # copy increments for restarts
         if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
-	    for FHR in "${soilinc_fhrs[@]}"; do
-	        echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
+            for FHR in "${soilinc_fhrs[@]}"; do
+                echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
 				${DATA}/sfci00${FHR}.nc"
             done
         fi
@@ -187,12 +187,12 @@ else # deterministic member only (NMEM_REGRID=1)
         echo "#!/bin/bash"
 
         # copy regridded increments for restarts
-	for FHR in "${soilinc_fhrs[@]}"; do
-	    for n in $(seq 1 "${ntiles}"); do
-         	echo "cpfs ${DATA}/sfci00${FHR}.mem1.tile${n}.nc \
+        for FHR in "${soilinc_fhrs[@]}"; do
+            for n in $(seq 1 "${ntiles}"); do
+                echo "cpfs ${DATA}/sfci00${FHR}.mem1.tile${n}.nc \
 		           ${COMOUT_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${FHR}.tile${n}.nc"
-	    done
-	done
+            done
+        done
 
         # copy regridded increments for land-IAU
         if [[ "${DO_LAND_IAU}" = ".true." ]]; then
