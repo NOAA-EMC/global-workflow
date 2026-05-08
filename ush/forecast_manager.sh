@@ -40,7 +40,9 @@ fi
 declare -a local_data local_log com_data com_log done_flag
 count=0
 while read -r ld ll cd cl; do
-    [[ -z "${ld}" || "${ld:0:1}" == "#" ]] && continue
+    if [[ -z "${ld}" || "${ld:0:1}" == "#" ]]; then
+        continue
+    
     local_data[count]="${ld}"
     local_log[count]="${ll}"
     com_data[count]="${cd}"
