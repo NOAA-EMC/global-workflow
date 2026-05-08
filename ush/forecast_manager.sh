@@ -141,7 +141,9 @@ while [[ ${remaining} -gt 0 ]]; do
         done
     done
 
-    [[ ${remaining} -eq 0 ]] && break
+    if [[ ${remaining} -eq 0 ]]; then
+        break
+    fi
 
     # Timeout check (fatal — hard wall enforced by batch scheduler walltime).
     elapsed=$(($(date +%s) - start_time))
