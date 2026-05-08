@@ -42,7 +42,7 @@ count=0
 while read -r ld ll cd cl; do
     if [[ -z "${ld}" || "${ld:0:1}" == "#" ]]; then
         continue
-    
+    fi
     local_data[count]="${ld}"
     local_log[count]="${ll}"
     com_data[count]="${cd}"
@@ -67,7 +67,7 @@ while [[ ${remaining} -gt 0 ]]; do
         if [[ "${done_flag[i]}" == "YES" ]]; then
             continue
         fi
-        
+
         if [[ ! -f "${local_log[i]}" ]]; then
             continue
         fi
