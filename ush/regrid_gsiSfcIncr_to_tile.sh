@@ -49,7 +49,7 @@ if [[ "${DO_LAND_IAU}" = ".true." ]]; then
 fi
 
 # soilinc_fhrs is the time(s) of the requested
-# analysis restarts. Regrid all into a single file.
+# analysis restarts. Regrid each into a separate file.
 # If ensemble and land IAU, this will be skipped
 if [[ "${LFHR}" -ge 0 ]]; then # ensemble, LFHR already set
     soilinc_fhrs=("${LFHR}")
@@ -129,7 +129,7 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
         {
             echo "#!/bin/bash"
 
-            if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
+            if [[ "${DO_LAND_IAU}" = ".false." ]]; then
                 # copy regridded increments for restarts
                 for FHR in "${soilinc_fhrs[@]}"; do
                     for n in $(seq 1 "${ntiles}"); do
@@ -156,14 +156,13 @@ else # deterministic member only (NMEM_REGRID=1)
     # Create commands to stage input files and append to the cmdfile.0
     {
         # copy increments for restarts
-        if [[ "${DO_LAND_IAU}" = ".false." || "${RUN}" == "gdas" || "${RUN}" == "gfs" ]]; then
+        if [[ "${DO_LAND_IAU}" = ".false." ]]; then
+            echo "CSD: overlap check enabled for deterministic member; soilinc_fhrs=(${soilinc_fhrs[*]}), landifhrs=(${landifhrs[*]})" >&2
             for FHR in "${soilinc_fhrs[@]}"; do
                 echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
 				${DATA}/sfci00${FHR}.nc"
             done
-        fi
-
-        if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+	else
             # copy increments for land IAU, if don't have already
             echo "CSD: overlap check enabled for deterministic member; soilinc_fhrs=(${soilinc_fhrs[*]}), landifhrs=(${landifhrs[*]})" >&2
             for FHI in "${landifhrs[@]}"; do
@@ -226,6 +225,9 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
         fi
     done
 fi
+
+echo "CSD - forcing exit" 
+exit 10
 
 # Run MPMD to stage input files
 "${USHgfs}/run_mpmd.sh" "cmdfile_in" && true
