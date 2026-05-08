@@ -64,8 +64,13 @@ fcst_done_idle=0
 while [[ ${remaining} -gt 0 ]]; do
     remaining_before=${remaining}
     for ((i = 0; i < count; i++)); do
-        [[ "${done_flag[i]}" == "YES" ]] && continue
-        [[ ! -f "${local_log[i]}" ]] && continue
+        if [[ "${done_flag[i]}" == "YES" ]]; then
+            continue
+        fi
+        
+        if [[ ! -f "${local_log[i]}" ]]; then
+            continue
+        fi
 
         # Sentinel exists; process all rows that share this sentinel
         this_ll="${local_log[i]}"
