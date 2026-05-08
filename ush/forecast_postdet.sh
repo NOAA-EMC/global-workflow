@@ -816,7 +816,7 @@ MOM6_postdet() {
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
                     # Use MOM6's outputlog sentinel (YYYYMMDD.HHMMSS.mom6.NNh written to DATA on output completion).
                     local ocn_log_time freq_str
-                    ocn_log_time=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${last_fhr} hours" +%Y%m%d.%H%M%S)
+                    ocn_log_time=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H%M%S)
                     freq_str=$(printf "%02ih" "${interval}")
                     ocn_log="${DATA}/${ocn_log_time}.mom6.${freq_str}"
                     ocn_com_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.ocn.log.f${fhr3}.txt"
