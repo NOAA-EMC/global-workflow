@@ -986,14 +986,24 @@ case ${step} in
     ;;
 
   "fcst_manager")
-    # Forecast manager: one MPMD rank per active component (ATM, WW3, OCN, ICE).
+    # Forecast manager: one MPMD rank per active model component.
     # Polls DATAoutput for sentinel log files and copies products to COM in real time.
     # Walltime must be long enough to cover the full forecast run.
-    # is_exclusive must be reset here because config.fcst (loaded before this file)
-    # exports is_exclusive=True; the manager does not need exclusive node access.
     export is_exclusive=False
-    ntasks=4
-    tasks_per_node=4
+    ntasks=1  # ATM is always active
+    if [[ "${DO_WAVE}" == "YES" ]]; then
+        (( ntasks += 1 ))
+    fi
+    if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+        (( ntasks += 1 ))
+    fi
+    if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+        (( ntasks += 1 ))
+    fi
+    if [[ "${DO_AERO_FCST:-NO}" == "YES" ]]; then
+        (( ntasks += 1 ))
+    fi
+    tasks_per_node=${ntasks}
     threads_per_task=1
     memory="8GB"
     walltime="08:00:00"
