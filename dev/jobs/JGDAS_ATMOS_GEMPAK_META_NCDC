@@ -85,7 +85,7 @@ if ((cyc % 12 == 0)); then
 fi
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to generate GDAS GEMPAK GIF products for NCDC"
+    err_exit "Failed to generate NCDC GIFs from GDAS GEMPAK products"
 fi
 ########################################################
 

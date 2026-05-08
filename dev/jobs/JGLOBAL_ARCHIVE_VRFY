@@ -58,7 +58,7 @@ fi
 ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to verify the archived analysis and forecast files"
+    err_exit "Failed to archive analysis and forecast files for verification"
 fi
 
 ##############################################

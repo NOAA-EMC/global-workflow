@@ -31,7 +31,7 @@ declare -rx COMIN_SNOW_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/
 
 "${SCRgfs}/exglobal_enkf_earc_vrfy.py" && true
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to verify the archived ensemble mean and spread statistics"
+    err_exit "Failed to archive ensemble statistics for verification"
 fi
 
 ###############################################################
