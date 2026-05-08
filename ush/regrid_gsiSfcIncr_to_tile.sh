@@ -41,8 +41,8 @@ export jreso=${CASE_OUT:1}
 
 regrid_nml_tmpl="${PARMgfs}/regrid_sfc/regrid.nml_tmpl"
 
-# landifhrs is the time(s) of the increments. 
-# for land-IAU, regrid these into a single 
+# landifhrs is the time(s) of the increments.
+# for land-IAU, regrid these into a single
 # combined file.
 if [[ "${DO_LAND_IAU}" = ".true." ]]; then
     IFS=',' read -ra landifhrs <<< "${IAUFHRS}"
