@@ -96,7 +96,9 @@ while [[ ${remaining} -gt 0 ]]; do
                 continue
             fi
             com_dir=$(dirname "${com_data[j]}")
-            if [[ ! -d "${com_dir}" ]]; then mkdir -p "${com_dir}"; fi
+            if [[ ! -d "${com_dir}" ]]; then
+                mkdir -p "${com_dir}"
+            fi
             cpfs "${local_data[j]}" "${com_data[j]}"
             copy_err=$?
             if [[ ${copy_err} -ne 0 ]]; then
