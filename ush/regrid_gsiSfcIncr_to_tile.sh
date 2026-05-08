@@ -112,8 +112,8 @@ if [[ "${NMEM_REGRID}" -gt 1 ]]; then
 
             if [[ "${DO_LAND_IAU}" = ".false." ]]; then
                 # copy ensemble increments for restarts
-		for FHR in "${soilinc_fhrs[@]}"; do
-		    echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
+                for FHR in "${soilinc_fhrs[@]}"; do
+                    echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}increment.sfc.i00${FHR}.nc \
 		                ${DATA}/${memdir}/sfci00${FHR}.nc"
 		    done
             else
