@@ -111,8 +111,16 @@ while [[ ${remaining} -gt 0 ]]; do
         if [[ ! -f "${this_cl}" ]]; then
             cl_dir=$(dirname "${this_cl}")
             if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
-            cpfs "${this_ll}" "${this_cl}"
-            log_err=$?
+            if [[ "${this_ll}" == "${local_data[i]}" ]]; then
+                # Data-as-sentinel fallback: MOM6 did not write the period-start
+                # sentinel (e.g. FHMAX last window or sentinel dir was cleaned).
+                # Write a synthetic marker instead of copying the NC binary.
+                echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
+                log_err=$?
+            else
+                cpfs "${this_ll}" "${this_cl}"
+                log_err=$?
+            fi
             if [[ ${log_err} -ne 0 ]]; then
                 echo "FATAL ERROR [${component}]: cpfs sentinel '${this_ll}' -> '${this_cl}' failed (err=${log_err})" >&2
                 exit "${log_err}"
