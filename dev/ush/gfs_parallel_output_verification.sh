@@ -95,11 +95,11 @@ set -x
 HOMEbase=$(pwd)
 
 for arr_elm_idx in $(seq 0 5); do
-    if [[ ! "${array_element_com[$((10#$arr_elm_idx))]}" == "NONE" ]]; then
+    if [[ "${array_element_com[$((10#${arr_elm_idx}))]}" != "NONE" ]]; then
         DATA=${DATAROOT}/${arr_elm_idx}
         mkdir -p "${DATA}"
-        CONTROL_DIR_SCAN="${COMROOT_Parallel_1}/${array_element_com[$((10#$arr_elm_idx))]}"
-        TARGET_DIR_SCAN="${COMROOT_Parallel_2}/${array_element_com[$((10#$arr_elm_idx))]}"
+        CONTROL_DIR_SCAN="${COMROOT_Parallel_1}/${array_element_com[$((10#${arr_elm_idx}))]}"
+        TARGET_DIR_SCAN="${COMROOT_Parallel_2}/${array_element_com[$((10#${arr_elm_idx}))]}"
         echo "Start comparison process on #${arr_elm_idx}"
         echo "Control directory ${TARGET_DIR_SCAN}"
         echo "Target directory ${TARGET_DIR_SCAN}"
