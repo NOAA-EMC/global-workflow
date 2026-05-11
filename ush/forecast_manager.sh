@@ -25,6 +25,11 @@
 #             table_file - absolute path to the 4-column product table file
 ################################################################################
 
+# Suppress xtrace that may be inherited from the parent J-job via SHELLOPTS.
+# The inner copy loops iterate hundreds of entries; xtrace would generate
+# millions of log lines and significantly slow filesystem I/O.
+set +x
+
 component="${1:?Usage: forecast_manager.sh <component> <table_file>}"
 table_file="${2:?Usage: forecast_manager.sh <component> <table_file>}"
 
