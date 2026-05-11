@@ -3,7 +3,7 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         exgfs_wave_post_pnt.sh
+# Script name:         exglobal_wave_post_pnt.sh
 # Script description:  Creates point output products from NetCDF WW3 point data
 #
 # Abstract: This script is the point postprocessor for the wave component in GFS.
@@ -13,7 +13,7 @@
 #  wave_tar.sh               : tars the spectral and bulletin multiple files
 #
 # COM inputs:
-#  - ${COMIN_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin
+#  - ${COMIN_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${grdID}.bin
 #  - ${COMIN_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${FH3}.nc
 #
 # $Id$
@@ -63,9 +63,9 @@ printf "\nPreparing input files :\n-------------------------\n"
 # Copy model definition files
 iloop=0
 for grdID in ${waveuoutpGRD}; do
-    if [[ -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
-        echo " Mod def file for ${grdID} found in ${COMIN_WAVE_PREP}. copying ...."
-        cpreq -f "${COMIN_WAVE_PREP}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
+    if [[ -f "${COMIN_WAVE_INIT}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" ]]; then
+        echo " Mod def file for ${grdID} found in ${COMIN_WAVE_INIT}. copying ...."
+        cpreq -f "${COMIN_WAVE_INIT}/${WAV_MOD_TAG}.mod_def.${grdID}.bin" "mod_def.${grdID}"
         iloop=$((iloop + 1))
     fi
 done
