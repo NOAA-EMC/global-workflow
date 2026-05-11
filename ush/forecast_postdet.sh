@@ -7,12 +7,7 @@
 #   DESCRIPTION: Defines post-determination handler functions for all UFS
 #                components: FV3 (Atmosphere), WW3 (Waves), MOM6 (Ocean),
 #                CICE (Sea Ice), GOCART (Aerosols), and CMEPS (Coupler).
-
-
 ################################################################################
-# forecast_postdet_fv3.sh
-################################################################################
-
 # shellcheck disable=SC2034
 # shellcheck disable=SC2178
 
