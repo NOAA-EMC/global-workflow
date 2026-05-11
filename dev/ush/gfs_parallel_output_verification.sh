@@ -120,7 +120,8 @@ for arr_elm_idx in $(seq 0 5); do
             echo "--- Hashing Target Files ---"
             # iterate through the EXACT SAME sorted list for the target directory
             cd "${TARGET_DIR_SCAN}"
-            cat "${DATA}/file_list.txt" | parallel -k " < "${DATA}/file_list.txt"
+            # shellcheck disable=SC2002
+            cat "${DATA}/file_list.txt" | parallel -k "
         if [ -f \"{}\" ]; then
           sha256sum \"{}\"
         else
