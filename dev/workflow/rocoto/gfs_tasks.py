@@ -1278,7 +1278,7 @@ class GFSTasks(Tasks):
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
                                    'history_file_tmpl': f'{self.run}.t@Hz.ocn.log.f#fhr3_last#.txt',
-                                   'dep_condition': 'and'},
+                                   'dep_condition': 'or'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc',
