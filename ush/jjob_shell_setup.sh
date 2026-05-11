@@ -54,7 +54,7 @@ set -x
 ##############################################
 source "${USHgfs}/postamble.sh"
 # shellcheck disable=SC2064
-trap "postamble ${start_time}" EXIT
+trap "postamble ${start_time} \$?" EXIT
 
 ##############################################
 # Temporal variables: PDY, PDYm#, PDYp# (via setpdy.sh)
