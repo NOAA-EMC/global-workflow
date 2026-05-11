@@ -1,16 +1,16 @@
 # Paths
-IODADIR: '/lustre/sharedGWdata/global/dump_ioda_nr'
-DMPDIR: '/lustre/sharedGWdata/global/dump_nr'
-BASE_GIT: '/lustre/global_externals'
-BASE_DATA: '/lustre/data'
-BASE_IC: '/lustre/sharedGWdata/ICSDIR'
-AERO_INPUTS_DIR: '/lustre/sharedGWdata/GEFS_ExtData/20250310'
+IODADIR: '/lustre/global/data/dump_ioda_nr'
+DMPDIR: '/lustre/global/data/dump_nr'
+BASE_GIT: '/lustre/global/external_programs'
+BASE_DATA: '/lustre/global/data'
+BASE_IC: '/lustre/global/data/ICSDIR'
+AERO_INPUTS_DIR: '/lustre/global/data/GEFS_ExtData/20250310'
 PACKAGEROOT: '' #TODO: This does not yet exist.
-HOMEDIR: '/home/ubuntu/Global-Workflow/wei'
-STMP: '/lustre/wei/stmp/'
-PTMP: '/lustre/wei/ptmp/'
+HOMEDIR: '/lustre/noscrub'
+STMP: '/lustre/stmp'
+PTMP: '/lustre/ptmp'
 NOSCRUB: '${HOMEDIR}'
-COMINsyn: '/lustre/syndat'
+COMINsyn: '/lustre/global/data/syndat'
 # BQS properties
 SCHEDULER: slurm
 QUEUE: batch

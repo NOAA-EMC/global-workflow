@@ -14,17 +14,21 @@ setenv("I_MPI_HYDRA_BOOTSTRAP", "slurm")
 setenv("FI_PROVIDER", "tcp")
 setenv("I_MPI_OFI_PROVIDER", "tcp")
 
-prepend_path("MODULEPATH", pathJoin("/lustre/global_externals/prepobs/v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lustre", "global", "external_programs", "prepobs", "v" .. (os.getenv("prepobs_run_ver") or "None"), "modulefiles"))
 load(pathJoin("prepobs", (os.getenv("prepobs_run_ver") or "None")))
 
-prepend_path("MODULEPATH", pathJoin("/lustre/global_externals/Fit2Obs/v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lustre", "global", "external_programs", "Fit2Obs", "v" .. (os.getenv("fit2obs_ver") or "None"), "modulefiles"))
 load(pathJoin("fit2obs", (os.getenv("fit2obs_ver") or "None")))
 
 -- load(pathJoin("imagemagick", (os.getenv("imagemagick_ver") or "None")))
 
-setenv("CRTM_FIX", "/lustre/sharedGWdata/fix/crtm/v2.4.0.2")
+setenv("CRTM_FIX", "/lustre/global/data/fix/crtm/v2.4.0.2")
 
-prepend_path("LD_LIBRARY_PATH", "/opt/amazon/efa/lib")
-prepend_path("LD_LIBRARY_PATH", "/opt/amazon/openmpi/lib")
+prepend_path("MODULEPATH", "/opt/amazon/modules/modulefiles")
+load(pathJoin("libfabric-aws","2.1.0amzn2.0"))
+load(pathJoin("openmpi","4.1.7"))
+
+-- prepend_path("LD_LIBRARY_PATH", "/opt/amazon/efa/lib")
+-- prepend_path("LD_LIBRARY_PATH", "/opt/amazon/openmpi/lib")
 
 whatis("Description: GFS run environment")

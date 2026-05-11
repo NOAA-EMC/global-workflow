@@ -4,7 +4,7 @@
 {% set cycle_YMD = current_cycle | to_YMD %}
 {% set cycle_HH = current_cycle | strftime("%H") %}
 target:
-    tarball: "/lustre/sharedGWdata/global/prod_anl_tars/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_nc.tar"
+    tarball: "/lustre/global/data/prod_anl_tars/com_gfs_{{ gdas_version }}_gdas.{{ cycle_YMD }}_{{ cycle_HH }}.gdas_nc.tar"
     on_hpss: False
     contents:
         # Atmospheric analysis
