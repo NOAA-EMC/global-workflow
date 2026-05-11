@@ -25,9 +25,9 @@ if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
 else
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
 fi
-declare -rx COMOUT_WAVE_PREP="${COMOUT}/model/wave/prep"
+declare -rx COMOUT_WAVE_INIT="${COMOUT}/model/wave/init"
 
-mkdir -p "${COMOUT_WAVE_PREP}"
+mkdir -p "${COMOUT_WAVE_INIT}"
 
 # Additional variables are set in scripts/exglobal_wave_init.sh in order to loop over
 # ensemble members (gefs only):
