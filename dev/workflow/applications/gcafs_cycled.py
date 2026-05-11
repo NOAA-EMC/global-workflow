@@ -111,7 +111,7 @@ class GCAFSCycledAppConfig(AppConfig):
             # Don't include aerosol_init for cycled runs
             # aerosol_init is only needed for forecast-only mode
 
-        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
@@ -124,7 +124,7 @@ class GCAFSCycledAppConfig(AppConfig):
         #                     'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal',
         #                     'ecen_fv3jedi']
 
-        #     configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
+        #     configs += ['esfc_gcycle', 'efcs', 'epos', 'earc_vrfy']
 
         #     if options['do_archcom']:
         #         configs += ['earc_tars']
@@ -198,7 +198,7 @@ class GCAFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['fetch']
                 task_names[run] += ['offlineanl']
-                task_names[run] += ['sfcanl']
+                task_names[run] += ['sfcanl_gcycle']
 
                 if options['do_aero_anl']:
                     task_names[run] += ['aeroanlgenb']

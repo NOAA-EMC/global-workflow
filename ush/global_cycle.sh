@@ -127,7 +127,6 @@
 #     DO_SFCCYCLE   Call sfcsub routine
 #     GCYCLE_DO_SOILINCR   Call routine to add soil increments
 #     GCYCLE_DO_SNOWINCR   Call routine to add snow inrcements
-#                   grid inside gcycle
 #
 #     zsea1/zsea2   When running with NST model, this is the lower/upper bound
 #                   of depth of sea temperature.  In whole mm.
@@ -229,7 +228,6 @@ if [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]] || [[ "${GCYCLE_DO_SNOWINCR}" == ".
 else
     DO_LANDINCR=".false."
 fi
-
 zsea1=${zsea1:-0}
 zsea2=${zsea2:-0}
 MAX_TASKS_CY=${MAX_TASKS_CY:-99999}

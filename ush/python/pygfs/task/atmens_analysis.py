@@ -13,7 +13,6 @@ class AtmEnsAnalysis(Analysis):
     """
     Class for JEDI-based global atmens analysis tasks
     """
-    @logit(logger, name="AtmEnsAnalysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global atmens analysis task
 

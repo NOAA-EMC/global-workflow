@@ -17,11 +17,11 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
-    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
+    echo "anal sfcanl_regrid sfcanl_gcycle analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
-    echo "eobs ediag eupd ecen esfc efcs epos earc_vrfy earc_tars"
+    echo "eobs ediag eupd ecen esfc_gcycle esfc_regrid efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
@@ -790,7 +790,7 @@ case ${step} in
     memory="150GB"
     ;;
 
-  "sfcanl")
+  "sfcanl_regrid" | "sfcanl_gcycle")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
     threads_per_task=4
@@ -1308,8 +1308,21 @@ case ${step} in
     is_exclusive=True
     ;;
 
-  "esfc")
-    walltime="01:15:00"
+  "esfc_gcycle")
+    walltime="01:00:00"
+    ntasks=${NMEM_ENS:-80}
+    threads_per_task=1
+    node_numerator=1
+    node_denominator=2
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+
+    threads_per_task_cycle=${threads_per_task}
+    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    ;;
+
+  "esfc_regrid")
+    walltime="00:30:00"
     ntasks=$(( NMEM_ENS * 6)) # The regrid program requires tasks to be tiles times members
     threads_per_task=1
 
@@ -1318,9 +1331,6 @@ case ${step} in
     node_numerator=1
     node_denominator=2
     tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
-
-    threads_per_task_cycle=${threads_per_task}
-    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     ;;
 
   "epos")

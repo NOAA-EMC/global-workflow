@@ -3,12 +3,12 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_sfc.sh
-# Script description:  generate ensemble surface analyses on tiles
+# Script name:         exglobal_enkf_sfc_gcycle.sh
+# Script description:  run global_cycle for ensemble surface analyses on tiles
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 #
-# Abstract: This script generates ensemble surface analyses on tiles
+# Abstract: This script runs global_cycle for ensemble surface analyses on tiles
 #
 # $Id$
 #
@@ -51,9 +51,13 @@ else
 fi
 DOIAU=${DOIAU_ENKF:-"NO"}
 
-# Global_cycle stuff
+if [[ "${DOIAU}" == "YES" ]]; then
+    export LFHR=3 # match BDATE
+else
+    export LFHR=6 # PDYcyc
+fi
+
 CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
-REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
@@ -61,9 +65,6 @@ export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 export COUPLED=${COUPLED:-".false."}
-
-APRUN_ESFC=${APRUN_ESFC:-${APRUN:-""}}
-NTHREADS_ESFC=${NTHREADS_ESFC:-${NTHREADS:-1}}
 
 ################################################################################
 # Update surface fields in the FV3 restart's using global_cycle.
@@ -127,28 +128,7 @@ else
     export NST_FILE="NULL"
 fi
 
-# regrid the surface increment files
-if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-
-    export CASE_IN=${CASE_ENS}
-    export CASE_OUT=${CASE_ENS}
-    export OCNRES_OUT=${OCNRES}
-    export NMEM_REGRID=${NMEM_ENS}
-    if [[ "${DOIAU}" == "YES" ]]; then
-        export LFHR=3 # match BDATE
-    else              # DOSFCANL_ENKF
-        export LFHR=6 # PDYcyc
-    fi
-
-    "${REGRIDSH}" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to regrid the surface inrement file!"
-    fi
-
-fi
-
-export APRUNCY=${APRUN_CYCLE:-${APRUN_ESFC}}
+export APRUNCY=${APRUN_CYCLE:-${APRUN:-""}}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-${NTHREADS_ESFC}}
 export MAX_TASKS_CY=${NMEM_ENS}
 
@@ -264,8 +244,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
                 sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
             fi
             cpreq "${sfcdata_dir}/${PDY}.${cyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
-                "${DATA}/fnbgsi.${cmem}"
-            cpreq "${DATA}/fnbgsi.${cmem}" "${DATA}/sfc_data_cycle.${cmem}"
+                "${DATA}/sfc_data_cycle.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
             cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 

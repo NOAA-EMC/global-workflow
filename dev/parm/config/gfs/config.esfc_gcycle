@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-########## config.esfc ##########
-# Ensemble surface specific
+########## config.esfc_gcycle ##########
+# Ensemble surface gcycle specific
 
-echo "BEGIN: config.esfc"
+echo "BEGIN: config.esfc_gcycle"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" esfc
+source "${EXPDIR}/config.resources" esfc_gcycle
 
 # Run global_cycle in coupled mode
 if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
@@ -31,11 +31,6 @@ if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
    export DONST="NO"
 fi
 
-if [[ "${RUN/enkf}" == "gfs" ]]; then
-    echo "turning off gsi soilda for gfs run"
-    DO_GSISOILDA="NO"
-fi
-
 # set up soil analysis
 if [[ ${DO_GSISOILDA} == "YES" ]]; then
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
@@ -43,8 +38,6 @@ if [[ ${DO_GSISOILDA} == "YES" ]]; then
     else
         export GCYCLE_DO_SOILINCR=".true."
     fi
-    export GCYCLE_INTERP_LANDINCR=".false."
-    export REGRID_EXEC="${HOMEglobal}/exec/regridStates.x"
 fi
 
-echo "END: config.esfc"
+echo "END: config.esfc_gcycle"
