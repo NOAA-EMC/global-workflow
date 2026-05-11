@@ -47,7 +47,7 @@ EXSCRIPT=${SNOWANLPY:-${SCRgfs}/exglobal_snow_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to calculate the snow analysis for ${RUN} at ${PDY}${cyc}"
+    err_exit "Failed to calculate the snow analysis"
 fi
 
 ##############################################

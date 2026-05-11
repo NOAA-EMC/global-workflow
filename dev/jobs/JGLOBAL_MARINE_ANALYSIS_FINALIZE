@@ -48,7 +48,7 @@ EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to finalize the ocean and/or ice analyses"
+    err_exit "Failed to finalize the marine analysis"
 fi
 
 ##########################################

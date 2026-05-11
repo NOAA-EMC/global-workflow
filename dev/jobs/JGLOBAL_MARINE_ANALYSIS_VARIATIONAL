@@ -35,7 +35,7 @@ EXSCRIPT=${GDASMARINERUNSH:-${SCRgfs}/exglobal_marine_analysis_variational.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to run the variational marine analysis"
+    err_exit "Failed to calculate the deterministic marine analysis increment"
 fi
 
 ##############################################

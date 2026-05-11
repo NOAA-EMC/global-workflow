@@ -49,7 +49,7 @@ EXSCRIPT=${GDASATMRUNPY:-${SCRgfs}/exglobal_enkf_ecen_fv3jedi.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to recenter the JEDI ensemble mean"
+    err_exit "Failed to calculate the recentered ensemble atmospheric increments"
 fi
 
 ##############################################

@@ -33,7 +33,7 @@ EXSCRIPT=${GDASATMENSOBSSH:-${SCRgfs}/exglobal_atmens_analysis_obs.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to assimilate observations for the atmospheric ensemble analysis"
+    err_exit "Failed to assimilate observations for the ensemble atmospheric analysis"
 fi
 
 ##############################################

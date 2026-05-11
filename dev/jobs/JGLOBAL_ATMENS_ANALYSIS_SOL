@@ -34,7 +34,7 @@ EXSCRIPT=${GDASATMENSSOLSH:-${SCRgfs}/exglobal_atmens_analysis_sol.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to solve the atmospheric ensemble analysis"
+    err_exit "Failed to calculate the ensemble atmospheric analysis increments"
 fi
 
 ##############################################

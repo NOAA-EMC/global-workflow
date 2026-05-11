@@ -69,7 +69,7 @@ EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to run the marine LETKF analysis"
+    err_exit "Failed to calculate the ensemble marine analysis increments"
 fi
 
 ##############################################

@@ -42,7 +42,7 @@ EXSCRIPT=${GDASAEROFINALPY:-${SCRgfs}/exglobal_aero_analysis_finalize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to finalize aerosol analysis"
+    err_exit "Failed to finalize the aerosol analysis"
 fi
 
 ##############################################
