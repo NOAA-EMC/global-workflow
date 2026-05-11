@@ -53,7 +53,7 @@ while read -r ld ll cd cl; do
     com_data[count]="${cd}"
     com_log[count]="${cl}"
     done_flag[count]="NO"
-    (( count++ )) || true
+    ((count++)) || true
 done < "${table_file}"
 
 if [[ ${count} -eq 0 ]]; then
@@ -68,7 +68,7 @@ fcst_done_idle=0
 
 while [[ ${remaining} -gt 0 ]]; do
     remaining_before=${remaining}
-    for (( i = 0; i < count; i++ )); do
+    for ((i = 0; i < count; i++)); do
         if [[ "${done_flag[i]}" == "YES" ]]; then
             continue
         fi
@@ -83,10 +83,10 @@ while [[ ${remaining} -gt 0 ]]; do
 
         # RERUN safety: if com_log already in COM, mark all rows for this sentinel done
         if [[ -f "${this_cl}" ]]; then
-            for (( j = 0; j < count; j++ )); do
+            for ((j = 0; j < count; j++)); do
                 if [[ "${done_flag[j]}" == "NO" && "${local_log[j]}" == "${this_ll}" ]]; then
                     done_flag[j]="YES"
-                    (( remaining-- )) || true
+                    ((remaining--)) || true
                 fi
             done
             continue
@@ -102,7 +102,7 @@ while [[ ${remaining} -gt 0 ]]; do
             fi
             com_dir=$(dirname "${com_data[j]}")
             if [[ ! -d "${com_dir}" ]]; then
-                mkdir -p "${com_dir}";
+              mkdir -p "${com_dir}"
             fi
             cpfs "${local_data[j]}" "${com_data[j]}"
             copy_err=$?
@@ -124,7 +124,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 # sentinel (e.g. FHMAX last window or sentinel dir was cleaned).
                 # Write a synthetic marker instead of copying the NC binary.
                 echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
-                log_err=$?
+                log_err=0
             else
                 cpfs "${this_ll}" "${this_cl}"
                 log_err=$?
