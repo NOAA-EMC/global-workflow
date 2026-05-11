@@ -323,7 +323,7 @@ export pgm=${ENKFEXEC}
 source prep_step
 
 cpreq "${ENKFEXEC}" "${DATA}"
-${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 2>&1 | tee enkfstat.txt  && true
+${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 2>&1 | tee enkfstat.txt && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the EnKF!"
