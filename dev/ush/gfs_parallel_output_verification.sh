@@ -113,14 +113,14 @@ for arr_elm_idx in $(seq 0 5); do
         # Compare netcdf files
         cd "${CONTROL_DIR_SCAN}"
         find -L . -type f -name "*.nc" | sed 's|^\./||' | sort > "${DATA}/file_list.txt"
-        if [[ $(cat "${DATA}"/file_list.txt | wc -l) -gt 0 ]]; then
+        if [[ $(wc -l < "${DATA}"/file_list.txt) -gt 0 ]]; then
             echo "--- Hashing Control Files ---"
             # Use the sorted list to generate hashes.
-            cat "${DATA}/file_list.txt" | parallel -k "sha256sum {}" > "${DATA}/control_hashes.data"
+            parallel -k "sha256sum {}" < "${DATA}/file_list.txt" > "${DATA}/control_hashes.data"
             echo "--- Hashing Target Files ---"
             # iterate through the EXACT SAME sorted list for the target directory
             cd "${TARGET_DIR_SCAN}"
-            cat "${DATA}/file_list.txt" | parallel -k "
+            cat "${DATA}/file_list.txt" | parallel -k " < "${DATA}/file_list.txt"
         if [ -f \"{}\" ]; then
           sha256sum \"{}\"
         else
@@ -140,11 +140,12 @@ for arr_elm_idx in $(seq 0 5); do
         }
       }' "${DATA}/control_hashes.data" "${DATA}/target_hashes.data" > "${DATA}/differ.data"
 
-            if [[ $(cat "${DATA}"/differ.data | wc -l) -gt 0 ]]; then
+            if [[ $(wc -l < "${DATA}"/differ.data) -gt 0 ]]; then
                 sed -i 's/ (MISMATCH)//' "${DATA}"/differ.data
-                cat "${DATA}"/differ.data | awk -v CONTROL_DIR_SCAN="${CONTROL_DIR_SCAN}" -v TARGET_DIR_SCAN="${TARGET_DIR_SCAN}" '{print "echo \"Running: ${MPI_RANK} nccmp -d -B --warn=format "CONTROL_DIR_SCAN"/"$1,TARGET_DIR_SCAN"/"$1,"\" >>","out.${PMI_RANK}.log;","nccmp -d -B --warn=format "CONTROL_DIR_SCAN"/"$1,TARGET_DIR_SCAN"/"$1," >> out.${PMI_RANK}.log 2>&1 || true "}' &> "${DATA}"/differ_netcdf_nccmp.sh
+                awk -v CONTROL_DIR_SCAN="${CONTROL_DIR_SCAN}" -v TARGET_DIR_SCAN="${TARGET_DIR_SCAN}" '{print "echo \"Running: ${MPI_RANK} nccmp -d -B --warn=format "CONTROL_DIR_SCAN"/"$1,TARGET_DIR_SCAN"/"$1,"\" >>","out.${PMI_RANK}.log;","nccmp -d -B --warn=format "CONTROL_DIR_SCAN"/"$1,TARGET_DIR_SCAN"/"$1," >> out.${PMI_RANK}.log 2>&1 || true "}' < "${DATA}"/differ.data &> "${DATA}"/differ_netcdf_nccmp.sh
 
-                export GAN_MPI_RANK_CT=$(cat "${DATA}"/differ_netcdf_nccmp.sh | wc -l)
+                GAN_MPI_RANK_CT=$(wc -l < "${DATA}"/differ_netcdf_nccmp.sh)
+                export GAN_MPI_RANK_CT
                 export LIN_MPI_RANK_CMD_DATA=${DATA}
                 touch "${DATA}"/parallel_comparison_cfp.sh
                 python "${DATA}"/gfs_parallel_output_verification_cfp.py
@@ -155,11 +156,12 @@ for arr_elm_idx in $(seq 0 5); do
         # Compare grib2 files
         cd "${CONTROL_DIR_SCAN}"
         find -L . -type f -name "*.grib2" | sed 's|^\./||' | sort > "${DATA}"/grib2_file_list.txt
-        if [[ $(cat "${DATA}"/grib2_file_list.txt | wc -l) -gt 0 ]]; then
+        if [[ $(wc -l < "${DATA}"/grib2_file_list.txt) -gt 0 ]]; then
             echo "--- Hashing Control Files ---"
-            cat "${DATA}/grib2_file_list.txt" | parallel -k "sha256sum {}" > "${DATA}/grib2_control_hashes.data"
+            parallel -k "sha256sum {}" < "${DATA}/grib2_file_list.txt" > "${DATA}/grib2_control_hashes.data"
             echo "--- Hashing Target Files ---"
             cd "${TARGET_DIR_SCAN}"
+            # shellcheck disable=SC2002
             cat "${DATA}/grib2_file_list.txt" | parallel -k "
         if [ -f \"{}\" ]; then
           sha256sum \"{}\"
