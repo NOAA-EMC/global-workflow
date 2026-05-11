@@ -109,7 +109,7 @@ for arr_elm_idx in $(seq 0 5); do
         # TARGET_DIR_SCAN="/lfs/f2/t2o/ptmp/emc/emc.global/ecflow_gfsv17_rt/ptmp/emc.global/ecflow_gfs/para/com/gdas.20260429/00"
         [[ ! -d "${CONTROL_DIR_SCAN}" ]] && exit 7
         [[ ! -d "${TARGET_DIR_SCAN}" ]] && exit 7
-        cpreq "${HOMEbase}"/gfs_parallel_output_verification_cfp.py "$DATA"
+        cpreq "${HOMEbase}"/gfs_parallel_output_verification_cfp.py "${DATA}"
         # Compare netcdf files
         cd "${CONTROL_DIR_SCAN}"
         find -L . -type f -name "*.nc" | sed 's|^\./||' | sort > "${DATA}/file_list.txt"
