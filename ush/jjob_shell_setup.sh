@@ -52,9 +52,11 @@ set -x
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
-source "${USHgfs}/postamble.sh"
-# shellcheck disable=SC2064
-trap "postamble ${start_time} \$?" EXIT
+if [[ "${TRAP_POSTAMBLE:NO}" == "YES" ]]; then
+    source "${USHgfs}/postamble.sh"
+    # shellcheck disable=SC2064
+    trap "postamble ${start_time} \$?" EXIT
+fi
 
 ##############################################
 # Temporal variables: PDY, PDYm#, PDYp# (via setpdy.sh)
