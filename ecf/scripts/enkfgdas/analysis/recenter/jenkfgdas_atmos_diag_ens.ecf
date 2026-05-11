@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N gfs_marine_prep_fsm_%CYC%
+#PBS -N enkfgdas_atmos_diag_ens_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=06:00:00
-#PBS -l select=1:ncpus=1:ompthreads=1:mem=20GB
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=48GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -16,17 +16,17 @@ export cyc="%CYC%"
 ############################################################
 # Load modules
 ############################################################
-module load intel/${intel_ver}
-module load craype/${craype_ver}
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
 
 module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export WGF="%WGF%"
-export RJN="%RJN%"
+export CDATE=${PDY}${cyc}
 
-${HOMEgfs}/jobs/JGLOBAL_FSM
+#### ${HOMEgfs}/dev/job_cards/rocoto/ediag.sh
+${HOMEgfs}/jobs/JGLOBAL_ENKF_DIAG
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
