@@ -85,6 +85,9 @@ source "${USHgfs}/parsing_ufs_configure.sh" # include functions for ufs_configur
 
 source "${USHgfs}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
+# Default segment index to 0 if not set by the caller (multi-segment forecasts set this).
+FCST_SEGMENT=${FCST_SEGMENT:-0}
+
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
 cplflx=${cplflx:-.false.} # default off,import from outside source
@@ -179,14 +182,14 @@ cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
 # Signal to the forecast manager that this segment's model run is about to start.
 # This sentinel is cleaned during postdet so a rewound segment does not trigger the
 # manager prematurely from a table written by the previous run.
-echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} started" > "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"
+echo "${RUN}_fcst_seg${FCST_SEGMENT} started" > "${DATAjob}/fcst_started_seg${FCST_SEGMENT}"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "The forecast failed to run to completion!"
 fi
 # Signal to the forecast manager that the model run has completed successfully for this segment.
-echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} done" > "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+echo "${RUN}_fcst_seg${FCST_SEGMENT} done" > "${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
 
 FV3_out
 if [[ "${cplflx}" == ".true." ]]; then

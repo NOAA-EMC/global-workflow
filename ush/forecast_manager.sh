@@ -45,7 +45,9 @@ fi
 declare -a local_data local_log com_data com_log done_flag
 count=0
 while read -r ld ll cd cl; do
-    [[ -z "${ld}" || "${ld:0:1}" == "#" ]] && continue
+    if [[ -z "${ld}" || "${ld:0:1}" == "#" ]]; then
+        continue
+    fi
     local_data[count]="${ld}"
     local_log[count]="${ll}"
     com_data[count]="${cd}"
@@ -67,7 +69,9 @@ fcst_done_idle=0
 while [[ ${remaining} -gt 0 ]]; do
     remaining_before=${remaining}
     for (( i = 0; i < count; i++ )); do
-        [[ "${done_flag[i]}" == "YES" ]] && continue
+        if [[ "${done_flag[i]}" == "YES" ]]; then
+            continue
+        fi
 
         if [[ ! -f "${local_log[i]}" ]]; then
             continue
@@ -90,10 +94,16 @@ while [[ ${remaining} -gt 0 ]]; do
 
         # Copy all data files that share this sentinel (data first, log last)
         for ((j = 0; j < count; j++)); do
-            [[ "${done_flag[j]}" == "YES" ]] && continue
-            [[ "${local_log[j]}" != "${this_ll}" ]] && continue
+            if [[ "${done_flag[j]}" == "YES" ]]; then
+                continue
+            fi
+            if [[ "${local_log[j]}" != "${this_ll}" ]]; then
+                continue
+            fi
             com_dir=$(dirname "${com_data[j]}")
-            if [[ ! -d "${com_dir}" ]]; then mkdir -p "${com_dir}"; fi
+            if [[ ! -d "${com_dir}" ]]; then
+                mkdir -p "${com_dir}";
+            fi
             cpfs "${local_data[j]}" "${com_data[j]}"
             copy_err=$?
             if [[ ${copy_err} -ne 0 ]]; then
@@ -106,7 +116,9 @@ while [[ ${remaining} -gt 0 ]]; do
         # Skip if already in COM (e.g. RERUN scenario where data was already copied).
         if [[ ! -f "${this_cl}" ]]; then
             cl_dir=$(dirname "${this_cl}")
-            if [[ ! -d "${cl_dir}" ]]; then mkdir -p "${cl_dir}"; fi
+            if [[ ! -d "${cl_dir}" ]]; then
+                mkdir -p "${cl_dir}"
+            fi
             if [[ "${this_ll}" == "${local_data[i]}" ]]; then
                 # Data-as-sentinel fallback: MOM6 did not write the period-start
                 # sentinel (e.g. FHMAX last window or sentinel dir was cleaned).
@@ -133,7 +145,9 @@ while [[ ${remaining} -gt 0 ]]; do
         done
     done
 
-    [[ ${remaining} -eq 0 ]] && break
+    if [[ ${remaining} -eq 0 ]]; then
+        break
+    fi
 
     # Timeout check (fatal — hard wall enforced by batch scheduler walltime).
     elapsed=$(($(date +%s) - start_time))

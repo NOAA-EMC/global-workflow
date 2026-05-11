@@ -25,6 +25,9 @@ source "${USHgfs}/wait_for_file.sh"
 
 cd "${DATA}" || exit 8
 
+# Default segment index to 0 if not set by the caller (multi-segment forecasts set this).
+FCST_SEGMENT=${FCST_SEGMENT:-0}
+
 MGR_INIT_TIMEOUT="${FCST_MANAGER_INIT_TIMEOUT:-7200}"
 # Poll every 30 seconds up to the timeout.
 mgr_sleep_interval=30
@@ -35,7 +38,7 @@ mgr_max_tries=$((MGR_INIT_TIMEOUT / mgr_sleep_interval))
 FCST_MANAGER_CMDFILE="${DATA}/fcst_manager_cmdfile"
 rm -f "${FCST_MANAGER_CMDFILE}"
 
-ATM_TABLE="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+ATM_TABLE="${DATAjob}/atm_products_seg${FCST_SEGMENT}.txt"
 echo "INFO: Waiting for ATM product table at ${ATM_TABLE}"
 if ! wait_for_file "${ATM_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
     echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ATM_TABLE}" >&2
@@ -45,7 +48,7 @@ echo "INFO: ATM product table found"
 echo "${USHgfs}/forecast_manager.sh atm ${ATM_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+    WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for WW3 product table at ${WW3_TABLE}"
     if ! wait_for_file "${WW3_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
         echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${WW3_TABLE}" >&2
@@ -56,7 +59,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
 fi
 
 if [[ "${DO_OCN:-NO}" == "YES" ]]; then
-    OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+    OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for OCN product table at ${OCN_TABLE}"
     if ! wait_for_file "${OCN_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
         echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${OCN_TABLE}" >&2
@@ -67,7 +70,7 @@ if [[ "${DO_OCN:-NO}" == "YES" ]]; then
 fi
 
 if [[ "${DO_ICE:-NO}" == "YES" ]]; then
-    ICE_TABLE="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+    ICE_TABLE="${DATAjob}/ice_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for ICE product table at ${ICE_TABLE}"
     if ! wait_for_file "${ICE_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
         echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ICE_TABLE}" >&2
@@ -82,11 +85,11 @@ echo "INFO: Launching ${num_ranks} MPMD component manager rank(s)"
 
 # Tell forecast_manager.sh where to find the model-completion sentinel so it can
 # exit gracefully when the model is done but some product files were not produced.
-export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
 
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
 "${USHgfs}/run_mpmd.sh" "${FCST_MANAGER_CMDFILE}"
 
 # Segment copy complete — remove sentinels so a rewound forecast can write fresh ones.
-rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}" "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT}" "${DATAjob}/fcst_done_seg${FCST_SEGMENT}"

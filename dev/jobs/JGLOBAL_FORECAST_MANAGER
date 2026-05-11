@@ -19,7 +19,7 @@ set -x
 
 export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
 export DATA="${DATAjob}/manager.${jobid}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst_manager"
 
 #{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
 #{% if false %}
@@ -75,16 +75,11 @@ if [[ "${DO_ICE:-NO}" == "YES" ]]; then
     declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
 fi
 
-# Export COM variables needed by each forecast_manager.sh rank
-export COMOUT_CONF COMOUT_ATMOS_HISTORY COMOUT_ATMOS_MASTER
-[[ "${DO_WAVE}" == "YES" ]] && export COMOUT_WAVE_HISTORY
-[[ "${DO_OCN:-NO}" == "YES" ]] && export COMOUT_OCEAN_HISTORY
-[[ "${DO_ICE:-NO}" == "YES" ]] && export COMOUT_ICE_HISTORY
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-: "${FORECASTMGRSH:=${SCRgfs}/exglobal_forecast_manager.sh}"
+FORECASTMGRSH="${FORECASTMGRSH:-${SCRglobal}/exglobal_forecast_manager.sh}"
 "${FORECASTMGRSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
