@@ -23,16 +23,3 @@ export SIPHONROOT=${UTILROOT}/fakedbn
 export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
-
-# Developer configuration
-PTMP=/lfs/h3/emc/eib/noscrub/ptmp
-model=gfs
-PSLOT=ecflow_gfs
-export COMROOT=${PTMP}/${USER}/${PSLOT}/para/com
-export COMPATH=${COMROOT}/${model}
-#### export COMgfs=$(compath.py gfs/${gfs_ver})
-export COMgfs=/lfs/h3/emc/eib/noscrub/ptmp/${USER}/ecflow_gfs/para/com
-export DATAROOT=/lfs/h3/emc/eib/noscrub/stmp/${USER}/${model}/${PSLOT}/${RUN}.${CDATE}
-export DBNLOG=${DATAROOT}/DBNLOG
-mkdir -p ${DATAROOT}/emc_ecflow_header_work ${DBNLOG}
-cd ${DATAROOT}/emc_ecflow_header_work

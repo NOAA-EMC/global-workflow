@@ -20,13 +20,12 @@ export PYTHONPATH
 
 # Execute staging
 "${SCRglobal}/exglobal_stage_ic.py" && true
-err=$?
+export err=$?
 
 ###############################################################
 # Check for errors and exit if any of the above failed
 if [[ "${err}" -ne 0 ]]; then
-    echo "Unable to stage ICs to ${ROTDIR}; ABORT!"
-    exit "${err}"
+    err_exit "Unable to stage ICs to ${ROTDIR}; ABORT!"
 fi
 
 ##########################################
