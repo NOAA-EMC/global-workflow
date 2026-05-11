@@ -21,11 +21,11 @@ atmensanl:
   OBS_JEDI_TEST_YAML: "${HOMEglobal}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_lgetkf-observer_ufs_hybatmDA.yaml.j2"
   SOL_JEDI_TEST_YAML: "${HOMEglobal}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_lgetkf-solver_ufs_hybatmDA.yaml.j2"
   FV3INC_JEDI_TEST_YAML: "${HOMEglobal}/sorc/gdas.cd/test/gw-ci/atm/jedi-test_lgetkf-fv3inc_ufs_hybatmDA.yaml.j2"
-esfc:
+esfc_gcycle:
   DONST: "NO"
 nsst:
   NST_MODEL: "1"
 prepatmiodaobs:
   DO_CONVERT_IODA: "YES"
-sfcanl:
+sfcanl_gcycle:
   DONST: "NO"

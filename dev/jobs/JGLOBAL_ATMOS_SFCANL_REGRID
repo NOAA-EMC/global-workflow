@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 set -x
-
-source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl_regrid" -c "base sfcanl_regrid"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -15,36 +14,30 @@ source "${USHglobal}/jjob_shell_setup.sh"
 source "${USHglobal}/set_strict.sh"
 
 ##############################################
-# Set variables used in the script
-##############################################
-
-##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-export gPDY=${GDATE:0:8}
-export gcyc=${GDATE:8:2}
-export GDUMP="gdas"
-export GDUMP_ENS="enkf${GDUMP}"
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+export GDATE
 
-export OPREFIX="${RUN/enkf/}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${RUN/enkf/}.t${cyc}z."
+BKG_RUN="gdas"
+if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
+    BKG_RUN="gcdas"
+fi
 
-export CASE=${CASE_ENS}
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/obs"
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart"
 
-export OPREFIX="${RUN/enkf/}.t${cyc}z."
-export APREFIX="${RUN/enkf/}.t${cyc}z."
-export APREFIX_ENS="${RUN}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
 
-declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
-declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
 
-declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
+
+mkdir -p "${COMOUT_ATMOS_RESTART}"
 
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
@@ -52,10 +45,10 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${ENKFRESFCSH:-${SCRglobal}/exglobal_enkf_sfc.sh} && true
+${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl_regrid.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to calculate the ensemble surface analysis"
+    err_exit
 fi
 
 ##############################################

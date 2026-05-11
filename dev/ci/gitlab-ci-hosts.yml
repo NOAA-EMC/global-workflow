@@ -36,6 +36,10 @@
 .ursa_cases_matrix: &ursa_cases
   - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufsgsi_hybatmDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA", "C48_gsienkf_atmDA", "C48_ufsenkf_atmDA"]
 
+.derecho_cases_matrix: &derecho_cases
+  - caseName: ["C48_ATM", "C48_S2SW", "C48_S2SWA_gefs", "C48mx500_3DVarAOWCDA", "C48mx500_hybAOWCDA", "C96C48_hybatmDA", "C96C48_hybatmsnowDA", "C96C48_hybatmsoilDA", "C96C48_ufsgsi_hybatmDA", "C96C48_ufs_hybatmDA", "C96C48mx500_S2SW_cyc_gfs", "C96_atm3DVar", "C96mx100_S2S", "C96_gcafs_cycled", "C96_gcafs_cycled_noDA"]
+
+
 # Host: Hera - Standard Cases
 setup_experiments-hera:
   extends: .setup_experiment_template
@@ -171,6 +175,33 @@ run_experiments-ursa:
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
 
+# Host: Ursa - Standard Cases
+setup_experiments-derecho:
+  extends: .setup_experiment_template
+  variables:
+    machine: derecho
+  tags:
+    - derecho
+  parallel:
+    matrix: *derecho_cases
+  needs:
+    - build-derecho
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bderecho\b|all/)
+
+run_experiments-derecho:
+  extends: .run_experiments_template
+  variables:
+    machine: derecho
+  tags:
+    - derecho
+  parallel:
+    matrix: *derecho_cases
+  needs:
+    - setup_experiments-derecho
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bderecho\b|all/)
+
 finalize_success-hera:
   extends: .finalize_success_template
   variables:
@@ -235,6 +266,19 @@ finalize_success-ursa:
   when: on_success
   rules:
     - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
+finalize_success-derecho:
+  extends: .finalize_success_template
+  variables:
+    machine: derecho
+  tags:
+    - derecho
+  needs:
+    - job: run_experiments-derecho
+      optional: true
+  when: on_success
+  rules:
+    - if: $PIPELINE_TYPE == "pr_cases" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\derecho\b|all/)
 
 # =======================================
 
@@ -323,6 +367,18 @@ setup_ctests-ursa:
   rules:
     - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
 
+setup_ctests-derecho:
+  extends: .setup_ctests_template
+  stage: setup_tests
+  tags:
+    - derecho
+  variables:
+    machine: derecho
+  needs:
+    - build-derecho
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bderecho\b|all/)
+
 # Host: Hera - CTests
 run_ctests-hera:
   extends: .ctests_cases_template
@@ -372,6 +428,16 @@ run_ctests-ursa:
     - setup_ctests-ursa
   rules:
     - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
+# Host: Derecho - CTests
+run_ctests-derecho:
+  extends: .ctests_cases_template
+  tags:
+    - derecho
+  needs:
+    - setup_ctests-derecho
+  rules:
+    - if: $PIPELINE_TYPE == "ctests" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule") && ($RUN_ON_MACHINES =~ /\bderecho\b|all/)
 
 # =======================================
 # Common build configurations by host
@@ -425,3 +491,12 @@ build-ursa:
     - ursa
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bursa\b|all/)
+
+build-derecho:
+  extends: .build_template
+  variables:
+    machine: derecho
+  tags:
+    - derecho
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bderecho\b|all/)
