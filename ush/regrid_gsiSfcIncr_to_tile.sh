@@ -156,7 +156,7 @@ else # deterministic member only (NMEM_REGRID=1)
         # copy increments for restarts
         for FHR in "${soilinc_fhrs[@]}"; do
             echo "cpreq ${COMIN_SOIL_ANALYSIS_MEM}/${APREFIX_ENS}ensmean_increment.sfc.i00${FHR}.nc \
-			${DATA}/sfci00${FHR}.nc"
+                    ${DATA}/sfci00${FHR}.nc"
         done
         if [[ "${DO_LAND_IAU}" = ".true." ]]; then
             # copy increments for land IAU, if don't have already
