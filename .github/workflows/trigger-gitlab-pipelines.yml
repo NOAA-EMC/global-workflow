@@ -36,6 +36,10 @@ on:
         description: 'Ursa'
         type: boolean
         default: false
+      derecho:
+        description: 'Derecho'
+        type: boolean
+        default: false
       # Add more machines by directly using their names as input IDs
 
 jobs:
