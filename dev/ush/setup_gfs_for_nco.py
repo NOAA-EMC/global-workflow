@@ -63,7 +63,7 @@ base_job_list = [
     "JGLOBAL_WAVE_POST_SBS",
     "JGLOBAL_WAVE_PRDGEN_BULLS",
     "JGLOBAL_WAVE_PRDGEN_GRIDDED",
-    "JGLOBAL_WAVE_PREP",
+    "JGDAS_ATMOS_ANALYSIS_WDQMS",
     "JGDAS_ATMOS_CHGRES_FORENKF",
     "JGDAS_ATMOS_GEMPAK",
     "JGDAS_ATMOS_GEMPAK_META_NCDC",
@@ -95,6 +95,7 @@ base_job_list = [
 ]
 
 base_script_list = [
+    "exgdas_atmos_analysis_wdqms.sh",
     "exgdas_atmos_chgres_forenkf.sh",
     "exgdas_atmos_gempak_gif_ncdc.sh",
     "exgdas_atmos_nawips.sh",
@@ -109,13 +110,12 @@ base_script_list = [
     "exgfs_atmos_grib2_special_npoess.sh",
     "exgfs_atmos_nawips.sh",
     "exgfs_atmos_postsnd.sh",
-    "exgfs_wave_init.sh",
+    "exglobal_wave_init.sh",
     "exgfs_wave_nawips.sh",
-    "exgfs_wave_post_gridded_sbs.sh",
-    "exgfs_wave_post_pnt.sh",
+    "exglobal_wave_post_gridded.sh",
+    "exglobal_wave_post_pnt.sh",
     "exgfs_wave_prdgen_bulls.sh",
     "exgfs_wave_prdgen_gridded.sh",
-    "exgfs_wave_prep.sh",
     "exglobal_analysis_stats.py",
     "exglobal_archive_tars.py",
     "exglobal_archive_vrfy.py",

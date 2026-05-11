@@ -28,6 +28,7 @@ sorc/build_opts.yaml @DavidHuber-NOAA @TravisElless-NOAA
 # jobs
 dev/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
 dev/jobs/JGDAS_ATMOS_ANALYSIS_DIAG @RussTreadon-NOAA @CoryMartin-NOAA
+dev/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS @AndrewCollard-NOAA
 dev/jobs/JGDAS_ATMOS_CHGRES_FORENKF @RussTreadon-NOAA @CoryMartin-NOAA
 dev/jobs/JGDAS_ATMOS_GEMPAK @ChristopherHill-NOAA
 dev/jobs/JGDAS_ATMOS_GEMPAK_META_NCDC @ChristopherHill-NOAA
@@ -80,6 +81,7 @@ modulefiles/gw_upp_wcoss2.lua @WenMeng-NOAA
 
 # scripts
 dev/scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA
+dev/scripts/exgdas_atmos_analysis_wdqms.sh @AndrewCollard-NOAA
 dev/scripts/exgdas_atmos_chgres_forenkf.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exgdas_atmos_gempak_gif_ncdc.sh @ChristopherHill-NOAA
 dev/scripts/exgdas_atmos_nawips.sh @ChristopherHill-NOAA
@@ -185,6 +187,7 @@ ush/syndat_qctropcy.sh @HananehJafary-NOAA
 ush/tropcy_relocate.sh @HananehJafary-NOAA
 ush/tropcy_relocate_extrkr.sh @HananehJafary-NOAA
 ush/wave_*.sh @JessicaMeixner-NOAA @sbanihash
+ush/wdqms.py @AndrewCollard-NOAA
 ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
 
 # ush/python

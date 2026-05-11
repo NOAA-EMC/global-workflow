@@ -35,7 +35,7 @@ eval "export HOME${model:?"model undefined"}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
 if [ -n "%rrfs_ver:%" ]; then export rrfs_ver=${rrfs_ver:-%rrfs_ver:%}; fi
 if [ -f "$versionfile" ]; then
-  . $versionfile
+  . $versionfile 
 fi
 export envir=%ENVIR%
 export MACHINE_SITE=%MACHINE_SITE%
@@ -96,7 +96,6 @@ ERROR() {
   fi
   ecflow_client --abort="$msg"
   echo $msg
-  echo ${ECF_NAME} | mail -s "Development Cactus GFS job watch"
   if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
     echo "# Trap Caught" >>$POST_OUT
   fi
