@@ -12,6 +12,7 @@ experiment:
   gefstype: gefs-offline
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ BASE_IC }}/C48mx500/20250808
   idate: 2021032312
   edate: 2021032312
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gefs_defaults_ci.yaml
