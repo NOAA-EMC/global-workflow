@@ -87,7 +87,7 @@ else
 fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
+    declare -rx COMIN_WAVE_INIT="${COMIN}/model/wave/init"
     declare -rx COMOUT_WAVE_RESTART="${COMOUT}/model/wave/restart"
     declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
     declare -rx COMIN_WAVE_RESTART_PREV="${COMIN_RESTART_PREV}/model/wave/restart"
