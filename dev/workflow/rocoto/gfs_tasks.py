@@ -1273,16 +1273,13 @@ class GFSTasks(Tasks):
 
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.log.f#fhr3_last#.txt',
-                                   'dep_condition': 'or'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.log.f#fhr3_last#.txt'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.ocn.log.f#fhr3_last#.txt',
-                                   'dep_condition': 'or'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_nextp1#.nc.log'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc',
-                                 'dep_condition': 'or'}}
+                                 'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc.log'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -1300,6 +1297,13 @@ class GFSTasks(Tasks):
 
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
+        # Delay triggering ocean products task to next next forecast hour to ensure all data is available
+        if component == 'ocean':
+            fhr3_next = fhr_var_dict['fhr3_next'].split(' ')
+            fhr3_nextp1 = fhr3_next[1:]
+            fhr3_nextp1.append(fhr3_next[-1])  # repeat last forecast hour to maintain same number of groups
+            fhr_var_dict['fhr3_nextp1'] = ' '.join(fhr3_nextp1)
+
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
@@ -1310,16 +1314,15 @@ class GFSTasks(Tasks):
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl])
-        dep_condition = component_dict['dep_condition']
         deps = []
-        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file_tmpl}'}
+        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file_tmpl}', 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
         if 'fcst_manager' in self._configs:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
         else:
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition=dep_condition)
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
