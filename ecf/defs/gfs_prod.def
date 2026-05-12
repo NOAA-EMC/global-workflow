@@ -1,4 +1,4 @@
-suite gfs_v17
+suite gfs_v17_nco
   family primary
     edit gfs_ver 'v17.0'
     edit PACKAGEHOME '/lfs/h3/emc/eib/noscrub/%EMC_USER%/gfs/para/packages/gfs.%gfs_ver%'
@@ -37,15 +37,6 @@ suite gfs_v17
           endfamily		//marine
         endfamily		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgfs_marine_bmat_init
-              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/enkfgdas/forecast==complete
-            task jgfs_marine_bmat
-              trigger jgfs_marine_bmat_init==complete
-            task jgfs_marine_anal_init
-              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
-          endfamily		//marine
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
@@ -63,13 +54,17 @@ suite gfs_v17
               trigger jgfs_atmos_anal_sfc_gcycle==complete
             task jgfs_atmos_analupp
               trigger jgfs_atmos_anal_calc==complete
-            task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
           endfamily		//atmos
           family marine
             edit WGF 'marine'
+            task jgfs_marine_bmat_init
+              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/enkfgdas/forecast==complete
+            task jgfs_marine_bmat
+              trigger jgfs_marine_bmat_init==complete
+            task jgfs_marine_anal_init
+              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
             task jgfs_marine_analvar
-              trigger ../../init/marine/jgfs_marine_anal_init==complete
+              trigger jgfs_marine_anal_init==complete
             task jgfs_marine_analchkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
@@ -1684,6 +1679,8 @@ suite gfs_v17
                 edit FHR_LIST '384'
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
+            task jgfs_atmos_analprod
+              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -5356,15 +5353,6 @@ suite gfs_v17
           endfamily		//marine
         endfamily		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgdas_marine_bmat_init
-              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/enkfgdas/forecast==complete
-            task jgdas_marine_bmat
-              trigger jgdas_marine_bmat_init==complete
-            task jgdas_marine_anal_init
-              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
-          endfamily		//marine
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
@@ -5387,13 +5375,17 @@ suite gfs_v17
               trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../18/enkfgdas/analysis/recenter/jenkfgdas_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
-            task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
+            task jgdas_marine_bmat_init
+              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/enkfgdas/forecast==complete
+            task jgdas_marine_bmat
+              trigger jgdas_marine_bmat_init==complete
+            task jgdas_marine_anal_init
+              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
             task jgdas_marine_analvar
-              trigger ../../init/marine/jgdas_marine_anal_init==complete
+              trigger jgdas_marine_anal_init==complete
             task jgdas_marine_analchkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
@@ -5477,6 +5469,8 @@ suite gfs_v17
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
+            task jgdas_atmos_analprod
+              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -5579,8 +5573,6 @@ suite gfs_v17
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
             task jgdas_verfrad
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
-            task jgdas_anlstat
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete and ../../analysis/snow/jgdas_atmos_analsnow==complete and ../../analysis/marine/jgdas_marine_analfinal==complete
             task jgdas_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -5601,7 +5593,7 @@ suite gfs_v17
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
-              trigger ../../../gdas/init/marine/jgdas_marine_bmat_init==complete
+              trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
             task jenkfgdas_atmos_diag_ens
               trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
@@ -5929,15 +5921,6 @@ suite gfs_v17
           endfamily		//marine
         endfamily		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgfs_marine_bmat_init
-              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/enkfgdas/forecast==complete
-            task jgfs_marine_bmat
-              trigger jgfs_marine_bmat_init==complete
-            task jgfs_marine_anal_init
-              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
-          endfamily		//marine
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
@@ -5955,13 +5938,17 @@ suite gfs_v17
               trigger jgfs_atmos_anal_sfc_gcycle==complete
             task jgfs_atmos_analupp
               trigger jgfs_atmos_anal_calc==complete
-            task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
           endfamily		//atmos
           family marine
             edit WGF 'marine'
+            task jgfs_marine_bmat_init
+              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/enkfgdas/forecast==complete
+            task jgfs_marine_bmat
+              trigger jgfs_marine_bmat_init==complete
+            task jgfs_marine_anal_init
+              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
             task jgfs_marine_analvar
-              trigger ../../init/marine/jgfs_marine_anal_init==complete
+              trigger jgfs_marine_anal_init==complete
             task jgfs_marine_analchkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
@@ -7576,6 +7563,8 @@ suite gfs_v17
                 edit FHR_LIST '384'
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
+            task jgfs_atmos_analprod
+              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -11222,10 +11211,6 @@ suite gfs_v17
             edit WGF 'atmos'
             task jgfs_vminmon
               trigger ../../analysis/atmos/jgfs_atmos_anal==complete
-            task jgfs_tracker
-              trigger ../../product/atmos==complete
-            task jgfs_genesis
-              trigger ../../product/atmos==complete
           endfamily		//atmos
         endfamily		//verf
       endfamily			//gfs
@@ -11252,15 +11237,6 @@ suite gfs_v17
           endfamily  		//marine
         endfamily    		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgdas_marine_bmat_init
-              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/enkfgdas/forecast==complete
-            task jgdas_marine_bmat
-              trigger jgdas_marine_bmat_init==complete
-            task jgdas_marine_anal_init
-              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
-          endfamily  		//marine
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
@@ -11283,13 +11259,17 @@ suite gfs_v17
               trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../00/enkfgdas/analysis/recenter/jenkfgdas_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
-            task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
+            task jgdas_marine_bmat_init
+              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/enkfgdas/forecast==complete
+            task jgdas_marine_bmat
+              trigger jgdas_marine_bmat_init==complete
+            task jgdas_marine_anal_init
+              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
             task jgdas_marine_analvar
-              trigger ../../init/marine/jgdas_marine_anal_init==complete
+              trigger jgdas_marine_anal_init==complete
             task jgdas_marine_analchkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
@@ -11373,6 +11353,8 @@ suite gfs_v17
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
+            task jgdas_atmos_analprod
+              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -11475,8 +11457,6 @@ suite gfs_v17
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
             task jgdas_verfrad
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
-            task jgdas_anlstat
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete and ../../analysis/snow/jgdas_atmos_analsnow==complete and ../../analysis/marine/jgdas_marine_analfinal==complete
             task jgdas_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -11497,7 +11477,7 @@ suite gfs_v17
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
-              trigger ../../../gdas/init/marine/jgdas_marine_bmat_init==complete
+              trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
             task jenkfgdas_atmos_diag_ens
               trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
@@ -11825,15 +11805,6 @@ suite gfs_v17
           endfamily		//marine
         endfamily		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgfs_marine_bmat_init
-              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/enkfgdas/forecast==complete
-            task jgfs_marine_bmat
-              trigger jgfs_marine_bmat_init==complete
-            task jgfs_marine_anal_init
-              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
-          endfamily		//marine
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
@@ -11851,13 +11822,17 @@ suite gfs_v17
               trigger jgfs_atmos_anal_sfc_gcycle==complete
             task jgfs_atmos_analupp
               trigger jgfs_atmos_anal_calc==complete
-            task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
           endfamily		//atmos
           family marine
             edit WGF 'marine'
+            task jgfs_marine_bmat_init
+              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/enkfgdas/forecast==complete
+            task jgfs_marine_bmat
+              trigger jgfs_marine_bmat_init==complete
+            task jgfs_marine_anal_init
+              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
             task jgfs_marine_analvar
-              trigger ../../init/marine/jgfs_marine_anal_init==complete
+              trigger jgfs_marine_anal_init==complete
             task jgfs_marine_analchkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
@@ -13472,6 +13447,8 @@ suite gfs_v17
                 edit FHR_LIST '384'
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
+            task jgfs_atmos_analprod
+              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -17118,10 +17095,6 @@ suite gfs_v17
             edit WGF 'atmos'
             task jgfs_vminmon
               trigger ../../analysis/atmos/jgfs_atmos_anal==complete
-            task jgfs_tracker
-              trigger ../../product/atmos==complete
-            task jgfs_genesis
-              trigger ../../product/atmos==complete
           endfamily		//atmos
         endfamily		//verf
       endfamily			//gfs
@@ -17148,15 +17121,6 @@ suite gfs_v17
           endfamily  		//marine
         endfamily    		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgdas_marine_bmat_init
-              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/enkfgdas/forecast==complete
-            task jgdas_marine_bmat
-              trigger jgdas_marine_bmat_init==complete
-            task jgdas_marine_anal_init
-              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
-          endfamily  		//marine
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
@@ -17179,13 +17143,17 @@ suite gfs_v17
               trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../06/enkfgdas/analysis/recenter/jenkfgdas_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
-            task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
+            task jgdas_marine_bmat_init
+              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/enkfgdas/forecast==complete
+            task jgdas_marine_bmat
+              trigger jgdas_marine_bmat_init==complete
+            task jgdas_marine_anal_init
+              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
             task jgdas_marine_analvar
-              trigger ../../init/marine/jgdas_marine_anal_init==complete
+              trigger jgdas_marine_anal_init==complete
             task jgdas_marine_analchkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
@@ -17269,6 +17237,8 @@ suite gfs_v17
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
+            task jgdas_atmos_analprod
+              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -17371,8 +17341,6 @@ suite gfs_v17
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
             task jgdas_verfrad
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
-            task jgdas_anlstat
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete and ../../analysis/snow/jgdas_atmos_analsnow==complete and ../../analysis/marine/jgdas_marine_analfinal==complete
             task jgdas_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -17393,7 +17361,7 @@ suite gfs_v17
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
-              trigger ../../../gdas/init/marine/jgdas_marine_bmat_init==complete
+              trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
             task jenkfgdas_atmos_diag_ens
               trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
@@ -17721,15 +17689,6 @@ suite gfs_v17
           endfamily		//marine
         endfamily		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgfs_marine_bmat_init
-              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/enkfgdas/forecast==complete
-            task jgfs_marine_bmat
-              trigger jgfs_marine_bmat_init==complete
-            task jgfs_marine_anal_init
-              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
-          endfamily		//marine
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
@@ -17747,13 +17706,17 @@ suite gfs_v17
               trigger jgfs_atmos_anal_sfc_gcycle==complete
             task jgfs_atmos_analupp
               trigger jgfs_atmos_anal_calc==complete
-            task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
           endfamily		//atmos
           family marine
             edit WGF 'marine'
+            task jgfs_marine_bmat_init
+              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/enkfgdas/forecast==complete
+            task jgfs_marine_bmat
+              trigger jgfs_marine_bmat_init==complete
+            task jgfs_marine_anal_init
+              trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_prepoceanobs==complete
             task jgfs_marine_analvar
-              trigger ../../init/marine/jgfs_marine_anal_init==complete
+              trigger jgfs_marine_anal_init==complete
             task jgfs_marine_analchkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
@@ -19368,6 +19331,8 @@ suite gfs_v17
                 edit FHR_LIST '384'
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
+            task jgfs_atmos_analprod
+              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -23014,10 +22979,6 @@ suite gfs_v17
             edit WGF 'atmos'
             task jgfs_vminmon
               trigger ../../analysis/atmos/jgfs_atmos_anal==complete
-            task jgfs_tracker
-              trigger ../../product/atmos==complete
-            task jgfs_genesis
-              trigger ../../product/atmos==complete
           endfamily		//atmos
         endfamily		//verf
       endfamily			//gfs
@@ -23044,15 +23005,6 @@ suite gfs_v17
           endfamily  		//marine
         endfamily    		//prep
         family init
-          family marine
-            edit WGF 'marine'
-            task jgdas_marine_bmat_init
-              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/enkfgdas/forecast==complete
-            task jgdas_marine_bmat
-              trigger jgdas_marine_bmat_init==complete
-            task jgdas_marine_anal_init
-              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
-          endfamily  		//marine
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
@@ -23075,13 +23027,17 @@ suite gfs_v17
               trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../12/enkfgdas/analysis/recenter/jenkfgdas_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
-            task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
+            task jgdas_marine_bmat_init
+              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/enkfgdas/forecast==complete
+            task jgdas_marine_bmat
+              trigger jgdas_marine_bmat_init==complete
+            task jgdas_marine_anal_init
+              trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_prepoceanobs==complete
             task jgdas_marine_analvar
-              trigger ../../init/marine/jgdas_marine_anal_init==complete
+              trigger jgdas_marine_anal_init==complete
             task jgdas_marine_analchkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
@@ -23165,6 +23121,8 @@ suite gfs_v17
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
+            task jgdas_atmos_analprod
+              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -23267,8 +23225,6 @@ suite gfs_v17
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
             task jgdas_verfrad
               trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
-            task jgdas_anlstat
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete and ../../analysis/snow/jgdas_atmos_analsnow==complete and ../../analysis/marine/jgdas_marine_analfinal==complete
             task jgdas_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -23289,7 +23245,7 @@ suite gfs_v17
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
-              trigger ../../../gdas/init/marine/jgdas_marine_bmat_init==complete
+              trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
             task jenkfgdas_atmos_diag_ens
               trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
