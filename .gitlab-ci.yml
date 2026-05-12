@@ -93,7 +93,7 @@ include:
       fi
 
       # Setup GitHub CLI for use throughout the pipeline
-      export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
+      export GH=$(echo "${HOME}/bin/gh" || which gh 2>/dev/null)
       if [[ ! -x "${GH}" ]]; then
         echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
         exit 1
