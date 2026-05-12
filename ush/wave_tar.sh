@@ -71,7 +71,7 @@ mkdir "TAR_${filext}_${ID}"
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-if [[ -z "${COMOUT_WAVE_STATION+x}" || -z "${SENDDBN+x}" || -z "${STA_DIR+x}" ]]; then
+if [[ -z "${COMOUT_WAVE_STATION+x}" || -z "${SENDDBN+x}" ]]; then
     msg='FATAL ERROR: EXPORTED VARIABLES IN ww3_tar.sh NOT SET'
     err=2
     err_exit "${msg}"
@@ -155,17 +155,6 @@ if [[ "${SENDDBN}" == "YES" ]]; then
     echo "   Alerting TAR file as ${COMOUT_WAVE_STATION}/${file_name}"
     "${DBNROOT}/bin/dbn_alert MODEL" "${RUN^^}_WAVE_TAR" "${job}" \
         "${COMOUT_WAVE_STATION}/${file_name}"
-fi
-
-# --------------------------------------------------------------------------- #
-# 4.  Final clean up
-
-cd "${DATA}" || exit 1
-
-if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
-    set -v
-    rm -rf "${STA_DIR:?}/${type}"
-    set +v
 fi
 
 # End of ww3_tar.sh ----------------------------------------------------- #

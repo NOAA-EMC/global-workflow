@@ -41,16 +41,6 @@ fi
 
 waveuoutpGRD=${waveuoutpGRD:?buoyNotSet}
 
-# 0.c.1 Define a temporary directory for storing ascii point output files
-#       and flush it
-
-export STA_DIR="${DATA}/station_ascii_files"
-rm -rf "${STA_DIR}"
-mkdir -p "${STA_DIR}"
-mkdir -p "${STA_DIR}/spec"
-mkdir -p "${STA_DIR}/bull"
-mkdir -p "${STA_DIR}/cbull"
-
 printf "\n   Grid information  :\n   ------------------\n     Output points : %s\n" "${waveuoutpGRD}"
 
 # --------------------------------------------------------------------------- #
@@ -137,7 +127,7 @@ while [[ ${fhr} -le ${FHMAX_WAV_PNT} ]]; do
     FH3=$(printf %03i "${fhr}")
     pfile="${COMIN_WAVE_HISTORY}/${WAV_MOD_TAG}.points.f${FH3}.nc"
     if [[ -f "${pfile}" ]]; then
-        ${NLN} "${pfile}" "./${ymdhms}.out_pnt.ww3.nc"
+        cpreq -f "${pfile}" "./${ymdhms}.out_pnt.ww3.nc"
     else
         export err=7
         err_exit "NO RAW POINT OUTPUT FILE ${ymdhms}.out_pnt.ww3.nc"
