@@ -101,7 +101,7 @@ for arr_elm_idx in $(seq 0 5); do
         CONTROL_DIR_SCAN="${COMROOT_Parallel_1}/${array_element_com[$((10#${arr_elm_idx}))]}"
         TARGET_DIR_SCAN="${COMROOT_Parallel_2}/${array_element_com[$((10#${arr_elm_idx}))]}"
         echo "Start comparison process on #${arr_elm_idx}"
-        echo "Control directory ${TARGET_DIR_SCAN}"
+        echo "Control directory ${CONTROL_DIR_SCAN}"
         echo "Target directory ${TARGET_DIR_SCAN}"
         # Reg. test for one array element
         # This example is to compare gfs v17 ecflow and rocoto parallel gdas output
