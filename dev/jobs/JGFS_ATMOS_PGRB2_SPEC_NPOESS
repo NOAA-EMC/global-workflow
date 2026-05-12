@@ -36,7 +36,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GOES}"
 "${SCRglobal}/exgfs_atmos_grib2_special_npoess.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to simulate NPOESS data from GFS GRIB2 products"
 fi
 #############################################################
 

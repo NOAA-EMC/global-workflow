@@ -1,5 +1,15 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: forecast_det.sh
+#
+#   DESCRIPTION: Determines the run type (Cold Start, Warm Start, or Re-run)
+#                for the Unified Forecast System (UFS). It evaluates the
+#                availability of required restart files across all coupled model
+#                components and atmospheric initial conditions. Based on this availability, it sets the
+#                appropriate logical flags and environment variables to guide downstream model initialization.
+
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 UFS_det() {
@@ -88,17 +98,20 @@ UFS_det() {
                 mom6_rst_ok="NO"
             else
                 # Also check for MOM6 history file availability
+                # This is done because MOM6 output and restart files are asynchronous
+                # TODO: We now have MOM6 log files, and so this logic can be updated to only check that 1 time level is written
+                # and confirm that the file is fully written via the log file.
                 # TODO: SFS runs with 24-hr averaging of ocean output, which causes issues with restart checks,
                 # TODO: so we will skip them for now, and revisit this logic later
                 if [[ "${FHOUT_OCN}" -le 6 ]]; then
                     fhout_ocn_by_2=$((FHOUT_OCN / 2))
                     hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")
-                    if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}.nc" ]]; then
+                    if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdate:0:4}_${hdate:4:2}_${hdate:6:2}_${hdate:8:2}_00.nc" ]]; then
                         mom6_rst_ok="NO"
                     else
                         # Also check for the next MOM6 history file (hdate + FHOUT_OCN hours)
                         hdatep1=$(date -u -d "${hdate:0:8} ${hdate:8:2} + ${FHOUT_OCN} hours" +"%Y%m%d%H")
-                        if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}.nc" ]]; then
+                        if [[ ! -f "${DATAoutput}/MOM6_OUTPUT/ocn_${hdatep1:0:4}_${hdatep1:4:2}_${hdatep1:6:2}_${hdatep1:8:2}_00.nc" ]]; then
                             mom6_rst_ok="NO"
                         fi
                     fi

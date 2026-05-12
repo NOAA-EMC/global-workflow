@@ -17,7 +17,6 @@ class Fetch(Task):
     """Task to pull ROTDIR data from HPSS (or locally)
     """
 
-    @logit(logger, name="Fetch")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Fetch task
         The constructor is responsible for collecting necessary yamls based on

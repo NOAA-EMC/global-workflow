@@ -48,7 +48,7 @@ declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/en
 ${ENKFRECENSH:-${SCRglobal}/exglobal_enkf_ecen.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to recenter the ensemble mean"
 fi
 
 ##############################################

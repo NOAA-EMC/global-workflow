@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
-set -x
 
-source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc_regrid" -c "base esfc_regrid"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -28,23 +27,10 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
-export OPREFIX="${RUN/enkf/}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${RUN/enkf/}.t${cyc}z."
-
 export CASE=${CASE_ENS}
 
-export OPREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
-
-declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
-declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
-
-declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
@@ -52,7 +38,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${ENKFRESFCSH:-${SCRglobal}/exglobal_enkf_sfc.sh} && true
+${ENKFSFCREGRIDSH:-${SCRglobal}/exglobal_enkf_sfc_regrid.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

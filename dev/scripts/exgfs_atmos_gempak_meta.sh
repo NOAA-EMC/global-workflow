@@ -4,6 +4,8 @@ GEMGRD1="${RUN}_1p00_${PDY}${cyc}f"
 
 export numproc=23
 
+# fhend, fhbeg, and fhinc come from config.gempakmeta
+
 # Find the last hour available
 for ((fhr = fhend; fhr >= fhbeg; fhr = fhr - fhinc)); do
     fhr3=$(printf "%03d" "${fhr}")
@@ -12,10 +14,17 @@ for ((fhr = fhend; fhr >= fhbeg; fhr = fhr - fhinc)); do
     fi
 done
 
+# If none were found, start at fhbeg
+if [[ ${fhr} -lt ${fhbeg} ]]; then
+    fhr=${fhbeg}
+fi
+
 sleep_interval=20
 max_tries=180
 first_time=0
 do_all=0
+
+fhr3=$(printf "%03d" "${fhr}")
 
 #loop through and process needed forecast hours
 while [[ ${fhr} -le ${fhend} ]]; do
@@ -49,32 +58,37 @@ while [[ ${fhr} -le ${fhend} ]]; do
 
     if [[ ${do_all} -eq 1 ]]; then
         do_all=0
-        awk '{print $1}' "${HOMEglobal}/gempak/fix/gfs_meta" | envsubst > "poescript"
+        awk '{print $1}' "${HOMEglobal}/gempak/fix/gfs_meta" | envsubst > "poescript" || true
     else
         #
         #    Do not try to grep out 12, it will grab the 12 from 126.
         #    This will work as long as we don't need 12 fhr metafiles
         #
         if [[ ${fhr} -ne 12 ]]; then
-            grep "${fhr}" "${HOMEglobal}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript"
+            grep "${fhr}" "${HOMEglobal}/gempak/fix/gfs_meta" | awk -F" [0-9]" '{print $1}' | envsubst > "poescript" || true
         fi
     fi
 
-    #  If this is the final fcst hour, alert the
-    #  file to all centers.
-    #
-    if [[ ${fhr} -ge ${fhend} ]]; then
-        export DBN_ALERT_TYPE=GFS_METAFILE_LAST
-    fi
+    # Do not try to run the poescript if it doesn't exist.
+    # This means that there are no jobs to run for this fhr
+    if [[ -f "poescript" ]]; then
 
-    export fend=${fhr}
+        # Declare fend for the various gempak/ush scripts
+        export fend=${fhr}
 
-    cat poescript
+        #  If this is the final fcst hour, alert the
+        #  file to all centers.
+        #
+        if [[ ${fhr} -ge ${fhend} ]]; then
+            export DBN_ALERT_TYPE=GFS_METAFILE_LAST
+        fi
 
-    "${HOMEglobal}/ush/run_mpmd.sh" poescript && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to generate one or more gempak meta plots!"
+        "${HOMEglobal}/ush/run_mpmd.sh" poescript && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "Failed to generate one or more gempak meta plots!"
+        fi
+
     fi
 
     if [[ ${fhr} -eq 126 ]]; then

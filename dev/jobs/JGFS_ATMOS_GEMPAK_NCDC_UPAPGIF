@@ -57,7 +57,7 @@ export pgmout=OUTPUT.$$
 "${SCRglobal}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate NCDC skew-T GIFs from GFS GEMPAK products"
 fi
 ########################################################
 

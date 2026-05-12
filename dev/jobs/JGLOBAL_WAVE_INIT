@@ -37,7 +37,7 @@ export wave_mpmd=${wave_mpmd:-"cfp"}
 "${SCRglobal}/exgfs_wave_init.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate wave grids for model initialization."
 fi
 
 ##########################################

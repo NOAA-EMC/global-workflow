@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 set -x
-source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl_regrid" -c "base sfcanl_regrid"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -37,13 +37,15 @@ declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/res
 
 declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
 
+mkdir -p "${COMOUT_ATMOS_RESTART}"
+
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
 
 ###############################################################
 # Run relevant script
 
-${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl.sh} && true
+${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl_regrid.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit

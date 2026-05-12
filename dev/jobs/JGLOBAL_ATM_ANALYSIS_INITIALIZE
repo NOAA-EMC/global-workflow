@@ -45,7 +45,7 @@ EXSCRIPT=${GDASATMINITPY:-${SCRglobal}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to initialize the atmospheric analysis"
 fi
 
 ##############################################

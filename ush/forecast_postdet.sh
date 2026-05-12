@@ -1,5 +1,16 @@
 #! /usr/bin/env bash
 
+#===============================================================================
+#
+#   FILE: forecast_postdet.sh
+#
+#   DESCRIPTION: A suite of handler functions for managing the data flow and
+#                configuration of various Unified Forecast System (UFS)
+#                coupled components. It handles the staging of initial conditions,
+#                namelist generation, and output/restart file management for:
+#                FV3 (Atmosphere), WW3 (Waves), MOM6 (Ocean), CICE (Sea Ice),
+#                GOCART (Aerosols), and CMEPS (Coupler/Mediator)
+
 # Disable variable not used warnings
 # shellcheck disable=SC2034
 # shellcheck disable=SC2178
@@ -662,7 +673,7 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
             # Looping over MOM6 output hours
-            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -686,10 +697,14 @@ MOM6_postdet() {
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
+                ihour=$(printf %02i "${interval}")
+                source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
 
                 last_fhr=${fhr}
 

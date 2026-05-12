@@ -10,9 +10,8 @@ device="nc | gdas.meta"
 # TODO: Add only necessary files and remove unneeded ones to minimize data volume
 # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
 export COMIN="${RUN}.${PDY}${cyc}"
-if [[ ! -L "${COMIN}" ]]; then
-    ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
-fi
+rm -f "${COMIN}"
+${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
 if [[ "${envir}" == "para" ]]; then
     export m_title="GDASP"
@@ -98,7 +97,7 @@ if [[ "${err}" -ne 0 ]] || [[ ! -s gdas.meta ]] &> /dev/null; then
     exit "${err}"
 fi
 
-mv gdas.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
+cpfs gdas.meta "${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
 export err=$?
 if [[ "${err}" -ne 0 ]]; then
     echo "FATAL ERROR: Failed to move meta file to ${COMOUT_ATMOS_GEMPAK_META}/gdas_${PDY}_${cyc}_na"
