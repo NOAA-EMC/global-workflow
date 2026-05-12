@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_ocean_wavepostsbs_%CYC%_f%FHR%
+#PBS -N gdas_ocean_wave_post_gridded_%CYC%_f%FHR%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -31,7 +31,7 @@ export CDATE=${PDY}${cyc}
 export COMPONENT=${WGF}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/wavepostsbs.sh
-${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SBS
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_GRIDDED
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
