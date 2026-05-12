@@ -16,10 +16,10 @@ print("BEGIN: " + os.path.basename(__file__))
 # Read in environment variables
 gan_mpi_rank_ct = os.environ['GAN_MPI_RANK_CT']
 if not gan_mpi_rank_ct:
-     sys.exit("TERMINATING: Required environment variable 'GAN_MPI_RANK_CT' is not set.")
+    sys.exit("TERMINATING: Required environment variable 'GAN_MPI_RANK_CT' is not set.")
 lin_mpi_rank_cmd_data = os.environ['LIN_MPI_RANK_CMD_DATA']
 if not lin_mpi_rank_cmd_data:
-     sys.exit("TERMINATING: Required environment variable 'LIN_MPI_RANK_CMD_DATA' is not set.")
+    sys.exit("TERMINATING: Required environment variable 'LIN_MPI_RANK_CMD_DATA' is not set.")
 cfp_cmd_file_name = os.path.join(lin_mpi_rank_cmd_data + '/differ_netcdf_nccmp.sh')
 job_card_filename = "parallel_comparison_cfp.sh"
 # Exception Handling - Ensure DATA directory exist
