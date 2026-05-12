@@ -335,7 +335,7 @@ cat << EOF > fort.37
  /
 EOF
 
-${APRUNCY} "${CYCLEXEC}" 2>&1 | tee ${PGMOUT}
+${APRUNCY} "${CYCLEXEC}" 2>&1 | tee "${PGMOUT}"
 
 export err=$?
 
