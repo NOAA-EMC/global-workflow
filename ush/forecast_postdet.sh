@@ -799,7 +799,6 @@ MOM6_postdet() {
                 else
                     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
                 ihour=$(printf %02i "${interval}")
                 source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
