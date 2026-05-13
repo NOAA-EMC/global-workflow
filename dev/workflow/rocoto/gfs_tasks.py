@@ -1424,11 +1424,11 @@ class GFSTasks(Tasks):
 
     def wavegempak(self):
 
-        # wave_gempak tasks depend on wave_postgridded tasks
-        # wave_postgridded runs on different forecast hours than wave_gempak,
-        # so we need to get the forecast hours for wave_postgridded and wave_gempak separately
+        # wave_gempak tasks depend on wave_post_gridded tasks
+        # wave_post_gridded runs on different forecast hours than wave_gempak,
+        # so we need to get the forecast hours for wave_post_gridded and wave_gempak separately
 
-        # Get the forecast hours for wave_postgridded
+        # Get the forecast hours for wave_post_gridded
         dep_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostgridded'], 'wave')
         dep_max_tasks = self._configs['wavepostgridded']['MAX_TASKS']
         dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
@@ -1438,7 +1438,7 @@ class GFSTasks(Tasks):
         max_tasks = self._configs['wavegempak']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
-        # Get the right dependency labels for wave_gempak on wave_postgridded groups
+        # Get the right dependency labels for wave_gempak on wave_post_gridded groups
         fhr_var_dict = self.get_dep_fhr_label(fhr_var_dict, dep_fhr_var_dict)
 
         deps = []
@@ -1667,7 +1667,7 @@ class GFSTasks(Tasks):
         # atmos_prod runs on different forecast hours than gempak,
         # so we need to get the forecast hours for atmos_prod and gempak separately
 
-        # Get the forecast hours for wave_postgridded
+        # Get the forecast hours for wave_post_gridded
         dep_fhrs = self._get_forecast_hours(self.run, self._configs['atmos_products'])
         dep_max_tasks = self._configs['atmos_products']['MAX_TASKS']
         dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)

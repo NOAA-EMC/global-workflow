@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_ocean_wave_post_gridded_%CYC%_f%FHR%
+#PBS -N gdas_wave_post_gridded_%CYC%_f%FHR%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
