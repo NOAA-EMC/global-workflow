@@ -7,7 +7,7 @@
 # Script description:  Interpolate from native grids to target grid
 #
 # Author:   J-Henrique Alves    Org: NCEP/EMC      Date: 2019-11-02
-# Abstract: Interpolates native/computational grids to target post grids  
+# Abstract: Interpolates native/computational grids to target post grids
 #
 # Script history log:
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
