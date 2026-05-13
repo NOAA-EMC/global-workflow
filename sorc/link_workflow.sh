@@ -411,13 +411,12 @@ for sys in "${model_systems[@]}"; do
         rm -f "${model_exe}"
     fi
     if [[ -f "${HOMEglobal}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
-        ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/${model_exe}" "${model_exe}"
+        ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/${model_exe}" "ufs_model_${sys}.x"
     fi
 done
 
 # WW3 pre/post executables
-declare -a ww3_exes=("ww3_grid" "ww3_prep" "ww3_prnc" "ww3_outp" "ww3_outf" "ww3_gint" "ww3_ounf" "ww3_ounp" "ww3_grib")
-# TODO: ww3_prep, ww3_outf, ww3_ounf, ww3_ounp are not used in the workflow # FIXME or remove them from the list
+declare -a ww3_exes=("ww3_grid" "ww3_prnc" "ww3_outp" "ww3_gint" "ww3_ounf" "ww3_grib")
 declare -A wave_systems
 wave_systems["gfs"]="pdlib_ON"
 wave_systems["gefs"]="pdlib_OFF"
@@ -427,7 +426,7 @@ for sys in "${!wave_systems[@]}"; do
     build_loc="${wave_systems[${sys}]}"
     if [[ -d "${HOMEglobal}/sorc/ufs_model.fd/WW3/install/${build_loc}" ]]; then
         for ww3exe in "${ww3_exes[@]}"; do
-            target_ww3_exe="${sys}_${ww3exe}.x"
+            target_ww3_exe="${ww3exe}_${sys}.x"
             if [[ -s "${target_ww3_exe}" ]]; then
                 rm -f "${target_ww3_exe}"
             fi
@@ -484,7 +483,7 @@ fi
 # GDASApp executables
 if [[ -d "${HOMEglobal}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin"/gdas* ./
-    cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/satbias2ioda.x" ./satbias2ioda.x
+    cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/satbias2ioda.x" ./gdas_satbias2ioda.x
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
 fi
 
@@ -592,6 +591,13 @@ if [[ -d gsi_monitor.fd ]]; then
     ${LINK} gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd radmon_time.fd
 fi
 
+if [[ -d ufs_model.fd ]]; then
+    if [[ -d WW3.fd ]]; then
+        rm -rf WW3.fd
+    fi
+    ${LINK} ufs_model.fd/WW3 WW3.fd
+fi  
+
 for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
     if [[ -d "${prog}" ]]; then
         rm -rf "${prog}"
@@ -600,10 +606,14 @@ for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
 done
 
 for prog in enkf_chgres_recenter_nc.fd \
+    ensadd.fd \
+    ensppf.fd \
+    ensstat.fd \
     fbwndgfs.fd \
     gaussian_sfcanl.fd \
     gfs_bufr.fd \
     mkgfsawps.fd \
+    ocnicepost.fd \
     overgridid.fd \
     rdbfmsua.fd \
     supvit.fd \
@@ -614,8 +624,8 @@ for prog in enkf_chgres_recenter_nc.fd \
     tocsbufr.fd \
     tref_calc.fd \
     vint.fd \
-    webtitle.fd \
-    ocnicepost.fd; do
+    wave_stat.fd \
+    webtitle.fd; do
     if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
     ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
 done
