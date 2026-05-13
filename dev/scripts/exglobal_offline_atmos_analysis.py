@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}"
 # exglobal_offline_analysis.py
 # This script creates an OfflineAnalysis class
 # and runs the initialize, run, and finalize methods

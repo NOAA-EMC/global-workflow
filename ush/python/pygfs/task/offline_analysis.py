@@ -20,7 +20,6 @@ class OfflineAnalysis(Task):
     Class for tasks to compute analysis increments from
     an offline analysis and previous forecast
     """
-    @logit(logger, name="SnowAnalysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global offline analysis task
 

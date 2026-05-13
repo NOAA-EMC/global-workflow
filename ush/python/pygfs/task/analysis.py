@@ -15,7 +15,6 @@ class Analysis(Task):
     """
     General class for JEDI-based global analysis tasks
     """
-    @logit(logger, name="Analysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global analysis task
 

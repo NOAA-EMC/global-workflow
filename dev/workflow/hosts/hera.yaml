@@ -28,3 +28,4 @@ CHGRP_CMD: 'chgrp rstprod'
 # Features
 SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 DO_ARCHCOM: 'YES'
+PYTHON_EXCLUDE_TRACE_PATHS: '/contrib/spack-stack'

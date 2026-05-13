@@ -19,7 +19,6 @@ class MarineAnalysis(Analysis):
     """
     Class for global marine analysis tasks
     """
-    @logit(logger, name="MarineAnalysis")
     def __init__(self, config):
         """Constructor for global marine analysis
 

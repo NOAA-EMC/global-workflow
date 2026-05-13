@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -m trace -t --ignore-module=__init__ --ignore-dir="${PYTHON_EXCLUDE_TRACE_PATHS}"
 # exgdas_aero_analysis_generate_bmatrix.py
 # This script creates an AerosolBMatrix object
 # and runs the methods needed

@@ -40,7 +40,6 @@ class NEXUSEmissions(Task):
     """NEXUS Emissions pre-processing Task
     """
 
-    @logit(logger, name="NEXUSEmissions")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the NEXUS Emissions task
 
