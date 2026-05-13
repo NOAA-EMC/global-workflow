@@ -25,7 +25,7 @@ if (( $# != 1 )); then
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
     echo "eobs ediag eupd ecen efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
-    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
+    echo "waveinit waveprep wavepostgridded wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
     echo "marineanlinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
@@ -179,7 +179,7 @@ case ${step} in
     NTASKS=${ntasks}
     ;;
 
-  "wavepostsbs")
+  "wavepostgridded")
     # Walltime is per forecast hour; will be multipled by group size
     ntasks=8
     threads_per_task=1
