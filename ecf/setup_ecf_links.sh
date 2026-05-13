@@ -54,7 +54,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     else
         fhr_start=$((fhr_start + 3))
     fi
-    add_to_tmpfile "scripts/gfs/post/wave/jgfs_wave_post_gridded_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/wave/gridded/jgfs_wave_post_gridded_f${head_3d}.ecf"
 done
 
 # gfs atmos product files
@@ -125,7 +125,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     head_3d=$(printf "%03d" "${fhr_start}")
     cp jgdas_wave_post_gridded_master.ecf "jgdas_wave_post_gridded_f${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
-    add_to_tmpfile "scripts/gdas/post/wave/jgdas_wave_post_gridded_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gdas/product/wave/gridded/jgdas_wave_post_gridded_f${head_3d}.ecf"
 done
 
 # enkfgdas ens recenter files
