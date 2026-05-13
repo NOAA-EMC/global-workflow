@@ -11,7 +11,7 @@ if [[ "${err}" -ne 0 ]]; then
     exit "${err}"
 fi
 
-export job="wavepostsbs"
+export job="wavepostgridded"
 
 ###############################################################
 # shellcheck disable=SC2153
