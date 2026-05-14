@@ -440,7 +440,7 @@ if [[ -s "upp.x" ]]; then
 fi
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/exec/upp.x" .
 
-for ufs_utilsexe in chgres_cube emcsfc_ice_blend emcsfc_snow2mdl global_cycle fregrid regridStates.x; do
+for ufs_utilsexe in chgres_cube emcsfc_ice_blend emcsfc_snow2mdl global_cycle regridStates.x; do
     if [[ -s "${ufs_utilsexe}" ]]; then
         rm -f "${ufs_utilsexe}"
     fi
@@ -598,12 +598,17 @@ if [[ -d ufs_model.fd ]]; then
     ${LINK} ufs_model.fd/WW3 WW3.fd
 fi  
 
-for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
+for prog in chgres_cube.fd global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
     if [[ -d "${prog}" ]]; then
         rm -rf "${prog}"
     fi
     ${LINK} "ufs_utils.fd/sorc/${prog}" "${prog}"
 done
+
+if [[ -d "regridStates.fd" ]]; then
+	rm -rf "regridStates.fd"
+fi
+${LINK} "ufs_utils.fd/sorc/regrid_sfc.fd" "regridStates.fd"
 
 for prog in enkf_chgres_recenter_nc.fd \
     ensadd.fd \
