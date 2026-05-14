@@ -822,7 +822,12 @@ MOM6_postdet() {
                     # to confirm the copy completed successfully.
                     echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}.log" >> "${ocn_table}"
                 else
+                    local ihour source_file_log dest_file_log
+                    ihour=$(printf %02i "${interval}")
+                    source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                    dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                     ${NLN} "${ocn_com}" "${ocn_local}"
+                    ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
                 fi
 
                 last_fhr=${fhr}
