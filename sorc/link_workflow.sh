@@ -416,7 +416,7 @@ for sys in "${model_systems[@]}"; do
 done
 
 # WW3 pre/post executables
-declare -a ww3_exes=("ww3_grid" "ww3_prnc" "ww3_outp" "ww3_gint" "ww3_ounf" "ww3_grib")
+declare -a ww3_exes=("ww3_grid" "ww3_prnc" "ww3_outp" "ww3_gint" "ww3_grib")
 declare -A wave_systems
 wave_systems["gfs"]="pdlib_ON"
 wave_systems["gefs"]="pdlib_OFF"
