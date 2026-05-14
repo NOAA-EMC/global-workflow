@@ -37,11 +37,6 @@ source "${USHgfs}/set_strict.sh"
 PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-# The manager shares DATAjob with the forecast job; DATAoutput is created
-# by the forecast job before the model is launched.
-export DATArestart="${DATAjob}/restart"
-export DATAoutput="${DATAjob}/output"
-
 ##############################################
 # Construct COM variables (mirrors JGLOBAL_FORECAST)
 ##############################################
@@ -52,10 +47,8 @@ export rCDUMP="${rCDUMP/gcafs/gcdas}"
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03i" $((10#${ENSMEM})))
-    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
 else
-    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
 fi
 

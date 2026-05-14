@@ -4,13 +4,16 @@
 #
 #   FILE: forecast_postdet.sh
 #
-#   DESCRIPTION: Defines post-determination handler functions for all UFS
-#                components: FV3 (Atmosphere), WW3 (Waves), MOM6 (Ocean),
-#                CICE (Sea Ice), GOCART (Aerosols), and CMEPS (Coupler).
-################################################################################
+#   DESCRIPTION: A suite of handler functions for managing the data flow and
+#                configuration of various Unified Forecast System (UFS)
+#                coupled components. It handles the staging of initial conditions,
+#                namelist generation, and output/restart file management for:
+#                FV3 (Atmosphere), WW3 (Waves), MOM6 (Ocean), CICE (Sea Ice),
+#                GOCART (Aerosols), and CMEPS (Coupler/Mediator)
+
+# Disable variable not used warnings
 # shellcheck disable=SC2034
 # shellcheck disable=SC2178
-
 FV3_postdet() {
     echo "SUB ${FUNCNAME[0]}: Entering for RUN = ${RUN}"
 
@@ -203,34 +206,18 @@ EOF
                 read_increment=".true."
 
                 if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+                    inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
                     increment_file_on_native_grid=".true."
-                    if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
-                        inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
-                        res_latlon_dynamics="jedi_increment.atm.i006"
-                    else
-                        inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
-                        res_latlon_dynamics="jedi_increment.atm.i006"
-                    fi
+                    res_latlon_dynamics="jedi_increment.atm.i006"
                     if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
                         inc_files=("increment.atm.i006.nc")
                         res_latlon_dynamics="increment.atm.i006.nc"
                         increment_file_on_native_grid=".false."
                     fi
                 else
-                    if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
-                        inc_files=("increment.atm.i006.nc")
-                        res_latlon_dynamics="increment.atm.i006.nc"
-                        increment_file_on_native_grid=".false."
-                    else
-                        increment_file_on_native_grid=".true."
-                        if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
-                            inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
-                            res_latlon_dynamics="jedi_increment.atm.i006"
-                        else
-                            inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
-                            res_latlon_dynamics="jedi_increment.atm.i006"
-                        fi
-                    fi
+                    inc_files=("increment.atm.i006.nc")
+                    res_latlon_dynamics="increment.atm.i006.nc"
+                    increment_file_on_native_grid=".false."
                 fi
                 if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
                     # Control member has no perturbation
@@ -243,11 +230,7 @@ EOF
             fi
 
             if [[ "${RUN}" == "enkfgfs" ]] || [[ "${RUN}" == "enkfgdas" ]]; then
-                if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
-                    prefix_atminc=""
-                else
-                    prefix_atminc="recentered_"
-                fi
+                prefix_atminc="recentered_"
             else
                 prefix_atminc=""
             fi
@@ -295,6 +278,27 @@ EOF
             FHMAX_HF=$((FHMAX_HF + 6))
         fi
     fi
+    #============================================================================
+
+    #============================================================================
+    # If warm starting from restart files, set the following flags
+    if [[ "${warm_start}" == ".true." ]]; then
+
+        # start from restart file
+        nggps_ic=".false."
+        ncep_ic=".false."
+        external_ic=".false."
+        mountain=".true."
+
+        # restarts contain non-hydrostatic state
+        if [[ "${TYPE}" == "nh" ]]; then
+            make_nh=".false."
+        fi
+
+        # do not pre-condition the solution
+        na_init=0
+
+    fi # warm_start == .true.
     #============================================================================
 
     #============================================================================
@@ -733,6 +737,23 @@ WW3_out() {
 
 }
 
+################################################################################
+# forecast_postdet_cmeps.sh
+################################################################################
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC2178
+
+CPL_out() {
+    echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
+    if [[ "${esmf_profile:-.false.}" == ".true." ]]; then
+        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_ATMOS_HISTORY}"
+        fi
+        cpfs "${DATA}/ESMF_Profile.summary" "${COMOUT_ATMOS_HISTORY}/ESMF_Profile.summary"
+    fi
+}
 ################################################################################
 # forecast_postdet_mom6.sh
 ################################################################################
@@ -1185,24 +1206,6 @@ GOCART_out() {
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy GOCART output files!"
         fi
-    fi
-}
-
-################################################################################
-# forecast_postdet_cmeps.sh
-################################################################################
-
-# shellcheck disable=SC2034
-# shellcheck disable=SC2178
-
-CPL_out() {
-    echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
-    if [[ "${esmf_profile:-.false.}" == ".true." ]]; then
-        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
-            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
-            mkdir -p "${COMOUT_ATMOS_HISTORY}"
-        fi
-        cpfs "${DATA}/ESMF_Profile.summary" "${COMOUT_ATMOS_HISTORY}/ESMF_Profile.summary"
     fi
 }
 
