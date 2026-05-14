@@ -284,7 +284,7 @@ class OceanIceProducts(Task):
         try:
             # open the netcdf file; use_cftime=True handles non-standard calendars
             # (e.g. julian) that pandas cannot decode
-            ds = xr.open_dataset(input_file, use_cftime=True)
+            ds = xr.open_dataset(input_file)
             if config.component == 'ice':
                 # subset the variables
                 ds_subset = ds[varlist]
