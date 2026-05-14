@@ -842,6 +842,9 @@ suite gfs_v17
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
             trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            event release_fcst_manager
+          task jgfs_fcst_manager
+            trigger jgfs_fcst:release_fcst_manager
         endfamily		//forecast
         family product
           family atmos
@@ -6734,6 +6737,9 @@ suite gfs_v17
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
             trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            event release_fcst_manager
+          task jgfs_fcst_manager
+            trigger jgfs_fcst:release_fcst_manager
         endfamily		//forecast
         family product
           family atmos
@@ -12630,6 +12636,9 @@ suite gfs_v17
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
             trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            event release_fcst_manager
+          task jgfs_fcst_manager
+            trigger jgfs_fcst:release_fcst_manager
         endfamily		//forecast
         family product
           family atmos
@@ -18526,6 +18535,9 @@ suite gfs_v17
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
             trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            event release_fcst_manager
+          task jgfs_fcst_manager
+            trigger jgfs_fcst:release_fcst_manager
         endfamily		//forecast
         family product
           family atmos

@@ -389,6 +389,14 @@ EOF
             fi
         done
 
+        ##############################################################
+        # Release the forecast manager once the product table is ready
+        # so it can begin copying output files to COM as they appear.
+        ##############################################################
+        if [[ "${SENDECF}" == "YES" && "${use_mgr}" == "YES" ]]; then
+            ecflow_client --event release_fcst_manager
+        fi
+
     fi
     #============================================================================
     restart_interval=${restart_interval:-${FHMAX}}

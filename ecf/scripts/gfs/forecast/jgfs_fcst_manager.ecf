@@ -1,0 +1,38 @@
+#PBS -S /bin/bash
+#PBS -N gfs_fcst_manager_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=08:00:00
+#PBS -l select=1:ncpus=4:ompthreads=1:mem=32GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export FCST_SEGMENT='0'
+
+${HOMEgfs}/jobs/JGLOBAL_FORECAST_MANAGER
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end
