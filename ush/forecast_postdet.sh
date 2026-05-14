@@ -302,27 +302,6 @@ EOF
     #============================================================================
 
     #============================================================================
-    # If warm starting from restart files, set the following flags
-    if [[ "${warm_start}" == ".true." ]]; then
-
-        # start from restart file
-        nggps_ic=".false."
-        ncep_ic=".false."
-        external_ic=".false."
-        mountain=".true."
-
-        # restarts contain non-hydrostatic state
-        if [[ "${TYPE}" == "nh" ]]; then
-            make_nh=".false."
-        fi
-
-        # do not pre-condition the solution
-        na_init=0
-
-    fi # warm_start == .true.
-    #============================================================================
-
-    #============================================================================
     if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
         local FH2 FH3
         # For GFS/GEFS/SFS/GCAFS: build a product table consumed by the forecast manager.
@@ -826,7 +805,7 @@ MOM6_postdet() {
                 # Native model uses midpoint in filename; we map that to the end of the period for COM.
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
-                    source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
+                    source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
                     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
