@@ -596,7 +596,7 @@ if [[ -d ufs_model.fd ]]; then
         rm -rf WW3.fd
     fi
     ${LINK} ufs_model.fd/WW3 WW3.fd
-fi  
+fi
 
 for prog in chgres_cube.fd global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd; do
     if [[ -d "${prog}" ]]; then
@@ -606,7 +606,7 @@ for prog in chgres_cube.fd global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.f
 done
 
 if [[ -d "regridStates.fd" ]]; then
-	rm -rf "regridStates.fd"
+    rm -rf "regridStates.fd"
 fi
 ${LINK} "ufs_utils.fd/sorc/regrid_sfc.fd" "regridStates.fd"
 
