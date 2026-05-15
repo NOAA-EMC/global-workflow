@@ -117,7 +117,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 fi
             done
             if [[ ${_unstable} -eq 1 ]]; then
-                continue  # file still growing; defer to next poll cycle
+                continue # file still growing; defer to next poll cycle
             fi
         fi
 
