@@ -407,8 +407,8 @@ done
 declare -a model_systems=("gfs" "gefs" "sfs" "gcafs")
 for sys in "${model_systems[@]}"; do
     model_exe="${sys}_model.x"
-    if [[ -s "ufs_model_${sys}" ]]; then
-        rm -f "ufs_model_${sys}"
+    if [[ -s "ufs_model_${sys}.x" ]]; then
+        rm -f "ufs_model_${sys}.x"
     fi
     if [[ -f "${HOMEglobal}/sorc/ufs_model.fd/tests/${model_exe}" ]]; then
         ${LINK_OR_COPY} "${HOMEglobal}/sorc/ufs_model.fd/tests/${model_exe}" "ufs_model_${sys}.x"
