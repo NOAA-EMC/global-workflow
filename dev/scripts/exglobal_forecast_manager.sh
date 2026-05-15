@@ -90,6 +90,3 @@ export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
 "${USHgfs}/run_mpmd.sh" "${FCST_MANAGER_CMDFILE}"
-
-# Segment copy complete — remove sentinels so a rewound forecast can write fresh ones.
-rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT}" "${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
