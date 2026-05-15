@@ -1341,12 +1341,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file_tmpl}', 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        if 'fcst_manager' in self._configs:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
-        else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
+        dependencies = rocoto.create_dependency(dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
@@ -1451,11 +1446,15 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostpnt(self):
+        # Trigger from the last wave log in COM (copied by the ww3 manager component).
+        # When this file appears, all wave output for the segment is in COM.
+        wave_grid = self._configs['base']['waveGRD']
+        history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        last_fhr = fhrs[-1]
+        history_file = f'{self.run}.t@Hz.{wave_grid}.f{last_fhr:03d}.log'
         deps = []
-        if 'fcst_manager' in self._configs:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
-        else:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
