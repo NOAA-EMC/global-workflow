@@ -157,8 +157,6 @@ FV3_predet() {
     echo "SUB ${FUNCNAME[0]}: Defining variables for FV3"
 
     if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then mkdir -p "${COMOUT_ATMOS_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then mkdir -p "${COMOUT_ATMOS_MASTER}"; fi
-    if [[ ! -d "${COMOUT_ATMOS_RESTART}" ]]; then mkdir -p "${COMOUT_ATMOS_RESTART}"; fi
     if [[ ! -d "${DATAoutput}/FV3ATM_OUTPUT" ]]; then mkdir -p "${DATAoutput}/FV3ATM_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/FV3_RESTART" ]]; then mkdir -p "${DATArestart}/FV3_RESTART"; fi
 
@@ -166,6 +164,9 @@ FV3_predet() {
     # Link the output and restart directories to the DATA directory
     ${NLN} "${DATAoutput}/FV3ATM_OUTPUT" "${DATA}/FV3ATM_OUTPUT"
     ${NLN} "${DATArestart}/FV3_RESTART" "${DATA}/RESTART"
+    if [[ "${WRITE_DOPOST:-}" == ".true." ]] && [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then
+        mkdir -p "${COMOUT_ATMOS_MASTER}"
+    fi
 
     FHZERO=${FHZERO:-6}
     FHCYC=${FHCYC:-24}
@@ -620,7 +621,6 @@ WW3_predet() {
     echo "SUB ${FUNCNAME[0]}: WW3 before run type determination"
 
     if [[ ! -d "${COMOUT_WAVE_HISTORY}" ]]; then mkdir -p "${COMOUT_WAVE_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_WAVE_RESTART}" ]]; then mkdir -p "${COMOUT_WAVE_RESTART}"; fi
     if [[ ! -d "${DATAoutput}/WW3_OUTPUT" ]]; then mkdir -p "${DATAoutput}/WW3_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/WW3_RESTART" ]]; then mkdir -p "${DATArestart}/WW3_RESTART"; fi
 
@@ -632,7 +632,7 @@ WW3_predet() {
     # Copy mod_def files for wave grids
     local ww3_grid
     #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    cpreq "${COMIN_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
+    cpreq "${COMIN_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
 
     #If pnt_wght file exists, use it to speed up initialization for unstructured grids
     # this file does not exist for structured, and the model can run without it (just slower init)
@@ -644,7 +644,7 @@ WW3_predet() {
     # so these files are not generated.
     # TODO: Remove these lines or enable waveprep job
     if [[ "${WW3ICEINP}" == "YES" ]]; then
-        local wavicefile="${COMIN_WAVE_PREP}/${RUN}.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
+        local wavicefile="${COMIN_WAVE_INIT}/${RUN}.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
         if [[ ! -f "${wavicefile}" ]]; then
             echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
             exit 1
@@ -653,7 +653,7 @@ WW3_predet() {
     fi
 
     if [[ "${WW3CURINP}" == "YES" ]]; then
-        local wavcurfile="${COMIN_WAVE_PREP}/${RUN}.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
+        local wavcurfile="${COMIN_WAVE_INIT}/${RUN}.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
         if [[ ! -f "${wavcurfile}" ]]; then
             echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
             exit 1
@@ -676,8 +676,6 @@ CICE_predet() {
     echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
 
     if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_ICE_RESTART}" ]]; then mkdir -p "${COMOUT_ICE_RESTART}"; fi
-    if [[ ! -d "${COMIN_ICE_INPUT}" ]]; then mkdir -p "${COMIN_ICE_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/CICE_OUTPUT" ]]; then mkdir -p "${DATAoutput}/CICE_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/CICE_RESTART" ]]; then mkdir -p "${DATArestart}/CICE_RESTART"; fi
 
@@ -701,8 +699,6 @@ MOM6_predet() {
     echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 
     if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then mkdir -p "${COMOUT_OCEAN_HISTORY}"; fi
-    if [[ ! -d "${COMOUT_OCEAN_RESTART}" ]]; then mkdir -p "${COMOUT_OCEAN_RESTART}"; fi
-    if [[ ! -d "${COMIN_OCEAN_INPUT}" ]]; then mkdir -p "${COMIN_OCEAN_INPUT}"; fi
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
 
@@ -755,8 +751,6 @@ EOF
 # shellcheck disable=SC2178
 CMEPS_predet() {
     echo "SUB ${FUNCNAME[0]}: CMEPS before run type determination"
-
-    if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then mkdir -p "${COMOUT_MED_RESTART}"; fi
     if [[ ! -d "${DATArestart}/CMEPS_RESTART" ]]; then mkdir -p "${DATArestart}/CMEPS_RESTART"; fi
 
     # Link the restart directory to the DATA directory
@@ -766,8 +760,6 @@ CMEPS_predet() {
 # shellcheck disable=SC2034
 GOCART_predet() {
     echo "SUB ${FUNCNAME[0]}: GOCART before run type determination"
-
-    if [[ ! -d "${COMOUT_CHEM_HISTORY}" ]]; then mkdir -p "${COMOUT_CHEM_HISTORY}"; fi
 
     # FHMAX gets modified when IAU is on, so keep origianl value for GOCART output
     GOCART_MAX=${FHMAX}

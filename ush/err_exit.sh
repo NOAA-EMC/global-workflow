@@ -18,6 +18,9 @@ err_exit() {
     # Do not fail in err_exit
     set +eux
 
+    # Nullify any traps
+    trap - EXIT
+
     msg1=${*:-Job ${jobid} failed}
     if [[ -n "${pgm}" ]]; then
         msg1+=", ERROR IN ${pgm}"
@@ -55,7 +58,9 @@ err_exit() {
             echo "----- contents of errfile -----" >> "${pgmout}"
             cat errfile >> "${pgmout}"
         fi
-        >&2 cat "${pgmout}"
+        if [[ -s "${pgmout}" ]]; then
+            >&2 cat "${pgmout}"
+        fi
     elif [[ -s errfile ]]; then
         >&2 cat errfile
     fi
@@ -67,14 +72,15 @@ err_exit() {
     fi
 
     # KILL THE JOB:
-    if [[ "${SENDECF}" == "YES" ]]; then
-        ecflow_client --kill="${ECF_NAME:?}"
-    fi
-
     if [[ -n "${PBS_JOBID}" ]]; then
         qdel "${PBS_JOBID}"
     elif [[ -n "${SLURM_JOB_ID}" ]]; then
         scancel "${SLURM_JOB_ID}"
+    elif [[ "${SENDECF}" == "YES" ]]; then
+        ecflow_client --kill="${ECF_NAME:?}"
+    else
+        echo "FATAL ERROR: Unable to kill job, unknown scheduler and not running under ecflow"
+        exit 99
     fi
 }
 
