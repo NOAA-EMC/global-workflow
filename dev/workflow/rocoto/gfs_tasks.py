@@ -1300,7 +1300,7 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.log.f#fhr3_last#.txt'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_nextp1#.nc.log'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.log.f#fhr3_nextp1#.txt'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc.log'}}

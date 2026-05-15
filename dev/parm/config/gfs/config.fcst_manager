@@ -16,6 +16,10 @@ export FCST_MGR_TIMEOUT=0
 # Polling interval (seconds) between sentinel checks.
 export FCST_MGR_SLEEP=30
 
+# Seconds between the two size samples used to verify a data file is no longer
+# being written before copying it (size-stability guard). Set to 0 to disable.
+export FCST_MGR_STABILITY_WAIT=5
+
 # Get task specific resources
 . "${EXPDIR}/config.resources" "fcst_manager"
 

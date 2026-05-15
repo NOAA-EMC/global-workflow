@@ -987,7 +987,8 @@ case ${step} in
     # Forecast manager: one MPMD rank per active model component.
     # Polls DATAoutput for sentinel log files and copies products to COM in real time.
     # Walltime must be long enough to cover the full forecast run.
-    export is_exclusive=False
+    is_exclusive=False
+    prepost=True
     ntasks=1  # ATM is always active
     if [[ "${DO_WAVE}" == "YES" ]]; then
         (( ntasks += 1 ))
@@ -1003,8 +1004,8 @@ case ${step} in
     fi
     tasks_per_node=${ntasks}
     threads_per_task=1
-    memory="8GB"
-    walltime="08:00:00"
+    memory="12GB"
+    walltime="06:00:00"
     ;;
 
   "oceanice_products")

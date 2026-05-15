@@ -4,7 +4,8 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=08:00:00
-#PBS -l select=1:ncpus=4:ompthreads=1:mem=32GB
+#PBS -l walltime=06:00:00
+#PBS -l select=1:ncpus=4:ompthreads=1:mem=12GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -15,9 +16,8 @@ export cyc="%CYC%"
 
 ############################################################
 # Load modules
-############################################################
-module load intel/${intel_ver}
-module load craype/${craype_ver}
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
 
 module list
 ############################################################

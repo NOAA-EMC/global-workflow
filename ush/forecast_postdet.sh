@@ -780,14 +780,14 @@ MOM6_postdet() {
     # Link output files
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
-            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
             local ocn_local ocn_com ocn_table use_mgr_ocn
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             case "${RUN}" in
                 gfs) use_mgr_ocn="YES" ;;
                 *) use_mgr_ocn="NO" ;;
             esac
-            ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT:-0}.txt"
+            ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
             rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
@@ -810,24 +810,23 @@ MOM6_postdet() {
                     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
+                ihour=$(printf %02i "${interval}")
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
+                source_file_log="${DATA}/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
 
                 # Forecast manager copies from DATA to COM; register in product table.
                 # Others: NLN so model writes directly into COM.
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
-                    # Data-triggered: local_log == local_data so the manager waits for the .nc
-                    # file to appear, then copies it to COM and writes a small .log marker
-                    # to confirm the copy completed successfully.
-                    echo "${ocn_local} ${ocn_local} ${ocn_com} ${ocn_com}.log" >> "${ocn_table}"
+                    # Model-log-triggered: local_log (source_file_log) is the MOM6 period log
+                    # written by the model after the .nc is complete. Manager polls for it,
+                    # copies the .nc to COM, then copies the log to COM as the Rocoto sentinel.
+                    echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
                 else
-                    local ihour source_file_log dest_file_log
-                    ihour=$(printf %02i "${interval}")
-                    source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
-                    dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                     ${NLN} "${ocn_com}" "${ocn_local}"
-                    ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
+                    ${NLN} "${dest_file_log}" "${source_file_log}"
                 fi
 
                 last_fhr=${fhr}

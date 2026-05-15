@@ -28,8 +28,6 @@
 # Suppress xtrace that may be inherited from the parent J-job via SHELLOPTS.
 # The inner copy loops iterate hundreds of entries; xtrace would generate
 # millions of log lines and significantly slow filesystem I/O.
-set +x
-
 component="${1:?Usage: forecast_manager.sh <component> <table_file>}"
 table_file="${2:?Usage: forecast_manager.sh <component> <table_file>}"
 
@@ -90,6 +88,37 @@ while [[ ${remaining} -gt 0 ]]; do
                 fi
             done
             continue
+        fi
+
+        # Size-stability guard for data-as-sentinel only.
+        # For model-log-sentinel components (ATM, WW3, MOM6) the model writes the
+        # sentinel log only after the data file is closed, so no extra check is
+        # needed. For data-as-sentinel (e.g. CICE, where local_log == local_data),
+        # PIO writes directly to the final filename without an atomic rename, so the
+        # file can exist and be non-zero while still being written. In that case,
+        # sample sizes before and after FCST_MGR_STABILITY_WAIT seconds and defer
+        # to the next poll cycle if any file is still growing.
+        if [[ "${this_ll}" == "${local_data[i]}" ]]; then
+            _chk_paths=()
+            _chk_sizes=()
+            for ((j = 0; j < count; j++)); do
+                [[ "${done_flag[j]}" == "YES" ]] && continue
+                [[ "${local_log[j]}" != "${this_ll}" ]] && continue
+                _chk_paths+=("${local_data[j]}")
+                _chk_sizes+=("$(stat -c%s "${local_data[j]}" 2>/dev/null || echo -1)")
+            done
+            sleep "${FCST_MGR_STABILITY_WAIT:-5}"
+            _unstable=0
+            for ((k = 0; k < ${#_chk_paths[@]}; k++)); do
+                _sz_now=$(stat -c%s "${_chk_paths[k]}" 2>/dev/null || echo -1)
+                if [[ "${_chk_sizes[k]}" -le 0 || "${_sz_now}" -ne "${_chk_sizes[k]}" ]]; then
+                    _unstable=1
+                    break
+                fi
+            done
+            if [[ ${_unstable} -eq 1 ]]; then
+                continue  # file still growing; defer to next poll cycle
+            fi
         fi
 
         # Copy all data files that share this sentinel (data first, log last)
