@@ -3030,7 +3030,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['enkfgdas']:
-            dep_dict = {'type': 'task', 'name': f'enkfgdas_esfc_regrid'}
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlecen'}
