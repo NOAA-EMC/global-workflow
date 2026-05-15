@@ -118,9 +118,9 @@ else
     err_exit "NO TEMPLATE FOR BULLETIN INPUT FILE"
 fi
 
-# 1.d Linking the output files
+# 1.d Copy the output files from upstream forecast job for input to this job 
 
-# Loop through forecast hours to link output file
+# Loop through forecast hours to copy input 
 fhr=${FHMIN_WAV}
 while [[ ${fhr} -le ${FHMAX_WAV_PNT} ]]; do
     ymdhms=$(date --utc +%Y%m%d.%H0000 -d "${PDY} ${cyc} + ${fhr} hours")
