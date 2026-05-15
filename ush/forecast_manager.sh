@@ -105,7 +105,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 [[ "${done_flag[j]}" == "YES" ]] && continue
                 [[ "${local_log[j]}" != "${this_ll}" ]] && continue
                 _chk_paths+=("${local_data[j]}")
-                _chk_sizes+=("$(stat -c%s "${local_data[j]}" 2>/dev/null || echo -1)")
+                _chk_sizes+=("$(stat -c%s "${local_data[j]}" 2> /dev/null || echo -1)")
             done
             sleep "${FCST_MGR_STABILITY_WAIT:-5}"
             _unstable=0
