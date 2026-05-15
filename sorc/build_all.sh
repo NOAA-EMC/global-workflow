@@ -79,7 +79,7 @@ export HOMEglobal
 
 echo "Sourcing global-workflow modules ..."
 source "${HOMEglobal}/dev/ush/gw_setup.sh"
-if [[ ${MACHINE_ID} == "derecho" ]]; then
+if [[ "${MACHINE_ID}" == "derecho" && "${compute_build}" == "NO" ]]; then
     # Derecho has stricter limits on head node usage
     cat << 'EOF'
 WARNING: Interactive build on Derecho is limited to four cores to comply
