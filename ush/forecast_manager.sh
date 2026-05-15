@@ -63,7 +63,7 @@ echo "INFO [${component}]: Loaded ${count} product entries"
 # Wait for fcst_table_ready (tables complete, model about to start). If the sentinel is
 # absent the forecast is mid-rewind; stall until postdet re-writes it.
 # Skip entirely when the sentinel path is not configured (backward compat).
-if [[ -n "${FCST_TABLE_READY_SENTINEL:-}" ]]; then
+if [[ -n "${FCST_TABLE_READY_SENTINEL:-}" && ! -f "${FCST_TABLE_READY_SENTINEL}" ]]; then
     _mgr_wait_max="${FCST_MANAGER_INIT_TIMEOUT:-7200}"
     _mgr_waited=0
     until [[ -f "${FCST_TABLE_READY_SENTINEL}" ]]; do
