@@ -179,10 +179,10 @@ else
 fi
 
 cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
-# Signal to the forecast manager that this segment's model run is about to start.
-# This sentinel is cleaned during postdet so a rewound segment does not trigger the
-# manager prematurely from a table written by the previous run.
-echo "${RUN}_fcst_seg${FCST_SEGMENT} started" > "${DATAjob}/fcst_started_seg${FCST_SEGMENT}"
+# Signal to the forecast manager that the product tables are ready and the model
+# is about to start. Postdet deletes this sentinel before rebuilding tables so a
+# rewound segment cannot trigger the manager against a partially-written table.
+echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

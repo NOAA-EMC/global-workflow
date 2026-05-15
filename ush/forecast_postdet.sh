@@ -318,9 +318,9 @@ EOF
         local atm_table="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
         if [[ "${use_mgr}" == "YES" ]]; then
             rm -f "${atm_table}"
-            # Remove the started sentinel so the forecast manager does not trigger from a
+            # Remove the table-ready sentinel so the forecast manager does not trigger from a
             # previous run when this segment is rewound and re-queued.
-            rm -f "${DATAjob}/fcst_started_seg${FCST_SEGMENT:-0}"
+            rm -f "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}"
         fi
 
         for fhr in ${FV3_OUTPUT_FH}; do

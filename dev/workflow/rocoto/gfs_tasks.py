@@ -1122,7 +1122,7 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_started_seg#seg#', 'age': 5}
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_table_ready_seg#seg#', 'age': 5}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
