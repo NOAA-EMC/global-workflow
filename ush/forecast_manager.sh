@@ -110,7 +110,7 @@ while [[ ${remaining} -gt 0 ]]; do
             sleep "${FCST_MGR_STABILITY_WAIT:-5}"
             _unstable=0
             for ((k = 0; k < ${#_chk_paths[@]}; k++)); do
-                _sz_now=$(stat -c%s "${_chk_paths[k]}" 2>/dev/null || echo -1)
+                _sz_now=$(stat -c%s "${_chk_paths[k]}" 2> /dev/null || echo -1)
                 if [[ "${_chk_sizes[k]}" -le 0 || "${_sz_now}" -ne "${_chk_sizes[k]}" ]]; then
                     _unstable=1
                     break
