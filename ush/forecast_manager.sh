@@ -71,11 +71,26 @@ while [[ ${remaining} -gt 0 ]]; do
             continue
         fi
 
+        _fcst_done_fallback=0
         if [[ ! -f "${local_log[i]}" ]]; then
-            continue
+            # Model-done fallback for the last segment entry only: when the forecast
+            # is complete, the data file exists, and this is the last sentinel group
+            # in the product table (local_log matches the last row's sentinel), the
+            # model likely never wrote its period log because it is written at the
+            # start of the next averaging period, which does not exist for the final
+            # output window (e.g. MOM6 last averaging period). Treat data-file
+            # existence as a substitute trigger and write a synthetic COM log.
+            if [[ -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" \
+                  && "${local_log[i]}" != "${local_data[i]}" \
+                  && "${local_log[i]}" == "${local_log[count-1]}" \
+                  && -f "${local_data[i]}" ]]; then
+                _fcst_done_fallback=1
+            else
+                continue
+            fi
         fi
 
-        # Sentinel exists (or data-as-sentinel fallback); process all rows that share this sentinel
+        # Sentinel exists, or fcst_done fallback active; process all rows that share this sentinel
         this_ll="${local_log[i]}"
         this_cl="${com_log[i]}"
 
@@ -148,10 +163,9 @@ while [[ ${remaining} -gt 0 ]]; do
             if [[ ! -d "${cl_dir}" ]]; then
                 mkdir -p "${cl_dir}"
             fi
-            if [[ "${this_ll}" == "${local_data[i]}" ]]; then
-                # Data-as-sentinel fallback: MOM6 did not write the period-start
-                # sentinel (e.g. FHMAX last window or sentinel dir was cleaned).
-                # Write a synthetic marker instead of copying the NC binary.
+            if [[ "${this_ll}" == "${local_data[i]}" || ${_fcst_done_fallback} -eq 1 ]]; then
+                # Data-as-sentinel (local_log == local_data) or fcst_done fallback
+                # (model never wrote the period log): write a synthetic COM marker.
                 echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
                 log_err=0
             else
