@@ -155,7 +155,7 @@ case "${MODULE_TYPE}" in
         export PYTHONPATH
         ;;
 
-    "run" | "gsi" | "verif" | "setup" | "upp")
+    "run" | "gsi" | "verif" | "setup" | "upp" | "atmos_post")
 
         # Test that the version file exists
         if [[ ! -f "${HOMEglobal}/versions/run.ver" ]]; then
@@ -181,8 +181,8 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
-        # Source versions file (except for upp)
-        if [[ "${mod_type}" != "upp" ]]; then
+        # Source versions file (except for upp and atmos_post)
+        if [[ "${mod_type}" != "upp" && "${mod_type}" != "atmos_post" ]]; then
             source "${HOMEglobal}/versions/run.ver"
         fi
 
@@ -207,7 +207,7 @@ case "${MODULE_TYPE}" in
 
     *)
         echo "FATAL ERROR: Unknown module type '${MODULE_TYPE}'"
-        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup"
+        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup, upp, atmos_post"
         ;;
 
 esac
