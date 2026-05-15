@@ -78,10 +78,10 @@ while [[ ${remaining} -gt 0 ]]; do
             # the final output window is never written (no next period exists).
             # Component and last-entry checks are evaluated first (pure string
             # comparisons) to short-circuit before any filesystem access.
-            if [[ "${component}" == "ocn" \
-                  && "${local_log[i]}" == "${local_log[count-1]}" \
-                  && -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" \
-                  && -f "${local_data[i]}" ]]; then
+            if [[ "${component}" == "ocn" &&
+                "${local_log[i]}" == "${local_log[count - 1]}" &&
+                -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" &&
+                -f "${local_data[i]}" ]]; then
                 _fcst_done_fallback=1
             else
                 continue
