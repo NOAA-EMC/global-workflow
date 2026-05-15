@@ -73,16 +73,14 @@ while [[ ${remaining} -gt 0 ]]; do
 
         _fcst_done_fallback=0
         if [[ ! -f "${local_log[i]}" ]]; then
-            # Model-done fallback for the last segment entry only: when the forecast
-            # is complete, the data file exists, and this is the last sentinel group
-            # in the product table (local_log matches the last row's sentinel), the
-            # model likely never wrote its period log because it is written at the
-            # start of the next averaging period, which does not exist for the final
-            # output window (e.g. MOM6 last averaging period). Treat data-file
-            # existence as a substitute trigger and write a synthetic COM log.
-            if [[ -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" \
-                  && "${local_log[i]}" != "${local_data[i]}" \
+            # Model-done fallback for the last ocean entry only: MOM6 writes each
+            # period log at the start of the next averaging period, so the log for
+            # the final output window is never written (no next period exists).
+            # Component and last-entry checks are evaluated first (pure string
+            # comparisons) to short-circuit before any filesystem access.
+            if [[ "${component}" == "ocn" \
                   && "${local_log[i]}" == "${local_log[count-1]}" \
+                  && -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" \
                   && -f "${local_data[i]}" ]]; then
                 _fcst_done_fallback=1
             else
