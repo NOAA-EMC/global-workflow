@@ -118,7 +118,7 @@ else
     err_exit "NO TEMPLATE FOR BULLETIN INPUT FILE"
 fi
 
-# 1.d Copy the output files from upstream forecast job for input to this job 
+# 1.d Copy the output files from upstream forecast job for input to this job
 
 # Loop through forecast hours to copy input 
 fhr=${FHMIN_WAV}
