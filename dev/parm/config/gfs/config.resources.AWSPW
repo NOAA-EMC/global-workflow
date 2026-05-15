@@ -29,7 +29,7 @@ case ${step} in
     export is_exclusive="True"
     ;;
 
-  "sfcanl")
+  "sfcanl_regrid" | "sfcanl_gcycle")
     export is_exclusive="False"
     export PARTITION_BATCH="process"
     export threads_per_task=1 
@@ -66,7 +66,12 @@ case ${step} in
     export tasks_per_node=${max_tasks_per_node}
     ;;
 
-  "esfc")
+  "esfc_gcycle")
+    export is_exclusive="True"
+    export tasks_per_node=${max_tasks_per_node}
+    ;;
+
+  "esfc_regrid")
     export is_exclusive="True"
     export tasks_per_node=${max_tasks_per_node}
     ;;
