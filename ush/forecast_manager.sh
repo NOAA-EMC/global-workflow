@@ -181,7 +181,7 @@ while [[ ${remaining} -gt 0 ]]; do
             if [[ "${this_ll}" == "${local_data[i]}" || ${_fcst_done_fallback} -eq 1 ]]; then
                 # Data-as-sentinel (local_log == local_data) or fcst_done fallback
                 # (model never wrote the period log): write a synthetic COM marker.
-                echo "$(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
+                echo "synthetic sentinel created (model sentinel unavailable): $(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
                 log_err=0
             else
                 cpfs "${this_ll}" "${this_cl}"
