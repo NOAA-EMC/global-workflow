@@ -978,8 +978,14 @@ CICE_postdet() {
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
-        : # Manager (GFS): iceh_ic copied to COM in CICE_out after the model completes.
+        # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
+        # No per-period sentinel; use fcst_done_seg as proxy since iceh_ic is written
+        # during CICE initialization before any time stepping begins.
         # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
+        echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
+             "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}" \
+             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
+             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
         # Non-manager (GDAS): NLN so the model writes directly into COM via symlink.
         if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
@@ -1050,23 +1056,6 @@ CICE_out() {
 
     # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
-
-    # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
-    # No per-period sentinel exists; copied here for manager runs after the model completes.
-    # Non-manager runs (GDAS) use an NLN set up in CICE_postdet instead.
-    # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
-    local use_mgr_ice="NO"
-    case "${RUN}" in
-        gfs) use_mgr_ice="YES" ;;
-        *) ;;
-    esac
-    if [[ "${use_mgr_ice}" == "YES" ]]; then
-        local ic_seconds ic_vdatestr
-        ic_seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000")
-        ic_vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${ic_seconds}"
-        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
-        cpfs "${DATAoutput}/CICE_OUTPUT/iceh_ic.${ic_vdatestr}.nc" "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc"
-    fi
 
     # Build MPMD cmdfile to copy CICE restarts in parallel
     local cmdfile="${DATA}/cmdfile_cice_out"
