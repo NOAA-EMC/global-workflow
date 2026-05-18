@@ -17,6 +17,10 @@ case ${cyc} in
      cyc_to_wait=""
      prev_cyc="12"
      ;;
+  *)
+     echo "ERROR: Unexpected cycle ${cyc} in C96 test suite (only 12 and 00 are valid)"
+     exit 1
+     ;;
 esac
 retro=YES
 suite_name=$(ecflow_client --query variable ${ECF_NAME}:SUITE)
