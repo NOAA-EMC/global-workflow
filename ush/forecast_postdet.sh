@@ -1051,8 +1051,9 @@ CICE_out() {
     # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
 
-    # iceh_ic: CICE initial condition snapshot; copied here for manager runs since
-    # no per-period sentinel exists. Non-manager runs use an NLN set up in CICE_postdet.
+    # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
+    # No per-period sentinel exists; copied here for manager runs after the model completes.
+    # Non-manager runs (GDAS) use an NLN set up in CICE_postdet instead.
     # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
     local use_mgr_ice="NO"
     case "${RUN}" in
