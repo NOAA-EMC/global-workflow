@@ -55,6 +55,28 @@ SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 # Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
 ##############################################################################
 export SHOUR=0
+
+####################################
+# Check if this is a restart
+####################################
+if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb" ]]; then
+    modelrecvy=$(cat < "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
+    recvy_cyc="${modelrecvy:8:2}"
+    recvy_shour="${modelrecvy:10:13}"
+
+    if [[ ${RERUN} == "NO" ]]; then
+        NEW_SHOUR=$((recvy_shour + FHOUT_GOES))
+        if ((NEW_SHOUR > SHOUR)); then
+            export SHOUR="${NEW_SHOUR}"
+        fi
+        if ((recvy_shour >= FHMAX_GOES)); then
+            echo "Forecast Pgrb Generation Already Completed to ${FHMAX_GOES}"
+        else
+            echo "Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}"
+        fi
+    fi
+fi
+
 export FHOUR=24
 export FHINC=3
 if ((FHOUR > FHMAX_GFS)); then
@@ -108,7 +130,9 @@ done
 ################################################################
 # Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files
 ################################################################
-export SHOUR=${FHMIN_GFS}
+if ((FHMIN_GFS > SHOUR)); then
+    export SHOUR=${FHMIN_GFS}
+fi
 export FHOUR=${FHMAX_GOES}
 export FHINC=${FHOUT_GOES}
 
