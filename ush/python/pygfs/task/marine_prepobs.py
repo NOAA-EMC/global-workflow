@@ -249,31 +249,21 @@ class MarineObsPrep(Task):
         """
         """
         # Copy the processed ioda files to the destination directory
-        logger.info("Copying ioda files to COMOUT_OBSFORGE_MARINE_OBS directory")
-        comout = self.task_config['COMOUT_OBSFORGE_MARINE_OBS']
+        logger.info("Copying ioda files to COMOUT_OBS directory")
+        comout = self.task_config['COMOUT_OBS']
 
         # Loop through the observation types
         obs_types = ['sst', 'adt', 'icec', 'sss']
         src_dst_obs_list = []  # list of [src_file, dst_file]
         for obs_type in obs_types:
-            # Create the destination directory
-            comout_tmp = join(comout, obs_type)
-            FileHandler({'mkdir': [comout_tmp]}).sync()
-
             # Glob the ioda files
             ioda_files = glob.glob(join(self.task_config['DATA'],
                                         f"{self.task_config['PREFIX']}*{obs_type}_*.nc"))
             for ioda_file in ioda_files:
-                logger.info(f"ioda_file: {ioda_file}")
                 src_file = ioda_file
-                dst_file = join(comout_tmp, basename(ioda_file))
+                dst_file = join(comout, basename(ioda_file))
                 src_dst_obs_list.append([src_file, dst_file])
-
-        logger.info("Copying ioda files to COMOUT_OBSFORGE_MARINE_OBS directory")
-        logger.info(f"src_dst_obs_list: {src_dst_obs_list}")
 
         FileHandler({'copy': src_dst_obs_list}).sync()
 
-        # create an empty file to tell external processes the obs are ready
-        ready_file = pathlib.Path(join(comout, f"{self.task_config['PREFIX']}obsforge_marine_status.log"))
-        ready_file.touch()
+        # TODO add call to monitoring script for SDM monitoring

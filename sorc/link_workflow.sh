@@ -317,9 +317,19 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd/build" ]]; then
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/ioda/bufr2ioda/run_bufr2ioda.py" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/gsincdiag_to_ioda" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/sorc/da-utils/ush/pyiodaconv" .
+    ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/b2i/b2iconverter" .
     cd "${HOMEgfs}/ush" || exit 1
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
     ${LINK_OR_COPY} "${HOMEgfs}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
+    mkdir -p "${HOMEgfs}/ush/bufr2ioda"
+    cd "${HOMEgfs}/ush/bufr2ioda" || exit 1
+    b2i_src_dir="${HOMEgfs}/sorc/gdas.cd/ush/b2i"
+    b2i_python_scripts=("${b2i_src_dir}"/*.py)
+    if [[ -e "${b2i_python_scripts[0]}" ]]; then
+        for script in "${b2i_python_scripts[@]}"; do
+            ${LINK_OR_COPY} "${script}" .
+        done
+    fi
 fi
 
 #------------------------------

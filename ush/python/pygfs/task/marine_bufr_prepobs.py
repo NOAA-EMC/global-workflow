@@ -34,7 +34,6 @@ class MarineBufrObsPrep(Task):
         cycstr = self.task_config.current_cycle.strftime("%H")
 
         RUN = self.task_config.RUN
-        OCNOBS2IODAEXEC = path.join(self.task_config.HOMEobsforge, 'build/bin/obsforge_obsprovider2ioda.x')
 
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, +to_timedelta(f"{self.task_config['assim_freq']}H") / 2)
@@ -43,9 +42,7 @@ class MarineBufrObsPrep(Task):
             {
                 'window_begin': to_isotime(_window_begin),
                 'window_end': to_isotime(_window_end),
-                'OCNOBS2IODAEXEC': OCNOBS2IODAEXEC,
                 'PREFIX': f"{RUN}.t{cycstr}z.",
-                'bufr2ioda_config_temp': f"{self.task_config.HOMEobsforge}/parm/{self.task_config.BUFR2IODA_CONFIG_TEMP}",
                 'cycstr': cycstr,
                 'yyyymmdd': yyyymmdd
             }
@@ -61,7 +58,7 @@ class MarineBufrObsPrep(Task):
         providers = self.task_config.providers
         logger.info(f"Providers: {providers}")
 
-        obs_cycle_dict = AttrDict({key: self.task_config[key] for key in ['DATA', 'COMIN_OBSPROC', 'RUN', 'ocean_basin']})
+        obs_cycle_dict = AttrDict({key: self.task_config[key] for key in ['DATA', 'COMIN_OBSPROC', 'RUN', 'ocean_basin_file']})
         bufr_files_to_copy = []
         RUN = self.task_config.RUN
         cycstr = self.task_config.cycstr
@@ -96,13 +93,13 @@ class MarineBufrObsPrep(Task):
                     'obs_cycle': obs_cycle,
                     'obs_cycle_PREFIX': f"{obs_cycle_dict['RUN']}.t{obs_cycle_cyc}z."
                 })
-                obs_cycle_config = parse_j2yaml(self.task_config.bufr2ioda_config_temp, obs_cycle_dict)
+                obs_cycle_config = parse_j2yaml(self.task_config.BUFR2IODA_CONFIG_TEMP, obs_cycle_dict)
 
                 if (not sfcshp.is_ready()) and sfcshp.has_provider_for(provider["dump_tag"]):
                     # construct sfcshp_filename using j2yaml
                     sfcshp_cycle_dict = obs_cycle_dict
                     sfcshp_cycle_dict['dump_tag'] = 'sfcshp'
-                    sfcshp_cycle_config = parse_j2yaml(self.task_config.bufr2ioda_config_temp, sfcshp_cycle_dict)
+                    sfcshp_cycle_config = parse_j2yaml(self.task_config.BUFR2IODA_CONFIG_TEMP, sfcshp_cycle_dict)
                     sfcshp_filename = sfcshp_cycle_config.dump_filename
 
                     if path.exists(sfcshp_filename):
@@ -110,7 +107,7 @@ class MarineBufrObsPrep(Task):
                         cycle = obs_cycle_config.cycle_datetime[-2:]
                         sfcshp = SfcShp(sfcshp_filename, cycle=cycle)
                         sfcshp.split()  # result is in cwd
-                        sfcshp.rename(self.task_config.bufr2ioda_config_temp, sfcshp_cycle_dict)
+                        sfcshp.rename(self.task_config.BUFR2IODA_CONFIG_TEMP, sfcshp_cycle_dict)
                         sfcshp.set_ready()
                     else:
                         logger.warning(f"sfcshp not found: {sfcshp_filename}")
@@ -157,23 +154,22 @@ class MarineBufrObsPrep(Task):
 
         save_as_yaml(providers, "providers.yaml")
 
-        # fetch available bufr files and make COMOUT_OBSFORGE_MARINE_OBS
+        # fetch available bufr files and make COMOUT_OBS
         FileHandler({'copy_opt': bufr_files_to_copy}).sync()
-        FileHandler({'mkdir': [self.task_config.COMOUT_OBSFORGE_MARINE_OBS]}).sync()
+        FileHandler({'mkdir': [self.task_config.COMOUT_OBS]}).sync()
 
     @logit(logger)
     def execute(self) -> None:
         """
         """
         logger.info("running execute")
-        HOMEobsforge = self.task_config.HOMEobsforge
         providers = parse_yaml("providers.yaml")
 
         for provider in providers:
             provider_name = provider['name']
             logger.info(f"Processing provider: {provider_name}")
             # TODO(AFE) set this in providers
-            bufrconverter = f"{HOMEobsforge}/utils/b2i/bufr2ioda_{provider_name}.py"
+            bufrconverter = f"{self.task_config.USHglobal}/bufr2ioda/bufr2ioda_{provider_name}.py"
 
             obs_cycle_configs = provider['obs_cycles_to_convert']
             for obs_cycle_config in obs_cycle_configs:
@@ -227,7 +223,7 @@ class MarineBufrObsPrep(Task):
                 logger.info(f"ioda_filename: {ioda_filename}")
                 source_ioda_filename = path.join(self.task_config.DATA, ioda_filename)
                 if path.exists(source_ioda_filename):
-                    destination_ioda_filename = path.join(self.task_config.COMOUT_OBSFORGE_MARINE_OBS, concat_config['save file'])
+                    destination_ioda_filename = path.join(self.task_config.COMOUT_OBS, concat_config['save file'])
                     # Only append if source_ioda_filename is a valid NetCDF4 file
                     try:
                         with netCDF4.Dataset(source_ioda_filename, 'r'):
@@ -236,8 +232,3 @@ class MarineBufrObsPrep(Task):
                         logger.warning(f"Skipping invalid file: {source_ioda_filename}")
 
         FileHandler({'copy_opt': ioda_files_to_copy}).sync()
-
-        # create an empty file to tell external processes the obs are ready
-        ready_file = pathlib.Path(path.join(self.task_config.COMOUT_OBSFORGE_MARINE_OBS,
-                                            f"{self.task_config['PREFIX']}obsforge_marine_bufr_status.log"))
-        ready_file.touch()
