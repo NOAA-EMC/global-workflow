@@ -971,22 +971,7 @@ CICE_postdet() {
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     rm -f "${ice_table}"
 
-    # Register/link iceh_ic (f000 initial condition snapshot written by CICE at start of run).
     local vdate seconds vdatestr fhr fhr3 interval last_fhr
-    seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
-    vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-    local ic_local="${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
-    local ic_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc"
-    if [[ "${use_mgr_ice}" == "YES" ]]; then
-        # Add to product table; forecast manager will copy the real file to COM after the run.
-        echo "${ic_local} ${ic_local} ${ic_com} ${ic_com}.log" >> "${ice_table}"
-    else
-        # NLN: model writes directly into COM via symlink; create the directory first.
-        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then
-            mkdir -p "${COMOUT_ICE_HISTORY}"
-        fi
-        ${NLN} "${ic_com}" "${ic_local}"
-    fi
 
     # Link/register regular CICE forecast output files.
     local source_file dest_file
@@ -998,6 +983,8 @@ CICE_postdet() {
         fi
 
         fhr3=$(printf %03i "${fhr}")
+        local fhr4
+        fhr4=$(printf %04i "${fhr}")
         ((interval = fhr - last_fhr))
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
@@ -1025,10 +1012,12 @@ CICE_postdet() {
 
         local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
         local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
+        # log.ice.fHHHH (4-digit hour) is the sentinel written by CICE's ufs_logfhour
+        # after the output .nc is closed and ice_timer_stop(timer_readwrite) returns.
+        local ice_log_local="${DATA}/log.ice.f${fhr4}"
+        local ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
         if [[ "${use_mgr_ice}" == "YES" ]]; then
-            # Data-triggered: local_log == local_data so the manager waits for the .nc
-            # file to appear, then copies it to COM and writes a small .log marker.
-            echo "${ice_local} ${ice_local} ${ice_com} ${ice_com}.log" >> "${ice_table}"
+            echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
             ${NLN} "${ice_com}" "${ice_local}"
         fi
