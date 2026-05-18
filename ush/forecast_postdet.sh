@@ -983,9 +983,9 @@ CICE_postdet() {
         # during CICE initialization before any time stepping begins.
         # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
         echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
-             "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}" \
-             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
-             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
+            "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}" \
+            "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
+            "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
         # Non-manager (GDAS): NLN so the model writes directly into COM via symlink.
         if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
