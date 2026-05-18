@@ -1,0 +1,57 @@
+#! /usr/bin/env bash
+set -x
+
+source "${HOMEgfs}/ush/jjob_header.sh" -e "marineobsdump" -c "base marineobsdump"
+
+#{% if false %}
+source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHgfs}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHgfs}/set_strict.sh"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${DUMPMARINEPY:-${HOMEglobal}/scripts/exglobal_global_marine_dump.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
