@@ -973,7 +973,18 @@ CICE_postdet() {
 
     local vdate seconds vdatestr fhr fhr3 interval last_fhr
 
-    # Link/register regular CICE forecast output files.
+    # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
+    # No per-period sentinel exists for it; the manager cannot track it in-flight.
+    # Manager (GFS): copied in CICE_out after the model completes.
+    # Non-manager (GDAS): NLN so the model writes directly into COM via symlink.
+    seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
+    vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
+    if [[ "${use_mgr_ice}" == "NO" ]]; then
+        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
+        ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    fi
+
+    # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM.
     local source_file dest_file
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
@@ -1037,6 +1048,21 @@ CICE_out() {
 
     # Copy ice_in namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ice_in" "${COMOUT_CONF}/ufs.ice_in"
+
+    # iceh_ic: CICE initial condition snapshot copied after the model completes.
+    # No per-period sentinel exists, so the forecast manager cannot track it in-flight.
+    # Non-manager runs (GDAS) use an NLN symlink set up in CICE_postdet instead.
+    # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
+    case "${RUN}" in
+        gfs)
+            local ic_seconds ic_vdatestr
+            ic_seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000")
+            ic_vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${ic_seconds}"
+            if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
+            cpfs "${DATAoutput}/CICE_OUTPUT/iceh_ic.${ic_vdatestr}.nc" "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc"
+            ;;
+        *) ;;
+    esac
 
     # Build MPMD cmdfile to copy CICE restarts in parallel
     local cmdfile="${DATA}/cmdfile_cice_out"
