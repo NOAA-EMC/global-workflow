@@ -42,7 +42,7 @@ done
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate AWIPS products at 1 degree resolution for forecast hour ${FHR3}"
 fi
 
 ########################################################
@@ -53,7 +53,7 @@ fi
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate AWIPS products at 0.25 degree resolution for forecast hour ${FHR3}"
 fi
 
 ############################################

@@ -122,7 +122,7 @@ fi
 "${FORECASTSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run the ${RUN} forecast for ${PDY}${cyc}"
 fi
 
 # Send DBN alerts for EnKF

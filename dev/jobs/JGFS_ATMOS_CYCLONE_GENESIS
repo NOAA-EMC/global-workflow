@@ -51,7 +51,7 @@ source "${USHglobal}/unset_strict.sh"
 export err=$?
 source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run the tropical cyclone genesis script"
 fi
 
 ##############################################

@@ -147,7 +147,11 @@ if [[ $((10#${fhr})) -eq 0 ]]; then
 else
     export F00FLAG="NO"
 fi
-${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}"
+${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to generate BUFR sounding files for forecast hour ${fhr}!"
+fi
 
 ############################################
 # Tar and gzip the bufr files created so far

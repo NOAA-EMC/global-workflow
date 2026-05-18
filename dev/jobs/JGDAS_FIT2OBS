@@ -76,10 +76,10 @@ if [[ ${CDATE} -gt ${SDATE} ]]; then
 
     # Un-export SHELLOPTS before going into the Fit2Obs package (let that package handle logging/errors)
     export -n SHELLOPTS
-    "${SCRIPTSfit2obs}/excfs_gdas_vrfyfits.sh"
+    "${SCRIPTSfit2obs}/excfs_gdas_vrfyfits.sh" && true
     err=$?
     if [[ ${err} -ne 0 ]]; then
-        exit "${err}"
+        err_exit "Failed to run Fit2Obs verification"
     fi
 
     ##############################################

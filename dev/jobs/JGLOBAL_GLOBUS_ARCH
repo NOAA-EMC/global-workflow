@@ -28,9 +28,11 @@ declare -rx COMIN_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 ###############################################################
 
 export -n SHELLOPTS
-${GLOBALGLOBUSARCHSH:-${SCRglobal}/exglobal_globus_arch.py}
-err=$?
-[[ ${err} -ne 0 ]] && exit "${err}"
+${GLOBALGLOBUSARCHSH:-${SCRglobal}/exglobal_globus_arch.py} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to archive data to Globus."
+fi
 
 ##############################################
 # End JOB SPECIFIC work

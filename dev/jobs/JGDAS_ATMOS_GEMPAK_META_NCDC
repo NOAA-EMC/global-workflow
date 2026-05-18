@@ -63,13 +63,13 @@ export pgmout=OUTPUT.$$
 "${HOMEglobal}/gempak/ush/gdas_meta_na.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate North American meta gempak products"
 fi
 
 "${HOMEglobal}/gempak/ush/gdas_meta_loop.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate looped image meta gempak products"
 fi
 
 ########################################################
@@ -85,7 +85,7 @@ if ((cyc % 12 == 0)); then
 fi
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate NCDC GIFs from GDAS GEMPAK products"
 fi
 ########################################################
 

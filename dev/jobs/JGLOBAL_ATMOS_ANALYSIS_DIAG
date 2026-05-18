@@ -47,7 +47,7 @@ export pCOMIN_ATMOS_ANALYSIS
 ${ANALDIAGSH:-${SCRglobal}/exglobal_diag.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate GSI diagnostics from the atmospheric analysis"
 fi
 
 ##############################################

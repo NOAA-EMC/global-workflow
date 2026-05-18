@@ -21,6 +21,10 @@ export PYTHONPATH
 # Execute staging
 "${SCRglobal}/exglobal_stage_ic.py" && true
 export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to stage ICs."
+fi
+###################################
 
 ###############################################################
 # Check for errors and exit if any of the above failed
