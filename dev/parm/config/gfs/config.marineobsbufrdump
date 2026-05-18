@@ -1,0 +1,12 @@
+#!/bin/bash
+
+########## config.marineobsbufrdump ##########
+# Pre Marine Analysis specific
+
+echo "BEGIN: config.marineobsbufrdump"
+
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" marineobsbufrdump
+
+echo "END: config.marineobsbufrdump"
