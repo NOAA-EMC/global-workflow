@@ -83,6 +83,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
+            run_options[run]['do_gsiliau'] = base.get('DO_LAND_IAU', run_options[run]['do_gsisoilda'])
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
 
         return run_options
@@ -132,7 +133,7 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
@@ -145,7 +146,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'ediag', 'eupd', 'echgres', 'ecen']
 
-            configs += ['esfc', 'efcs', 'epos', 'earc_vrfy']
+            configs += ['esfc_gcycle', 'efcs', 'epos', 'earc_vrfy']
 
             if options['do_archcom']:
                 configs += ['earc_tars', 'earc_groups']
@@ -204,6 +205,11 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['snowanl']
             if options['do_hybvar']:
                 configs += ['esnowanl']
+
+        if options['do_gsisoilda']:
+            configs += ['sfcanl_regrid']
+            if options['do_hybvar']:
+                configs += ['esfc_regrid']
 
         if options['do_globusarch']:
             configs += ['globus']
@@ -265,7 +271,7 @@ class GFSCycledAppConfig(AppConfig):
                 if options['do_jediocnvar']:
                     task_names[run] += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
 
-                task_names[run] += ['sfcanl']
+                task_names[run] += ['sfcanl_gcycle']
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['snowanl']
@@ -284,6 +290,8 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_aero_anl']:
                         task_names[run] += ['aeroanlgenb']
 
+                    if options['do_gsisoilda']:
+                        task_names[run] += ['sfcanl_regrid']
                 else:
                     if options['do_wave']:
                         task_names[run] += wave_prep_tasks
@@ -416,7 +424,9 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
-                task_names[run] += ['esfc']
+                task_names[run] += ['esfc_gcycle']
+                if options['do_gsisoilda']:
+                    task_names[run].append('esfc_regrid') if 'gdas' in run else 0
                 task_names[run] += ['earc_vrfy']
 
                 if options['do_archcom']:
@@ -438,5 +448,5 @@ class GFSCycledAppConfig(AppConfig):
                             task_names[run] += ['atmensanlletkf']
                     else:
                         task_names[run] += ['eobs', 'eupd', 'ecen', 'ediag']
-                    task_names[run] += ['efcs', 'epos', 'esfc', 'earc_tars', 'cleanup']
+                    task_names[run] += ['efcs', 'epos', 'esfc_gcycle', 'earc_tars', 'cleanup']
         return task_names

@@ -1,0 +1,71 @@
+#! /usr/bin/env bash
+set -x
+source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl_gcycle" -c "base sfcanl_gcycle"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+export GDATE
+
+BKG_RUN="gdas"
+if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
+    BKG_RUN="gcdas"
+fi
+
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/obs"
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart"
+
+declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
+
+declare -rx COMOUT_ATMOS_RESTART="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/restart"
+
+declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
+
+# Use CFP to stage and save files in parallel
+export USE_CFP=YES
+
+###############################################################
+# Run relevant script
+
+${SFCANALSH:-${SCRglobal}/exglobal_atmos_sfcanl_gcycle.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to calculate the surface analysis"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

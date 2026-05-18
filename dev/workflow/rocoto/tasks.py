@@ -14,13 +14,13 @@ class Tasks:
     SERVICE_TASKS = ['arch_vrfy', 'earc_vrfy', 'stage_ic', 'globus', 'ens_globus']
     DTN_TASKS = ['arch_tars', 'earc_tars', 'fetch']
     VALID_TASKS = ['aerosol_init', 'stage_ic', 'gen_control_ic', 'fetch', 'globus', 'ens_globus',
-                   'prep_sfc', 'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars', 'cleanup',
+                   'prep_sfc', 'prep', 'anal', 'sfcanl_regrid', 'sfcanl_gcycle', 'analcalc', 'analdiag', 'arch_vrfy', 'arch_tars',
                    'ecen_fv3jedi', 'analcalc_fv3jedi', 'cleanup',
                    'atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal',
                    'prep_emissions', 'prepoceanobs', 'prepatmanlbias',
                    'marineanlinit', 'marineanlletkf', 'marinebmatinit', 'marinebmat', 'marineanlvar',
                    'marineanlecen', 'marineanlchkpt', 'marineanlfinal', 'ocnanalvrfy',
-                   'eobs', 'epos', 'esfc', 'eupd',
+                   'eobs', 'epos', 'esfc_gcycle', 'esfc_regrid', 'eupd',
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',

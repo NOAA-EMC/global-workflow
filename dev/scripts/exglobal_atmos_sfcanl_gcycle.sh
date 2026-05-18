@@ -3,12 +3,14 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_atmos_sfcanl.sh
-# Script description:  Makes global model surface analysis files
+# Script name:         exglobal_atmos_sfcanl_gcycle.sh
+# Script description:  Updates global surface analysis files
+#                      with global_cycle program
 #
 # Author: Russ Treadon      Org: NCEP/EMC     Date: 2021-12-13
 #
-# Abstract: This script makes global model surface analysis files
+# Abstract: This script updates global model surface analysis files
+#           using global_cycle
 #
 # $Id$
 #
@@ -17,13 +19,8 @@
 #
 ################################################################################
 
-#  Set environment.
-
-# Derived base variables
-
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-"${USHglobal}/global_cycle.sh"}
-REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 export CYCLEXEC=${CYCLEXEC:-"${EXECglobal}/global_cycle"}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
@@ -123,56 +120,34 @@ else
 fi
 
 # Collect the dates in the window to update surface restarts
-gcycle_dates=("${PDY}${cyc}")  # Always update surface restarts at middle of window
-soilinc_fhrs=("${assim_freq}") # increment file at middle of window
-LFHR="${assim_freq}"
+gcycle_dates=("${PDY}${cyc}")        # Always update surface restarts at middle of window
 if [[ "${DOIAU:-}" == "YES" ]]; then # Update surface restarts at beginning of window
     half_window=$((assim_freq / 2))
     soilinc_fhrs+=("${half_window}")
-    LFHR=-1
     BDATE=$(date --utc -d "${PDY} ${cyc} - ${half_window} hours" +%Y%m%d%H)
     gcycle_dates+=("${BDATE}")
-fi
-
-# if doing GSI soil anaysis, copy increment file and re-grid it to native model resolution
-if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-
-    export COMIN_SOIL_ANALYSIS_MEM="${COMIN_ATMOS_ENKF_ANALYSIS_STAT}"
-    export COMOUT_ATMOS_ANALYSIS_MEM="${COMIN_ATMOS_ANALYSIS}"
-    export CASE_IN="${CASE_ENS}"
-    export CASE_OUT="${CASE}"
-    export OCNRES_OUT="${OCNRES}"
-    export LFHR
-
-    "${REGRIDSH}"
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Soil increment file was not regridded correctly!"
-    fi
-
 fi
 
 # Loop over the dates in the window to update the surface restarts
 for hr in "${!gcycle_dates[@]}"; do
 
     export gcycle_date="${gcycle_dates[hr]}"
-    FHR="${soilinc_fhrs[hr]}"
     echo "Updating surface restarts for ${gcycle_date} ..."
 
     datestr="${gcycle_date:0:8}.${gcycle_date:8:2}0000"
 
-    if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
+    # Copy inputs from COMIN to DATA
+    for ((nn = 1; nn <= ntiles; nn++)); do
+        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/sfc_data_cycle.00${nn}"
+    done
+
+    if [[ "${DO_LAND_IAU}" == ".false." && "${DO_GSISOILDA}" == "YES" ]]; then
+        FHR="${soilinc_fhrs[hr]}"
         for ((nn = 1; nn <= ntiles; nn++)); do
             cpreq "${COMIN_ATMOS_ANALYSIS}/increment.sfc.i00${FHR}.tile${nn}.nc" \
                 "${DATA}/soil_xainc.00${nn}"
         done
     fi
-
-    # Copy inputs from COMIN to DATA
-    for ((nn = 1; nn <= ntiles; nn++)); do
-        cpreq "${sfcdata_dir}/${datestr}.${snow_prefix}sfc_data.tile${nn}.nc" "${DATA}/fnbgsi.00${nn}"
-        cpreq "${DATA}/fnbgsi.00${nn}" "${DATA}/sfc_data_cycle.00${nn}"
-    done
 
     "${CYCLESH}" && true
     export err=$?
