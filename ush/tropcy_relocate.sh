@@ -234,7 +234,7 @@ if [[ "${modhr}" -ne 0 ]]; then
     #  if center date/time for relocation processing isn't a multiple of 3-hrs, exit
     #  -----------------------------------------------------------------------------
     export err=9
-    msg="FATAL ERROR: cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs"
+    echo "FATAL ERROR: cannot perform tropical cyclone processing because cycle hour is not a multiple of 3-hrs"
     exit 9
 fi
 
