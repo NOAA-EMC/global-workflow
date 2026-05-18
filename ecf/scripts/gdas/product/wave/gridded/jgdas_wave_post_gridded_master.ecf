@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N gfs_tracker_%CYC%
+#PBS -N gdas_wave_post_gridded_%CYC%_f%FHR%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:10:00
-#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=6G
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=20GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -17,17 +17,22 @@ export cyc="%CYC%"
 # Load modules
 ############################################################
 #TODO: load only the modules needed for each job
-source ${HOMEgfs}/dev/ush/load_modules.sh run
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
 
 module list
 ############################################################
 # CALL executable job script here
 ############################################################
+export WGF="%WGF%"
+export FHR="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export FORECAST_HOUR="${FHR_LIST}"
 export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
+export COMPONENT=${WGF}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/tracker.sh
-${HOMEgfs}/jobs/JGFS_ATMOS_CYCLONE_TRACKER
+#### ${HOMEgfs}/dev/job_cards/rocoto/wavepostsbs.sh
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_GRIDDED
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -38,4 +43,3 @@ fi
 %manual
 
 %end
-
