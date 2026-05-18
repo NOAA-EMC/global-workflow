@@ -5,8 +5,10 @@
 
 echo "BEGIN: config.marineobsbufrdump"
 
-
 # Get task specific resources
 source "${EXPDIR}/config.resources" marineobsbufrdump
+
+export ocean_basin_file="${PARMglobal}/gdas/marine/RECCAP2_region_masks_all_v20221025.nc"
+export marine_obs_provider_dict="${PARMgfs}/gdas/marine/marine_bufr_dump_config.yaml"
 
 echo "END: config.marineobsbufrdump"
