@@ -304,12 +304,11 @@ EOF
     #============================================================================
     if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
         local FH2 FH3
-        # For GFS/GEFS/SFS/GCAFS: build a product table consumed by the forecast manager.
+        # Build a product table consumed by the forecast manager.
         # The model writes real files to DATAoutput; the manager copies them to COM.
-        # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
         local use_mgr="NO"
         case "${RUN}" in
-            gfs) use_mgr="YES" ;;
+            gfs | gdas | enkfgdas) use_mgr="YES" ;;
                 # TODO: enable forecast manager for gefs, sfs, gcafs once tested
                 # gefs | sfs | gcafs) use_mgr="YES" ;;
             *) ;;
@@ -364,7 +363,7 @@ EOF
                     echo "${local_files[i]} ${local_log} ${com_files[i]} ${com_log}" >> "${atm_table}"
                 done
             else
-                # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
+                # Remaining runs (gefs, sfs, gcafs, enkfgfs): NLN symlinks to COM
                 for ((i = 0; i < ${#local_files[@]}; i++)); do
                     ${NLN} "${com_files[i]}" "${local_files[i]}"
                 done
@@ -570,18 +569,17 @@ WW3_postdet() {
     #fi
     cd "${cwd}" || exit 1
 
-    # For GFS/GEFS/SFS/GCAFS: build product tables for the forecast manager.
-    # For GDAS: keep NLN symlinks so downstream analysis jobs can read WW3 outputs.
+    # Build product tables for the forecast manager.
     local use_mgr_ww3="NO"
     case "${RUN}" in
-        gfs) use_mgr_ww3="YES" ;;
+        gfs | gdas | enkfgdas) use_mgr_ww3="YES" ;;
             # TODO: enable forecast manager for gefs, sfs, gcafs once tested
             # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
         *) ;;
     esac
 
-    # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
-    # (copied to COM in WW3_out). For GDAS it is symlinked to COM here.
+    # log.ww3 is the WW3 run log written to DATA. For manager runs it becomes a
+    # real file (copied to COM in WW3_out). Others symlink it to COM here.
     if [[ "${use_mgr_ww3}" == "YES" ]]; then
         : # log.ww3 will be a real file in DATA; WW3_out copies it after the run
     else
@@ -657,10 +655,10 @@ WW3_out() {
     # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
 
-    # Copy WW3 run log for GFS/GEFS/SFS/GCAFS (no pre-run symlink; model writes a real
-    # file in DATA which is copied to COM here at end of run)
+    # Copy WW3 run log (no pre-run symlink; model writes a real file in DATA
+    # which is copied to COM here at end of run for manager-enabled runs)
     case "${RUN}" in
-        gfs | gefs | sfs | gcafs)
+        gfs | gdas | enkfgdas | gefs | sfs | gcafs)
             if [[ -f "${DATA}/log.ww3" ]]; then
                 mkdir -p "${COMOUT_WAVE_HISTORY}"
                 cpfs "${DATA}/log.ww3" "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log"
@@ -779,12 +777,12 @@ MOM6_postdet() {
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
-            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
+        gfs | enkfgfs | gefs | sfs | gcafs | gdas | enkfgdas) # Set up MOM6 output files
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid ihour source_file dest_file source_file_log dest_file_log
             local ocn_local ocn_com ocn_table use_mgr_ocn
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             case "${RUN}" in
-                gfs) use_mgr_ocn="YES" ;;
+                gfs | gdas | enkfgdas) use_mgr_ocn="YES" ;;
                 *) use_mgr_ocn="NO" ;;
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
@@ -798,24 +796,48 @@ MOM6_postdet() {
                 fi
 
                 ((interval = fhr - last_fhr))
-                ((midpoint = last_fhr + interval / 2))
-
-                vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-                # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
-                # Native model uses midpoint in filename; we map that to the end of the period for COM.
-                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
-                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
-                    source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-                else
-                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
-                fi
                 ihour=$(printf %02i "${interval}")
-                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+                source_file_log="${DATA}/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+
+                case "${RUN}" in
+                    gdas | enkfgdas)
+                        # Instantaneous MOM6 backgrounds; filename uses underscore-separated date.
+                        local vdatestr_da="${vdate:0:4}_${vdate:4:2}_${vdate:6:2}_${vdate:8:2}"
+                        source_file="ocn_da_${vdatestr_da}.nc"
+                        dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
+                        dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.log.f${fhr3}.txt"
+                        ;;
+                    gfs | enkfgfs | sfs | gcafs)
+                        # Period averages; model uses midpoint timestamp in filename.
+                        ((midpoint = last_fhr + interval / 2))
+                        # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
+                        # Native model uses midpoint in filename; we map that to the end of the period for COM.
+                        if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                            vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
+                            source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                        else
+                            vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+                            source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
+                        fi
+                        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                        dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
+                        ;;
+                    gefs)
+                        ((midpoint = last_fhr + interval / 2))
+                        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+                        source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
+                        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                        dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
+                        ;;
+                    *)
+                        echo "FATAL ERROR: Unsupported RUN ${RUN} in MOM6 postdet"
+                        exit 25
+                        ;;
+                esac
+
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
-                source_file_log="${DATA}/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
-                dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
 
                 # Forecast manager copies from DATA to COM; register in product table.
                 # Others: NLN so model writes directly into COM.
@@ -833,16 +855,6 @@ MOM6_postdet() {
             done
             ;;
 
-        gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
-            # Save (instantaneous) MOM6 backgrounds
-            local fhr3 vdatestr
-            for fhr in ${MOM6_OUTPUT_FH}; do
-                fhr3=$(printf %03i "${fhr}")
-                vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                # NLN symlink: GDAS analysis jobs need ocean backgrounds during the run
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
-            done
-            ;;
         *)
             echo "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
             exit 25
@@ -963,7 +975,7 @@ CICE_postdet() {
     # Determine whether to use the forecast manager for CICE output.
     local use_mgr_ice="NO"
     case "${RUN}" in
-        gfs) use_mgr_ice="YES" ;;
+        gfs | gdas | enkfgdas) use_mgr_ice="YES" ;;
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             # enkfgfs | gefs | sfs | gcafs) use_mgr_ice="YES" ;;
         *) ;;
@@ -981,13 +993,13 @@ CICE_postdet() {
         # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
         # No per-period sentinel; use fcst_done_seg as proxy since iceh_ic is written
         # during CICE initialization before any time stepping begins.
-        # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
+        # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those runs.
         echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
             "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
-        # Non-manager (GDAS): NLN so the model writes directly into COM via symlink.
+        # Non-manager runs (gefs, sfs, gcafs, enkfgfs): NLN so model writes directly to COM.
         if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
         ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
     fi
