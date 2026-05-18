@@ -6,9 +6,6 @@ import numpy as np
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 
-# Load your dataset (e.g., from a NetCDF file)
-ds = xr.open_dataset(input_file)
-
 # 1. Load large dataset with Dask chunking
 # Chunking by spatial/temporal dimensions, keeping the vertical (depth) dimension contiguous
 ds = xr.open_dataset(input_file)
