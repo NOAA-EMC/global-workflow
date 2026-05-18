@@ -62,7 +62,7 @@ class MarineBMat(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create dictionary of Jedi objects
-        expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
+        expected_keys = ['soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
                          'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
@@ -102,7 +102,6 @@ class MarineBMat(Analysis):
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
 
         # initialize JEDI applications
-        self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['soca_diagb'].initialize(self.task_config)
         self.jedi_dict['soca_chgres'].initialize(self.task_config)
         self.jedi_dict['soca_parameters_diffusion_vt'].initialize(self.task_config)
@@ -128,9 +127,6 @@ class MarineBMat(Analysis):
         ----------
         None
         """
-
-        # soca grid generation
-        self.jedi_dict['gridgen'].execute()
 
         # variance partitioning
         self.jedi_dict['soca_diagb'].execute()

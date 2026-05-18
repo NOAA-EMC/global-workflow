@@ -63,7 +63,7 @@ class MarineRecenter(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
-        expected_keys = ['gridgen', 'ens_handler']
+        expected_keys = ['ens_handler']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -93,7 +93,6 @@ class MarineRecenter(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['ens_handler'].initialize(self.task_config)
 
     @logit(logger)

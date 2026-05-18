@@ -59,7 +59,7 @@ class MarineLETKF(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Construct dictionary of JEDI objects, one for each JEDI application need for the analysis
-        expected_keys = ['gridgen', 'letkf']
+        expected_keys = ['letkf']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -90,7 +90,6 @@ class MarineLETKF(Analysis):
 
         # initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['gridgen'].initialize(self.task_config)
         self.jedi_dict['letkf'].initialize(self.task_config, clean_empty_obsspaces=True)
 
     @logit(logger)
@@ -106,7 +105,6 @@ class MarineLETKF(Analysis):
         None
         """
 
-        self.jedi_dict['gridgen'].execute()
         self.jedi_dict['letkf'].execute()
 
     @logit(logger)
