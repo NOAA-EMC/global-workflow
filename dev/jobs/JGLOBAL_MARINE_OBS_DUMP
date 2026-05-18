@@ -28,7 +28,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${DUMPMARINEPY:-${HOMEglobal}/scripts/exglobal_global_marine_dump.py}
+EXSCRIPT=${DUMPMARINEPY:-${HOMEglobal}/scripts/exglobal_marine_obs_dump.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

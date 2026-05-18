@@ -28,7 +28,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${DUMPMARINEBUFRPY:-${HOMEglobal}/scripts/exglobal_marine_bufr_dump.py}
+EXSCRIPT=${DUMPMARINEBUFRPY:-${HOMEglobal}/scripts/exglobal_marine_obs_bufr_dump.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
