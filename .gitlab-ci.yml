@@ -101,6 +101,10 @@ include:
       if [[ ! -x "${GH}" ]]; then
         echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
         exit 1
+      else
+        echo "GitHub CLI (gh) binary resolved to: ${GH}"
+        echo "Found via PATH lookup (command -v): $(command -v gh 2>/dev/null || echo 'not in PATH')"
+        echo "And PATH has been set as: ${PATH}"
       fi
 
       # Configure GitLab native GitHub integration
