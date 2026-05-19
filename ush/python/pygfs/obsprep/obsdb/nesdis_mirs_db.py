@@ -2,7 +2,7 @@ import os
 import glob
 from logging import getLogger
 from datetime import datetime
-from pyobsforge.obsdb import BaseDatabase
+from pygfs.obsprep.obsdb import BaseDatabase
 
 logger = getLogger(__name__.split('.')[-1])
 
