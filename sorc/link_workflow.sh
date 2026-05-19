@@ -272,6 +272,7 @@ if [[ -d "${HOMEgfs}/sorc/gdas.cd" ]]; then
         fix_ver="gdas_${gdas_sub}_ver"
         ${LINK_OR_COPY} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
+    ${LINK_OR_COPY} "/lfs/h2/emc/da/noscrub/common/validation/RECCAP2_region_masks_all_v20221025.nc" .
 fi
 
 #------------------------------
