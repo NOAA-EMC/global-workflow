@@ -315,11 +315,14 @@ EOF
         esac
 
         local atm_table="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
+        local atm_hist_cmdfile="${DATA}/cmdfile_fv3_hist"
         if [[ "${use_mgr}" == "YES" ]]; then
             rm -f "${atm_table}"
             # Remove the table-ready sentinel so the forecast manager does not trigger from a
             # previous run when this segment is rewound and re-queued.
             rm -f "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}"
+        else
+            rm -f "${atm_hist_cmdfile}"
         fi
 
         for fhr in ${FV3_OUTPUT_FH}; do
@@ -363,11 +366,12 @@ EOF
                     echo "${local_files[i]} ${local_log} ${com_files[i]} ${com_log}" >> "${atm_table}"
                 done
             else
-                # Remaining runs (gefs, sfs, gcafs, enkfgfs): NLN symlinks to COM
+                # Remaining runs (gefs, sfs, gcafs, enkfgfs): build a copy cmdfile;
+                # FV3_out will copy files from DATA to COM after the forecast completes.
                 for ((i = 0; i < ${#local_files[@]}; i++)); do
-                    ${NLN} "${com_files[i]}" "${local_files[i]}"
+                    echo "cpfs ${local_files[i]} ${com_files[i]}" >> "${atm_hist_cmdfile}"
                 done
-                ${NLN} "${com_log}" "${local_log}"
+                echo "cpfs ${local_log} ${com_log}" >> "${atm_hist_cmdfile}"
             fi
         done
 
@@ -494,6 +498,26 @@ FV3_out() {
 
             echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
         fi
+    fi
+
+    # Copy FV3 history files and log sentinels from DATA to COM for non-manager runs
+    # (gefs, sfs, gcafs, enkfgfs). For manager runs this is handled by the forecast manager.
+    local atm_hist_cmdfile="${DATA}/cmdfile_fv3_hist"
+    if [[ -s "${atm_hist_cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_ATMOS_HISTORY}"
+        fi
+        if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then
+            echo "INFO: Directory ${COMOUT_ATMOS_MASTER} does not exist, creating..."
+            mkdir -p "${COMOUT_ATMOS_MASTER}"
+        fi
+        "${USHgfs}/run_mpmd.sh" "${atm_hist_cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy FV3 history files!"
+        fi
+        echo "SUB ${FUNCNAME[0]}: FV3 history files copied to COM"
     fi
 }
 
@@ -779,14 +803,15 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs | gdas | enkfgdas) # Set up MOM6 output files
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid ihour source_file dest_file source_file_log dest_file_log
-            local ocn_local ocn_com ocn_table use_mgr_ocn
+            local ocn_local ocn_com ocn_table ocn_hist_cmdfile use_mgr_ocn
             # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
             case "${RUN}" in
                 gfs | gdas | enkfgdas) use_mgr_ocn="YES" ;;
                 *) use_mgr_ocn="NO" ;;
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
-            rm -f "${ocn_table}"
+            ocn_hist_cmdfile="${DATA}/cmdfile_mom6_hist"
+            rm -f "${ocn_table}" "${ocn_hist_cmdfile}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -840,15 +865,16 @@ MOM6_postdet() {
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
                 # Forecast manager copies from DATA to COM; register in product table.
-                # Others: NLN so model writes directly into COM.
+                # Others: build a copy cmdfile; MOM6_out will copy files from DATA to COM
+                # after the forecast completes.
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
                     # Model-log-triggered: local_log (source_file_log) is the MOM6 period log
                     # written by the model after the .nc is complete. Manager polls for it,
                     # copies the .nc to COM, then copies the log to COM as the Rocoto sentinel.
                     echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
                 else
-                    ${NLN} "${ocn_com}" "${ocn_local}"
-                    ${NLN} "${dest_file_log}" "${source_file_log}"
+                    echo "cpfs ${ocn_local} ${ocn_com}" >> "${ocn_hist_cmdfile}"
+                    echo "cpfs ${source_file_log} ${dest_file_log}" >> "${ocn_hist_cmdfile}"
                 fi
 
                 last_fhr=${fhr}
@@ -937,6 +963,22 @@ MOM6_out() {
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
         fi
     fi
+
+    # Copy MOM6 history files and log sentinels from DATA to COM for non-manager runs
+    # (gefs, sfs, gcafs, enkfgfs). For manager runs this is handled by the forecast manager.
+    local ocn_hist_cmdfile="${DATA}/cmdfile_mom6_hist"
+    if [[ -s "${ocn_hist_cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_OCEAN_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_OCEAN_HISTORY}"
+        fi
+        "${USHgfs}/run_mpmd.sh" "${ocn_hist_cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy MOM6 history files!"
+        fi
+        echo "SUB ${FUNCNAME[0]}: MOM6 history files copied to COM"
+    fi
 }
 
 ################################################################################
@@ -981,7 +1023,8 @@ CICE_postdet() {
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
-    rm -f "${ice_table}"
+    local ice_hist_cmdfile="${DATA}/cmdfile_cice_hist"
+    rm -f "${ice_table}" "${ice_hist_cmdfile}"
 
     local vdate seconds vdatestr fhr fhr3 interval last_fhr
 
@@ -999,9 +1042,10 @@ CICE_postdet() {
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
-        # Non-manager runs (gefs, sfs, gcafs, enkfgfs): NLN so model writes directly to COM.
-        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
-        ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+        # Non-manager runs (gefs, sfs, gcafs, enkfgfs): build a copy cmdfile;
+        # CICE_out will copy files from DATA to COM after the forecast completes.
+        echo "cpfs ${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
+            "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" >> "${ice_hist_cmdfile}"
     fi
 
     # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM.
@@ -1050,7 +1094,8 @@ CICE_postdet() {
         if [[ "${use_mgr_ice}" == "YES" ]]; then
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
-            ${NLN} "${ice_com}" "${ice_local}"
+            echo "cpfs ${ice_local} ${ice_com}" >> "${ice_hist_cmdfile}"
+            echo "cpfs ${ice_log_local} ${ice_log_com}" >> "${ice_hist_cmdfile}"
         fi
 
         last_fhr=${fhr}
@@ -1109,6 +1154,22 @@ CICE_out() {
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CICE restart files!"
         fi
+    fi
+
+    # Copy CICE history files and log sentinels from DATA to COM for non-manager runs
+    # (gefs, sfs, gcafs, enkfgfs). For manager runs this is handled by the forecast manager.
+    local ice_hist_cmdfile="${DATA}/cmdfile_cice_hist"
+    if [[ -s "${ice_hist_cmdfile}" ]]; then
+        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_ICE_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_ICE_HISTORY}"
+        fi
+        "${USHgfs}/run_mpmd.sh" "${ice_hist_cmdfile}" && true
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            err_exit "run_mpmd.sh failed to copy CICE history files!"
+        fi
+        echo "SUB ${FUNCNAME[0]}: CICE history files copied to COM"
     fi
 }
 
