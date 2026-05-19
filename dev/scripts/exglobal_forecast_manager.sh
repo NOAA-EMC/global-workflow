@@ -33,8 +33,43 @@ MGR_INIT_TIMEOUT="${FCST_MANAGER_INIT_TIMEOUT:-7200}"
 mgr_sleep_interval=30
 mgr_max_tries=$((MGR_INIT_TIMEOUT / mgr_sleep_interval))
 
-# Build a command file with one line per active component.
-# Each line is a complete command passed to run_mpmd.sh for MPMD execution.
+# Number of parallel manager ranks per component. Each component's product table
+# is split into n sub-tables (one per rank) by sentinel group so that all rows
+# for a given sentinel land in the same sub-table, preserving the data-first-
+# log-last copy contract inside each manager process.
+MGR_NTASKS_ATM=${MGR_NTASKS_ATM:-3}
+MGR_NTASKS_WW3=${MGR_NTASKS_WW3:-2}
+MGR_NTASKS_OCN=${MGR_NTASKS_OCN:-1}
+MGR_NTASKS_ICE=${MGR_NTASKS_ICE:-1}
+
+# split_table_by_sentinel <table_file> <n_ranks> <output_prefix>
+# Reads a 4-column product table and distributes rows across n_ranks output
+# files. All rows sharing a sentinel log (field 2) are kept together and each
+# sentinel group is assigned to a rank in round-robin order.
+split_table_by_sentinel() {
+    local table_file="${1}" n_ranks="${2}" output_prefix="${3}"
+    local r ld ll cd cl
+    local rank=0
+    declare -A sentinel_rank
+
+    for ((r = 0; r < n_ranks; r++)); do
+        : > "${output_prefix}${r}.txt"
+    done
+
+    while read -r ld ll cd cl; do
+        [[ -z "${ld}" || "${ld:0:1}" == "#" ]] && continue
+        if [[ -z "${sentinel_rank[${ll}]+_}" ]]; then
+            sentinel_rank["${ll}"]=${rank}
+            ((rank = (rank + 1) % n_ranks)) || true
+        fi
+        r="${sentinel_rank[${ll}]}"
+        echo "${ld} ${ll} ${cd} ${cl}" >> "${output_prefix}${r}.txt"
+    done < "${table_file}"
+}
+
+# Build a command file with one line per manager rank. Each component's product
+# table is split into MGR_NTASKS_<component> sub-tables and one manager rank is
+# launched per sub-table via run_mpmd.sh in MPMD mode.
 FCST_MANAGER_CMDFILE="${DATA}/fcst_manager_cmdfile"
 rm -f "${FCST_MANAGER_CMDFILE}"
 
@@ -44,8 +79,11 @@ if ! wait_for_file "${ATM_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; th
     echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ATM_TABLE}" >&2
     exit 1
 fi
-echo "INFO: ATM product table found"
-echo "${USHgfs}/forecast_manager.sh atm ${ATM_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
+echo "INFO: ATM product table found (${MGR_NTASKS_ATM} rank(s))"
+split_table_by_sentinel "${ATM_TABLE}" "${MGR_NTASKS_ATM}" "${DATA}/atm_mgr_rank"
+for ((r = 0; r < MGR_NTASKS_ATM; r++)); do
+    echo "${USHgfs}/forecast_manager.sh atm ${DATA}/atm_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+done
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"
@@ -54,8 +92,11 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
         echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${WW3_TABLE}" >&2
         exit 1
     fi
-    echo "INFO: WW3 product table found"
-    echo "${USHgfs}/forecast_manager.sh ww3 ${WW3_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
+    echo "INFO: WW3 product table found (${MGR_NTASKS_WW3} rank(s))"
+    split_table_by_sentinel "${WW3_TABLE}" "${MGR_NTASKS_WW3}" "${DATA}/ww3_mgr_rank"
+    for ((r = 0; r < MGR_NTASKS_WW3; r++)); do
+        echo "${USHgfs}/forecast_manager.sh ww3 ${DATA}/ww3_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+    done
 fi
 
 if [[ "${DO_OCN:-NO}" == "YES" ]]; then
@@ -65,8 +106,11 @@ if [[ "${DO_OCN:-NO}" == "YES" ]]; then
         echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${OCN_TABLE}" >&2
         exit 1
     fi
-    echo "INFO: OCN product table found"
-    echo "${USHgfs}/forecast_manager.sh ocn ${OCN_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
+    echo "INFO: OCN product table found (${MGR_NTASKS_OCN} rank(s))"
+    split_table_by_sentinel "${OCN_TABLE}" "${MGR_NTASKS_OCN}" "${DATA}/ocn_mgr_rank"
+    for ((r = 0; r < MGR_NTASKS_OCN; r++)); do
+        echo "${USHgfs}/forecast_manager.sh ocn ${DATA}/ocn_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+    done
 fi
 
 if [[ "${DO_ICE:-NO}" == "YES" ]]; then
@@ -76,8 +120,11 @@ if [[ "${DO_ICE:-NO}" == "YES" ]]; then
         echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ICE_TABLE}" >&2
         exit 1
     fi
-    echo "INFO: ICE product table found"
-    echo "${USHgfs}/forecast_manager.sh ice ${ICE_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
+    echo "INFO: ICE product table found (${MGR_NTASKS_ICE} rank(s))"
+    split_table_by_sentinel "${ICE_TABLE}" "${MGR_NTASKS_ICE}" "${DATA}/ice_mgr_rank"
+    for ((r = 0; r < MGR_NTASKS_ICE; r++)); do
+        echo "${USHgfs}/forecast_manager.sh ice ${DATA}/ice_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+    done
 fi
 
 num_ranks=$(wc -l < "${FCST_MANAGER_CMDFILE}")
