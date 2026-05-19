@@ -25,27 +25,13 @@ def run_nc2ioda(task_config: dict, obs_space: str, context: dict) -> int:
 
     # Run the ioda converter
     nc2ioda_exe = join(task_config['EXECgfs'], 'gdas_obsprovider2ioda.x')
-    # exec_cmd = Executable(nc2ioda_exe)
-    # exec_cmd.add_default_arg(nc2ioda_yaml)
+    exec_cmd = Executable(nc2ioda_exe)
+    exec_cmd.add_default_arg(nc2ioda_yaml)
 
-    # logger.info(f"Executing {exec_cmd}")
-    # try:
-    #     exec_cmd()
-    #     return 0
-    # except Exception as e:
-    #     logger.warning(f"ioda converter failed with error {e}")
-    #     return 0
+    logger.info(f"Executing {exec_cmd}")
     try:
-        result = subprocess.run([nc2ioda_exe, nc2ioda_yaml],
-                                cwd=task_config['DATA'],
-                                capture_output=True,
-                                text=True)
-        logger.info(f"Standard Output: \n{result.stdout}")
-        # TODO (G): Figure out what to do with failures.
-        #           Ignore failures for now and just issue a warning
-        if result.returncode != 0:
-            logger.error(f"Standard Error: \n{result.stderr}")
+        exec_cmd()
         return 0
-    except subprocess.CalledProcessError as e:
-        logger.warning(f"ioda converter failed with error {e}, \
-            return code {e.returncode}")
+    except Exception as e:
+        logger.warning(f"ioda converter failed with error {e}")
+        return 0
