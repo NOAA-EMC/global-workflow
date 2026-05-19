@@ -69,7 +69,7 @@ EXSCRIPT=${GDASOCNLETKFPY:-${HOMEgfs}/scripts/exglobal_marine_analysis_letkf.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to calculate the ensemble marine analysis increments"
 fi
 
 ##############################################
@@ -90,7 +90,7 @@ fi
 cd "${DATAROOT/enkf/}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to change directory to ${DATAROOT/enkf/} to remove temporary working directory"
 fi
 
 exit 0

@@ -55,10 +55,10 @@ fi
 # Run archive script
 ###############################################################
 
-${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py}
-err=$?
+${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive_vrfy.py} && true
+export err=$?
 if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
+    err_exit "Failed to archive analysis and forecast files for verification"
 fi
 
 ##############################################

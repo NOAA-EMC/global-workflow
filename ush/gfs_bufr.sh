@@ -109,7 +109,7 @@ if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: GFS postsnd job error, Please check files "
     echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f${fhr}.${atmfm}"
     echo "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.sfc.f${fhr}.${atmfm}"
-    err_exit
+    exit 1
 fi
 
 exit 0

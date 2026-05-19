@@ -11,7 +11,7 @@ if [[ "${err}" -ne 0 ]]; then
     exit "${err}"
 fi
 
-export job="wavepostsbs"
+export job="wavepostgridded"
 
 ###############################################################
 # shellcheck disable=SC2153
@@ -22,7 +22,7 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
     fhr3=$(printf '%03d' "${FORECAST_HOUR}")
     jobid="${job}_f${fhr3}.$$"
     # Execute the JJOB
-    "${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_POST_SBS"
+    "${HOMEgfs}/dev/jobs/JGLOBAL_WAVE_POST_GRIDDED"
     err=$?
     if [[ "${err}" -ne 0 ]]; then
         exit "${err}"
