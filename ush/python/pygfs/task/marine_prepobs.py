@@ -65,16 +65,30 @@ class MarineObsPrep(Task):
     @logit(logger)
     def execute(self) -> None:
         """
-        Serial execution for debugging: process each obs_space one at a time.
         """
-        shared_ioda_files = []
-        for provider, obs_spaces in self.task_config.providers.items():
-            logger.info(f"========= provider: {provider}")
-            for obs_space in obs_spaces["list"]:
-                logger.info(f"========= obs_space: {obs_space}")
-                self.process_obs_space(provider, obs_space, shared_ioda_files)
-        self.ioda_files = list(shared_ioda_files)
-        logger.info(f"Final ioda_files: {self.ioda_files}")
+        with Manager() as manager:
+            # Use a Manager list to share ioda_files across processes
+            shared_ioda_files = manager.list()
+
+            processes = []
+            for provider, obs_spaces in self.task_config.providers.items():
+                logger.info(f"========= provider: {provider}")
+                for obs_space in obs_spaces["list"]:
+                    logger.info(f"========= obs_space: {obs_space}")
+
+                    # Start a new process
+                    process = Process(target=self.process_obs_space,
+                                      args=(provider, obs_space, shared_ioda_files))
+                    process.start()
+                    processes.append(process)
+
+            # Wait for all processes to complete
+            for process in processes:
+                process.join()
+
+            # Convert the Manager list to a regular list
+            self.ioda_files = list(shared_ioda_files)
+            logger.info(f"Final ioda_files: {self.ioda_files}")
 
     @logit(logger)
     def process_obs_space(self,
