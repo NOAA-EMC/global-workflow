@@ -90,12 +90,17 @@ while [[ ${remaining} -gt 0 ]]; do
 
         _fcst_done_fallback=0
         if [[ ! -f "${local_log[i]}" ]]; then
-            # Model-done fallback for the last ocean entry only: MOM6 writes each
-            # period log at the start of the next averaging period, so the log for
-            # the final output window is never written (no next period exists).
-            # Component and last-entry checks are evaluated first (pure string
-            # comparisons) to short-circuit before any filesystem access.
-            if [[ "${component}" == "ocn" &&
+            # Model-done fallback for the last ocean or ice entry.
+            # Ocean (MOM6): the period log is written at the start of the next
+            # averaging period, so the final window's log is never produced.
+            # Ice (CICE): the sentinel is written inside ice_step (before model
+            # exit), but on a loaded network filesystem it may not be visible on
+            # the manager node before the idle countdown expires. If the data
+            # file is already on disk and the model is done, synthesise the log
+            # rather than silently dropping the last entry.
+            # Component and last-entry checks use pure string comparisons to
+            # short-circuit before any filesystem access.
+            if [[ ("${component}" == "ocn" || "${component}" == "ice") &&
                 "${local_log[i]}" == "${local_log[count - 1]}" &&
                 -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" &&
                 -f "${local_data[i]}" ]]; then
@@ -120,13 +125,28 @@ while [[ ${remaining} -gt 0 ]]; do
             continue
         fi
 
-        # Copy all data files that share this sentinel (data first, log last)
+        # Copy all data files that share this sentinel (data first, log last).
+        # If a data file is not yet visible on this node (Lustre/NFS metadata
+        # latency after the sentinel write), wait FCST_MGR_STABILITY_WAIT
+        # seconds then re-check; if still absent, defer the entire sentinel
+        # group to the next poll cycle rather than exiting with a fatal error.
+        _deferred=0
         for ((j = 0; j < count; j++)); do
             if [[ "${done_flag[j]}" == "YES" ]]; then
                 continue
             fi
             if [[ "${local_log[j]}" != "${this_ll}" ]]; then
                 continue
+            fi
+            if [[ ! -f "${local_data[j]}" ]]; then
+                if [[ ${FCST_MGR_STABILITY_WAIT:-0} -gt 0 ]]; then
+                    sleep "${FCST_MGR_STABILITY_WAIT}"
+                fi
+                if [[ ! -f "${local_data[j]}" ]]; then
+                    echo "INFO [${component}]: '$(basename "${local_data[j]}")' not yet visible; deferring sentinel $(basename "${this_ll}")"
+                    _deferred=1
+                    break
+                fi
             fi
             com_dir=$(dirname "${com_data[j]}")
             if [[ ! -d "${com_dir}" ]]; then
@@ -139,6 +159,9 @@ while [[ ${remaining} -gt 0 ]]; do
                 exit "${copy_err}"
             fi
         done
+        if [[ ${_deferred} -eq 1 ]]; then
+            continue
+        fi
 
         # Copy sentinel log last.
         # Skip if already in COM (e.g. RERUN scenario where data was already copied).
