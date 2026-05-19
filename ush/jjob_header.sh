@@ -71,7 +71,7 @@ fi
 #############################
 # Source relevant config files
 #############################
-export EXPDIR="${EXPDIR:-${HOMEgfs}/dev/parm/config}"
+export EXPDIR="${EXPDIR:-${HOMEgfs}/parm/config}"
 for config in "${configs[@]:-''}"; do
     source "${EXPDIR}/config.${config}" && true
     export err=$?

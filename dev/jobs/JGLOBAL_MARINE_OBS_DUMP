@@ -31,7 +31,7 @@ mkdir -m 775 -p "${COMOUT_OBS}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${DUMPMARINEPY:-${HOMEglobal}/scripts/exglobal_marine_obs_dump.py}
+EXSCRIPT=${DUMPMARINEPY:-${HOMEgfs}/scripts/exglobal_marine_obs_dump.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

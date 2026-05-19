@@ -185,6 +185,7 @@ ush/ghcn_snod2ioda.py
 ush/bufr_snocvr_snomad.py
 ush/atparse.bash
 ush/bufr2ioda_insitu*
+ush/python/b2iconverter
 ush/python/gsincdiag_to_ioda
 ush/python/ufsda
 ush/python/pyiodaconv
