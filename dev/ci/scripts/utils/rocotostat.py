@@ -21,7 +21,7 @@ ROCOTO_SUMMARY_SLEEP_DURATION = 120    # Sleep duration (seconds) between summar
 ROCOTO_STATCOUNT_MAX_ATTEMPTS = 4      # Maximum attempts for rocotostat --all
 ROCOTO_STATCOUNT_SLEEP_DURATION = 120  # Sleep duration (seconds) between statcount attempts
 
-ROCOTO_RETRY_MAX_ATTEMPTS = 2          # Maximum retry attempts for status checks
+ROCOTO_RETRY_MAX_ATTEMPTS = 4          # Maximum retry attempts for status checks
 ROCOTO_RETRY_SLEEP_DURATION = 120      # Sleep duration (seconds) between retry attempts
 
 # Telescoping delay configuration
