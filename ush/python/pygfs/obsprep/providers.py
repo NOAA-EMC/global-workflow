@@ -85,7 +85,7 @@ class ProviderConfig:
         else:
             raise NotImplementedError(f"DB setup for provider {provider_name} not yet implemented")
 
-        ocean_basin = getattr(task_config, "ocean_basin", None)
+        ocean_basin = getattr(task_config, "ocean_basin_file", None)
         return cls(qc_config=qc, db=db, ocean_basin=ocean_basin)
 
     def process_obs_space(self, **kwargs) -> None:
@@ -141,8 +141,8 @@ class ProviderConfig:
                        'output_file': output_file}
 
             # Add global ocean_basin if present
-            if getattr(self, "ocean_basin", None):
-                context["ocean_basin"] = self.ocean_basin
+            if getattr(self, "ocean_basin_file", None):
+                context["ocean_basin_file"] = self.ocean_basin_file
 
             # Only add QC config attributes if they exist
             if hasattr(self.qc_config, 'bounds_min'):
