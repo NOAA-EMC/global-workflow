@@ -2,7 +2,7 @@ date
 hostname
 set -xe  # print commands as they are executed and enable signal trapping
 
-export PS4="+ $SECONDS + "
+export PS4='+ $SECONDS + '
 
 # Variables needed for communication with ecFlow
 export ECF_NAME=%ECF_NAME%
@@ -17,26 +17,18 @@ export ecflow_ver=%ecflow_ver%
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x
-  echo "Running "module reset""
+  echo "Running 'module reset'"
   module reset
   set -x
 fi
 
-if [ -n "%PDY:%" ]; then
-  export PDY=${PDY:-%PDY:%}
-else
-  export PDY=$($NDATE | cut -c1-8)
-fi
-export CDATE=${PDY}%CYC:%
-
-# Setting the model package location
 modelhome=%PACKAGEHOME:%
-eval "export HOME${model:?"model undefined"}=$modelhome"
+eval "export HOME${model:?'model undefined'}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
-if [ -n "%rrfs_ver:%" ]; then export rrfs_ver=${rrfs_ver:-%rrfs_ver:%}; fi
-if [ -f "$versionfile" ]; then
-  . $versionfile 
-fi
+if [ -f "$versionfile" ]; then . $versionfile ; fi
+modelver=$(echo ${modelhome} | perl -pe "s:.*?/${model}\.(v[\d\.a-z]+).*:\1:")
+eval "export ${model}_ver=$modelver"
+
 export envir=%ENVIR%
 export MACHINE_SITE=%MACHINE_SITE%
 export RUN_ENVIR=${RUN_ENVIR:-nco}
@@ -46,14 +38,9 @@ if [ -n "%PDY:%" ]; then export PDY=${PDY:-%PDY:%}; fi
 if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
 if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
-if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
-export KEEPDATA=YES
-#### enkfgdas fcst job failure with SENDDBN="YES" as of 20260306 with expdir:
-####   -rw-r--r-- 1 emc.global global 17K Mar  4 15:57 /lfs/h2/emc/gfstemp/emc.global/expdir/retrov17_01_realtime/config.base
-####   GFS code hash with this issue caab01
-#### Therefore, set the SENDDBN to NO for now
-#### export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
-export SENDDBN="NO"
+if [ -n "%DBNLOGDIR:%" ]; then export DBNLOG=YES; fi
+export KEEPDATA=${KEEPDATA:-%KEEPDATA:NO%}
+export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
@@ -63,7 +50,7 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   fi
   echo "Running module load ecflow/$ecflow_ver"
   module load ecflow/$ecflow_ver
-  echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed "s/:$//")"
+  echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed 's/:$//')"
   set -x
   . ${ECF_ROOT}/versions/run.ver
   set +x
@@ -72,18 +59,24 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   echo "Listing modules from head.h:"
   module list
   set -x
+  if [[ ! " ops.prod ops.para " =~ " $(whoami) " ]]; then
+    echo "Allow over-riding defaults for developers"
+    if [ -n "%COMROOT:%" ]; then export COMROOT="%COMROOT:%"; fi
+    if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT="%DCOMROOT:%"; fi
+  fi
 fi
 
 timeout 300 ecflow_client --init=${ECF_RID}
 
 if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
   POST_OUT=${POST_OUT:-/lfs/h1/ops/%ENVIR%/tmp/posts/ecflow_post_in.${ECF_RID}}
-  echo "export ECF_NAME=${ECF_NAME}" > $POST_OUT
-  echo "export ECF_HOST=${ECF_HOST}" >> $POST_OUT
-  echo "export ECF_PORT=${ECF_PORT}" >> $POST_OUT
-  echo "export ECF_PASS=${ECF_PASS}" >> $POST_OUT
-  echo "export ECF_TRYNO=${ECF_TRYNO}" >> $POST_OUT
-  echo "export ECF_RID=${ECF_RID}" >> $POST_OUT
+  echo 'export ECF_NAME=${ECF_NAME}' > $POST_OUT
+  echo 'export ECF_HOST=${ECF_HOST}' >> $POST_OUT
+  echo 'export ECF_PORT=${ECF_PORT}' >> $POST_OUT
+  echo 'export ECF_PASS=${ECF_PASS}' >> $POST_OUT
+  echo 'export ECF_TRYNO=${ECF_TRYNO}' >> $POST_OUT
+  echo 'export ECF_RID=${ECF_RID}' >> $POST_OUT
 fi
 
 # Define error handler
@@ -102,5 +95,5 @@ ERROR() {
   trap $1; exit $1
 }
 # Trap all error and exit signals
-trap "ERROR $?" ERR EXIT
+trap 'ERROR $?' ERR EXIT
 
