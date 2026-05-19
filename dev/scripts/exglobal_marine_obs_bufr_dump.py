@@ -21,8 +21,7 @@ if __name__ == '__main__':
     config_yaml = parse_j2yaml(config_env['marine_obs_provider_dict'], config_env)
 
     # Combine configs together
-    config = AttrDict(**config_env, **obsforge_dict)
-    config = AttrDict(**config, **config_yaml)
+    config = AttrDict(**config_env, **config_yaml)
 
     marineBufrObs = MarineBufrObsPrep(config)
     marineBufrObs.initialize()
