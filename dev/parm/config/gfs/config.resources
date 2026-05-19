@@ -482,7 +482,7 @@ case ${step} in
     ;;
 
   "marineobsdump")
-    walltime="00:10:00"
+    walltime="00:20:00"
     ntasks=20
     threads_per_task=2
     tasks_per_node=${max_tasks_per_node}
