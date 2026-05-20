@@ -19,6 +19,5 @@ if __name__ == '__main__':
     #
     MarineRecen = MarineRecenter(config)
     MarineRecen.initialize()
-    MarineRecen.execute('gridgen')
     MarineRecen.execute('ens_handler')
     MarineRecen.finalize()

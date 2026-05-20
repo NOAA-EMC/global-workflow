@@ -82,7 +82,7 @@ class GCAFSForecastOnlyAppConfig(AppConfig):
         configs = ['stage_ic', 'fcst', 'atmos_products', 'aero', 'aerosol_init', 'prep_emissions']
 
         if options['do_wave']:
-            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            configs += ['waveinit', 'wavepostgridded', 'wavepostpnt']
 
         if options['do_archcom']:
             configs += ['arch_tars']

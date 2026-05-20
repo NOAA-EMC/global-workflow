@@ -40,21 +40,21 @@ add_to_tmpfile() {
 
 ################################################################################################
 ################################################################################################
-# gfs wave postsbs files
-cd "${ECF_DIR}/scripts/gfs/product/wave/sbs"
-echo "Copy gfs wave postsbs files ..."
-rm -f jgfs_wave_postsbs_f*.ecf
+# gfs wave post gridded files
+cd "${ECF_DIR}/scripts/gfs/product/wave/gridded"
+echo "Copy gfs wave post gridded files ..."
+rm -f jgfs_wave_post_gridded_f*.ecf
 fhr_end=384
 fhr_start=0
 while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     head_3d=$(printf "%03d" "${fhr_start}")
-    cp jgfs_wave_postsbs_master.ecf "jgfs_wave_postsbs_f${head_3d}.ecf"
+    cp jgfs_wave_post_gridded_master.ecf "jgfs_wave_post_gridded_f${head_3d}.ecf"
     if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
     fi
-    add_to_tmpfile "scripts/gfs/post/wave/jgfs_wave_postsbs_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/wave/gridded/jgfs_wave_post_gridded_f${head_3d}.ecf"
 done
 
 # gfs atmos product files
@@ -114,18 +114,18 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     add_to_tmpfile "scripts/gdas/product/atmos/product/jgdas_atmos_product_f${head_3d}.ecf"
 done
 
-# gdas wave postsbs files
-cd "${ECF_DIR}/scripts/gdas/product/wave/sbs"
-echo "Copy gdas wave postsbs files ..."
-rm -f jgdas_wave_postsbs_f???.ecf
+# gdas wave post gridded files
+cd "${ECF_DIR}/scripts/gdas/product/wave/gridded"
+echo "Copy gdas wave post gridded files ..."
+rm -f jgdas_wave_post_gridded_f???.ecf
 fhr_end=9
 fhr_start=0
 while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     step=1
     head_3d=$(printf "%03d" "${fhr_start}")
-    cp jgdas_wave_postsbs_master.ecf "jgdas_wave_postsbs_f${head_3d}.ecf"
+    cp jgdas_wave_post_gridded_master.ecf "jgdas_wave_post_gridded_f${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
-    add_to_tmpfile "scripts/gdas/post/wave/jgdas_wave_postsbs_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gdas/product/wave/gridded/jgdas_wave_post_gridded_f${head_3d}.ecf"
 done
 
 # enkfgdas ens recenter files
