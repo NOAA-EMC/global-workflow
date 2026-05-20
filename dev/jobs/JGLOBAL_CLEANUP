@@ -17,7 +17,7 @@ source "${USHgfs}/set_strict.sh"
 "${SCRgfs}/exglobal_cleanup.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to complete cleanup"
 fi
 
 #################################################

@@ -11,8 +11,8 @@
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
-#  wave_grib2_sbs.sh         : generates GRIB2 files.
-#  wave_grid_interp_ush.sh   : interpolates data from new grids to old grids
+#  wave_grib2.sh         : generates GRIB2 files.
+#  wave_grid_interp.sh   : interpolates data from new grids to old grids
 #
 # COM inputs:
 #
@@ -84,11 +84,11 @@ if [[ "${DOGRI_WAV}" == "YES" ]]; then
     for grdID in ${waveinterpGRD}; do
         count=$((count + 1))
         echo "#!/bin/bash" > "cmdfile.${count}"
-        echo "${USHgfs}/wave_grid_interp_sbs.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+        echo "${USHgfs}/wave_grid_interp.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
         echo "cat ${DATA}/grid_interp_${grdID}.out" >> "cmdfile.${count}"
         if [[ "${DOGRB_WAV}" == "YES" ]]; then
             process_grdID "${grdID}"
-            echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+            echo "${USHgfs}/wave_grib2.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
             echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
         fi
         chmod 755 "cmdfile.${count}"
@@ -98,11 +98,11 @@ fi
 
 # Products on the post-processing grid "wavepostGRD"
 if [[ "${DOGRB_WAV}" == "YES" ]]; then
-    for grdID in ${wavepostGRD}; do # First concatenate grib files for sbs grids
+    for grdID in ${wavepostGRD}; do # First concatenate grib files for grids
         count=$((count + 1))
         process_grdID "${grdID}"
         echo "#!/bin/bash" > "cmdfile.${count}"
-        echo "${USHgfs}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+        echo "${USHgfs}/wave_grib2.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
         echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
         chmod 755 "cmdfile.${count}"
         echo "${DATA}/cmdfile.${count}" >> "${DATA}/cmdfile"
