@@ -1,10 +1,10 @@
-.. _experiment-setup:
+.. _globus-setup:
 
 =================================
 Setup Globus Connections for HPSS
 =================================
 
- The Global Workflow archives and retrieves data from HPSS.  Some systems, such as Hera and WCOSS2, have direct connections to HPSS, while others like Hercules do not.  To enable HPSS transfers, RDHPCS Mercury offers temporary disk space and HPSS connections.  The high-throughput Globus protocol is used to schedule and transfer data to Mercury where a service (The Doorman) runs jobs to transfer data to HPSS.  To make use of this service, users must initialize their connections to Globus and Mercury.  This guide provides instructions on how to enable these services.
+The Global Workflow archives and retrieves data from HPSS.  Some systems, such as Hera and WCOSS2, have direct connections to HPSS, while others like Hercules do not.  To enable HPSS transfers, RDHPCS Mercury offers temporary disk space and HPSS connections.  The high-throughput Globus protocol is used to schedule and transfer data to Mercury where a service (The Doorman) runs jobs to transfer data to HPSS.  To make use of this service, users must initialize their connections to Globus and Mercury.  This guide provides instructions on how to enable these services.
 
 ^^^^^^^^^^^^^^^^^
 Setting Up Globus
@@ -38,7 +38,8 @@ Note that the globus connection stays active for 7 days.  If your experiment fai
 
 For some users, the new system, Mercury, occassionally fails to add all necessary permissions necessary to run globus transfers.  If you receive an error about needing to add ``data_access`` in the logs, then login to Mercury and execute
 
-.. code-block::
+.. code-block:: bash
+   
     module load globus-cli
     globus session update --all
     # Get the host UUID

@@ -92,7 +92,7 @@ Usage
 What the viewer shows
 *********************
 
- .. figure:: _static/fv3_rocoto_view.png
+ .. figure:: ../_static/fv3_rocoto_view.png
 
   Sample output from Rocoto viewer
 

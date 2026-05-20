@@ -10,7 +10,7 @@ with interactive aerosol and atmospheric chemistry capabilities. It provides a u
 for predicting the evolution of atmospheric composition alongside traditional weather variables.
 
 Key Features
------------
+------------
 
 * Interactive GOCART aerosol module for forecasting dust, sea salt, sulfate, black carbon, and organic carbon
 * Optional full atmospheric chemistry with gas-phase and heterogeneous reactions
@@ -21,7 +21,7 @@ Key Features
 * Optional aerosol data assimilation
 
 Running GCAFS
-------------
+-------------
 
 GCAFS can be run using the global-workflow framework. To set up a free-forecast GCAFS experiment:
 
@@ -50,7 +50,7 @@ HPSS archive or a location stored on disk). The aerosol analysis is optional and
 `USE_AERO_ANL` to be "YES"
 
 GCAFS Workflow
--------------
+--------------
 
 The GCAFS workflow includes these main tasks:
 
@@ -65,7 +65,7 @@ The workflow is managed by the Rocoto workflow manager, with tasks defined in th
 ``workflow/rocoto/gcafs_tasks.py`` file.
 
 Configuration Files
-------------------
+-------------------
 
 GCAFS configuration is managed through several key files in the ``parm/config/gcafs/`` directory:
 

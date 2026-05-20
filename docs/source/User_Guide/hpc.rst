@@ -1,14 +1,13 @@
 #####################
-HPC Settings and Help
+HPC Setup and Support
 #####################
 
-Running the GFS configurations (or almost any global workflow configuration except the coarsest) is a resource intensive exercise. This page discusses recommended HPC environmental settings and contact information in case you need assistance from a particular HPC helpdesk. While most of the documentation is based on supported NOAA platforms, the learnings here can hopefully apply to other platforms.
+Running the GFS configurations (or nearly any GW configuration except the coarsest) is a resource intensive task. This page describes recommended Research and Development High‑Performance Computing Systems (RDHPCS) environment settings and provides contact information in case assistance is needed from a specific HPC helpdesk. While most of the documentation focuses on supported NOAA platforms, the guidance presented here can be applied to other systems.
 
 ====================================
 Minimum system software requirements
 ====================================
-
-The following system software requirements are the minimum for any new or existing system and reflect the development and testing environment on which the global workflow is maintained.  Any system that does not meet these requirements will not be supported.
+The system software requirements listed in the following table represent the minimum standards for any new or existing system and reflect the development and testing environments on which the GW is maintained. Any system that does not meet these requirements will not be supported.
 
 +--------------+-------------+---------------------------------------+
 | Software     | Minimum     | Notes                                 |
@@ -31,8 +30,8 @@ The following system software requirements are the minimum for any new or existi
 | PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
 +--------------+-------------+---------------------------------------+
 | Git          | 2.29.0      | * Some components e.g. GDASApp may    |
-|              |             |   need Git-LFS for downloading test   |
-|              |             |   data                                |
+|              |             |   need Git Large File Storage         |
+|              |             |   (Git-LFS) for downloading test data |
 +--------------+-------------+---------------------------------------+
 | Rocoto       | 1.3.5       | * 1.3.7 is required for newer         |
 |              |             |   versions of Ruby (3.2+)             |
@@ -44,11 +43,13 @@ The following system software requirements are the minimum for any new or existi
 |              |             |   WCOSS2                              |
 +--------------+-------------+---------------------------------------+
 
-===========================
-Feature availability by HPC
-===========================
+==============================
+Feature availability by RDHPCS
+==============================
 
-The Global Workflow provides capabilities for deterministic and ensemble forecasts along with data assimilation on multiple platforms.  However, not all features are currently supported on all platforms.  The following table lists the features by platform and states their level of support.
+The GW provides capabilities for deterministic and ensemble forecasts, along with DA, across multiple platforms. However, not all features are currently supported on every system. The table below summarizes available features by platform and states their level of support.
+
+.. _HPC_Capabilities_Matrix:
 
 .. list-table:: Capabilities matrix by HPC
    :header-rows: 1
@@ -138,21 +139,6 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      - X
      -
      - X
-   * - Hera
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     - X
-     - X
-     - X
    * - Orion
      - 2
      - X
@@ -229,13 +215,12 @@ The Global Workflow provides capabilities for deterministic and ensemble forecas
      -
      -
 
-=============
-HPC helpdesks
-=============
+================
+RDHPCS Helpdesks
+================
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
 * Ursa: rdhpcs.ursa.help@noaa.gov
-* Hera: rdhpcs.hera.help@noaa.gov
 * Orion:  rdhpcs.orion.help@noaa.gov
 * Hercules:  rdhpcs.hercules.help@noaa.gov
 * HPSS: rdhpcs.hpss.help@noaa.gov
@@ -244,42 +229,49 @@ HPC helpdesks
 * Derecho: https://rchelp.ucar.edu
 
 ======================
-Restricted data access
+Restricted Data Access
 ======================
 
-The GFS system ingests dump data files that contain global observation data. A number of these dump files contain restricted data which means those files come with an extra level of permissions called restricted or ‘rstprod’. Users who wish to run cycled GFS experiments, which both utilizes restricted observation data and produces output containing restricted data, will need to gain rstprod group access.
+The GFS system ingests dump data files that contain global observational data. Several of these dump files include restricted data which requires additional level of permissions called **restricted** or ``rstprod``. Users who wish to run cycled GFS experiments, which both use restricted observational data and produce restricted output, must obtain ``rstprod`` access.
 
-To request rstprod access, do either a and/or b below:
+To request ``rstprod`` access, follow one or both of the options below depending on the platform you need access for:
 
-a) If you need restricted data access on WCOSS2, read details about restricted data and fill out form here:
+* Requesting restricted data access on WCOSS2
 
+If you need access on WCOSS2, review restricted data policy and submit the request here: 
 https://www.nco.ncep.noaa.gov/sib/restricted_data/restricted_data_sib/
 
-b) If you need restricted data access on RDHPCS systems: go to the AIM system, click on "Request new access to a project", select the rstprod project, provide justification for needed access, and submit the request:
 
-https://aim.rdhpcs.noaa.gov/
+* Requesting restricted data access on NOAA RDHPCS
 
-=========================================
-Stacksize on R&Ds (Hera, Orion, Hercules)
-=========================================
+If you need restricted data access on NOAA RDHPCS platforms: 
 
-Some GFS components, like the UPP, need an unlimited stacksize. Add the following setting into your appropriate .*rc file to support these components:
+1. Login to the NOAA AIM portal
+2. select **Request new access to a project** 
+3. Choose ``rstprod`` project 
+4. Provide justification explaining why you need restricted data access
+5. Submit the request here: https://aim.rdhpcs.noaa.gov/
 
-csh::
+===========================================
+Stacksize on RDHPCS (e.g., Orion, Hercules)
+===========================================
+
+Some GFS components, such as the Unified Post Processor (UPP), need an unlimited stacksize. Add the following setting into your appropriate shell startup file (e.g, .cshrc, .bashrc) to support these components.
+
+For csh::
 
     limit stacksize unlimited
 
-sh/bash/ksh::
+For sh, bash, or ksh::
 
     ulimit -s unlimited
 
-=========================================
-Forecast hangs due to issue with ssh-keys
-=========================================
+==========================================
+Forecast Hangs Caused by SSH Keys: The Fix
+==========================================
 
-Did you generate your ssh-keys with a passphrase? If so, remake them without one. To test this try ssh-ing to a different login node; you should be able to without being prompted for your passphrase.
+Did you generate your ssh-keys with a passphrase? If so, recreate them without a passphrase. To test this, try ssh-ing to a different login node; you should be able to connect without being prompted for a passphrase.
 
 Is your public key in the authorized_keys file? If not, add it::
 
    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-

@@ -1,15 +1,8 @@
-###############
-Global Workflow
-###############
+##################################
+Global Workflow (GW) Documentation
+##################################
 
-**Global-workflow** is the end-to-end workflow designed to run global configurations of medium range weather forecasting for the UFS weather model. It supports both development and operational implementations. In its current format it supports the Global Forecast System (GFS), Global Ensemble Forecast System (GEFS), and Subseasonal Forecast System (SFS) configurations.
-
-======
-Status
-======
-
-* State of develop (HEAD) branch: GFSv17+ development
-* State of operations (dev/gfs.v16 branch): GFS v16.3.28 `tag: [gfs.v16.3.28] <https://github.com/NOAA-EMC/global-workflow/releases/tag/gfs.v16.3.28>`_
+The **Global Workflow (GW)** is an end-to-end system designed to run global configurations of medium range weather forecasts for the Unified Forecast System (UFS) weather model. It is designed to support both development and operational implementations. 
 
 =============
 Code managers
@@ -26,24 +19,16 @@ General updates: NOAA employees and affiliates can join the gfs-announce distrib
 
 GitHub updates: Users should adjust their "Watch" settings for this repo so they receive notifications as they'd like to. Find the "Watch" or "Unwatch" button towards the top right of the `authoritative global-workflow repository page <https://github.com/NOAA-EMC/global-workflow>`_ and click it to adjust how you watch the repo.
 
-=================
-Table of Contents
-=================
+#############################
+GW Documentation, ersion 1.0
+#############################
 
 .. toctree::
-   :numbered:
    :maxdepth: 3
 
-   development.rst
-   testing.rst
-   components.rst
-   jobs.rst
-   hpc.rst
-   output.rst
-   run.rst
-   wave.rst
-   noaa_csp.rst
-   errors_faq.rst
-   globus_arch.rst
-   gcafs.rst
-   ci_cd_pipeline.rst
+   User_Guide/index
+
+.. toctree::
+   :maxdepth: 3
+
+   Contributor_Guide/index

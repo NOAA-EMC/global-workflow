@@ -29,7 +29,7 @@ runners. By mirroring the repository to GitLab and placing GitLab runners direct
 on those HPC systems, the project gains the ability to build and test the workflow
 in the same environments where it will be deployed operationally.
 
-.. figure:: _static/ci_cd_architecture.svg
+.. figure:: ../_static/ci_cd_architecture.svg
    :align: center
    :width: 100%
    :alt: CI/CD Architecture Diagram
