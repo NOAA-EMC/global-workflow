@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-########## config.wavepostsbs ##########
+########## config.wavepostgridded ##########
 # Wave steps specific
 
-echo "BEGIN: config.wavepostsbs"
+echo "BEGIN: config.wavepostgridded"
 
 # Get task specific resources
-source "${EXPDIR}/config.resources" wavepostsbs
+source "${EXPDIR}/config.resources" wavepostgridded
 
 # Maximum number of rocoto tasks per member
 export MAX_TASKS=25
@@ -27,4 +27,4 @@ fi
 export DOSPC_WAV='YES' # Spectral post
 export DOBLL_WAV='YES' # Bulletin post
 
-echo "END: config.wavepostsbs"
+echo "END: config.wavepostgridded"
