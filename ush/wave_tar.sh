@@ -35,8 +35,8 @@ export err
 
 if [[ "$#" -lt '3' ]]; then
     msg='FATAL ERROR: VARIABLES IN ww3_tar.sh NOT SET'
-    err=1
-    err_exit "${msg}"
+    echo "${msg}"
+    exit 1
 else
     ID=$1
     type=$2
@@ -72,9 +72,8 @@ mkdir "TAR_${filext}_${ID}"
 #     The tested variables should be exported by the postprocessor script.
 
 if [[ -z "${COMOUT_WAVE_STATION+x}" || -z "${SENDDBN+x}" || -z "${STA_DIR+x}" ]]; then
-    msg='FATAL ERROR: EXPORTED VARIABLES IN ww3_tar.sh NOT SET'
-    err=2
-    err_exit "${msg}"
+    echo 'FATAL ERROR: EXPORTED VARIABLES IN ww3_tar.sh NOT SET'
+    exit 2
 fi
 
 # --------------------------------------------------------------------------- #
@@ -95,16 +94,14 @@ while [[ "${tardone}" == "no" ]]; do
         err=$?
 
         if [[ ${err} -ne 0 ]]; then
-            msg='FATAL ERROR: TAR CREATION FAILED *** '
-            err=3
-            err_exit "${msg}"
+            echo 'FATAL ERROR: TAR CREATION FAILED *** '
+            exit 3
         fi
 
         filename="${ID}.${type}.tar"
         if ! wait_for_file "${filename}" "${sleep_interval}" "${countMAX}"; then
-            msg="FATAL ERROR: File ${filename} not found after waiting $((sleep_interval * (countMAX + 1))) secs"
-            err=3
-            err_exit "${msg}"
+            echo "FATAL ERROR: File ${filename} not found after waiting $((sleep_interval * (countMAX + 1))) secs"
+            exit 3
         fi
 
         if [[ -f "${ID}.${type}.tar" ]]; then
@@ -115,21 +112,24 @@ while [[ "${tardone}" == "no" ]]; do
 done
 
 if [[ "${tardone}" == 'no' ]]; then
-    msg='FATAL ERROR: TAR CREATION FAILED *** '
-    err=3
-    err_exit "${msg}"
+    echo 'FATAL ERROR: TAR CREATION FAILED *** '
+    exit 4
 fi
 
 if [[ "${type}" == 'spec' ]]; then
     if [[ -s "${ID}.${type}.tar" ]]; then
         file_name="${ID}.${type}.tar.gz"
-        /usr/bin/gzip -c "${ID}.${type}.tar" > "${file_name}"
+        # Check if gzip is available
+        if ! command -v gzip &> /dev/null; then
+            echo "FATAL ERROR: gzip command not found!"
+            exit 5
+        fi
+        gzip -c "${ID}.${type}.tar" > "${file_name}"
         err=$?
 
         if [[ ${err} -ne 0 ]]; then
-            msg='FATAL ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
-            err=4
-            err_exit
+            echo 'FATAL ERROR: SPECTRAL TAR COMPRESSION FAILED *** '
+            exit 6
         fi
     fi
 else
@@ -146,9 +146,8 @@ cpfs "${file_name}" "${COMOUT_WAVE_STATION}/."
 err=$?
 
 if [[ ${err} -ne 0 ]]; then
-    msg='FATAL ERROR: TAR COPY FAILED *** '
-    export err=4
-    err_exit "${msg}"
+    echo 'FATAL ERROR: TAR COPY FAILED *** '
+    export err=6
 fi
 
 if [[ "${SENDDBN}" == "YES" ]]; then

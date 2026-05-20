@@ -190,7 +190,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['awips', 'fbwind']
 
         if options['do_wave']:
-            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            configs += ['waveinit', 'wavepostgridded', 'wavepostpnt']
             if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
             if options['do_gempak']:
@@ -357,7 +357,7 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['metp']
 
                 if options['do_wave']:
-                    task_names[run] += ['wavepostsbs']
+                    task_names[run] += ['wavepostgridded']
                     if options['do_wave_bnd']:
                         task_names[run] += wave_bndpnt_tasks
                     task_names[run] += ['wavepostpnt']

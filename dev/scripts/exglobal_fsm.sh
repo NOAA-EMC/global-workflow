@@ -16,9 +16,9 @@ scan_release_gfs_atmos_product="NO"
 scan_release_gfs_ocean_product="NO"
 scan_release_gfs_ice_product="NO"
 scan_release_gdas_atmos_product="NO"
-scan_release_gfs_wave_postsbs="NO"
+scan_release_gfs_wave_post_gridded="NO"
 scan_release_gdas_marine_prepoceanobs="NO"
-scan_release_gdas_wave_postsbs="NO"
+scan_release_gdas_wave_post_gridded="NO"
 scan_release_gfs_atmos_goesupp="NO"
 
 # Initialize sleep time for as long as 5 hours
@@ -52,7 +52,7 @@ if [[ "${RJN}" == "forecast" ]]; then
         COMIN_WAVE_HISTORY="${COMgfs}/gfs.${PDY}/${cyc}/model/wave/history"
         COMIN_ICE_HISTORY="${COMgfs}/gfs.${PDY}/${cyc}/model/ice/history"
         scan_release_gfs_atmos_product="YES"
-        scan_release_gfs_wave_postsbs="YES"
+        scan_release_gfs_wave_post_gridded="YES"
         scan_release_gfs_ocean_product="YES"
         scan_release_gfs_ice_product="YES"
         scan_release_gfs_atmos_goesupp="YES"
@@ -72,7 +72,7 @@ if [[ "${RJN}" == "forecast" ]]; then
         COMIN_WAVE_HISTORY="${COMgfs}/gdas.${PDY}/${cyc}/model/wave/history"
         COMIN_ATMOS_MASTER="${COMgfs}/gdas.${PDY}/${cyc}/model/atmos/master"
         scan_release_gdas_atmos_product="YES"
-        scan_release_gdas_wave_postsbs="YES"
+        scan_release_gdas_wave_post_gridded="YES"
         for fhr in $(seq 0 9); do
             array_element_atmos_master[fhr]="NO"
             array_element_ocean_uglo_15km[fhr]="NO"
@@ -162,11 +162,11 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         done
     fi
 
-    #### release_gfs_wave_postsbs
-    if [[ "${scan_release_gfs_wave_postsbs}" == "YES" ]]; then
+    #### release_gfs_wave_post_gridded
+    if [[ "${scan_release_gfs_wave_post_gridded}" == "YES" ]]; then
         skip_this_scan="NO"
-        scan_release_gfs_wave_postsbs="NO"
-        echo "Proceeding with scan_release_gfs_wave_postsbs"
+        scan_release_gfs_wave_post_gridded="NO"
+        echo "Proceeding with scan_release_gfs_wave_post_gridded"
         fhr_max=384
         fhr=0
         while [[ "${fhr}" -le "${fhr_max}" ]]; do
@@ -180,14 +180,14 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${ocean_uglo_15km}" ]]; then
                         release_event="YES"
                         array_element_ocean_uglo_15km[10#${fhr}]="YES"
-                        ecflow_client --event release_gfs_wave_postsbs_f"${fhr_3d}"
+                        ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
                     fi
                 fi
             fi
             if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${array_element_ocean_uglo_15km[fhr]}" == "NO" ]]; then
-                echo "FSM release_gfs_wave_postsbs is waiting for file: ${ocean_uglo_15km}"
+                echo "FSM release_gfs_wave_post_gridded is waiting for file: ${ocean_uglo_15km}"
                 skip_this_scan="YES"
-                scan_release_gfs_wave_postsbs="YES"
+                scan_release_gfs_wave_post_gridded="YES"
                 proceed_trigger_scan="YES"
             fi
             if [[ "${fhr}" -lt 120 ]]; then
@@ -323,11 +323,11 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         done
     fi
 
-    #### release_gdas_wave_postsbs
-    if [[ "${scan_release_gdas_wave_postsbs}" == "YES" ]]; then
+    #### release_gdas_wave_post_gridded
+    if [[ "${scan_release_gdas_wave_post_gridded}" == "YES" ]]; then
         skip_this_scan="NO"
-        scan_release_gdas_wave_postsbs="NO"
-        echo "Proceeding with scan_release_gdas_wave_postsbs"
+        scan_release_gdas_wave_post_gridded="NO"
+        echo "Proceeding with scan_release_gdas_wave_post_gridded"
         for fhr in $(seq 0 9); do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
@@ -339,14 +339,14 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${ocean_uglo_15km}" ]]; then
                         release_event="YES"
                         array_element_ocean_uglo_15km[10#${fhr}]="YES"
-                        ecflow_client --event release_gdas_wave_postsbs_f"${fhr_3d}"
+                        ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
                     fi
                 fi
             fi
             if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${array_element_ocean_uglo_15km[fhr]} == "NO" ]]; then
-                echo "FSM release_gdas_wave_postsbs is waiting for file: ${ocean_uglo_15km}"
+                echo "FSM release_gdas_wave_post_gridded is waiting for file: ${ocean_uglo_15km}"
                 skip_this_scan="YES"
-                scan_release_gdas_wave_postsbs="YES"
+                scan_release_gdas_wave_post_gridded="YES"
                 proceed_trigger_scan="YES"
             fi
         done
