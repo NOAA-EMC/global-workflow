@@ -34,6 +34,6 @@ declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/hist
 "${SCRgfs}/exglobal_atmos_pmgr.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate atmospheric post files"
 fi
 ########################################################

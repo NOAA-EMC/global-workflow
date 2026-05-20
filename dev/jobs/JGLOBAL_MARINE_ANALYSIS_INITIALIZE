@@ -41,8 +41,8 @@ declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/o
 declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 declare -rx COMIN_ICE_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/restart"
 
-declare -rx COMIN_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ocean"
-declare -rx COMIN_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/bmatrix/ice"
+declare -rx COMIN_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
+declare -rx COMIN_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
 
 ###############################################################
 # Run relevant script
@@ -51,7 +51,7 @@ EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to initialize the deterministic marine analysis"
 fi
 
 ##############################################

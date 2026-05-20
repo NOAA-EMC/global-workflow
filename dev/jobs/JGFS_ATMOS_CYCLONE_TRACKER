@@ -60,14 +60,14 @@ export loopnum=1
 "${USHens_tracker}/data_check_gfs.sh"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Data check failed for GFS input data. Cannot run the tracker script."
 fi
 #------------------------------------------------
 
 "${USHens_tracker}/extrkr_gfs.sh" "${loopnum}" "${cmodel}" "${PDY}${cyc}" "${pert}" "${DATA}"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Tropical cyclone tracking failed"
 fi
 
 #  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \

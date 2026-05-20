@@ -3,7 +3,7 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         wave_grib2_sbs.sh
+# Script name:         wave_grib2.sh
 # Script description:  Create grib2 files for the wave component
 #
 # Author:   Hendrik Tolman      Org: NCEP/EMC      Date: 2007-07-11
