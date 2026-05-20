@@ -89,22 +89,23 @@ while [[ ${remaining} -gt 0 ]]; do
         fi
 
         _fcst_done_fallback=0
+        _missing_sentinel=0
+        _size_check_msgs=""
         if [[ ! -f "${local_log[i]}" ]]; then
-            # Model-done fallback for the last ocean or ice entry.
-            # Ocean (MOM6): the period log is written at the start of the next
-            # averaging period, so the final window's log is never produced.
-            # Ice (CICE): the sentinel is written inside ice_step (before model
-            # exit), but on a loaded network filesystem it may not be visible on
-            # the manager node before the idle countdown expires. If the data
-            # file is already on disk and the model is done, synthesise the log
-            # rather than silently dropping the last entry.
-            # Component and last-entry checks use pure string comparisons to
-            # short-circuit before any filesystem access.
+            # Model-done fallback for ocean and ice.
+            # Ocean (MOM6): sentinel may be absent for any output period due
+            # to NFS metadata lag (period log written at the start of the
+            # next averaging period, so the final window's log is never
+            # produced even without lag).
+            # Ice (CICE): sentinel may be absent for any forecast hour due to
+            # NFS metadata lag or a cice_fhr_offset mismatch.
+            # Both cases: warn, copy, and run a post-copy size check.
             if [[ ("${component}" == "ocn" || "${component}" == "ice") &&
-                "${local_log[i]}" == "${local_log[count - 1]}" &&
                 -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" &&
                 -f "${local_data[i]}" ]]; then
                 _fcst_done_fallback=1
+                _missing_sentinel=1
+                echo "WARN [${component}]: sentinel '$(basename "${local_log[i]}")' not found; forecast complete and data present -- copying without sentinel"
             else
                 continue
             fi
@@ -158,6 +159,37 @@ while [[ ${remaining} -gt 0 ]]; do
                 echo "FATAL ERROR [${component}]: cpfs '${local_data[j]}' -> '${com_data[j]}' failed (err=${copy_err})" >&2
                 exit "${copy_err}"
             fi
+            if [[ ${_missing_sentinel} -eq 1 ]]; then
+                _sz_new=$(stat -c %s "${com_data[j]}")
+                # Find an already-copied COM file from a different (real) sentinel
+                # as a size reference. All forecast outputs should be similar
+                # in size; a large deviation suggests partial or corrupt output.
+                _ref_size=""
+                _ref_name=""
+                for ((k = 0; k < count; k++)); do
+                    if [[ "${done_flag[k]}" == "YES" &&
+                        "${local_log[k]}" != "${this_ll}" &&
+                        -f "${com_data[k]}" ]]; then
+                        _ref_size=$(stat -c %s "${com_data[k]}")
+                        _ref_name=$(basename "${com_data[k]}")
+                        break
+                    fi
+                done
+                if [[ -n "${_ref_size}" ]]; then
+                    _sz_diff=$(( _sz_new - _ref_size ))
+                    if [[ ${_sz_diff} -lt 0 ]]; then
+                        _sz_diff=$((-_sz_diff))
+                    fi
+                    if [[ ${_sz_diff} -gt 1048576 ]]; then
+                        echo "WARN [${component}]: size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs reference '${_ref_name}': ${_ref_size}B (diff=${_sz_diff}B > 1 MB) -- possible partial/corrupt output"
+                        _size_check_msgs+="WARN: size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs ref '${_ref_name}': ${_ref_size}B diff=${_sz_diff}B (>1 MB)"$'\n'
+                    else
+                        _size_check_msgs+="INFO: size OK for '$(basename "${com_data[j]}")': ${_sz_new}B (ref '${_ref_name}': ${_ref_size}B)"$'\n'
+                    fi
+                else
+                    _size_check_msgs+="INFO: no reference COM file available yet for size check of '$(basename "${com_data[j]}")'"$'\n'
+                fi
+            fi
         done
         if [[ ${_deferred} -eq 1 ]]; then
             continue
@@ -171,8 +203,16 @@ while [[ ${remaining} -gt 0 ]]; do
                 mkdir -p "${cl_dir}"
             fi
             if [[ ${_fcst_done_fallback} -eq 1 ]]; then
-                # fcst_done fallback: model never wrote the final period log; write a synthetic COM marker.
-                echo "synthetic sentinel created (model sentinel unavailable): $(basename "${com_data[i]}") completed $(date --utc +%Y%m%d%H%M%S)" > "${this_cl}"
+                # fcst_done fallback: model never wrote the period log; write a synthetic COM marker.
+                {
+                    echo "synthetic sentinel created (model sentinel unavailable): $(basename "${this_cl}") at $(date --utc +%Y%m%d%H%M%S)"
+                    if [[ ${_missing_sentinel} -eq 1 ]]; then
+                        echo "WARN: model sentinel '$(basename "${this_ll}")' was not produced"
+                        if [[ -n "${_size_check_msgs}" ]]; then
+                            printf '%s' "${_size_check_msgs}"
+                        fi
+                    fi
+                } > "${this_cl}"
                 log_err=0
             else
                 cpfs "${this_ll}" "${this_cl}"
