@@ -1443,7 +1443,7 @@ class GFSTasks(Tasks):
         # When this file appears, all wave output for the segment is in COM.
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostpnt'], 'wave')
         last_fhr = fhrs[-1]
         history_file = f'{self.run}.t@Hz.{wave_grid}.f{last_fhr:03d}.log'
         deps = []
