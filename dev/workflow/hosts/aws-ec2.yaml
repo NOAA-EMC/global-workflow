@@ -1,6 +1,6 @@
 # Paths
-IODADIR: '/lustre/global/data/dump_ioda_nr'
 DMPDIR: '/lustre/global/data/dump_nr'
+IODADIR: '/lustre/global/data/dump_ioda_nr'
 BASE_GIT: '/lustre/global/external_programs'
 BASE_DATA: '/lustre/global/data'
 BASE_IC: '/lustre/global/data/ICSDIR'
@@ -17,13 +17,11 @@ QUEUE: batch
 PARTITION_BATCH: compute
 PARTITION_SERVICE: processing
 # HPSS properties
-HPSS_PROJECT: emc-global #TODO: See `ATARDIR` below.
 ARCHCOM_TO: 'local'
 ATARDIR: '/bucket/archive/${PSLOT}' # TODO: This will not yet work from AWS.
 CHGRP_RSTPROD: 'NO' #TODO: rstprod group not yet supported.
-CHGRP_CMD: 'echo' # TODO: This is not yet supported.
 # Features
-SUPPORTED_RESOLUTIONS: ['C48', 'C96', 'C192', 'C384', 'C768'] # TODO: Test and support all cubed-sphere resolutions.
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
 DO_ARCHCOM: 'NO'
 DO_GEMPAK: 'NO'
 FETCH_GCDAS_YAML_TMPL_LIST: '${PARMglobal}/fetch/${NET}_${APP}_gdas-anl_aws-ec2.yaml.j2,'

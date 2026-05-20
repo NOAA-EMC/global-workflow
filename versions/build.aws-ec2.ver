@@ -4,7 +4,6 @@ export stack_compiler_ver=2024.2.1
 
 export stack_mpi=intel-oneapi-mpi
 export stack_mpi_ver=2021.13
-export gnu_ver=14.1.0
 
 spack_stack_root="/opt/spack-stack"
 

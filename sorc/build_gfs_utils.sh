@@ -50,4 +50,3 @@ BUILD_TYPE=${BUILD_TYPE:-"Release"} \
     "${HOMEglobal_}/sorc/gfs_utils.fd/ush/build.sh"
 
 exit
-
