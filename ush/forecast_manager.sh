@@ -204,10 +204,12 @@ while [[ ${remaining} -gt 0 ]]; do
             fi
             if [[ ${_fcst_done_fallback} -eq 1 ]]; then
                 # fcst_done fallback: model never wrote the period log; write a synthetic COM marker.
+                _cl_base=$(basename "${this_cl}")
+                _ll_base=$(basename "${this_ll}")
                 {
-                    echo "synthetic sentinel created (model sentinel unavailable): $(basename "${this_cl}") at $(date --utc +%Y%m%d%H%M%S)"
+                    echo "synthetic sentinel created (model sentinel unavailable): ${_cl_base} at $(date --utc +%Y%m%d%H%M%S)"
                     if [[ ${_missing_sentinel} -eq 1 ]]; then
-                        echo "WARN: model sentinel '$(basename "${this_ll}")' was not produced"
+                        echo "WARN: model sentinel '${_ll_base}' was not produced"
                         if [[ -n "${_size_check_msgs}" ]]; then
                             printf '%s' "${_size_check_msgs}"
                         fi
