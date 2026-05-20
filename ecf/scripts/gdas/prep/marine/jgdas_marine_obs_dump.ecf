@@ -3,7 +3,7 @@
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:20:00
+#PBS -l walltime=00:10:00
 #PBS -l select=1:mpiprocs=20:ompthreads=2:ncpus=40:mem=96GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
