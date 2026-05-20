@@ -39,9 +39,9 @@ if [[ -f "../${grdID}.msh" ]]; then
     ${NLN} "../${grdID}.msh" "${grdID}.msh"
 fi
 
-export pgm="${NET,,}_ww3_grid.x"
+export pgm="ww3_grid_${NET,,}.x"
 
-echo "INFO: Executing ${EXECglobal}/${NET,,}_ww3_grid.x"
+echo "INFO: Executing ${EXECglobal}/ww3_grid_${NET,,}.x"
 
 "${EXECglobal}/${pgm}"
 export err=$?
