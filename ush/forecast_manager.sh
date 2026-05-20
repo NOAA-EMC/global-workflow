@@ -176,7 +176,7 @@ while [[ ${remaining} -gt 0 ]]; do
                     fi
                 done
                 if [[ -n "${_ref_size}" ]]; then
-                    _sz_diff=$(( _sz_new - _ref_size ))
+                    _sz_diff=$((_sz_new - _ref_size))
                     if [[ ${_sz_diff} -lt 0 ]]; then
                         _sz_diff=$((-_sz_diff))
                     fi
