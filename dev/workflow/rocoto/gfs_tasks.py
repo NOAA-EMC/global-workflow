@@ -3142,7 +3142,7 @@ class GFSTasks(Tasks):
             efcs_mgr_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         cycledef = 'gdas_half,gdas' if self.run in ['enkfgdas'] else self.run.replace('enkf', '')
-        resources = self.get_resource('fcst_manager')
+        resources = self.get_resource('efcs_manager')
 
         task_name = f'{self.run}_efcs_manager_mem#member#'
         task_dict = {'task_name': task_name,
