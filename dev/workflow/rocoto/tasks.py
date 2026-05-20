@@ -26,7 +26,7 @@ class Tasks:
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
                    'offlineanl',
-                   'fcst', 'fcst_manager',
+                   'fcst', 'fcst_manager', 'efcs_manager',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
                    'verfozn', 'verfrad', 'vminmon', 'anlstat', 'wdqms',

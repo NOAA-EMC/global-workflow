@@ -3121,6 +3121,49 @@ class GFSTasks(Tasks):
 
         return task
 
+    def efcs_manager(self):
+        # Member forecast manager: runs alongside each ensemble member forecast (enkfgdas).
+        # DATAjob = ${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY}${cyc}  (see JGLOBAL_FORECAST/ENSMEM path)
+        stmp = self._base.get('STMP')
+        pslot = self._base.get('PSLOT')
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}efcs#member#.@Y@m@d@H"
+
+        deps = []
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg0.txt', 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_table_ready_seg0', 'age': 5}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        efcs_mgr_vars = self.envars.copy()
+        efcs_mgr_vars_dict = {'ENSMEM': '#member#',
+                              'MEMDIR': 'mem#member#'}
+        for key, value in efcs_mgr_vars_dict.items():
+            efcs_mgr_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        cycledef = 'gdas_half,gdas' if self.run in ['enkfgdas'] else self.run.replace('enkf', '')
+        resources = self.get_resource('fcst_manager')
+
+        task_name = f'{self.run}_efcs_manager_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': efcs_mgr_vars,
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/fcst_manager.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        metatask_dict = {'task_name': f'{self.run}_efcs_manager',
+                         'var_dict': member_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        return rocoto.create_task(metatask_dict)
+
     def echgres(self):
 
         self._is_this_a_gdas_task(self.run, 'echgres')

@@ -135,7 +135,7 @@ class GFSCycledAppConfig(AppConfig):
 
         configs += ['stage_ic', 'sfcanl_gcycle', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
 
-        if run == 'gfs':
+        if run in ['gfs', 'gdas']:
             configs += ['fcst_manager']
 
         if options['do_archcom']:
@@ -149,7 +149,7 @@ class GFSCycledAppConfig(AppConfig):
             else:
                 configs += ['eobs', 'ediag', 'eupd', 'echgres', 'ecen']
 
-            configs += ['esfc_gcycle', 'efcs', 'epos', 'earc_vrfy']
+            configs += ['esfc_gcycle', 'efcs', 'efcs_manager', 'epos', 'earc_vrfy']
 
             if options['do_archcom']:
                 configs += ['earc_tars', 'earc_groups']
@@ -311,8 +311,8 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['atmanlupp', 'atmanlprod', 'fcst']
 
-                # gfs-specific products
-                if run == 'gfs':
+                # gfs- and gdas-specific forecast manager
+                if run in ['gfs', 'gdas']:
                     task_names[run] += ['fcst_manager']
 
                     if options['do_ocean']:
@@ -409,6 +409,7 @@ class GFSCycledAppConfig(AppConfig):
                     else:
                         task_names[run] += ['atmensanlletkf']
                     task_names[run].append('efcs') if 'gdas' in run else 0
+                    task_names[run].append('efcs_manager') if 'gdas' in run else 0
                     task_names[run].append('epos') if 'gdas' in run else 0
 
                 else:
@@ -424,6 +425,7 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
                 task_names[run].append('efcs') if 'gdas' in run else 0
+                task_names[run].append('efcs_manager') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
                 task_names[run] += ['esfc_gcycle']

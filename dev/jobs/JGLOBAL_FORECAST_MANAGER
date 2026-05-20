@@ -17,7 +17,12 @@ set -x
 #           are copied at the end of the forecast job by JGLOBAL_FORECAST.
 #############################################################################
 
-export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+else
+    export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+fi
 export DATA="${DATAjob}/manager.${jobid}"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst_manager"
 
