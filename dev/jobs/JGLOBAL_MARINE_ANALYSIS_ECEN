@@ -26,7 +26,7 @@ PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ## HOTFIX
-# TODO Move this to the GDASApp config. Better yet, fix this in the model so RESTART doesn't get created.
+# TODO Fix this in the input.nml template so RESTART doesn't get created in the first place.
 mkdir -p "${DATA}/RESTART"
 
 # Ignore possible spelling error (nothing is misspelled)
