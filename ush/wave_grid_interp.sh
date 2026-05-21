@@ -66,7 +66,7 @@ sed -e "s/TIME/${ymdhms}/g" \
 cat ww3_gint.inp
 
 # Run the interpolation code
-export pgm="${NET,,}_ww3_gint.x"
+export pgm="ww3_gint_${NET,,}.x"
 source prep_step
 echo "INFO: Executing '${pgm}'"
 "${EXECglobal}/${pgm}" > "grid_interp.${grdID}.out" 2>&1
