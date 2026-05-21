@@ -259,7 +259,6 @@ FNACNA=${FNACNA:-${COMIN_OBS}/${PREINP}engicegrb${SUFINP}}
 FNSNOA=${FNSNOA:-${COMIN_OBS}/${PREINP}snogrb${SUFINP}}
 #  Other variables.
 PGMOUT=${PGMOUT:-${pgmout:-'out'}}
-PGMERR=${PGMERR:-${pgmerr:-'err'}}
 # Set defaults
 ################################################################################
 #  Preprocessing
@@ -336,7 +335,7 @@ cat << EOF > fort.37
  /
 EOF
 
-${APRUNCY} "${CYCLEXEC}" 1>> "${PGMOUT}" 2>> "${PGMERR}"
+${APRUNCY} "${CYCLEXEC}" 2>&1 | tee "${PGMOUT}"
 
 export err=$?
 
