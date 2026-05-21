@@ -101,9 +101,10 @@ dest_inst="${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}$
 
 # 1. Consolidate Accumulated (ACC)
 if [[ -d "${tmp_acc_work_dir}" ]]; then
-    # Clear array and fill it using mapfile
+    # Clear array and fill it using arrary
     unset acc_files
-    mapfile -t acc_files < <(ls -v "${tmp_acc_work_dir}"/daily_acc*.grb 2> /dev/null)
+    acc_files=( "${tmp_acc_work_dir}"/daily_acc*.grb )
+    [ -e "${acc_files[0]}" ] || acc_files=()
 
     if [[ ${#acc_files[@]} -gt 0 ]]; then
         echo "INFO: Task ${i} merging ${#acc_files[@]} days for ACC using array expansion."
@@ -116,8 +117,10 @@ fi
 
 # 2. Consolidate Instantaneous (INST)
 if [[ -d "${tmp_inst_work_dir}" ]]; then
+    # Clear array and fill it using arrary
     unset inst_files
-    mapfile -t inst_files < <(ls -v "${tmp_inst_work_dir}"/daily_inst*.grb 2> /dev/null)
+    inst_files=( "${tmp_inst_work_dir}"/daily_inst*.grb )
+    [ -e "${inst_files[0]}" ] || inst_files=()
 
     if [[ ${#inst_files[@]} -gt 0 ]]; then
         echo "INFO: Task ${i} merging ${#inst_files[@]} days for INST using array expansion."
