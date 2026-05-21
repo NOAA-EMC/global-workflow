@@ -964,47 +964,45 @@ CICE_postdet() {
     local use_mgr_ice="NO"
     case "${RUN}" in
         gfs) use_mgr_ice="YES" ;;
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
-            # enkfgfs | gefs | sfs | gcafs) use_mgr_ice="YES" ;;
+        # TODO: enable forecast manager for gdas, enkfgdas, enkfgfs, gefs, sfs, gcafs once tested
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     rm -f "${ice_table}"
 
-    local vdate seconds vdatestr fhr fhr3 interval last_fhr
+    local vdate seconds vdatestr fhr fhr3 interval
 
     # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
     # No per-period sentinel exists; the manager cannot track it in-flight.
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
-        # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
-        # No per-period sentinel; use fcst_done_seg as proxy since iceh_ic is written
-        # during CICE initialization before any time stepping begins.
+        # iceh_ic is written during CICE initialization before any time stepping.
+        # Use fcst_table_ready_seg as the trigger so it is copied early and does
+        # not collide with the last forecast-hour entry (which uses fcst_done_seg).
         # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
         echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
-            "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}" \
+            "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
-        # Non-manager (GDAS): NLN so the model writes directly into COM via symlink.
+        # Non-manager: NLN so the model writes directly into COM via symlink.
         if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
         ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
     fi
 
-    # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM.
+    # Build CICE product table entries for each forecast hour.
+    # Column layout: local_data  local_trigger  com_data  com_log
+    #   local_trigger: next hour's output file for non-last entries, or
+    #                  fcst_done_seg for the last entry.  The manager writes
+    #                  com_log synthetically when the trigger appears.
     local source_file dest_file
-    for fhr in "${CICE_OUTPUT_FH[@]}"; do
-
-        if [[ -z ${last_fhr:-} ]]; then
-            last_fhr=${fhr}
-            continue
-        fi
-
+    local n_fhr=${#CICE_OUTPUT_FH[@]}
+    for ((idx = 1; idx < n_fhr; idx++)); do
+        fhr=${CICE_OUTPUT_FH[idx]}
+        local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
+        ((interval = fhr - prev_fhr))
         fhr3=$(printf %03i "${fhr}")
-        local fhr4
-        fhr4=$(printf %04i "${fhr}")
-        ((interval = fhr - last_fhr))
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
@@ -1031,17 +1029,36 @@ CICE_postdet() {
 
         local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
         local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
-        # log.ice.fHHHH (4-digit hour) is the sentinel written by CICE's ufs_logfhour
-        # after the output .nc is closed and ice_timer_stop(timer_readwrite) returns.
-        local ice_log_local="${DATA}/log.ice.f${fhr4}"
-        local ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
+        local ice_log_local ice_log_com
+        ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
         if [[ "${use_mgr_ice}" == "YES" ]]; then
+            if [[ $((idx + 1)) -lt n_fhr ]]; then
+                # Non-last: trigger = next forecast hour's ice output on DATA.
+                local next_fhr=${CICE_OUTPUT_FH[idx + 1]}
+                local next_vdate next_sec next_vdstr
+                next_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${next_fhr} hours" +%Y%m%d%H)
+                next_sec=$(to_seconds "${next_vdate:8:2}0000")
+                next_vdstr="${next_vdate:0:4}-${next_vdate:4:2}-${next_vdate:6:2}-${next_sec}"
+                case "${RUN}" in
+                    gfs | enkfgfs | sfs | gcafs)
+                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${next_vdstr}.nc"
+                        ;;
+                    gefs)
+                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh.${next_vdstr}.nc"
+                        ;;
+                    *)
+                        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet ice trigger"
+                        exit 10
+                        ;;
+                esac
+            else
+                # Last forecast hour: trigger = forecast completion sentinel.
+                ice_log_local="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+            fi
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
             ${NLN} "${ice_com}" "${ice_local}"
         fi
-
-        last_fhr=${fhr}
     done
 }
 
