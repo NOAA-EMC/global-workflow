@@ -101,7 +101,7 @@ fi
 outfiletmp="${outfile}.tmp"
 if [[ ${fhr} -gt 0 ]]; then
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
-        -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
+        -grib "${outfiletmp}"
     err=$?
     if [[ ${err} -eq 0 ]]; then
         ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
@@ -113,7 +113,7 @@ if [[ ${fhr} -gt 0 ]]; then
 else
     ${WGRIB2} gribfile -set_date "${PDY}${cyc}" -set_ftime "${fhr} hour fcst" \
         -set table_1.4 1 -set table_1.2 1 \
-        -set_grib_type simple -g2clib 0 -grib "${outfiletmp}"
+        -grib "${outfiletmp}"
     err=$?
     if [[ ${err} -eq 0 ]]; then
         ${WGRIB2} "${outfiletmp}" -set_grib_type c2 -grib "${outfile}"
