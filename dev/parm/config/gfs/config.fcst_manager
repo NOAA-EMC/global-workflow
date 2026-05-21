@@ -5,10 +5,10 @@
 
 echo "BEGIN: config.fcst_manager"
 
-# Number of parallel MPMD ranks per model component. Each component's product
-# table is split into this many sub-tables so that files are copied in parallel.
+# Number of parallel MPMD ranks per model component.
+# ATM uses 5 fixed ranks (4 per-product + 1 barrier); no MGR_NTASKS_ATM.
+# WW3/OCN/ICE tables are split into n sub-tables; one rank per sub-table.
 # Must match the ntasks calculation in config.resources "fcst_manager".
-export MGR_NTASKS_ATM=${MGR_NTASKS_ATM:-3}
 export MGR_NTASKS_WW3=${MGR_NTASKS_WW3:-2}
 export MGR_NTASKS_OCN=${MGR_NTASKS_OCN:-1}
 export MGR_NTASKS_ICE=${MGR_NTASKS_ICE:-1}
