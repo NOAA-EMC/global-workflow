@@ -282,6 +282,7 @@ class OceanIceProducts(Task):
         logger.info(f"Subsetting {varlist} from {input_file} to {output_file}")
 
         try:
+            # open the netcdf file
             ds = xr.open_dataset(input_file)
             if config.component == 'ice':
                 # subset the variables

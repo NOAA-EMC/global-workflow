@@ -161,18 +161,24 @@ while [[ ${remaining} -gt 0 ]]; do
             fi
             if [[ ${_missing_sentinel} -eq 1 ]]; then
                 _sz_new=$(stat -c %s "${com_data[j]}")
-                # Find an already-copied COM file from a different (real) sentinel
-                # as a size reference. All forecast outputs should be similar
-                # in size; a large deviation suggests partial or corrupt output.
+                # Find an already-copied COM file of the same file type (same
+                # name pattern, different forecast hour) as a size reference.
+                # Strip the forecast-hour token (f006, F06, …) to derive a
+                # normalised pattern, then only accept a match with the same
+                # normalised name so we compare apples to apples.
                 _ref_size=""
                 _ref_name=""
+                _cur_norm=$(basename "${com_data[j]}" | sed 's/[Ff][0-9]\{2,3\}/fNNN/g')
                 for ((k = 0; k < count; k++)); do
                     if [[ "${done_flag[k]}" == "YES" &&
                         "${local_log[k]}" != "${this_ll}" &&
                         -f "${com_data[k]}" ]]; then
-                        _ref_size=$(stat -c %s "${com_data[k]}")
-                        _ref_name=$(basename "${com_data[k]}")
-                        break
+                        _ref_norm=$(basename "${com_data[k]}" | sed 's/[Ff][0-9]\{2,3\}/fNNN/g')
+                        if [[ "${_ref_norm}" == "${_cur_norm}" ]]; then
+                            _ref_size=$(stat -c %s "${com_data[k]}")
+                            _ref_name=$(basename "${com_data[k]}")
+                            break
+                        fi
                     fi
                 done
                 if [[ -n "${_ref_size}" ]]; then
