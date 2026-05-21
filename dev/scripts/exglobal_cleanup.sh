@@ -12,17 +12,6 @@ fi
 #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
 rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 ###############################################################
-# Remove MOM6/CICE completion sentinel .log files from the current cycle.
-# These marker files are written by the forecast manager to confirm that each
-# output .nc was fully copied to COM.  They are not needed after the cycle
-# completes and the cleanup job runs.
-for _sentinel_log in \
-    "${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ocean/history"/*.nc.log \
-    "${ROTDIR}/${RUN}.${PDY}/${cyc}/model/ice/history"/*.nc.log; do
-    rm -f "${_sentinel_log}"
-done
-unset _sentinel_log
-###############################################################
 
 if [[ "${CLEANUP_COM:-YES}" == NO ]]; then
     exit 0
