@@ -64,7 +64,7 @@ if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb" ]]; then
     recvy_cyc="${modelrecvy:8:2}"
     recvy_shour="${modelrecvy:10:13}"
 
-    if [[ ${RERUN} == "NO" ]]; then
+    if [[ ${RERUN:-NO} == "NO" ]]; then
         NEW_SHOUR=$((recvy_shour + FHOUT_GOES))
         if ((NEW_SHOUR > SHOUR)); then
             export SHOUR="${NEW_SHOUR}"
