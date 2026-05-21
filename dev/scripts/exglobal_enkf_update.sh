@@ -323,14 +323,12 @@ export pgm=${ENKFEXEC}
 source prep_step
 
 cpreq "${ENKFEXEC}" "${DATA}"
-${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 1> stdout 2> stderr && true
+${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 2>&1 | tee enkfstat.txt && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the EnKF!"
 fi
 
-# Cat runtime output files.
-cat stdout stderr > enkfstat.txt
 cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 
 ################################################################################

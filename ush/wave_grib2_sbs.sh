@@ -83,7 +83,7 @@ sed -e "s/TIME/${tstart}/g" \
 cat ww3_grib.inp
 
 # Run the ww3_grib generation code
-export pgm="${NET,,}_ww3_grib.x"
+export pgm="ww3_grib_${NET,,}.x"
 source prep_step
 "${EXECglobal}/${pgm}" > "grib2_${grid_region}_${FH3}.out" 2>&1
 export err=$?

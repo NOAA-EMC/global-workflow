@@ -107,7 +107,7 @@ printf "   Run through preprocessor ...\n"
 
 cpreq -f "${DATA}/ww3_prnc.ice.${WAVEICE_FID}.inp.tmpl" ww3_prnc.inp
 
-export pgm="${NET,,}_ww3_prnc.x"
+export pgm="ww3_prnc_${NET,,}.x"
 source prep_step
 
 "${EXECglobal}/${pgm}" 1> "prnc_${WAVEICE_FID}_${cycle}.out" 2>&1
