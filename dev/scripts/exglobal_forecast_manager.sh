@@ -91,11 +91,13 @@ for _atm_tbl in "${ATM_ATMF_TABLE}" "${ATM_SFCF_TABLE}" \
     fi
 done
 echo "INFO: ATM per-product tables found; adding 5 ATM rank(s) (4 product + 1 barrier)"
-echo "${USHgfs}/forecast_manager.sh atm_atmf ${ATM_ATMF_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
-echo "${USHgfs}/forecast_manager.sh atm_sfcf ${ATM_SFCF_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
-echo "${USHgfs}/forecast_manager.sh atm_grib ${ATM_GRIB_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
-echo "${USHgfs}/forecast_manager.sh atm_flux ${ATM_FLUX_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
-echo "${USHgfs}/forecast_atm_barrier.sh ${ATM_BARRIER_TABLE}" >> "${FCST_MANAGER_CMDFILE}"
+{
+    echo "${USHgfs}/forecast_manager.sh atm_atmf ${ATM_ATMF_TABLE}"
+    echo "${USHgfs}/forecast_manager.sh atm_sfcf ${ATM_SFCF_TABLE}"
+    echo "${USHgfs}/forecast_manager.sh atm_grib ${ATM_GRIB_TABLE}"
+    echo "${USHgfs}/forecast_manager.sh atm_flux ${ATM_FLUX_TABLE}"
+    echo "${USHgfs}/forecast_atm_barrier.sh ${ATM_BARRIER_TABLE}"
+} >> "${FCST_MANAGER_CMDFILE}"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"
