@@ -55,6 +55,9 @@ fi
 
 FCST_POLL_INTERVAL="${FCST_MGR_POLL_INTERVAL:-30}"
 FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+# After fcst_done appears, keep polling for this long before forcing WARN sentinels
+# if no pending rows are being resolved. Set to 0 to disable forced WARN drain.
+FCST_POSTDONE_TIMEOUT="${FCST_MGR_POSTDONE_TIMEOUT:-1800}"
 
 # Track which rows are still pending.
 declare -a final_logs all_deps_arr pending_idx
@@ -74,7 +77,10 @@ total="${count}"
 echo "INFO [atm_barrier]: ${total} forecast hour(s) to confirm"
 
 remaining="${total}"
+postdone_elapsed=0
+postdone_announced=0
 while [[ "${remaining}" -gt 0 ]]; do
+    remaining_before="${remaining}"
     new_pending=()
 
     for idx in "${pending_idx[@]}"; do
@@ -105,18 +111,36 @@ while [[ "${remaining}" -gt 0 ]]; do
     pending_idx=("${new_pending[@]}")
 
     if [[ "${remaining}" -gt 0 ]]; then
-        # If the model is finished, drain any remaining rows with a WARN sentinel
-        # rather than blocking the job. This handles edge cases where a product
-        # rank failed or a file was never written. Clean up dep logs either way.
+        # If the model is finished, keep polling for a grace period before forcing
+        # WARN sentinels. Product-copy ranks can still be actively writing dep
+        # sentinels after fcst_done appears.
         if [[ -f "${FCST_DONE_SENTINEL}" ]]; then
-            echo "WARN [atm_barrier]: Model done but ${remaining} row(s) still pending; writing WARN sentinels"
-            for idx in "${pending_idx[@]}"; do
-                final_log="${final_logs[${idx}]}"
-                echo "WARN: ATM barrier timed out at $(date --utc +%Y%m%d%H%M%S)" > "${final_log}"
-                read -r -a warn_deps <<< "${all_deps_arr[${idx}]}"
-                rm -f "${warn_deps[@]}"
-            done
-            break
+            # Reset idle timer whenever at least one row completed this poll cycle.
+            if [[ "${remaining}" -lt "${remaining_before}" ]]; then
+                postdone_elapsed=0
+            else
+                ((postdone_elapsed += FCST_POLL_INTERVAL)) || true
+            fi
+
+            if [[ "${postdone_announced}" -eq 0 ]]; then
+                echo "INFO [atm_barrier]: fcst_done detected with ${remaining} row(s) pending; allowing copy ranks to finish"
+                postdone_announced=1
+            fi
+
+            if [[ "${FCST_POSTDONE_TIMEOUT}" -gt 0 && "${postdone_elapsed}" -ge "${FCST_POSTDONE_TIMEOUT}" ]]; then
+                echo "WARN [atm_barrier]: Model done and no barrier progress for ${postdone_elapsed}s; writing WARN sentinels for ${remaining} pending row(s)"
+                for idx in "${pending_idx[@]}"; do
+                    final_log="${final_logs[${idx}]}"
+                    final_dir=$(dirname "${final_log}")
+                    if [[ ! -d "${final_dir}" ]]; then
+                        mkdir -p "${final_dir}"
+                    fi
+                    echo "WARN: ATM barrier timed out at $(date --utc +%Y%m%d%H%M%S)" > "${final_log}"
+                    read -r -a warn_deps <<< "${all_deps_arr[${idx}]}"
+                    rm -f "${warn_deps[@]}"
+                done
+                break
+            fi
         fi
         sleep "${FCST_POLL_INTERVAL}"
     fi
