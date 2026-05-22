@@ -73,31 +73,33 @@ split_table_by_sentinel() {
 FCST_MANAGER_CMDFILE="${DATA}/fcst_manager_cmdfile"
 rm -f "${FCST_MANAGER_CMDFILE}"
 
-# ATM: one dedicated manager rank per product type + one barrier rank.
-# The barrier rank writes the final combined com_log only after all per-product
-# ranks have confirmed their data files are in COM.
-ATM_ATMF_TABLE="${DATAjob}/atm_atmf_products_seg${FCST_SEGMENT}.txt"
-ATM_SFCF_TABLE="${DATAjob}/atm_sfcf_products_seg${FCST_SEGMENT}.txt"
-ATM_GRIB_TABLE="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}.txt"
-ATM_FLUX_TABLE="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}.txt"
-ATM_BARRIER_TABLE="${DATAjob}/atm_barrier_seg${FCST_SEGMENT}.txt"
-
-echo "INFO: Waiting for ATM per-product tables"
-for _atm_tbl in "${ATM_ATMF_TABLE}" "${ATM_SFCF_TABLE}" \
-    "${ATM_GRIB_TABLE}" "${ATM_FLUX_TABLE}" "${ATM_BARRIER_TABLE}"; do
-    if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-        echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
-        exit 1
-    fi
+# ATM: MGR_NATM_INST instance groups, each with 4 product ranks + 1 barrier rank.
+# Forecast hours are distributed round-robin across instances (postdet splits the tables)
+# so all groups copy in parallel.
+natm_inst="${MGR_NATM_INST:-2}"
+echo "INFO: Waiting for ATM per-product tables (${natm_inst} instance(s))"
+for ((inst = 0; inst < natm_inst; inst++)); do
+    atm_atmf_tbl="${DATAjob}/atm_atmf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_sfcf_tbl="${DATAjob}/atm_sfcf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_grib_tbl="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_barrier_tbl="${DATAjob}/atm_barrier_seg${FCST_SEGMENT}_inst${inst}.txt"
+    for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" \
+        "${atm_grib_tbl}" "${atm_flux_tbl}" "${atm_barrier_tbl}"; do
+        if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
+            echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
+            exit 1
+        fi
+    done
+    {
+        echo "${USHgfs}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
+        echo "${USHgfs}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
+        echo "${USHgfs}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
+        echo "${USHgfs}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        echo "${USHgfs}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
+    } >> "${FCST_MANAGER_CMDFILE}"
 done
-echo "INFO: ATM per-product tables found; adding 5 ATM rank(s) (4 product + 1 barrier)"
-{
-    echo "${USHgfs}/forecast_manager.sh atm_atmf ${ATM_ATMF_TABLE}"
-    echo "${USHgfs}/forecast_manager.sh atm_sfcf ${ATM_SFCF_TABLE}"
-    echo "${USHgfs}/forecast_manager.sh atm_grib ${ATM_GRIB_TABLE}"
-    echo "${USHgfs}/forecast_manager.sh atm_flux ${ATM_FLUX_TABLE}"
-    echo "${USHgfs}/forecast_atm_barrier.sh ${ATM_BARRIER_TABLE}"
-} >> "${FCST_MANAGER_CMDFILE}"
+echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"

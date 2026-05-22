@@ -315,25 +315,37 @@ EOF
             *) ;;
         esac
 
-        # Per-product tables: one manager rank per ATM file type + one barrier rank.
-        # The barrier rank writes the final combined com_log only after all per-product
-        # ranks confirm their files are in COM.
-        local atm_atmf_table="${DATAjob}/atm_atmf_products_seg${FCST_SEGMENT:-0}.txt"
-        local atm_sfcf_table="${DATAjob}/atm_sfcf_products_seg${FCST_SEGMENT:-0}.txt"
-        local atm_grib_table="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT:-0}.txt"
-        local atm_flux_table="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT:-0}.txt"
-        local atm_barrier_table="${DATAjob}/atm_barrier_seg${FCST_SEGMENT:-0}.txt"
+        # Per-product tables: MGR_NATM_INST instance groups, each with one rank
+        # per ATM file type plus one barrier rank (5 ranks per instance, 10 total
+        # for the default of 2). Forecast hours are distributed round-robin across
+        # instances so all groups copy in parallel, halving the serial copy time.
+        local natm_inst="${MGR_NATM_INST:-2}"
+        local seg="${FCST_SEGMENT:-0}"
+        local inst fhr_idx
+        local -a atm_atmf_tables atm_sfcf_tables atm_grib_tables atm_flux_tables atm_barrier_tables
+        for ((inst = 0; inst < natm_inst; inst++)); do
+            atm_atmf_tables[inst]="${DATAjob}/atm_atmf_products_seg${seg}_inst${inst}.txt"
+            atm_sfcf_tables[inst]="${DATAjob}/atm_sfcf_products_seg${seg}_inst${inst}.txt"
+            atm_grib_tables[inst]="${DATAjob}/atm_grib_products_seg${seg}_inst${inst}.txt"
+            atm_flux_tables[inst]="${DATAjob}/atm_flux_products_seg${seg}_inst${inst}.txt"
+            atm_barrier_tables[inst]="${DATAjob}/atm_barrier_seg${seg}_inst${inst}.txt"
+        done
         if [[ "${use_mgr}" == "YES" ]]; then
-            rm -f "${atm_atmf_table}" "${atm_sfcf_table}" \
-                "${atm_grib_table}" "${atm_flux_table}" "${atm_barrier_table}"
+            for ((inst = 0; inst < natm_inst; inst++)); do
+                rm -f "${atm_atmf_tables[inst]}" "${atm_sfcf_tables[inst]}" \
+                    "${atm_grib_tables[inst]}" "${atm_flux_tables[inst]}" "${atm_barrier_tables[inst]}"
+            done
             # Remove the table-ready sentinel so the forecast manager does not trigger from a
             # previous run when this segment is rewound and re-queued.
-            rm -f "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}"
+            rm -f "${DATAjob}/fcst_table_ready_seg${seg}"
         fi
 
+        fhr_idx=0
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
+            inst=$(( fhr_idx % natm_inst ))
+            ((fhr_idx++)) || true
 
             # Build (local_file, com_file) pairs once; used for both the manager
             # product table and the NLN symlink paths.
@@ -371,30 +383,30 @@ EOF
                 local com_log_atmf="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.atm.atmf.f${FH3}.txt"
                 local com_log_sfcf="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.atm.sfcf.f${FH3}.txt"
                 # Atmospheric state netCDF rank
-                echo "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_table}"
+                echo "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_tables[inst]}"
                 # Surface state netCDF rank
-                echo "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_table}"
+                echo "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_tables[inst]}"
                 # Optional cubed-sphere grid files share the same nc rank as their Gaussian counterpart.
                 if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_table}"
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_table}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_tables[inst]}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_tables[inst]}"
                 fi
                 local barrier_deps="${com_log_atmf} ${com_log_sfcf}"
                 if [[ "${WRITE_DOPOST}" == ".true." ]]; then
                     local com_log_grib="${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.log.atm.grib.f${FH3}.txt"
                     local com_log_flux="${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.log.atm.flux.f${FH3}.txt"
                     # GRIB2 gridded rank
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_table}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_tables[inst]}"
                     # GRIB2 flux rank
-                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_table}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_tables[inst]}"
                     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_table}"
-                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_table}"
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_tables[inst]}"
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_tables[inst]}"
                     fi
                     barrier_deps="${barrier_deps} ${com_log_grib} ${com_log_flux}"
                 fi
                 # Barrier row: final combined com_log followed by all per-product deps.
-                echo "${com_log} ${barrier_deps}" >> "${atm_barrier_table}"
+                echo "${com_log} ${barrier_deps}" >> "${atm_barrier_tables[inst]}"
             else
                 # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
                 for ((i = 0; i < ${#local_files[@]}; i++)); do

@@ -989,7 +989,7 @@ case ${step} in
     # Walltime must be long enough to cover the full forecast run.
     is_exclusive=False
     prepost=True
-    ntasks=5  # ATM: 4 per-product ranks + 1 barrier rank
+    (( ntasks = MGR_NATM_INST * 5 ))  # ATM: MGR_NATM_INST x (4 product + 1 barrier)
     if [[ "${DO_WAVE}" == "YES" ]]; then
         (( ntasks += ${MGR_NTASKS_WW3:-2} ))
     fi

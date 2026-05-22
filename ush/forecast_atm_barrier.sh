@@ -5,16 +5,40 @@
 # Script name:         forecast_atm_barrier.sh
 # Script description:  ATM barrier for per-product parallel copy ranks
 #
-# Abstract: Called by JGLOBAL_FORECAST_MGR in MPMD mode alongside the four
-#           per-product ATM manager ranks (atm_atmf, atm_sfcf, atm_grib,
-#           atm_flux). Reads a barrier table where each row has the format:
+# Abstract: Runs as the fifth MPMD rank alongside the four per-product ATM
+#           manager ranks (atm_atmf, atm_sfcf, atm_grib, atm_flux).
 #
-#             final_com_log  dep1  dep2  [dep3  dep4 ...]
+#           Each of those four ranks copies one class of ATM output files to
+#           COM and writes a small per-product sentinel (com_log) in COM
+#           when its copy is done.  Downstream jobs cannot wait on four
+#           separate sentinels, so this barrier rank provides the single
+#           combined sentinel they already expect: gfs.tXXz.log.fHHH.txt.
 #
-#           Polls until every per-product dep log (dep1..depN) exists in COM,
-#           then writes the final_com_log so that downstream jobs see the
-#           standard sentinel contract: all ATM products for that forecast
-#           hour are fully in COM when final_com_log appears.
+#           The barrier table (written by FV3_postdet in forecast_postdet.sh)
+#           has one row per forecast hour:
+#
+#             final_com_log  com_log_atmf  com_log_sfcf  [com_log_grib  com_log_flux]
+#
+#           Where:
+#             final_com_log  = COMOUT_ATMOS_HISTORY/gfs.tXXz.log.fHHH.txt
+#                              (the standard per-hour sentinel downstream jobs poll)
+#             com_log_atmf   = COMOUT_ATMOS_HISTORY/gfs.tXXz.log.atm.atmf.fHHH.txt
+#                              (written by atm_atmf rank once atmfHHH.nc is in COM)
+#             com_log_sfcf   = COMOUT_ATMOS_HISTORY/gfs.tXXz.log.atm.sfcf.fHHH.txt
+#                              (written by atm_sfcf rank once sfcfHHH.nc is in COM)
+#             com_log_grib   = COMOUT_ATMOS_MASTER/gfs.tXXz.log.atm.grib.fHHH.txt
+#                              (written by atm_grib rank; present only if WRITE_DOPOST)
+#             com_log_flux   = COMOUT_ATMOS_MASTER/gfs.tXXz.log.atm.flux.fHHH.txt
+#                              (written by atm_flux rank; present only if WRITE_DOPOST)
+#
+#           Once all dep logs in a row are present (meaning all product types
+#           for that hour are in COM), this script writes final_com_log and
+#           removes the intermediate dep logs (they are internal bookkeeping
+#           and not part of the downstream sentinel contract).
+#
+#           If the model finishes (fcst_done_seg appears) while rows are still
+#           pending, a WARN sentinel is written to unblock the job rather than
+#           hanging indefinitely.
 #
 # Usage:    forecast_atm_barrier.sh <barrier_table>
 #             barrier_table - absolute path to the barrier table file
@@ -69,7 +93,8 @@ while [[ "${remaining}" -gt 0 ]]; do
         if [[ "${all_ready}" -eq 1 ]]; then
             echo "INFO [atm_barrier]: All deps for '$(basename "${final_log}")' confirmed; writing final sentinel"
             echo "ATM products confirmed in COM at $(date --utc +%Y%m%d%H%M%S)" > "${final_log}"
-            # Remove intermediate per-product sentinels now that the combined sentinel is written.
+            # The four per-product dep logs are internal bookkeeping only; remove
+            # them now that the combined final_com_log is written so COM stays clean.
             rm -f "${deps[@]}"
             ((remaining--)) || true
         else
@@ -80,8 +105,9 @@ while [[ "${remaining}" -gt 0 ]]; do
     pending_idx=("${new_pending[@]}")
 
     if [[ "${remaining}" -gt 0 ]]; then
-        # If the model is finished, drain remaining rows with a warning rather
-        # than blocking the job from completing.
+        # If the model is finished, drain any remaining rows with a WARN sentinel
+        # rather than blocking the job. This handles edge cases where a product
+        # rank failed or a file was never written. Clean up dep logs either way.
         if [[ -f "${FCST_DONE_SENTINEL}" ]]; then
             echo "WARN [atm_barrier]: Model done but ${remaining} row(s) still pending; writing WARN sentinels"
             for idx in "${pending_idx[@]}"; do
