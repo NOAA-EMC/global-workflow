@@ -69,6 +69,8 @@ while [[ "${remaining}" -gt 0 ]]; do
         if [[ "${all_ready}" -eq 1 ]]; then
             echo "INFO [atm_barrier]: All deps for '$(basename "${final_log}")' confirmed; writing final sentinel"
             echo "ATM products confirmed in COM at $(date --utc +%Y%m%d%H%M%S)" > "${final_log}"
+            # Remove intermediate per-product sentinels now that the combined sentinel is written.
+            rm -f "${deps[@]}"
             ((remaining--)) || true
         else
             new_pending+=("${idx}")
@@ -85,6 +87,8 @@ while [[ "${remaining}" -gt 0 ]]; do
             for idx in "${pending_idx[@]}"; do
                 final_log="${final_logs[${idx}]}"
                 echo "WARN: ATM barrier timed out at $(date --utc +%Y%m%d%H%M%S)" > "${final_log}"
+                read -r -a warn_deps <<< "${all_deps_arr[${idx}]}"
+                rm -f "${warn_deps[@]}"
             done
             break
         fi

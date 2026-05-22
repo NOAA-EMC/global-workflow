@@ -1010,11 +1010,28 @@ CICE_postdet() {
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
         # iceh_ic is written during CICE initialization before any time stepping.
-        # Use fcst_table_ready_seg as the trigger so it is copied early and does
-        # not collide with the last forecast-hour entry (which uses fcst_done_seg).
-        # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those.
+        # Use the first forecast-hour ice output as the trigger (same pattern as
+        # non-last entries in the loop below). iceh_ic is fully written before
+        # f006 appears, ensuring a complete copy.
+        local ic_trigger_fhr=${CICE_OUTPUT_FH[1]}
+        local ic_trigger_vdate ic_trigger_sec ic_trigger_vdstr ic_trigger
+        ic_trigger_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${ic_trigger_fhr} hours" +%Y%m%d%H)
+        ic_trigger_sec=$(to_seconds "${ic_trigger_vdate:8:2}0000")
+        ic_trigger_vdstr="${ic_trigger_vdate:0:4}-${ic_trigger_vdate:4:2}-${ic_trigger_vdate:6:2}-${ic_trigger_sec}"
+        case "${RUN}" in
+            gfs | enkfgfs | sfs | gcafs)
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${ic_trigger_vdstr}.nc"
+                ;;
+            gefs)
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh.${ic_trigger_vdstr}.nc"
+                ;;
+            *)
+                echo "FATAL ERROR: Unsupported RUN ${RUN} for iceh_ic trigger in CICE postdet" >&2
+                exit 10
+                ;;
+        esac
         echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
-            "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}" \
+            "${ic_trigger}" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
