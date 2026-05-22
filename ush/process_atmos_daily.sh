@@ -123,7 +123,6 @@ if [[ -d "${tmp_inst_work_dir}" ]]; then
     inst_string=$(ls -v "${tmp_inst_work_dir}"/daily_inst*.grb 2>/dev/null)
     mapfile -t inst_files <<< "${inst_string}"
 
-
     if [[ ${#inst_files[@]} -gt 0 ]]; then
         echo "INFO: Task ${i} merging ${#inst_files[@]} days for INST using array expansion."
         ${GMERGE} "${dest_inst}" "${inst_files[@]}"
