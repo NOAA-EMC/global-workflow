@@ -123,10 +123,14 @@ sorc/logs
 sorc/calc_analysis.fd
 sorc/calc_increment_ens.fd
 sorc/calc_increment_ens_ncio.fd
+sorc/chgres_cube.fd
 sorc/emcsfc_ice_blend.fd
 sorc/emcsfc_snow2mdl.fd
 sorc/enkf.fd
 sorc/enkf_chgres_recenter_nc.fd
+sorc/ensadd.fd
+sorc/ensppf.fd
+sorc/ensstat.fd
 sorc/fbwndgfs.fd
 sorc/gaussian_sfcanl.fd
 sorc/getsfcensmeanp.fd
@@ -146,6 +150,7 @@ sorc/radmon_bcor.fd
 sorc/radmon_time.fd
 sorc/rdbfmsua.fd
 sorc/recentersigp.fd
+sorc/regridStates.fd
 sorc/supvit.fd
 sorc/syndat_getjtbul.fd
 sorc/syndat_maksynrc.fd
@@ -155,7 +160,9 @@ sorc/tocsbufr.fd
 sorc/tref_calc.fd
 sorc/upp.fd
 sorc/vint.fd
+sorc/wave_stat.fd
 sorc/webtitle.fd
+sorc/WW3.fd
 sorc/ocnicepost.fd
 
 # Ignore scripts from externals
