@@ -43,7 +43,7 @@ ABIAS_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias
 ABIASPC_SAT=${BIASDIR}/${GDUMP}.t${gcyc}z.abias_pc
 ABIAS_JEDI_TAR=${COMOUT_ATMOS_ANALYSIS_PREV}/${GDUMP}.t${gcyc}z.varbc_params.tar
 
-SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECglobal}/satbias2ioda.x}
+SATBIAS2IODAX=${SATBIAS2IODAX:-${EXECglobal}/gdas_satbias2ioda.x}
 SATBIAS2IODAY=${HOMEglobal}/sorc/gdas.cd/ush/satbias_converter.yaml.tmpl
 OUTPUT=${DATA}/output
 
