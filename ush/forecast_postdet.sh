@@ -1069,7 +1069,7 @@ CICE_postdet() {
         case "${RUN}" in
             gdas | enkfgdas)
                 source_file="iceh_inst.${vdatestr}.nc"
-                dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
+                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                 ;;
             gfs | enkfgfs | sfs | gcafs)
                 source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
