@@ -19,7 +19,6 @@ class Archive(Task):
     """Task to archive ROTDIR data to HPSS (or locally)
     """
 
-    @logit(logger, name="Archive")
     def __init__(self, config: AttrDict) -> None:
         """Constructor for the Archive task
 

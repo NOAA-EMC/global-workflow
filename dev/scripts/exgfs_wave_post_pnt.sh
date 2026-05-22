@@ -168,7 +168,7 @@ fi
 rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
 ${NLN} "./mod_def.${waveuoutpGRD}" ./mod_def.ww3
 
-export pgm="${NET,,}_ww3_outp.x"
+export pgm="ww3_outp_${NET,,}.x"
 source prep_step
 
 "${EXECglobal}/${pgm}" > buoy_lst.loc 2>&1
@@ -231,7 +231,7 @@ if [[ "${DOSPC_WAV}" == "YES" ]]; then
         -e "s/FORMAT/F/g" \
         ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
-    export pgm="${NET,,}_ww3_outp.x"
+    export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
 fi
 
@@ -243,7 +243,7 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
         -e "s|POINT|${points}|g" \
         -e "s/REFT/${truntime}/g" \
         ww3_outp_bull.inp.tmpl > ww3_outp.inp
-    export pgm="${NET,,}_ww3_outp.x"
+    export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
 fi
 

@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__.split('.')[-1])
 
 class GFS(UFS):
 
-    @logit(logger, name="GFS")
     def __init__(self, config):
 
         super().__init__("GFS", config)
