@@ -344,7 +344,7 @@ EOF
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
-            inst=$(( fhr_idx % natm_inst ))
+            inst=$((fhr_idx % natm_inst))
             ((fhr_idx++)) || true
 
             # Build (local_file, com_file) pairs once; used for both the manager
