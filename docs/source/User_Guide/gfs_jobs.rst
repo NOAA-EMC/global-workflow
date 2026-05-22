@@ -8,18 +8,58 @@ Global Forecast System (GFS) Configuration
 
    Schematic flow chart for GFS v16 in operations
 
-The sequence of jobs executed in the GFS v16 configuration's end-to-end workflow, covering analysis, forecast, post processing, and verification, is shown in :numref:`GFS_v16_flowchart`. The GW uses a collection of scripts that perform the tasks required at each stage.
+The sequence of jobs executed in the GFS v16 configuration's end-to-end workflow covering analysis, forecast, post processing, and verification, is shown in :numref:`GFS_v16_flowchart`. Each of these steps is carried out by a set of workflow scripts.
 
-For any givem cycle, the system consists of two suites:
+For each cycle, the system runs two suites:
 
 * **gdas** suite, which provides the initial guess fields  
 * **gfs** suite, which generates the initial conditions (ICs) and runs the forecast
 
-Downstream jobs (e.g., **awips**, **gempak**) are not included in :numref:`GFS_v16_flowchart` because these jobs are not normally run in developmental tests.
-
 =================================
 Jobs run in the GFS Configuration
 =================================
+
+The GFS configuration in the GW is organized into a series of jobs that run in a defined sequence for each cycle. These jobs handle everything from preparing input data to running the forecast and generating post processed products. Each job is executed by a workflow manager (Rocoto or ecFlow) and corresponds to a specific script within the workflow. Although the exact list of jobs varies depending on whether you are running gdas, gfs, or a specialized experiment, the major categories of jobs include:
+
+1. **Preprocessing Jobs**: 
+
+These jobs prepare all required inputs before analysis or forecasting begins and examples include:
+
+  - **prep**: prepares observation data
+  - **chgres**: converts initial conditions to the model grid
+  - **fv3ics**: generates FV3 initial conditions
+  - **sfcprep**: prepares surface fields
+
+2. **Analysis Jobs (gdas suite)**:
+These jobs perform data assimilation to produce the best estimate of the atmosphere at the cycle time and examples include:
+
+  - **gdasanal**: runs the GSI or JEDI analysis
+  - **enkf**: ensemble Kalman filter analysis (if enabled)
+  - **updatebc**: updates background fields for the next cycle
+
+3. **Forecast Jobs (gfs suite)**:
+These jobs run the UFS-WM to produce the forecast and these jobs include:
+ 
+  - **fcst**: main forecast model integration
+  - **post**: post processing of model output
+  - **postg**: additional post processing for specific grids
+
+4. **Post processing Jobs**:
+These jobs generate downstream products used for verification, graphics, or distribution and examples include:
+ 
+  - **vrfy**: verification tasks
+  - **awips**: AWIPS ready products (not typically run in experiments)
+  - **gempak**: GEMPAK output (operations only)
+
+5. **Archiving and Cleanup Jobs (Experimental Mode Only)**:
+These jobs are run only in development mode and examples include:
+
+  - **arch_vrfy**: Archives verfication products.
+  - **arch_tars**: Archives various tarred workflow outputs (e.g., logs, restarts).
+  - **cleanup**: Removes temporary or intermediate files.
+
+A **comprehensive list of jobs run in the GFS configuration** is listed in the following table.
+
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | JOB NAME          | PURPOSE                                                                                                               |
 +===================+=======================================================================================================================+
@@ -82,22 +122,40 @@ Jobs run in the GFS Configuration
 | wavepostpnt       | Runs wave post-processing for points.                                                                                 |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 
-================================
-Experimental vs Operational Runs
-================================
 
-Experimental runs differ from operations in the following ways:
+============================================
+Experimental vs Operational Runs: A Snapshot
+============================================
 
-* **Workflow manager**: Operations use `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__, while development currently uses `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__. 
+Experimental run is different from operational runs in the following ways:
+
+* **Workflow manager**: 
+
+  - Operations use `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__, whereas development use `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__. 
 
 .. note::
    
-   Experiments can also be run using ecFlow on platforms where an ecFlow server is available.
+   Experiments can also be run with ecFlow if the platform has an ecFlow server.
 
-* **Dump step**: This step is not run in experimental mode because it has already been completed during real-time production. The required dump data is available in GDA on supported machines.
+* **Dump step**: 
+
+  - Not run in experiments but in real-time production. Dump data already exists in GDA on supported platforms.
 
 * **Additional steps** in experimental mode:
 
-  - **arch_vrfy**: Archives verfication products.
-  - **arch_tars**: Archives various tarred workflow outputs (e.g., logs, restarts).
-  - **cleanup**: Removes temporary or intermediate files.
+  - **arch_vrfy**
+  - **arch_tars**
+  - **cleanup**
+
+.. note::
+   
+   Downstream production jobs (e.g., **AWIPS**, **GEMPAK**) are not included in :numref:`GFS_v16_flowchart` because these jobs are not normally run in developmental setups.
+
+^^^^^^^^^^^^^^^^^^^
+For New Users
+^^^^^^^^^^^^^^^^^^^
+.. note::
+   
+  - Operational systems include many additional downstream jobs that are not run in development mode.
+  - The workflow manager (ROCOTO or ecFlow) determines job dependencies and ensures each job runs only when its prerequisites are complete.
+  - The exact job list for your experiment is defined in the workflow XML (ROCOTO) or suite definition (ecFlow)

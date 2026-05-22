@@ -13,12 +13,26 @@ Documentation Organization
 
 GW Documenation is organized to support both new users and adavanced users or developers:
 
-* **Background Information**: Overview of the workflow, documentation conventions, and support resources.
-* **System Requirements & Setup**: Platforms, prerequisites, and installation steps.
-* **Components & Configuration**: Details on FV3, GSI/JEDI, post processing, and verification.
-* **Running the Workflow**: How to configure, launch, and monitor GFS/GDAS cycles.
-* **Advanced Topics**: Experimentation, workflow customization, and CI based development.
-* **Appendices**: Reference tables, environment variables, and troubleshooting.
+* **User's Guide**
+
+  - **Background Information**: Overview of the workflow, documentation conventions, and user support resources.
+  - **GW Components**: Components of Global Workflow and their repositories. 
+  - **System Requirements & HPC Setup**: Platforms, prerequisites, and installation steps.
+  - **Setup Globus Connection for HPSS**: Setting up connection for NOAA High Performance Storage System (HPSS) for data access.
+  - **GFS Configuration**: Global Forecast System Configartion and the list of jobs run in GFS
+  - **GCAFS Configuration**: Global Chemistry and Aerosol Forecast System (GCAFS) overview and seeting up and running GCAFS.
+  - **Wave Component**: Overview of WAVE-height, WATer depth and Current Hindcasting (WAVEWATCH) III, the community wave modeling framework, a component of the GW.
+  - **Running GW on RDHPCS**: How to setup the experiment, configure, launch, monitor GW runs, and view the forecast output.
+  - **Setup & Run GW on CSPs**: How to setup and run GW on Cloud Service Providers (CSPs).
+  - **Plotting Output**: Instrcutions for plotting analysis output and forecast output.
+  - **Common Errors and Known Issues**: List of common errors/issues and their solutions.
+  - **Advanced Topics**: Experimentation, workflow customization, and CI based development.
+
+* **Contributor's Guide**
+
+  - **Contributing to the Global Workflow**: A section devoted to developers to contribute to the Global Workflow repository.
+  - **Testing Global Workflow Jobs**: a comprehensive CTest framework for testing individual Rocoto workflow job.
+  - **GitLab CI/CD Pipeline Infrastructure**: a comprehensive reference for the GitLab CI/CD pipeline infrastructure by GW and Troubleshooting.
 
 =========================
 Documentation Conventions
@@ -38,39 +52,20 @@ Text rendered as ``AaBbCc123`` typically refers to variables in scripts or the n
    
    This presentation style indicates important clarifications or items require special attention.
 
+.. warning::
+      
+   This presentation style indicates critical information that must be carefully reviewed.
+
 *Italic text* is used for optional concepts or secondary explanations. 
 
 Code that includes angle brackets (e.g., ``build_<component>.sh``) indicates that users should substitute the appropriate options or components for their GW configuration (e.g., ``build_gfs_utils.sh``).
 
-File or directory paths that begin with ``/path/to/`` or with variables such as``$file or $directory`` should be replaced with the actual path on the user's system. For example, ``/path/to/logs/build_ufs_utils.log`` or ``$log_directory`` might be replaced with ``/Users/Jane.Smith/global-workflow/sorc/logs/build_ufs_utils.log``.
-
-=======================
-Component Documentation
-=======================
-
-A list of available component documentation is shown in **Add table for component documentation**. In general, technical documentation will explain how to use a particular component, whereas scientific documentation provides more in-depth information on the science involved in specific component files.
-
-+---------------------+-----------------------------------------------------------------------------------------+
-| **Documentation**   | **Location**                                                                            |
-+=====================+=========================================================================================+
-| UFS_UTILS           | Non-restricted versions of restricted files in production. Produced in production.      |
-| Documentation       | Restriced data is fully stripped from files. These files remain as is.                  |
-+---------------------+-----------------------------------------------------------------------------------------+
-| UPP Documentation   |                                                                                         |
-|                     |                                                                                         |
-|                     |                                                                                         |
-+---------------------+-----------------------------------------------------------------------------------------+
-|                     |                                                                                         |
-|                     |                                                                                         |
-+---------------------+-----------------------------------------------------------------------------------------+
-|                     |                                                                                         |
-|                     |                                                                                         |
-+---------------------+-----------------------------------------------------------------------------------------+
+File or directory paths that begin with ``/path/to/`` or with variables such as ``$file or $directory`` should be replaced with the actual path on the user's system. For example, ``/path/to/logs/build_ufs_utils.log`` or ``$log_directory`` might be replaced with ``/Users/Jane.Smith/global-workflow/sorc/logs/build_ufs_utils.log``.
 
 
-========================================
-User Support and Community Contributions
-========================================
+===========================================
+GW User Support and Community Contributions
+===========================================
 
 ^^^^^^^^^
 Questions
@@ -81,7 +76,7 @@ The `global-workflow GitHub Discussions <https://github.com/NOAA-EMC/global-work
 When posting a question, it is recommended that users provide the following information:
 
 * The platform or system being used (e.g., Orion, Hercules, Derecho)
-* The version of the GW being used (e.g., develop, release/public-vx.0.0). (To determine this, users can run git branch, and the name of the branch with an asterisk * in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties.   Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
+* The version of the GW being used (e.g., develop, release/public-vx.y.z). (To determine this, users can run git branch, and the name of the branch with an asterisk * in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties.   Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
 * Configuration file contents (e.g., config.yaml contents)
 * Full error message (preferably in text form rather than a screenshot)
 * Current shell (e.g., bash) and modules loaded
