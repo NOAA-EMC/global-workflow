@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 export DATA=${DATA:-${DATAROOT}/${RUN}fetch_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fetch" -c "base fetch"
 

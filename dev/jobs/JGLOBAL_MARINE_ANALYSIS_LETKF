@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlletkf"

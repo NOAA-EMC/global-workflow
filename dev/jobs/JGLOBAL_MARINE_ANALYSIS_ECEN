@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"

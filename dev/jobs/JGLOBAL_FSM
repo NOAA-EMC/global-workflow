@@ -7,7 +7,7 @@ set -xue
 #-----------------------------------------------------------------------
 # GFS File Service Manager for ATMOS Prep Step
 #-----------------------------------------------------------------------
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
 export DATA=${DATA:-${DATAROOT}/${jobid}}

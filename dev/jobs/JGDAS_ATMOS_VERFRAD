@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################

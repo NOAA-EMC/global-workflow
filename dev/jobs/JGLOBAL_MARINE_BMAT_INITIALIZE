@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 # Create the directory to hold the BMAT initialization data
 export DATA="${DATAjob}/marinebmat"

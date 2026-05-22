@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlfinal" -c "base aeroanl aeroanlfinal"

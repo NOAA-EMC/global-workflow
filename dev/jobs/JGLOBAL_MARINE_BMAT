@@ -1,5 +1,6 @@
 #!/bin/bash
 set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 # DATA is pre-populated by the MARINE_BMAT_INIT job
