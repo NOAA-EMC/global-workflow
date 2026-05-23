@@ -57,7 +57,7 @@ FCST_POLL_INTERVAL="${FCST_MGR_POLL_INTERVAL:-30}"
 FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
 # After fcst_done appears, keep polling for this long before forcing WARN sentinels
 # if no pending rows are being resolved. Set to 0 to disable forced WARN drain.
-FCST_POSTDONE_TIMEOUT="${FCST_MGR_POSTDONE_TIMEOUT:-1800}"
+FCST_POSTDONE_TIMEOUT="${FCST_MGR_POSTDONE_TIMEOUT:-120}"
 
 # Track which rows are still pending.
 declare -a final_logs all_deps_arr pending_idx
@@ -88,6 +88,13 @@ while [[ "${remaining}" -gt 0 ]]; do
     for idx in "${pending_idx[@]}"; do
         final_log="${final_logs[${idx}]}"
         read -r -a deps <<< "${all_deps_arr[${idx}]}"
+
+        # If the final sentinel already exists (e.g. from a previous run or
+        # WARN drain), mark this row done immediately and move on.
+        if [[ -f "${final_log}" ]]; then
+            ((remaining--)) || true
+            continue
+        fi
 
         # Check if all per-product dep logs are present.
         all_ready=1
