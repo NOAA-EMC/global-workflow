@@ -61,6 +61,7 @@ FCST_POSTDONE_TIMEOUT="${FCST_MGR_POSTDONE_TIMEOUT:-1800}"
 
 # Track which rows are still pending.
 declare -a final_logs all_deps_arr pending_idx
+declare -A dep_seen
 count=0
 
 while read -r line; do
@@ -81,6 +82,7 @@ postdone_elapsed=0
 postdone_announced=0
 while [[ "${remaining}" -gt 0 ]]; do
     remaining_before="${remaining}"
+    progress_made=0
     new_pending=()
 
     for idx in "${pending_idx[@]}"; do
@@ -94,6 +96,13 @@ while [[ "${remaining}" -gt 0 ]]; do
                 all_ready=0
                 break
             fi
+            # Dependency logs can appear gradually after fcst_done. Treat first
+            # observation of each dep file as progress so timeout logic does not
+            # fire while ranks are still actively finishing.
+            if [[ -z "${dep_seen[${dep}]+_}" ]]; then
+                dep_seen["${dep}"]=1
+                progress_made=1
+            fi
         done
 
         if [[ "${all_ready}" -eq 1 ]]; then
@@ -103,6 +112,7 @@ while [[ "${remaining}" -gt 0 ]]; do
             # them now that the combined final_com_log is written so COM stays clean.
             rm -f "${deps[@]}"
             ((remaining--)) || true
+            progress_made=1
         else
             new_pending+=("${idx}")
         fi
@@ -115,8 +125,9 @@ while [[ "${remaining}" -gt 0 ]]; do
         # WARN sentinels. Product-copy ranks can still be actively writing dep
         # sentinels after fcst_done appears.
         if [[ -f "${FCST_DONE_SENTINEL}" ]]; then
-            # Reset idle timer whenever at least one row completed this poll cycle.
-            if [[ "${remaining}" -lt "${remaining_before}" ]]; then
+            # Reset idle timer whenever we see any progress: either a row completes
+            # or at least one new dependency file appears for pending rows.
+            if [[ "${progress_made}" -eq 1 || "${remaining}" -lt "${remaining_before}" ]]; then
                 postdone_elapsed=0
             else
                 ((postdone_elapsed += FCST_POLL_INTERVAL)) || true
