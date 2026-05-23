@@ -175,11 +175,17 @@ while [[ ${remaining} -gt 0 ]]; do
             if [[ ! -d "${com_dir}" ]]; then
                 mkdir -p "${com_dir}"
             fi
-            cpfs "${local_data[j]}" "${com_data[j]}"
+            cp "${local_data[j]}" "${com_data[j]}"
             copy_err=$?
             if [[ ${copy_err} -ne 0 ]]; then
-                echo "FATAL ERROR [${component}]: cpfs '${local_data[j]}' -> '${com_data[j]}' failed (err=${copy_err})" >&2
-                exit "${copy_err}"
+                echo "ERROR [${component}]: cp '$(basename "${local_data[j]}")' -> '$(basename "${com_data[j]}")' failed (err=${copy_err}); retrying once after 10s"
+                sleep 10
+                cp "${local_data[j]}" "${com_data[j]}"
+                copy_err=$?
+                if [[ ${copy_err} -ne 0 ]]; then
+                    echo "FATAL ERROR [${component}]: cp '${local_data[j]}' -> '${com_data[j]}' failed on retry (err=${copy_err})" >&2
+                    exit "${copy_err}"
+                fi
             fi
             if [[ ${_missing_sentinel} -eq 1 ]]; then
                 _sz_new=$(stat -c %s "${com_data[j]}")
