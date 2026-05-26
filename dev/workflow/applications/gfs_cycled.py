@@ -428,6 +428,12 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run].append('efcs_manager') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
+                if 'gdas' in run:
+                    if options['do_ocean']:
+                        task_names[run] += ['ocean_prod']
+                    if options['do_ice']:
+                        task_names[run] += ['ice_prod']
+
                 task_names[run] += ['esfc_gcycle']
                 if options['do_gsisoilda']:
                     task_names[run].append('esfc_regrid') if 'gdas' in run else 0

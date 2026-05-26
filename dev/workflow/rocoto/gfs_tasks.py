@@ -1336,7 +1336,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
+        cycledef = 'gdas_half,gdas' if self.run in ['gdas', 'enkfgdas'] else self.run
 
         task_name = f'{self.run}_{component}_prod_#fhr_label#'
         task_dict = {'task_name': task_name,
@@ -3129,7 +3129,7 @@ class GFSTasks(Tasks):
         datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}efcs#member#.@Y@m@d@H"
 
         deps = []
-        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg0.txt', 'age': 60}
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_atmf_products_seg0_inst0.txt', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_table_ready_seg0', 'age': 5}
         deps.append(rocoto.add_dependency(dep_dict))
