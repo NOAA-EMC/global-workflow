@@ -103,9 +103,8 @@ dest_inst="${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}$
 if [[ -d "${tmp_acc_work_dir}" ]]; then
     # Clear array and fill it using mapfile
     unset acc_files
-    acc_string=$(ls -v "${tmp_acc_work_dir}"/daily_acc*.grb 2>/dev/null)
+    acc_string=$(ls -v "${tmp_acc_work_dir}"/daily_acc*.grb 2> /dev/null)
     mapfile -t acc_files <<< "${acc_string}"
-
 
     if [[ ${#acc_files[@]} -gt 0 ]]; then
         echo "INFO: Task ${i} merging ${#acc_files[@]} days for ACC using array expansion."
@@ -120,9 +119,8 @@ fi
 if [[ -d "${tmp_inst_work_dir}" ]]; then
     # Clear array and fill it using mapfile
     unset inst_files
-    inst_string=$(ls -v "${tmp_inst_work_dir}"/daily_inst*.grb 2>/dev/null)
+    inst_string=$(ls -v "${tmp_inst_work_dir}"/daily_inst*.grb 2> /dev/null)
     mapfile -t inst_files <<< "${inst_string}"
-
 
     if [[ ${#inst_files[@]} -gt 0 ]]; then
         echo "INFO: Task ${i} merging ${#inst_files[@]} days for INST using array expansion."
