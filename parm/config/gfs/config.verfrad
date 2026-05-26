@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+
+########## config.verfrad ##########
+echo "BEGIN: config.verfrad"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" verfrad
+
+export satype_file=${PARMgfs}/monitor/gdas_radmon_satype.txt
+
+# Source the parm file
+. "${PARMgfs}/monitor/da_mon.parm"
+
+# Other variables
+export RAD_AREA="glb"
+export MAKE_CTL=1
+export MAKE_DATA=1
+export USE_ANL=1
+export DO_DIAG_RPT=1
+export DO_DATA_RPT=1
+
+export RADMON_SUFFIX=${RUN}
+export CYCLE_INTERVAL=${assim_freq:-6}
+export VERBOSE="YES"
+
+echo "END: config.verfrad"

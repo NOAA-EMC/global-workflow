@@ -1,0 +1,11 @@
+#!/bin/bash
+
+########## config.marineanlfinal ##########
+# Post Ocn Analysis specific
+
+echo "BEGIN: config.marineanlfinal"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" marineanlfinal
+
+echo "END: config.marineanlfinal"
