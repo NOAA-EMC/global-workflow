@@ -79,7 +79,7 @@ ice:
     compress_level: 9
   data_in:
     copy:
-      - ["{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
+      - ["{{ COMIN_ICE_HISTORY }}/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.inst.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ice.nc"]
   data_out:
     mkdir:
       - "{{ COMOUT_ICE_NETCDF }}/native"
