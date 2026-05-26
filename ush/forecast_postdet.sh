@@ -1171,6 +1171,7 @@ CICE_postdet() {
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
             echo "cpfs ${ice_local} ${ice_com}" >> "${ice_hist_cmdfile}"
+            echo "touch ${ice_log_com}" >> "${ice_hist_cmdfile}"
         fi
     done
 
