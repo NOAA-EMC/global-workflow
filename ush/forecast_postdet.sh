@@ -1171,9 +1171,14 @@ CICE_postdet() {
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
             echo "cpfs ${ice_local} ${ice_com}" >> "${ice_hist_cmdfile}"
-            echo "cpfs ${ice_log_local} ${ice_log_com}" >> "${ice_hist_cmdfile}"
         fi
     done
+
+    # When the manager is not used for ICE, create the (empty) product table so
+    # the forecast manager does not wait for a file that is never written.
+    if [[ "${use_mgr_ice}" == "NO" ]]; then
+        touch "${ice_table}"
+    fi
 }
 
 CICE_nml() {
