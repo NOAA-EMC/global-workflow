@@ -1336,7 +1336,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gdas_half,gdas' if self.run in ['gdas', 'enkfgdas'] else self.run
+        cycledef = 'gdas_half,gdas' if self.run == 'gdas' else ('gdas' if self.run == 'enkfgdas' else self.run)
 
         task_name = f'{self.run}_{component}_prod_#fhr_label#'
         task_dict = {'task_name': task_name,
