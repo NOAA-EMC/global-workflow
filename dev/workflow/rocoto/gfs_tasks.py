@@ -1120,7 +1120,7 @@ class GFSTasks(Tasks):
         # is_serial=True ensures seg1 only starts after seg0's manager finishes (i.e.
         # after all seg0 products are copied to COM, which is after fcst_seg0 completes).
         deps = []
-        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_products_seg#seg#.txt', 'age': 60}
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_atmf_products_seg#seg#_inst0.txt', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_table_ready_seg#seg#', 'age': 5}
         deps.append(rocoto.add_dependency(dep_dict))

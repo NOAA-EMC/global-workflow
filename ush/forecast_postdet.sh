@@ -314,20 +314,37 @@ EOF
             *) ;;
         esac
 
-        local atm_table="${DATAjob}/atm_products_seg${FCST_SEGMENT:-0}.txt"
-        local atm_hist_cmdfile="${DATA}/cmdfile_fv3_hist"
+        # Per-product tables: MGR_NATM_INST instance groups, each with one rank
+        # per ATM file type plus one barrier rank (5 ranks per instance, 10 total
+        # for the default of 2). Forecast hours are distributed round-robin across
+        # instances so all groups copy in parallel, halving the serial copy time.
+        local natm_inst="${MGR_NATM_INST:-2}"
+        local seg="${FCST_SEGMENT:-0}"
+        local inst fhr_idx
+        local -a atm_atmf_tables atm_sfcf_tables atm_grib_tables atm_flux_tables atm_barrier_tables
+        for ((inst = 0; inst < natm_inst; inst++)); do
+            atm_atmf_tables[inst]="${DATAjob}/atm_atmf_products_seg${seg}_inst${inst}.txt"
+            atm_sfcf_tables[inst]="${DATAjob}/atm_sfcf_products_seg${seg}_inst${inst}.txt"
+            atm_grib_tables[inst]="${DATAjob}/atm_grib_products_seg${seg}_inst${inst}.txt"
+            atm_flux_tables[inst]="${DATAjob}/atm_flux_products_seg${seg}_inst${inst}.txt"
+            atm_barrier_tables[inst]="${DATAjob}/atm_barrier_seg${seg}_inst${inst}.txt"
+        done
         if [[ "${use_mgr}" == "YES" ]]; then
-            rm -f "${atm_table}"
+            for ((inst = 0; inst < natm_inst; inst++)); do
+                rm -f "${atm_atmf_tables[inst]}" "${atm_sfcf_tables[inst]}" \
+                    "${atm_grib_tables[inst]}" "${atm_flux_tables[inst]}" "${atm_barrier_tables[inst]}"
+            done
             # Remove the table-ready sentinel so the forecast manager does not trigger from a
             # previous run when this segment is rewound and re-queued.
-            rm -f "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}"
-        else
-            rm -f "${atm_hist_cmdfile}"
+            rm -f "${DATAjob}/fcst_table_ready_seg${seg}"
         fi
 
+        fhr_idx=0
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
+            inst=$((fhr_idx % natm_inst))
+            ((fhr_idx++)) || true
 
             # Build (local_file, com_file) pairs once; used for both the manager
             # product table and the NLN symlink paths.
@@ -361,10 +378,34 @@ EOF
             local com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt"
             local i
             if [[ "${use_mgr}" == "YES" ]]; then
-                # Product table entries: local_data  local_log  com_data  com_log
-                for ((i = 0; i < ${#local_files[@]}; i++)); do
-                    echo "${local_files[i]} ${local_log} ${com_files[i]} ${com_log}" >> "${atm_table}"
-                done
+                # Per-product com_logs for parallel copy ranks.
+                local com_log_atmf="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.atm.atmf.f${FH3}.txt"
+                local com_log_sfcf="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.atm.sfcf.f${FH3}.txt"
+                # Atmospheric state netCDF rank
+                echo "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_tables[inst]}"
+                # Surface state netCDF rank
+                echo "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_tables[inst]}"
+                # Optional cubed-sphere grid files share the same nc rank as their Gaussian counterpart.
+                if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_tables[inst]}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_tables[inst]}"
+                fi
+                local barrier_deps="${com_log_atmf} ${com_log_sfcf}"
+                if [[ "${WRITE_DOPOST}" == ".true." ]]; then
+                    local com_log_grib="${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.log.atm.grib.f${FH3}.txt"
+                    local com_log_flux="${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.log.atm.flux.f${FH3}.txt"
+                    # GRIB2 gridded rank
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_tables[inst]}"
+                    # GRIB2 flux rank
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_tables[inst]}"
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_tables[inst]}"
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_tables[inst]}"
+                    fi
+                    barrier_deps="${barrier_deps} ${com_log_grib} ${com_log_flux}"
+                fi
+                # Barrier row: final combined com_log followed by all per-product deps.
+                echo "${com_log} ${barrier_deps}" >> "${atm_barrier_tables[inst]}"
             else
                 # Remaining runs (gefs, sfs, gcafs, enkfgfs): build a copy cmdfile;
                 # FV3_out will copy files from DATA to COM after the forecast completes.
@@ -1017,50 +1058,64 @@ CICE_postdet() {
     # Determine whether to use the forecast manager for CICE output.
     local use_mgr_ice="NO"
     case "${RUN}" in
-        gfs | gdas | enkfgdas) use_mgr_ice="YES" ;;
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
-            # enkfgfs | gefs | sfs | gcafs) use_mgr_ice="YES" ;;
+        gfs) use_mgr_ice="YES" ;;
+        # TODO: enable forecast manager for gdas, enkfgdas, enkfgfs, gefs, sfs, gcafs once tested
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     local ice_hist_cmdfile="${DATA}/cmdfile_cice_hist"
     rm -f "${ice_table}" "${ice_hist_cmdfile}"
 
-    local vdate seconds vdatestr fhr fhr3 interval last_fhr
+    local vdate seconds vdatestr fhr fhr3 interval
 
     # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
     # No per-period sentinel exists; the manager cannot track it in-flight.
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
-        # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
-        # No per-period sentinel; use fcst_done_seg as proxy since iceh_ic is written
-        # during CICE initialization before any time stepping begins.
-        # TODO: extend to enkfgfs, gefs, sfs, gcafs once forecast manager is enabled for those runs.
+        # iceh_ic is written during CICE initialization before any time stepping.
+        # Use the first forecast-hour ice output as the trigger (same pattern as
+        # non-last entries in the loop below). iceh_ic is fully written before
+        # f006 appears, ensuring a complete copy.
+        local ic_trigger_fhr=${CICE_OUTPUT_FH[1]}
+        local ic_trigger_vdate ic_trigger_sec ic_trigger_vdstr ic_trigger
+        ic_trigger_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${ic_trigger_fhr} hours" +%Y%m%d%H)
+        ic_trigger_sec=$(to_seconds "${ic_trigger_vdate:8:2}0000")
+        ic_trigger_vdstr="${ic_trigger_vdate:0:4}-${ic_trigger_vdate:4:2}-${ic_trigger_vdate:6:2}-${ic_trigger_sec}"
+        case "${RUN}" in
+            gfs | enkfgfs | sfs | gcafs)
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${ic_trigger_vdstr}.nc"
+                ;;
+            gefs)
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh.${ic_trigger_vdstr}.nc"
+                ;;
+            *)
+                echo "FATAL ERROR: Unsupported RUN ${RUN} for iceh_ic trigger in CICE postdet" >&2
+                exit 10
+                ;;
+        esac
         echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
-            "${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}" \
+            "${ic_trigger}" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
     else
-        # Non-manager runs (gefs, sfs, gcafs, enkfgfs): build a copy cmdfile;
-        # CICE_out will copy files from DATA to COM after the forecast completes.
-        echo "cpfs ${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
-            "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" >> "${ice_hist_cmdfile}"
+        # Non-manager: NLN so the model writes directly into COM via symlink.
+        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
+        ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
     fi
 
-    # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM.
+    # Build CICE product table entries for each forecast hour.
+    # Column layout: local_data  local_trigger  com_data  com_log
+    #   local_trigger: next hour's output file for non-last entries, or
+    #                  fcst_done_seg for the last entry.  The manager writes
+    #                  com_log synthetically when the trigger appears.
     local source_file dest_file
-    for fhr in "${CICE_OUTPUT_FH[@]}"; do
-
-        if [[ -z ${last_fhr:-} ]]; then
-            last_fhr=${fhr}
-            continue
-        fi
-
+    local n_fhr=${#CICE_OUTPUT_FH[@]}
+    for ((idx = 1; idx < n_fhr; idx++)); do
+        fhr=${CICE_OUTPUT_FH[idx]}
+        local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
+        ((interval = fhr - prev_fhr))
         fhr3=$(printf %03i "${fhr}")
-        local fhr4
-        fhr4=$(printf %04i "${fhr}")
-        ((interval = fhr - last_fhr))
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
@@ -1087,18 +1142,37 @@ CICE_postdet() {
 
         local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
         local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
-        # log.ice.fHHHH (4-digit hour) is the sentinel written by CICE's ufs_logfhour
-        # after the output .nc is closed and ice_timer_stop(timer_readwrite) returns.
-        local ice_log_local="${DATA}/log.ice.f${fhr4}"
-        local ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
+        local ice_log_local ice_log_com
+        ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
         if [[ "${use_mgr_ice}" == "YES" ]]; then
+            if [[ $((idx + 1)) -lt n_fhr ]]; then
+                # Non-last: trigger = next forecast hour's ice output on DATA.
+                local next_fhr=${CICE_OUTPUT_FH[idx + 1]}
+                local next_vdate next_sec next_vdstr
+                next_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${next_fhr} hours" +%Y%m%d%H)
+                next_sec=$(to_seconds "${next_vdate:8:2}0000")
+                next_vdstr="${next_vdate:0:4}-${next_vdate:4:2}-${next_vdate:6:2}-${next_sec}"
+                case "${RUN}" in
+                    gfs | enkfgfs | sfs | gcafs)
+                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${next_vdstr}.nc"
+                        ;;
+                    gefs)
+                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh.${next_vdstr}.nc"
+                        ;;
+                    *)
+                        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet ice trigger"
+                        exit 10
+                        ;;
+                esac
+            else
+                # Last forecast hour: trigger = forecast completion sentinel.
+                ice_log_local="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+            fi
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
             echo "cpfs ${ice_local} ${ice_com}" >> "${ice_hist_cmdfile}"
             echo "cpfs ${ice_log_local} ${ice_log_com}" >> "${ice_hist_cmdfile}"
         fi
-
-        last_fhr=${fhr}
     done
 }
 

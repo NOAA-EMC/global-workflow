@@ -5,10 +5,14 @@
 
 echo "BEGIN: config.fcst_manager"
 
-# Number of parallel MPMD ranks per model component. Each component's product
-# table is split into this many sub-tables so that files are copied in parallel.
+# Number of parallel ATM instance groups. Each group has 4 product copy ranks
+# (atmf, sfcf, grib, flux) plus 1 barrier rank = 5 ranks per instance.
+# Forecast hours are distributed round-robin across instances so all groups
+# copy in parallel. Total ATM ranks = MGR_NATM_INST * 5.
 # Must match the ntasks calculation in config.resources "fcst_manager".
-export MGR_NTASKS_ATM=${MGR_NTASKS_ATM:-3}
+export MGR_NATM_INST=${MGR_NATM_INST:-2}
+
+# WW3/OCN/ICE: product table split into n sub-tables; one rank per sub-table.
 export MGR_NTASKS_WW3=${MGR_NTASKS_WW3:-2}
 export MGR_NTASKS_OCN=${MGR_NTASKS_OCN:-1}
 export MGR_NTASKS_ICE=${MGR_NTASKS_ICE:-1}

@@ -33,11 +33,11 @@ MGR_INIT_TIMEOUT="${FCST_MANAGER_INIT_TIMEOUT:-7200}"
 mgr_sleep_interval=30
 mgr_max_tries=$((MGR_INIT_TIMEOUT / mgr_sleep_interval))
 
-# Number of parallel manager ranks per component. Each component's product table
-# is split into n sub-tables (one per rank) by sentinel group so that all rows
-# for a given sentinel land in the same sub-table, preserving the data-first-
-# log-last copy contract inside each manager process.
-MGR_NTASKS_ATM=${MGR_NTASKS_ATM:-3}
+# Number of parallel manager ranks for WW3/OCN/ICE components. Each product
+# table is split into n sub-tables (one per rank) by sentinel group so that all
+# rows for a given sentinel land in the same sub-table, preserving the
+# data-first-log-last copy contract inside each manager process.
+# ATM uses dedicated per-product ranks instead (see below).
 MGR_NTASKS_WW3=${MGR_NTASKS_WW3:-2}
 MGR_NTASKS_OCN=${MGR_NTASKS_OCN:-1}
 MGR_NTASKS_ICE=${MGR_NTASKS_ICE:-1}
@@ -73,17 +73,33 @@ split_table_by_sentinel() {
 FCST_MANAGER_CMDFILE="${DATA}/fcst_manager_cmdfile"
 rm -f "${FCST_MANAGER_CMDFILE}"
 
-ATM_TABLE="${DATAjob}/atm_products_seg${FCST_SEGMENT}.txt"
-echo "INFO: Waiting for ATM product table at ${ATM_TABLE}"
-if ! wait_for_file "${ATM_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-    echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ATM_TABLE}" >&2
-    exit 1
-fi
-echo "INFO: ATM product table found (${MGR_NTASKS_ATM} rank(s))"
-split_table_by_sentinel "${ATM_TABLE}" "${MGR_NTASKS_ATM}" "${DATA}/atm_mgr_rank"
-for ((r = 0; r < MGR_NTASKS_ATM; r++)); do
-    echo "${USHgfs}/forecast_manager.sh atm ${DATA}/atm_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+# ATM: MGR_NATM_INST instance groups, each with 4 product ranks + 1 barrier rank.
+# Forecast hours are distributed round-robin across instances (postdet splits the tables)
+# so all groups copy in parallel.
+natm_inst="${MGR_NATM_INST:-2}"
+echo "INFO: Waiting for ATM per-product tables (${natm_inst} instance(s))"
+for ((inst = 0; inst < natm_inst; inst++)); do
+    atm_atmf_tbl="${DATAjob}/atm_atmf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_sfcf_tbl="${DATAjob}/atm_sfcf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_grib_tbl="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+    atm_barrier_tbl="${DATAjob}/atm_barrier_seg${FCST_SEGMENT}_inst${inst}.txt"
+    for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" \
+        "${atm_grib_tbl}" "${atm_flux_tbl}" "${atm_barrier_tbl}"; do
+        if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
+            echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
+            exit 1
+        fi
+    done
+    {
+        echo "${USHgfs}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
+        echo "${USHgfs}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
+        echo "${USHgfs}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
+        echo "${USHgfs}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        echo "${USHgfs}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
+    } >> "${FCST_MANAGER_CMDFILE}"
 done
+echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"

@@ -90,6 +90,7 @@ while [[ ${remaining} -gt 0 ]]; do
 
         _fcst_done_fallback=0
         _missing_sentinel=0
+        _data_file_trigger=0
         _size_check_msgs=""
         if [[ ! -f "${local_log[i]}" ]]; then
             # Model-done fallback for ocean and ice.
@@ -114,6 +115,14 @@ while [[ ${remaining} -gt 0 ]]; do
         # Sentinel exists, or fcst_done fallback active; process all rows that share this sentinel
         this_ll="${local_log[i]}"
         this_cl="${com_log[i]}"
+        _ll_base=$(basename "${this_ll}")
+        # Data-file trigger: sentinel column holds the next-hour ice output (*.nc)
+        # or the forecast-done sentinel (fcst_done_seg*) rather than a text log.
+        # The trigger signals current-hour data is ready; the manager writes a
+        # synthetic COM log instead of copying the trigger file itself.
+        if [[ "${this_ll}" == *.nc || "${_ll_base}" == fcst_done_seg* ]]; then
+            _data_file_trigger=1
+        fi
 
         # RERUN safety: if com_log already in COM, mark all rows for this sentinel done
         if [[ -f "${this_cl}" ]]; then
@@ -149,15 +158,34 @@ while [[ ${remaining} -gt 0 ]]; do
                     break
                 fi
             fi
+            # File is present; verify it is not still being written.
+            # Take two size snapshots FCST_MGR_STABILITY_WAIT seconds apart;
+            # if the size changes or is zero the write is still in progress.
+            if [[ ${FCST_MGR_STABILITY_WAIT:-0} -gt 0 ]]; then
+                _sz_pre=$(stat -c %s "${local_data[j]}" 2> /dev/null || echo -1)
+                sleep "${FCST_MGR_STABILITY_WAIT}"
+                _sz_post=$(stat -c %s "${local_data[j]}" 2> /dev/null || echo -1)
+                if [[ "${_sz_pre}" -ne "${_sz_post}" || "${_sz_post}" -le 0 ]]; then
+                    echo "INFO [${component}]: '$(basename "${local_data[j]}")' still flushing (${_sz_pre}→${_sz_post} B); deferring"
+                    _deferred=1
+                    break
+                fi
+            fi
             com_dir=$(dirname "${com_data[j]}")
             if [[ ! -d "${com_dir}" ]]; then
                 mkdir -p "${com_dir}"
             fi
-            cpfs "${local_data[j]}" "${com_data[j]}"
+            cp "${local_data[j]}" "${com_data[j]}"
             copy_err=$?
             if [[ ${copy_err} -ne 0 ]]; then
-                echo "FATAL ERROR [${component}]: cpfs '${local_data[j]}' -> '${com_data[j]}' failed (err=${copy_err})" >&2
-                exit "${copy_err}"
+                echo "ERROR [${component}]: cp '$(basename "${local_data[j]}")' -> '$(basename "${com_data[j]}")' failed (err=${copy_err}); retrying once after 10s"
+                sleep 10
+                cp "${local_data[j]}" "${com_data[j]}"
+                copy_err=$?
+                if [[ ${copy_err} -ne 0 ]]; then
+                    echo "FATAL ERROR [${component}]: cp '${local_data[j]}' -> '${com_data[j]}' failed on retry (err=${copy_err})" >&2
+                    exit "${copy_err}"
+                fi
             fi
             if [[ ${_missing_sentinel} -eq 1 ]]; then
                 _sz_new=$(stat -c %s "${com_data[j]}")
@@ -211,7 +239,6 @@ while [[ ${remaining} -gt 0 ]]; do
             if [[ ${_fcst_done_fallback} -eq 1 ]]; then
                 # fcst_done fallback: model never wrote the period log; write a synthetic COM marker.
                 _cl_base=$(basename "${this_cl}")
-                _ll_base=$(basename "${this_ll}")
                 {
                     echo "synthetic sentinel created (model sentinel unavailable): ${_cl_base} at $(date --utc +%Y%m%d%H%M%S)"
                     if [[ ${_missing_sentinel} -eq 1 ]]; then
@@ -219,6 +246,18 @@ while [[ ${remaining} -gt 0 ]]; do
                         if [[ -n "${_size_check_msgs}" ]]; then
                             printf '%s' "${_size_check_msgs}"
                         fi
+                    fi
+                } > "${this_cl}"
+                log_err=0
+            elif [[ ${_data_file_trigger} -eq 1 ]]; then
+                # Data-file trigger: sentinel column is the next-hour ice output
+                # (*.nc) or fcst_done_seg -- not a text log to copy to COM.
+                # Write a compact synthetic COM sentinel instead.
+                _cl_base=$(basename "${this_cl}")
+                {
+                    echo "sentinel created from data-file trigger '${_ll_base}': ${_cl_base} at $(date --utc +%Y%m%d%H%M%S)"
+                    if [[ -n "${_size_check_msgs}" ]]; then
+                        printf '%s' "${_size_check_msgs}"
                     fi
                 } > "${this_cl}"
                 log_err=0

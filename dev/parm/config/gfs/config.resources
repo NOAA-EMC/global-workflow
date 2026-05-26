@@ -984,12 +984,12 @@ case ${step} in
     ;;
 
   "fcst_manager")
-    # Forecast manager: MGR_NTASKS_<component> MPMD ranks per active component.
-    # Polls DATAoutput for sentinel log files and copies products to COM in real time.
+    # Forecast manager: ATM always uses 5 fixed ranks (4 per-product + 1 barrier).
+    # WW3/OCN/ICE use MGR_NTASKS_<component> round-robin ranks each.
     # Walltime must be long enough to cover the full forecast run.
     is_exclusive=False
     prepost=True
-    ntasks=${MGR_NTASKS_ATM:-3}  # ATM is always active
+    (( ntasks = MGR_NATM_INST * 5 ))  # ATM: MGR_NATM_INST x (4 product + 1 barrier)
     if [[ "${DO_WAVE}" == "YES" ]]; then
         (( ntasks += ${MGR_NTASKS_WW3:-2} ))
     fi
