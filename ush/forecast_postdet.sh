@@ -335,9 +335,9 @@ EOF
                 rm -f "${atm_atmf_tables[inst]}" "${atm_sfcf_tables[inst]}" \
                     "${atm_grib_tables[inst]}" "${atm_flux_tables[inst]}" "${atm_barrier_tables[inst]}"
             done
-            # Remove the table-ready sentinel so the forecast manager does not trigger from a
-            # previous run when this segment is rewound and re-queued.
-            rm -f "${DATAjob}/fcst_table_ready_seg${seg}"
+            # Note: fcst_table_ready_seg${seg} is NOT removed here to allow the forecast
+            # manager to be restarted independently without re-running the forecast. The
+            # sentinel is created fresh each forecast run and persists for manager restarts.
         fi
 
         fhr_idx=0
