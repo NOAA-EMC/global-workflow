@@ -334,8 +334,9 @@ EOF
                 rm -f "${atm_atmf_tables[inst]}" "${atm_sfcf_tables[inst]}" \
                     "${atm_grib_tables[inst]}" "${atm_flux_tables[inst]}" "${atm_barrier_tables[inst]}"
             done
-            # Remove the table-ready sentinel so the forecast manager does not trigger from a
-            # previous run when this segment is rewound and re-queued.
+            # Remove the table-ready sentinel to prevent the forecast manager from triggering
+            # on partial tables during table generation. The sentinel is recreated after all
+            # component tables (ATM, WW3, OCN, ICE) are complete.
             rm -f "${DATAjob}/fcst_table_ready_seg${seg}"
         fi
 
