@@ -8,11 +8,11 @@ echo "BEGIN: config.marineanl"
 # TODO: This should be sourced in a config file specific to marine deterministic analysis
 #       and renamed to remove _DET
 
-export INPUT_FIX_DIR="/lfs/h2/emc/gfstemp/emc.global/git/global-workflow/retrov17_01/fix/gdas/soca/1440x1080x75/soca"
-export ANL_GEOM="/lfs/h2/emc/gfstemp/emc.global/git/global-workflow/retrov17_01/fix/gdas/soca/720x540x75/soca"
+export INPUT_FIX_DIR="${HOMEglobal}/fix/gdas/soca/1440x1080x75/soca"
+export ANL_GEOM="${HOMEglobal}/fix/gdas/soca/720x540x75/soca"
 export NINNER="100"
 
-export OBS_LIST_YAML="/lfs/h2/emc/gfstemp/emc.global/git/global-workflow/retrov17_01/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2"
-export TASK_CONFIG_YAML="${PARMgfs}/gdas/marine/marine_det_config.yaml.j2"
+export OBS_LIST_YAML="${HOMEglobal}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2"
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/marine/marine_det_config.yaml.j2"
 
 echo "END: config.marineanl"
