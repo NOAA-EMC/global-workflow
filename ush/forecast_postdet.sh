@@ -408,12 +408,8 @@ EOF
                 # Barrier row: final combined com_log followed by all per-product deps.
                 echo "${com_log} ${barrier_deps}" >> "${atm_barrier_tables[inst]}"
             else
-                # Remaining runs (gefs, sfs, gcafs, enkfgfs): build a copy cmdfile;
-                # FV3_out will copy files from DATA to COM after the forecast completes.
-                for ((i = 0; i < ${#local_files[@]}; i++)); do
-                    echo "cpfs ${local_files[i]} ${com_files[i]}" >> "${atm_hist_cmdfile}"
-                done
-                echo "cpfs ${local_log} ${com_log}" >> "${atm_hist_cmdfile}"
+                echo "FATAL ERROR: No ATM product handling defined for RUN=${RUN}. Add it to the use_mgr case statement." >&2
+                exit 1
             fi
         done
 
@@ -541,26 +537,6 @@ FV3_out() {
             echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
         fi
     fi
-
-    # Copy FV3 history files and log sentinels from DATA to COM for non-manager runs
-    # (gefs, sfs, gcafs, enkfgfs). For manager runs this is handled by the forecast manager.
-    local atm_hist_cmdfile="${DATA}/cmdfile_fv3_hist"
-    if [[ -s "${atm_hist_cmdfile}" ]]; then
-        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
-            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
-            mkdir -p "${COMOUT_ATMOS_HISTORY}"
-        fi
-        if [[ ! -d "${COMOUT_ATMOS_MASTER}" ]]; then
-            echo "INFO: Directory ${COMOUT_ATMOS_MASTER} does not exist, creating..."
-            mkdir -p "${COMOUT_ATMOS_MASTER}"
-        fi
-        "${USHgfs}/run_mpmd.sh" "${atm_hist_cmdfile}" && true
-        export err=$?
-        if [[ ${err} -ne 0 ]]; then
-            err_exit "run_mpmd.sh failed to copy FV3 history files!"
-        fi
-        echo "SUB ${FUNCNAME[0]}: FV3 history files copied to COM"
-    fi
 }
 
 ################################################################################
@@ -644,12 +620,10 @@ WW3_postdet() {
         *) ;;
     esac
 
-    # log.ww3 is the WW3 run log written to DATA. For manager runs it becomes a
-    # real file (copied to COM in WW3_out). Others symlink it to COM here.
-    if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        : # log.ww3 will be a real file in DATA; WW3_out copies it after the run
-    else
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    # log.ww3 is the WW3 run log written to DATA; WW3_out copies it to COM after the run.
+    if [[ "${use_mgr_ww3}" != "YES" ]]; then
+        echo "FATAL ERROR: No WW3 log handling defined for RUN=${RUN}. Add it to the use_mgr_ww3 case statement." >&2
+        exit 1
     fi
 
     # Loop for gridded output (uses FHINC)
@@ -662,9 +636,7 @@ WW3_postdet() {
         fhinc=${FHOUT_WAV}
     fi
     local ww3_table="${DATAjob}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
-    if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        rm -f "${ww3_table}"
-    fi
+    rm -f "${ww3_table}"
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
@@ -672,13 +644,8 @@ WW3_postdet() {
         local ww3_grd_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
         local ww3_grd_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin"
         local ww3_grd_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log"
-        if [[ "${use_mgr_ww3}" == "YES" ]]; then
-            # Each WW3 gridded file has its own per-file sentinel log
-            echo "${ww3_grd_local} ${ww3_grd_local_log} ${ww3_grd_com} ${ww3_grd_com_log}" >> "${ww3_table}"
-        else
-            ${NLN} "${ww3_grd_com}" "${ww3_grd_local}"
-            ${NLN} "${ww3_grd_com_log}" "${ww3_grd_local_log}"
-        fi
+        # Each WW3 gridded file has its own per-file sentinel log
+        echo "${ww3_grd_local} ${ww3_grd_local_log} ${ww3_grd_com} ${ww3_grd_com_log}" >> "${ww3_table}"
 
         if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
             fhinc=${FHOUT_WAV}
@@ -696,13 +663,8 @@ WW3_postdet() {
         local ww3_pnt_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
         local ww3_pnt_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"
         local ww3_pnt_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log"
-        if [[ "${use_mgr_ww3}" == "YES" ]]; then
-            # Each WW3 point file has its own per-file sentinel log
-            echo "${ww3_pnt_local} ${ww3_pnt_local_log} ${ww3_pnt_com} ${ww3_pnt_com_log}" >> "${ww3_table}"
-        else
-            ${NLN} "${ww3_pnt_com}" "${ww3_pnt_local}"
-            ${NLN} "${ww3_pnt_com_log}" "${ww3_pnt_local_log}"
-        fi
+        # Each WW3 point file has its own per-file sentinel log
+        echo "${ww3_pnt_local} ${ww3_pnt_local_log} ${ww3_pnt_com} ${ww3_pnt_com_log}" >> "${ww3_table}"
 
         fhr=$((fhr + fhinc))
     done
@@ -843,17 +805,11 @@ MOM6_postdet() {
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs | gdas | enkfgdas) # Set up MOM6 output files
+        gfs | enkfgfs | gdas | enkfgdas) # Set up MOM6 output files
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid ihour source_file dest_file source_file_log dest_file_log
-            local ocn_local ocn_com ocn_table ocn_hist_cmdfile use_mgr_ocn
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
-            case "${RUN}" in
-                gfs | gdas | enkfgdas) use_mgr_ocn="YES" ;;
-                *) use_mgr_ocn="NO" ;;
-            esac
+            local ocn_local ocn_com ocn_table
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
-            ocn_hist_cmdfile="${DATA}/cmdfile_mom6_hist"
-            rm -f "${ocn_table}" "${ocn_hist_cmdfile}"
+            rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -875,7 +831,7 @@ MOM6_postdet() {
                         dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
                         dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.log.f${fhr3}.txt"
                         ;;
-                    gfs | enkfgfs | sfs | gcafs)
+                    gfs | enkfgfs)
                         # Period averages; model uses midpoint timestamp in filename.
                         ((midpoint = last_fhr + interval / 2))
                         # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
@@ -890,15 +846,8 @@ MOM6_postdet() {
                         dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                         dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                         ;;
-                    gefs)
-                        ((midpoint = last_fhr + interval / 2))
-                        vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-                        source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
-                        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                        dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
-                        ;;
                     *)
-                        echo "FATAL ERROR: Unsupported RUN ${RUN} in MOM6 postdet"
+                        echo "FATAL ERROR: Unsupported RUN ${RUN} in MOM6 postdet" >&2
                         exit 25
                         ;;
                 esac
@@ -906,18 +855,10 @@ MOM6_postdet() {
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
-                # Forecast manager copies from DATA to COM; register in product table.
-                # Others: build a copy cmdfile; MOM6_out will copy files from DATA to COM
-                # after the forecast completes.
-                if [[ "${use_mgr_ocn}" == "YES" ]]; then
-                    # Model-log-triggered: local_log (source_file_log) is the MOM6 period log
-                    # written by the model after the .nc is complete. Manager polls for it,
-                    # copies the .nc to COM, then copies the log to COM as the Rocoto sentinel.
-                    echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
-                else
-                    echo "cpfs ${ocn_local} ${ocn_com}" >> "${ocn_hist_cmdfile}"
-                    echo "cpfs ${source_file_log} ${dest_file_log}" >> "${ocn_hist_cmdfile}"
-                fi
+                # Model-log-triggered: source_file_log is the MOM6 period log written by the
+                # model after the .nc is complete. Manager polls for it, copies the .nc to COM,
+                # then copies the log to COM as the Rocoto sentinel.
+                echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
 
                 last_fhr=${fhr}
             done
@@ -1006,21 +947,6 @@ MOM6_out() {
         fi
     fi
 
-    # Copy MOM6 history files and log sentinels from DATA to COM for non-manager runs
-    # (gefs, sfs, gcafs, enkfgfs). For manager runs this is handled by the forecast manager.
-    local ocn_hist_cmdfile="${DATA}/cmdfile_mom6_hist"
-    if [[ -s "${ocn_hist_cmdfile}" ]]; then
-        if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then
-            echo "INFO: Directory ${COMOUT_OCEAN_HISTORY} does not exist, creating..."
-            mkdir -p "${COMOUT_OCEAN_HISTORY}"
-        fi
-        "${USHgfs}/run_mpmd.sh" "${ocn_hist_cmdfile}" && true
-        export err=$?
-        if [[ ${err} -ne 0 ]]; then
-            err_exit "run_mpmd.sh failed to copy MOM6 history files!"
-        fi
-        echo "SUB ${FUNCNAME[0]}: MOM6 history files copied to COM"
-    fi
 }
 
 ################################################################################
