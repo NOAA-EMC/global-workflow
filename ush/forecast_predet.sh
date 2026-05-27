@@ -177,7 +177,7 @@ FV3_predet() {
     local fhr=${FHMIN}
     if [[ "${FHOUT_HF}" -gt 0 && "${FHMAX_HF}" -gt 0 ]]; then
         FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${FHMIN}" "${FHOUT_HF}" "${FHMAX_HF}")"
-        fhr=${FHMAX_HF}
+        fhr=$((FHMAX_HF + FHOUT))
     fi
     FV3_OUTPUT_FH="${FV3_OUTPUT_FH} $(seq -s ' ' "${fhr}" "${FHOUT}" "${FHMAX}")"
 
