@@ -15,17 +15,16 @@
 		COMROOT_r: The root of this auxillary system (ONLY set this to COMROOT_gfs when going live, not for testing)
 	-->
 	<!ENTITY PSLOT "aux_gfs">
-	<!ENTITY MAXTRIES "2">
-	<!ENTITY HOME_repo "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/packages/gfs.v17.0">
-	<!ENTITY EXP_aux "/lfs/h2/emc/global/david.huber/EXP/aux">
+	<!ENTITY MAXTRIES "1">
+	<!ENTITY HOME_repo "/lfs/h2/emc/global/noscrub/David.Huber/GW/gw_aux_v17">
+	<!ENTITY EXP_aux "/lfs/h2/emc/global/noscrub/David.Huber/EXP/aux">
 	<!ENTITY ECF_OUT_gfs "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/output/prod/today">
-	<!ENTITY COM_gfs "/lfs/f2/t2o/ptmp/emc/emc.global/ecflow_gfsv17_rt/ptmp/emc.global/ecflow_gfs/para/com">
 	<!ENTITY COM_aux "/lfs/h2/emc/ptmp/david.huber/realtime_aux/COM/&PSLOT;">
 	<!ENTITY DATAROOT_aux "/lfs/h2/emc/stmp/david.huber/RUNDIRS/&PSLOT;">
 	<!ENTITY COMROOT_r "/lfs/h2/emc/ptmp/david.huber/realtime_aux/COM">
 ]>
 
-<workflow realtime="F" scheduler="pbspro" cyclethrottle="3" taskthrottle="25">
+<workflow realtime="F" scheduler="pbspro" cyclethrottle="1" taskthrottle="25">
 
 	<log verbosity="10"><cyclestr>&EXP_aux;/logs/@Y@m@d@H.log</cyclestr></log>
 
@@ -55,7 +54,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-  <envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
