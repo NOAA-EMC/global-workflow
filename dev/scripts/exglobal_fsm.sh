@@ -105,6 +105,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     if [[ "${scan_release_gfs_marine_prepoceanobs}" == "YES" ]]; then
         skip_this_scan="YES"
         echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
+        # TODO remove/change this and look at obsproc for the bufr files
         COMIN_prep_ocean_obs=${DMPDIR_ocean}/gfs.${PDY}/${cyc}/ocean
         for ty_md in adt icec sst insitu; do
             # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
@@ -279,6 +280,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     if [[ "${scan_release_gdas_marine_prepoceanobs}" == "YES" ]]; then
         skip_this_scan="YES"
         echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
+        # TODO remove/change this and look at obsproc for the bufr files
         COMIN_prep_ocean_obs=${DMPDIR_ocean}/gdas.${PDY}/${cyc}/ocean
         for ty_md in adt icec sst insitu; do
             # TODO: try to remove the use of ls.
