@@ -147,6 +147,13 @@ if [[ "${cplchm}" == ".true." ]]; then
 fi
 echo "MAIN: Post-determination set up of run type finished"
 
+# Signal to the forecast manager that all product tables are ready.
+# This is created AFTER all component postdet functions complete to ensure
+# the manager only starts when all tables (ATM, WW3, OCN, ICE) are fully written.
+if [[ -n "${DATAjob:-}" ]]; then
+    echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
+fi
+
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
 if [[ "${cplflx}" == ".true." ]]; then
@@ -179,10 +186,6 @@ else
 fi
 
 cpreq "${EXECgfs}/${FCSTEXEC}" "${DATA}/"
-# Signal to the forecast manager that the product tables are ready and the model
-# is about to start. Postdet deletes this sentinel before rebuilding tables so a
-# rewound segment cannot trigger the manager against a partially-written table.
-echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then

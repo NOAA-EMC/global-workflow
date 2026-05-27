@@ -335,9 +335,10 @@ EOF
                 rm -f "${atm_atmf_tables[inst]}" "${atm_sfcf_tables[inst]}" \
                     "${atm_grib_tables[inst]}" "${atm_flux_tables[inst]}" "${atm_barrier_tables[inst]}"
             done
-            # Note: fcst_table_ready_seg${seg} is NOT removed here to allow the forecast
-            # manager to be restarted independently without re-running the forecast. The
-            # sentinel is created fresh each forecast run and persists for manager restarts.
+            # Remove the table-ready sentinel to prevent the forecast manager from triggering
+            # on partial tables during table generation. The sentinel is recreated after all
+            # component tables (ATM, WW3, OCN, ICE) are complete.
+            rm -f "${DATAjob}/fcst_table_ready_seg${seg}"
         fi
 
         fhr_idx=0
