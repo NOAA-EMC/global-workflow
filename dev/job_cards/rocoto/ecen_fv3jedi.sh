@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source UFSDA workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" ufsda
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufsda
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/dev/jobs/JGLOBAL_ENKF_ECEN_FV3JEDI
+"${HOMEglobal}"/dev/jobs/JGLOBAL_ENKF_ECEN_FV3JEDI
 status=$?
 exit "${status}"

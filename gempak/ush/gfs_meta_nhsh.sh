@@ -6,7 +6,7 @@
 rm -rf "${DATA}/mrfnhsh"
 mkdir -p -m 775 "${DATA}/mrfnhsh"
 cd "${DATA}/mrfnhsh" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
@@ -36,9 +36,9 @@ MAP	= 1
 CLEAR	= yes
 CLRBAR  = 1
 
-restore ${HOMEgfs}/gempak/ush/restore/garea_nh.nts
+restore ${HOMEglobal}/gempak/ush/restore/garea_nh.nts
 
-restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 SKIP	= 0                  !0                  !1
@@ -58,7 +58,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/garea_sh.nts
+restore ${HOMEglobal}/gempak/ush/restore/garea_sh.nts
 
 DEVICE	= nc | Nmeta_sh
 TITLE	= 5//~ ? ${m_title} @ HEIGHTS AND VORTICITY|~ @ HGHT AND VORTICITY!0
@@ -66,10 +66,10 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/garea_nh.nts
+restore ${HOMEglobal}/gempak/ush/restore/garea_nh.nts
 DEVICE	= nc | Nmeta_nh
 
-restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 GDPFUN  = knts((mag(wnd)))            !sm9s(hght)
@@ -78,11 +78,11 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/garea_sh.nts
+restore ${HOMEglobal}/gempak/ush/restore/garea_sh.nts
 DEVICE	= nc | Nmeta_sh
 ru
 
-restore ${HOMEgfs}/gempak/ush/restore/precip.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/precip.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 GDATTIM = F12-F240-12
@@ -92,7 +92,7 @@ TITLE   = 5//~ ? ${m_title} 12-HOUR TOTAL PRECIPITATION (IN)|~ 12-HOURLY TOTAL P
 l
 r
 
-restore ${HOMEgfs}/gempak/ush/restore/garea_sh.nts
+restore ${HOMEglobal}/gempak/ush/restore/garea_sh.nts
 DEVICE	= nc | Nmeta_sh
 ru
 

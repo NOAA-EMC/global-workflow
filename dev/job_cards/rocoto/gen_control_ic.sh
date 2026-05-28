@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -10,7 +10,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_CHGRES_GEN_CONTROL"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_CHGRES_GEN_CONTROL"
 status=$?
 
 exit "${status}"

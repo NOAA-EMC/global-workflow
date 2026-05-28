@@ -24,6 +24,7 @@ module list
 # CALL executable job script here
 ############################################################
 export CDATE=${PDY}${cyc}
+export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/echgres.sh
 ${HOMEgfs}/jobs/JGDAS_ATMOS_CHGRES_FORENKF

@@ -27,6 +27,7 @@ export COMPONENT=${WGF}
 ############################################################
 # CALL executable job script here
 ############################################################
+export HOMEglobal=${HOMEgfs}
 export CDATE=${PDY}${cyc}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/gempakgrb2spec.sh

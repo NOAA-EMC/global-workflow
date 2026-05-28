@@ -2,11 +2,11 @@
 
 """
 Basic python script to create an experiment directory on the fly from a given
-yaml file for the arguments to the two scripts below in ${HOMEgfs}/dev/workflow
-where ${HOMEgfs} is determined from the location of this script.
+yaml file for the arguments to the two scripts below in ${HOMEglobal}/dev/workflow
+where ${HOMEglobal} is determined from the location of this script.
 
- ${HOMEgfs}/dev/workflow/setup_expt.py
- ${HOMEgfs}/dev/workflow/setup_workflow.py
+ ${HOMEglobal}/dev/workflow/setup_expt.py
+ ${HOMEglobal}/dev/workflow/setup_workflow.py
 
 The yaml file are simply the arguments for these two scripts.
 After this scripts runs the experiment is ready for launch.
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     user_inputs = input_args()
 
     # Create a dictionary to pass to parse_j2yaml for parsing the yaml file
-    data = AttrDict(HOMEgfs=_top)
+    data = AttrDict(HOMEglobal=_top)
     data.update(os.environ)
     testconf = parse_j2yaml(path=user_inputs.yaml, data=data)
 

@@ -27,7 +27,6 @@ class SnowAnalysis(Analysis):
     Class for JEDI-based global snow analysis tasks
     """
 
-    @logit(logger, name="Analysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global snow analysis task
 
@@ -266,7 +265,7 @@ class SnowAnalysis(Analysis):
                 'current_cycle': bkgtime,
                 'CASE': self.task_config.CASE,
                 'DATA': self.task_config.DATA,
-                'HOMEgfs': self.task_config.HOMEgfs,
+                'HOMEglobal': self.task_config.HOMEglobal,
                 'OCNRES': self.task_config.OCNRES,
                 'ens_size': self.task_config.ens_size,
                 'ntiles': self.task_config.ntiles,
