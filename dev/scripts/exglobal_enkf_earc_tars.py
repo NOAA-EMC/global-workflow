@@ -27,7 +27,7 @@ def main():
             'restart_interval_enkfgdas', 'restart_interval_enkfgfs',
             'DOHYBVAR', 'DOIAU_ENKF', 'IAU_OFFSET', 'DOIAU', 'DO_CA',
             'DO_CALC_INCREMENT', 'assim_freq', 'ARCH_CYC', 'DO_JEDISNOWDA',
-            'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ', 'DOHYBVAR_OCN',
+            'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ', 'DOHYBVAR_OCN', 'ARCH_LOGS',
             'DOLETKF_OCN', 'IAUFHRS_ENKF', 'NET', 'NMEM_ENS_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
 
     archive_dict = AttrDict()
