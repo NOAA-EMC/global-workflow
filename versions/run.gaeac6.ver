@@ -8,7 +8,7 @@ export stack_mpi_ver=8.1.30
 spack_stack_root="/ncrc/proj/epic/spack-stack/c6"
 
 
-source "${HOMEgfs:-}/versions/spack.ver"
+source "${HOMEglobal:-}/versions/spack.ver"
 
 # Gaea uses a slgihtly older version of cdo
 export cdo_ver=2.3.0

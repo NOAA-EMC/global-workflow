@@ -18,7 +18,6 @@ logger = getLogger(__name__.split('.')[-1])
 class Stage(Task):
     """Task to stage initial conditions"""
 
-    @logit(logger, name="Stage")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Stage task
 

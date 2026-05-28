@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source UFSDA workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" ufsda
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufsda
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -15,11 +15,11 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Setup Python path for GDASApp ush
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEgfs}/sorc/gdas.cd/ush"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${HOMEglobal}/sorc/gdas.cd/ush"
 export PYTHONPATH
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/dev/jobs/JGLOBAL_MARINE_ANALYSIS_ECEN
+"${HOMEglobal}"/dev/jobs/JGLOBAL_MARINE_ANALYSIS_ECEN
 status=$?
 exit "${status}"

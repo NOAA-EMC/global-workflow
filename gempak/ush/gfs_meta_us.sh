@@ -7,7 +7,7 @@ cd "${DATA}" || exit 2
 rm -rf "${DATA}/us"
 mkdir -p -m 775 "${DATA}/us"
 cd "${DATA}/us" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
@@ -45,7 +45,7 @@ GAREA	= 17.529;-129.296;53.771;-22.374
 PROJ	= str/90;-105;0
 LATLON	= 0
 
-restore ${HOMEgfs}/gempak/ush/restore/pmsl_thkn.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/pmsl_thkn.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -54,7 +54,7 @@ l
 run
 
 
-restore ${HOMEgfs}/gempak/ush/restore/850mb_hght_tmpc.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -63,7 +63,7 @@ l
 run
 
 
-restore ${HOMEgfs}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -72,7 +72,7 @@ l
 run
 
 
-restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -81,7 +81,7 @@ l
 run
 
 
-restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -91,7 +91,7 @@ run
 
 
 
-restore ${HOMEgfs}/gempak/ush/restore/p06m_pmsl.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/p06m_pmsl.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 HLSYM   = 2;1.5//21//hw
