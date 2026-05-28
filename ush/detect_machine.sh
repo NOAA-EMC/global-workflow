@@ -37,8 +37,8 @@ case $(hostname -f) in
     derecho[1-8].hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho1-8
     dec*) MACHINE_ID=derecho ;;                             ### derech compute node
 
-    ip-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
-    compute-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
+    ip-*) MACHINE_ID=aws-ec2 ;;            ### aws-ec2
+    compute-dy-*) MACHINE_ID=aws-ec2 ;;    ### aws-ec2
     processing-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
 
     Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4

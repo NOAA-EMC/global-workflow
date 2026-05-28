@@ -191,7 +191,7 @@ ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
 ush/python/pygfs/jedi/__init__.py @TravisElless-NOAA @DavidNew-NOAA
 ush/python/pygfs/jedi/jedi.py @DavidNew-NOAA
 ush/python/pygfs/task/__init__.py @DavidHuber-NOAA
-sh/python/pygfs/task/aero_analysis.py @DavidNew-NOAA @CoryMartin-NOAA
+ush/python/pygfs/task/aero_analysis.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/chem_fire_emission.py @bbakernoaa
 ush/python/pygfs/task/nexus_emission.py @bbakernoaa
