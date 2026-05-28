@@ -486,7 +486,7 @@ case ${step} in
     ntasks=20
     threads_per_task=2
     tasks_per_node=${max_tasks_per_node}
-    memory="32GB"
+    memory="96GB"
     ;;
 
   "marineobsbufrdump")

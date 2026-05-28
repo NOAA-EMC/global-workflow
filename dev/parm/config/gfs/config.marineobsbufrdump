@@ -8,9 +8,9 @@ echo "BEGIN: config.marineobsbufrdump"
 # Get task specific resources
 source "${EXPDIR}/config.resources" marineobsbufrdump
 
-export ocean_basin_file="${FIXgfs}/gdas/RECCAP2_region_masks_all_v20221025.nc"
-export marine_obs_provider_dict="${PARMgfs}/gdas/marine/marine_bufr_dump_config.yaml"
-export OCNOBS2IODAEXEC="${EXECgfs}/gdas_obsprovider2ioda.x"
-export BUFR2IODA_CONFIG_TEMP="${PARMgfs}/gdas/marine/bufr2ioda_template.yaml.j2"
+export ocean_basin_file="${FIXglobal}/gdas/RECCAP2_region_masks_all_v20221025.nc"
+export marine_obs_provider_dict="${PARMglobal}/gdas/marine/marine_bufr_dump_config.yaml"
+export OCNOBS2IODAEXEC="${EXECglobal}/gdas_obsprovider2ioda.x"
+export BUFR2IODA_CONFIG_TEMP="${PARMglobal}/gdas/marine/bufr2ioda_template.yaml.j2"
 
 echo "END: config.marineobsbufrdump"

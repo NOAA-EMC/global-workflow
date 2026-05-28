@@ -8,7 +8,7 @@ echo "BEGIN: config.marineobsdump"
 # Get task specific resources
 source "${EXPDIR}/config.resources" marineobsdump
 
-export marine_obs_provider_dict="${PARMgfs}/gdas/marine/marine_obs_providers.yaml"
-export ocean_basin_file="${FIXgfs}/gdas/RECCAP2_region_masks_all_v20221025.nc"
+export marine_obs_provider_dict="${PARMglobal}/gdas/marine/marine_obs_providers.yaml"
+export ocean_basin_file="${FIXglobal}/gdas/RECCAP2_region_masks_all_v20221025.nc"
 
 echo "END: config.marineobsdump"

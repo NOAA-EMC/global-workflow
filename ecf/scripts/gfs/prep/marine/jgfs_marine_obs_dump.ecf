@@ -24,6 +24,7 @@ module list
 # CALL executable job script here
 ############################################################
 export CDATE=${PDY}${cyc}
+export HOMEglobal=${HOMEgfs}
 
 ${HOMEgfs}/jobs/JGLOBAL_MARINE_OBS_DUMP
 if [ $? -ne 0 ]; then
