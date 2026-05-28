@@ -10,18 +10,16 @@
 		HOME_repo: Where the official repository is located
 		EXP_aux: Where the expdir for this auxillary system lives (can be the same as GFS)
 		ECF_OUT_gfs: The GFS ecflow output directory; used as triggers
+		DATAROOT_aux: DATAROOT for this auxillary system
 		COM_aux: The auxillary COM directory (ONLY set this to COM_gfs when going live, not for testing)
-		DATAROOT_aux: DATAROOT for this auxillary system (can be the same as GFS)
-		COMROOT_r: The root of this auxillary system (ONLY set this to COMROOT_gfs when going live, not for testing)
 	-->
 	<!ENTITY PSLOT "aux_gfs">
 	<!ENTITY MAXTRIES "1">
-	<!ENTITY HOME_repo "/lfs/h2/emc/global/noscrub/David.Huber/GW/gw_aux_v17">
-	<!ENTITY EXP_aux "/lfs/h2/emc/global/noscrub/David.Huber/EXP/aux">
+	<!ENTITY HOME_repo "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/packages/gfs.v17.0">
+	<!ENTITY EXP_aux "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/retrov17_01_realtime">
 	<!ENTITY ECF_OUT_gfs "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/output/prod/today">
-	<!ENTITY COM_aux "/lfs/h2/emc/ptmp/david.huber/realtime_aux/COM/&PSLOT;">
-	<!ENTITY DATAROOT_aux "/lfs/h2/emc/stmp/david.huber/RUNDIRS/&PSLOT;">
-	<!ENTITY COMROOT_r "/lfs/h2/emc/ptmp/david.huber/realtime_aux/COM">
+	<!ENTITY COM_aux "/lfs/f2/t2o/ptmp/emc/emc.global/ecflow_gfsv17_rt/ptmp/emc.global/ecflow_gfs/para/com">
+	<!ENTITY DATAROOT_aux "/lfs/h2/emc/stmp/emc.global/RUNDIRS/&PSLOT;">
 ]>
 
 <workflow realtime="F" scheduler="pbspro" cyclethrottle="1" taskthrottle="25">
@@ -29,14 +27,14 @@
 	<log verbosity="10"><cyclestr>&EXP_aux;/logs/@Y@m@d@H.log</cyclestr></log>
 
 	<!-- Define the cycles -->
-	<cycledef group="gdas">202605260000 202605270000 06:00:00</cycledef>
-	<cycledef group="gfs">202605260000 202605270000 06:00:00</cycledef>
+	<cycledef group="gdas">202605270600 202605270600 06:00:00</cycledef>
+	<cycledef group="gfs">202605270600 202605270600 06:00:00</cycledef>
 
 <task name="gfs_tracker" cycledefs="gfs" maxtries="&MAXTRIES;">
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/tracker.sh</command>
 
-	<jobname><cyclestr>fm_17_gfs_tracker_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gfs_tracker_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev</queue>
 	<walltime>00:10:00</walltime>
@@ -54,7 +52,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
@@ -67,7 +65,7 @@
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/genesis.sh</command>
 
-	<jobname><cyclestr>fm_17_gfs_genesis_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gfs_genesis_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev</queue>
 	<walltime>00:40:00</walltime>
@@ -85,7 +83,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
@@ -102,7 +100,7 @@
 
 		<command>&HOME_repo;/dev/job_cards/rocoto/metp.sh</command>
 
-		<jobname><cyclestr>fm_17_gfs_metp#metpcase#_@H</cyclestr></jobname>
+		<jobname><cyclestr>&PSLOT;_gfs_metp#metpcase#_@H</cyclestr></jobname>
 		<account>GFS-DEV</account>
 		<queue>dev</queue>
 		<walltime>06:00:00</walltime>
@@ -120,7 +118,7 @@
 		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-		<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>EDATE_GFS</name><value>2030010100</value></envar>
 		<envar><name>METPCASE</name><value>#metpcase#</value></envar>
@@ -145,7 +143,7 @@
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/arch_vrfy.sh</command>
 
-	<jobname><cyclestr>fm_17_gfs_arch_vrfy_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gfs_arch_vrfy_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev_transfer</queue>
 	<walltime>00:30:00</walltime>
@@ -163,7 +161,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
@@ -171,6 +169,38 @@
 			<taskdep task="gfs_tracker"/>
 			<taskdep task="gfs_genesis"/>
 		</and>
+	</dependency>
+
+</task>
+
+<task name="gfs_arch_logs" cycledefs="gfs" maxtries="&MAXTRIES;">
+
+	<command>&HOME_repo;/dev/job_cards/rocoto/arch_ecf_logs.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gfs_arch_logs_@H</cyclestr></jobname>
+	<account>GFS-DEV</account>
+	<queue>dev_transfer</queue>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>3GB</memory>
+	<native>-l place=vscatter:shared</native>
+
+	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_arch_logs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gfs</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
+	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
+
+	<dependency>
+		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
 	</dependency>
 
 </task>
@@ -183,7 +213,7 @@
 
 		<command>&HOME_repo;/dev/job_cards/rocoto/arch_tars.sh</command>
 
-		<jobname><cyclestr>fm_17_gfs_arch_tar_#tartype#_@H</cyclestr></jobname>
+		<jobname><cyclestr>&PSLOT;_gfs_arch_tar_#tartype#_@H</cyclestr></jobname>
 		<account>GFS-DEV</account>
 		<queue>dev_transfer</queue>
 		<walltime>06:00:00</walltime>
@@ -201,9 +231,10 @@
 		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-		<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>TARBALL_TYPE</name><value>#tartype#</value></envar>
+      <envar><name>ARCH_LOGS</name><value>NO</value></envar>
 
 		<dependency>
 			<and>
@@ -222,7 +253,7 @@
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/fit2obs.sh</command>
 
-	<jobname><cyclestr>fm_17_gdas_fit2obs_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gdas_fit2obs_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev</queue>
 	<walltime>01:20:00</walltime>
@@ -240,7 +271,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
@@ -253,7 +284,7 @@
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/anlstat.sh</command>
 
-	<jobname><cyclestr>fm_17_gdas_anlstat_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gdas_anlstat_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev</queue>
 	<walltime>00:30:00</walltime>
@@ -271,7 +302,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
@@ -284,7 +315,7 @@
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/arch_vrfy.sh</command>
 
-	<jobname><cyclestr>fm_17_gdas_arch_vrfy_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gdas_arch_vrfy_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev_transfer</queue>
 	<walltime>00:30:00</walltime>
@@ -302,13 +333,45 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
 		<and>
 			<taskdep task="gdas_fit2obs"/>
 		</and>
+	</dependency>
+
+</task>
+
+<task name="gdas_arch_logs" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&HOME_repo;/dev/job_cards/rocoto/arch_ecf_logs.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdas_arch_logs_@H</cyclestr></jobname>
+	<account>GFS-DEV</account>
+	<queue>dev_transfer</queue>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>3GB</memory>
+	<native>-l place=vscatter:shared</native>
+
+	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_arch_logs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
+	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
+
+	<dependency>
+		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
 	</dependency>
 
 </task>
@@ -321,7 +384,7 @@
 
 		<command>&HOME_repo;/dev/job_cards/rocoto/arch_tars.sh</command>
 
-		<jobname><cyclestr>fm_17_gdas_arch_tar_#tartype#_@H</cyclestr></jobname>
+		<jobname><cyclestr>&PSLOT;_gdas_arch_tar_#tartype#_@H</cyclestr></jobname>
 		<account>GFS-DEV</account>
 		<queue>dev_transfer</queue>
 		<walltime>06:00:00</walltime>
@@ -339,9 +402,10 @@
 		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-		<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>TARBALL_TYPE</name><value>#tartype#</value></envar>
+      <envar><name>ARCH_LOGS</name><value>NO</value></envar>
 
 		<dependency>
 			<and>
@@ -359,7 +423,7 @@
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/earc_vrfy.sh</command>
 
-	<jobname><cyclestr>fm_17_enkfgdas_earc_vrfy_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_enkfgdas_earc_vrfy_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
 	<queue>dev_transfer</queue>
 	<walltime>00:30:00</walltime>
@@ -377,7 +441,7 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ENSGRP</name><value>#grp#</value></envar>
 
@@ -385,6 +449,38 @@
 		<and>
 		  <datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
 		</and>
+	</dependency>
+
+</task>
+
+<task name="enkfgdas_arch_logs" cycledefs="enkfgdas" maxtries="&MAXTRIES;">
+
+	<command>&HOME_repo;/dev/job_cards/rocoto/arch_ecf_logs.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_enkfgdas_arch_logs_@H</cyclestr></jobname>
+	<account>GFS-DEV</account>
+	<queue>dev_transfer</queue>
+	<walltime>00:30:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>3GB</memory>
+	<native>-l place=vscatter:shared</native>
+
+	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/enkfgdas_arch_logs.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>RUN</name><value>enkfgdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
+	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
+
+	<dependency>
+		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
 	</dependency>
 
 </task>
@@ -397,7 +493,7 @@
 
 		<command>&HOME_repo;/dev/job_cards/rocoto/earc_tars.sh</command>
 
-		<jobname><cyclestr>fm_17_enkfgdas_earc_tars_#grp#_@H</cyclestr></jobname>
+		<jobname><cyclestr>&PSLOT;_enkfgdas_earc_tars_#grp#_@H</cyclestr></jobname>
 		<account>GFS-DEV</account>
 		<queue>dev_transfer</queue>
 		<walltime>06:00:00</walltime>
@@ -415,9 +511,10 @@
 		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-		<envar><name>COMROOT</name><value>&COMROOT_r;</value></envar>
+		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+      <envar><name>ARCH_LOGS</name><value>NO</value></envar>
 
 		<dependency>
 		  <datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
