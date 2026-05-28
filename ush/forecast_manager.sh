@@ -55,7 +55,7 @@ while read -r ld ll cd cl; do
 done < "${table_file}"
 
 if [[ ${count} -eq 0 ]]; then
-    echo "WARN [${component}]: Product table '${table_file}' contains no entries; nothing to do"
+    echo "WARNING: [${component}] Product table '${table_file}' contains no entries; nothing to do"
     exit 0
 fi
 echo "INFO [${component}]: Loaded ${count} product entries"
@@ -106,7 +106,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 -f "${local_data[i]}" ]]; then
                 _fcst_done_fallback=1
                 _missing_sentinel=1
-                echo "WARN [${component}]: sentinel '$(basename "${local_log[i]}")' not found; forecast complete and data present -- copying without sentinel"
+                echo "WARNING: [${component}] sentinel '$(basename "${local_log[i]}")' not found; forecast complete and data present -- copying without sentinel"
             else
                 continue
             fi
@@ -209,8 +209,8 @@ while [[ ${remaining} -gt 0 ]]; do
                         _sz_diff=$((-_sz_diff))
                     fi
                     if [[ ${_sz_diff} -gt 1048576 ]]; then
-                        echo "WARN [${component}]: size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs reference '${_ref_name}': ${_ref_size}B (diff=${_sz_diff}B > 1 MB) -- possible partial/corrupt output"
-                        _size_check_msgs+="WARN: size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs ref '${_ref_name}': ${_ref_size}B diff=${_sz_diff}B (>1 MB)"$'\n'
+                        echo "WARNING: [${component}] size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs reference '${_ref_name}': ${_ref_size}B (diff=${_sz_diff}B > 1 MB) -- possible partial/corrupt output"
+                        _size_check_msgs+="WARNING: size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs ref '${_ref_name}': ${_ref_size}B diff=${_sz_diff}B (>1 MB)"$'\n'
                     else
                         _size_check_msgs+="INFO: size OK for '$(basename "${com_data[j]}")': ${_sz_new}B (ref '${_ref_name}': ${_ref_size}B)"$'\n'
                     fi
@@ -236,7 +236,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 {
                     echo "synthetic sentinel created (model sentinel unavailable): ${_cl_base} at $(date --utc +%Y%m%d%H%M%S)"
                     if [[ ${_missing_sentinel} -eq 1 ]]; then
-                        echo "WARN: model sentinel '${_ll_base}' was not produced"
+                        echo "WARNING: model sentinel '${_ll_base}' was not produced"
                         if [[ -n "${_size_check_msgs}" ]]; then
                             printf '%s' "${_size_check_msgs}"
                         fi
@@ -297,7 +297,7 @@ while [[ ${remaining} -gt 0 ]]; do
             ((fcst_done_idle++)) || true
             idle_max=${FCST_MGR_DONE_IDLE_MAX:-3}
             if [[ ${fcst_done_idle} -ge ${idle_max} ]]; then
-                echo "WARN [${component}]: Model run complete; no new files for ${fcst_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model — skipping."
+                echo "WARNING: [${component}] Model run complete; no new files for ${fcst_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model — skipping."
                 break
             fi
         fi

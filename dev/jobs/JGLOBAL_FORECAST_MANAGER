@@ -40,10 +40,6 @@ export PYTHONPATH
 ##############################################
 # Construct COM variables (mirrors JGLOBAL_FORECAST)
 ##############################################
-
-rCDUMP="${RUN/gfs/gdas}"
-export rCDUMP="${rCDUMP/gcafs/gcdas}"
-
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03i" $((10#${ENSMEM})))

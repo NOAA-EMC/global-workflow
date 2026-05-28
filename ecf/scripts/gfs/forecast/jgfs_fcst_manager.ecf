@@ -5,7 +5,7 @@
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=06:00:00
 ### Note, the exact number of CPUs will need to be fine tuned.
-#PBS -l select=1:ncpus=7:ompthreads=1:mem=12GB
+#PBS -l select=1:ncpus=14:ompthreads=1:mem=20GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 

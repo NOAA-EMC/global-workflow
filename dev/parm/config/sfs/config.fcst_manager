@@ -14,7 +14,7 @@ export FCST_MGR_INIT_TIMEOUT=7200
 export FCST_MGR_TIMEOUT=0
 
 # Polling interval (seconds) between sentinel checks.
-export FCST_MGR_SLEEP=30
+export FCST_MGR_SLEEP=10
 
 # Get task specific resources
 . "${EXPDIR}/config.resources" "fcst_manager"

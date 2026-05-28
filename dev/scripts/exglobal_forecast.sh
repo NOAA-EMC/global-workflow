@@ -151,7 +151,12 @@ echo "MAIN: Post-determination set up of run type finished"
 # This is created AFTER all component postdet functions complete to ensure
 # the manager only starts when all tables (ATM, WW3, OCN, ICE) are fully written.
 if [[ -n "${DATAjob:-}" ]]; then
-    echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
+    echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready at $(date)" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
+    if [[ "${SENDECF}" == "YES" ]]; then
+        if [[ "${RUN}" == "gfs" ]]; then
+            ecflow_client --event release_gfs_fcst_manager
+        fi
+    fi
 fi
 
 echo "MAIN: Writing namelists and model configuration"
