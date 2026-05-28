@@ -1017,8 +1017,7 @@ CICE_postdet() {
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
-    local ice_hist_cmdfile="${DATA}/cmdfile_cice_hist"
-    rm -f "${ice_table}" "${ice_hist_cmdfile}"
+    rm -f "${ice_table}"
 
     local vdate seconds vdatestr fhr fhr3 interval
 
@@ -1124,8 +1123,8 @@ CICE_postdet() {
             fi
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
-            echo "cpfs ${ice_local} ${ice_com}" >> "${ice_hist_cmdfile}"
-            echo "touch ${ice_log_com}" >> "${ice_hist_cmdfile}"
+            # Non-manager: NLN so the model writes directly into COM via symlink.
+            ${NLN} "${ice_com}" "${ice_local}"
         fi
     done
 
@@ -1188,22 +1187,6 @@ CICE_out() {
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CICE restart files!"
         fi
-    fi
-
-    # Copy CICE history files and log sentinels from DATA to COM for non-manager runs
-    # (gefs, sfs, gcafs, enkfgfs). For manager runs this is handled by the forecast manager.
-    local ice_hist_cmdfile="${DATA}/cmdfile_cice_hist"
-    if [[ -s "${ice_hist_cmdfile}" ]]; then
-        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then
-            echo "INFO: Directory ${COMOUT_ICE_HISTORY} does not exist, creating..."
-            mkdir -p "${COMOUT_ICE_HISTORY}"
-        fi
-        "${USHgfs}/run_mpmd.sh" "${ice_hist_cmdfile}" && true
-        export err=$?
-        if [[ ${err} -ne 0 ]]; then
-            err_exit "run_mpmd.sh failed to copy CICE history files!"
-        fi
-        echo "SUB ${FUNCNAME[0]}: CICE history files copied to COM"
     fi
 }
 
