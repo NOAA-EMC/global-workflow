@@ -1140,7 +1140,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': mgr_vars,
-                     'cycledef': self.run,
+                     'cycledef': 'gdas_half,gdas' if self.run in ['gdas'] else self.run,
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
