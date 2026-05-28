@@ -25,11 +25,11 @@ NTHREADS_EPOS=${NTHREADS_EPOS:-1}
 
 # Fix files
 LEVS=${LEVS:-64}
-HYBENSMOOTH=${HYBENSMOOTH:-${FIXgfs}/gsi/global_hybens_smoothinfo.l${LEVS}.txt}
+HYBENSMOOTH=${HYBENSMOOTH:-${FIXglobal}/gsi/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgfs}/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgfs}/getsfcensmeanp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECglobal}/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECglobal}/getsfcensmeanp.x}
 
 # Other variables.
 PREFIX=${PREFIX:-""}

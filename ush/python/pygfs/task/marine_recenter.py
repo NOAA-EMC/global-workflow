@@ -19,7 +19,6 @@ class MarineRecenter(Analysis):
     Class for global ocean analysis recentering task
     """
 
-    @logit(logger, name="MarineRecenter")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean recentering task
 
@@ -52,7 +51,7 @@ class MarineRecenter(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
+                'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'cice_rst_date': _cice_rst_date,
                 'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent

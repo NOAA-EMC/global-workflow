@@ -118,7 +118,7 @@ FV3_postdet() {
     # Check for consistency
     # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
     if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
-        "${USHgfs}/check_land_input_orography.py" \
+        "${USHglobal}/check_land_input_orography.py" \
             --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
         err=$?
         if [[ ${err} -ne 0 ]]; then
@@ -463,12 +463,12 @@ FV3_nml() {
     # namelist output for a certain component
     echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
 
-    source "${USHgfs}/parsing_namelists_FV3.sh"
-    source "${USHgfs}/parsing_model_configure_FV3.sh"
+    source "${USHglobal}/parsing_namelists_FV3.sh"
+    source "${USHglobal}/parsing_model_configure_FV3.sh"
 
     # Call the appropriate namelist functions
     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-        source "${USHgfs}/parsing_namelists_FV3_nest.sh"
+        source "${USHglobal}/parsing_namelists_FV3_nest.sh"
         FV3_namelists_nest global
         FV3_namelists_nest nest
     else
@@ -532,7 +532,7 @@ FV3_out() {
                 echo "INFO: Directory ${COMOUT_ATMOS_RESTART} does not exist, creating..."
                 mkdir -p "${COMOUT_ATMOS_RESTART}"
             fi
-            "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+            "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
             export err=$?
             if [[ ${err} -ne 0 ]]; then
                 err_exit "run_mpmd.sh failed to copy FV3 restart files!"
@@ -692,7 +692,7 @@ WW3_postdet() {
 
 WW3_nml() {
     echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-    source "${USHgfs}/parsing_namelists_WW3.sh"
+    source "${USHglobal}/parsing_namelists_WW3.sh"
     WW3_namelists
 }
 
@@ -752,7 +752,7 @@ WW3_out() {
             echo "INFO: Directory ${COMOUT_WAVE_RESTART} does not exist, creating..."
             mkdir -p "${COMOUT_WAVE_RESTART}"
         fi
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy WW3 restart files!"
@@ -900,7 +900,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-    source "${USHgfs}/parsing_namelists_MOM6.sh"
+    source "${USHglobal}/parsing_namelists_MOM6.sh"
     MOM6_namelists
 }
 
@@ -964,7 +964,7 @@ MOM6_out() {
             echo "INFO: Directory ${COMOUT_OCEAN_RESTART} does not exist, creating..."
             mkdir -p "${COMOUT_OCEAN_RESTART}"
         fi
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
@@ -1126,7 +1126,7 @@ CICE_postdet() {
 
 CICE_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-    source "${USHgfs}/parsing_namelists_CICE.sh"
+    source "${USHglobal}/parsing_namelists_CICE.sh"
     CICE_namelists
 }
 
@@ -1171,7 +1171,7 @@ CICE_out() {
             echo "INFO: Directory ${COMOUT_ICE_RESTART} does not exist, creating..."
             mkdir -p "${COMOUT_ICE_RESTART}"
         fi
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CICE restart files!"
@@ -1201,7 +1201,7 @@ GOCART_rc() {
         fi
     fi
 
-    source "${USHgfs}/parsing_namelists_GOCART.sh"
+    source "${USHglobal}/parsing_namelists_GOCART.sh"
     GOCART_namelists
 }
 
@@ -1271,7 +1271,7 @@ GOCART_out() {
             echo "INFO: Directory ${COMOUT_CHEM_HISTORY} does not exist, creating..."
             mkdir -p "${COMOUT_CHEM_HISTORY}"
         fi
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy GOCART output files!"
@@ -1394,7 +1394,7 @@ CMEPS_out() {
         if [[ ! -d "${COMOUT_MED_RESTART}" ]]; then
             mkdir -p "${COMOUT_MED_RESTART}"
         fi
-        "${USHgfs}/run_mpmd.sh" "${cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy CMEPS mediator restart files!"

@@ -41,9 +41,9 @@ fi
 
 export pgm="ww3_grid_${NET,,}.x"
 
-echo "INFO: Executing ${EXECgfs}/ww3_grid_${NET,,}.x"
+echo "INFO: Executing ${EXECglobal}/ww3_grid_${NET,,}.x"
 
-"${EXECgfs}/${pgm}"
+"${EXECglobal}/${pgm}"
 export err=$?
 
 if [[ "${err}" != '0' ]]; then

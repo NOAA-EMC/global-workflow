@@ -12,7 +12,7 @@ experiment:
   nens: 0
   interval: 0
   start: cold
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gcafs_cycled_noDA_defaults_dev.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gcafs_cycled_noDA_defaults_dev.yaml
 
 workflow:
   engine: rocoto

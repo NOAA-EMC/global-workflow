@@ -13,7 +13,6 @@ class GFSForecast(Task):
     UFS-weather-model forecast task for the GFS
     """
 
-    @logit(logger, name="GFSForecast")
     def __init__(self, config: Dict[str, Any], *args, **kwargs):
         """
         Parameters

@@ -199,7 +199,7 @@ for ((i = 0; i < nm; i += chunk_size)); do
         set +eu
         # shellcheck disable=SC2086
         ${launcher:-} ${mpmd_opt:-} -n "${n_mpmd_tasks}" "${chunk_file}"
-        source "${USHgfs}/set_strict.sh"
+        source "${USHglobal}/set_strict.sh"
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # shellcheck disable=SC2086
         ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
