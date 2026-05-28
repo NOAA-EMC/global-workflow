@@ -42,14 +42,14 @@ fi
 # Load table into indexed arrays
 declare -a local_data local_log com_data com_log done_flag
 count=0
-while read -r ld ll cd cl; do
-    if [[ -z "${ld}" || "${ld:0:1}" == "#" ]]; then
+while read -r src_data src_log dst_data dst_log; do
+    if [[ -z "${src_data}" || "${src_data:0:1}" == "#" ]]; then
         continue
     fi
-    local_data[count]="${ld}"
-    local_log[count]="${ll}"
-    com_data[count]="${cd}"
-    com_log[count]="${cl}"
+    local_data[count]="${src_data}"
+    local_log[count]="${src_log}"
+    com_data[count]="${dst_data}"
+    com_log[count]="${dst_log}"
     done_flag[count]="NO"
     ((count++)) || true
 done < "${table_file}"
