@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 set -x
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if ((status != 0)); then exit "${status}"; fi
 
@@ -17,7 +17,7 @@ for fhr in "${fhr_list[@]}"; do
     ###############################################################
     # Execute the JJOB
     ###############################################################
-    "${HOMEgfs}/dev/jobs/J${RUN^^}_ATMOS_GEMPAK"
+    "${HOMEglobal}/dev/jobs/J${RUN^^}_ATMOS_GEMPAK"
     err=$?
     [[ ${err} -ne 0 ]] && exit "${err}"
 done

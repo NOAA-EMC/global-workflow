@@ -4,7 +4,7 @@
 # Defines the postamble function for use in J-jobs and ex-scripts.
 #
 # Source this file to load the function into the current shell:
-#   source "${USHgfs}/postamble.sh"
+#   source "${USHglobal}/postamble.sh"
 #
 # Then register with trap:
 #   trap "postamble ${start_time}" EXIT

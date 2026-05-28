@@ -23,7 +23,6 @@ class ChemFireEmissions(Task):
     """Chemistry Emissions pre-processing Task
     """
 
-    @logit(logger, name="ChemFireEmissions")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Chemistry Fire Emissions task
 
@@ -94,7 +93,7 @@ class ChemFireEmissions(Task):
         Notes
         -----
         The method expects the following configuration to be available:
-        - HOMEgfs : str
+        - HOMEglobal : str
             Base directory containing workflow configuration
         - DATA : str
             Working directory path
@@ -121,7 +120,7 @@ class ChemFireEmissions(Task):
             logger.info(f'Using AERO_EMIS_FIRE: {aero_emis_fire}')
             logger.info(f'Using AERO_EMIS_FIRE_VERSION: {aero_emis_fire_version}')
 
-            fire_emission_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'fire_emission.yaml.j2')
+            fire_emission_template = os.path.join(self.task_config.HOMEglobal, 'parm', 'chem', 'fire_emission.yaml.j2')
             if not os.path.exists(fire_emission_template):
                 raise WorkflowException(f"Fire emission template file not found: {fire_emission_template}")
 
@@ -214,7 +213,7 @@ class ChemFireEmissions(Task):
         }
 
         # Parse template and update task configuration
-        yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'fire_emission.yaml.j2')
+        yaml_template = os.path.join(self.task_config.HOMEglobal, 'parm', 'chem', 'fire_emission.yaml.j2')
         if not os.path.exists(yaml_template):
             logger.warning(f"Template file not found: {yaml_template}, using default configuration")
             yaml_config = {'fire_emission': {}}
@@ -936,7 +935,7 @@ class ChemFireEmissions(Task):
         """
         logger.info("Rendering YAML template")
         # Parse template and update task configuration
-        yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'fire_emission.yaml.j2')
+        yaml_template = os.path.join(self.task_config.HOMEglobal, 'parm', 'chem', 'fire_emission.yaml.j2')
         if not os.path.exists(yaml_template):
             logger.warning(f"Template file not found: {yaml_template}, using default configuration")
             yaml_config = {'fire_emission': {}}

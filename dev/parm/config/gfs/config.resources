@@ -1004,7 +1004,7 @@ case ${step} in
     fi
     tasks_per_node=${ntasks}
     threads_per_task=1
-    memory="12GB"
+    memory="20GB"
     walltime="06:00:00"
     ;;
 

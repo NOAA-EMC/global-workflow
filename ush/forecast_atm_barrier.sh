@@ -53,7 +53,7 @@ if [[ ! -f "${barrier_table}" ]]; then
     exit 1
 fi
 
-FCST_POLL_INTERVAL="${FCST_MGR_POLL_INTERVAL:-30}"
+FCST_POLL_INTERVAL="${FCST_MGR_POLL_INTERVAL:-5}"
 FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
 # After fcst_done appears, keep polling for this long before forcing WARN sentinels
 # if no pending rows are being resolved. Set to 0 to disable forced WARN drain.

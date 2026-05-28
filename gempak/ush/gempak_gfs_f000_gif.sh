@@ -17,7 +17,7 @@
 
 LATVAL="1/1/1/1/5;5"
 pixels="1728;1472"
-cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
+cpreq "${HOMEglobal}/gempak/fix/coltbl.spc" coltbl.xwp
 
 #################################################################
 #                       ANALYSIS CHARTS                         #
@@ -27,7 +27,7 @@ cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 
 echo "0000${PDY}${cyc}" > dates
 export FORT55="title.output"
-"${HOMEgfs}/exec/webtitle.x" < dates
+"${HOMEglobal}/exec/webtitle.x" < dates
 TITLE="$(cat title.output)"
 echo "TITLE = ${TITLE}"
 
@@ -574,6 +574,6 @@ fi
 export input=${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}
 export HEADER=YES
 export OUTPATH=${DATA}/gfs_500_hgt_tmp_nh_anl_${cyc}.tif
-"${USHgfs}/make_tif.sh"
+"${USHglobal}/make_tif.sh"
 
 exit

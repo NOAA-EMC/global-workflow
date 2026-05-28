@@ -26,7 +26,7 @@ export FCST_MGR_INIT_TIMEOUT=7200
 export FCST_MGR_TIMEOUT=0
 
 # Polling interval (seconds) between sentinel checks.
-export FCST_MGR_SLEEP=30
+export FCST_MGR_SLEEP=5
 
 # Seconds between the two size samples used to verify a data file is no longer
 # being written before copying it (size-stability guard). Set to 0 to disable.

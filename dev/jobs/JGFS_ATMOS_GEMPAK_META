@@ -6,18 +6,18 @@ set -x
 ############################################
 # GFS GEMPAK META PRODUCT GENERATION
 ############################################
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempakmeta"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempakmeta"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 ###############################################
 # Set MP variables
@@ -28,7 +28,7 @@ export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 export COMPONENT="atmos"
 
@@ -49,7 +49,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 
 ########################################################
 # Execute the script.
-"${SCRgfs}/exgfs_atmos_gempak_meta.sh" && true
+"${SCRglobal}/exgfs_atmos_gempak_meta.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to generate at least one GFS GEMPAK meta product"

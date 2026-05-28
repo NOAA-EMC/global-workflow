@@ -12,11 +12,11 @@ pslot=${2:-${pslot:-?}}                  # Name of the experiment being tested b
 SYSTEM_BUILD_DIR=${3:-"global-workflow"} # Name of the system build directory, default is "global-workflow
 
 # TEST_DIR contains 2 directories;
-# 1. HOMEgfs: clone of the global-workflow
+# 1. HOMEglobal: clone of the global-workflow
 # 2. RUNTESTS: A directory containing EXPDIR and COMROOT for experiments
 # # e.g. $> tree ./TEST_DIR
 # ./TEST_DIR
-# ├── HOMEgfs
+# ├── HOMEglobal
 # └── RUNTESTS
 #     ├── COMROOT
 #     │   └── ${pslot}
@@ -41,7 +41,7 @@ SYSTEM_BUILD_DIR=${3:-"global-workflow"} # Name of the system build directory, d
 # relevant GitHub PR. If any are missing, PR reporting will be skipped for failed cases.
 # -----------------------------------------------------------------------------------
 
-HOMEgfs="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
+HOMEglobal="${TEST_DIR}/${SYSTEM_BUILD_DIR}"
 RUNTESTS="${TEST_DIR}/RUNTESTS"
 run_check_logfile="${RUNTESTS}/ci-run_check.log"
 
@@ -79,15 +79,15 @@ report_failure_to_github() {
 
         if [[ -n "${error_logs_for_gist}" ]]; then
             # Generate gist URLs with formatted markdown links
-            source "${HOMEgfs}/dev/ush/gw_setup.sh"
+            source "${HOMEglobal}/dev/ush/gw_setup.sh"
             # shellcheck disable=SC2027,SC2086,SC2155
-            local gist_links=$("${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+            local gist_links=$("${HOMEglobal}/dev/ci/scripts/utils/publish_logs.py" \
                 --file ${error_logs_for_gist} --multiple --format=github \
                 --gist "PR_${PR_NUMBER}_${caseName}" | tail -n 1) || true
 
             # Upload to repo as well for backup
             # shellcheck disable=SC2027,SC2086
-            "${HOMEgfs}/dev/ci/scripts/utils/publish_logs.py" \
+            "${HOMEglobal}/dev/ci/scripts/utils/publish_logs.py" \
                 --file ${error_logs_for_gist} --repo "PR_${PR_NUMBER}_${caseName}" || true
 
             # Prepare markdown section for files links to gist for GitHub comment
@@ -120,7 +120,7 @@ EOF
     )
 
     # Post GitHub comment
-    cd "${HOMEgfs}"
+    cd "${HOMEglobal}"
     "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${comment_body}" || true
 
     # Move processed error log to prevent reprocessing
@@ -134,7 +134,7 @@ EOF
 
 # Source modules and setup logging
 echo "Source modules."
-source "${HOMEgfs}/dev/ush/gw_setup.sh"
+source "${HOMEglobal}/dev/ush/gw_setup.sh"
 # TODO We need to add local python env to support PyGitHub
 PYTHONPATH="${PYTHONPATH}:$(python3 -m site --user-site)" || true
 echo "Updated PYTHONPATH: ${PYTHONPATH}"
@@ -179,7 +179,7 @@ while true; do
     caseName="${pslot%_*-*}" # caseName recovered from pslot: (caseName_<hash>-<pipeline ID> (eg. C48_ATM_90f10fc1-3517)
     echo "Gather Rocoto statistics for (${caseName} on ${MACHINE_ID^})"
     export ROCOTOSTAT_LOG_FILE="${RUNTESTS}/EXPDIR/${pslot}/logs/${caseName}_rocotostat.log"
-    source <("${HOMEgfs}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --declare --thread-logging) || true
+    source <("${HOMEglobal}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" --declare --thread-logging) || true
 
     echo -e "\tCompleted Cycles: ${CYCLES_DONE}/${CYCLES_TOTAL}
   \tCompleted Jobs  : ${JOBS_DONE}/${JOBS_TOTAL}

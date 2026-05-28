@@ -1,5 +1,5 @@
 defaults:
-  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
   DOIAU: "YES"
   DO_JEDISNOWDA: "YES"

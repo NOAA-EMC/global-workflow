@@ -8,7 +8,7 @@
 rm -rf "${DATA}/MAR_VER"
 mkdir -p -m 775 "${DATA}/MAR_VER"
 cd "${DATA}/MAR_VER" || exit 2
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits

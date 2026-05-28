@@ -4,24 +4,24 @@ export WIPE_DATA="NO"
 export DATAjob="${DATAROOT}/marineanalysis.${PDY:-}${cyc}"
 export DATAens="${DATAjob}/ensdata"
 export DATA="${DATAjob}/marineanlvar"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl marineanlchkpt"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlchkpt" -c "base marineanl marineanlchkpt"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 ##############################################
 # Set variables used in the script
 ##############################################
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 ##############################################
@@ -31,7 +31,7 @@ export PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_checkpoint.py}
+EXSCRIPT=${GDASMARINEANALYSIS:-${SCRglobal}/exglobal_marine_analysis_checkpoint.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
