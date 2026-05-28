@@ -37,7 +37,8 @@ class MarineObsPrep(Task):
 
         # Initialize the Providers
         self.ghrsst = ProviderConfig.from_task_config("ghrsst", self.task_config)
-        self.rads = ProviderConfig.from_task_config("rads", self.task_config)
+        if self.task_config.cyc == 0:
+            self.rads = ProviderConfig.from_task_config("rads", self.task_config)
         self.nesdis_amsr2 = ProviderConfig.from_task_config("nesdis_amsr2", self.task_config)
         self.nesdis_mirs = ProviderConfig.from_task_config("nesdis_mirs", self.task_config)
         self.nesdis_jpssrr = ProviderConfig.from_task_config("nesdis_jpssrr", self.task_config)
@@ -55,7 +56,8 @@ class MarineObsPrep(Task):
         """
         # Update the database with new files
         self.ghrsst.db.ingest_files()
-        self.rads.db.ingest_files()
+        if self.task_config.cyc == 0:
+            self.rads.db.ingest_files()
         self.nesdis_amsr2.db.ingest_files()
         self.nesdis_mirs.db.ingest_files()
         self.nesdis_jpssrr.db.ingest_files()
