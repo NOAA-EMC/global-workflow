@@ -1,18 +1,18 @@
 #! /usr/bin/env bash
 set -x
 export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "genesis" -c "base genesis"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "genesis" -c "base genesis"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 ##############################################
 # Set variables used in the exglobal script
@@ -46,10 +46,10 @@ export JYYYY=${PDY:0:4}
 ##############################################
 
 # Do not fail on errors or unassigned variables in external code
-source "${USHgfs}/unset_strict.sh"
+source "${USHglobal}/unset_strict.sh"
 "${SCRIPTens_tracker}/exgfs_tc_genesis.sh" && true
 export err=$?
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the tropical cyclone genesis script"
 fi

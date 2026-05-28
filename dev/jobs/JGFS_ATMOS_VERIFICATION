@@ -1,23 +1,23 @@
 #! /usr/bin/env bash
 set -x
 export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
-source "${HOMEgfs}/ush/jjob_header.sh" -e "metp" -c "base metp"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "metp" -c "base metp"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 ###############################################################
 ## Abstract:
 ## Inline METplus verification and diagnostics driver script
-## HOMEgfs   : /full/path/to/workflow
+## HOMEglobal   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## PDY    : current date (YYYYMMDD)
 ## RUN    : cycle name (gdas / gfs)
@@ -41,11 +41,11 @@ done
 if [[ "${RUN_GRID2GRID_STEP1}" == "YES" || "${RUN_GRID2OBS_STEP1}" == "YES" || "${RUN_PRECIP_STEP1}" == "YES" ]]; then
     # Override the -e in VERIF_GLOBALSH's shebang and un-export SHELLOPTS
     # TODO: clean up the verif-global script so it does not raise false-positive errors
-    source "${USHgfs}/unset_strict.sh"
+    source "${USHglobal}/unset_strict.sh"
     export -n SHELLOPTS
     bash -x "${VERIF_GLOBALSH}"
     err=$?
-    source "${USHgfs}/set_strict.sh"
+    source "${USHglobal}/set_strict.sh"
     if [[ ${err} -ne 0 ]]; then
         exit "${err}"
     fi

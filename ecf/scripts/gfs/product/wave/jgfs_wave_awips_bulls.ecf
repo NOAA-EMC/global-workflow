@@ -24,6 +24,7 @@ module list
 # CALL executable job script here
 ############################################################
 export CDATE=${PDY}${cyc}
+export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/waveawipsbulls.sh
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_PRDGEN_BULLS

@@ -8,6 +8,6 @@ echo "BEGIN: config.sfcanl_regrid"
 # Get task specific resources
 source "${EXPDIR}/config.resources" sfcanl_regrid
 
-export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
+export REGRID_EXEC="${HOMEglobal}/exec/regridStates.x"
 
 echo "END: config.sfcanl_regrid"

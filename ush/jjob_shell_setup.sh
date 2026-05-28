@@ -14,26 +14,26 @@
 #   - Running setpdy.sh and sourcing PDY date variables
 #
 # Requires in environment:
-#   HOMEgfs (mandatory)
-#   USHgfs, start_time (defaulted here if not already set)
+#   HOMEglobal (mandatory)
+#   USHglobal, start_time (defaulted here if not already set)
 #######
 
 ##############################################
 # Shell defaults (allow sourcing without jjob_standard_vars.sh)
 ##############################################
-# Ensure USHgfs is set for scripts that source this file directly
-# (e.g. preamble.sh callers such as run_mpmd.sh)
-export USHgfs="${USHgfs:-${HOMEgfs}/ush}"
+# Ensure USHglobal is set for scripts that source this file directly
+# (e.g. run_mpmd.sh)
+export USHglobal="${USHglobal:-${HOMEglobal}/ush}"
 export start_time=${start_time:-$(date +%s)}
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
 # Utility functions
 ##############################################
-source "${USHgfs}/wait_for_file.sh"
-source "${USHgfs}/dataroot_com_path.sh"
-source "${USHgfs}/timer.sh"
-source "${USHgfs}/err_exit.sh"
+source "${USHglobal}/wait_for_file.sh"
+source "${USHglobal}/dataroot_com_path.sh"
+source "${USHglobal}/timer.sh"
+source "${USHglobal}/err_exit.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
@@ -43,7 +43,7 @@ export SHELLOPTS
 ##############################################
 # Create and enter the working directory
 ##############################################
-source "${USHgfs}/setup_data_dir.sh"
+source "${USHglobal}/setup_data_dir.sh"
 setup_data_dir "${DATA}"
 
 # Activate tracing
@@ -53,7 +53,7 @@ set -x
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
 if [[ "${TRAP_POSTAMBLE:NO}" == "YES" ]]; then
-    source "${USHgfs}/postamble.sh"
+    source "${USHglobal}/postamble.sh"
     # shellcheck disable=SC2064
     trap "postamble ${start_time} \$?" EXIT
 fi

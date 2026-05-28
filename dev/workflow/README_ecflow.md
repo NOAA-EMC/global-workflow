@@ -72,12 +72,12 @@ parameter is set, it will look in the `$ECFgfs/scripts` folder for the scripts
 associated with the tasks or templates defined within the YAML file.
 
 If not already in the environment, it is suggested to add the following to the config.base file:
-`export ECFgfs=$HOMEgfs/ecf`
+`export ECFgfs=$HOMEglobal/ecf`
 
 * **NOTE**: Older versions of the `config.base` may not contain this export so it
 will be important to add as the application does rely on some pieces of information
 from that folder.
-* **NOTE**: In the examples provided below and their output, the `HOMEgfs` parameter
+* **NOTE**: In the examples provided below and their output, the `HOMEglobal` parameter
 is set to `/usr1/knevins/global-workflow` so you can make the associated reference in
 yours to match the output that you are looking to accomplish.
 

@@ -18,7 +18,7 @@ setpdy.sh
 source ./PDY
 export CDATE="${PDY}${cyc}"
 
-"${HOMEgfs}"/scripts/exglobal_fsm.sh
+"${HOMEglobal}"/scripts/exglobal_fsm.sh
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the files system manager for!"

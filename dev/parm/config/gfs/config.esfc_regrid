@@ -8,6 +8,6 @@ echo "BEGIN: config.esfc_regrid"
 # Get task specific resources
 source "${EXPDIR}/config.resources" esfc_regrid
 
-export REGRID_EXEC="${HOMEgfs}/exec/regridStates.x"
+export REGRID_EXEC="${HOMEglobal}/exec/regridStates.x"
 
 echo "END: config.esfc_regrid"

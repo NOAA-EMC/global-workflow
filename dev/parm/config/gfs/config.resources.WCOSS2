@@ -14,9 +14,9 @@ case ${step} in
     if [[ "${CASE}" == "C768" || "${CASE}" == "C1152" ]]; then
         export threads_per_task=8
         # Make ntasks a multiple of 16
-        export ntasks=1200
-        export ntasks_gdas=1200
-        export ntasks_gfs=1200
+        export ntasks=1600
+        export ntasks_gdas=1600
+        export ntasks_gfs=1600
         export tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     fi
     ;;

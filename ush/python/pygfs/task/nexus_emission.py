@@ -40,7 +40,6 @@ class NEXUSEmissions(Task):
     """NEXUS Emissions pre-processing Task
     """
 
-    @logit(logger, name="NEXUSEmissions")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the NEXUS Emissions task
 
@@ -116,7 +115,7 @@ class NEXUSEmissions(Task):
         Notes
         -----
         The method expects the following configuration to be available:
-        - HOMEgfs : str
+        - HOMEglobal : str
             Base directory containing workflow configuration
         - DATA : str
             Working directory path
@@ -206,7 +205,7 @@ class NEXUSEmissions(Task):
             'NEXUS_YMIN': self.task_config.NEXUS_YMIN,
             'NEXUS_YMAX': self.task_config.NEXUS_YMAX,
             'LOCAL_INPUT_DIR': os.path.join(self.task_config.DATA, 'INPUT'),
-            'NEXUS_EXECUTABLE': os.path.join(self.task_config.get('HOMEgfs', None), "exec/nexus.x"),
+            'NEXUS_EXECUTABLE': os.path.join(self.task_config.get('HOMEglobal', None), "exec/nexus.x"),
             "DATA": self.task_config.DATA,
             "NEXUS_DO_MEGAN": self.task_config.get('NEXUS_DO_MEGAN', False),
             "NEXUS_DO_CEDS2019": self.task_config.get('NEXUS_DO_CEDS2019', True),
@@ -293,7 +292,7 @@ class NEXUSEmissions(Task):
             dest_dir = os.path.dirname(dest_file)
             os.makedirs(dest_dir, exist_ok=True)
 
-        yaml_template = os.path.join(self.task_config.HOMEgfs, 'parm', 'chem', 'nexus_emission.yaml.j2')
+        yaml_template = os.path.join(self.task_config.HOMEglobal, 'parm', 'chem', 'nexus_emission.yaml.j2')
         if not os.path.exists(yaml_template):
             logger.warning(f"Template file not found: {yaml_template}, using default configuration")
             yaml_config = {'nexus_emission': {}}
