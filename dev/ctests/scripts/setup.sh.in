@@ -6,16 +6,16 @@ TEST_NAME=${1:?"Name of the test is required"}
 YAML_FILE=${2:?"Name of the CI yaml file for the test"}
 
 # CMake to fill these variables
-HOMEgfs="@PROJECT_SOURCE_DIR@"
+HOMEglobal="@PROJECT_SOURCE_DIR@"
 RUNTESTS="@RUNTESTS@"
 ICSDIR_ROOT="@ICSDIR_ROOT@"
 HPC_ACCOUNT="@HPC_ACCOUNT@"
 
 set +x
-source "${HOMEgfs}/dev/ush/gw_setup.sh"
+source "${HOMEglobal}/dev/ush/gw_setup.sh"
 set -x
 
-cd "${HOMEgfs}/dev/workflow" || exit 1
+cd "${HOMEglobal}/dev/workflow" || exit 1
 
 # We need to tag the pslot with the current git commit hash
 # for a unique path in the RUNDIR directory for the use case

@@ -17,8 +17,8 @@ INTERVAL_GFS: Forecast cadence (frequency) in hours
 FHMAX_GFS:    Forecast length in hours
 RUN:          Forecast phase (gfs or gdas). Currently always expected to be gfs.
 ROTDIR:       Rotating (COM) directory
-USHgfs:       Path to global-workflow `ush` directory
-PARMgfs:      Path to global-workflow `parm` directory
+USHglobal:       Path to global-workflow `ush` directory
+PARMglobal:      Path to global-workflow `parm` directory
 
 Additionally, the following data files are used:
 
@@ -82,8 +82,8 @@ def main() -> None:
     fcst_length = int(get_env_var('FHMAX_GFS'))
     run = get_env_var("RUN")
     rot_dir = get_env_var("ROTDIR")
-    ush_gfs = get_env_var("USHgfs")
-    parm_gfs = get_env_var("PARMgfs")
+    ush_gfs = get_env_var("USHglobal")
+    parm_gfs = get_env_var("PARMglobal")
 
     # os.chdir(data)
 

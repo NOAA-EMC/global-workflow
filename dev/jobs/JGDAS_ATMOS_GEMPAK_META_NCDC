@@ -5,23 +5,23 @@ set -x
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
 ############################################
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 # Now set up GEMPAK/NTRANS environment
 
 # datatype.tbl specifies the paths and filenames of files
-cpreq "${HOMEgfs}/gempak/fix/datatype.tbl" datatype.tbl
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 ###################################
 # Specify NET and RUN Name and model
@@ -60,13 +60,13 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${HOMEgfs}/gempak/ush/gdas_meta_na.sh" && true
+"${HOMEglobal}/gempak/ush/gdas_meta_na.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to generate North American meta gempak products"
 fi
 
-"${HOMEgfs}/gempak/ush/gdas_meta_loop.sh" && true
+"${HOMEglobal}/gempak/ush/gdas_meta_loop.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to generate looped image meta gempak products"
@@ -81,7 +81,7 @@ fi
 ########################################################
 # Execute the script.
 if ((cyc % 12 == 0)); then
-    "${SCRgfs}/exgdas_atmos_gempak_gif_ncdc.sh" && true
+    "${SCRglobal}/exgdas_atmos_gempak_gif_ncdc.sh" && true
 fi
 export err=$?
 if [[ ${err} -ne 0 ]]; then

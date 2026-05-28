@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" gsi
+source "${HOMEglobal}/dev/ush/load_modules.sh" gsi
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
@@ -22,7 +22,7 @@ for fhr in ${fhrlst}; do
     export job=ecen
     export jobid="${job}.$$"
 
-    "${HOMEgfs}/dev/jobs/JGLOBAL_ENKF_ECEN"
+    "${HOMEglobal}/dev/jobs/JGLOBAL_ENKF_ECEN"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"

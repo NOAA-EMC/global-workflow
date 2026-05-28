@@ -19,7 +19,6 @@ class MarineLETKF(Analysis):
     Class for global ocean and sea ice analysis LETKF task
     """
 
-    @logit(logger, name="MarineLETKF")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean and sea ice LETKF task
 
@@ -47,7 +46,7 @@ class MarineLETKF(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         self.task_config.update(AttrDict(
             {
-                'PARMmarine': os.path.join(self.task_config.PARMgfs, 'gdas', 'marine'),
+                'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'letkf_app': 'true',
                 'DIST_HALO_SIZE': 3500000,

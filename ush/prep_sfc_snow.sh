@@ -44,14 +44,14 @@
 #
 #########################################################################
 
-source "${USHgfs}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
+source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
 #------------------------------------------------------------------------
 # The snow2mdl executable and namelist
 #------------------------------------------------------------------------
 
-SNOW2MDLEXEC=${SNOW2MDLEXEC:-"${EXECgfs}/emcsfc_snow2mdl"}
-SNOW2MDLNMLTMPL=${SNOW2MDLNMLTMPL:-"${PARMgfs}/prep_sfc/snow2mdl.nml.tmpl"}
+SNOW2MDLEXEC=${SNOW2MDLEXEC:-"${EXECglobal}/emcsfc_snow2mdl"}
+SNOW2MDLNMLTMPL=${SNOW2MDLNMLTMPL:-"${PARMglobal}/prep_sfc/snow2mdl.nml.tmpl"}
 
 #------------------------------------------------------------------------
 # Fixed files that describe the model grid: landmask, latitudes/longitudes.
@@ -77,7 +77,7 @@ IMS_FILE=${IMS_FILE:-"imssnow96.grib2"}
 # File of snow cover climo used to qc the input snow data
 #------------------------------------------------------------------------
 
-CLIMO_QC=${CLIMO_QC:-"${FIXgfs}/am/emcsfc_snow_cover_climo.grib2"}
+CLIMO_QC=${CLIMO_QC:-"${FIXglobal}/am/emcsfc_snow_cover_climo.grib2"}
 
 #------------------------------------------------------------------------
 # Output snow analysis on model grid

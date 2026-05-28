@@ -29,6 +29,7 @@ export COMPONENT=${WGF}
 # CALL executable job script here
 ############################################################
 export CDATE=${PDY}${cyc}
+export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/oceanice_products.sh
 ${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS

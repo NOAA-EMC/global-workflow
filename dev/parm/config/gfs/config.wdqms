@@ -9,6 +9,6 @@ echo "BEGIN: config.wdqms"
 source "${EXPDIR}/config.resources" wdqms
 
 # WDQMS utility script
-export WDQMSPY="${HOMEgfs}/ush/wdqms.py"
+export WDQMSPY="${HOMEglobal}/ush/wdqms.py"
 
 echo "END: config.wdqms"

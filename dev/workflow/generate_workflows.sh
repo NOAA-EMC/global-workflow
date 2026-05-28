@@ -28,7 +28,7 @@ function _usage() {
     -D Delete the RUNTESTS and DATAROOT directories if they already exist
 
     -Y /path/to/directory/with/YAMLs
-       If this option is not specified, then the \${HOMEgfs}/dev/ci/cases/pr
+       If this option is not specified, then the \${HOMEglobal}/dev/ci/cases/pr
        directory is used.
 
     -G Run all valid GFS cases in the specified YAML directory.
@@ -50,7 +50,7 @@ function _usage() {
 
     -A "HPC account name"  Set the HPC account name.
        If this is not set, the default in
-       \$HOMEgfs/dev/ci/platform/config.\$machine
+       \$HOMEglobal/dev/ci/platform/config.\$machine
        will be used.
 
     -c Append the chosen set of tests to your existing crontab
@@ -80,14 +80,14 @@ EOF
 set -eu
 
 # Set default options
-HOMEgfs=""
+HOMEglobal=""
 _specified_home=false
 _build=false
 _build_flags=""
 _update_submods=false
 declare -a _yaml_list=()
 _specified_yaml_list=false
-_yaml_dir="" # Will be set based off of HOMEgfs if not specified explicitly
+_yaml_dir="" # Will be set based off of HOMEglobal if not specified explicitly
 _specified_yaml_dir=false
 _run_all_gfs=false
 _run_all_gefs=false
@@ -114,10 +114,10 @@ while [[ $# -gt 0 && "$1" != "--" ]]; do
     while getopts ":H:bDuy:Y:GESCA:ce:t:vVdh" option; do
         case "${option}" in
             H)
-                HOMEgfs="${OPTARG}"
+                HOMEglobal="${OPTARG}"
                 _specified_home=true
-                if [[ ! -d "${HOMEgfs}" ]]; then
-                    echo "Specified HOMEgfs directory (${HOMEgfs}) does not exist"
+                if [[ ! -d "${HOMEglobal}" ]]; then
+                    echo "Specified HOMEglobal directory (${HOMEglobal}) does not exist"
                     exit 1
                 fi
                 ;;
@@ -285,18 +285,18 @@ if [[ "${_run_all_gfs}" == "true" ||
 
 fi
 
-# Set HOMEgfs if it wasn't set by the user
+# Set HOMEglobal if it wasn't set by the user
 if [[ "${_specified_home}" == "false" ]]; then
     script_relpath="$(dirname "${BASH_SOURCE[0]}")"
-    HOMEgfs="$(cd "${script_relpath}/../.." && pwd)"
+    HOMEglobal="$(cd "${script_relpath}" && git rev-parse --show-toplevel)"
     if [[ "${_verbose}" == "true" ]]; then
-        printf "Setting HOMEgfs to %s\n\n" "${HOMEgfs}"
+        printf "Setting HOMEglobal to %s\n\n" "${HOMEglobal}"
     fi
 fi
 
-# Set the _yaml_dir to HOMEgfs/dev/ci/cases/pr if not explicitly set
+# Set the _yaml_dir to HOMEglobal/dev/ci/cases/pr if not explicitly set
 if [[ "${_specified_yaml_dir}" == false ]]; then
-    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
+    _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
 function select_all_yamls() {
@@ -432,9 +432,9 @@ fi
 if [[ "${_debug}" == "true" ]]; then
     set +x
 fi
-if ! source "${HOMEgfs}/dev/ush/gw_setup.sh" >&stdout; then
+if ! source "${HOMEglobal}/dev/ush/gw_setup.sh" >&stdout; then
     cat stdout
-    echo "Failed to source ${HOMEgfs}/dev/ush/gw_setup.sh!"
+    echo "Failed to source ${HOMEglobal}/dev/ush/gw_setup.sh!"
     exit 7
 fi
 if [[ "${_verbose}" == "true" ]]; then
@@ -446,9 +446,9 @@ if [[ "${_debug}" == "true" ]]; then
 fi
 set -u
 machine=${MACHINE_ID}
-platform_config="${HOMEgfs}/dev/ci/platforms/config.${machine}"
+platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
 if [[ -f "${platform_config}" ]]; then
-    source "${HOMEgfs}/dev/ci/platforms/config.${machine}"
+    source "${HOMEglobal}/dev/ci/platforms/config.${machine}"
 else
     if [[ "${_set_account}" == "false" ]]; then
         echo "ERROR Unknown HPC account!  Please use the -A option to specify."
@@ -456,9 +456,9 @@ else
     fi
 fi
 
-# If _yaml_dir is not set, set it to $HOMEgfs/dev/ci/cases/pr
+# If _yaml_dir is not set, set it to $HOMEglobal/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
-    _yaml_dir="${HOMEgfs}/dev/ci/cases/pr"
+    _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
 # Build the system if requested
@@ -466,14 +466,14 @@ if [[ "${_build}" == "true" ]]; then
     printf "Building via build_all.sh %s\n\n" "${_build_flags}"
     # Let the output of build_all.sh go to stdout regardless of verbose options
     #shellcheck disable=SC2086,SC2248
-    ${HOMEgfs}/sorc/build_all.sh ${_verbose_flag} ${_build_flags}
+    ${HOMEglobal}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
 fi
 
 # Link the workflow silently unless there's an error
 if [[ "${_verbose}" == true ]]; then
     printf "Linking the workflow\n\n"
 fi
-if ! "${HOMEgfs}/sorc/link_workflow.sh" >&stdout; then
+if ! "${HOMEglobal}/sorc/link_workflow.sh" >&stdout; then
     cat stdout
     echo "link_workflow.sh failed!"
     if [[ "${_set_email}" == true ]]; then

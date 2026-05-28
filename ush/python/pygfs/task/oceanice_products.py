@@ -34,7 +34,6 @@ class OceanIceProducts(Task):
     TRIPOLE_DIMS_MAP = {'mx025': [1440, 1080], 'mx050': [720, 526], 'mx100': [360, 320], 'mx500': [72, 35]}
     LATLON_DIMS_MAP = {'0p25': [1440, 721], '0p50': [720, 361], '1p00': [360, 181], '5p00': [72, 36]}
 
-    @logit(logger, name="OceanIceProducts")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Ocean/Ice Productstask
 

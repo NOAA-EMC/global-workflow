@@ -23,7 +23,6 @@ class Jedi:
     Class for initializing and executing JEDI applications
     """
 
-    @logit(logger, name="Jedi")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for JEDI objects
 
@@ -180,7 +179,6 @@ class Jedi:
         return jedi_input_config
 
     @staticmethod
-    @logit(logger)
     def get_jedi_dict(jedi_config_dict: dict, task_config: AttrDict, expected_block_names: Optional[list] = None):
         """Get dictionary of Jedi objects from YAML specifying their configuration dictionaries
 
@@ -209,7 +207,7 @@ class Jedi:
             # Make sure all required keys present
             for key in required_jedi_keys:
                 if key not in jedi_config_dict[block_name]:
-                    raise WorkflowKeyError(f"Required key {key} not found in {jedi_config_yaml} for block {block_name}.")
+                    raise WorkflowKeyError(f"Required key {key} not found in {jedi_config_dict} for block {block_name}.")
 
             # Set optional keys to None
             for key in optional_jedi_keys:
@@ -223,9 +221,9 @@ class Jedi:
         if expected_block_names:
             for block_name in expected_block_names:
                 if block_name not in jedi_dict:
-                    raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_yaml}")
+                    raise WorkflowKeyError(f"Expected block key {block_name} not present {jedi_config_dict}")
             if len(jedi_dict) > len(expected_block_names):
-                raise WorkflowException(f"{jedi_config_yaml} specifies more Jedi objects than expected.")
+                raise WorkflowException(f"{jedi_config_dict} specifies more Jedi objects than expected.")
 
         # Return dictionary of JEDI objects
         return jedi_dict

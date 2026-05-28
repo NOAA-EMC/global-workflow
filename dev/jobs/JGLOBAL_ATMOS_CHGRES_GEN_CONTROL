@@ -1,18 +1,18 @@
 #! /usr/bin/env bash
 set -x
 # shellcheck disable=SC2153  # PDY is always set in environment
-source "${HOMEgfs}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gen_control_ic" -c "base gen_control_ic"
 
 #{% if false %}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 # Initial conditions are from previous GFS cycle, but valid at the end of the cycle
 GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
@@ -34,7 +34,7 @@ export ATM_FILE="${COMINgfs:-}/gfs.${GDATE:0:8}/${GDATE:8:2}/atmos/history/gfs.t
 export SFC_FILE="${COMINgfs:-}/gfs.${GDATE:0:8}/${GDATE:8:2}/atmos/history/gfs.t${GDATE:8:2}.sfc.f003.nc"
 ###############################################################
 # Run relevant script
-${CHGRESFCSTSH:-${SCRgfs}/exglobal_atmos_chgres_gen_control.sh} && true
+${CHGRESFCSTSH:-${SCRglobal}/exglobal_atmos_chgres_gen_control.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run chgres_cube, ABORT!"

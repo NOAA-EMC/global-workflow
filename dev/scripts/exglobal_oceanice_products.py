@@ -18,7 +18,7 @@ def main():
     oceanice = OceanIceProducts(config)
 
     # Pull out all the configuration keys needed to run the rest of steps
-    keys = ['HOMEgfs', 'DATA', 'current_cycle', 'RUN', 'NET',
+    keys = ['HOMEglobal', 'DATA', 'current_cycle', 'RUN', 'NET',
             f'COMIN_{oceanice.task_config.component.upper()}_HISTORY',
             f'COMOUT_{oceanice.task_config.component.upper()}_GRIB',
             'APRUN_OCNICEPOST',
