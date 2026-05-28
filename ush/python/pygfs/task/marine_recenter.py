@@ -19,7 +19,6 @@ class MarineRecenter(Analysis):
     Class for global ocean analysis recentering task
     """
 
-    @logit(logger, name="MarineRecenter")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean recentering task
 

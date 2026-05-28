@@ -23,7 +23,6 @@ class ChemFireEmissions(Task):
     """Chemistry Emissions pre-processing Task
     """
 
-    @logit(logger, name="ChemFireEmissions")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the Chemistry Fire Emissions task
 

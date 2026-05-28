@@ -27,7 +27,6 @@ class SnowAnalysis(Analysis):
     Class for JEDI-based global snow analysis tasks
     """
 
-    @logit(logger, name="Analysis")
     def __init__(self, config: Dict[str, Any]):
         """Constructor global snow analysis task
 

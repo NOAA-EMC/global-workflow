@@ -20,7 +20,6 @@ class MarineBMat(Analysis):
     """
     Class for global marine B-matrix tasks.
     """
-    @logit(logger, name="MarineBMat")
     def __init__(self, config):
         """Constructor for marine B-matrix task
 
