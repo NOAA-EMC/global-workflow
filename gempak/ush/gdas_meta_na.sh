@@ -41,7 +41,7 @@ PROJ    = str/90;-105;0
 LATLON  = 1
 
 
-restore ${HOMEgfs}/gempak/ush/restore/pmsl_thkn.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/pmsl_thkn.2.nts
 CLRBAR  = 1
 HLSYM   = 2;1.5//21//hw
 TEXT    = 1/21//hw
@@ -50,7 +50,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/850mb_hght_tmpc.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/850mb_hght_tmpc.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 SKIP    = 0         !0         !0         !0         !/3
@@ -60,7 +60,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/700mb_hght_relh_omeg.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGT, REL HUMIDITY AND OMEGA|~@ HGT, RH AND OMEGA!0
@@ -68,7 +68,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/500mb_hght_absv.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/500mb_hght_absv.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGT AND VORTICITY|~@ HGT AND VORTICITY!0
@@ -76,7 +76,7 @@ l
 ru
 
 
-restore ${HOMEgfs}/gempak/ush/restore/250mb_hght_wnd.2.nts
+restore ${HOMEglobal}/gempak/ush/restore/250mb_hght_wnd.2.nts
 CLRBAR  = 1
 TEXT    = 1/21//hw
 TITLE	= 5/-2/~ ? ${m_title} @ HGT, ISOTACHS AND WIND (KTS)|~@ HGT AND WIND!0

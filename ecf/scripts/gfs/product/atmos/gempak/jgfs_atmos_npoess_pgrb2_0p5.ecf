@@ -23,6 +23,7 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
+export HOMEglobal=${HOMEgfs}
 export CDATE=${PDY}${cyc}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/npoess.sh

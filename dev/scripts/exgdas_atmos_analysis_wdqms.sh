@@ -36,7 +36,7 @@ INPUT_LIST=("diag_conv_ps_ges.${PDY}${cyc}.nc4"
 OTYPES=(SYNOP TEMP MARINE)
 
 # Location of Reject List
-REJECTLIST=${REJECTLIST:-${HOMEgfs}/parm/wdqms/reject_list.txt}
+REJECTLIST=${REJECTLIST:-${HOMEglobal}/parm/wdqms/reject_list.txt}
 
 ################################################################################
 echo "Begin job ${job:-}"

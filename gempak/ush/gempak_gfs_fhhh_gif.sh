@@ -9,7 +9,7 @@
 
 LATVAL="1/1/1/1/5;5"
 pixels="1728;1472"
-cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
+cpreq "${HOMEglobal}/gempak/fix/coltbl.spc" coltbl.xwp
 
 ##########################################################
 #                   FORECAST CHARTS                      #
@@ -19,7 +19,7 @@ cpreq "${HOMEgfs}/gempak/fix/coltbl.spc" coltbl.xwp
 
 echo "0${fhr3}${PDY}${cyc}" > dates
 export FORT55="title.output"
-"${HOMEgfs}/exec/webtitle.x" < dates
+"${HOMEglobal}/exec/webtitle.x" < dates
 
 TITLE="$(cat title.output)"
 echo "TITLE = ${TITLE}"

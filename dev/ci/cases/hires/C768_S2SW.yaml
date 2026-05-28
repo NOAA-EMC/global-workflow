@@ -9,7 +9,7 @@ experiment:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2019120300
   edate: 2019120300
-  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
 
 workflow:
   engine: rocoto

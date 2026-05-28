@@ -8,7 +8,7 @@ set -x
 ###############################################################
 
 # Source FV3GFS workflow modules
-source "${HOMEgfs}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if ((status != 0)); then exit "${status}"; fi
 
@@ -24,7 +24,7 @@ for FORECAST_HOUR in "${fhr_list[@]}"; do
     ###############################################################
     # Execute the JJOB
     ###############################################################
-    "${HOMEgfs}/dev/jobs/JGLOBAL_ATMOS_PRODUCTS"
+    "${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_PRODUCTS"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
 done

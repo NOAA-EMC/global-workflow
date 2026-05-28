@@ -25,7 +25,7 @@ DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
 ntiles=${ntiles:-6}
 
 # Scripts
-REGRIDSH=${REGRIDSH:-"${USHgfs}/regrid_gsiSfcIncr_to_tile.sh"}
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 
 # Executables.
 

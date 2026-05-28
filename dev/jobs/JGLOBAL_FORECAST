@@ -5,30 +5,30 @@ set -x
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
     export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
-    source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
 
 #{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
 #{% if false %}
 # When running the workflow in development, source jjob_standard_vars.sh #}
-source "${HOMEgfs}/ush/jjob_standard_vars.sh"
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% else %}
 #{# When rendered for operations, place the contents of jjob_var_setup.j2 here #}
 #{# Note that the first line of jjob_var_setup.j2 will be commented #}
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
 # Set strict mode which will exit on error or undefined variable
 # and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/set_strict.sh"
 
 # Setup Python path for pygfs
-PYTHONPATH="${HOMEgfs}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
 # Create the directory to hold restarts and output from the model in stmp
@@ -118,7 +118,8 @@ fi
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
-"${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}" && true # The && true prevents the shell from exiting when set -e
+: "${FORECASTSH:=${SCRglobal}/exglobal_forecast.sh}"
+"${FORECASTSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the ${RUN} forecast for ${PDY}${cyc}"

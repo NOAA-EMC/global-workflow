@@ -17,9 +17,6 @@
 #
 ################################################################################
 
-# Directories.
-pwd=$(pwd)
-
 # Base variables
 DONST=${DONST:-"NO"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
@@ -28,7 +25,7 @@ export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
 # Utilities
-NCLEN=${NCLEN:-${USHgfs}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
 
 # Scripts
 
@@ -61,8 +58,8 @@ else
 fi
 
 # Global_cycle stuff
-CYCLESH=${CYCLESH:-${USHgfs}/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-${EXECgfs}/global_cycle}
+CYCLESH=${CYCLESH:-${USHglobal}/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-${EXECglobal}/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
@@ -178,8 +175,8 @@ if [[ "${DOIAU}" == "YES" ]]; then
             fi
             cpreq "${sfcdata_dir}/${bPDY}.${bcyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/sfc_data_cycle.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/increment.sfc.i00${LFHR}.tile${n}.nc" \
@@ -249,11 +246,10 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
             else
                 sfcdata_dir="${COMIN_ATMOS_RESTART_MEM_PREV}"
             fi
-
             cpreq "${sfcdata_dir}/${PDY}.${cyc}0000.${snow_prefix}sfc_data.tile${n}.nc" \
                 "${DATA}/sfc_data_cycle.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
-            cpreq "${FIXgfs}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${n}.nc" "${DATA}/fngrid.${cmem}"
+            cpreq "${FIXglobal}/orog/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${n}.nc" "${DATA}/fnorog.${cmem}"
 
             if [[ "${DO_GSISOILDA}" == "YES" ]] && [[ "${GCYCLE_DO_SOILINCR}" == ".true." ]]; then
                 cpreq "${COMIN_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${LFHR}.tile${n}.nc" \
@@ -293,7 +289,5 @@ fi
 ################################################################################
 
 ################################################################################
-# Postprocessing
-cd "${pwd}" || exit 1
 
 exit "${err}"

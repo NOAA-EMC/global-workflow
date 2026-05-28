@@ -63,8 +63,8 @@ echo "   Number of bulletin files :   ${Nb}"
 echo '   --------------------------'
 echo ' '
 # 1.c Get the datat cards
-if [[ -f "${PARMgfs}/wave/bull_awips_gfswave.${waveGRD}" ]]; then
-    cpreq "${PARMgfs}/wave/bull_awips_gfswave.${waveGRD}" "awipsbull.data"
+if [[ -f "${PARMglobal}/wave/bull_awips_gfswave.${waveGRD}" ]]; then
+    cpreq "${PARMglobal}/wave/bull_awips_gfswave.${waveGRD}" "awipsbull.data"
 else
     export err=3
     err_exit "Bulletin header data file missing."
