@@ -1141,7 +1141,7 @@ class GFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': mgr_vars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEgfs}/dev/job_cards/rocoto/fcst_manager.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
