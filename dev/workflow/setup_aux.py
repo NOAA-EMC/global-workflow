@@ -27,7 +27,7 @@ _here = os.path.dirname(os.path.abspath(__file__))
 logger = getLogger(__name__)
 
 # Required keys in the configuration YAML
-_REQUIRED_CONFIG_KEYS = ['start_date', 'end_date', 'HOMEglobal', 'EXP_aux',
+_REQUIRED_CONFIG_KEYS = ['start_date', 'end_date', 'EXP_aux',
                          'ECF_OUT_gfs', 'COM_aux', 'DATAROOT_aux']
 
 
@@ -113,6 +113,11 @@ def main():
     if missing_keys:
         raise KeyError(f"Required key(s) missing from config file {config_path}: "
                        f"{', '.join(missing_keys)}")
+
+    # Check if HOMEglobal is set in the context, if not, set it using _get_HOMEglobal()
+    if 'HOMEglobal' not in context:
+        context['HOMEglobal'] = _get_HOMEglobal()
+        logger.info(f"HOMEglobal not found in config, set to: {context['HOMEglobal']}")
 
     template_path = os.path.join(context['HOMEglobal'], 'dev', 'parm', 'aux', 'aux.xml.j2')
     output_path = context.get('output') or os.path.join(context['EXP_aux'], 'aux.xml')

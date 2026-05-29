@@ -6,8 +6,8 @@
 start_date: "202605270600"
 end_date: "202605270600"
 
-# Full path to the global workflow home directory
-HOMEglobal: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/packages/gfs.v17.0"
+# Full path to the global workflow home directory (default is this repository's root directory)
+# HOMEglobal: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/packages/gfs.v17.0"
 
 # Full path to the auxiliary experiment directory
 # (can be the same as the main GFS experiment directory)
