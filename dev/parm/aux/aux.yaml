@@ -23,6 +23,5 @@ COM_aux: "/lfs/f2/t2o/ptmp/emc/emc.global/ecflow_gfsv17_rt/ptmp/emc.global/ecflo
 # Full path to the auxiliary DATAROOT directory
 DATAROOT_aux: "/lfs/h2/emc/stmp/emc.global/RUNDIRS/aux_gfs"
 
-# Optional: full path for the rendered aux.xml output file.
-# Defaults to <EXP_aux>/aux.xml if not set.
-# output: "/path/to/output/aux.xml"
+# Output path for the rendered XML.
+output: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/retrov17_01_realtime/aux.xml"
