@@ -16,7 +16,7 @@ export ARCH_EXPDIR_FREQ=0    # How often to archive the EXPDIR in hours or 0 for
 export ARCH_HASHES='YES'     # Archive the hashes of the GW and submodules and 'git status' for each; requires ARCH_EXPDIR
 export ARCH_DIFFS='NO'       # Archive the output of 'git diff' for the GW; requires ARCH_EXPDIR
 
-# Do not archive logs for ecflow-based experiments (this is handled elsewhere)
+# Archive logs by default; the auxiliary workflow sets ARCH_LOGS=NO since ecflow log archiving is handled separately
 export ARCH_LOGS=${ARCH_LOGS:-YES}
 
 export ARCH_GAUSSIAN="YES"
