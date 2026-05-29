@@ -29,6 +29,7 @@
 	<!-- Define the cycles -->
 	<cycledef group="gdas">{{ start_date }} {{ end_date }} 06:00:00</cycledef>
 	<cycledef group="gfs">{{ start_date }} {{ end_date }} 06:00:00</cycledef>
+	<cycledef group="metp">202605281800 202605281800 24:00:00</cycledef>
 
 <task name="gfs_tracker" cycledefs="gfs" maxtries="&MAXTRIES;">
 
@@ -96,7 +97,7 @@
 
 	<var name="metpcase">g2g1 g2o1 pcp1</var>
 
-	<task name="gfs_metp#metpcase#" cycledefs="gfs" maxtries="&MAXTRIES;">
+	<task name="gfs_metp#metpcase#" cycledefs="metp" maxtries="&MAXTRIES;">
 
 		<command>&HOME_repo;/dev/job_cards/rocoto/metp.sh</command>
 
