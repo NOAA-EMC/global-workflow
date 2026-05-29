@@ -6,7 +6,7 @@ export job="arch_logs"
 export jobid="${job}.$$"
 
 # Source config.base to get ATARDIR
-ATARDIR=$(source "${EXPDIR}/config.base" >& /dev/null && echo "${ATARDIR}")
+ATARDIR=$(source "${EXPDIR}/config.base" >&/dev/null && echo "${ATARDIR}")
 
 if [[ -z "${ATARDIR:-}" ]]; then
     echo "FATAL ERROR Could not determine the HPSS archive directory (ATARDIR)!"
