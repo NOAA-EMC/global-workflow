@@ -45,7 +45,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_tracker.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
@@ -76,7 +76,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_genesis.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
@@ -111,7 +111,7 @@
 		<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_metp#metpcase#.log</cyclestr></join>
 
 		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-		<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+		<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 		<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 		<envar><name>NET</name><value>gfs</value></envar>
 		<envar><name>RUN</name><value>gfs</value></envar>
@@ -154,7 +154,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_arch_vrfy.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
@@ -188,7 +188,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_arch_logs.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
@@ -224,7 +224,7 @@
 		<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_arch_tar_#tartype#.log</cyclestr></join>
 
 		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-		<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+		<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 		<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 		<envar><name>NET</name><value>gfs</value></envar>
 		<envar><name>RUN</name><value>gfs</value></envar>
@@ -264,7 +264,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_fit2obs.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gdas</value></envar>
@@ -295,7 +295,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_anlstat.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gdas</value></envar>
@@ -326,7 +326,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_arch_vrfy.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gdas</value></envar>
@@ -359,7 +359,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_arch_logs.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gdas</value></envar>
@@ -395,7 +395,7 @@
 		<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_arch_tar_#tartype#.log</cyclestr></join>
 
 		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-		<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+		<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 		<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 		<envar><name>NET</name><value>gfs</value></envar>
 		<envar><name>RUN</name><value>gdas</value></envar>
@@ -434,7 +434,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/enkfgdas_earc_vrfy.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>enkfgdas</value></envar>
@@ -453,7 +453,7 @@
 
 </task>
 
-<task name="enkfgdas_arch_logs" cycledefs="enkfgdas" maxtries="&MAXTRIES;">
+<task name="enkfgdas_arch_logs" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/arch_ecf_logs.sh</command>
 
@@ -468,7 +468,7 @@
 	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/enkfgdas_arch_logs.log</cyclestr></join>
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>enkfgdas</value></envar>
@@ -504,7 +504,7 @@
 		<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/enkfgdas_earc_tars_#grp#.log</cyclestr></join>
 
 		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-		<envar><name>HOMEgfs</name><value>&HOME_repo;</value></envar>
+		<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
 		<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 		<envar><name>NET</name><value>gfs</value></envar>
 		<envar><name>RUN</name><value>enkfgdas</value></envar>

@@ -5,7 +5,7 @@ set -x
 export job="arch_logs"
 export jobid="${job}.$$"
 
-source "${HOMEgfs}/ush/jjob_header.sh" -e "arch_logs" -c "base"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "arch_logs" -c "base"
 
 ###############################################################
 # Tar up the ecflow logs
