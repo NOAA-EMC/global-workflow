@@ -51,34 +51,32 @@ export SLEEP_INT=${SLEEP_TIME:-5}
 
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
-# TODO: Does this section do anything? I retained if for clarity of
-# changes/updates, but it does not appear to do anything.
+##############################################################################
+# Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
+##############################################################################
+export SHOUR=0
 
 ####################################
 # Check if this is a restart
 ####################################
-if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
+if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb" ]]; then
     modelrecvy=$(cat < "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
     recvy_cyc="${modelrecvy:8:2}"
     recvy_shour="${modelrecvy:10:13}"
 
-    if [[ ${RERUN} == "NO" ]]; then
-        NEW_SHOUR=$((recvy_shour + FHINC))
-        if ((NEW_SHOUR >= SHOUR)); then
+    if [[ ${RERUN:-NO} == "NO" ]]; then
+        NEW_SHOUR=$((recvy_shour + FHOUT_GOES))
+        if ((NEW_SHOUR > SHOUR)); then
             export SHOUR="${NEW_SHOUR}"
         fi
-        if ((recvy_shour >= FHOUR)); then
-            echo "Forecast Pgrb Generation Already Completed to ${FHOUR}"
+        if ((recvy_shour >= FHMAX_GOES)); then
+            echo "Forecast Pgrb Generation Already Completed to ${FHMAX_GOES}"
         else
             echo "Starting: PDY=${PDY} cycle=t${recvy_cyc}z SHOUR=${SHOUR}"
         fi
     fi
 fi
 
-##############################################################################
-# Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
-##############################################################################
-export SHOUR=0
 export FHOUR=24
 export FHINC=3
 if ((FHOUR > FHMAX_GFS)); then
@@ -132,7 +130,9 @@ done
 ################################################################
 # Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files
 ################################################################
-export SHOUR=${FHMIN_GFS}
+if ((FHMIN_GFS > SHOUR)); then
+    export SHOUR=${FHMIN_GFS}
+fi
 export FHOUR=${FHMAX_GOES}
 export FHINC=${FHOUT_GOES}
 
