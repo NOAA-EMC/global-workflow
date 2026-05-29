@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 #######
 # Source this file to set strict mode in a script.
-#   source "${USHgfs}/set_strict.sh"
+#   source "${USHglobal}/set_strict.sh"
 #######
 
 if [[ ${STRICT:-"YES"} == "YES" ]]; then

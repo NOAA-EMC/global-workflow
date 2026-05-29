@@ -99,12 +99,12 @@ if [[ -s jtwcbul ]]; then
     echo "Processing JTWC bulletin halfs into tcvitals records"
 fi
 
-pgm=$(basename "${EXECgfs}/syndat_getjtbul.x")
+pgm=$(basename "${EXECglobal}/syndat_getjtbul.x")
 export pgm
 if [[ -s prep_step ]]; then
-    source "${USHgfs}/unset_strict.sh"
+    source "${USHglobal}/unset_strict.sh"
     source prep_step
-    source "${USHgfs}/set_strict.sh"
+    source "${USHglobal}/set_strict.sh"
 else
     rm -f errfile
     # shellcheck disable=SC2046
@@ -115,7 +115,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p "${EXECgfs}/${pgm}" 2> errfile
+time -p "${EXECglobal}/${pgm}" 2> errfile
 errget=$?
 cat errfile
 rm errfile

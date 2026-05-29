@@ -2,8 +2,8 @@ help([[
 Load environment to run the UPP on WCOSS2
 ]])
 
-local homegfs=os.getenv("HOMEgfs") or ""
-prepend_path("MODULEPATH", pathJoin(homegfs,"/modulefiles/upp"))
+local homeglobal=os.getenv("HOMEglobal") or ""
+prepend_path("MODULEPATH", pathJoin(homeglobal,"/modulefiles/upp"))
 -- Load UPP modules
 load("wcoss2_intel")
 
