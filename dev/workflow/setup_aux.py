@@ -119,7 +119,7 @@ def main():
         context['HOMEglobal'] = _get_HOMEglobal()
         logger.info(f"HOMEglobal not found in config, set to: {context['HOMEglobal']}")
 
-    template_path = os.path.join(context['HOMEglobal'], 'dev', 'parm', 'aux', 'aux.xml.j2')
+    template_path = os.path.join(context['HOMEglobal'], 'dev', 'workflow', 'aux', 'aux.xml.j2')
     output_path = context.get('output') or os.path.join(context['EXP_aux'], 'aux.xml')
 
     # Create the output directory if it doesn't exist
