@@ -3,15 +3,15 @@
 [
 	<!--
 	PROGRAM
-		Auxillary workflow manager for Global Forecast System
+		Auxiliary workflow manager for Global Forecast System
 		Variables:
-		PSLOT: The name of this auxillary system
+		PSLOT: The name of this auxiliary system
 		MAXTRIES: How many times to run a job
 		HOME_repo: Where the official repository is located
-		EXP_aux: Where the expdir for this auxillary system lives (can be the same as GFS)
+		EXP_aux: Where the expdir for this auxiliary system lives (can be the same as GFS)
 		ECF_OUT_gfs: The GFS ecflow output directory; used as triggers
-		DATAROOT_aux: DATAROOT for this auxillary system
-		COM_aux: The auxillary COM directory (ONLY set this to COM_gfs when going live, not for testing)
+		DATAROOT_aux: DATAROOT for this auxiliary system
+		COM_aux: The auxiliary COM directory (ONLY set this to COM_gfs when going live, not for testing)
 	-->
 	<!ENTITY PSLOT "aux_gfs">
 	<!ENTITY MAXTRIES "1">
