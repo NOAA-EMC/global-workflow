@@ -31,8 +31,8 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHgfs}/jjob_shell_setup.sh"
-source "${USHgfs}/set_strict.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
+source "${USHglobal}/set_strict.sh"
 
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
@@ -68,7 +68,7 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-FORECASTMGRSH="${FORECASTMGRSH:-${SCRgfs}/exglobal_forecast_manager.sh}"
+FORECASTMGRSH="${FORECASTMGRSH:-${SCRglobal}/exglobal_forecast_manager.sh}"
 "${FORECASTMGRSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
