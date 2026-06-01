@@ -21,7 +21,7 @@
 
 #  Set environment.
 # shellcheck source=ush/wait_for_file.sh
-source "${USHglobalbalbal}/wait_for_file.sh"
+source "${USHglobal}/wait_for_file.sh"
 
 cd "${DATA}" || exit 8
 
