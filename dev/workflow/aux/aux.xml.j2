@@ -29,7 +29,7 @@
 	<!-- Define the cycles -->
 	<cycledef group="gdas">{{ start_date }} {{ end_date }} 06:00:00</cycledef>
 	<cycledef group="gfs">{{ start_date }} {{ end_date }} 06:00:00</cycledef>
-	<cycledef group="metp">202605281800 202605281800 24:00:00</cycledef>
+	<cycledef group="metp">{{ start_date_metp }} {{ end_date_metp }} 24:00:00</cycledef>
 
 <task name="gfs_tracker" cycledefs="gfs" maxtries="&MAXTRIES;">
 

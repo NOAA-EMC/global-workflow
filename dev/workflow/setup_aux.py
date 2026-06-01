@@ -57,6 +57,44 @@ def _get_HOMEglobal():
         raise RuntimeError(f"Failed to determine HOMEglobal via git: {e}") from e
 
 
+def calc_start_end_metp_dates(start_date, end_date):
+    """
+    Calculate the start and end dates for the METplus METP tool based on the
+    provided workflow start and end dates. METplus runs on the 18z cycle only.
+
+    Parameters
+    ----------
+    start_date : str
+        Workflow start date in YYYYMMDDHH format
+    end_date : str
+        Workflow end date in YYYYMMDDHH format
+
+    Returns
+    -------
+    tuple of str
+        Tuple containing the calculated start and end dates for METP in YYYYMMDDHH format
+    """
+
+    from datetime import datetime, timedelta
+
+    # Parse the input dates
+    # Assume input dates are in UTC and in the format YYYYMMDDHHmm
+
+    start_dt = datetime.strptime(start_date, '%Y%m%d%H%M')
+    end_dt = datetime.strptime(end_date, '%Y%m%d%H%M')
+
+    # Calculate the METP start date (the 18z cycle on the workflow start date)
+    metp_start_dt = (start_dt - timedelta(days=1)).replace(hour=18, minute=0, second=0)
+
+    # Calculate the METP end date (the 18z cycle on the workflow end date)
+    metp_end_dt = end_dt.replace(hour=18, minute=0, second=0)
+
+    # Convert to strings in the format YYYYMMDDHH
+    metp_start_str = metp_start_dt.strftime('%Y%m%d%H%M')
+    metp_end_str = metp_end_dt.strftime('%Y%m%d%H%M')
+
+    return metp_start_str, metp_end_str
+
 def input_args():
     """
     Method to collect user arguments for ``setup_aux.py``
@@ -113,6 +151,12 @@ def main():
     if missing_keys:
         raise KeyError(f"Required key(s) missing from config file {config_path}: "
                        f"{', '.join(missing_keys)}")
+
+    # Get the start and end METp dates
+    metp_start_date, metp_end_date = calc_start_end_metp_dates(context['start_date'], context['end_date'])
+    context['start_date_metp'] = metp_start_date
+    context['end_date_metp'] = metp_end_date
+    logger.info(f"Calculated METP start date: {metp_start_date}, METP end date: {metp_end_date}")
 
     # Check if HOMEglobal is set in the context, if not, set it using _get_HOMEglobal()
     if 'HOMEglobal' not in context:
