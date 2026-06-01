@@ -95,6 +95,7 @@ def calc_start_end_metp_dates(start_date, end_date):
 
     return metp_start_str, metp_end_str
 
+
 def input_args():
     """
     Method to collect user arguments for ``setup_aux.py``
