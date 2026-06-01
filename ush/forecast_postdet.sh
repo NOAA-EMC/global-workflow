@@ -830,7 +830,7 @@ MOM6_postdet() {
                 source_file_log="${DATA}/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
 
                 case "${RUN}" in
-                    gdas | enkfgdas)
+                    gdas | enkfgdas | gefs | sfs | gcafs)
                         # Instantaneous MOM6 backgrounds; filename uses underscore-separated date.
                         local vdatestr_da="${vdate:0:4}_${vdate:4:2}_${vdate:6:2}_${vdate:8:2}"
                         source_file="ocn_da_${vdatestr_da}.nc"
@@ -861,14 +861,15 @@ MOM6_postdet() {
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
-                # Model-log-triggered: source_file_log is the MOM6 period log written by the
-                # model after the .nc is complete. Manager polls for it, copies the .nc to COM,
-                # then copies the log to COM as the Rocoto sentinel.
+                # For manager runs (gfs|enkfgfs): source_file_log is the MOM6 period log written
+                # by the model after the .nc is complete. Manager polls for it, copies the .nc
+                # to COM, then copies the log to COM as the Rocoto sentinel.
+                # For non-manager runs (gdas|enkfgdas): MOM6 does not produce a period log file,
+                # so only the history .nc is queued; files are copied after the model completes.
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
                     echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
                 else
                     echo "cpfs ${ocn_local} ${ocn_com}" >> "${ocn_hist_cmdfile}"
-                    echo "cpfs ${source_file_log} ${dest_file_log}" >> "${ocn_hist_cmdfile}"
                 fi
 
                 last_fhr=${fhr}
