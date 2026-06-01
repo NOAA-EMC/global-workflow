@@ -92,11 +92,11 @@ for ((inst = 0; inst < natm_inst; inst++)); do
         fi
     done
     {
-        echo "${USHglobalbalbal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
-        echo "${USHglobalbal}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
+        echo "${USHglobalbal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
+        echo "${USHglobal}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
-        echo "${USHglobalbal}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
+        echo "${USHglobal}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
     } >> "${FCST_MANAGER_CMDFILE}"
 done
 echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
@@ -111,7 +111,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     echo "INFO: WW3 product table found (${MGR_NTASKS_WW3} rank(s))"
     split_table_by_sentinel "${WW3_TABLE}" "${MGR_NTASKS_WW3}" "${DATA}/ww3_mgr_rank"
     for ((r = 0; r < MGR_NTASKS_WW3; r++)); do
-        echo "${USHglobalbal}/forecast_manager.sh ww3 ${DATA}/ww3_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+        echo "${USHglobal}/forecast_manager.sh ww3 ${DATA}/ww3_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
     done
 fi
 

@@ -36,8 +36,8 @@ source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 #{% include jjob_var_setup.j2 %}
 #{% endif %}
 
-source "${USHglobalbal}/jjob_shell_setup.sh"
-source "${USHglobalbal}/set_strict.sh"
+source "${USHglobal}/jjob_shell_setup.sh"
+source "${USHglobal}/set_strict.sh"
 
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
