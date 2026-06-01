@@ -92,7 +92,7 @@ for ((inst = 0; inst < natm_inst; inst++)); do
         fi
     done
     {
-        echo "${USHglobalbal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
+        echo "${USHglobal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
