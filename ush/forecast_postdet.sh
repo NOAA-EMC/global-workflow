@@ -966,7 +966,7 @@ MOM6_out() {
             echo "INFO: Directory ${COMOUT_OCEAN_HISTORY} does not exist, creating..."
             mkdir -p "${COMOUT_OCEAN_HISTORY}"
         fi
-        "${USHgfs}/run_mpmd.sh" "${ocn_hist_cmdfile}" && true
+        "${USHglobal}/run_mpmd.sh" "${ocn_hist_cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 history files!"

@@ -21,7 +21,7 @@
 
 #  Set environment.
 # shellcheck source=ush/wait_for_file.sh
-source "${USHgfs}/wait_for_file.sh"
+source "${USHglobalbalbal}/wait_for_file.sh"
 
 cd "${DATA}" || exit 8
 
@@ -92,11 +92,11 @@ for ((inst = 0; inst < natm_inst; inst++)); do
         fi
     done
     {
-        echo "${USHgfs}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
-        echo "${USHgfs}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
-        echo "${USHgfs}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
-        echo "${USHgfs}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
-        echo "${USHgfs}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
+        echo "${USHglobalbalbal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
+        echo "${USHglobalbal}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
+        echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
+        echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        echo "${USHglobalbal}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
     } >> "${FCST_MANAGER_CMDFILE}"
 done
 echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
@@ -111,7 +111,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     echo "INFO: WW3 product table found (${MGR_NTASKS_WW3} rank(s))"
     split_table_by_sentinel "${WW3_TABLE}" "${MGR_NTASKS_WW3}" "${DATA}/ww3_mgr_rank"
     for ((r = 0; r < MGR_NTASKS_WW3; r++)); do
-        echo "${USHgfs}/forecast_manager.sh ww3 ${DATA}/ww3_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+        echo "${USHglobalbal}/forecast_manager.sh ww3 ${DATA}/ww3_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
     done
 fi
 
@@ -125,7 +125,7 @@ if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     echo "INFO: OCN product table found (${MGR_NTASKS_OCN} rank(s))"
     split_table_by_sentinel "${OCN_TABLE}" "${MGR_NTASKS_OCN}" "${DATA}/ocn_mgr_rank"
     for ((r = 0; r < MGR_NTASKS_OCN; r++)); do
-        echo "${USHgfs}/forecast_manager.sh ocn ${DATA}/ocn_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+        echo "${USHglobal}/forecast_manager.sh ocn ${DATA}/ocn_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
     done
 fi
 
@@ -139,7 +139,7 @@ if [[ "${DO_ICE:-NO}" == "YES" ]]; then
     echo "INFO: ICE product table found (${MGR_NTASKS_ICE} rank(s))"
     split_table_by_sentinel "${ICE_TABLE}" "${MGR_NTASKS_ICE}" "${DATA}/ice_mgr_rank"
     for ((r = 0; r < MGR_NTASKS_ICE; r++)); do
-        echo "${USHgfs}/forecast_manager.sh ice ${DATA}/ice_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
+        echo "${USHglobal}/forecast_manager.sh ice ${DATA}/ice_mgr_rank${r}.txt" >> "${FCST_MANAGER_CMDFILE}"
     done
 fi
 
@@ -153,4 +153,4 @@ export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
 
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
-"${USHgfs}/run_mpmd.sh" "${FCST_MANAGER_CMDFILE}"
+"${USHglobal}/run_mpmd.sh" "${FCST_MANAGER_CMDFILE}"
