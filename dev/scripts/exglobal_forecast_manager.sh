@@ -48,7 +48,7 @@ MGR_NTASKS_ICE=${MGR_NTASKS_ICE:-1}
 # sentinel group is assigned to a rank in round-robin order.
 split_table_by_sentinel() {
     local table_file="${1}" n_ranks="${2}" output_prefix="${3}"
-    local r ld ll cd cl
+    local r logd logl comd coml
     local rank=0
     declare -A sentinel_rank
 
@@ -56,14 +56,14 @@ split_table_by_sentinel() {
         : > "${output_prefix}${r}.txt"
     done
 
-    while read -r ld ll cd cl; do
-        [[ -z "${ld}" || "${ld:0:1}" == "#" ]] && continue
-        if [[ -z "${sentinel_rank[${ll}]+_}" ]]; then
-            sentinel_rank["${ll}"]=${rank}
+    while read -r logd logl comd coml; do
+        [[ -z "${logd}" || "${logd:0:1}" == "#" ]] && continue
+        if [[ -z "${sentinel_rank[${logl}]+_}" ]]; then
+            sentinel_rank["${logl}"]=${rank}
             ((rank = (rank + 1) % n_ranks)) || true
         fi
-        r="${sentinel_rank[${ll}]}"
-        echo "${ld} ${ll} ${cd} ${cl}" >> "${output_prefix}${r}.txt"
+        r="${sentinel_rank[${logl}]}"
+        echo "${logd} ${logl} ${comd} ${coml}" >> "${output_prefix}${r}.txt"
     done < "${table_file}"
 }
 
