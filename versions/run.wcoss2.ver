@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
-export version=v16.3.7
-export gfs_ver=v16.3.7
+export version=v17.0.0
+export gfs_ver=v17.0.0
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
@@ -71,4 +71,3 @@ export COMINobsproc="/lfs/h2/emc/dump/noscrub/dump/gfs.${PDY}/${cyc}/atmos"
 #### GDAS fit2obs slient failure workaround
 #export ARCDIR="/lfs/h3/emc/eib/noscrub/stmp/${USER}/test"
 #export ATARDIR="/lfs/h3/emc/eib/noscrub/stmp/${USER}/test"
-
