@@ -910,15 +910,6 @@ fi
 # Postprocessing
 cd "${DATA}" || exit 1
 
-##############################################################
-# Add this statement to release the forecast job once the
-# atmopsheric analysis and updated surface RESTARTS are
-# available.  Do not release forecast when RUN=enkf
-##############################################################
-if [[ "${SENDECF}" == "YES" && "${RUN}" != "enkf" ]]; then
-    ecflow_client --event release_fcst
-fi
-
 echo "${rCDUMP} ${PDY}${cyc} atminc done at $(date)" > "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.done.txt"
 
 ################################################################################
