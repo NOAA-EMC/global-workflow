@@ -194,10 +194,7 @@ fi
 
 # Link these templates from ufs-weather-model
 cd "${HOMEglobal}/parm/ufs" || exit 1
-declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
-    "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN"
-    "MOM6_data_table.IN"
-    "ice_in.IN"
+declare -a ufs_templates=("model_configure.IN"
     "ufs.configure.atm.IN"
     "ufs.configure.atmaero.IN"
     "ufs.configure.s2s.IN"
@@ -205,9 +202,6 @@ declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
     "ufs.configure.s2sw.IN"
     "ufs.configure.s2swa.IN"
     "ufs.configure.leapfrog_atm_wav.IN"
-    "ww3_shel.nml.IN"
-    "post_itag_gfs"
-    "post_itag_gcafs"
     "global_control.nml.IN")
 
 for file in "${ufs_templates[@]}"; do

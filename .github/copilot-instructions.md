@@ -86,23 +86,17 @@ JGLOBAL_FORECAST              # Job sets environment, calls script
 ## Workflow Orchestration System
 
 ### Workflow Management Components
-- **Rocoto**: Ruby-based XML workflow manager with Python task generation
+- **ecFlow**: The sole orchestration engine for the global-workflow (ecFlow Python API for suite definition generation)
 - **Applications Framework**: Factory pattern for different forecast systems
 
 ### Workflow Directory Structure
 ```
 dev/workflow/              # Core workflow orchestration system
 ├── applications/          # Application-specific configurations (GFS, GEFS, SFS, GCAFS)
-├── rocoto/                # Rocoto XML generation and task definitions
+├── deployment/            # Deployment pipeline (renderer, DAG generator, stager, manifest, seal)
+├── ecflow/                # ecFlow suite definition and template generation
 ├── hosts/                 # Host-specific configurations and settings
-└── ecFlow/                # Alternative workflow engine support
-
-dev/workflow/rocoto/       # Rocoto-specific implementations
-├── workflow_xml.py        # Base RocotoXML abstract class
-├── rocoto_xml_factory.py  # Factory for creating workflow XML generators
-├── tasks.py               # Base Tasks class with common task functionality
-├── workflow_tasks.py      # Task orchestration and dependency management
-├── gfs_*.py               # GFS-specific implementations
+└── tests/                 # Workflow test suite
 ├── gefs_*.py              # GEFS-specific implementations
 ├── sfs_*.py               # SFS-specific implementations
 └── gcafs_*.py             # GCAFS-specific implementations
@@ -148,8 +142,8 @@ python setup_expt.py gfs forecast-only \
   --comroot /path/to/data \
   --expdir /path/to/experiment
 
-# 3. Generate workflow XML
-python setup_xml.py /path/to/experiment rocoto
+# 3. Generate ecFlow workflow
+python setup_workflow.py /path/to/experiment ecflow
 ```
 
 ### Platform-Specific Development
@@ -166,14 +160,14 @@ Ursa      # Tier 1 - Fully supported, but cannot run high resolution or GCAFS ca
 ## Key Architectural Patterns
 
 ### Factory Pattern Usage
-The system heavily uses factory patterns for creating workflow components:
+The system uses factory patterns for creating workflow components:
 
 ```python
-# Example from rocoto_xml_factory.py
+# Example from application_factory.py
 from wxflow import Factory
-rocoto_xml_factory = Factory('RocotoXML')
-rocoto_xml_factory.register('gfs_cycled', GFSCycledRocotoXML)
-rocoto_xml_factory.register('gefs_forecast-only', GEFSRocotoXML)
+application_factory = Factory('Application')
+application_factory.register('gfs_cycled', GFSCycled)
+application_factory.register('gefs_forecast-only', GEFS)
 ```
 
 **When to use factories:**
@@ -185,16 +179,16 @@ rocoto_xml_factory.register('gefs_forecast-only', GEFSRocotoXML)
 Core classes use ABC pattern for extensibility:
 
 ```python
-class RocotoXML(ABC):
+class Application(ABC):
     @abstractmethod
-    def get_cycledefs(self):
+    def get_tasks(self):
         pass
 ```
 
 **When extending:**
 - Always inherit from appropriate base classes
 - Implement all abstract methods
-- Follow naming conventions: `{Application}{WorkflowType}RocotoXML`
+- Follow naming conventions: `{Application}{WorkflowType}`
 
 ### Configuration Management
 Configuration flows through AppConfig objects:
@@ -221,10 +215,10 @@ VALID_TASKS = ['prep', 'anal', 'fcst', 'upp', 'atmos_products', ...]
 ```
 
 ### Task Dependencies and Scheduling
-- Tasks use Rocoto XML `<dependency>` blocks
-- Dependencies resolved through `WorkflowState` objects
-- Throttling managed via `cyclethrottle`, `taskthrottle`, `corethrottle`
-- Metatasks group related tasks with shared throttling
+- Tasks use ecFlow trigger expressions for dependency management
+- Dependencies resolved through the DAG (Directed Acyclic Graph) structure
+- ecFlow supports trigger, complete, event, meter, time, date, and cron primitives
+- Boolean compositions (and, or, not) for complex dependency logic
 
 ### Task Resource Management
 ```python
@@ -254,28 +248,26 @@ template = Template(template_str)
 - Use `wxflow.Executable` for subprocess management
 - Integration points in task scripts via `SCRIPTS_PYTHONPATH`
 
-## Rocoto Workflow Engine
+## ecFlow Workflow Engine
 
-### XML Generation Process
-1. **Preamble**: XML header and DOCTYPE
-2. **Definitions**: Entity definitions (PSLOT, ROTDIR, MAXTRIES)
-3. **Workflow Header**: Scheduler, throttling settings
-4. **Cycledefs**: Cycle definitions for workflow scheduling
-5. **Tasks**: Generated task XML with dependencies
-6. **Footer**: Closing workflow tags
+### Suite Definition Generation
+1. **Parse Workflow Configuration**: Read YAML workflow config
+2. **Build DAG**: Construct directed acyclic graph of task dependencies
+3. **Emit Suite Definition**: Generate `.def` file via ecFlow Python API
+4. **Generate ecf Scripts**: Render per-task `.ecf` scripts from templates
+5. **Validate**: Run EE2 compliance scan and DAG acyclicity check
 
-### Metatask Management
+### ecFlow Task Management
 ```python
-# Metatasks group related tasks
-metatask_list = {}  # Hierarchical task grouping
-meta_tasks_state = {}  # State tracking per metatask
+# ecFlow suite/family/task hierarchy
+from ecflow import Defs, Suite, Family, Task, Trigger, Event, Meter
 ```
 
 ### Job State Management
-- States: QUEUED, RUNNING, SUCCEEDED, FAILED, DEAD, EXPIRED, LOST
-- Retry logic with `maxtries` parameter
-- Hang detection via `hangdependency`
-- Resource throttling and job scheduling
+- States: unknown, queued, submitted, active, complete, aborted, suspended
+- Retry logic with `ECF_TRIES` parameter
+- Dependencies via trigger expressions
+- Resource management via scheduler directives in `.ecf` scripts
 
 ## Development Guidelines
 
@@ -311,21 +303,21 @@ meta_tasks_state = {}  # State tracking per metatask
 ### GFS (Global Forecast System)
 - **Cycled**: Full data assimilation cycling
 - **Forecast-only**: Forecast from existing initial conditions
-- Classes: `GFSCycledRocotoXML`, `GFSForecastOnlyRocotoXML`
+- Classes: `GFSCycled`, `GFSForecastOnly`
 
 ### GEFS (Global Ensemble Forecast System)
 - Ensemble forecasting system
 - Special handling for ensemble members via `NMEM_ENS`
-- Class: `GEFSRocotoXML`
+- Class: `GEFS`
 
 ### SFS (Standalone Forecast System)
 - Simplified forecast-only workflow
-- Class: `SFSRocotoXML`
+- Class: `SFS`
 
 ### GCAFS (Global Climate Analysis Forecast System)
 - Climate analysis and forecasting
 - Both cycled and forecast-only modes
-- Classes: `GCAFSCycledRocotoXML`, `GCAFSForecastOnlyRocotoXML`
+- Classes: `GCAFSCycled`, `GCAFSForecastOnly`
 
 ## Host Configuration
 
@@ -372,9 +364,8 @@ envar_dict = {
 
 ### Cycle String Templates
 ```python
-# Rocoto cyclestring substitution patterns
-'<cyclestr>@Y@m@d@H</cyclestr>'  # YYYYMMDDHH format
-'<cyclestr offset="-6:00:00">@Y@m@d@H</cyclestr>'  # 6-hour offset
+# ecFlow repeat date patterns for cycle management
+# Cycles defined via RepeatDate in suite definition
 ```
 
 ### File Path Conventions
@@ -390,12 +381,12 @@ DATAROOT = f"{STMP}/RUNDIRS/{PSLOT}/{RUN}.<cyclestr>@Y@m@d@H</cyclestr>"
 1. **PYTHONPATH setup**: Ensure wxflow is in PYTHONPATH via `gw_setup.sh`
 2. **Environment variables**: LSB vs SLURM variable mismatches
 3. **Resource conflicts**: BatchQueueServer configuration for local testing
-4. **Thread hanging**: Rocoto thread join issues in subprocess management
+4. **ecFlow server**: Connection and authentication issues with ecflow_client
 
 ### Development Tools
 - Use existing tasks: "Run Python Linting", "Run Shell Check"
 - Performance analysis tools for workflow optimization
-- rocoto_viewer.py for workflow visualization
+- ecflow_ui for workflow visualization and monitoring
 
 ### Testing Patterns
 ```python
@@ -409,15 +400,14 @@ def test_task_creation():
 ### New Applications
 1. Create new classes in `dev/workflow/applications/`
 2. Register in `application_factory.py`
-3. Create corresponding Rocoto XML generators in `dev/workflow/rocoto/`
-4. Register in `rocoto_xml_factory.py`
-5. Add host-specific configurations
+3. Add ecFlow workflow configuration YAML in `dev/parm/workflow/`
+4. Add host-specific configurations
 
 ### New Tasks
-1. Add to `VALID_TASKS` list in `tasks.py`
+1. Add task definition to the workflow configuration YAML
 2. Implement task generation logic
 3. Define resource requirements
-4. Set up dependencies and scheduling
+4. Set up dependencies via trigger expressions
 5. Create corresponding job scripts
 
 ### New Hosts

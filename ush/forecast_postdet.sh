@@ -377,23 +377,43 @@ EOF
 }
 
 FV3_nml() {
-    # namelist output for a certain component
-    echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
+    # Copy pre-rendered FV3 configuration files from EXPDIR to DATA
+    # These files were rendered at deployment time by the Deployment_Tool's
+    # Template_Renderer (Jinja2) and are immutable artifacts in the EXPDIR.
+    # This replaces the legacy runtime generation via:
+    #   - parsing_namelists_FV3.sh (input.nml)
+    #   - parsing_model_configure_FV3.sh (model_configure)
+    echo "SUB ${FUNCNAME[0]}: Copying pre-rendered FV3 configs from EXPDIR"
 
-    source "${USHglobal}/parsing_namelists_FV3.sh"
-    source "${USHglobal}/parsing_model_configure_FV3.sh"
-
-    # Call the appropriate namelist functions
-    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-        source "${USHglobal}/parsing_namelists_FV3_nest.sh"
-        FV3_namelists_nest global
-        FV3_namelists_nest nest
-    else
-        FV3_namelists
+    # Copy FV3 namelist (input.nml) from pre-rendered EXPDIR location
+    if [[ ! -f "${EXPDIR}/parm/ufs/fv3/input.nml" ]]; then
+        echo "FATAL ERROR: Pre-rendered input.nml not found at ${EXPDIR}/parm/ufs/fv3/input.nml"
+        exit 1
     fi
-    FV3_model_configure
+    cpreq "${EXPDIR}/parm/ufs/fv3/input.nml" "${DATA}/input.nml"
 
-    echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"
+    # Copy FV3 model_configure from pre-rendered EXPDIR location
+    if [[ ! -f "${EXPDIR}/parm/ufs/fv3/model_configure" ]]; then
+        echo "FATAL ERROR: Pre-rendered model_configure not found at ${EXPDIR}/parm/ufs/fv3/model_configure"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/fv3/model_configure" "${DATA}/model_configure"
+
+    # Copy FV3 diag_table from pre-rendered EXPDIR location
+    if [[ ! -f "${EXPDIR}/parm/ufs/fv3/diag_table" ]]; then
+        echo "FATAL ERROR: Pre-rendered diag_table not found at ${EXPDIR}/parm/ufs/fv3/diag_table"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/fv3/diag_table" "${DATA}/diag_table"
+
+    # Copy FV3 field_table from pre-rendered EXPDIR location
+    if [[ ! -f "${EXPDIR}/parm/ufs/fv3/field_table" ]]; then
+        echo "FATAL ERROR: Pre-rendered field_table not found at ${EXPDIR}/parm/ufs/fv3/field_table"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/fv3/field_table" "${DATA}/field_table"
+
+    echo "SUB ${FUNCNAME[0]}: Pre-rendered FV3 configs copied to DATA"
 }
 
 FV3_out() {
@@ -566,9 +586,17 @@ WW3_postdet() {
 }
 
 WW3_nml() {
-    echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-    source "${USHglobal}/parsing_namelists_WW3.sh"
-    WW3_namelists
+    # Copy pre-rendered WW3 configuration file from EXPDIR to DATA.
+    # This file was rendered at deployment time by the Deployment_Tool's
+    # Template_Renderer (Jinja2) and is an immutable artifact in the EXPDIR.
+    # This replaces the legacy runtime generation via parsing_namelists_WW3.sh.
+    echo "SUB ${FUNCNAME[0]}: Copying pre-rendered WW3 config from EXPDIR"
+
+    if [[ ! -f "${EXPDIR}/parm/ufs/wave/ww3_shel.nml" ]]; then
+        echo "FATAL ERROR: Pre-rendered ww3_shel.nml not found at ${EXPDIR}/parm/ufs/wave/ww3_shel.nml"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/wave/ww3_shel.nml" "${DATA}/ww3_shel.nml"
 }
 
 WW3_out() {
@@ -731,9 +759,23 @@ MOM6_postdet() {
 }
 
 MOM6_nml() {
-    echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-    source "${USHglobal}/parsing_namelists_MOM6.sh"
-    MOM6_namelists
+    # Copy pre-rendered MOM6 configuration files from EXPDIR to DATA.
+    # These files were rendered at deployment time by the Deployment_Tool's
+    # Template_Renderer (Jinja2) and are immutable artifacts in the EXPDIR.
+    # This replaces the legacy runtime generation via parsing_namelists_MOM6.sh.
+    echo "SUB ${FUNCNAME[0]}: Copying pre-rendered MOM6 configs from EXPDIR"
+
+    if [[ ! -f "${EXPDIR}/parm/ufs/ocean/MOM_input" ]]; then
+        echo "FATAL ERROR: Pre-rendered MOM_input not found at ${EXPDIR}/parm/ufs/ocean/MOM_input"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/ocean/MOM_input" "${DATA}/INPUT/MOM_input"
+
+    if [[ ! -f "${EXPDIR}/parm/ufs/ocean/MOM6_data_table" ]]; then
+        echo "FATAL ERROR: Pre-rendered MOM6_data_table not found at ${EXPDIR}/parm/ufs/ocean/MOM6_data_table"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/ocean/MOM6_data_table" "${DATA}/data_table"
 }
 
 MOM6_out() {
@@ -881,9 +923,17 @@ CICE_postdet() {
 }
 
 CICE_nml() {
-    echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-    source "${USHglobal}/parsing_namelists_CICE.sh"
-    CICE_namelists
+    # Copy pre-rendered CICE configuration file from EXPDIR to DATA.
+    # This file was rendered at deployment time by the Deployment_Tool's
+    # Template_Renderer (Jinja2) and is an immutable artifact in the EXPDIR.
+    # This replaces the legacy runtime generation via parsing_namelists_CICE.sh.
+    echo "SUB ${FUNCNAME[0]}: Copying pre-rendered CICE config from EXPDIR"
+
+    if [[ ! -f "${EXPDIR}/parm/ufs/ice/ice_in" ]]; then
+        echo "FATAL ERROR: Pre-rendered ice_in not found at ${EXPDIR}/parm/ufs/ice/ice_in"
+        exit 1
+    fi
+    cpreq "${EXPDIR}/parm/ufs/ice/ice_in" "${DATA}/ice_in"
 }
 
 CICE_out() {
@@ -951,8 +1001,22 @@ GOCART_rc() {
         fi
     fi
 
-    source "${USHglobal}/parsing_namelists_GOCART.sh"
-    GOCART_namelists
+    # Copy pre-rendered GOCART configuration files from EXPDIR to DATA.
+    # These files were rendered at deployment time by the Deployment_Tool's
+    # Template_Renderer (Jinja2) and are immutable artifacts in the EXPDIR.
+    # This replaces the legacy runtime generation via parsing_namelists_GOCART.sh.
+    echo "SUB ${FUNCNAME[0]}: Copying pre-rendered GOCART configs from EXPDIR"
+
+    if [[ ! -d "${EXPDIR}/parm/ufs/gocart" ]]; then
+        echo "FATAL ERROR: Pre-rendered GOCART config directory not found at ${EXPDIR}/parm/ufs/gocart"
+        exit 1
+    fi
+    local rc_file
+    for rc_file in "${EXPDIR}/parm/ufs/gocart"/*.rc "${EXPDIR}/parm/ufs/gocart"/ExtData; do
+        if [[ -f "${rc_file}" ]]; then
+            cpreq "${rc_file}" "${DATA}/$(basename "${rc_file}")"
+        fi
+    done
 }
 
 GOCART_postdet() {

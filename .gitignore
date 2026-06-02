@@ -95,14 +95,7 @@ parm/post/ocnicepost.nml.jinja2
 parm/regrid_sfc
 parm/ufs/noahmptable.tbl
 parm/ufs/model_configure.IN
-parm/ufs/input_global_nest.nml.IN
-parm/ufs/MOM_input_*.IN
-parm/ufs/MOM6_data_table.IN
-parm/ufs/ice_in.IN
 parm/ufs/ufs.configure.*.IN
-parm/ufs/post_itag_gfs
-parm/ufs/post_itag_gcafs
-parm/ufs/ww3_shel.nml.IN
 parm/ufs/global_control.nml.IN
 parm/ufs/fd_ufs.yaml
 parm/ufs/suite_FV3_global_nest_v1.xml
@@ -206,3 +199,6 @@ versions/run.ver
 
 # jcb checkout and symlinks
 ush/python/jcb
+
+# hypothesis
+.hypothesis

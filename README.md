@@ -17,7 +17,7 @@ In progress [documentation](https://global-workflow.readthedocs.io/en/latest/) i
 
 The Global Workflow depends on the following prerequisities to be available on the system:
 
-* Workflow Engines - [Rocoto](https://github.com/christopherwharrop/rocoto) and [ecFlow](https://github.com/ecmwf/ecflow) (for NWS Operations)
+* Workflow Engine - [ecFlow](https://github.com/ecmwf/ecflow) (sole orchestration engine for NWS Operations)
 * Compiler - Intel classic compiler suite version 2021.x
 * Software - NCEPLIBS (various), ESMF, HDF5, NetCDF, and a host of other softwares (see module files under /modulefiles for additional details).
     - [Spack-stack](https://github.com/JCSDA/spack-stack) is recommended for the installation of dependent libraries.
