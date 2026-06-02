@@ -2357,6 +2357,9 @@ class GFSTasks(Tasks):
                         deps.append(rocoto.add_dependency(dep_dict))
                         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                         deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_wave']:
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavegempak'}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_metp'] and self.run in ['gfs']:
             deps2 = []
