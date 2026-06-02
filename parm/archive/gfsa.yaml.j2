@@ -5,11 +5,13 @@ gfsa:
     required:
         # Logs
         # TODO explicitly name all logs to include
+        {% if ARCH_LOGS %}
         {% for log in glob("logs/" ~ cycle_YMDH ~ "/gfs*.log") %}
         {% if not "tar" in log %}
         - "{{ log }}"
         {% endif %}
         {% endfor %}
+        {% endif %}
 
         # UFS configuration
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.input.nml"

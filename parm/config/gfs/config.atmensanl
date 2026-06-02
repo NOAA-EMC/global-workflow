@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+
+########## config.atmensanl ##########
+# configuration common to all atm ens analysis tasks
+
+echo "BEGIN: config.atmensanl"
+
+export OBS_LIST_YAML="${PARMglobal}/gdas/atm/atm_obs_list.yaml.j2"
+export LETKF_JEDI_TEST_YAML=""
+export OBS_JEDI_TEST_YAML=""
+export SOL_JEDI_TEST_YAML=""
+export FV3INC_JEDI_TEST_YAML=""
+export layout_x_atmensanl="8"
+export layout_y_atmensanl="8"
+export io_layout_x="1"
+export io_layout_y="1"
+
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/atm/atm_ens_config.yaml.j2"
+export BIAS_FILES_YAML="${PARMglobal}/gdas/atm/atm_bias_files.yaml.j2"
+
+echo "END: config.atmensanl"

@@ -5,20 +5,21 @@ gdas:
     required:
         {% if MODE == "cycled" %}
         # Cycled logs
+            {% if ARCH_LOGS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_prep.log"
-            {% if DO_JEDIATMVAR %}
+                {% if DO_JEDIATMVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlfinal.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlfv3inc.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlvar.log"
-            {% else %}
+               {% else %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_anal.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_analdiag.log"
-            {% endif %}
+               {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlupp.log"
-            {% if DO_JEDIOCNVAR %}
+               {% if DO_JEDIOCNVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_prepoceanobs.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marinebmatinit.log"
@@ -26,20 +27,22 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlvar.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlfinal.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlchkpt.log"
-            {% endif %}
-            {% if DO_AERO_ANL %}
+               {% endif %}
+               {% if DO_AERO_ANL %}
         - "logs/{{ cycle_YMDH }}/gdas_aeroanlgenb.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlvar.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlfinal.log"
-            {% endif %}
-            {% if DO_JEDISNOWDA %}
+               {% endif %}
+               {% if DO_JEDISNOWDA %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_snowanl.log"
-            {% endif %}
-            {% if DO_GSISOILDA %}
+               {% endif %}
+               {% if DO_GSISOILDA %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl_regrid.log"
-            {% endif %}
+               {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl_gcycle.log"
+            {% endif %}
+            # End cycled logs
 
         # Analysis Master GRIB2 data
         - "{{ COMIN_ATMOS_MASTER | relpath(ROTDIR) }}/{{ head }}master.analysis.grib2"
@@ -124,7 +127,9 @@ gdas:
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcoef.tar.gz"
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_bcor.tar.gz"
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/radmon_time.tar.gz"
+                {% if ARCH_LOGS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfrad.log"
+                {% endif %}
             {% endif %}
 
         # Minimization monitor
@@ -134,19 +139,25 @@ gdas:
         - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.gnorms.ieee_d"
         - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/{{ cycle_YMDH }}.reduction.ieee_d"
         - "{{ COMIN_ATMOS_MINMON | relpath(ROTDIR) }}/gnorm_data.txt"
+                {% if ARCH_LOGS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_vminmon.log"
+                {% endif %}
             {% endif %}
         {% endif %}  # End of cycled data
 
         # Forecast and post logs
+        {% if ARCH_LOGS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_seg0.log"
+        {% endif %}
 
         {% for fhr in range(0, FHMAX + 1, 3) %}
             {% set fhr3 = '%03d' % fhr %}
+            {% if ARCH_LOGS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_prod_f{{ fhr3 }}.log"
-            {% if not WRITE_DOPOST %}
+                {% if not WRITE_DOPOST %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmos_upp_f{{ fhr3 }}.log"
-            {% endif %}  ## not WRITE_DOPOST
+                {% endif %}  ## not WRITE_DOPOST
+            {% endif %}
         # Forecast GRIB2 data
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2"
         - "{{ COMIN_ATMOS_GRIB_0p25 | relpath(ROTDIR) }}/{{ head }}pres_a.0p25.f{{ fhr3 }}.grib2.idx"
@@ -189,7 +200,9 @@ gdas:
         - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/bad_pen.{{ cycle_YMDH }}"
         - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/time/stdout.time.tar.gz"
         - "{{ COMIN_ATMOS_OZNMON | relpath(ROTDIR) }}/horiz/stdout.horiz.tar.gz"
+                {% if ARCH_LOGS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_verfozn.log"
+                {% endif %}
                 # Not all of these ozone instruments always produce data
                 {% set oznmon_types = [
                    "gome_metop-b", "omi_aura", "ompslp_npp", "ompsnp_n20",

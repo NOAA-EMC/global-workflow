@@ -30,8 +30,6 @@
 #
 # Additionally, there are a couple of optional settings that
 #   can be set before calling the script:
-#   - $EXPDIR       : Override the default $EXPDIR
-#                     [default: ${HOMEglobal}/dev/parm/config]
 #   - $DATA         : Override the default $DATA location
 #                     [default: ${DATAROOT}/${jobid}]
 #   - $WIPE_DATA    : Set whether to delete any existing $DATA
@@ -71,7 +69,6 @@ fi
 #############################
 # Source relevant config files
 #############################
-export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config}"
 for config in "${configs[@]:-''}"; do
     source "${EXPDIR}/config.${config}" && true
     export err=$?
