@@ -81,25 +81,39 @@ echo "INFO: Waiting for ATM per-product tables (${natm_inst} instance(s))"
 for ((inst = 0; inst < natm_inst; inst++)); do
     atm_atmf_tbl="${DATAjob}/atm_atmf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
     atm_sfcf_tbl="${DATAjob}/atm_sfcf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
-    atm_grib_tbl="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}_inst${inst}.txt"
-    atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
     atm_barrier_tbl="${DATAjob}/atm_barrier_seg${FCST_SEGMENT}_inst${inst}.txt"
-    for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" \
-        "${atm_grib_tbl}" "${atm_flux_tbl}" "${atm_barrier_tbl}"; do
+    for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" "${atm_barrier_tbl}"; do
         if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
             echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
             exit 1
         fi
     done
+    # GRIB2/flux tables only exist when inline post-processing is enabled.
+    if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+        atm_grib_tbl="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+        atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+        for _atm_tbl in "${atm_grib_tbl}" "${atm_flux_tbl}"; do
+            if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
+                echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
+                exit 1
+            fi
+        done
+    fi
     {
         echo "${USHglobal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
-        echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
-        echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+            echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
+            echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        fi
         echo "${USHglobal}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
     } >> "${FCST_MANAGER_CMDFILE}"
 done
-echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
+if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+    echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
+else
+    echo "INFO: ATM tables found; added $((natm_inst * 3)) ATM rank(s) (${natm_inst} x 2 history + 1 barrier; no inline post)"
+fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"
