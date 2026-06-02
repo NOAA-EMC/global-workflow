@@ -92,7 +92,7 @@ _gw_pad_str() {
 # Globals:
 #   None
 # Arguments:
-#   -r RUNTESTS : Path to CI RUNTESTS directory containing EXPDIR subdirectory
+#   [-r] RUNTESTS : Path to CI RUNTESTS directory containing EXPDIR subdirectory
 # Outputs:
 #   Writes formatted status information for all experiments to stdout
 #   Writes warnings to stdout for experiments with DEAD tasks
@@ -117,6 +117,10 @@ gw_cistat() {
         esac
     done
     shift $((OPTIND - 1))
+
+    if [[ $# -eq 1 && -z "${RUNTESTS}" ]]; then
+        RUNTESTS="${1}"
+    fi
 
     if [[ -z "${RUNTESTS}" ]]; then
         echo "FATAL ERROR: RUNTESTS directory argument is required"
