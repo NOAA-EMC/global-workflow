@@ -122,6 +122,12 @@ class MarineObsPrep(Task):
 
         # Process RADS
         if provider == "rads":
+            if not hasattr(self, 'rads'):
+                logger.warning(
+                    f"Skipping RADS processing — rads not initialized "
+                    f"(cyc={self.task_config.cyc}, only runs at cyc=0)"
+                )
+                return None
             platform = obs_space.split("_")[2]
             instrument = None
             # TODO(G): Get the window size from the config
