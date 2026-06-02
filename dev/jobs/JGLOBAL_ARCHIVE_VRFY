@@ -58,7 +58,7 @@ fi
 ${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_vrfy.py}
 err=$?
 if [[ ${err} -ne 0 ]]; then
-    exit "${err}"
+    err_exit "Failed to run archive verification"
 fi
 
 ##############################################

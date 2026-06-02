@@ -1,0 +1,148 @@
+{# dev/parm/ufs/ice/ice_in.j2 #}
+{# Replaces: ice_in.IN + ush/parsing_namelists_CICE.sh #}
+{# Traces to: Requirement 3, Requirement 11 AC2 #}
+{% set ice = model.ice %}
+
+&setup_nml
+  days_per_year  = 365
+  use_leap_years = .true.
+  year_init      = ${SYEAR}
+  month_init     = ${SMONTH}
+  day_init       = ${SDAY}
+  sec_init       = 0
+  dt             = {{ ice.dt_ice }}
+  npt            = ${FHMAX}
+  ndtd           = 1
+  runtype        = '{% if ice.warm_start %}continue{% else %}initial{% endif %}'
+  ice_ic         = '{% if ice.warm_start %}./cice_model.res{% else %}default{% endif %}'
+  restart        = .true.
+  use_restart_time = {{ ice.warm_start | fortran_logical }}
+  restart_format = 'nc'
+  restart_dir    = './RESTART/'
+  restart_file   = 'iced'
+  pointer_file   = './ice.restart_file'
+  dumpfreq       = '{{ ice.dumpfreq | default("d") }}'
+  dumpfreq_n     = {{ ice.dumpfreq_n | default(1) }}
+  dump_last      = .false.
+  diagfreq       = {{ ice.diagfreq | default(24) }}
+  diag_type      = 'file'
+  diag_file      = 'ice_diag.d'
+  print_global   = .true.
+  print_points   = .true.
+  histfreq       = '{{ ice.histfreq | default("d") }}','x','x','x','x'
+  histfreq_n     = {{ ice.histfreq_n }},0,0,0,0
+  hist_avg       = {{ ice.hist_avg | fortran_logical }}
+  history_dir    = './history/'
+  history_file   = 'iceh'
+  write_ic       = .true.
+/
+
+&grid_nml
+  grid_format  = 'nc'
+  grid_type    = 'tripole'
+  grid_file    = '{{ ice.grid }}'
+  kmt_file     = '{{ ice.mask }}'
+  kcatbound    = 0
+/
+
+&domain_nml
+  nprocs            = {{ ice.nprocs }}
+  processor_shape   = '{{ ice.decomposition }}'
+  block_size_x      = {{ ice.block_size_x | default(0) }}
+  block_size_y      = {{ ice.block_size_y | default(0) }}
+  max_blocks        = -1
+  nx_global         = {{ ice.nx_glb }}
+  ny_global         = {{ ice.ny_glb }}
+  distribution_type = 'spacecurve'
+  distribution_wght = 'latitude'
+  ew_boundary_type  = 'cyclic'
+  ns_boundary_type  = 'tripole'
+/
+
+&tracer_nml
+  tr_iage      = .true.
+  restart_age  = .false.
+  tr_FY        = .true.
+  restart_FY   = .false.
+  tr_lvl       = .true.
+  restart_lvl  = .false.
+  tr_pond_lvl  = {{ ice.tr_pond_lvl | fortran_logical }}
+  restart_pond_lvl = .false.
+  tr_aero      = .false.
+  restart_aero = .false.
+/
+
+&thermo_nml
+  kitd    = 1
+  ktherm  = {{ ice.ktherm }}
+  conduct = 'MU71'
+/
+
+&dynamics_nml
+  kdyn      = 1
+  ndte      = 120
+  revised_evp = .false.
+  advection = 'remap'
+/
+
+&shortwave_nml
+  shortwave   = 'dEdd'
+  albedo_type = 'default'
+  ahmax       = 0.3
+  R_ice       = 0.0
+  R_pnd       = 0.0
+  R_snw       = 1.5
+/
+
+&ponds_nml
+  hp1       = 0.01
+  hs0       = 0.0
+  hs1       = 0.03
+  dpscale   = 1.0e-3
+  frzpnd    = 'hlid'
+  rfracmin  = 0.15
+  rfracmax  = 1.0
+  pndaspect = 0.8
+/
+
+&snow_nml
+  snwredist = 'none'
+/
+
+&forcing_nml
+  formdrag     = .false.
+  atmbndy      = 'default'
+  fyear_init   = ${SYEAR}
+  ycycle       = 1
+  calc_strair  = .true.
+  calc_Tsfc    = .true.
+  precip_units = 'mks'
+  ustar_min    = 0.0005
+  tfrz_option  = 'mushy'
+/
+
+&icefields_nml
+  f_tmask    = .true.
+  f_blkmask  = .true.
+  f_tarea    = .true.
+  f_uarea    = .true.
+  f_ANGLE    = .true.
+  f_ANGLET   = .true.
+  f_NCAT     = .true.
+  f_aice     = 'd'
+  f_hi       = 'd'
+  f_hs       = 'd'
+  f_Tsfc     = 'd'
+  f_sice     = 'd'
+  f_uvel     = 'd'
+  f_vvel     = 'd'
+  f_fswdn    = 'd'
+  f_flwdn    = 'd'
+  f_sst      = 'd'
+  f_sss      = 'd'
+  f_strength = 'd'
+  f_divu     = 'd'
+  f_shear    = 'd'
+  f_iage     = 'd'
+  f_FY       = 'd'
+/

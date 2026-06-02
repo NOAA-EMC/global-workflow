@@ -1,0 +1,37 @@
+# Workflow overrides for GFS v17 realtime cycling (S2SW)
+# Used by retrov17_realtime.yaml CI case
+# Replaces legacy: dev/ci/cases/gfsv17/s2sw_realtime.yaml
+
+base:
+  DOIAU: "YES"
+  DO_JEDIOCNVAR: "YES"
+  DO_JEDISNOWDA: "YES"
+  DO_GSISOILDA: "YES"
+  DO_LAND_IAU: ".true."
+  DOHYBVAR: "YES"
+  DOHYBVAR_OCN: "YES"
+  DOLETKF_OCN: "NO"
+  DO_STARTMEM_FROM_JEDIICE: "YES"
+  EUPD_CYC: "gdas"
+  INTERVAL_GFS: 6
+  SDATE_GFS: "2025111312"
+  FHMAX_GFS: 384
+  FHMAX_HF_GFS: 0
+  CASE_HIST: "C768"
+
+prep:
+  PROCESS_TROPCY: "NO"
+
+prepoceanobs:
+  use_exp_obs: "YES"
+  dmpdir_exp: "/lfs/h2/emc/da/noscrub/emc.da/obsForge/COMROOT/realtime"
+
+marinebmat:
+  SOCA_INPUT_FIX_DIR: "{{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca"
+  SOCA_ANL_GEOM: "{{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca"
+
+marineanl:
+  SOCA_INPUT_FIX_DIR: "{{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca"
+  SOCA_ANL_GEOM: "{{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca"
+  SOCA_OBS_LIST: "{{ HOMEglobal }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2"
+  SOCA_NINNER: 100

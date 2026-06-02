@@ -1,0 +1,15 @@
+#
+# NEXUS_Config.rc (Submodule_Fixture stand-in)
+#
+# Minimal, byte-stable stand-in for the NEXUS gocart configuration owned by
+# the sorc/nexus.fd submodule. It exists only so a fixture-backed verification
+# deploy can copy a submodule source without a fatal missing-source error.
+#
+# This file is intentionally free of any templating tokens so the Token_Scan
+# over a rendered EXPDIR passes. See the directory README for details.
+#
+ROOT: ./
+Logfile: HEMCO.log
+DiagnFreq: 00000100 000000
+Verbose: 0
+Warnings: 1

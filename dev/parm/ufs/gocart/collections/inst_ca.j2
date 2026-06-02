@@ -1,0 +1,21 @@
+{# dev/parm/ufs/gocart/collections/inst_ca.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_ca (Carbonaceous aerosol concentrations). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# 3d aerosols - Carbonaceous
+#
+  inst_ca.format:         'CFIO' ,
+  inst_ca.descr:          '3d,Hourly,Instantaneous,Model-Level,Aerosol Concentrations',
+  inst_ca.template:       '%y4%m2%d2_%h2%n2z.nc4',
+  inst_ca.mode:           'instantaneous',
+  inst_ca.grid_label:     {{ model.aerosol.grid_label }} ,
+  inst_ca.frequency:      {{ model.aerosol.frequencies.inst_ca | default('010000') }} ,
+  inst_ca.duration:       010000 ,
+  inst_ca.ref_time:       000000 ,
+  inst_ca.nbits:          10,
+  inst_ca.fields:         'CAphilicCA.bc' , 'CA.bc' ,
+                          'CAphobicCA.bc' , 'CA.bc' ,
+                          'CAphilicCA.oc' , 'CA.oc' ,
+                          'CAphobicCA.oc' , 'CA.oc' ,
+                          ::

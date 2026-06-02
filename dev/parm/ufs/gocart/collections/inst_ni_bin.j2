@@ -1,0 +1,23 @@
+{# dev/parm/ufs/gocart/collections/inst_ni_bin.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_ni_bin (Binned nitrate diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Binned aerosols - Nitrate
+#
+  inst_ni_bin.format:     'CFIO' ,
+  inst_ni_bin.descr:      '3d,Hourly,Instantaneous,Model-Level'
+  inst_ni_bin.template:   '%y4%m2%d2_%h2%n2z.nc4',
+  inst_ni_bin.mode:       'instantaneous',
+  inst_ni_bin.grid_label:  {{ model.aerosol.grid_label }} ,
+  inst_ni_bin.splitField:  1,
+  inst_ni_bin.frequency:   {{ model.aerosol.frequencies.inst_ni_bin | default('010000') }} ,
+  inst_ni_bin.duration:    010000 ,
+  inst_ni_bin.ref_time:    000000 ,
+  inst_ni_bin.nbits:      10,
+  inst_ni_bin.fields:     'NIHT' , 'NI' ,
+                          'NISD' , 'NI' ,
+                          'NIDP' , 'NI' ,
+                          'NIWT' , 'NI' ,
+                          'NISV' , 'NI' ,
+                          ::

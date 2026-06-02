@@ -12,9 +12,6 @@ experiment:
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
 
 workflow:
-  engine: rocoto
-  rocoto:
-    maxtries: 2
-    cyclethrottle: 3
-    taskthrottle: 25
-    verbosity: 2
+  engine: ecflow
+  ecflow:
+    verbosity: 1

@@ -1,0 +1,26 @@
+# dev/parm/components/ice.yaml
+# Sea Ice (CICE6) component definition
+# Traces to: Requirement 10.1, 10.2, 10.5, 10.6, 10.10
+#
+# This component YAML defines the CICE6 sea ice model parameters,
+# families, and tasks. Included into the top-level Workflow_Configuration
+# via !INC or {% include %} at deployment time.
+
+model:
+  ice:
+    resolution: "025"
+    nprocs: 48
+    omp_threads: 1
+    decomposition: "slenderX2"
+    dt_ice: 900
+    restart_interval: 6
+
+families:
+  - path: "gfs/ice"
+    tasks:
+      - name: "prep"
+        trigger: "gfs/atmos/analysis/analcalc == complete"
+        jjob: "JGLOBAL_ICE_PREP"
+      - name: "post"
+        trigger: "gfs/atmos/forecast/fcst == complete"
+        jjob: "JGFS_ICE_POST"

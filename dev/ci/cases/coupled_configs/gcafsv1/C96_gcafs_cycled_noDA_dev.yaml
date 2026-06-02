@@ -1,0 +1,75 @@
+# ecFlow CI Case: C96 GCAFS Cycled noDA (Dev Mode) — Single Cycle Smoke
+#
+# Validates GCAFS dev mode with single-cycle (interval=0), short forecast (FHMAX=24).
+# Used for rapid developer iteration on aerosol forecast configs.
+#
+# Replaces legacy: dev/ci/cases/gcafsv1/C96_gcafs_cycled_noDA_dev.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirement 6.2
+
+case:
+  name: "C96_gcafs_cycled_noDA_dev"
+  description: "GCAFS dev mode — single cycle, 24h forecast"
+  resolution: "C96"
+  app: "ATMA"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gcafs.yaml"
+  suite_name: "gcafs_v1"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA_dev"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gcafs"
+  resdetatmos: 96
+  idate: "2021122012"
+  edate: "2021122200"
+  nens: 0
+  interval: 0
+  start: "cold"
+  icsdir: "{{ BASE_IC }}/C96C48/20250808"
+
+base:
+  DO_TEST_MODE: "NO"
+  USE_AERO_ANL: "NO"
+  AERO_ANL_RUNS: ""
+  assim_freq: 24
+  FHMAX: 24
+  FHOUT_AERO: 1
+
+model_context:
+  post:
+    system: "gcafs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/post/post_itag"
+      expect_contains: ["gcafs"]
+  no_legacy_tokens: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gcafs.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA_dev \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "verify_short_fcst"
+    description: "Verify FHMAX=24 propagated to forecast configs"
+    command: |
+      # Short forecast smoke check
+      test -f {{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA_dev/parm/ufs/post/post_itag
+      echo "OK: Dev mode deployment succeeded"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA_dev"

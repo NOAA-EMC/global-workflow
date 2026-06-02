@@ -1,0 +1,46 @@
+{
+  "authority": "agentcore MCP RAG EE2 v11 (Phase 2 SME-corrected patterns: err_chk/err_exit/cpreq/cpfs correct; set -e / set -eu not required)",
+  "extract_categories": [
+    "output_file_naming",
+    "shebang_compliance",
+    "env_var_validation"
+  ],
+  "extract_findings": {
+    "env_var_validation": [],
+    "output_file_naming": [],
+    "shebang_compliance": []
+  },
+  "files": {
+    "ush/forecast_postdet.sh": {
+      "extract": {
+        "env_var_validation": "clean",
+        "output_file_naming": "clean",
+        "shebang_compliance": "clean"
+      },
+      "scan": {
+        "environment_variables": "clean",
+        "error_handling": "clean",
+        "file_naming": "clean",
+        "production_utilities": "clean",
+        "shebang_compliance": "clean"
+      }
+    }
+  },
+  "files_with_issues": 0,
+  "issues_by_category": {},
+  "passed": true,
+  "scan_categories": [
+    "error_handling",
+    "environment_variables",
+    "file_naming",
+    "shebang_compliance",
+    "production_utilities"
+  ],
+  "scanner_categories": [
+    "error_handling",
+    "environment_variables",
+    "file_naming",
+    "shebang_compliance"
+  ],
+  "schema_version": "1.0"
+}

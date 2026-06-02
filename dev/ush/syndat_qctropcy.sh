@@ -1,0 +1,302 @@
+#! /usr/bin/env bash
+
+#          SCRIPT NAME :  syndat_qctropcy.sh
+#               AUTHOR :  Steven Lord/Hua-Lu pan/Dennis Keyser/Diane Stokes
+#         DATE WRITTEN :  04/21/97; MODIFIED 05/27/1997 (Keyser)
+#                                   MODIFIED 07/06/1997 (Keyser)
+#                                   MODIFIED 03/03/2000 (Keyser)
+#
+#   Abstract: This script handles the pre-processing of the tcvital
+#             files that are made by NHC and other tropical
+#             prediction centers by the executable syndat_qctropcy
+#
+#
+# echo "History: JUN     1997 - First implementation of this utility script"
+# echo "         JUL     1997 - Added tcvitals made manually by SDM; Added "
+# echo "                        jtwc/fnoc tcvitals                         "
+# echo "         MAR     2000   Converted to IBM-SP                        "
+# echo "         MAR     2013   Converted to WCOSS                         "
+# echo "                        Added option files_override which can set  "
+# echo "                        namelist var used for logical variable     "
+# echo "                        FILES in syndat_qctropcy to control final  "
+# echo "                        copying of records and file manipulation.  "
+# echo "                        (typically F for testing, otherwise not set)"
+# echo "                        Added dateck fallback if archive file misg."
+# echo "         OCT     2013   Remove defaults for parm, exec, fix and ush "
+# echo "                        directories.  These must now be passed in. "
+#
+#
+# Positional parameters passed in:
+#   1 - Run date (YYYYMMDDHH)
+#        (NOTE: If $tmmark below is 'tm00', then RUN date is the same as
+#                CYCLE date; otherwise RUN date is earlier than CYCLE date
+#                by "hh" hours where "hh" is "tmhh" in $tmmark)
+
+# Imported variables that must be passed in:
+#   envir  - processing environment (such as 'prod' or 'test')
+#   DATA   - path to working directory
+#   pgmout - string indicating path to for standard output file
+#   NET    - string indicating network ('nam', 'gfs')
+#   RUN    - string indicating run ('nam', 'ndas', 'gfs', or 'gdas')
+#   cyc    - cycle hour (e.g., '00', '06', '12', or '18')
+#   tmmark - string indicating relative time of run to cycle time
+#             (e.g., 'tm00', 'tm03', 'tm06', 'tm09', or 'tm12')
+#   COMSP  - path to both output jtwc-fnoc file and output tcvitals file (this
+#             tcvitals file is read by subsequent relocation processing and/or
+#             subsequent program SYNDAT_SYNDATA)
+
+# Imported variables that can be passed in:
+#   ARCHSYND  - path to syndat archive directory
+#                (Default: /com/arch/${envir}/syndat)
+#   HOMENHC   - path to NHC directory containing tcvitals records
+#                (Default: /nhc/save/guidance/storm-data/ncep)
+#   TANK_TROPCY
+#             - path to home directory containing tropical cyclone record
+#                data base
+#                (Default: /dcom/us007003)
+#   slmask    - path to t126 32-bit gaussian land/sea mask file
+#                (Default: ${FIXglobal}/am/syndat_slmask.t126.gaussian)
+#   copy_back - switch to copy updated files back to archive directory and
+#                to tcvitals directory
+#                (Default: YES)
+#   files_override - switch to override default "files" setting for given run
+#                (Default: not set)
+#   TIMEIT   - optional time and resource reporting (Default: not set)
+
+ARCHSYND=${ARCHSYND:-${COMROOTp3}/gfs/prod/syndat}
+HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
+
+slmask=${slmask:-${FIXglobal}/am/syndat_slmask.t126.gaussian}
+copy_back=${copy_back:-YES}
+files_override=${files_override:-""}
+
+cd "${DATA}" || exit 2
+
+echo "Tropical Cyclone tcvitals QC processing has begun"
+
+if [[ "$#" -ne '1' ]]; then
+    echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
+positional parameter 1"
+    echo "**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
+
+    # Copy null files into "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and
+    #  "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark" so later ftp attempts will find and
+    #  copy the zero-length file and avoid wasting time with multiple attempts
+    #  to remote machine(s)
+    #  (Note: Only do so if files don't already exist)
+
+    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+    fi
+    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}" ]]; then
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+    fi
+
+    exit
+fi
+
+run_date=$1
+
+echo "Run date is ${run_date}"
+
+year=${run_date:0:4}
+
+#  Copy the seasonal statistics from archive directory to local
+
+cpreq "${ARCHSYND}/syndat_akavit" akavit
+touch akavit
+cpreq "${ARCHSYND}/syndat_dateck" dateck
+cpreq "${ARCHSYND}/syndat_stmcat.scr" stmcat.scr
+touch stmcat.scr
+cpreq "${ARCHSYND}/syndat_stmcat" stmcat
+touch stmcat
+cpreq "${ARCHSYND}/syndat_sthisto" sthisto
+cpreq "${ARCHSYND}/syndat_sthista" sthista
+
+touch dateck
+dateck_size=$(find ./ -name dateck -printf "%s")
+
+if [[ ${dateck_size} -lt 10 ]]; then
+    echo 1900010100 > dateck
+    echo "WARNING: Archive run date check file not available or shorter than expected. Using dummy date 1900010100 to allow code to continue"
+fi
+
+#  Generate the correct RUNID and FILES value based on $NET, $RUN and $cyc
+#  Copy this into parm file, then cat the remaining switches in the parm file
+#     Note: FILES=T for 00Z GDAS at tm00 (last run of day centered on 00Z)
+#                       06Z GDAS at tm00 (last run of day centered on 06Z)
+#                       12Z GDAS at tm00 (last run of day centered on 12Z)
+#                       18Z GDAS at tm00 (last run of day centered on 18Z)
+
+net="${NET}"
+files=F,
+if [[ "${RUN}" == 'ndas' ]]; then
+    net=ndas
+elif [[ "${RUN}" == 'gdas' ]]; then
+    files=T,
+fi
+
+if [[ -n "${files_override}" ]]; then # for testing, typically want FILES=F
+    files_override=${files_override^^}
+    files_override=${files_override//./}
+    files_override=${files_override:0:1}
+    if [[ "${files_override}" == 'T' || "${files_override}" == 'F' ]]; then
+        echo "WARNING: Variable files setting will be overriden from ${files} to ${files_override}. Override expected if testing."
+        files=${files_override}
+    else
+        echo "WARNING: Invalid attempt to override files setting. Will stay with default for this job"
+    fi
+fi
+
+echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = ${files} " > vitchk.inp
+cat "${PARMglobal}/relo/syndat_qctropcy.${RUN}.parm" >> vitchk.inp
+
+#  Copy the fixed fields
+
+cpreq "${FIXglobal}/am/syndat_fildef.vit" fildef.vit
+cpreq "${FIXglobal}/am/syndat_stmnames" stmnames
+
+rm -f nhc fnoc lthistry
+
+#########################################################################
+
+#  There are five possible sources of tropical cyclone bogus messages
+#  All are input to program syndat_qctropcy
+#  ------------------------------------------------------------------
+
+if [[ -s "${HOMENHC}/tcvitals" ]]; then
+    echo "tcvitals found"
+    cpreq "${HOMENHC}/tcvitals" nhc
+else
+    echo "WARNING: tcvitals not found, create empty tcvitals"
+fi
+
+# NHC ... copy into working directory as nhc; copy to archive
+touch nhc
+if [[ "${copy_back}" == 'YES' ]]; then
+    cat nhc >> "${ARCHSYND}/syndat_tcvitals.${year}"
+fi
+
+mv -f nhc nhc1
+"${USHglobal}/parse-storm-type.pl" nhc1 > nhc
+
+cpreq -p nhc nhc.ORIG
+# JTWC/FNOC ... execute syndat_getjtbul script to write into working directory
+#               as fnoc; copy to archive
+"${USHglobal}/syndat_getjtbul.sh" "${run_date}"
+touch fnoc
+if [[ "${copy_back}" == 'YES' ]]; then
+    cat fnoc >> "${ARCHSYND}/syndat_tcvitals.${year}"
+fi
+
+mv -f fnoc fnoc1
+"${USHglobal}/parse-storm-type.pl" fnoc1 > fnoc
+
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL SYNDAT_TCVITALS "${job}" "${ARCHSYND}/syndat_tcvitals.${year}"
+fi
+
+#########################################################################
+
+cpreq "${slmask}" slmask.126
+
+#  Execute program syndat_qctropcy
+
+pgm=$(basename "${EXECglobal}/syndat_qctropcy.x")
+export pgm
+if [[ -s prep_step ]]; then
+    source "${USHglobal}/unset_strict.sh"
+    source prep_step
+    source "${USHglobal}/set_strict.sh"
+else
+    rm -f errfile
+    # shellcheck disable=SC2046
+    unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
+fi
+
+echo "${run_date}" > run_date.dat
+export FORT11=slmask.126
+export FORT12=run_date.dat
+"${EXECglobal}/${pgm}"
+errqct=$?
+echo "The foreground exit status for SYNDAT_QCTROPCY is ${errqct}"
+if [[ "${errqct}" -gt '0' ]]; then
+    echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE ${errqct}"
+    echo "**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
+
+    # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
+    #  "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.$tmmark" and "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.$tmmark"
+    #  so later ftp attempts will find and copy the zero-length file and avoid
+    #  wasting time with multiple attempts to remote machine(s)
+    #  (Note: Only do so if files don't already exist)
+
+    if [[ ! -s "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}" ]]; then
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+    fi
+    if [[ ! -s ${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark} ]]; then
+        touch "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+    fi
+
+    exit
+fi
+cat << EOF
+----------------------------------------------------------
+**********  COMPLETED PROGRAM syndat_qctropcy   **********
+----------------------------------------------------------
+EOF
+
+if [[ "${copy_back}" == 'YES' ]]; then
+    cat lthistry >> "${ARCHSYND}/syndat_lthistry.${year}"
+    cpfs akavit "${ARCHSYND}/syndat_akavit"
+    cpfs dateck "${ARCHSYND}/syndat_dateck"
+    cpfs stmcat.scr "${ARCHSYND}/syndat_stmcat.scr"
+    cpfs stmcat "${ARCHSYND}/syndat_stmcat"
+    cpfs sthisto "${ARCHSYND}/syndat_sthisto"
+    cpfs sthista "${ARCHSYND}/syndat_sthista"
+fi
+
+diff nhc nhc.ORIG > /dev/null
+errdiff=$?
+
+###################################
+#  Update NHC file in ${HOMENHC}
+###################################
+
+if [[ "${errdiff}" -ne 0 ]]; then
+
+    if [[ "${copy_back}" == 'YES' && ${envir} == 'prod' ]]; then
+        if [[ -s "${HOMENHC}/tcvitals" ]]; then
+            cpfs nhc "${HOMENHC}/tcvitals"
+        fi
+
+        err=$?
+
+        if [[ "${err}" -ne 0 ]]; then
+            echo "###ERROR: Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not updated by syndat_qctropcy"
+        else
+            echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals successfully updated by syndat_qctropcy"
+        fi
+
+    fi
+
+else
+
+    echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not changed by syndat_qctropcy"
+
+fi
+
+###################################
+
+#  This is the file that connects to the later RELOCATE and/or PREP scripts
+cpfs current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+
+#  Create the DBNet alert
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" "MODEL" "GDAS_TCVITALS" "${job}" "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
+fi
+
+#  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
+cpfs fnoc "${COMOUT_OBS}/${RUN}.${cycle}.jtwc-fnoc.tcvitals.${tmmark}"
+
+exit

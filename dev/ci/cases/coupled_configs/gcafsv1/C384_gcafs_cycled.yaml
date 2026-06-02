@@ -1,0 +1,85 @@
+# ecFlow CI Case: C384 GCAFS Cycled — High-Res Aerosol DA + Coupled Configs
+#
+# Validates GCAFS cycled DA at C384 resolution with coupled-model config rendering.
+# Exercises high-res GOCART configs, NEXUS submodule copy, post_itag selection.
+#
+# Replaces legacy: dev/ci/cases/gcafsv1/C384_gcafs_cycled.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirement 6.2, 13.1
+
+case:
+  name: "C384_gcafs_cycled"
+  description: "C384 GCAFS cycled DA with coupled-model config rendering"
+  resolution: "C384"
+  app: "ATMA"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gcafs.yaml"
+  suite_name: "gcafs_v1"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gcafs"
+  resdetatmos: 384
+  idate: "2023040118"
+  edate: "2023040206"
+  nens: 0
+  interval: 12
+  start: "cold"
+  icsdir: "{{ BASE_IC }}/C384C192/20240610"
+
+base:
+  DO_TEST_MODE: "NO"
+  AERO_ANL_RUNS: "gcdas"
+  USE_IODADIR: "YES"
+
+model_context:
+  post:
+    system: "gcafs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/post/post_itag"
+      expect_contains: ["gcafs"]
+  submodule_copies:
+    - source: "sorc/nexus.fd/config/gocart/"
+      destination: "parm/chem/nexus/gocart/"
+      verify: "byte_identical"
+  no_legacy_tokens: true
+  no_symlinks: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gcafs.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "verify_post_gcafs"
+    command: |
+      grep -q "gcafs" {{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled/parm/ufs/post/post_itag
+      echo "OK: GCAFS post_itag rendered for C384"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_no_legacy_tokens"
+    command: |
+      if grep -r '@\[' {{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled/parm/ 2>/dev/null; then
+        echo "FATAL ERROR: Legacy @[VAR] tokens found"
+        exit 1
+      fi
+      echo "OK: No legacy atparse tokens"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled"

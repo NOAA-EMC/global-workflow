@@ -1,0 +1,29 @@
+{# dev/parm/ufs/gocart/collections/tavg_3d_rad.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for tavg_3d_rad (Time-averaged 3D radiation diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Radiation-related diagnostics (3D time-averaged)
+#
+  tavg_3d_rad.format:     'CFIO' ,
+  tavg_3d_rad.template:   '%y4%m2%d2_%h2%n2z.nc4',
+  tavg_3d_rad.archive:    '%c/Y%y4',
+  tavg_3d_rad.mode:       'time-averaged',
+  tavg_3d_rad.frequency:  {{ model.aerosol.frequencies.tavg_3d_rad | default('120000') }},
+  tavg_3d_rad.duration:   120000,
+  tavg_3d_rad.ref_time:   000000,
+  tavg_3d_rad.grid_label: {{ model.aerosol.grid_label }}
+  tavg_3d_rad.splitField: 1,
+  tavg_3d_rad.fields:    'CAEXTCOEFCA.bc' , 'CA.bc' ,
+                         'CAEXTCOEFCA.oc' , 'CA.oc' ,
+                         'CASCACOEFCA.bc' , 'CA.bc' ,
+                         'CASCACOEFCA.oc' , 'CA.oc' ,
+                         'DUEXTCOEF'      , 'DU' ,
+                         'DUSCACOEF'      , 'DU' ,
+                         'NIEXTCOEF'      , 'NI' ,
+                         'NISCACOEF'      , 'NI' ,
+                         'SSEXTCOEF'      , 'SS' ,
+                         'SSSCACOEF'      , 'SS' ,
+                         'SUEXTCOEF'      , 'SU' ,
+                         'SUSCACOEF'      , 'SU' ,
+                         ::

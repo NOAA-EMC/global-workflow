@@ -112,7 +112,7 @@ This file loads **only** when the EIB MCP-RAG gateway is connected. It provides 
 | Tier | Sources | Purpose |
 |------|---------|---------|
 | 1 | global-workflow RTD, EE2 Standards | Core workflow docs |
-| 2 | Rocoto, ecFlow, wxflow, PyFlow | Workflow engines |
+| 2 | ecFlow, wxflow, PyFlow | Workflow engines |
 | 3 | UFS Weather Model, JEDI, FV3 | Forecast models |
 | 4 | Spack, spack-stack, hpc-stack | Build systems |
 | 5 | Shell Style Guide, PEP8, NumPy | Coding standards |

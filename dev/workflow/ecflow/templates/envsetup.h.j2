@@ -1,0 +1,71 @@
+#!/bin/bash
+# ============================================================
+# ecFlow Environment Setup (envsetup.h)
+# ============================================================
+# Generated from: dev/workflow/ecflow/templates/envsetup.h.j2
+# Traces to: Requirements 6.1, 6.3, 12.4
+#
+# This include sources the platform-appropriate environment file
+# from the rendered EXPDIR. It detects the platform via ${MACHINE}
+# or falls back to detect_machine.sh, then sources the env file
+# passing the task name as argument.
+# ============================================================
+
+# --- Resolve EXPDIR (set by ecFlow edit or deployment) ---
+export EXPDIR="${EXPDIR:-%EXPDIR%}"
+
+# --- Platform detection ---
+if [[ -z "${MACHINE:-}" ]]; then
+    if [[ -x "${EXPDIR}/ush/detect_machine.sh" ]]; then
+        MACHINE=$(${EXPDIR}/ush/detect_machine.sh)
+        export MACHINE
+    else
+        echo "FATAL ERROR: MACHINE is not set and detect_machine.sh not found" >&2
+        ecflow_client --abort="MACHINE not set and detect_machine.sh unavailable"
+        exit 1
+    fi
+fi
+
+# --- Source platform environment file ---
+_env_file="${EXPDIR}/env/${MACHINE}.env"
+if [[ ! -f "${_env_file}" ]]; then
+    echo "FATAL ERROR: Platform environment file not found: ${_env_file}" >&2
+    ecflow_client --abort="Missing env file: ${_env_file}"
+    exit 1
+fi
+
+# Pass the task name (derived from ECF_NAME) as argument to the env file
+_task_name=$(basename "%ECF_NAME%")
+source "${_env_file}" "${_task_name}"
+
+# --- WCOSS2 envir guard (Requirement 11.8) ---
+if [[ "${MACHINE}" == "WCOSS2" ]]; then
+    if [[ -z "${envir:-}" || ! "${envir}" =~ ^(prod|para|test)$ ]]; then
+        echo "FATAL ERROR: On WCOSS2, envir must be one of: prod, para, test (got: '${envir:-}')" >&2
+        ecflow_client --abort="Invalid envir='${envir:-}' on WCOSS2"
+        exit 1
+    fi
+fi
+
+# --- Set up ephemeral working directory (Requirement 5.1) ---
+export jobid="${ECF_RID:-$$}"
+export DATAROOT="${DATAROOT:-/tmp}"
+export DATA="${DATAROOT}/${jobid}"
+mkdir -p "${DATA}"
+cd "${DATA}" || exit 1
+
+# --- EE2 standard variables ---
+export pgmout="OUTPUT.$$"
+
+# --- Lifecycle logging: task init ---
+if command -v log_task_event.py &>/dev/null; then
+    log_task_event.py \
+        --task "${ECF_TASK_NAME:-unknown}" \
+        --cycle "${PDY:-}${cyc:-}" \
+        --jobid "${jobid}" \
+        --attempt "${ECF_TASK_TRYNO:-1}" \
+        --state "init" \
+        --exit-status 0 \
+        --duration 0 \
+        || true
+fi

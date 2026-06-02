@@ -1,0 +1,9 @@
+{# dev/parm/ufs/ocean/MOM6_data_table.j2 #}
+{# Replaces: MOM6_data_table.IN #}
+{# Traces to: Requirement 2 #}
+{% set ocean = model.ocean %}
+"ATM", "p_surf", "psl", "./INPUT/gfs_ctrl.nc", "bilinear", "none"
+"ATM", "p_bot",  "psl", "./INPUT/gfs_ctrl.nc", "bilinear", "none"
+{% if ocean.river_runoff %}
+"OCN", "runoff", "runoff", "{{ ocean.frunoff }}", "bilinear", "none"
+{% endif %}

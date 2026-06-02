@@ -5,7 +5,7 @@
 
 echo "BEGIN: config.gempak"
 
-# Maximum number of rocoto tasks per member
+# Maximum number of ecFlow tasks per member
 export MAX_TASKS=42
 
 # Get task specific resources

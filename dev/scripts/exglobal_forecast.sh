@@ -81,9 +81,11 @@
 source "${USHglobal}/forecast_predet.sh"       # include functions for variable definition
 source "${USHglobal}/forecast_det.sh"          # include functions for run type determination
 source "${USHglobal}/forecast_postdet.sh"      # include functions for variables after run type determination
-source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_configure processing
-
-source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
+# NOTE: parsing_ufs_configure.sh and atparse.bash are no longer sourced.
+# UFS model configuration files (ufs.configure, input.nml, model_configure,
+# diag_table, field_table) are now pre-rendered at deployment time by the
+# Deployment_Tool's Template_Renderer and reside in ${EXPDIR}/parm/ufs/.
+# See: templated-model-configs spec (Requirements 5.1, 5.2, 5.3, 5.4, 9.4)
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
@@ -146,19 +148,49 @@ echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
+
+# Copy pre-rendered coupled-model config files from EXPDIR
+# Replaces: source "${USHglobal}/parsing_namelists_MOM6.sh"; MOM6_namelists
+# Replaces: source "${USHglobal}/parsing_namelists_CICE.sh"; CICE_namelists
+# Replaces: source "${USHglobal}/parsing_namelists_WW3.sh"; WW3_namelists
+# See: coupled-model-configs spec (Requirements 8.1, 8.2, 8.3, 8.4, 8.5, 9.7)
 if [[ "${cplflx}" == ".true." ]]; then
-    MOM6_nml
-fi
-if [[ "${cplwav}" == ".true." ]]; then
-    WW3_nml
+    echo "MAIN: Copying pre-rendered MOM6 configs from EXPDIR"
+    cpreq "${EXPDIR}/parm/ufs/ocean/MOM_input" "${DATA}/INPUT/MOM_input"
+    cpreq "${EXPDIR}/parm/ufs/ocean/MOM6_data_table" "${DATA}/data_table"
 fi
 if [[ "${cplice}" == ".true." ]]; then
-    CICE_nml
+    echo "MAIN: Copying pre-rendered CICE6 config from EXPDIR"
+    cpreq "${EXPDIR}/parm/ufs/ice/ice_in" "${DATA}/ice_in"
 fi
+if [[ "${cplwav}" == ".true." ]]; then
+    echo "MAIN: Copying pre-rendered WW3 config from EXPDIR"
+    cpreq "${EXPDIR}/parm/ufs/wave/ww3_shel.nml" "${DATA}/ww3_shel.nml"
+fi
+
 if [[ "${cplchm}" == ".true." ]]; then
     GOCART_rc
 fi
-UFS_configure
+
+# Copy pre-rendered ufs.configure from EXPDIR (replaces legacy UFS_configure/atparse)
+echo "MAIN: Copying pre-rendered ufs.configure from EXPDIR"
+if [[ ! -f "${EXPDIR}/parm/ufs/ufs.configure" ]]; then
+    echo "FATAL ERROR: Pre-rendered ufs.configure not found at ${EXPDIR}/parm/ufs/ufs.configure"
+    exit 1
+fi
+cpreq "${EXPDIR}/parm/ufs/ufs.configure" "${DATA}/ufs.configure"
+
+# Copy pre-rendered GOCART configs from EXPDIR if aerosol coupling is active
+if [[ "${cplchm}" == ".true." ]]; then
+    echo "MAIN: Copying pre-rendered GOCART configs from EXPDIR"
+    if [[ -d "${EXPDIR}/parm/ufs/gocart" ]]; then
+        for rc_file in "${EXPDIR}/parm/ufs/gocart"/*.rc "${EXPDIR}/parm/ufs/gocart"/ExtData; do
+            if [[ -f "${rc_file}" ]]; then
+                cpreq "${rc_file}" "${DATA}/$(basename "${rc_file}")"
+            fi
+        done
+    fi
+fi
 echo "MAIN: Name lists and model configuration written"
 
 #------------------------------------------------------------------

@@ -1,0 +1,183 @@
+# ecFlow CI Case: C384mx025 S2SW — Ocean Resolution 025 (Quarter-degree)
+#
+# Validates coupled-model config rendering for the highest ocean resolution.
+# Exercises: MOM_input.j2 (025 branch), ice_in.j2, ww3_shel.nml.j2 (CPL forcing),
+# MOM6_data_table.j2, ODA increment update, SPPT stochastics.
+#
+# Traces to: coupled-model-configs Requirements 1.2, 1.4, 1.7, 3.1, 4.2, 4.3, 12.1
+
+case:
+  name: "C384mx025_S2SW_ocean_res025"
+  description: "Coupled S2SW with quarter-degree ocean — validates high-res config with ODA and SPPT"
+  resolution: "C384"
+  app: "S2SW"
+  mode: "forecast-only"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_forecast_only.yaml"
+  suite_name: "gfs_v17_fcst_only"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025"
+  version: "ci-{{ git_sha_short }}"
+
+model_context:
+  ocean:
+    resolution: "025"
+    dt_ocean: 900
+    dt_therm: 3600
+    use_waves: true
+    oda_incupd: true
+    oda_incupd_nhours: 6
+    do_sppt: true
+    river_runoff: true
+    diag_coord_def_z_file: "oceanda_zgrid_75L.nc"
+    frunoff: "INPUT/runoff.daitren.clim.nc"
+    tasks: 120
+  ice:
+    nprocs: 48
+    decomposition: "slenderX2"
+    dt_ice: 900
+    grid: "grid_cice_NEMS_mx025.nc"
+    mask: "kmtu_cice_NEMS_mx025.nc"
+    nx_glb: 1440
+    ny_glb: 1080
+    warm_start: true
+    histfreq_n: 1
+    hist_avg: true
+    dumpfreq: "d"
+    dumpfreq_n: 1
+    ktherm: 2
+    tr_pond_lvl: true
+  wave:
+    ice_input: "CPL"
+    current_input: "CPL"
+    output_params: "HS FP DP PHS PTP PDIR CHA"
+    dt_field_output: 10800
+    dt_point_output: 3600
+    grid_output_dir: "./"
+    point_output_dir: "./"
+    restart_output_dir: "./RESTART/"
+  post:
+    system: "gfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/ocean/MOM_input"
+      validator: "MOM6ParameterValidator"
+      expect_contains:
+        - "NIGLOBAL = 1440"
+        - "NJGLOBAL = 1080"
+        - "DT = 900"
+        - "DT_THERM = 3600"
+        - "KHTH = 10.0"
+        - "KHTR = 10.0"
+        - "SMAG_BI_CONST = 0.06"
+        - "USE_VARIABLE_MIXING = True"
+        - "USE_WAVES = True"
+        - "ODA_INCUPD = True"
+        - "ODA_INCUPD_NHOURS = 6"
+        - "DO_SPPT = True"
+    - path: "parm/ufs/ocean/MOM6_data_table"
+      expect_contains:
+        - "runoff"
+        - "INPUT/runoff.daitren.clim.nc"
+    - path: "parm/ufs/ice/ice_in"
+      validator: "NamelistValidator"
+      expect_contains:
+        - "runtype        = 'continue'"
+        - "use_restart_time = .true."
+        - "nx_global         = 1440"
+        - "ny_global         = 1080"
+        - "nprocs            = 48"
+    - path: "parm/ufs/wave/ww3_shel.nml"
+      validator: "NamelistValidator"
+  no_legacy_tokens: true
+  no_symlinks: true
+  shell_vars_preserved:
+    - "${TOPOEDITS}"
+    - "${CHLCLIM}"
+    - "${SYEAR}"
+    - "${SMONTH}"
+    - "${SDAY}"
+    - "${FHMAX}"
+    - "${FHMAX_WAV}"
+
+steps:
+  - name: "deploy"
+    description: "Deploy workflow with coupled-model config rendering (ocean res 025)"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025 \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "verify_ocean_config"
+    description: "Verify MOM_input rendered with correct 025-resolution parameters"
+    command: |
+      grep -q "NIGLOBAL = 1440" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      grep -q "NJGLOBAL = 1080" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      grep -q "KHTH = 10.0" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      grep -q "SMAG_BI_CONST = 0.06" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      echo "OK: Ocean config verified for resolution 025"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_oda_sppt"
+    description: "Verify ODA increment update and SPPT stochastics enabled"
+    command: |
+      grep -q "ODA_INCUPD = True" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      grep -q "ODA_INCUPD_NHOURS = 6" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      grep -q "DO_SPPT = True" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      echo "OK: ODA and SPPT correctly enabled"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_wave_cpl_forcing"
+    description: "Verify WW3 forcing mode mapped correctly for CPL inputs"
+    command: |
+      # CPL → 'C' flag in rendered ww3_shel.nml
+      grep -q "'C'" \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/wave/ww3_shel.nml
+      echo "OK: Wave CPL forcing mode verified"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_shell_vars"
+    description: "Verify shell variables preserved through Jinja2 rendering"
+    command: |
+      grep -q '${TOPOEDITS}' \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ocean/MOM_input
+      grep -q '${SYEAR}' \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ice/ice_in
+      grep -q '${FHMAX}' \
+        {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/ice/ice_in
+      echo "OK: Shell variables preserved"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_no_legacy_tokens"
+    description: "Verify no @[VAR] atparse tokens remain in rendered configs"
+    command: |
+      if grep -r '@\[' {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025/parm/ufs/; then
+        echo "FATAL ERROR: Legacy @[VAR] tokens found in rendered configs"
+        exit 1
+      fi
+      echo "OK: No legacy atparse tokens found"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C384mx025_S2SW_ocean_res025"

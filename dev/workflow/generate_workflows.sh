@@ -5,8 +5,7 @@ function _usage() {
     cat << EOF
    This script automates the experiment setup process for the global workflow.
    Options are also available to update submodules, build the workflow (with
-   specific build flags), specify which YAMLs and YAML directory to run, and
-   whether to automatically update your crontab.
+   specific build flags), and specify which YAMLs and YAML directory to run.
 
    Usage: generate_workflows.sh [OPTIONS] /path/to/RUNTESTS
           or
@@ -60,16 +59,9 @@ function _usage() {
        If this is not set, BASE_IC is read from the hosts YAML
        (\$HOMEglobal/dev/workflow/hosts/\$machine.yaml).
 
-    -c Append the chosen set of tests to your existing crontab
-       If this option is not chosen, the new entries that would have been
-       written to your crontab will be printed to stdout.
-       NOTES:
-          - For Orion/Hercules, this option will not work unless run on
-            the [orion|hercules]-login-1 head node.
-
-    -e "your@email.com" Email address to place in the crontab.
-       If this option is not specified, then the existing email address in
-       the crontab will be preserved.
+    -e "your@email.com" Email address for workflow failure notifications.
+       If this option is not specified, then the REPLYTO environment
+       variable will be used if set.
 
     -t Add a 'tag' to the end of the case names in the pslots to distinguish
        pslots between multiple sets of tests.
@@ -108,7 +100,6 @@ _hpc_account=""
 _set_account=false
 _base_ic=""
 _set_base_ic=false
-_update_cron=false
 _email=""
 _tag=""
 _set_email=false
@@ -120,8 +111,6 @@ _cwd=$(pwd)
 _runtests="${RUNTESTS:-${_runtests:-}}"
 _auto_del=false
 _nonflag_option_count=0
-_use_scron=false
-declare -a _scron_sh_files=()
 # --------------------------------------------------------------------------- #
 # Argument Parsing
 # --------------------------------------------------------------------------- #
@@ -160,7 +149,6 @@ function _parse_option() {
         C) _run_all_gcafs=true ;;
 
         # Workflow behavior and notifications
-        c) _update_cron=true ;;
         e) _email="${OPTARG}" && _set_email=true ;;
         t) _tag="_${OPTARG}" ;;
         I) _set_base_ic=true && _base_ic="${OPTARG}" ;;
@@ -189,7 +177,7 @@ function _parse_option() {
 
 function _parse_args() {
     while [[ $# -gt 0 && "$1" != "--" ]]; do
-        while getopts ":H:bBDuy:Y:GESCA:I:ce:t:vVdh" option; do
+        while getopts ":H:bBDuy:Y:GESCA:I:e:t:vVdh" option; do
             _parse_option
         done
 
@@ -224,13 +212,6 @@ function send_email() {
     _body="${1}"
 
     echo "${_body}" | mail -s "${_subject}" "${_email}"
-}
-
-# Function to notify user about REPLYTO for scrontab workflows
-function mail_warning() {
-    if [[ "${_use_scron}" == true && "${_set_email}" == false && -z "${REPLYTO:-}" ]]; then
-        echo -e "\033[0;33mWARNING:\033[0m Set \033[0;32mexport REPLYTO=\"your_email\"\033[0m in your .bashrc or use generate_workflows.sh with \033[0;32m-e \"your_email\"\033[0m to receive job failure notifications."
-    fi
 }
 
 # Export REPLYTO if email was provided via -e flag and is not empty
@@ -642,7 +623,6 @@ fi
 # --------------------------------------------------------------------------- #
 
 # Create the experiments
-rm -f "tests.cron" "${_verbose_flag}"
 echo "Running create_experiment.py for ${#_yaml_list[@]} cases"
 
 if [[ "${_verbose}" == true ]]; then
@@ -691,199 +671,28 @@ for _case in "${_yaml_list[@]}"; do
         fi
     fi
 
-    # Check if this experiment is using cron or scron
-    cron_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab"
-    scron_sh_file="${_runtests}/EXPDIR/${_pslot}/${_pslot}.scron.sh"
-    if [[ -f "${scron_sh_file}" ]]; then
-        _use_scron=true
-        _crontab_cmd="scrontab"
-    elif [[ -f "${cron_file}" ]]; then
-        _use_scron=false
-        _crontab_cmd="crontab"
+    # ecFlow workflow: load the suite definition into ecflow_client
+    _def_file="${_runtests}/EXPDIR/${_pslot}/ecf/defs/${_pslot}.def"
+    if [[ -f "${_def_file}" ]]; then
+        echo "  ecFlow definition: ${_def_file}"
     else
-        echo "Could not find a crontab file for case ${_pslot}!"
-        echo "Expected to find ${cron_file}"
-        exit 13
-    fi
-
-    if [[ "${_use_scron}" == true ]]; then
-        # Collect this experiment's scron script path; the master runner script
-        # will call them all sequentially to reduce simultaneous rocoto instances.
-        _scron_sh_files+=("${scron_sh_file}")
-    else
-        grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
+        echo "  WARNING: ecFlow definition not found at ${_def_file}"
     fi
 done
 echo
 
 # --------------------------------------------------------------------------- #
-# Build Master Runner Script for scrontab (if using scron)
+# ecFlow CI Runner Summary
 # --------------------------------------------------------------------------- #
 
-# When running on a SLURM-managed scron system (e.g. Gaea), running all rocoto
-# instances simultaneously can exhaust head-node memory.  Instead, generate a
-# single master script that cycles through every experiment scron script
-# sequentially, and place only that one entry in the scrontab.
-if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
-    _master_script="${_runtests}/EXPDIR/rocoto_master_run.sh"
-    {
-        printf '%s\n' '#!/usr/bin/env bash'
-        printf '%s\n' '# Master runner script - cycles through all experiments sequentially'
-        printf '%s\n' '# to reduce simultaneous rocoto instances on the head node.'
-        for _scron_sh in "${_scron_sh_files[@]}"; do
-            printf 'if [[ -x "%s" ]]; then\n' "${_scron_sh}"
-            printf '    "%s"\n' "${_scron_sh}"
-            printf '%s\n' 'fi'
-        done
-    } > "${_master_script}"
-    chmod +x "${_master_script}"
-
-    # Guard: _yaml_list must be non-empty if _scron_sh_files is non-empty,
-    # but verify explicitly to surface any unexpected state.
-    if [[ ${#_yaml_list[@]} -eq 0 ]]; then
-        echo "ERROR: _yaml_list is empty but scron scripts were collected. This is unexpected."
-        exit 14
-    fi
-
-    # Pull partition and account from the first experiment's crontab (note that cases can be removed, so we must search)
-    _indexes=("${!_yaml_list[@]}")
-    _first_index="${_indexes[0]}"
-    _first_pslot="${_yaml_list[${_first_index}]}${_tag}"
-    _first_cron_file="${_runtests}/EXPDIR/${_first_pslot}/${_first_pslot}.crontab"
-    _master_log="${_runtests}/EXPDIR/rocoto_master_run.log"
-
-    _scron_partition=$(grep "^#SCRON --partition=" "${_first_cron_file}" | head -1)
-    _scron_account=$(grep "^#SCRON --account=" "${_first_cron_file}" | head -1)
-    if [[ -z "${_scron_partition}" || -z "${_scron_account}" ]]; then
-        echo "ERROR: Could not find #SCRON --partition= or #SCRON --account= in ${_first_cron_file}"
-        exit 15
-    fi
-
-    master_job_name="master_scron${_tag}"
-
-    {
-        echo
-        echo "#################### ${master_job_name} ####################"
-        echo "${_scron_partition}"
-        echo "${_scron_account}"
-        echo "#SCRON --job-name=${master_job_name}"
-        echo "#SCRON --output=${_master_log}"
-        echo "#SCRON --time=00:10:00"
-        echo "#SCRON --dependency=singleton"
-        echo "*/5 * * * * ${_master_script}"
-        echo "#################################################################"
-        echo
-    } >> tests.cron
-fi
-
-# --------------------------------------------------------------------------- #
-# Configure Mail Behavior
-# --------------------------------------------------------------------------- #
-
-# Add MAILTO to tests.cron for regular crontab
-if [[ "${_use_scron}" == false ]]; then
-    if [[ "${_set_email}" == "true" ]]; then
-        # Use email from -e flag
-        sed -i "1i MAILTO=\"${_email}\"" tests.cron
-    elif [[ -n "${REPLYTO:-}" ]]; then
-        # Use REPLYTO environment variable
-        sed -i "1i MAILTO=\"${REPLYTO}\"" tests.cron
-    else
-        # Use empty MAILTO
-        sed -i "1i MAILTO=\"\"" tests.cron
-    fi
-fi
-
-# --------------------------------------------------------------------------- #
-# Install or Print Scheduler Entries
-# --------------------------------------------------------------------------- #
-
-# Update the cron
-if [[ "${_update_cron}" == "true" ]]; then
-    printf "Updating the existing crontab\n\n"
-    echo
-    mail_warning
-    rm -f existing.cron final.cron "${_verbose_flag}"
-    touch existing.cron final.cron
-
-    ${_crontab_cmd} -l | grep -v "no crontab for" > existing.cron || true
-
-    if [[ "${_debug}" == "true" ]]; then
-        echo "Existing crontab: "
-        echo "#######################"
-        cat existing.cron
-        echo "#######################"
-    fi
-
-    # Save existing MAILTO before removing it
-    existing_mailto=$(grep "^MAILTO=" existing.cron 2> /dev/null | head -1 || echo "")
-
-    # Remove ALL MAILTO lines from existing.cron and tests.cron to prevent duplicates
-    sed -i '/^MAILTO=/d' existing.cron 2> /dev/null || true
-    sed -i '/^MAILTO=/d' tests.cron 2> /dev/null || true
-
-    if [[ "${_set_email}" == "true" ]]; then
-        # For scrontab, REPLYTO is already exported earlier; for crontab, set MAILTO
-        if [[ "${_verbose}" == "true" ]]; then
-            printf "Updating crontab/scrontab email to %s\n\n" "${_email}"
-        fi
-
-        if [[ "${_use_scron}" == false ]]; then
-            # For regular crontab, set MAILTO at the top of final.cron
-            echo "MAILTO=\"${_email}\"" > final.cron
-        fi
-    else
-        # Preserve existing MAILTO if present with non-empty value (only for regular crontab)
-        if [[ "${_use_scron}" == false ]]; then
-            # Check if there was a MAILTO with a non-empty value in the original crontab
-            # Extract the email value from MAILTO="email" or MAILTO=email
-            if [[ -n "${existing_mailto}" ]]; then
-                # Extract email value between quotes or after =
-                existing_email=$(echo "${existing_mailto}" | sed -n 's/^MAILTO=["'\'']*\([^"'\'']*\)["'\'']*$/\1/p')
-            else
-                existing_email=""
-            fi
-
-            if [[ -n "${existing_email}" ]]; then
-                echo "${existing_mailto}" > final.cron
-            elif [[ -n "${REPLYTO:-}" ]]; then
-                echo "MAILTO=\"${REPLYTO}\"" > final.cron
-            else
-                echo "MAILTO=\"\"" > final.cron
-            fi
-        fi
-    fi
-
-    cat existing.cron tests.cron >> final.cron
-
-    if [[ "${_verbose}" == "true" ]]; then
-        echo "Setting crontab to:"
-        echo "#######################"
-        cat final.cron
-        echo "#######################"
-    fi
-
-    ${_crontab_cmd} final.cron
-else
-    mail_warning
-    _message="Add the following to your crontab or scrontab to start running:"
-    _cron_tests=$(cat tests.cron)
-    _message="${_message}"$'\n'"${_cron_tests}"
-    echo "${_message}"
-    echo
-    if [[ "${_set_email}" == true ]]; then
-        final_message="${final_message:-}"$'\n'"${_message}"
-    fi
-fi
+echo "All experiments created with ecFlow workflow engine."
+echo "To load and run experiments, use ecflow_client:"
+echo "  ecflow_client --load=<EXPDIR>/ecf/defs/<pslot>.def"
+echo "  ecflow_client --begin=<suite_name>"
 
 # --------------------------------------------------------------------------- #
 # Cleanup and Completion
 # --------------------------------------------------------------------------- #
-
-# Cleanup
-if [[ "${_debug}" == "false" ]]; then
-    rm -f final.cron existing.cron tests.cron "${_verbose_flag}"
-fi
 
 echo "Success!!"
 if [[ "${_set_email}" == true && "${_debug}" == "true" ]]; then

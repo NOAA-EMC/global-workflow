@@ -1,0 +1,205 @@
+# Traceability_Matrix (immutable-dag-goal-realization, Task 8 / Req 8)
+#
+# Maps every parent (immutable-dag-workflow-modernization) requirement
+# (R1-R14) and every parent correctness Property (1-14) to its proving
+# test(s) and the current pass status derived from the most recent
+# Goal_Realization_Gate run.
+#
+# status values (Design "Data Models"): pending | pass | fail | unmapped
+#   pending  - no gate run has recorded a result yet (initial value)
+#   pass     - every mapped proving test passed in the latest gate run
+#   fail     - at least one mapped proving test failed in the latest gate run
+#   unmapped - the item has no proving test (Req 8.4 violation)
+#
+# Test identifiers are pytest paths relative to dev/workflow/ (the directory
+# the gate runs pytest from). A "file.py::node" form pins a single test node.
+#
+# Consumed by: dev/workflow/deployment/traceability.py (load_traceability_matrix)
+# Updated by:  goal_realization_gate.py / task 11 from the Verification_Report.
+#
+# NOTE on Properties 6 (Idempotence) and 7 (Statelessness): the parent design's
+# illustrative PROPERTY_TESTS map named tests/test_idempotence_property.py and
+# tests/test_statelessness_property.py, which do not exist in the suite. Those
+# parent Properties trace to parent Req 5.4 (idempotence) and Req 5.3
+# (statelessness), both exercised by the Universal_Wrapper ephemeral-execution
+# tests. They are therefore mapped to the real proving test
+# tests/test_universal_wrapper.py so the matrix maps only to tests that exist.
+#
+# LAST UPDATED: Goal_Realization_Gate run — all 14 Properties pass,
+# 758 passed / 4 skipped / 0 failed / 0 errors / 0 collection errors.
+# GateResult.realized = True.
+
+properties:
+  1:
+    name: "Deployment Determinism"
+    tests:
+      - "tests/test_deployment_determinism.py::test_deployment_determinism_property"
+    status: pass
+  2:
+    name: "Manifest Integrity"
+    tests:
+      - "tests/test_manifest_integrity_property.py"
+    status: pass
+  3:
+    name: "Immutability"
+    tests:
+      - "tests/test_integration_immutability.py"
+    status: pass
+  4:
+    name: "Self-Containment"
+    tests:
+      - "tests/test_integration_self_containment.py"
+    status: pass
+  5:
+    name: "Atomicity"
+    tests:
+      - "tests/test_property_atomicity.py"
+      - "tests/test_atomicity_property.py"
+    status: pass
+  6:
+    name: "Idempotence"
+    tests:
+      - "tests/test_universal_wrapper.py"
+    status: pass
+  7:
+    name: "Statelessness"
+    tests:
+      - "tests/test_universal_wrapper.py"
+    status: pass
+  8:
+    name: "Platform Isolation"
+    tests:
+      - "tests/test_property_platform_isolation.py"
+    status: pass
+  9:
+    name: "Parser Round-Trip"
+    tests:
+      - "tests/test_parser_roundtrip.py"
+    status: pass
+  10:
+    name: "Printer Round-Trip"
+    tests:
+      - "tests/test_printer_roundtrip.py"
+    status: pass
+  11:
+    name: "ecFlow Round-Trip"
+    tests:
+      - "tests/test_ecflow_roundtrip_property.py"
+    status: pass
+  12:
+    name: "DAG Acyclicity"
+    tests:
+      - "tests/test_dag_acyclicity_property.py"
+    status: pass
+  13:
+    name: "Definition Fidelity"
+    tests:
+      - "tests/test_definition_fidelity_property.py"
+    status: pass
+  14:
+    name: "No Unresolved Tokens"
+    tests:
+      - "tests/test_no_unresolved_tokens.py"
+    status: pass
+
+requirements:
+  R1:
+    title: "ecFlow-Only Orchestration"
+    tests:
+      - "tests/test_setup_workflow_rocoto_guard.py"
+      - "tests/test_rocoto_guard_check.py"
+      - "tests/test_dag_generator.py"
+    status: pass
+  R2:
+    title: "Directed Acyclic Graph (DAG) Orchestration"
+    tests:
+      - "tests/test_dag_acyclicity_property.py"
+      - "tests/test_dag_acyclicity.py"
+      - "tests/test_dag_queries.py"
+      - "tests/test_dag_generator.py"
+    status: pass
+  R3:
+    title: "Immutable EXPDIR Deployment (Snapshot Paradigm)"
+    tests:
+      - "tests/test_integration_immutability.py"
+      - "tests/test_manifest_integrity_property.py"
+      - "tests/test_manifest.py"
+      - "tests/test_seal.py"
+      - "tests/test_deployment_determinism.py"
+    status: pass
+  R4:
+    title: "Declarative Configuration & Deployment-Time Templating with Nested Includes"
+    tests:
+      - "tests/test_template_renderer.py"
+      - "tests/test_template_renderer_full.py"
+      - "tests/test_shell_var_preservation.py"
+      - "tests/test_no_unresolved_tokens.py"
+      - "tests/test_yaml_roundtrip_property.py"
+      - "tests/test_pretty_print.py"
+    status: pass
+  R5:
+    title: "Ephemeral Execution and Idempotency"
+    tests:
+      - "tests/test_universal_wrapper.py"
+    status: pass
+  R6:
+    title: "Universal Wrappers (DRY Principle)"
+    tests:
+      - "tests/test_universal_wrapper.py"
+      - "tests/test_backward_compat_shims.py"
+    status: pass
+  R7:
+    title: "Atomic Delivery"
+    tests:
+      - "tests/test_property_atomicity.py"
+      - "tests/test_atomicity_property.py"
+      - "tests/test_atomic_publish.py"
+    status: pass
+  R8:
+    title: "dev/ as Authoring Source and Deployment to NCO Layout"
+    tests:
+      - "tests/test_file_stager.py"
+      - "tests/test_integration_self_containment.py"
+      - "tests/test_integration_pipeline.py"
+    status: pass
+  R9:
+    title: "wxflow and uwtools Integration"
+    tests:
+      - "tests/test_configuration.py"
+      - "tests/test_validation.py"
+      - "tests/test_version_gate.py"
+    status: pass
+  R10:
+    title: "Workflow Configuration Parser, Pretty-Printer, and Round-Trip"
+    tests:
+      - "tests/test_parser_roundtrip.py"
+      - "tests/test_printer_roundtrip.py"
+      - "tests/test_workflow_config.py"
+      - "tests/test_definition_fidelity_property.py"
+      - "tests/test_ecflow_roundtrip_property.py"
+    status: pass
+  R11:
+    title: "EE2 Compliance Preservation"
+    tests:
+      - "tests/test_ee2_scanner.py"
+      - "tests/test_rag_ee2_adapter.py"
+      - "tests/test_forecast_postdet_cpreq.py"
+    status: pass
+  R12:
+    title: "Multi-Platform Support"
+    tests:
+      - "tests/test_property_platform_isolation.py"
+      - "tests/test_platform_conditioner.py"
+    status: pass
+  R13:
+    title: "Observability and Provenance"
+    tests:
+      - "tests/test_log_task_event.py"
+      - "tests/test_seal.py"
+    status: pass
+  R14:
+    title: "Decommissioning of Existing Rocoto Code Paths"
+    tests:
+      - "tests/test_setup_workflow_rocoto_guard.py"
+      - "tests/test_rocoto_guard_check.py"
+    status: pass

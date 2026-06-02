@@ -3,7 +3,7 @@
 """
 stage.py
 
-This script is part of the ctest framework for testing Rocoto JJOBS that stages the
+This script is part of the ctest framework for testing ecFlow JJOBs that stages the
 input files needed to run a JJOB independently from other jobs in the workflow.
 The YAML file specified at the command line contains the paths to the staged input files
 and their corresponding directories under the COMROOT of the experiment for the JJOB.

@@ -1,0 +1,138 @@
+# ecFlow CI Case: C48 S2SW — FV3 Nested Grid Configuration
+#
+# Validates coupled-model config rendering with FV3 nested grid enabled.
+# Exercises: input_global_nest.nml.j2 (do_nest=true), plus all coupled templates.
+# Tests nest-specific parameters (NEST_IMO, NEST_JMO) in model_configure format.
+#
+# Traces to: coupled-model-configs Requirements 5.1, 5.2, 5.3, 5.4, 5.5
+
+case:
+  name: "C48_S2SW_nested_grid"
+  description: "Coupled S2SW with FV3 nested grid — validates input_global_nest.nml rendering"
+  resolution: "C48"
+  app: "S2SW"
+  mode: "forecast-only"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_forecast_only.yaml"
+  suite_name: "gfs_v17_fcst_only"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid"
+  version: "ci-{{ git_sha_short }}"
+
+model_context:
+  fv3:
+    do_nest: true
+    NEST_IMO: 1536
+    NEST_JMO: 1536
+  ocean:
+    resolution: "500"
+    dt_ocean: 7200
+    dt_therm: 14400
+    use_waves: true
+    oda_incupd: false
+    do_sppt: false
+    river_runoff: true
+    diag_coord_def_z_file: "oceanda_zgrid_75L.nc"
+    frunoff: "INPUT/runoff.daitren.clim.nc"
+    tasks: 12
+  ice:
+    nprocs: 12
+    decomposition: "slenderX2"
+    dt_ice: 7200
+    grid: "grid_cice_NEMS_mx500.nc"
+    mask: "kmtu_cice_NEMS_mx500.nc"
+    nx_glb: 72
+    ny_glb: 35
+    warm_start: false
+    histfreq_n: 1
+    hist_avg: true
+    dumpfreq: "d"
+    dumpfreq_n: 1
+    ktherm: 2
+    tr_pond_lvl: true
+  wave:
+    ice_input: "CPL"
+    current_input: "CPL"
+    output_params: "HS FP DP PHS PTP PDIR CHA"
+    dt_field_output: 10800
+    dt_point_output: 3600
+    grid_output_dir: "./"
+    point_output_dir: "./"
+    restart_output_dir: "./RESTART/"
+  post:
+    system: "gfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/fv3/input_global_nest.nml"
+      validator: "ModelConfigureValidator"
+      expect_contains:
+        - "NEST_IMO"
+        - "NEST_JMO"
+        - "1536"
+    - path: "parm/ufs/ocean/MOM_input"
+      validator: "MOM6ParameterValidator"
+    - path: "parm/ufs/ice/ice_in"
+      validator: "NamelistValidator"
+    - path: "parm/ufs/wave/ww3_shel.nml"
+      validator: "NamelistValidator"
+  no_legacy_tokens: true
+  no_symlinks: true
+  shell_vars_preserved:
+    - "${FHMAX}"
+    - "${PDY}"
+    - "${cyc}"
+
+steps:
+  - name: "deploy"
+    description: "Deploy workflow with FV3 nested grid configuration"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "verify_nested_grid"
+    description: "Verify input_global_nest.nml contains nest-specific parameters"
+    command: |
+      grep -q "NEST_IMO" \
+        {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid/parm/ufs/fv3/input_global_nest.nml
+      grep -q "NEST_JMO" \
+        {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid/parm/ufs/fv3/input_global_nest.nml
+      grep -q "1536" \
+        {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid/parm/ufs/fv3/input_global_nest.nml
+      echo "OK: Nested grid parameters verified"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_shell_vars_nest"
+    description: "Verify shell variables preserved in nested grid config"
+    command: |
+      grep -q '${FHMAX}' \
+        {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid/parm/ufs/fv3/input_global_nest.nml
+      grep -q '${PDY}' \
+        {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid/parm/ufs/fv3/input_global_nest.nml
+      echo "OK: Shell variables preserved in nested grid config"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_no_legacy_tokens"
+    description: "Verify no @[VAR] atparse tokens remain in rendered configs"
+    command: |
+      if grep -r '@\[' {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid/parm/ufs/; then
+        echo "FATAL ERROR: Legacy @[VAR] tokens found in rendered configs"
+        exit 1
+      fi
+      echo "OK: No legacy atparse tokens found"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C48_S2SW_nested_grid"

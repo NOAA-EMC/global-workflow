@@ -1,0 +1,23 @@
+{# dev/parm/ufs/gocart/collections/tavg_du_bin.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for tavg_du_bin (Time-averaged binned dust). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Time-averaged binned aerosols - Dust
+#
+  tavg_du_bin.format:     'CFIO' ,
+  tavg_du_bin.descr:      '2d,Hourly,Instantaneous'
+  tavg_du_bin.template:   '%y4%m2%d2_%h2%n2z.nc4',
+  tavg_du_bin.mode:       'time-averaged'
+  tavg_du_bin.grid_label: {{ model.aerosol.grid_label }} ,
+  tavg_du_bin.splitField: 1,
+  tavg_du_bin.frequency:  {{ model.aerosol.frequencies.tavg_du_bin | default('010000') }} ,
+  tavg_du_bin.duration:   010000 ,
+  tavg_du_bin.ref_time:   000000 ,
+  tavg_du_bin.nbits:      10,
+  tavg_du_bin.fields:     'DUEM' , 'DU' ,
+                          'DUSD' , 'DU' ,
+                          'DUDP' , 'DU' ,
+                          'DUWT' , 'DU' ,
+                          'DUSV' , 'DU' ,
+                          ::

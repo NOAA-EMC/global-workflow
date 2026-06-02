@@ -1,0 +1,37 @@
+{# dev/parm/ufs/gocart/AERO_HISTORY.rc.j2 #}
+{# Traces to: Requirement 3 AC1, AC4, AC5, Requirement 8 AC3 #}
+{# Renders GOCART MAPL History resource configuration. #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#######################################################################
+#                 Create History List for Output
+#######################################################################
+
+VERSION: 1
+EXPID:  gocart
+EXPDSC: GOCART2g_diagnostics_at_{{ model.resolution | lower }}
+EXPSRC: GEOSgcm-v10.16.0
+Allow_Overwrite: .true.
+
+COLLECTIONS: {% for coll in model.aerosol.active_collections %}'{{ coll }}'
+{% if not loop.last %}             {% endif %}{% endfor %}
+             ::
+
+##################################################
+# The GRID_LABELS section must be after the main #
+#  list of COLLECTIONS for scripting purposes.   #
+##################################################
+
+GRID_LABELS: {{ model.aerosol.grid_label }}
+::
+
+
+{{ model.aerosol.grid_label }}.GRID_TYPE: LatLon
+{{ model.aerosol.grid_label }}.IM_WORLD: {{ model.aerosol.grid_im }}
+{{ model.aerosol.grid_label }}.JM_WORLD: {{ model.aerosol.grid_jm }}
+{{ model.aerosol.grid_label }}.POLE: PC
+{{ model.aerosol.grid_label }}.DATELINE: DC
+{{ model.aerosol.grid_label }}.LM: {{ model.fv3.npz }}
+
+{% for coll in model.aerosol.active_collections %}
+{% include 'gocart/collections/' + coll + '.j2' %}
+{% endfor %}

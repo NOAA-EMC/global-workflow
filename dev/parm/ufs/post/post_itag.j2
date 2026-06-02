@@ -1,0 +1,73 @@
+{# dev/parm/ufs/post/post_itag.j2 #}
+{# Replaces: post_itag_gfs, post_itag_gcafs #}
+{# Traces to: Requirement 6 #}
+{% set post = model.post %}
+{% if post.system == 'gfs' %}
+&model_inputs
+  filename = "atm_file.nc",
+  ioform = "netcdf",
+  grib = "grib2",
+  datestr = "YYYYMMDDHHmmss",
+  modelname = "GFS",
+  submodelname = "NONE",
+  filenameflux = "sfc_file.nc",
+  filenameflat = "postxconfig-NT.txt"
+/
+&nampgb
+  kpo = 0,
+  po = 0.,
+  rdaod = .false.
+  nasa_on = .false.
+/
+{% elif post.system == 'gcafs' %}
+&model_inputs
+  filename = "atm_file.nc",
+  ioform = "netcdf",
+  grib = "grib2",
+  datestr = "YYYYMMDDHHmmss",
+  modelname = "GCAFS",
+  submodelname = "NONE",
+  filenameflux = "sfc_file.nc",
+  filenameflat = "postxconfig-NT.txt"
+/
+&nampgb
+  kpo = 0,
+  po = 0.,
+  rdaod = .true.
+  nasa_on = .true.
+/
+{% elif post.system == 'gefs' %}
+&model_inputs
+  filename = "atm_file.nc",
+  ioform = "netcdf",
+  grib = "grib2",
+  datestr = "YYYYMMDDHHmmss",
+  modelname = "GEFS",
+  submodelname = "NONE",
+  filenameflux = "sfc_file.nc",
+  filenameflat = "postxconfig-NT.txt"
+/
+&nampgb
+  kpo = 0,
+  po = 0.,
+  rdaod = .false.
+  nasa_on = .false.
+/
+{% elif post.system == 'sfs' %}
+&model_inputs
+  filename = "atm_file.nc",
+  ioform = "netcdf",
+  grib = "grib2",
+  datestr = "YYYYMMDDHHmmss",
+  modelname = "SFS",
+  submodelname = "NONE",
+  filenameflux = "sfc_file.nc",
+  filenameflat = "postxconfig-NT.txt"
+/
+&nampgb
+  kpo = 0,
+  po = 0.,
+  rdaod = .false.
+  nasa_on = .false.
+/
+{% endif %}

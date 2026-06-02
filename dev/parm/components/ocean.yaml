@@ -1,0 +1,28 @@
+# dev/parm/components/ocean.yaml
+# Ocean (MOM6) component definition
+# Traces to: Requirement 10.1, 10.2, 10.5, 10.6, 10.10
+#
+# This component YAML defines the MOM6 ocean model parameters,
+# families, and tasks. Included into the top-level Workflow_Configuration
+# via !INC or {% include %} at deployment time.
+
+model:
+  ocean:
+    resolution: "025"
+    dt_ocean: 900
+    tasks: 120
+    omp_threads: 1
+    output_dir: "./MOM6_OUTPUT"
+    restart_dir: "./MOM6_RESTART"
+    output_frequency_hours: 6
+    use_mommesh: true
+
+families:
+  - path: "gfs/ocean"
+    tasks:
+      - name: "prep"
+        trigger: "gfs/atmos/analysis/analcalc == complete"
+        jjob: "JGLOBAL_OCEAN_PREP"
+      - name: "post"
+        trigger: "gfs/atmos/forecast/fcst == complete"
+        jjob: "JGFS_OCEAN_POST"

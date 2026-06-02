@@ -1,0 +1,69 @@
+{# dev/parm/ufs/gocart/CA2G_instance_CA.br.rc.j2 #}
+{# Brown carbon parameters with configurable SOA fractions and removal schemes #}
+{# Namespace: model.aerosol.carbon.br #}
+{% set carbon = model.aerosol.carbon | default({}) %}
+{% set br = carbon.br | default({}) %}
+#
+# Resource file for BR parameters.
+#
+
+aerosol_radBands_optics_file: ExtData/optics/opticsBands_BRC.v1_5.RRTMG.nc
+aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_BRC.v1_5.nc
+
+# Aircraft emission factor: convert input unit to kg C
+aircraft_fuel_emission_factor: 1.0000
+
+# Heights [m] of LTO, CDS and CRS aviation emissions layers
+aviation_vertical_layers: 0.0 100.0 9.0e3 10.0e3
+
+# Fraction of biogenic VOCs emissions for SOA production
+monoterpenes_emission_fraction: {{ br.monoterpenes_emission_fraction | default(0.0) }}
+isoprene_emission_fraction: {{ br.isoprene_emission_fraction | default(0.0) }}
+
+# Ratio of POM/BRC -> convert source masses from carbon to POM
+pom_ca_ratio: 1.8
+
+# Initially hydrophobic portion
+hydrophobic_fraction: {{ br.hydrophobic_fraction | default(0.5) }}
+
+# Rate of conversion of hydrophobic to hydrophilic [days]
+time_days_hydrophobic_to_hydrophilic: {{ br.time_days_hydrophobic_to_hydrophilic | default(2.5) }}
+
+# Rate of chemical destruction of carbon species [days]
+time_days_chemical_destruction: -1.  -1.
+
+# Wet Removal Scheme Option | gocart, ufs
+wet_removal_scheme: {{ br.wet_removal_scheme | default('ufs') }}
+fwet_ice: {{ br.fwet_ice | default('0.0 0.4') }}
+fwet_snow: {{ br.fwet_snow | default('0.0 0.4') }}
+fwet_rain: {{ br.fwet_rain | default('0.0 0.4') }}
+
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: '{{ br.settling_scheme | default('ufs') }}'
+
+# Scavenging efficiency per bin [km-1] (NOT USED UNLESS RAS IS CALLED)
+fscav: {{ br.fscav | default('0.0  0.4') }}
+
+# particle radius
+particle_radius_microns: 0.35 0.35
+
+rhFlag: 0
+
+# Dry particle density [kg m-3]
+particle_density: 1800   1800
+
+# Molecular weight of species [kg mole-1]
+molecular_weight: 0.18  0.18
+
+# Number of particles per kg mass
+fnum: 9.76e17  9.76e17
+
+# Sigma of lognormal number distribution
+sigma: 2.20  2.20
+
+nbins: 2
+
+pressure_lid_in_hPa: 0.01
+
+point_emissions_srcfilen: /dev/null

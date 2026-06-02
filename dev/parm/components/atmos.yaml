@@ -1,0 +1,126 @@
+# dev/parm/components/atmos.yaml
+# Atmosphere (FV3) component definition
+# Traces to: Requirement 10.1, 10.2, 10.5, 10.6, 10.10
+#
+# This component YAML defines the FV3 atmospheric model parameters,
+# families, and tasks. Included into the top-level Workflow_Configuration
+# via !INC or {% include %} at deployment time.
+
+model:
+  fv3:
+    npx: 385
+    npy: 385
+    npz: 127
+    layout: [6, 6]
+    io_layout: [1, 1]
+    quilting: true
+    write_group: 2
+    wrttask_per_group: 40
+    restart_interval: 12
+    blocksize: 32
+    total_tasks: 216
+    omp_threads: 1
+    type: "nh"
+    imp_physics: 11
+    ccpp_suite: "FV3_GFS_v17_p8"
+    fhrot: 0
+    imo: 1536
+    jmo: 768
+    output_fh: "0 1 2 3 6 12"
+    iau_offset: 0
+    output_filetype_atm: "netcdf"
+    output_filetype_sfc: "netcdf"
+    num_output_files: 2
+    quilting_restart: true
+    d2_bg_k1: 0.20
+    d2_bg_k2: 0.04
+    dz_min: 6
+    n_sponge: 42
+    hord_mt: 5
+    hord_vt: 5
+    hord_tm: 5
+    hord_dp: -5
+    nord: 2
+    dddmp: 0.1
+    d4_bg: 0.12
+    dnats: 1
+    do_sat_adj: true
+    atm_model: "fv3"
+
+families:
+  # GDAS Atmosphere Analysis
+  - path: "gdas/atmos/prep"
+    tasks:
+      - name: "prep"
+        trigger: ""
+        jjob: "JGLOBAL_ATMOS_PREP"
+
+  - path: "gdas/atmos/analysis"
+    tasks:
+      - name: "anal"
+        trigger: "gdas/atmos/prep/prep == complete"
+        jjob: "JGDAS_ATMOS_ANALYSIS"
+      - name: "analcalc"
+        trigger: "anal == complete"
+        jjob: "JGDAS_ATMOS_ANALYSIS_CALC"
+      - name: "analdiag"
+        trigger: "anal == complete"
+        jjob: "JGDAS_ATMOS_ANALYSIS_DIAG"
+
+  # GDAS Atmosphere Forecast
+  - path: "gdas/atmos/forecast"
+    tasks:
+      - name: "fcst"
+        trigger: "gdas/atmos/analysis/analcalc == complete"
+        jjob: "JGLOBAL_FORECAST"
+        events:
+          - "forecast_hour"
+        meters:
+          - name: "forecast_hour"
+            min: 0
+            max: 9
+
+  # GDAS Atmosphere Post-Processing
+  - path: "gdas/atmos/post"
+    tasks:
+      - name: "post_f{{ '%03d' % fhr }}"
+        trigger: "gdas/atmos/forecast/fcst:forecast_hour ge {{ fhr }}"
+        jjob: "JGLOBAL_ATMOS_POST"
+        variables:
+          FHOUR: "{{ fhr }}"
+        for_each:
+          fhr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+  # GFS Atmosphere Analysis
+  - path: "gfs/atmos/analysis"
+    tasks:
+      - name: "anal"
+        trigger: "gdas/atmos/analysis/analcalc == complete"
+        jjob: "JGFS_ATMOS_ANALYSIS"
+      - name: "analcalc"
+        trigger: "anal == complete"
+        jjob: "JGFS_ATMOS_ANALYSIS_CALC"
+
+  # GFS Atmosphere Forecast
+  - path: "gfs/atmos/forecast"
+    tasks:
+      - name: "fcst"
+        trigger: "gfs/atmos/analysis/analcalc == complete"
+        jjob: "JGLOBAL_FORECAST"
+        events:
+          - "forecast_hour"
+        meters:
+          - name: "forecast_hour"
+            min: 0
+            max: 384
+
+  # GFS Atmosphere Post-Processing
+  - path: "gfs/atmos/post"
+    tasks:
+      - name: "post_f{{ '%03d' % fhr }}"
+        trigger: "gfs/atmos/forecast/fcst:forecast_hour ge {{ fhr }}"
+        jjob: "JGFS_ATMOS_POST"
+        variables:
+          FHOUR: "{{ fhr }}"
+        for_each:
+          fhr: [0, 6, 12, 24, 48, 72, 120, 180, 240, 384]

@@ -1,0 +1,40 @@
+{# dev/parm/ufs/gocart/collections/tavg_2d_rad.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for tavg_2d_rad (Time-averaged 2D radiation diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Radiation-related diagnostics (2D time-averaged)
+#
+  tavg_2d_rad.format:     'CFIO' ,
+  tavg_2d_rad.template:   '%y4%m2%d2_%h2%n2z.nc4',
+  tavg_2d_rad.archive:    '%c/Y%y4',
+  tavg_2d_rad.mode:       'time-averaged',
+  tavg_2d_rad.frequency:  {{ model.aerosol.frequencies.tavg_2d_rad | default('120000') }},
+  tavg_2d_rad.duration:   120000,
+  tavg_2d_rad.ref_time:   000000,
+  tavg_2d_rad.grid_label: {{ model.aerosol.grid_label }}
+  tavg_2d_rad.fields:     'CA.bcEXTTAU' , 'CA.bc' ,
+                          'CA.ocEXTTAU' , 'CA.oc' ,
+                          'CASCATAUCA.bc' , 'CA.bc' ,
+                          'CASCATAUCA.oc' , 'CA.oc' ,
+                          'DUEXTTAU'      , 'DU' ,
+                          'DUSCATAU'      , 'DU' ,
+                          'DUEXTT25'      , 'DU' ,
+                          'DUSCAT25'      , 'DU' ,
+                          'DUEXTTFM'      , 'DU' ,
+                          'DUSCATFM'      , 'DU' ,
+                          'NIEXTTFM'      , 'NI' ,
+                          'NISCATFM'      , 'NI' ,
+                          'NIEXTT25'      , 'NI' ,
+                          'NISCAT25'      , 'NI' ,
+                          'NIEXTTAU'      , 'NI' ,
+                          'NISCATAU'      , 'NI' ,
+                          'SSEXTTAU'      , 'SS' ,
+                          'SSSCATAU'      , 'SS' ,
+                          'SSEXTT25'      , 'SS' ,
+                          'SSSCAT25'      , 'SS' ,
+                          'SSEXTTFM'      , 'SS' ,
+                          'SSSCATFM'      , 'SS' ,
+                          'SUEXTTAU'      , 'SU' ,
+                          'SUSCATAU'      , 'SU' ,
+                          ::

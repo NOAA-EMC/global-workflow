@@ -1,0 +1,22 @@
+{# dev/parm/ufs/gocart/collections/inst_aod.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_aod (AOD diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Radiation-related diagnostics
+#
+  inst_aod.format:     'CFIO' ,
+  inst_aod.template:   '%y4%m2%d2_%h2%n2z.nc4' ,
+  inst_aod.archive:    '%c/Y%y4' ,
+  inst_aod.mode:       'instantaneous'
+  inst_aod.frequency:  {{ model.aerosol.frequencies.inst_aod | default('010000') }},
+  inst_aod.duration:   010000,
+  inst_aod.ref_time:   000000,
+  inst_aod.grid_label: {{ model.aerosol.grid_label }}
+  inst_aod.fields:     'CA.bcEXTTAU'   , 'CA.bc'    , 'AOD_BC',
+                       'CA.ocEXTTAU'   , 'CA.oc'    , 'AOD_OC',
+                       'DUEXTTAU'      , 'DU'       , 'AOD_DU',
+                       'SSEXTTAU'      , 'SS'       , 'AOD_SS',
+                       'SUEXTTAU'      , 'SU'       , 'AOD_SU',
+                       'TOTEXTTAU'     , 'GOCART2G' , 'AOD'   ,
+                       ::

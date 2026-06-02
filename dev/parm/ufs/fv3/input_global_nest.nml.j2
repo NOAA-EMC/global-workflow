@@ -1,0 +1,36 @@
+{# dev/parm/ufs/fv3/input_global_nest.nml.j2 #}
+{# Replaces: input_global_nest.nml.IN #}
+{# Traces to: Requirement 5, Requirement 11 AC4 #}
+{# Renders FV3 model_configure format for global-nest configurations. #}
+{# Shell variables ${FHMAX}, ${PDY}, ${cyc} are preserved verbatim for runtime expansion. #}
+{% set fv3 = model.fv3 %}
+print_esmf:              .true.
+total_member:            1
+PE_MEMBER01:             {{ fv3.total_tasks }}
+start_year:              ${PDY:0:4}
+start_month:             ${PDY:4:2}
+start_day:               ${PDY:6:2}
+start_hour:              ${cyc}
+start_minute:            0
+start_second:            0
+nhours_fcst:             ${FHMAX}
+fhrot:                   {{ fv3.fhrot | default(0) }}
+dt_atmos:                {{ model.dt_atmos }}
+atm_coupling_interval_sec: {{ model.dt_atmos }}
+restart_interval:        {{ fv3.restart_interval }}
+quilting:                {{ fv3.quilting | fortran_logical }}
+quilting_restart:        {{ fv3.quilting_restart | default(fv3.quilting) | fortran_logical }}
+write_groups:            {{ fv3.write_group }}
+write_tasks_per_group:   {{ fv3.wrttask_per_group }}
+num_files:               {{ fv3.num_output_files | default(2) }}
+filename_base:           'atm' 'sfc'
+output_grid:             '{{ model.output_grid }}'
+output_file:             '{{ fv3.output_filetype_atm }}' '{{ fv3.output_filetype_sfc }}'
+imo:                     {{ fv3.imo }}
+jmo:                     {{ fv3.jmo }}
+output_fh:               {{ fv3.output_fh }}
+iau_offset:              {{ fv3.iau_offset | default(0) }}
+{% if fv3.do_nest %}
+NEST_IMO:                {{ fv3.npx_nest }}
+NEST_JMO:                {{ fv3.npy_nest }}
+{% endif %}

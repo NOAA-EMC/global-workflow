@@ -1,0 +1,76 @@
+# ecFlow CI Case: C96 GCAFS Cycled (noDA) — Forecast-Only Aerosol
+#
+# Validates GCAFS forecast-only without aerosol DA. Tests AERO_ANL_RUNS=""
+# variant: AERO_HISTORY rendering still required, but aerosol analysis tasks omitted.
+#
+# Replaces legacy: dev/ci/cases/gcafsv1/C96_gcafs_cycled_noDA.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirement 6.2; templated-model-configs GOCART
+
+case:
+  name: "C96_gcafs_cycled_noDA"
+  description: "GCAFS cycled without aerosol DA — minimal coupled config"
+  resolution: "C96"
+  app: "ATMA"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gcafs.yaml"
+  suite_name: "gcafs_v1"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gcafs"
+  resdetatmos: 96
+  idate: "2021122012"
+  edate: "2021122100"
+  nens: 0
+  interval: 12
+  start: "cold"
+  icsdir: "{{ BASE_IC }}/C96C48/20250808"
+
+base:
+  DO_TEST_MODE: "NO"
+  USE_AERO_ANL: "NO"
+  AERO_ANL_RUNS: ""
+
+model_context:
+  post:
+    system: "gcafs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/post/post_itag"
+      expect_contains: ["gcafs"]
+  no_aerosol_anal_tasks: true
+  no_legacy_tokens: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gcafs.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "verify_no_aero_anl_tasks"
+    description: "Verify aerosol analysis tasks omitted when USE_AERO_ANL=NO"
+    command: |
+      defs={{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA/ecf/defs/gcafs_v1.def
+      if grep -q "task aeroanl" "$defs"; then
+        echo "FATAL ERROR: Aerosol analysis tasks should be omitted"
+        exit 1
+      fi
+      echo "OK: Aerosol analysis tasks correctly omitted"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C96_gcafs_cycled_noDA"

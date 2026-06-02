@@ -21,7 +21,7 @@ The pipeline supports two primary testing modalities controlled by the `PIPELINE
   - Full system integration testing
 
 ### 2. CTests (`ctests`)
-- **Purpose**: Fast, focused testing of individual Rocoto jobs
+- **Purpose**: Fast, focused testing of individual workflow jobs
 - **Test Scope**: Unit-level tests with predefined input data
 - **Duration**: Shorter running tests (typically minutes to an hour)
 - **Use Cases**:

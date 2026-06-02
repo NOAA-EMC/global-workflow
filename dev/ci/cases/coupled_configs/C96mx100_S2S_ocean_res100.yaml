@@ -1,0 +1,149 @@
+# ecFlow CI Case: C96mx100 S2S — Ocean Resolution 100 (1-degree)
+#
+# Validates coupled-model config rendering for 1-degree ocean without wave coupling.
+# Exercises: MOM_input.j2 (100 branch), ice_in.j2 (warm start), no wave template.
+# Warm start, SFS post system.
+#
+# Traces to: coupled-model-configs Requirements 1.3, 3.3, 3.4, 6.1, 12.1
+
+case:
+  name: "C96mx100_S2S_ocean_res100"
+  description: "Coupled S2S with 1-degree ocean — validates warm start and no-wave config"
+  resolution: "C96"
+  app: "S2S"
+  mode: "forecast-only"
+
+workflow_config:
+  path: "dev/parm/workflow/sfs.yaml"
+  suite_name: "sfs_v1"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100"
+  version: "ci-{{ git_sha_short }}"
+
+model_context:
+  ocean:
+    resolution: "100"
+    dt_ocean: 3600
+    dt_therm: 7200
+    use_waves: false
+    oda_incupd: false
+    do_sppt: false
+    river_runoff: true
+    diag_coord_def_z_file: "oceanda_zgrid_75L.nc"
+    frunoff: "INPUT/runoff.daitren.clim.nc"
+    tasks: 60
+  ice:
+    nprocs: 48
+    decomposition: "slenderX2"
+    dt_ice: 3600
+    grid: "grid_cice_NEMS_mx100.nc"
+    mask: "kmtu_cice_NEMS_mx100.nc"
+    nx_glb: 360
+    ny_glb: 320
+    warm_start: true
+    histfreq_n: 1
+    hist_avg: true
+    dumpfreq: "d"
+    dumpfreq_n: 1
+    ktherm: 2
+    tr_pond_lvl: true
+  wave:
+    ice_input: "YES"
+    current_input: "YES"
+    output_params: "HS FP DP PHS PTP PDIR CHA"
+    dt_field_output: 10800
+    dt_point_output: 3600
+    grid_output_dir: "./"
+    point_output_dir: "./"
+    restart_output_dir: "./RESTART/"
+  post:
+    system: "sfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/ocean/MOM_input"
+      validator: "MOM6ParameterValidator"
+      expect_contains:
+        - "NIGLOBAL = 360"
+        - "NJGLOBAL = 320"
+        - "DT = 3600"
+        - "DT_THERM = 7200"
+        - "KHTH = 600.0"
+        - "SMAG_BI_CONST = 0.15"
+        - "USE_VARIABLE_MIXING = True"
+      expect_not_contains:
+        - "USE_WAVES = True"
+    - path: "parm/ufs/ice/ice_in"
+      validator: "NamelistValidator"
+      expect_contains:
+        - "runtype        = 'continue'"
+        - "use_restart_time = .true."
+        - "nx_global         = 360"
+        - "ny_global         = 320"
+  no_legacy_tokens: true
+  no_symlinks: true
+
+steps:
+  - name: "deploy"
+    description: "Deploy workflow with coupled-model config rendering (ocean res 100, warm start)"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/sfs.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100 \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "verify_ocean_config"
+    description: "Verify MOM_input rendered with correct 100-resolution parameters"
+    command: |
+      grep -q "NIGLOBAL = 360" \
+        {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/ocean/MOM_input
+      grep -q "NJGLOBAL = 320" \
+        {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/ocean/MOM_input
+      grep -q "KHTH = 600.0" \
+        {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/ocean/MOM_input
+      echo "OK: Ocean config verified for resolution 100"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_ice_warm_start"
+    description: "Verify ice_in rendered with warm start parameters"
+    command: |
+      grep -q "runtype        = 'continue'" \
+        {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/ice/ice_in
+      grep -q "use_restart_time = .true." \
+        {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/ice/ice_in
+      echo "OK: Ice warm start config verified"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_no_wave_in_ocean"
+    description: "Verify USE_WAVES not set when use_waves=false"
+    command: |
+      if grep -q "USE_WAVES = True" \
+        {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/ocean/MOM_input; then
+        echo "FATAL ERROR: USE_WAVES should not be set when use_waves=false"
+        exit 1
+      fi
+      echo "OK: USE_WAVES correctly absent"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_no_legacy_tokens"
+    description: "Verify no @[VAR] atparse tokens remain in rendered configs"
+    command: |
+      if grep -r '@\[' {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100/parm/ufs/; then
+        echo "FATAL ERROR: Legacy @[VAR] tokens found in rendered configs"
+        exit 1
+      fi
+      echo "OK: No legacy atparse tokens found"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C96mx100_S2S_ocean_res100"

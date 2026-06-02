@@ -26,18 +26,28 @@ if [[ -f "${CASEDIR}/config.base" ]]; then
     fi
 fi
 
-# Use custom Rocoto build with dryrun feature for testing
-# When GFS_CI_ROCOTO_PATH is unset, the system Rocoto will be used
+# Use ecFlow-based job submission for testing
+# The ecFlow suite definition provides the job card for each task
 
 source "${HOMEglobal}/ush/detect_machine.sh"
 source "${HOMEglobal}/dev/ci/platforms/config.${MACHINE_ID}"
 
-if [[ -x "${GFS_CI_ROCOTO_PATH}/rocotoboot" ]]; then
-    yes | "${GFS_CI_ROCOTO_PATH}/rocotoboot" --dryrun -d "${TEST_NAME}.db" -w "${TEST_NAME}.xml" -v 10 -c "${idate}00" -t "${JOB}" 2> jobcard || true
-    # Rocoto outputs the job card inside of {{}}.  Strip all other output to get just the job card.
-    sed -n '/^{{/,/^}}/p' < jobcard | sed '1d;$d'  > "${TEST_NAME}.sub" || true
+# Generate job submission script from ecFlow definition
+def_file="${CASEDIR}/ecf/defs/${TEST_NAME}.def"
+if [[ -f "${def_file}" ]]; then
+    # Extract job card from ecFlow definition for the specified task
+    ecflow_client --port "${ECF_PORT:-3141}" --load "${def_file}" 2>/dev/null || true
+    ecflow_client --port "${ECF_PORT:-3141}" --begin "${TEST_NAME}" 2>/dev/null || true
+    # Generate submission script from the ecf script
+    ecf_script="${CASEDIR}/ecf/scripts/${JOB}.ecf"
+    if [[ -f "${ecf_script}" ]]; then
+        cp "${ecf_script}" "${TEST_NAME}.sub"
+    else
+        echo "ERROR: ecFlow script not found at ${ecf_script}."
+        exit 1
+    fi
 else
-    echo "ERROR: Custom Rocoto build with dryrun feature not found at ${GFS_CI_ROCOTO_PATH}."
+    echo "ERROR: ecFlow definition file not found at ${def_file}."
     exit 1
 fi
 

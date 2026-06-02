@@ -1,0 +1,102 @@
+# ecFlow CI Case: C384mx025 — 3DVar Atmosphere-Ocean-Wave Coupled DA
+#
+# Validates 3DVar coupled DA at C384mx025 — pure 3DVar (no hybrid). Tests
+# SOCA marine 3DVar with quarter-degree ocean.
+#
+# Replaces legacy: dev/ci/cases/gfsv17/C384mx025_3DVarAOWCDA.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirements 1.2; templated-model-configs marine
+
+case:
+  name: "C384mx025_3DVarAOWCDA"
+  description: "C384mx025 3DVar coupled DA — pure 3DVar (no hybrid)"
+  resolution: "C384"
+  app: "S2S"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_cycled.yaml"
+  suite_name: "gfs_v17"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C384mx025_3DVarAOWCDA"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gfs"
+  resdetatmos: 384
+  resdetocean: 0.25
+  nens: 0
+  interval: 0
+  start: "warm"
+  idate: "2021063018"
+  edate: "2021070306"
+
+base:
+  DOIAU: "YES"
+  DO_JEDIOCNVAR: "YES"
+  DOHYBVAR: "NO"
+  FHMAX_GFS: 240
+  DO_TEST_MODE: "YES"
+
+model_context:
+  ocean:
+    resolution: "025"
+    dt_ocean: 900
+    dt_therm: 3600
+    use_waves: false
+    oda_incupd: true
+    oda_incupd_nhours: 6
+    do_sppt: false
+    river_runoff: true
+    diag_coord_def_z_file: "oceanda_zgrid_75L.nc"
+    frunoff: "INPUT/runoff.daitren.clim.nc"
+    tasks: 120
+  ice:
+    nprocs: 48
+    decomposition: "slenderX2"
+    dt_ice: 900
+    grid: "grid_cice_NEMS_mx025.nc"
+    mask: "kmtu_cice_NEMS_mx025.nc"
+    nx_glb: 1440
+    ny_glb: 1080
+    warm_start: true
+    histfreq_n: 1
+    hist_avg: true
+    dumpfreq: "d"
+    dumpfreq_n: 1
+    ktherm: 2
+    tr_pond_lvl: true
+  wave:
+    ice_input: "CPL"
+    current_input: "CPL"
+    output_params: "HS FP DP"
+    dt_field_output: 10800
+    dt_point_output: 3600
+    grid_output_dir: "./"
+    point_output_dir: "./"
+    restart_output_dir: "./RESTART/"
+  post:
+    system: "gfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/ocean/MOM_input"
+      validator: "MOM6ParameterValidator"
+      expect_contains: ["ODA_INCUPD = True"]
+  no_legacy_tokens: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C384mx025_3DVarAOWCDA \
+        --version ci-{{ git_sha_short }}
+    timeout: 240
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C384mx025_3DVarAOWCDA"

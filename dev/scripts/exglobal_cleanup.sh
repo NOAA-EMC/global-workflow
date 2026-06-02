@@ -93,7 +93,7 @@ for ((current_date = first_date; current_date <= last_date;  \
 current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2} +${assim_freq} hours"))); do
     current_PDY="${current_date:0:8}"
     current_cyc="${current_date:8:2}"
-    rocotolog="${EXPDIR}/logs/${current_date}.log"
+    cyclelog="${EXPDIR}/logs/${current_date}.log"
 
     # Build the exclude list based on the 'current_date'
     exclude_string=""
@@ -107,11 +107,11 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
         exclude_string+="${gempak_exclude_string}"
     fi
 
-    # Check if the cycle completed successfully by looking at the rocoto log
-    if [[ -f "${rocotolog}" ]]; then
-        # TODO: This needs to be revamped to not look at the rocoto log.
-        tail_log=$(tail -n 1 "${rocotolog}") || true
-        # Test if the last line of rocotolog indicates success
+    # Check if the cycle completed successfully by looking at the workflow log
+    if [[ -f "${cyclelog}" ]]; then
+        # TODO: This needs to be revamped to use ecFlow state.db for cycle status.
+        tail_log=$(tail -n 1 "${cyclelog}") || true
+        # Test if the last line of the cycle log indicates success
         if [[ ${tail_log} =~ "This cycle is complete: Success" ]]; then
             declare -x COMOUT_TOP=${ROTDIR}/${RUN}.${current_PDY}/${current_cyc}
             if [[ -d "${COMOUT_TOP}" ]]; then

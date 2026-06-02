@@ -1,0 +1,70 @@
+name: Goal Realization Gate
+# Single authoritative, OFFLINE goal-realization gate for the
+# immutable-dag-workflow-modernization parent goal (this spec: Req 7.6, 7.7,
+# 9.6, 10.6). It performs a fresh fixture-backed deploy, runs the full
+# dev/workflow test suite (proving parent Properties 1-14), runs the Token_Scan,
+# enforces EE2 offline against the committed EE2_Baseline_Recording, reconciles
+# the Traceability_Matrix, and emits the Verification_Report.
+#
+# OFFLINE GUARANTEE (Req 10.6): this workflow NEVER contacts the agentcore MCP
+# RAG server. EE2 authority comes solely from the committed baseline recording
+# consumed by the reconciled in-repo ee2_scanner.py. No RAG step exists here.
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  goal_realization_gate:
+    runs-on: ubuntu-22.04
+    name: Immutable-DAG goal realization gate (offline)
+
+    steps:
+    - name: Checkout global-workflow
+      uses: actions/checkout@v4
+      with:
+        path: global-workflow
+        submodules: false
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        # Match the authoritative full-suite runner (ci_unit_tests.yaml). The
+        # gate runs the same dev/workflow suite, so it must run on the same
+        # interpreter CI proves the suite against (Python 3.11+).
+        python-version: 3.11.8
+
+    - name: Install pinned dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Pinned wxflow==0.3.0 and uwtools==2.16.0 satisfy the Stage-1 version
+        # gate (Req 5); installing them makes importlib.metadata report the
+        # exact pinned versions the Deployment_Tool requires.
+        python -m pip install -r global-workflow/dev/workflow/requirements.txt
+        # Test-runner dependencies used by the full dev/workflow suite. These
+        # are intentionally NOT pinned in requirements.txt (they are not a
+        # deployment dependency), so install them explicitly here.
+        python -m pip install pytest hypothesis
+
+    - name: Run Goal_Realization_Gate (offline, no RAG)
+      working-directory: global-workflow/dev/workflow
+      run: |
+        # The gate exits 0 only when GateResult.realized is True; it exits 1
+        # when the goal is not realized and 2 on a GateError. A non-zero exit
+        # fails this step (and the job) naturally (Req 7.7).
+        python goal_realization_gate.py --report-dir "${GITHUB_WORKSPACE}/verification_report"
+
+    - name: Upload Verification_Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Verification_Report
+        path: |
+          verification_report/verification_report.xml
+          verification_report/verification_summary.json
+        if-no-files-found: warn

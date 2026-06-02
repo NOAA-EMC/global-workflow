@@ -1,0 +1,467 @@
+{# dev/parm/ufs/fv3/input.nml.j2 #}
+{# Comprehensive FV3 input.nml Jinja2 template #}
+{# Replaces: parsing_namelists_FV3.sh + global_control.nml.IN #}
+{# Traces to: Requirement 1 AC4, Requirement 5 AC3 #}
+
+{# --- Namespace defaults: ensure all sub-dicts exist even if not in context --- #}
+{% set physics = model.get('physics', {}) %}
+{% set radiation = model.get('radiation', {}) %}
+{% set stochastic = model.get('stochastic', {}) %}
+{% set land = model.get('land', {}) %}
+{% set ugwp = model.get('ugwp', {}) %}
+{% set surface_data = model.get('surface_data', {}) %}
+{% set iau = model.get('iau', {}) %}
+{% set fv3 = model.fv3 %}
+
+&amip_interp_nml
+  interp_oi_sst = .true.
+  use_ncep_sst  = .true.
+  use_ncep_ice  = .false.
+  no_anom_sst   = .false.
+  data_set      = 'reynolds_oi'
+/
+
+&atmos_model_nml
+  blocksize   = {{ fv3.blocksize | default(32) }}
+  chksum_debug = {{ fv3.chksum_debug | default(false) | fortran_logical }}
+  dycore_only = {{ fv3.dycore_only | default(false) | fortran_logical }}
+  ccpp_suite  = '{{ fv3.ccpp_suite | default("FV3_GFS_v17_p8") }}'
+/
+
+&diag_manager_nml
+  max_output_fields = {{ fv3.max_output_fields | default(300) }}
+  prepend_date = .true.
+/
+
+&fms_nml
+  domains_stack_size = {{ fv3.domains_stack_size | default(3000000) }}
+  print_memory_usage = {{ fv3.print_memory_usage | default(false) | fortran_logical }}
+/
+
+&fv_core_nml
+  layout   = {{ fv3.layout[0] }},{{ fv3.layout[1] }}
+  io_layout = {{ fv3.io_layout[0] }},{{ fv3.io_layout[1] }}
+  npx      = {{ fv3.npx }}
+  npy      = {{ fv3.npy }}
+  ntiles   = {{ fv3.ntiles | default(6) }}
+  npz      = {{ fv3.npz }}
+  npzp     = {{ fv3.npzp | default(fv3.npz + 1) }}
+  dz_min   = {{ fv3.dz_min | default(6) }}
+  psm_bc   = {{ fv3.psm_bc | default(0) }}
+  dt_atmos = {{ model.dt_atmos }}
+  k_split  = {{ fv3.k_split | default(1) }}
+  n_split  = {{ fv3.n_split | default(1) }}
+  nwat     = {{ fv3.nwat | default(2) }}
+  na_init  = {{ fv3.na_init | default(0) }}
+  dnats    = {{ fv3.dnats | default(0) }}
+  fv_sg_adj = {{ fv3.fv_sg_adj | default(450) }}
+  d_con    = {{ fv3.d_con | default(1.0) }}
+  hydrostatic = {{ (fv3.type | default('nh') != 'nh') | fortran_logical }}
+  phys_hydrostatic = {{ fv3.phys_hydrostatic | default(false) | fortran_logical }}
+  use_hydro_pressure = {{ fv3.use_hydro_pressure | default(false) | fortran_logical }}
+  pass_full_omega_to_physics_in_non_hydrostatic_mode = {{ fv3.pass_full_omega_to_physics | default(false) | fortran_logical }}
+  make_nh  = {{ (fv3.type | default('nh') == 'nh') | fortran_logical }}
+  fv_debug = {{ fv3.fv_debug | default(false) | fortran_logical }}
+  range_warn = {{ fv3.range_warn | default(true) | fortran_logical }}
+  n_sponge = {{ fv3.n_sponge | default(10) }}
+  nudge_qv = {{ fv3.nudge_qv | default(false) | fortran_logical }}
+  nudge_dz = {{ fv3.nudge_dz | default(false) | fortran_logical }}
+  tau      = {{ fv3.tau | default(10.0) }}
+  fast_tau_w_sec = {{ fv3.fast_tau_w_sec | default(0.2) }}
+  rf_cutoff = {{ fv3.rf_cutoff | default("7.5e2") }}
+  d2_bg_k1 = {{ fv3.d2_bg_k1 | default(0.15) }}
+  d2_bg_k2 = {{ fv3.d2_bg_k2 | default(0.02) }}
+  kord_tm  = {{ fv3.kord_tm | default(-9) }}
+  kord_mt  = {{ fv3.kord_mt | default(9) }}
+  kord_wz  = {{ fv3.kord_wz | default(9) }}
+  kord_tr  = {{ fv3.kord_tr | default(9) }}
+  hord_mt  = {{ fv3.hord_mt | default(5) }}
+  hord_vt  = {{ fv3.hord_vt | default(5) }}
+  hord_tm  = {{ fv3.hord_tm | default(5) }}
+  hord_dp  = {{ fv3.hord_dp | default(-5) }}
+  hord_tr  = {{ fv3.hord_tr | default(8) }}
+  nord     = {{ fv3.nord | default(3) }}
+  dddmp    = {{ fv3.dddmp | default(0.1) }}
+  d4_bg    = {{ fv3.d4_bg | default(0.15) }}
+  vtdm4    = {{ fv3.vtdm4 | default(0.06) }}
+  delt_max = {{ fv3.delt_max | default(0.002) }}
+  do_vort_damp = {{ fv3.do_vort_damp | default(true) | fortran_logical }}
+  external_ic = {{ fv3.external_ic | default(false) | fortran_logical }}
+  external_eta = {{ fv3.external_eta | default(true) | fortran_logical }}
+  gfs_phil = {{ fv3.gfs_phil | default(false) | fortran_logical }}
+  nggps_ic = {{ fv3.nggps_ic | default(false) | fortran_logical }}
+  mountain = {{ fv3.mountain | default(true) | fortran_logical }}
+  ncep_ic  = {{ fv3.ncep_ic | default(false) | fortran_logical }}
+  adjust_dry_mass = {{ fv3.adjust_dry_mass | default(true) | fortran_logical }}
+  dry_mass = {{ fv3.dry_mass | default(98320.0) }}
+  consv_te = {{ fv3.consv_te | default(1.0) }}
+  do_sat_adj = {{ fv3.do_sat_adj | default(false) | fortran_logical }}
+  print_freq = {{ fv3.print_freq | default(6) }}
+  warm_start = {{ fv3.warm_start | default(true) | fortran_logical }}
+  no_dycore = {{ fv3.no_dycore | default(false) | fortran_logical }}
+  agrid_vel_rst = {{ fv3.agrid_vel_rst | default(true) | fortran_logical }}
+  read_increment = {{ fv3.read_increment | default(false) | fortran_logical }}
+  res_latlon_dynamics = '{{ fv3.res_latlon_dynamics | default("") }}'
+  ignore_rst_cksum = .false.
+  increment_file_on_native_grid = {{ fv3.increment_file_on_native_grid | default(false) | fortran_logical }}
+  filtered_terrain = {{ fv3.filtered_terrain | default(true) | fortran_logical }}
+  gfs_dwinds = {{ fv3.gfs_dwinds | default(true) | fortran_logical }}
+/
+
+&fv_grid_nml
+/
+
+&external_ic_nml
+  filtered_terrain = {{ fv3.filtered_terrain | default(true) | fortran_logical }}
+  ncep_ic    = {{ fv3.ncep_ic | default(false) | fortran_logical }}
+  levp       = {{ fv3.npzp | default(fv3.npz + 1) }}
+  gfs_dwinds = {{ fv3.gfs_dwinds | default(true) | fortran_logical }}
+  checker_tr = .false.
+  nt_checker = 0
+/
+
+
+&gfs_physics_nml
+{# --- Timing --- #}
+  fhzero   = {{ physics.fhzero | default(6) }}
+  fhcyc    = {{ physics.fhcyc | default(0) }}
+{# --- Microphysics --- #}
+  imp_physics = {{ physics.imp_physics | default(11) }}
+  nwat     = {{ fv3.nwat | default(2) }}
+  dnats    = {{ fv3.dnats | default(0) }}
+  do_sat_adj = {{ fv3.do_sat_adj | default(false) | fortran_logical }}
+  lgfdlmprad = {{ physics.lgfdlmprad | default(false) | fortran_logical }}
+  effr_in  = {{ physics.effr_in | default(false) | fortran_logical }}
+  ltaerosol = {{ physics.ltaerosol | default(false) | fortran_logical }}
+  lradar   = {{ physics.lradar | default(true) | fortran_logical }}
+  ttendlim = {{ physics.ttendlim | default(-999) }}
+  dt_inner = {{ physics.dt_inner | default(model.dt_atmos // 2) }}
+  sedi_semi = {{ physics.sedi_semi | default(true) | fortran_logical }}
+  decfl    = {{ physics.decfl | default(10) }}
+  reiflag  = {{ physics.reiflag | default(2) }}
+{# --- Radiation --- #}
+  fhswr    = {{ radiation.fhswr | default(3600.0) }}
+  fhlwr    = {{ radiation.fhlwr | default(3600.0) }}
+  ialb     = {{ radiation.ialb | default(1) }}
+  iems     = {{ radiation.iems | default(1) }}
+  iaer     = {{ radiation.iaer | default(1011) }}
+  icliq_sw = {{ radiation.icliq_sw | default(2) }}
+  ico2     = {{ radiation.ico2 | default(2) }}
+  isubc_sw = {{ radiation.isubc_sw | default(2) }}
+  isubc_lw = {{ radiation.isubc_lw | default(2) }}
+  isol     = {{ radiation.isol | default(2) }}
+  lwhtr    = {{ radiation.lwhtr | default(true) | fortran_logical }}
+  swhtr    = {{ radiation.swhtr | default(true) | fortran_logical }}
+  iovr     = {{ radiation.iovr | default(3) }}
+  do_RRTMGP = {{ radiation.do_RRTMGP | default(false) | fortran_logical }}
+  active_gases = '{{ radiation.active_gases | default("h2o_co2_o3_n2o_ch4_o2") }}'
+  ngases   = {{ radiation.ngases | default(6) }}
+  lw_file_gas = '{{ radiation.lw_file_gas | default("rrtmgp-data-lw-g128-210809.nc") }}'
+  lw_file_clouds = '{{ radiation.lw_file_clouds | default("rrtmgp-cloud-optics-coeffs-lw.nc") }}'
+  sw_file_gas = '{{ radiation.sw_file_gas | default("rrtmgp-data-sw-g112-210809.nc") }}'
+  sw_file_clouds = '{{ radiation.sw_file_clouds | default("rrtmgp-cloud-optics-coeffs-sw.nc") }}'
+  rrtmgp_nGptsSW = {{ radiation.rrtmgp_nGptsSW | default(112) }}
+  rrtmgp_nGptsLW = {{ radiation.rrtmgp_nGptsLW | default(128) }}
+  rrtmgp_nBandsLW = {{ radiation.rrtmgp_nBandsLW | default(16) }}
+  rrtmgp_nBandsSW = {{ radiation.rrtmgp_nBandsSW | default(14) }}
+  doGP_cldoptics_LUT = {{ radiation.doGP_cldoptics_LUT | default(false) | fortran_logical }}
+  doGP_lwscat = {{ radiation.doGP_lwscat | default(false) | fortran_logical }}
+  doGP_sgs_cnv = .true.
+{# --- PBL --- #}
+  hybedmf  = {{ physics.hybedmf | default(false) | fortran_logical }}
+  satmedmf = {{ physics.satmedmf | default(true) | fortran_logical }}
+  isatmedmf = {{ physics.isatmedmf | default(1) }}
+  do_mynnedmf = {{ physics.do_mynnedmf | default(false) | fortran_logical }}
+  do_mynnsfclay = {{ physics.do_mynnsfclay | default(false) | fortran_logical }}
+  icloud_bl = {{ physics.icloud_bl | default(1) }}
+  bl_mynn_edmf = {{ physics.bl_mynn_edmf | default(1) }}
+  bl_mynn_tkeadvect = {{ physics.bl_mynn_tkeadvect | default(true) | fortran_logical }}
+  bl_mynn_edmf_mom = {{ physics.bl_mynn_edmf_mom | default(1) }}
+  lheatstrg = {{ physics.lheatstrg | default(false) | fortran_logical }}
+  lseaspray = {{ physics.lseaspray | default(true) | fortran_logical }}
+{# --- Convection --- #}
+  shal_cnv = {{ physics.shal_cnv | default(true) | fortran_logical }}
+  imfshalcnv = {{ physics.imfshalcnv | default(2) }}
+  imfdeepcnv = {{ physics.imfdeepcnv | default(2) }}
+  progsigma = {{ physics.progsigma | default(true) | fortran_logical }}
+  betascu  = {{ physics.betascu | default(8.0) }}
+  betamcu  = {{ physics.betamcu | default(1.0) }}
+  betadcu  = {{ physics.betadcu | default(2.0) }}
+  ras      = {{ physics.ras | default(false) | fortran_logical }}
+  cnvcld   = {{ physics.cnvcld | default(true) | fortran_logical }}
+  xr_cnvcld = {{ physics.xr_cnvcld | default(true) | fortran_logical }}
+  random_clds = {{ physics.random_clds | default(true) | fortran_logical }}
+  trans_trac = {{ physics.trans_trac | default(true) | fortran_logical }}
+  cnvgwd   = {{ physics.cnvgwd | default(true) | fortran_logical }}
+  cal_pre  = {{ physics.cal_pre | default(true) | fortran_logical }}
+{# --- Gravity Wave Drag --- #}
+  gwd_opt  = {{ ugwp.gwd_opt | default(2) }}
+  do_ugwp  = {{ ugwp.do_ugwp | default(false) | fortran_logical }}
+  do_tofd  = {{ ugwp.do_tofd | default(false) | fortran_logical }}
+  do_ugwp_v0 = {{ ugwp.do_ugwp_v0 | default(false) | fortran_logical }}
+  do_ugwp_v1 = {{ ugwp.do_ugwp_v1 | default(true) | fortran_logical }}
+  do_ugwp_v0_orog_only = {{ ugwp.do_ugwp_v0_orog_only | default(false) | fortran_logical }}
+  do_ugwp_v0_nst_only = {{ ugwp.do_ugwp_v0_nst_only | default(false) | fortran_logical }}
+  do_gsl_drag_ls_bl = {{ ugwp.do_gsl_drag_ls_bl | default(true) | fortran_logical }}
+  do_gsl_drag_ss = {{ ugwp.do_gsl_drag_ss | default(true) | fortran_logical }}
+  do_gsl_drag_tofd = {{ ugwp.do_gsl_drag_tofd | default(true) | fortran_logical }}
+  do_gwd_opt_psl = {{ ugwp.do_gwd_opt_psl | default(false) | fortran_logical }}
+  do_ugwp_v1_orog_only = {{ ugwp.do_ugwp_v1_orog_only | default(false) | fortran_logical }}
+  cdmbgwd  = {{ ugwp.cdmbgwd | default("3.5,0.25") }}
+  psl_gwd_dx_factor = {{ ugwp.psl_gwd_dx_factor | default(6.0) }}
+  prslrd0  = {{ ugwp.prslrd0 | default(0.0) }}
+{# --- Land/Surface --- #}
+  lsm      = {{ land.lsm | default(2) }}
+  lsoil    = {{ land.lsoil | default(4) }}
+  lsoil_lsm = {{ land.lsoil_lsm | default(4) }}
+  ivegsrc  = {{ land.ivegsrc | default(1) }}
+  isot     = {{ land.isot | default(1) }}
+  iopt_dveg = {{ land.iopt_dveg | default(1) }}
+  iopt_crs = {{ land.iopt_crs | default(1) }}
+  iopt_btr = {{ land.iopt_btr | default(1) }}
+  iopt_run = {{ land.iopt_run | default(1) }}
+  iopt_sfc = {{ land.iopt_sfc | default(1) }}
+  iopt_trs = {{ land.iopt_trs | default(2) }}
+  iopt_diag = {{ land.iopt_diag | default(2) }}
+  iopt_frz = {{ land.iopt_frz | default(1) }}
+  iopt_inf = {{ land.iopt_inf | default(1) }}
+  iopt_rad = {{ land.iopt_rad | default(1) }}
+  iopt_alb = {{ land.iopt_alb | default(2) }}
+  iopt_snf = {{ land.iopt_snf | default(4) }}
+  iopt_tbot = {{ land.iopt_tbot | default(2) }}
+  iopt_stc = {{ land.iopt_stc | default(1) }}
+  min_lakeice = {{ land.min_lakeice | default(0.15) }}
+  min_seaice = {{ land.min_seaice | default(0.15) }}
+  use_cice_alb = {{ land.use_cice_alb | default(false) | fortran_logical }}
+  frac_grid = {{ physics.frac_grid | default(true) | fortran_logical }}
+  landice  = {{ land.landice | default(true) | fortran_logical }}
+{# --- Ozone --- #}
+  h2o_phys = {{ physics.h2o_phys | default(true) | fortran_logical }}
+  oz_phys  = {{ physics.oz_phys | default(false) | fortran_logical }}
+  oz_phys_2015 = {{ physics.oz_phys_2015 | default(true) | fortran_logical }}
+{# --- Diagnostics --- #}
+  ldiag3d  = {{ physics.ldiag3d | default(false) | fortran_logical }}
+  qdiag3d  = {{ physics.qdiag3d | default(false) | fortran_logical }}
+  print_diff_pgr = {{ physics.print_diff_pgr | default(false) | fortran_logical }}
+  ldiag_ugwp = {{ physics.ldiag_ugwp | default(false) | fortran_logical }}
+  debug    = {{ physics.debug | default(false) | fortran_logical }}
+{# --- Coupling --- #}
+  cplflx   = {{ physics.cplflx | default(false) | fortran_logical }}
+  cplice   = {{ physics.cplice | default(false) | fortran_logical }}
+  cplwav   = {{ physics.cplwav | default(false) | fortran_logical }}
+  cplwav2atm = {{ physics.cplwav2atm | default(false) | fortran_logical }}
+  cplchm   = {{ physics.cplchm | default(false) | fortran_logical }}
+  cpllnd   = {{ physics.cpllnd | default(false) | fortran_logical }}
+  cpllnd2atm = {{ physics.cpllnd2atm | default(false) | fortran_logical }}
+  use_med_flux = {{ physics.use_med_flux | default(false) | fortran_logical }}
+  use_oceanuv = {{ physics.use_oceanuv | default(false) | fortran_logical }}
+{# --- Stochastic flags --- #}
+  do_sppt  = {{ stochastic.do_sppt | default(false) | fortran_logical }}
+  do_shum  = {{ stochastic.do_shum | default(false) | fortran_logical }}
+  do_skeb  = {{ stochastic.do_skeb | default(false) | fortran_logical }}
+  pert_mp  = {{ stochastic.pert_mp | default(false) | fortran_logical }}
+  pert_radtend = {{ stochastic.pert_radtend | default(false) | fortran_logical }}
+  pert_clds = {{ stochastic.pert_clds | default(false) | fortran_logical }}
+{# --- Other physics --- #}
+  use_ufo  = {{ physics.use_ufo | default(true) | fortran_logical }}
+  pre_rad  = {{ physics.pre_rad | default(false) | fortran_logical }}
+  pdfcld   = {{ physics.pdfcld | default(false) | fortran_logical }}
+  redrag   = {{ physics.redrag | default(true) | fortran_logical }}
+  dspheat  = {{ physics.dspheat | default(true) | fortran_logical }}
+  nstf_name = {{ physics.nstf_name | default("2,0,0,0,0") }}
+  nst_anl  = {{ physics.nst_anl | default(true) | fortran_logical }}
+  psautco  = {{ physics.psautco | default("0.0008,0.0005") }}
+  prautco  = {{ physics.prautco | default("0.00015,0.00015") }}
+  fscav_aero = {{ physics.fscav_aero | default('"*:0.3","so2:0.0","msa:0.0","dms:0.0","nh3:0.4","nh4:0.6","bc1:0.6","bc2:0.6","oc1:0.4","oc2:0.4","dust1:0.6","dust2:0.6","dust3:0.6","dust4:0.6","dust5:0.6","seas1:0.5","seas2:0.5","seas3:0.5","seas4:0.5","seas5:0.5"') }}
+{# --- Cellular Automata --- #}
+  do_ca    = .true.
+  ca_global = {{ physics.ca_global | default(false) | fortran_logical }}
+  ca_sgs   = {{ physics.ca_sgs | default(true) | fortran_logical }}
+  nca      = {{ physics.nca | default(1) }}
+  ncells   = {{ physics.ncells | default(5) }}
+  nlives   = {{ physics.nlives | default(12) }}
+  nseed    = {{ physics.nseed | default(1) }}
+  nfracseed = {{ physics.nfracseed | default(0.5) }}
+  nthresh  = {{ physics.nthresh | default(18) }}
+  ca_trigger = {{ physics.ca_trigger | default(true) | fortran_logical }}
+  nspinup  = {{ physics.nspinup | default(1) }}
+  iseed_ca = {{ physics.iseed_ca | default(12345) }}
+{# --- Land perturbation --- #}
+  lndp_type = {{ land.lndp_type | default(2) }}
+  n_var_lndp = {{ land.n_var_lndp | default(0) }}
+/
+
+
+&gfdl_cloud_microphysics_nml
+  reiflag  = {{ physics.reiflag | default(2) }}
+/
+
+&interpolator_nml
+/
+
+&namsfc
+  fnglac   = '{{ surface_data.fnglac | default("") }}'
+  fnmxic   = '{{ surface_data.fnmxic | default("") }}'
+  fntsfc   = '{{ surface_data.fntsfc | default("") }}'
+  fnsnoc   = '{{ surface_data.fnsnoc | default("") }}'
+  fnzorc   = '{{ surface_data.fnzorc | default("") }}'
+  fnalbc   = '{{ surface_data.fnalbc | default("") }}'
+  fnalbc2  = '{{ surface_data.fnalbc2 | default("") }}'
+  fnaisc   = '{{ surface_data.fnaisc | default("") }}'
+  fntg3c   = '{{ surface_data.fntg3c | default("") }}'
+  fnvegc   = '{{ surface_data.fnvegc | default("") }}'
+  fnvetc   = '{{ surface_data.fnvetc | default("") }}'
+  fnsotc   = '{{ surface_data.fnsotc | default("") }}'
+  fnsocc   = '{{ surface_data.fnsocc | default("") }}'
+  fnsmcc   = '{{ surface_data.fnsmcc | default("") }}'
+  fnmskh   = '{{ surface_data.fnmskh | default("") }}'
+  fntsfa   = '{{ surface_data.fntsfa | default("") }}'
+  fnacna   = '{{ surface_data.fnacna | default("") }}'
+  fnsnoa   = '{{ surface_data.fnsnoa | default("") }}'
+  fnvmnc   = '{{ surface_data.fnvmnc | default("") }}'
+  fnvmxc   = '{{ surface_data.fnvmxc | default("") }}'
+  fnslpc   = '{{ surface_data.fnslpc | default("") }}'
+  fnabsc   = '{{ surface_data.fnabsc | default("") }}'
+  ldebug   = {{ surface_data.ldebug | default(false) | fortran_logical }}
+  fsmcl(2) = {{ surface_data.fsmcl2 | default(99999) }}
+  fsmcl(3) = {{ surface_data.fsmcl3 | default(99999) }}
+  fsmcl(4) = {{ surface_data.fsmcl4 | default(99999) }}
+  landice  = {{ land.landice | default(true) | fortran_logical }}
+  ftsfs    = {{ surface_data.ftsfs | default(90) }}
+  faisl    = {{ surface_data.faisl | default(99999) }}
+  faiss    = {{ surface_data.faiss | default(99999) }}
+  fsnol    = {{ surface_data.fsnol | default(99999) }}
+  fsnos    = {{ surface_data.fsnos | default(99999) }}
+  fsicl    = {{ surface_data.fsicl | default(99999) }}
+  fsics    = {{ surface_data.fsics | default(99999) }}
+  ftsfl    = {{ surface_data.ftsfl | default(99999) }}
+  fvetl    = {{ surface_data.fvetl | default(99999) }}
+  fsotl    = {{ surface_data.fsotl | default(99999) }}
+  fvmnl    = {{ surface_data.fvmnl | default(99999) }}
+  fvmxl    = {{ surface_data.fvmxl | default(99999) }}
+  fslpl    = {{ surface_data.fslpl | default(99999) }}
+  fabsl    = {{ surface_data.fabsl | default(99999) }}
+/
+
+&nam_stochy
+  new_lscale = {{ stochastic.new_lscale | default(false) | fortran_logical }}
+  stochini = {{ stochastic.stochini | default(false) | fortran_logical }}
+  sppt     = {{ stochastic.sppt | default("-999.") }}
+  iseed_sppt = {{ stochastic.iseed_sppt | default(0) }}
+  sppt_tau = {{ stochastic.sppt_tau | default("-999.") }}
+  sppt_lscale = {{ stochastic.sppt_lscale | default("-999.") }}
+  sppt_logit = {{ stochastic.sppt_logit | default(true) | fortran_logical }}
+  sppt_sfclimit = {{ stochastic.sppt_sfclimit | default(true) | fortran_logical }}
+  spptint  = {{ stochastic.spptint | default(0) }}
+  use_zmtnblck = {{ stochastic.use_zmtnblck | default(true) | fortran_logical }}
+  shum     = {{ stochastic.shum | default("-999.") }}
+  iseed_shum = {{ stochastic.iseed_shum | default(0) }}
+  shum_tau = {{ stochastic.shum_tau | default("-999.") }}
+  shum_lscale = {{ stochastic.shum_lscale | default("-999.") }}
+  shumint  = {{ stochastic.shumint | default(0) }}
+  skeb     = {{ stochastic.skeb | default(0) }}
+  iseed_skeb = {{ stochastic.iseed_skeb | default(0) }}
+  skeb_tau = {{ stochastic.skeb_tau | default("-999.") }}
+  skeb_lscale = {{ stochastic.skeb_lscale | default("-999.") }}
+  skebnorm = {{ stochastic.skebnorm | default(1) }}
+  skeb_npass = {{ stochastic.skeb_npass | default(30) }}
+  skeb_vdof = {{ stochastic.skeb_vdof | default(5) }}
+  skebint  = {{ stochastic.skebint | default(0) }}
+  pbl_taper = {{ stochastic.pbl_taper | default("0,0,0,0.125,0.25,0.5,0.75") }}
+  ocnsppt  = {{ stochastic.ocnsppt | default("0.8,0.4,0.2,0.08,0.04") }}
+  ocnsppt_lscale = {{ stochastic.ocnsppt_lscale | default("500.E3,1000.E3,2000.E3,2000.E3,2000.E3") }}
+  ocnsppt_tau = {{ stochastic.ocnsppt_tau | default("2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7") }}
+  iseed_ocnsppt = {{ stochastic.iseed_ocnsppt | default(0) }}
+  epbl     = {{ stochastic.epbl | default("0.8,0.4,0.2,0.08,0.04") }}
+  epbl_lscale = {{ stochastic.epbl_lscale | default("500.E3,1000.E3,2000.E3,2000.E3,2000.E3") }}
+  epbl_tau = {{ stochastic.epbl_tau | default("2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7") }}
+  iseed_epbl = {{ stochastic.iseed_epbl | default(0) }}
+  lndp_type = {{ stochastic.lndp_type | default(0) }}
+/
+
+&nam_sfcperts
+  lndp_type = {{ stochastic.lndp_type | default(0) }}
+  lndp_model_type = {{ stochastic.lndp_model_type | default(0) }}
+  lndp_tau = {{ stochastic.lndp_tau | default(21600) }}
+  lndp_lscale = {{ stochastic.lndp_lscale | default(500000) }}
+  iseed_lndp = {{ stochastic.iseed_lndp | default(0) }}
+  lndp_var_list = {{ stochastic.lndp_var_list | default("'XXX'") }}
+  lndp_prt_list = {{ stochastic.lndp_prt_list | default("-999") }}
+/
+
+{% if ugwp.knob_ugwp_version | default(1) == 0 %}
+&cires_ugwp_nml
+  knob_ugwp_solver  = {{ ugwp.knob_ugwp_solver | default(2) }}
+  knob_ugwp_source  = {{ ugwp.knob_ugwp_source | default("1,1,0,0") }}
+  knob_ugwp_wvspec  = {{ ugwp.knob_ugwp_wvspec | default("1,25,25,25") }}
+  knob_ugwp_azdir   = {{ ugwp.knob_ugwp_azdir | default("2,4,4,4") }}
+  knob_ugwp_stoch   = {{ ugwp.knob_ugwp_stoch | default("0,0,0,0") }}
+  knob_ugwp_effac   = {{ ugwp.knob_ugwp_effac | default("1,1,1,1") }}
+  knob_ugwp_doaxyz  = {{ ugwp.knob_ugwp_doaxyz | default(1) }}
+  knob_ugwp_doheat  = {{ ugwp.knob_ugwp_doheat | default(1) }}
+  knob_ugwp_dokdis  = {{ ugwp.knob_ugwp_dokdis | default(1) }}
+  knob_ugwp_ndx4lh  = {{ ugwp.knob_ugwp_ndx4lh | default(1) }}
+  knob_ugwp_version = {{ ugwp.knob_ugwp_version | default(0) }}
+  launch_level      = {{ ugwp.launch_level | default(54) }}
+/
+{% endif %}
+
+{% if ugwp.knob_ugwp_version | default(1) == 1 %}
+&cires_ugwp1_nml
+  knob_ugwp_solver  = {{ ugwp.knob_ugwp_solver | default(2) }}
+  knob_ugwp_source  = {{ ugwp.knob_ugwp_source | default("1,1,0,0") }}
+  knob_ugwp_wvspec  = {{ ugwp.knob_ugwp_wvspec | default("1,25,25,25") }}
+  knob_ugwp_azdir   = {{ ugwp.knob_ugwp_azdir | default("2,4,4,4") }}
+  knob_ugwp_stoch   = {{ ugwp.knob_ugwp_stoch | default("0,0,0,0") }}
+  knob_ugwp_effac   = {{ ugwp.knob_ugwp_effac | default("1,1,1,1") }}
+  knob_ugwp_doaxyz  = {{ ugwp.knob_ugwp_doaxyz | default(1) }}
+  knob_ugwp_doheat  = {{ ugwp.knob_ugwp_doheat | default(1) }}
+  knob_ugwp_dokdis  = {{ ugwp.knob_ugwp_dokdis | default(2) }}
+  knob_ugwp_ndx4lh  = {{ ugwp.knob_ugwp_ndx4lh | default(4) }}
+  knob_ugwp_version = {{ ugwp.knob_ugwp_version | default(1) }}
+  knob_ugwp_palaunch = {{ ugwp.knob_ugwp_palaunch | default("275.0e2") }}
+  knob_ugwp_nslope  = {{ ugwp.knob_ugwp_nslope | default(1) }}
+  knob_ugwp_lzmax   = {{ ugwp.knob_ugwp_lzmax | default("15.750e3") }}
+  knob_ugwp_lzmin   = {{ ugwp.knob_ugwp_lzmin | default("0.75e3") }}
+  knob_ugwp_lzstar  = {{ ugwp.knob_ugwp_lzstar | default("2.0e3") }}
+  knob_ugwp_taumin  = {{ ugwp.knob_ugwp_taumin | default("0.25e-3") }}
+  knob_ugwp_tauamp  = {{ ugwp.knob_ugwp_tauamp | default("3.0e-3") }}
+  knob_ugwp_lhmet   = {{ ugwp.knob_ugwp_lhmet | default("200.0e3") }}
+  knob_ugwp_orosolv = '{{ ugwp.knob_ugwp_orosolv | default("pss-1986") }}'
+/
+{% endif %}
+
+{% if physics.cplflx | default(false) %}
+&MOM6_output_nml
+  n_checksum_fields = 0
+  use_calendar = .true.
+  write_time_axis = .true.
+  output_directory = '{{ fv3.mom6_output_dir | default("MOM6_OUTPUT/") }}'
+/
+{% endif %}
+
+{% if iau.do_iau | default(false) %}
+&iau_nml
+  iau_fhrs   = {{ iau.iau_fhrs }}
+  iau_delthrs = {{ iau.iau_delthrs }}
+  iau_inc_files = {{ iau.iau_inc_files | default("''") }}
+  iau_drymassfixer = .false.
+  iau_filter_increments = {{ iau.iau_filter_increments | default(false) | fortran_logical }}
+/
+{% endif %}
+
+{% if iau.do_land_iau | default(false) %}
+&land_iau_nml
+  do_land_iau = .true.
+  land_iau_fhrs = {{ iau.land_iau_fhrs }}
+  land_iau_delthrs = {{ iau.land_iau_delthrs }}
+  land_iau_inc_files = {{ iau.land_iau_inc_files | default("'sfc_inc',''") }}
+  lsoil_incr = {{ iau.lsoil_incr | default(2) }}
+  land_iau_filter_inc = {{ iau.land_iau_filter_inc | default(false) | fortran_logical }}
+  land_iau_upd_stc = {{ iau.land_iau_upd_stc | default(true) | fortran_logical }}
+  land_iau_upd_slc = {{ iau.land_iau_upd_slc | default(true) | fortran_logical }}
+  land_iau_do_stcsmc_adj = {{ iau.land_iau_do_stcsmc_adj | default(true) | fortran_logical }}
+  land_iau_min_t_inc = {{ iau.land_iau_min_t_inc | default(0.0001) }}
+  land_iau_min_slc_inc = {{ iau.land_iau_min_slc_inc | default(0.000001) }}
+/
+{% endif %}

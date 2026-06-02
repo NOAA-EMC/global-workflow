@@ -1,0 +1,74 @@
+# ecFlow CI Smoke Test Case: C48 ATM GFS Forecast-Only
+#
+# This case validates the ecFlow deployment pipeline for a minimal
+# forecast-only configuration. It replaces the legacy Rocoto CI case
+# with an ecFlow-native deployment + ecflow_client smoke test.
+#
+# Traces to: Requirement 14.5 (replace Rocoto CI cases with ecFlow equivalents)
+#            Requirement 1.1 (ecFlow-only orchestration)
+#
+# Workflow: deploy → load def → verify task count matches config
+
+case:
+  name: "C48_ATM_gfs_fcst_only"
+  description: "Minimal GFS forecast-only ecFlow deployment and smoke test"
+  resolution: "C48"
+  app: "ATM"
+  mode: "forecast-only"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_forecast_only.yaml"
+  suite_name: "gfs_v17_fcst_only"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C48_ATM_gfs_fcst_only"
+  version: "ci-{{ git_sha_short }}"
+
+validation:
+  # Expected task count after for_each expansion:
+  #   stage_ic(1) + fcst(1) + post_f{000,006,012,024,048,072,120}(7) + arch(1) = 10
+  expected_task_count: 10
+  expected_families:
+    - "gfs/atmos/stage"
+    - "gfs/atmos/forecast"
+    - "gfs/atmos/post"
+    - "gfs/atmos/archive"
+
+steps:
+  - name: "deploy"
+    description: "Run deploy_workflow with forecast-only config for CONTAINER platform"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C48_ATM_gfs_fcst_only \
+        --version ci-{{ git_sha_short }}
+    timeout: 120
+    expect_success: true
+
+  - name: "load_def"
+    description: "Start ecflow_server and load the generated suite definition"
+    command: |
+      ecflow_client --port {{ ecflow_port }} --load \
+        {{ RUNTESTS }}/EXPDIR/C48_ATM_gfs_fcst_only/ecf/defs/gfs_v17_fcst_only.def
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_task_count"
+    description: "Verify the loaded suite has exactly 10 tasks (matching config)"
+    command: |
+      task_count=$(ecflow_client --port {{ ecflow_port }} \
+        --get /gfs_v17_fcst_only 2>/dev/null | grep "task " | wc -l)
+      if [ "${task_count}" -ne 10 ]; then
+        echo "FATAL ERROR: Expected 10 tasks, found ${task_count}"
+        exit 1
+      fi
+      echo "OK: Task count verified (${task_count} tasks)"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "ecflow_client --port {{ ecflow_port }} --delete /gfs_v17_fcst_only yes"
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C48_ATM_gfs_fcst_only"

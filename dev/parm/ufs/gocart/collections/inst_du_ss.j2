@@ -1,0 +1,20 @@
+{# dev/parm/ufs/gocart/collections/inst_du_ss.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_du_ss (Dust and Sea Salt concentrations). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# 3d aerosols - Dust and Sea Salt
+#
+  inst_du_ss.format:      'CFIO' ,
+  inst_du_ss.descr:       '3d,Hourly,Instantaneous,Model-Level,Aerosol Concentrations',
+  inst_du_ss.template:    '%y4%m2%d2_%h2%n2z.nc4',
+  inst_du_ss.mode:        'instantaneous',
+  inst_du_ss.grid_label:  {{ model.aerosol.grid_label }} ,
+  inst_du_ss.splitField:  1,
+  inst_du_ss.frequency:   {{ model.aerosol.frequencies.inst_du_ss | default('010000') }} ,
+  inst_du_ss.duration:    010000 ,
+  inst_du_ss.ref_time:    000000 ,
+  inst_du_ss.nbits:       10,
+  inst_du_ss.fields:      'DU' , 'DU' ,
+                          'SS' , 'SS' ,
+                          ::

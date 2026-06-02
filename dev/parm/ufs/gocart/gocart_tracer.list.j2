@@ -1,0 +1,44 @@
+{# dev/parm/ufs/gocart/gocart_tracer.list.j2 #}
+{# Tracer list generated from active species configuration #}
+{# Namespace: model.aerosol.species #}
+{%- set species = model.aerosol.species | default({}) %}
+{%- set dust_enabled = species.dust | default(true) %}
+{%- set seasalt_enabled = species.seasalt | default(true) %}
+{%- set sulfate_enabled = species.sulfate | default(true) %}
+{%- set carbon_enabled = species.carbon | default(true) %}
+{%- set nitrate_enabled = species.nitrate | default(false) %}
+{% if sulfate_enabled -%}
+so2
+so4
+dms
+msa
+{% endif -%}
+{% if carbon_enabled -%}
+bc1
+bc2
+oc1
+oc2
+{% endif -%}
+{% if dust_enabled -%}
+dust1
+dust2
+dust3
+dust4
+dust5
+{% endif -%}
+{% if seasalt_enabled -%}
+seas1
+seas2
+seas3
+seas4
+seas5
+{% endif -%}
+{% if nitrate_enabled -%}
+nh3
+nh4a
+no3an1
+no3an2
+no3an3
+{% endif -%}
+pm25
+pm10

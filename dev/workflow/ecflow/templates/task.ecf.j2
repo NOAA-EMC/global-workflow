@@ -1,0 +1,52 @@
+%include <head.h>
+%include <envsetup.h>
+# ============================================================
+# ecFlow Task Script
+# ============================================================
+# Task: {{ task.name }}
+# Family: {{ task.family_path }}
+# JJob: {{ task.jjob }}
+# ============================================================
+# Generated from: dev/workflow/ecflow/templates/task.ecf.j2
+# Traces to: Requirements 1.2, 6.1, 6.2
+#
+# This template renders a per-task .ecf script that delegates
+# execution to the Universal_Wrapper, which in turn invokes
+# the specified JJob.
+# ============================================================
+
+# --- Lifecycle logging: task start ---
+if command -v log_task_event.py &>/dev/null; then
+    log_task_event.py \
+        --task "{{ task.name }}" \
+        --cycle "${PDY:-}${cyc:-}" \
+        --jobid "${jobid}" \
+        --attempt "${ECF_TASK_TRYNO:-1}" \
+        --state "start" \
+        --exit-status 0 \
+        --duration 0 \
+        || true
+fi
+
+# --- Execute JJob via Universal_Wrapper ---
+${EXPDIR}/ush/universal_wrapper.sh {{ task.jjob }}
+export err=$?
+
+# --- Error handling (EE2: err_chk pattern) ---
+if [[ ${err} -ne 0 ]]; then
+    if command -v log_task_event.py &>/dev/null; then
+        log_task_event.py \
+            --task "{{ task.name }}" \
+            --cycle "${PDY:-}${cyc:-}" \
+            --jobid "${jobid}" \
+            --attempt "${ECF_TASK_TRYNO:-1}" \
+            --state "failed" \
+            --exit-status "${err}" \
+            --duration "$(( $(date +%s) - ${ECF_TASK_START_TIME:-0} ))" \
+            || true
+    fi
+    ecflow_client --abort="JJob {{ task.jjob }} failed with exit code ${err}"
+    exit "${err}"
+fi
+
+%include <tail.h>

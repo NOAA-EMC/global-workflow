@@ -1,0 +1,31 @@
+{# dev/parm/ufs/wave/ww3_shel.nml.j2 #}
+{# Replaces: ww3_shel.nml.IN + ush/parsing_namelists_WW3.sh #}
+{# Traces to: Requirement 4, Requirement 11 AC3 #}
+{% set wave = model.wave %}
+
+&FORCING
+  IC1      = 'F'
+  IC5      = 'F'
+  WLEV     = 'F'
+  ICE_CONC = {% if wave.ice_input == "CPL" %}'C'{% elif wave.ice_input == "YES" %}'T'{% endif %}
+
+  CURRENTS = {% if wave.current_input == "CPL" %}'C'{% elif wave.current_input == "YES" %}'T'{% endif %}
+
+/
+
+&OUTPUT
+  OUTPARS  = '{{ wave.output_params }}'
+  DTFLD    = {{ wave.dt_field_output }}
+  DTPNT    = {{ wave.dt_point_output }}
+  FHMAX    = ${FHMAX_WAV}
+/
+
+&OUTPUT_DIRS
+  GRD_OUTDIR = '{{ wave.grid_output_dir }}'
+  PNT_OUTDIR = '{{ wave.point_output_dir }}'
+  RST_OUTDIR = '{{ wave.restart_output_dir }}'
+/
+
+&TIMESTEPS
+  DT_RST   = {{ wave.dt_restart | default(21600) }}
+/

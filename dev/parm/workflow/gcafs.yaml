@@ -1,0 +1,355 @@
+# Workflow_Configuration for GCAFS Cycled (GCDAS + GCAFS) with Aerosol DA
+# Schema: suite, defaults, cycles, families, tasks, inter_cycle_dependencies
+# This configuration defines the GCAFS cycled workflow as an ecFlow DAG.
+#
+# GCAFS (Global Chemistry and Aerosol Forecast System) extends GFS with
+# interactive aerosol and atmospheric chemistry capabilities.
+#
+# Cycled mode:
+#   - GCDAS cycle: offline atm analysis (from GDAS) + aerosol DA + short forecast
+#   - GCAFS cycle: aerosol-aware extended forecast + post-processing + archiving
+#
+# Traces to: coupled-model-configs Requirement 6.2, GCAFS documentation §12.4
+
+# Experiment-level context variables (normally provided by setup_expt.py)
+# These are deploy-time variables resolved into config templates.
+HOMEglobal: "/tmp/EXPDIR/gcafs_cycled_da_test"
+ACCOUNT: "nems"
+QUEUE: "batch"
+QUEUE_SERVICE: "service"
+QUEUE_EXCLUSIVE: "batch"
+QUEUE_DTN: "service"
+PARTITION_BATCH: "hera"
+PARTITION_SERVICE: "service"
+PARTITION_EXCLUSIVE: ""
+PARTITION_DTN: ""
+RESERVATION: ""
+CLUSTERS: ""
+CLUSTERS_SERVICE: ""
+CLUSTERS_EXCLUSIVE: ""
+CLUSTERS_DTN: ""
+PSLOT: "gcafs_cycled_da"
+SDATE: "2021122012"
+EDATE: "2021122100"
+idate: "2021122012"
+edate: "2021122100"
+EXP_WARM_START: ".false."
+assim_freq: 6
+APP: "ATMA"
+CASE_CTL: "C96"
+CASE_ENS: "C96"
+CASE_HIST: ""
+OCNRES: "500"
+LEVS: 128
+NMEM_ENS: 0
+NMEM_ENS_GFS: 0
+NMEM_ENS_GFS_OFFSET: 0
+FHMAX: 120
+FHMAX_GFS: 120
+FHMAX_HF_GFS: 0
+FHOUT_AERO: 3
+INTERVAL_GFS: 12
+SDATE_GFS: "2021122012"
+FCST_BREAKPOINTS: ""
+FHMAX_ENKF_GFS: 0
+EUPD_CYC: "gdas"
+DO_GOES: "NO"
+DO_BUFRSND: "NO"
+DO_GEMPAK: "NO"
+DO_AWIPS: "NO"
+DO_NPOESS: "NO"
+DO_TRACKER: "NO"
+DO_GENESIS: "NO"
+DO_GENESIS_FSU: "NO"
+DO_METP: "NO"
+DO_TEST_MODE: "NO"
+DO_JEDIATMVAR: "NO"
+DO_JEDIATMENS: "NO"
+DO_JEDIATMENS_SPLIT_OBSSOL: "NO"
+DO_JEDIAEROVAR: "YES"
+DO_JEDIOCNVAR: "NO"
+DO_JEDISNOWDA: "NO"
+DO_MERGENSST: "NO"
+DO_GSISOILDA: "NO"
+DO_LAND_IAU: ".false."
+DOHYBVAR: "NO"
+DOHYBVAR_OCN: "NO"
+DOLETKF_OCN: "NO"
+DOIAU: "NO"
+USE_AERO_ANL: "YES"
+AERO_ANL_RUNS: "gcdas"
+USE_IODADIR: "YES"
+DO_ARCHCOM: "YES"
+ARCHCOM_TO: "hpss"
+CLIENT_GLOBUS_UUID: ""
+FETCHDIR: ""
+CHECK_LAND_RESTART_OROG: ".true."
+
+# Additional template variables for config rendering
+PROCESS_TROPCY: "NO"
+CONVERT_BIASCOR: "NO"
+COPY_BIASCOR_SOURCE: ""
+COPY_BIASCOR_STATIC: ""
+SOURCE_BIASCOR: ""
+ICSDIR: "/scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C96C48/20250808"
+IO_LAYOUT_X: 1
+IO_LAYOUT_Y: 1
+LAYOUT_X_ATMANL: 6
+LAYOUT_Y_ATMANL: 6
+LAYOUT_X_ATMENSANL: 6
+LAYOUT_Y_ATMENSANL: 6
+NUMBER_OUTER_LOOPS: 2
+NINNER_LOOP1: 30
+NINNER_LOOP2: 30
+STATICB_TYPE: "identity"
+OBS_LIST_YAML: "obs_list.yaml"
+OBS_JEDI_TEST_YAML: ""
+SOL_JEDI_TEST_YAML: ""
+VAR_JEDI_TEST_YAML: ""
+LETKF_JEDI_TEST_YAML: ""
+FV3INC_JEDI_TEST_YAML: ""
+ARCH_WARMICFREQ: 4
+FETCH_GCDAS_YAML_TMPL_LIST: ""
+NEXUS_CONFIG: "NEXUS_Config.rc"
+NEXUS_CONFIG_NAME: "gocart"
+NEXUS_DIAG_FREQ: 10800
+NEXUS_DIAG_NAME: "NEXUS_Diag"
+NEXUS_DIAG_PREFIX: "NEXUS"
+NEXUS_GRID_NAME: "C96"
+NEXUS_LOGFILE: "nexus.log"
+NEXUS_NX: 96
+NEXUS_NY: 96
+NEXUS_NZ: 128
+NEXUS_SPEC_NAME: "NEXUS_Spec"
+NEXUS_TIME_NAME: "NEXUS_Time"
+NEXUS_TSTEP: 10800
+NEXUS_XMAX: 360.0
+NEXUS_XMIN: 0.0
+NEXUS_YMAX: 90.0
+NEXUS_YMIN: -90.0
+
+suite:
+  name: "gcafs_v1"
+  ecf_home: "{{ EXPDIR }}/ecf"
+  ecf_files: "{{ EXPDIR }}/ecf/scripts"
+  ecf_include: "{{ EXPDIR }}/ecf/include"
+
+defaults:
+  ECF_TRIES: 2
+  ECF_JOB_CMD: "uwtools submit %ECF_JOB% %ECF_JOBOUT%"
+  ACCOUNT: "nems"
+  QUEUE: "batch"
+  PARTITION: "hera"
+
+cycles:
+  - name: "gcdas"
+    repeat:
+      type: "date"
+      variable: "YMD"
+      start: "{{ idate }}"
+      end: "{{ edate }}"
+      step: 1
+    time: "00:00 06:00 12:00 18:00"
+
+  - name: "gcafs"
+    repeat:
+      type: "date"
+      variable: "YMD"
+      start: "{{ idate }}"
+      end: "{{ edate }}"
+      step: 1
+    time: "00:00 06:00 12:00 18:00"
+
+families:
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Stage Initial Conditions
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/stage"
+    tasks:
+      - name: "stage_ic"
+        trigger: ""
+        jjob: "JGCDAS_STAGE_IC"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Fetch Offline Atmospheric Analysis (from GDAS archive)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/fetch"
+    tasks:
+      - name: "fetch"
+        trigger: ""
+        jjob: "JGCDAS_FETCH"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Emissions Preparation
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/chem/prep"
+    tasks:
+      - name: "prep_emissions"
+        trigger: "gcdas/stage/stage_ic == complete"
+        jjob: "JGCDAS_PREP_EMISSIONS"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Aerosol Data Assimilation (JEDI variational)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/chem/analysis"
+    tasks:
+      - name: "aero_anl_init"
+        trigger: "gcdas/fetch/fetch == complete and gcdas/chem/prep/prep_emissions == complete"
+        jjob: "JGCDAS_AERO_ANALYSIS_INITIALIZE"
+
+      - name: "aero_anl_var"
+        trigger: "aero_anl_init == complete"
+        jjob: "JGCDAS_AERO_ANALYSIS_VARIATIONAL"
+
+      - name: "aero_anl_final"
+        trigger: "aero_anl_var == complete"
+        jjob: "JGCDAS_AERO_ANALYSIS_FINALIZE"
+
+      - name: "aero_anl_genb"
+        trigger: "aero_anl_final == complete"
+        jjob: "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Short Forecast (to provide background for next cycle)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/forecast"
+    tasks:
+      - name: "fcst"
+        trigger: "gcdas/chem/analysis/aero_anl_final == complete"
+        jjob: "JGCDAS_FORECAST"
+        events:
+          - "forecast_hour"
+        meters:
+          - name: "forecast_hour"
+            min: 0
+            max: 9
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Post-Processing (UPP for short forecast hours)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/post"
+    tasks:
+      - name: "upp_f{{ '%03d' % fhr }}"
+        trigger: "gcdas/forecast/fcst:forecast_hour ge {{ fhr }}"
+        jjob: "JGCDAS_ATMOS_UPP"
+        variables:
+          FHOUR: "{{ fhr }}"
+        for_each:
+          fhr: [0, 3, 6, 9]
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Products (atmosphere + aerosol)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/products"
+    tasks:
+      - name: "atmos_prod"
+        trigger: "gcdas/post/upp_f009 == complete"
+        jjob: "JGCDAS_ATMOS_PRODUCTS"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Archive
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/archive"
+    tasks:
+      - name: "arch_vrfy"
+        trigger: "gcdas/products/atmos_prod == complete and gcdas/chem/analysis/aero_anl_genb == complete"
+        jjob: "JGCDAS_ARCHIVE_VRFY"
+
+      - name: "arch_tars"
+        trigger: "arch_vrfy == complete"
+        jjob: "JGCDAS_ARCHIVE_TARS"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCDAS: Cleanup
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcdas/cleanup"
+    tasks:
+      - name: "cleanup"
+        trigger: "gcdas/archive/arch_tars == complete"
+        jjob: "JGCDAS_CLEANUP"
+
+  # ══════════════════════════════════════════════════════════════════════
+  # GCAFS: Extended Aerosol Forecast Cycle
+  # ══════════════════════════════════════════════════════════════════════
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Stage Initial Conditions
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/stage"
+    tasks:
+      - name: "stage_ic"
+        trigger: "gcdas/chem/analysis/aero_anl_final == complete"
+        jjob: "JGCAFS_STAGE_IC"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Emissions Preparation
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/chem/prep"
+    tasks:
+      - name: "prep_emissions"
+        trigger: "gcafs/stage/stage_ic == complete"
+        jjob: "JGCAFS_PREP_EMISSIONS"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Extended Forecast (aerosol-aware UFS run)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/forecast"
+    tasks:
+      - name: "fcst"
+        trigger: "gcafs/chem/prep/prep_emissions == complete"
+        jjob: "JGCAFS_FORECAST"
+        events:
+          - "forecast_hour"
+        meters:
+          - name: "forecast_hour"
+            min: 0
+            max: 120
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Post-Processing (UPP for extended forecast)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/post"
+    tasks:
+      - name: "upp_f{{ '%03d' % fhr }}"
+        trigger: "gcafs/forecast/fcst:forecast_hour ge {{ fhr }}"
+        jjob: "JGCAFS_ATMOS_UPP"
+        variables:
+          FHOUR: "{{ fhr }}"
+        for_each:
+          fhr: [0, 6, 12, 24, 48, 72, 96, 120]
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Products (atmosphere + aerosol)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/products"
+    tasks:
+      - name: "atmos_prod"
+        trigger: "gcafs/post/upp_f120 == complete"
+        jjob: "JGCAFS_ATMOS_PRODUCTS"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Archive
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/archive"
+    tasks:
+      - name: "arch_vrfy"
+        trigger: "gcafs/products/atmos_prod == complete"
+        jjob: "JGCAFS_ARCHIVE_VRFY"
+
+      - name: "arch_tars"
+        trigger: "arch_vrfy == complete"
+        jjob: "JGCAFS_ARCHIVE_TARS"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GCAFS: Cleanup
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gcafs/cleanup"
+    tasks:
+      - name: "cleanup"
+        trigger: "gcafs/archive/arch_tars == complete"
+        jjob: "JGCAFS_CLEANUP"
+
+inter_cycle_dependencies:
+  - task: "gcdas/stage/stage_ic"
+    depends_on: "gcdas/cleanup/cleanup == complete"
+    cycle_offset: -1

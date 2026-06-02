@@ -19,8 +19,8 @@
         the ecflow classes for tasks, families,
         etc.
     AUTHOR:
-        Kyle Nevins
-        kyle.nevins@noaa.gov
+        Barry Baker
+        barry.baker@noaa.gov
     FILE DEPENDENCIES:
         None
     OUTPUT:

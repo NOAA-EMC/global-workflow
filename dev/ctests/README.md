@@ -1,6 +1,6 @@
 # CTest Framework Quick Start
 
-This directory contains the CTest framework for testing Rocoto workflow jobs (JJOBS) independently. Each test runs in an isolated environment with staged input files from nightly baseline runs.
+This directory contains the CTest framework for testing workflow jobs (JJOBS) independently. Each test runs in an isolated environment with staged input files from nightly baseline runs.
 
 > **📖 Complete Documentation**: See the [comprehensive testing documentation](../../docs/source/testing.rst) for detailed information on framework architecture, YAML configuration, test patterns, CI/CD integration, and troubleshooting.
 

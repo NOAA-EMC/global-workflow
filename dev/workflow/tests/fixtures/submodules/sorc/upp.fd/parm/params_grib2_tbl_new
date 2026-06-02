@@ -1,0 +1,13 @@
+# params_grib2_tbl_new (Submodule_Fixture stand-in)
+#
+# Minimal, byte-stable stand-in for the UPP GRIB2 parameter table owned by
+# the sorc/upp.fd submodule. It exists only so a fixture-backed verification
+# deploy can copy a submodule source without a fatal missing-source error.
+#
+# Free of all templating tokens so the Token_Scan over a rendered EXPDIR
+# passes. See the directory README for details.
+#
+# discipline category param  short_name
+0 3 5 HGT
+0 0 0 TMP
+0 1 1 RH

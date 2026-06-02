@@ -1,0 +1,82 @@
+# ecFlow CI Case: C384C192 HybAtmDA — Weekly Hybrid Atmosphere DA
+#
+# Validates hybrid EnVar atmosphere DA at C384 with C192 ensemble (2 members).
+# Atmosphere-only — no ocean/ice/wave templates rendered.
+#
+# Replaces legacy: dev/ci/cases/weekly/C384C192_hybatmda.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirements 1.1 (selective rendering)
+
+case:
+  name: "C384C192_hybatmda"
+  description: "Weekly: C384/C192 hybrid atmosphere DA (2-member ensemble)"
+  resolution: "C384"
+  app: "ATM"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_cycled.yaml"
+  suite_name: "gfs_v17"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C384C192_hybatmda"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gfs"
+  resdetatmos: 384
+  resensatmos: 192
+  resdetocean: 0.25
+  nens: 2
+  interval: 24
+  start: "cold"
+  idate: "2023040118"
+  edate: "2023040200"
+  icsdir: "{{ BASE_IC }}/C384C192/20240610"
+
+base:
+  DO_TEST_MODE: "YES"
+  DO_METP: "NO"
+  DOHYBVAR: "YES"
+
+model_context:
+  # Atmosphere-only — no ocean/ice/wave configs needed
+  post:
+    system: "gfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/post/post_itag"
+      expect_contains: ["gfs"]
+  no_coupled_configs:
+    - "parm/ufs/ocean/MOM_input"
+    - "parm/ufs/ice/ice_in"
+    - "parm/ufs/wave/ww3_shel.nml"
+  expected_families_present:
+    - "gdas/enkf/analysis"
+    - "gdas/enkf/forecast"
+  no_legacy_tokens: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C384C192_hybatmda \
+        --version ci-{{ git_sha_short }}
+    timeout: 240
+    expect_success: true
+
+  - name: "verify_enkf_present"
+    description: "Verify EnKF families present for hybrid DA"
+    command: |
+      defs={{ RUNTESTS }}/EXPDIR/C384C192_hybatmda/ecf/defs/gfs_v17.def
+      grep -q "family enkf" "$defs"
+      echo "OK: EnKF families present for hybrid DA"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C384C192_hybatmda"

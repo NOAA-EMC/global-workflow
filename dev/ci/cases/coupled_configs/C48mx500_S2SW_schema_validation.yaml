@@ -1,0 +1,128 @@
+# ecFlow CI Case: C48mx500 S2SW — Schema Validation (Negative Test)
+#
+# Validates that the deployment pipeline correctly rejects invalid
+# coupled-model configurations with FATAL ERROR messages.
+# Exercises: validate_coupled_model_context() error paths.
+#
+# Traces to: coupled-model-configs Requirements 7.1, 7.2, 7.3, 7.4, 7.5
+
+case:
+  name: "C48mx500_S2SW_schema_validation"
+  description: "Negative test — validates FATAL ERROR on invalid model context"
+  resolution: "C48"
+  app: "S2SW"
+  mode: "forecast-only"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_forecast_only.yaml"
+  suite_name: "gfs_v17_fcst_only"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_schema_validation"
+  version: "ci-{{ git_sha_short }}"
+
+steps:
+  - name: "test_missing_ocean_resolution"
+    description: "Verify FATAL ERROR when ocean.resolution is missing"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/schema_test_1 \
+        --version ci-{{ git_sha_short }} \
+        --model-context '{"ocean": {"dt_ocean": 900}}' \
+        2>&1 | grep -q "FATAL ERROR"
+      rc=$?
+      rm -rf {{ RUNTESTS }}/EXPDIR/schema_test_1
+      if [ $rc -ne 0 ]; then
+        echo "FATAL ERROR: Expected FATAL ERROR for missing ocean.resolution"
+        exit 1
+      fi
+      echo "OK: Missing ocean.resolution produces FATAL ERROR"
+    timeout: 60
+    expect_success: true
+
+  - name: "test_unsupported_resolution"
+    description: "Verify FATAL ERROR for unsupported ocean resolution value"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/schema_test_2 \
+        --version ci-{{ git_sha_short }} \
+        --model-context '{"ocean": {"resolution": "999", "dt_ocean": 900, "dt_therm": 3600, "use_waves": false, "oda_incupd": false, "do_sppt": false, "river_runoff": false, "diag_coord_def_z_file": "x.nc", "frunoff": "x.nc", "tasks": 12}}' \
+        2>&1 | grep -q "FATAL ERROR"
+      rc=$?
+      rm -rf {{ RUNTESTS }}/EXPDIR/schema_test_2
+      if [ $rc -ne 0 ]; then
+        echo "FATAL ERROR: Expected FATAL ERROR for unsupported resolution"
+        exit 1
+      fi
+      echo "OK: Unsupported ocean resolution produces FATAL ERROR"
+    timeout: 60
+    expect_success: true
+
+  - name: "test_invalid_wave_ice_input"
+    description: "Verify FATAL ERROR for invalid wave.ice_input value"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/schema_test_3 \
+        --version ci-{{ git_sha_short }} \
+        --model-context '{"wave": {"ice_input": "INVALID"}}' \
+        2>&1 | grep -q "FATAL ERROR"
+      rc=$?
+      rm -rf {{ RUNTESTS }}/EXPDIR/schema_test_3
+      if [ $rc -ne 0 ]; then
+        echo "FATAL ERROR: Expected FATAL ERROR for invalid wave.ice_input"
+        exit 1
+      fi
+      echo "OK: Invalid wave.ice_input produces FATAL ERROR"
+    timeout: 60
+    expect_success: true
+
+  - name: "test_invalid_post_system"
+    description: "Verify FATAL ERROR for invalid post.system value"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/schema_test_4 \
+        --version ci-{{ git_sha_short }} \
+        --model-context '{"post": {"system": "invalid"}}' \
+        2>&1 | grep -q "FATAL ERROR"
+      rc=$?
+      rm -rf {{ RUNTESTS }}/EXPDIR/schema_test_4
+      if [ $rc -ne 0 ]; then
+        echo "FATAL ERROR: Expected FATAL ERROR for invalid post.system"
+        exit 1
+      fi
+      echo "OK: Invalid post.system produces FATAL ERROR"
+    timeout: 60
+    expect_success: true
+
+  - name: "test_missing_ice_section"
+    description: "Verify FATAL ERROR when entire ice section is missing"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_forecast_only.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/schema_test_5 \
+        --version ci-{{ git_sha_short }} \
+        --model-context '{"ocean": {"resolution": "500", "dt_ocean": 7200, "dt_therm": 14400, "use_waves": false, "oda_incupd": false, "do_sppt": false, "river_runoff": false, "diag_coord_def_z_file": "x.nc", "frunoff": "x.nc", "tasks": 12}, "wave": {"ice_input": "CPL", "current_input": "CPL", "output_params": "HS", "dt_field_output": 10800, "dt_point_output": 3600, "grid_output_dir": "./", "point_output_dir": "./", "restart_output_dir": "./"}, "post": {"system": "gfs"}}' \
+        2>&1 | grep -q "FATAL ERROR"
+      rc=$?
+      rm -rf {{ RUNTESTS }}/EXPDIR/schema_test_5
+      if [ $rc -ne 0 ]; then
+        echo "FATAL ERROR: Expected FATAL ERROR for missing ice section"
+        exit 1
+      fi
+      echo "OK: Missing ice section produces FATAL ERROR"
+    timeout: 60
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/schema_test_*"

@@ -1,0 +1,44 @@
+#!/bin/bash
+# ============================================================
+# ecFlow Task Postamble (tail.h)
+# ============================================================
+# Generated from: dev/workflow/ecflow/templates/tail.h.j2
+# Traces to: Requirements 1.2, 6.1, 6.6
+#
+# This include is sourced at the end of every rendered .ecf task
+# script. It performs cleanup, emits lifecycle logging, and
+# notifies the ecFlow server of task completion.
+# ============================================================
+
+# --- Compute task duration ---
+_ecf_task_end_time=$(date +%s)
+_ecf_task_duration=$(( _ecf_task_end_time - ${ECF_TASK_START_TIME:-${_ecf_task_end_time}} ))
+
+# --- Lifecycle logging: task succeeded ---
+if command -v log_task_event.py &>/dev/null; then
+    log_task_event.py \
+        --task "${ECF_TASK_NAME:-unknown}" \
+        --cycle "${PDY:-}${cyc:-}" \
+        --jobid "${ECF_RID:-$$}" \
+        --attempt "${ECF_TASK_TRYNO:-1}" \
+        --state "complete" \
+        --exit-status 0 \
+        --duration "${_ecf_task_duration}" \
+        || true
+fi
+
+# --- Cleanup ephemeral working directory ---
+if [[ "${KEEPDATA:-NO}" != "YES" && -n "${DATA:-}" && -d "${DATA}" ]]; then
+    cd "${DATAROOT:-/tmp}" || true
+    rm -rf "${DATA}"
+fi
+
+# --- Flush program output ---
+if [[ -s "${pgmout:-}" ]]; then
+    cat "${pgmout}"
+fi
+
+# --- Notify ecFlow server: task complete ---
+set +x
+trap - EXIT ERR
+ecflow_client --complete

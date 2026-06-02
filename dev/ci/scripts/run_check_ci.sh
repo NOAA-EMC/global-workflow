@@ -4,7 +4,7 @@ set -eu
 
 #####################################################################################
 # Script description: script to check the status of an experiment as reported
-#                     by Rocoto
+#                     by ecFlow
 #####################################################################################
 
 TEST_DIR=${1:-${TEST_DIR:-?}}            # Location of the root of the testing directory
@@ -19,7 +19,7 @@ SYSTEM_BUILD_DIR=${3:-"global-workflow"} # Name of the system build directory, d
 # ├── HOMEglobal
 # └── RUNTESTS
 #     ├── COMROOT
-#     │   └── ${pslot}
+#     │   └── ${pslot}
 #     └── EXPDIR
 #         └── ${pslot}
 # Two system build directories created at build time gfs, and gdas
@@ -39,79 +39,69 @@ cd "${RUNTESTS}/EXPDIR/${pslot}" || (
     exit 1
 )
 
-# Name of the Rocoto XML and database files
-xml="${pslot}.xml"
-db="${pslot}.db"
+# ecFlow suite definition file
+def_file="ecf/defs/${pslot}.def"
 
-# Ensure the XML is present for the experiment
-if [[ ! -f "${xml}" ]]; then
-    echo "FATAL ERROR: XML file ${xml} not found in '${pslot}', experiment ${pslot} failed, ABORT!"
+# Ensure the definition file is present for the experiment
+if [[ ! -f "${def_file}" ]]; then
+    echo "FATAL ERROR: ecFlow definition file ${def_file} not found in '${pslot}', experiment ${pslot} failed, ABORT!"
     exit 1
 fi
 
-# Launch experiment
-echo "Launch experiment with Rocoto."
-rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-sleep 10
-if [[ ! -f "${db}" ]]; then
-    echo "FATAL ERROR: Rocoto database file ${db} not found, experiment ${pslot} failed, ABORT!"
-    exit 1
-fi
+# Determine ecFlow port (use ECF_PORT if set, otherwise default)
+ECF_PORT="${ECF_PORT:-3141}"
 
-# Experiment launched
+# Load the suite definition into ecFlow
+echo "Loading ecFlow suite definition."
+ecflow_client --port "${ECF_PORT}" --load "${def_file}" 2>/dev/null || true
+ecflow_client --port "${ECF_PORT}" --begin "${pslot}" 2>/dev/null || true
+
+# Monitor experiment via ecFlow
 rc=99
 set +e
 while true; do
 
-    echo "Run rocotorun."
-    rocotorun -v "${ROCOTO_VERBOSE:-0}" -w "${xml}" -d "${db}"
-
-    # Wait before running rocotostat
+    # Wait before checking status
     sleep 60
 
-    # Get job statistics
-    echo "Gather Rocoto statistics"
-    full_state=$("${HOMEglobal}/dev/ci/scripts/utils/rocotostat.py" -w "${xml}" -d "${db}" -v)
-    error_stat=$?
+    # Get suite status from ecFlow
+    echo "Gather ecFlow statistics for ${pslot}"
+    suite_status=$(ecflow_client --port "${ECF_PORT}" --stats 2>/dev/null) || true
 
-    for state in CYCLES_TOTAL CYCLES_DONE SUCCEEDED FAIL DEAD; do
-        declare "${state}"="$(echo "${full_state}" | grep "${state}" | cut -d: -f2)" || true
-    done
-    ROCOTO_STATE=$(echo "${full_state}" | tail -1) || exit 1
+    # Count task states
+    TASKS_COMPLETE=$(ecflow_client --port "${ECF_PORT}" --get_state "/${pslot}" 2>/dev/null | grep -c "state:complete" || echo "0")
+    TASKS_ABORTED=$(ecflow_client --port "${ECF_PORT}" --get_state "/${pslot}" 2>/dev/null | grep -c "state:aborted" || echo "0")
+    TASKS_ACTIVE=$(ecflow_client --port "${ECF_PORT}" --get_state "/${pslot}" 2>/dev/null | grep -c "state:active" || echo "0")
+    TASKS_QUEUED=$(ecflow_client --port "${ECF_PORT}" --get_state "/${pslot}" 2>/dev/null | grep -c "state:queued" || echo "0")
+    TASKS_SUBMITTED=$(ecflow_client --port "${ECF_PORT}" --get_state "/${pslot}" 2>/dev/null | grep -c "state:submitted" || echo "0")
+    TASKS_TOTAL=$((TASKS_COMPLETE + TASKS_ABORTED + TASKS_ACTIVE + TASKS_QUEUED + TASKS_SUBMITTED))
 
-    echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Cycles: ${CYCLES_TOTAL}\n\tNumber Cycles done: ${CYCLES_DONE}\n\tState: ${ROCOTO_STATE}"
+    echo -e "(${pslot} on ${MACHINE_ID^})\n\tTotal Tasks: ${TASKS_TOTAL}\n\tComplete: ${TASKS_COMPLETE}\n\tAborted: ${TASKS_ABORTED}\n\tActive: ${TASKS_ACTIVE}\n\tQueued: ${TASKS_QUEUED}"
 
-    if [[ ${error_stat} -ne 0 ]]; then
+    # Check for aborted tasks (failure)
+    if [[ "${TASKS_ABORTED}" -gt 0 && "${TASKS_ACTIVE}" -eq 0 && "${TASKS_SUBMITTED}" -eq 0 ]]; then
         {
-            echo "Experiment ${pslot} Terminated with ${FAIL} tasks failed and ${DEAD} dead at $(date)" || true
-            echo "Experiment ${pslot} Terminated: *${ROCOTO_STATE}*"
+            echo "Experiment ${pslot} Terminated with ${TASKS_ABORTED} tasks aborted at $(date)" || true
         } | tee -a "${run_check_logfile}"
-        if [[ "${DEAD}" -ne 0 ]]; then
-            error_logs=$(rocotostat -d "${db}" -w "${xml}" | grep -E 'FAIL|DEAD' | awk '{print "-c", $1, "-t", $2}' | xargs rocotocheck -d "${db}" -w "${xml}" | grep join | awk '{print $2}') || true
-            {
-                echo "Error logs:"
-                echo "${error_logs}"
-            } | tee -a "${run_check_logfile}"
-            rm -f "${RUNTESTS}/${pslot}_error.logs"
-            for log in ${error_logs}; do
-                echo "RUNTESTS${log#*RUNTESTS}" >> "${RUNTESTS}/EXPDIR/${pslot}/${pslot}_error.logs"
-            done
-        fi
         rc=1
         break
     fi
 
-    if [[ "${ROCOTO_STATE}" == "DONE" ]]; then
+    # Check if all tasks are complete (success)
+    if [[ "${TASKS_TOTAL}" -gt 0 && "${TASKS_QUEUED}" -eq 0 && "${TASKS_ACTIVE}" -eq 0 && "${TASKS_SUBMITTED}" -eq 0 && "${TASKS_ABORTED}" -eq 0 ]]; then
         {
-            echo "Experiment ${pslot} Completed ${CYCLES_DONE} Cycles: *SUCCESS* at $(date)" || true
+            echo "Experiment ${pslot} Completed ${TASKS_COMPLETE} Tasks: *SUCCESS* at $(date)" || true
         } | tee -a "${run_check_logfile}"
         rc=0
         break
     fi
 
-    # Wait before running rocotorun again
+    # Wait before checking again
     sleep 300
 
 done
+
+# Cleanup: delete the suite from ecFlow
+ecflow_client --port "${ECF_PORT}" --delete "/${pslot}" yes 2>/dev/null || true
 
 exit "${rc}"

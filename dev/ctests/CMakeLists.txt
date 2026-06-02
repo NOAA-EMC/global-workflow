@@ -1,9 +1,9 @@
 # ------------------------------------------------------------------------- #
 # CTests for Global Workflow
 # ------------------------------------------------------------------------- #
-# These ctests correspond to JJOBs (individual Rocoto jobs) that can be
+# These ctests correspond to JJOBs (individual ecFlow tasks) that can be
 # run independently, each requiring its own YAML definition of inputs
-# and configurations. By integrating with Rocoto, these jobs can be
+# and configurations. By integrating with ecFlow, these jobs can be
 # validated, staged, and executed as self-contained tests using
 # their own data and test parameters.
 # ------------------------------------------------------------------------- #

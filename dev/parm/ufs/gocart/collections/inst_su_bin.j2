@@ -1,0 +1,23 @@
+{# dev/parm/ufs/gocart/collections/inst_su_bin.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_su_bin (Binned sulfate diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Binned aerosols - Sulfate
+#
+  inst_su_bin.format:     'CFIO' ,
+  inst_su_bin.descr:      '3d,Hourly,Instantaneous,Model-Level'
+  inst_su_bin.template:   '%y4%m2%d2_%h2%n2z.nc4',
+  inst_su_bin.mode:       'instantaneous',
+  inst_su_bin.grid_label:  {{ model.aerosol.grid_label }} ,
+  inst_su_bin.splitField:  1,
+  inst_su_bin.frequency:   {{ model.aerosol.frequencies.inst_su_bin | default('010000') }} ,
+  inst_su_bin.duration:    010000 ,
+  inst_su_bin.ref_time:    000000 ,
+  inst_su_bin.nbits:      10,
+  inst_su_bin.fields:     'SUEM'     , 'SU',
+                          'SUSD'     , 'SU',
+                          'SUDP'     , 'SU',
+                          'SUWT'     , 'SU',
+                          'SUSV'     , 'SU',
+                          ::

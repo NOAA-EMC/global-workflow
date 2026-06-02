@@ -1,0 +1,24 @@
+# Prefix Registry: Application_Prefix → ordered search list of Shared_Prefixes
+# The Name_Resolver searches these in order, returning the first match in dev/jobs/.
+#
+# Format: Each key is an Application_Prefix (including trailing underscore).
+# Each value is an ordered list of Shared_Prefixes to try.
+
+registry:
+  JGCAFS_:
+    - JGLOBAL_
+  JGCDAS_:
+    - JGLOBAL_
+    - JGDAS_
+  JGFS_:
+    - JGLOBAL_
+    - JGFS_
+  JGDAS_:
+    - JGLOBAL_
+    - JGDAS_
+  JGEFS_:
+    - JGLOBAL_
+    - JGEFS_
+  JSFS_:
+    - JGLOBAL_
+    - JSFS_

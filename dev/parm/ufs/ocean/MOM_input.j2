@@ -1,0 +1,119 @@
+{# dev/parm/ufs/ocean/MOM_input.j2 #}
+{# Replaces: MOM_input_025.IN, MOM_input_050.IN, MOM_input_100.IN, MOM_input_500.IN #}
+{# Traces to: Requirement 1, Requirement 11 AC1, Requirement 12 #}
+{% set ocean = model.ocean %}
+{% set res = ocean.resolution %}
+
+! === module MOM ===
+DT = {{ ocean.dt_ocean }}                        ! Baroclinic dynamics timestep [s]
+DT_THERM = {{ ocean.dt_therm }}                  ! Thermodynamic timestep [s]
+THICKNESSDIFFUSE = True
+THICKNESSDIFFUSE_FIRST = True
+USE_REGRIDDING = True
+DIABATIC_FIRST = True
+
+! === module MOM_domains ===
+{% if res == '025' %}
+NIGLOBAL = 1440
+NJGLOBAL = 1080
+{% elif res == '050' %}
+NIGLOBAL = 720
+NJGLOBAL = 576
+{% elif res == '100' %}
+NIGLOBAL = 360
+NJGLOBAL = 320
+{% elif res == '500' %}
+NIGLOBAL = 72
+NJGLOBAL = 35
+{% else %}
+{{ undefined_resolution_error }}
+{% endif %}
+NIHALO = 4
+NJHALO = 4
+
+! === module MOM_verticalGrid ===
+NK = {{ ocean.nk | default(75) }}
+
+! === module MOM_grid_init ===
+GRID_CONFIG = "mosaic"
+GRID_FILE = "ocean_mosaic.nc"
+TOPO_CONFIG = "file"
+TOPO_FILE = "ocean_topog.nc"
+TOPO_EDITS_FILE = "${TOPOEDITS}"
+MAXIMUM_DEPTH = 6500.0
+
+! === module MOM_coord_initialization ===
+COORD_CONFIG = "file"
+COORD_FILE = "{{ ocean.diag_coord_def_z_file }}"
+
+! === module MOM_diag_mediator ===
+NUM_DIAG_COORDS = 1
+DIAG_COORDS = "z Z ZSTAR"
+DIAG_COORD_DEF_Z_FILE = "{{ ocean.diag_coord_def_z_file }}"
+
+! === module MOM_EOS ===
+EQN_OF_STATE = "WRIGHT"
+
+! === module MOM_lateral_mixing_coeffs ===
+{% if res == '025' %}
+KHTH = 10.0
+KHTR = 10.0
+SMAG_BI_CONST = 0.06
+AH_VEL_SCALE = 0.01
+{% elif res == '050' %}
+KHTH = 50.0
+KHTR = 50.0
+SMAG_BI_CONST = 0.06
+AH_VEL_SCALE = 0.01
+{% elif res == '100' %}
+KHTH = 600.0
+KHTR = 600.0
+SMAG_BI_CONST = 0.15
+AH_VEL_SCALE = 0.05
+{% elif res == '500' %}
+KHTH = 1000.0
+KHTR = 1000.0
+{% endif %}
+USE_VARIABLE_MIXING = {% if res != '500' %}True{% else %}False{% endif %}
+SMAGORINSKY_AH = {% if res != '500' %}True{% else %}False{% endif %}
+
+! === module MOM_set_visc ===
+HBBL = 10.0
+DRAG_BG_VEL = 0.1
+KV = 1.0E-4
+KD = {{ ocean.kd | default("0.0") }}
+KD_MIN = {{ ocean.kd_min | default("2.0E-6") }}
+
+! === module MOM_surface_forcing ===
+MAX_P_SURF = 0.0
+CD_TIDES = 0.0018
+USE_RIGID_SEA_ICE = True
+SEA_ICE_RIGID_MASS = 100.0
+{% if ocean.use_waves %}
+USE_WAVES = True
+WAVE_METHOD = "SURFACE_BANDS"
+{% endif %}
+{% if ocean.river_runoff %}
+RIVER_RUNOFF = True
+FRUNOFF = "${CHLCLIM}"
+{% endif %}
+
+! === module MOM_diabatic_driver ===
+USE_LEGACY_DIABATIC_DRIVER = False
+ENERGETICS_SFC_PBL = True
+USE_KPP = True
+
+! === module MOM_oda_incupd ===
+{% if ocean.oda_incupd %}
+ODA_INCUPD = True
+ODA_INCUPD_NHOURS = {{ ocean.oda_incupd_nhours | default(6) }}
+{% else %}
+ODA_INCUPD = False
+{% endif %}
+
+! === module ocean_stochastics ===
+{% if ocean.do_sppt %}
+DO_SPPT = True
+{% else %}
+DO_SPPT = False
+{% endif %}

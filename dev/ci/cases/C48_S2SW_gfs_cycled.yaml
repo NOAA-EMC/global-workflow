@@ -1,0 +1,116 @@
+# ecFlow CI Smoke Test Case: C48 S2SW GFS Cycled (Full DAG Validation)
+#
+# This case validates the ecFlow deployment pipeline for the full cycled
+# GFS/GDAS workflow including wave coupling. It exercises the complete
+# DAG generation path with inter-cycle dependencies, for_each expansion,
+# meter-based triggers, and multi-family hierarchies.
+#
+# Traces to: Requirement 14.5 (replace Rocoto CI cases with ecFlow equivalents)
+#            Requirement 1.1 (ecFlow-only orchestration)
+#
+# Workflow: deploy → load def → verify task count → verify DAG acyclicity
+
+case:
+  name: "C48_S2SW_gfs_cycled"
+  description: "Full cycled GFS/GDAS + wave ecFlow DAG validation"
+  resolution: "C48"
+  app: "S2SW"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_cycled.yaml"
+  suite_name: "gfs_v17"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C48_S2SW_gfs_cycled"
+  version: "ci-{{ git_sha_short }}"
+
+validation:
+  # Expected task count after for_each expansion:
+  #   gdas/atmos/prep:         prep (1)
+  #   gdas/atmos/analysis:     anal, analcalc, analdiag (3)
+  #   gdas/atmos/forecast:     fcst (1)
+  #   gdas/atmos/post:         post_f000..post_f009 (10)
+  #   gdas/atmos/verification: verfrad, verfozn, fit2obs (3)
+  #   gdas/atmos/archive:      arch (1)
+  #   gdas/enkf/analysis:      eobs, eupd (2)
+  #   gdas/enkf/forecast:      ecen, efcs, epos (3)
+  #   gfs/atmos/analysis:      anal, analcalc (2)
+  #   gfs/atmos/forecast:      fcst (1)
+  #   gfs/atmos/post:          post_f000..post_f384 (10)
+  #   gfs/atmos/products:      awips, gempak, postsnd, npoess, fbwind (5)
+  #   gfs/atmos/verification:  tracker, genesis, genesis_fsu, metp (4)
+  #   gfs/atmos/archive:       arch (1)
+  #   gfs/wave:                init, prep, postsbs, postpnt, awipsbulls, awipsgridded, gempak (7)
+  #   Total: 54
+  expected_task_count: 54
+  expected_families:
+    - "gdas/atmos/prep"
+    - "gdas/atmos/analysis"
+    - "gdas/atmos/forecast"
+    - "gdas/atmos/post"
+    - "gdas/atmos/verification"
+    - "gdas/atmos/archive"
+    - "gdas/enkf/analysis"
+    - "gdas/enkf/forecast"
+    - "gfs/atmos/analysis"
+    - "gfs/atmos/forecast"
+    - "gfs/atmos/post"
+    - "gfs/atmos/products"
+    - "gfs/atmos/verification"
+    - "gfs/atmos/archive"
+    - "gfs/wave"
+  has_inter_cycle_dependencies: true
+
+steps:
+  - name: "deploy"
+    description: "Run deploy_workflow with full cycled config for CONTAINER platform"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C48_S2SW_gfs_cycled \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "load_def"
+    description: "Start ecflow_server and load the generated suite definition"
+    command: |
+      ecflow_client --port {{ ecflow_port }} --load \
+        {{ RUNTESTS }}/EXPDIR/C48_S2SW_gfs_cycled/ecf/defs/gfs_v17.def
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_task_count"
+    description: "Verify the loaded suite has exactly 54 tasks (matching config)"
+    command: |
+      task_count=$(ecflow_client --port {{ ecflow_port }} \
+        --get /gfs_v17 2>/dev/null | grep "task " | wc -l)
+      if [ "${task_count}" -ne 54 ]; then
+        echo "FATAL ERROR: Expected 54 tasks, found ${task_count}"
+        exit 1
+      fi
+      echo "OK: Task count verified (${task_count} tasks)"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_dag_acyclicity"
+    description: "Verify the DAG has no cycles using the workflow_config parser"
+    command: |
+      python3 -c "
+      import sys
+      sys.path.insert(0, '{{ HOMEglobal }}/dev/workflow')
+      from deployment.workflow_config import parse
+      dag = parse('{{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml')
+      dag.validate_acyclic()
+      print('OK: DAG acyclicity verified (no cycles detected)')
+      "
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "ecflow_client --port {{ ecflow_port }} --delete /gfs_v17 yes"
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C48_S2SW_gfs_cycled"

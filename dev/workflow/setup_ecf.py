@@ -4,22 +4,21 @@
     PROGRAM:
         Create a workflow file for use by a supercomputer.
     AUTHOR:
-        Kyle Nevins
-        kyle.nevins@noaa.gov
+        Barry Baker
+        barry.baker@noaa.gov
     FILE DEPENDENCIES:
         1. The configuration file that defines what jobs to run. It should be a
         YAML file following the syntax defined in the README.
         2. config files for the experiment; e.g. config.base, config.fcst[.gfs]
         etc.
         Without this dependency, the script will fail
-        3. The workflow utils package from the existing Rocoto generator. That
-        is used to read in the configuration files in the expdir.
+        3. The workflow utils package for reading configuration files in the
+        expdir.
         4. Any scripts defined in the YAML file must be present within the
         script repository.
     OUTPUT:
-        1. Either an ecFlow definition file or a Rocoto XML file
-        2. The folders and scripts needed to run either the ecflow suite or
-        Rocoto suite.
+        1. An ecFlow definition file
+        2. The folders and scripts needed to run the ecFlow suite.
 """
 
 import os
@@ -34,7 +33,7 @@ def input_args():
     """
     parser = ArgumentParser(description=""" Create the workflow files for
                                 ecFlow by deploying scripts and definition
-                                files or Rocoto""",
+                                files""",
                             formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--ecflow-config', type=str,
                         default='ecflow_build.yml', required=False,
@@ -58,8 +57,7 @@ if __name__ == "__main__":
     environment configurations to be used throughout the application.
 
     For the ecFlow setup, it sets up a new workflow and then uses the generic
-    functions which are available for the Rocoto setup as well of
-    generate_workflow and save.
+    functions of generate_workflow and save.
     """
 
     args = input_args()

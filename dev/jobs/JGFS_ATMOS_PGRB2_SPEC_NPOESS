@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
-# TODO (#1225) This job is not part of the rocoto suite
+# TODO (#1225) This job is not part of the ecFlow suite
 
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION

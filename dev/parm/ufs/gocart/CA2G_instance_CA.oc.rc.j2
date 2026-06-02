@@ -1,0 +1,71 @@
+{# dev/parm/ufs/gocart/CA2G_instance_CA.oc.rc.j2 #}
+{# Organic carbon parameters with configurable SOA fractions and removal schemes #}
+{# Namespace: model.aerosol.carbon.oc #}
+{% set carbon = model.aerosol.carbon | default({}) %}
+{% set oc = carbon.oc | default({}) %}
+#
+# Resource file for Organic Carbon parameters.
+#
+
+aerosol_radBands_optics_file: ExtData/optics/opticsBands_OC.v1_3.RRTMG.nc
+aerosol_monochromatic_optics_file: ExtData/monochromatic/optics_OC.v1_5.nc
+
+# Aircraft emission factor: convert input unit to kg C
+aircraft_fuel_emission_factor: 1.0000
+
+# Heights [m] of LTO, CDS and CRS aviation emissions layers
+aviation_vertical_layers: 0.0 100.0 9.0e3 10.0e3
+
+# Fraction of biogenic VOCs emissions for SOA production
+monoterpenes_emission_fraction: {{ oc.monoterpenes_emission_fraction | default(0.05) }}
+isoprene_emission_fraction:     {{ oc.isoprene_emission_fraction | default(0.03) }}
+
+# Ratio of POM/OC -> convert source masses from carbon to POM
+pom_ca_ratio: 1.8
+
+# particle radius
+particle_radius_microns: 0.35 0.35
+
+rhFlag: 0
+
+# Initially hydrophobic portion
+hydrophobic_fraction: {{ oc.hydrophobic_fraction | default(0.5) }}
+
+# Rate of conversion of hydrophobic to hydrophilic [days]
+time_days_hydrophobic_to_hydrophilic: {{ oc.time_days_hydrophobic_to_hydrophilic | default(2.5) }}
+
+# Rate of chemical destruction of carbon species [days]
+time_days_chemical_destruction: -1.  -1.
+
+# Wet Removal Scheme Option | gocart, ufs
+wet_removal_scheme: {{ oc.wet_removal_scheme | default('ufs') }}
+
+# Rainout efficiency per bin for wet_removal_scheme == ufs
+fwet_ice: {{ oc.fwet_ice | default('0.0 1.0') }}
+fwet_snow: {{ oc.fwet_snow | default('0.0 1.0') }}
+fwet_rain: {{ oc.fwet_rain | default('0.0 1.0') }}
+
+# SettlingSolver options
+# Options: 'gocart' or 'ufs'
+settling_scheme: '{{ oc.settling_scheme | default('ufs') }}'
+
+# Scavenging efficiency per bin [km-1] (NOT USED UNLESS RAS IS CALLED)
+fscav: {{ oc.fscav | default('0.0  0.4') }}
+
+# Dry particle density [kg m-3]
+particle_density: 1800   1800
+
+# Molecular weight of species [kg mole-1]
+molecular_weight: 0.18  0.18
+
+# Number of particles per kg mass
+fnum: 9.76e17  9.76e17
+
+# Sigma of lognormal number distribution
+sigma: 2.20  2.20
+
+pressure_lid_in_hPa: 0.01
+
+nbins: 2
+
+point_emissions_srcfilen: /dev/null

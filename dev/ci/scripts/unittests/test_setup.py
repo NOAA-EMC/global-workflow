@@ -61,18 +61,13 @@ def test_setup_expt():
 def test_setup_workflow():
 
     setup_workflow_script = Executable(os.path.join(HOMEglobal, "dev/workflow/setup_workflow.py"))
-    cmd_args = [f"{RUNDIR}/{pslot}", "rocoto"]
+    cmd_args = [f"{RUNDIR}/{pslot}", "ecflow"]
     setup_workflow_script(*cmd_args)
     assert (setup_workflow_script.returncode == 0)
 
-    # Get the account value from the config file
-    cfg = Configuration(f"{RUNDIR}/{pslot}")
-    base = cfg.parse_config('config.base')
-    account_value = base.ACCOUNT
-
-    with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
-        contents = file.read()
-    assert contents.count(account_value) > 5
+    # Verify ecFlow definition file was created
+    def_file = f"{RUNDIR}/{pslot}/ecf/defs/{pslot}.def"
+    assert os.path.exists(def_file), f"ecFlow definition file not found at {def_file}"
 
     rmtree(RUNDIR)  # TODO: should this be cleaned here or at end of all tests?
 
@@ -80,7 +75,7 @@ def test_setup_workflow():
 def test_setup_workflow_fail_config_env_cornercase(tmp_path):
 
     setup_workflow_script = Executable(os.path.join(HOMEglobal, "dev/workflow/setup_workflow.py"))
-    cmd_args = [f"{RUNDIR}/{pslot}", "rocoto"]
+    cmd_args = [f"{RUNDIR}/{pslot}", "ecflow"]
     env = os.environ.copy()
     env['HOMEglobal'] = 'foobar'  # Intentionally incorrect to trigger failure
 
@@ -95,12 +90,12 @@ def test_setup_workflow_fail_config_env_cornercase(tmp_path):
 
         assert "UNKNOWN" not in base.values()
 
-        with open(f"{RUNDIR}/{pslot}/{pslot}.xml", 'r') as file:
-            contents = file.read()
-        assert contents.count(account_value) > 5
+        # Verify ecFlow definition file was created
+        def_file = f"{RUNDIR}/{pslot}/ecf/defs/{pslot}.def"
+        assert os.path.exists(def_file), f"ecFlow definition file not found at {def_file}"
 
     except ProcessError as e:
-        # We expect this fail becuse ACCOUNT=fv3-cpu in config.base and environment
+        # We expect this fail because ACCOUNT=fv3-cpu in config.base and environment
         pass
 
     except Exception as e:

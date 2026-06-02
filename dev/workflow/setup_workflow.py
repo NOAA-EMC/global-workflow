@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-Entry point for setting up workflow (Rocoto XML or EcFlow) for all applications in global-workflow
+Entry point for setting up workflow (ecFlow only) for all applications in global-workflow.
+
+The workflow is orchestrated exclusively by ecFlow. Rocoto has been decommissioned
+per Requirement 1 (ecFlow-Only Orchestration).
 """
 
 import os
@@ -8,13 +11,50 @@ from logging import getLogger
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from applications.application_factory import app_config_factory
-from rocoto.rocoto_xml_factory import rocoto_xml_factory
 from ecflow.ecflow_suite_factory import ecflow_suite_factory
 from wxflow import AttrDict, Configuration, Logger, logit
 
 
 # Setup the logger
 logger = getLogger(__name__)
+
+
+class RocotoDecommissionedError(RuntimeError):
+    """Raised when a decommissioned Rocoto code path is invoked."""
+    pass
+
+
+def rocoto_deprecation_guard():
+    """Emit a FATAL ERROR if a Rocoto code path is invoked.
+
+    Per Requirement 1 (ecFlow-Only Orchestration) and Requirement 14.3,
+    Rocoto has been decommissioned. This function should be called whenever
+    any code path detects an attempt to use Rocoto.
+
+    Raises
+    ------
+    RocotoDecommissionedError
+        Always raised with a message referencing Requirement 1.
+    """
+    msg = (
+        "FATAL ERROR: Rocoto is decommissioned per Requirement 1. "
+        "Use ecFlow-only orchestration."
+    )
+    logger.critical(msg)
+    raise RocotoDecommissionedError(msg)
+
+
+def _check_for_rocoto_invocation(argv):
+    """Check if the user attempted to invoke Rocoto and emit FATAL ERROR.
+
+    Scans the raw argument list for 'rocoto' before argparse processes it,
+    since the rocoto subparser has been removed and argparse would otherwise
+    emit a generic 'invalid choice' error.
+    """
+    if argv is not None:
+        for arg in argv:
+            if arg.lower() == 'rocoto':
+                rocoto_deprecation_guard()
 
 
 # @logit(logger)
@@ -25,7 +65,7 @@ def input_args(*argv):
 
     description = """
         Sources configuration files based on application and
-        creates workflow files for use with Rocoto or EcFlow.
+        creates workflow files for use with ecFlow.
         """
 
     parser = ArgumentParser(description=description,
@@ -41,27 +81,21 @@ def input_args(*argv):
     subparsers = parser.add_subparsers(dest='workflow', required=True,
                                        help='workflow engine to use')
 
-    # Rocoto subparser
-    rocoto_parser = subparsers.add_parser('rocoto',
-                                          help='Use Rocoto workflow engine',
-                                          formatter_class=ArgumentDefaultsHelpFormatter)
-    rocoto_parser.add_argument('--maxtries', help='maximum number of retries', type=int,
-                               default=2, required=False)
-    rocoto_parser.add_argument('--cyclethrottle', help='maximum number of concurrent cycles', type=int,
-                               default=3, required=False)
-    rocoto_parser.add_argument('--taskthrottle', help='maximum number of concurrent tasks', type=int,
-                               default=25, required=False)
-    rocoto_parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
-                               default=10, required=False)
-
-    # EcFlow subparser
+    # ecFlow subparser (sole supported engine)
     ecflow_parser = subparsers.add_parser('ecflow',
-                                          help='Use EcFlow workflow engine',
+                                          help='Use ecFlow workflow engine',
                                           formatter_class=ArgumentDefaultsHelpFormatter)
     ecflow_parser.add_argument('--verbosity', help='verbosity level of ecflow', type=int,
                                default=10, required=False)
 
-    return parser.parse_args(argv[0][0] if len(argv[0]) else None)
+    # Check for Rocoto invocation before argparse processes args
+    # (provides a clear FATAL ERROR instead of a generic 'invalid choice' message)
+    raw_args = argv[0][0] if len(argv[0]) else None
+    _check_for_rocoto_invocation(raw_args)
+
+    args = parser.parse_args(raw_args)
+
+    return args
 
 
 # @logit(logger)
@@ -126,25 +160,13 @@ def main(*argv):
     # Configure the application
     app_config = app_config_factory.create(f'{net}_{mode}', cfg)
 
-    # Build workflow parameter dictionary - only available when rocoto is selected
+    # Build workflow parameter dictionary
     workflow_config = AttrDict()
     workflow_config.workflow_engine = workflow_engine
-    if workflow_engine == "rocoto":
-        workflow_config.maxtries = user_inputs.maxtries
-        workflow_config.cyclethrottle = user_inputs.cyclethrottle
-        workflow_config.taskthrottle = user_inputs.taskthrottle
-        workflow_config.verbosity = user_inputs.verbosity
-    elif workflow_engine == "ecflow":
-        workflow_config.verbosity = user_inputs.verbosity
+    workflow_config.verbosity = user_inputs.verbosity
 
-    # Call the appropriate workflow engine factory
-    ENGINE_MAP = {
-        "rocoto": rocoto_xml_factory,
-        "ecflow": ecflow_suite_factory,
-    }
-
-    # Create the XML (Rocoto) or Suite (ecFlow) object
-    workflow = ENGINE_MAP[workflow_engine].create(f'{net}_{mode}', app_config, workflow_config)
+    # Create the ecFlow Suite object
+    workflow = ecflow_suite_factory.create(f'{net}_{mode}', app_config, workflow_config)
     workflow.write()
 
 

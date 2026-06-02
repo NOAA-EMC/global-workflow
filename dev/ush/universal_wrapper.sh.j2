@@ -1,0 +1,215 @@
+#!/bin/bash
+# ============================================================
+# Universal_Wrapper — Single entry point for all ecFlow tasks
+# ============================================================
+# Source: dev/ush/universal_wrapper.sh.j2
+# Rendered to: <EXPDIR>/ush/universal_wrapper.sh
+# Traces to: Requirements 5.1, 5.2, 5.3, 5.7, 6.1, 6.2, 6.3, 6.4,
+#            6.6, 6.8, 11.8, 12.4
+#
+# Usage:
+#   universal_wrapper.sh <JJOB_NAME>
+#
+# This wrapper:
+#   1. Sets shell hardening (set -x, PS4, umask, traps)
+#   2. Detects the platform and sources the environment
+#   3. Enforces WCOSS2 envir guard
+#   4. Creates ephemeral working directory
+#   5. Executes the specified JJob
+#   6. Emits structured JSON lifecycle log records
+#   7. Cleans up unless KEEPDATA=YES
+# ============================================================
+
+# --- Shell hardening (Req 6.2) ---
+set -x
+export PS4='+ $SECONDS + '
+umask 022
+
+# --- Record wrapper start time ---
+readonly _UW_START_EPOCH=$(date +%s)
+
+# --- EXPDIR is baked in at deployment time (Jinja2) ---
+export EXPDIR="{{ EXPDIR }}"
+
+# --- Source err_exit for error handling (EE2 pattern) ---
+if [[ -f "{{ EXPDIR }}/ush/err_exit.sh" ]]; then
+    source "{{ EXPDIR }}/ush/err_exit.sh"
+elif [[ -f "${HOMEglobal:-}/ush/err_exit.sh" ]]; then
+    source "${HOMEglobal}/ush/err_exit.sh"
+fi
+
+# --- Validate arguments ---
+if [[ $# -lt 1 ]]; then
+    echo "FATAL ERROR: universal_wrapper.sh requires a JJob name as \$1" >&2
+    exit 1
+fi
+readonly _JJOB_NAME="$1"
+
+# --- Derive jobid if not already set (scheduler provides it) ---
+export jobid="${jobid:-${_JJOB_NAME}.${PBS_JOBID:-${SLURM_JOB_ID:-$$}}}"
+
+# --- Structured JSON lifecycle logging function (Req 6.6) ---
+_log_lifecycle() {
+    local state="$1"
+    local exit_status="${2:-0}"
+    local now
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    local duration=$(( $(date +%s) - _UW_START_EPOCH ))
+    local cycle="${PDY:-unknown}${cyc:-00}"
+    local attempt="${ECF_TRYNO:-${ECF_TASK_TRYNO:-1}}"
+    local snapshot_id="${SNAPSHOT_ID:-unknown}"
+
+    # Emit structured JSON to stderr for log aggregation
+    cat >&2 <<EOF
+{"event":"task_lifecycle","task":"${_JJOB_NAME}","cycle":"${cycle}","jobid":"${jobid}","attempt":${attempt},"state":"${state}","exit_status":${exit_status},"timestamp":"${now}","duration_seconds":${duration},"snapshot_id":"${snapshot_id}"}
+EOF
+
+    # Also log to state.db via log_task_event.py if available
+    if command -v log_task_event.py &>/dev/null; then
+        log_task_event.py \
+            --task "${_JJOB_NAME}" \
+            --cycle "${cycle}" \
+            --jobid "${jobid}" \
+            --attempt "${attempt}" \
+            --state "${state}" \
+            --exit-status "${exit_status}" \
+            --duration "${duration}" \
+            || true
+    fi
+}
+
+# --- ERR/EXIT trap (Req 6.2, 6.4) ---
+_uw_trap_err() {
+    local _exit_code=${1:-$?}
+    set +x
+    if [[ ${_exit_code} -ne 0 ]]; then
+        _log_lifecycle "failed" "${_exit_code}"
+        err_exit "JJob ${_JJOB_NAME} (jobid=${jobid}) FAILED with exit status ${_exit_code}"
+    fi
+}
+
+_uw_trap_exit() {
+    local _exit_code=$?
+    set +x
+    # Cleanup ephemeral DATA directory unless KEEPDATA=YES (Req 5.2)
+    if [[ "${KEEPDATA:-NO}" != "YES" && -n "${DATA:-}" && -d "${DATA}" ]]; then
+        rm -rf "${DATA}"
+    fi
+    # Log completion
+    if [[ ${_exit_code} -eq 0 ]]; then
+        _log_lifecycle "complete" "0"
+    fi
+}
+
+trap '_uw_trap_err $?' ERR
+trap '_uw_trap_exit' EXIT
+
+# --- Emit init lifecycle event ---
+_log_lifecycle "init" "0"
+
+# ============================================================
+# Platform Detection (Req 12.4)
+# ============================================================
+if [[ -z "${MACHINE:-}" ]]; then
+    # Source detect_machine.sh to set MACHINE_ID
+    if [[ -f "${EXPDIR}/ush/detect_machine.sh" ]]; then
+        source "${EXPDIR}/ush/detect_machine.sh"
+    elif [[ -f "${HOMEglobal:-}/ush/detect_machine.sh" ]]; then
+        source "${HOMEglobal}/ush/detect_machine.sh"
+    else
+        echo "FATAL ERROR: Cannot detect platform — MACHINE not set and detect_machine.sh not found" >&2
+        exit 1
+    fi
+    export MACHINE="${MACHINE_ID}"
+fi
+
+# ============================================================
+# Source Platform Environment (Req 6.3)
+# ============================================================
+readonly _ENV_FILE="{{ EXPDIR }}/env/${MACHINE}.env"
+if [[ ! -f "${_ENV_FILE}" ]]; then
+    echo "FATAL ERROR: Platform environment file not found: ${_ENV_FILE}" >&2
+    _log_lifecycle "aborted" "1"
+    exit 1
+fi
+source "${_ENV_FILE}" "${_JJOB_NAME}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    echo "FATAL ERROR: Failed to source environment file ${_ENV_FILE} for job ${_JJOB_NAME}" >&2
+    _log_lifecycle "aborted" "${err}"
+    exit "${err}"
+fi
+
+# ============================================================
+# WCOSS2 envir Guard (Req 11.8)
+# ============================================================
+if [[ "${MACHINE}" == "wcoss2" || "${MACHINE}" == "WCOSS2" ]]; then
+    if [[ -z "${envir:-}" ]]; then
+        echo "FATAL ERROR: \${envir} is not set on WCOSS2. Must be one of: prod, para, test" >&2
+        _log_lifecycle "aborted" "1"
+        exit 1
+    fi
+    case "${envir}" in
+        prod|para|test) ;; # valid
+        *)
+            echo "FATAL ERROR: \${envir}='${envir}' is invalid on WCOSS2. Must be one of: prod, para, test" >&2
+            _log_lifecycle "aborted" "1"
+            exit 1
+            ;;
+    esac
+fi
+
+# ============================================================
+# Create Ephemeral Working Directory (Req 5.1)
+# ============================================================
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
+
+# Remove any stale DATA from a prior failed run (Req 5.3, 5.6)
+if [[ -d "${DATA}" ]]; then
+    rm -rf "${DATA}"
+fi
+
+mkdir -p "${DATA}"
+cd "${DATA}" || exit 1
+
+# ============================================================
+# EE2 Standard Variables (Req 5.7)
+# ============================================================
+export pgmout="OUTPUT.$$"
+
+# ============================================================
+# Emit start lifecycle event
+# ============================================================
+_log_lifecycle "start" "0"
+
+# ============================================================
+# Execute JJob (Req 6.1, 6.4)
+# ============================================================
+readonly _JJOB_PATH="{{ EXPDIR }}/jobs/${_JJOB_NAME}"
+if [[ ! -f "${_JJOB_PATH}" ]]; then
+    echo "FATAL ERROR: JJob not found: ${_JJOB_PATH}" >&2
+    _log_lifecycle "failed" "127"
+    exit 127
+fi
+
+# Execute the JJob; capture exit status
+"${_JJOB_PATH}" && true
+_jjob_rc=$?
+
+if [[ ${_jjob_rc} -ne 0 ]]; then
+    export err=${_jjob_rc}
+    _log_lifecycle "failed" "${_jjob_rc}"
+    err_exit "JJob ${_JJOB_NAME} (jobid=${jobid}) FAILED with exit status ${_jjob_rc}"
+fi
+
+# ============================================================
+# Success
+# ============================================================
+_log_lifecycle "succeeded" "0"
+
+# Print program output if it exists (EE2 convention)
+if [[ -s "${DATA}/${pgmout}" ]]; then
+    cat "${DATA}/${pgmout}"
+fi
+
+exit 0

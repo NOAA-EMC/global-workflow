@@ -23,3 +23,26 @@ export PYTHONPATH
 export -n SHELLOPTS
 "${SCRglobal}/exglobal_fetch.py"
 err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to fetch data for ${RUN} cycle ${PDY}${cyc}"
+fi
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (
+    echo "${DATAROOT} does not exist. ABORT!"
+    exit 1
+)
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

@@ -1,0 +1,30 @@
+{# dev/parm/ufs/fv3/model_configure.j2 #}
+{# Traces to: Requirement 1 AC3, Requirement 5 AC1, Requirement 5 AC5 #}
+{# Renders FV3 model_configure key-value pairs from model.fv3 context. #}
+{# Shell variables like ${FHMAX} are preserved verbatim for runtime expansion. #}
+print_esmf:          .true.
+total_member:        1
+PE_MEMBER01:         {{ model.fv3.total_tasks }}
+start_year:          {{ model.start_date.year }}
+start_month:         {{ model.start_date.month }}
+start_day:           {{ model.start_date.day }}
+start_hour:          {{ model.start_date.hour }}
+start_minute:        0
+start_second:        0
+nhours_fcst:         ${FHMAX}
+fhrot:               {{ model.fv3.fhrot | default(0) }}
+dt_atmos:            {{ model.dt_atmos }}
+atm_coupling_interval_sec: {{ model.dt_atmos }}
+restart_interval:    {{ model.fv3.restart_interval }}
+quilting:            {{ model.fv3.quilting | fortran_logical }}
+quilting_restart:    {{ model.fv3.quilting_restart | default(model.fv3.quilting) | fortran_logical }}
+write_groups:        {{ model.fv3.write_group }}
+write_tasks_per_group: {{ model.fv3.wrttask_per_group }}
+num_files:           {{ model.fv3.num_output_files | default(2) }}
+filename_base:       'atm' 'sfc'
+output_grid:         '{{ model.output_grid }}'
+output_file:         '{{ model.fv3.output_filetype_atm }}' '{{ model.fv3.output_filetype_sfc }}'
+imo:                 {{ model.fv3.imo }}
+jmo:                 {{ model.fv3.jmo }}
+output_fh:           {{ model.fv3.output_fh }}
+iau_offset:          {{ model.fv3.iau_offset | default(0) }}

@@ -1,0 +1,28 @@
+{# dev/parm/ufs/gocart/collections/inst_ca_bin.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_ca_bin (Binned carbonaceous diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Binned aerosols - Carbonaceous
+#
+  inst_ca_bin.format:     'CFIO' ,
+  inst_ca_bin.descr:      '3d,Hourly,Instantaneous,Model-Level'
+  inst_ca_bin.template:   '%y4%m2%d2_%h2%n2z.nc4',
+  inst_ca_bin.mode:       'instantaneous'
+  inst_ca_bin.grid_label:  {{ model.aerosol.grid_label }} ,
+  inst_ca_bin.splitField:  1,
+  inst_ca_bin.frequency:   {{ model.aerosol.frequencies.inst_ca_bin | default('010000') }} ,
+  inst_ca_bin.duration:    010000 ,
+  inst_ca_bin.ref_time:    000000 ,
+  inst_ca_bin.nbits:      10,
+  inst_ca_bin.fields:     'CAEMCA.bc'  ,  'CA.bc'  ,
+                          'CAEMCA.oc'  ,  'CA.oc'  ,
+                          'CASDCA.bc'  ,  'CA.bc'  ,
+                          'CASDCA.oc'  ,  'CA.oc'  ,
+                          'CADPCA.bc'  ,  'CA.bc'  ,
+                          'CADPCA.oc'  ,  'CA.oc'  ,
+                          'CAWTCA.bc'  ,  'CA.bc'  ,
+                          'CAWTCA.oc'  ,  'CA.oc'  ,
+                          'CASVCA.bc'  ,  'CA.bc'  ,
+                          'CASVCA.oc'  ,  'CA.oc'  ,
+                          ::

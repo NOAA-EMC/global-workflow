@@ -1,0 +1,26 @@
+# dev/parm/components/gocart.yaml
+# Aerosol (GOCART) component definition
+# Traces to: Requirement 10.1, 10.2, 10.5, 10.6, 10.10
+#
+# This component YAML defines the GOCART aerosol model parameters,
+# families, and tasks. Included into the top-level Workflow_Configuration
+# via !INC or {% include %} at deployment time.
+
+model:
+  aerosol:
+    emission_dataset: "qfed"
+    active_collections:
+      - "inst_aod"
+    grid_label: "PC720x361-DC"
+    grid_im: 720
+    grid_jm: 361
+
+families:
+  - path: "gfs/aerosol"
+    tasks:
+      - name: "analysis"
+        trigger: "gfs/atmos/analysis/analcalc == complete"
+        jjob: "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX"
+      - name: "post"
+        trigger: "gfs/atmos/forecast/fcst == complete"
+        jjob: "JGFS_AERO_POST"

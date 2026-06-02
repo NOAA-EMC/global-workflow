@@ -1,0 +1,46 @@
+# Atparse_Exemption_Registry
+#
+# The single authoritative list of repository files permitted to retain
+# runtime atparse (`@[VAR]`) templating. The Token_Scan
+# (dev/workflow/deployment/token_scan.py) and the EE2 compliance scan read
+# this file to distinguish allowed exemptions from violations (Req 3.1, 3.5).
+#
+# Rules enforced by the Token_Scan:
+#   - A repo runtime file containing `@[...]` passes ONLY if its repo-relative
+#     path appears below (Req 3.3); any other file with `@[...]` is a violation.
+#   - An entry whose file no longer contains `@[...]` produces a *warning*
+#     (stale exemption) but does NOT fail the scan (Req 3.4).
+#   - This registry NEVER exempts sealed EXPDIR artifacts — rendered EXPDIR
+#     files must contain zero `@[...]` and zero Jinja2 tokens (Req 7.5, 9).
+#
+# Each entry is a repo-relative path with a recorded justification. These three
+# non-UFS usages are deliberately retained as enforced, tracked exemptions
+# rather than migrated now: they are outside the UFS-config scope of the parent
+# and child specs, and migrating them would expand blast radius without
+# advancing the core sealed-EXPDIR goal.
+
+exemptions:
+  - path: parm/prep_sfc/snow2mdl.nml.tmpl
+    justification: >-
+      Rendered by ush/prep_sfc_snow.sh; the snow analysis is not yet on the
+      deploy-time rendering path. Recorded and tracked for future migration to
+      a deploy-time-rendered config consumed via cpreq from the EXPDIR.
+  - path: ush/prep_sfc_snow.sh
+    justification: >-
+      Sources atparse.bash and invokes atparse to render snow2mdl.nml.tmpl at
+      runtime. The @[XYZ] reference in a comment documents the atparse pattern.
+      Tracked for future migration alongside parm/prep_sfc/snow2mdl.nml.tmpl.
+  - path: ush/regrid_gsiSfcIncr_to_tile.sh
+    justification: >-
+      Builds regrid.nml at runtime via atparse from per-tile values that are
+      resolved only at run time (per-tile grid dimensions). Tracked for future
+      migration once per-tile values can be resolved at deployment time.
+  - path: scripts/exgfs_wave_nawips.sh
+    justification: >-
+      Renders gempak.parm.tmpl per-grid at product time for the downstream
+      GEMPAK product job. Tracked for future migration to deploy-time rendering.
+  - path: ush/python/pygfs/ufswm/ufs.py
+    justification: >-
+      Python implementation of the UFS atparse template parser. The @[VARIABLE]
+      reference in a docstring documents the pattern it parses. Retained as the
+      runtime parser for UFS model configuration templates.

@@ -116,22 +116,12 @@ if __name__ == '__main__':
 
     setup_workflow_args = [str(experiment_dir)]
 
-    # Add workflow engine as positional argument (defaults to rocoto if not specified)
-    workflow_engine = 'rocoto'  # default
+    # Add workflow engine as positional argument (ecFlow is the sole orchestration engine)
+    workflow_engine = 'ecflow'
     if hasattr(testconf, 'workflow') and hasattr(testconf.workflow, 'engine'):
         workflow_engine = testconf.workflow.engine
 
     setup_workflow_args.append(workflow_engine)
-
-    # Add rocoto-specific parameters if workflow engine is rocoto and they are specified
-    if workflow_engine == 'rocoto' and hasattr(testconf, 'workflow') and hasattr(testconf.workflow, 'rocoto'):
-        rocoto_config = testconf.workflow.rocoto
-        if hasattr(rocoto_config, 'maxtries'):
-            setup_workflow_args.extend(['--maxtries', str(rocoto_config.maxtries)])
-        if hasattr(rocoto_config, 'cyclethrottle'):
-            setup_workflow_args.extend(['--cyclethrottle', str(rocoto_config.cyclethrottle)])
-        if hasattr(rocoto_config, 'taskthrottle'):
-            setup_workflow_args.extend(['--taskthrottle', str(rocoto_config.taskthrottle)])
 
     if user_inputs.force:
         setup_workflow_args.append("--force")

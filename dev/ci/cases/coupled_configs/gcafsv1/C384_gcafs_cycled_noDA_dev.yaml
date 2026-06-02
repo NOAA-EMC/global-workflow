@@ -1,0 +1,65 @@
+# ecFlow CI Case: C384 GCAFS Cycled noDA (Dev Mode) — Single Cycle Smoke
+#
+# C384 dev mode: single cycle (interval=0), short forecast for rapid iteration.
+#
+# Replaces legacy: dev/ci/cases/gcafsv1/C384_gcafs_cycled_noDA_dev.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirement 6.2
+
+case:
+  name: "C384_gcafs_cycled_noDA_dev"
+  description: "C384 GCAFS dev mode — single cycle, 24h forecast"
+  resolution: "C384"
+  app: "ATMA"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gcafs.yaml"
+  suite_name: "gcafs_v1"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled_noDA_dev"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gcafs"
+  resdetatmos: 384
+  idate: "2023040118"
+  edate: "2023040206"
+  nens: 0
+  interval: 0
+  start: "cold"
+  icsdir: "{{ BASE_IC }}/C384C192/20240610"
+
+base:
+  DO_TEST_MODE: "NO"
+  USE_AERO_ANL: "NO"
+  AERO_ANL_RUNS: ""
+  assim_freq: 24
+  FHMAX: 24
+  FHOUT_AERO: 1
+
+model_context:
+  post:
+    system: "gcafs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/post/post_itag"
+      expect_contains: ["gcafs"]
+  no_legacy_tokens: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gcafs.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled_noDA_dev \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C384_gcafs_cycled_noDA_dev"

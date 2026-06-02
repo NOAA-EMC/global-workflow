@@ -1,0 +1,41 @@
+# dev/parm/components/wave.yaml
+# Wave (WW3) component definition
+# Traces to: Requirement 10.1, 10.2, 10.5, 10.6, 10.10
+#
+# This component YAML defines the WW3 wave model parameters,
+# families, and tasks. Included into the top-level Workflow_Configuration
+# via !INC or {% include %} at deployment time.
+
+model:
+  wave:
+    resolution: "gwes_30m"
+    tasks: 100
+    omp_threads: 1
+    mesh: "mesh.ww3.gwes_30m"
+    dt_wave: 900
+    output_frequency_hours: 6
+
+families:
+  - path: "gfs/wave"
+    tasks:
+      - name: "init"
+        trigger: "gfs/atmos/analysis/analcalc == complete"
+        jjob: "JGLOBAL_WAVE_INIT"
+      - name: "prep"
+        trigger: "gfs/wave/init == complete"
+        jjob: "JGLOBAL_WAVE_PREP"
+      - name: "postsbs"
+        trigger: "gfs/atmos/forecast/fcst == complete"
+        jjob: "JGFS_WAVE_POSTSBS"
+      - name: "postpnt"
+        trigger: "gfs/atmos/forecast/fcst == complete"
+        jjob: "JGFS_WAVE_POSTPNT"
+      - name: "awipsbulls"
+        trigger: "gfs/wave/postpnt == complete"
+        jjob: "JGFS_WAVE_AWIPSBULLS"
+      - name: "awipsgridded"
+        trigger: "gfs/wave/postsbs == complete"
+        jjob: "JGFS_WAVE_AWIPSGRIDDED"
+      - name: "gempak"
+        trigger: "gfs/wave/postsbs == complete"
+        jjob: "JGFS_WAVE_GEMPAK"

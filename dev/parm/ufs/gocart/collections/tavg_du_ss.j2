@@ -1,0 +1,20 @@
+{# dev/parm/ufs/gocart/collections/tavg_du_ss.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for tavg_du_ss (Time-averaged Dust and Sea Salt). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# Time-averaged 3d aerosols - Dust and Sea Salt
+#
+  tavg_du_ss.format:      'CFIO' ,
+  tavg_du_ss.descr:       '3d,Hourly,Instantaneous,Model-Level,Aerosol Concentrations',
+  tavg_du_ss.template:    '%y4%m2%d2_%h2%n2z.nc4',
+  tavg_du_ss.mode:        'time-averaged',
+  tavg_du_ss.grid_label:  {{ model.aerosol.grid_label }} ,
+  tavg_du_ss.splitField:  1,
+  tavg_du_ss.frequency:   {{ model.aerosol.frequencies.tavg_du_ss | default('010000') }} ,
+  tavg_du_ss.duration:    010000 ,
+  tavg_du_ss.ref_time:    000000 ,
+  tavg_du_ss.nbits:       10,
+  tavg_du_ss.fields:      'DU' , 'DU' ,
+                          'SS' , 'SS' ,
+                          ::

@@ -1,0 +1,14 @@
+{# dev/parm/ufs/gocart/AERO.rc.j2 #}
+{# Core aerosol module configuration with grid decomposition and band settings #}
+{# Namespace: model.aerosol.aero #}
+{% set aero = model.aerosol.aero | default({}) %}
+NX: {{ aero.NX | default(4) }}
+NY: {{ aero.NY | default(24) }}
+
+# Atmospheric Model Configuration Parameters
+# ------------------------------------------
+IOSERVER_NODES: 0
+
+DYCORE: NONE
+
+NUM_BANDS: {{ aero.NUM_BANDS | default(30) }}

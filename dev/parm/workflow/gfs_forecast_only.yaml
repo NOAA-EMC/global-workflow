@@ -1,0 +1,75 @@
+# Workflow_Configuration for GFS Forecast-Only Mode
+# Schema: suite, defaults, cycles, families, tasks, inter_cycle_dependencies
+# Minimal configuration for testing: runs a single GFS forecast cycle
+# without data assimilation (no GDAS analysis, no EnKF).
+#
+# Traces to: Requirement 2.1 (DAG representation), Requirement 10.1 (Parser input)
+
+suite:
+  name: "gfs_v17_fcst_only"
+  ecf_home: "{{ EXPDIR }}/ecf"
+  ecf_files: "{{ EXPDIR }}/ecf/scripts"
+  ecf_include: "{{ EXPDIR }}/ecf/include"
+
+defaults:
+  ECF_TRIES: 2
+  ECF_JOB_CMD: "uwtools submit %ECF_JOB% %ECF_JOBOUT%"
+  ACCOUNT: "{{ ACCOUNT }}"
+  QUEUE: "{{ QUEUE }}"
+  PARTITION: "{{ PARTITION }}"
+
+cycles:
+  - name: "gfs"
+    repeat:
+      type: "date"
+      variable: "YMD"
+      start: "{{ idate }}"
+      end: "{{ edate }}"
+      step: 1
+    time: "00:00 06:00 12:00 18:00"
+
+families:
+  # ──────────────────────────────────────────────────────────────────────
+  # GFS Forecast (cold-start from staged ICs)
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gfs/atmos/stage"
+    tasks:
+      - name: "stage_ic"
+        trigger: ""
+        jjob: "JGLOBAL_STAGE_IC"
+
+  - path: "gfs/atmos/forecast"
+    tasks:
+      - name: "fcst"
+        trigger: "gfs/atmos/stage/stage_ic == complete"
+        jjob: "JGLOBAL_FORECAST"
+        events:
+          - "forecast_hour"
+        meters:
+          - name: "forecast_hour"
+            min: 0
+            max: 120
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GFS Post-Processing
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gfs/atmos/post"
+    tasks:
+      - name: "post_f{{ '%03d' % fhr }}"
+        trigger: "gfs/atmos/forecast/fcst:forecast_hour ge {{ fhr }}"
+        jjob: "JGFS_ATMOS_POST"
+        variables:
+          FHOUR: "{{ fhr }}"
+        for_each:
+          fhr: [0, 6, 12, 24, 48, 72, 120]
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GFS Archive
+  # ──────────────────────────────────────────────────────────────────────
+  - path: "gfs/atmos/archive"
+    tasks:
+      - name: "arch"
+        trigger: "gfs/atmos/post/post_f120 == complete"
+        jjob: "JGLOBAL_ARCHIVE"
+
+inter_cycle_dependencies: []

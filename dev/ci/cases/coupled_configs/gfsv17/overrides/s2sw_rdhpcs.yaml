@@ -1,0 +1,31 @@
+# Workflow overrides for GFS v17 RDHPCS cycling (S2SW)
+# Used by C1152mx025_S2SW_rdhpcs.yaml CI case
+# Replaces legacy: dev/ci/cases/gfsv17/s2sw_rdhpcs.yaml
+
+base:
+  DOIAU: "YES"
+  DO_JEDIOCNVAR: "YES"
+  DO_JEDISNOWDA: "YES"
+  DO_GSISOILDA: "YES"
+  DOHYBVAR: "YES"
+  DOHYBVAR_OCN: "YES"
+  EUPD_CYC: "gdas"
+  INTERVAL_GFS: 6
+  SDATE_GFS: "2024111512"
+  FHMAX_GFS: 384
+  FHMAX_HF_GFS: 120
+  CASE_HIST: "C768"
+
+prepoceanobs:
+  use_exp_obs: "YES"
+  dmpdir_exp: "/gpfs/f6/gfs-cpu/world-shared/Mindo.Choi/common_obsForge"
+
+marinebmat:
+  SOCA_INPUT_FIX_DIR: "{{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca"
+  SOCA_ANL_GEOM: "{{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca"
+
+marineanl:
+  SOCA_INPUT_FIX_DIR: "{{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca"
+  SOCA_ANL_GEOM: "{{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca"
+  SOCA_OBS_LIST: "{{ HOMEglobal }}/parm/gdas/marine/obs/obs_list_gfsv17.yaml.j2"
+  SOCA_NINNER: 100

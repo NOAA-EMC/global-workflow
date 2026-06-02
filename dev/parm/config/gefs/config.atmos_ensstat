@@ -5,7 +5,7 @@
 
 echo "BEGIN: config.atmos_ensstat"
 
-# Maximum number of rocoto tasks
+# Maximum number of ecFlow tasks
 export MAX_TASKS=25
 
 # Get task specific resources

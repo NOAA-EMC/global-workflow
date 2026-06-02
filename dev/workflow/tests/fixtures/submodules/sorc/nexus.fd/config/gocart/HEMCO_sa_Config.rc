@@ -1,0 +1,19 @@
+#
+# HEMCO_sa_Config.rc (Submodule_Fixture stand-in)
+#
+# Minimal, byte-stable stand-in for the NEXUS standalone HEMCO configuration
+# owned by the sorc/nexus.fd submodule. Free of all templating tokens so the
+# Token_Scan over a rendered EXPDIR passes. See the directory README.
+#
+###############################################################################
+### BEGIN SECTION SETTINGS
+###############################################################################
+Logfile:        HEMCO_sa.log
+DiagnFile:      HEMCO_sa_Diagn.rc
+DiagnPrefix:    HEMCO_sa_diagnostics
+DiagnFreq:      00000100 000000
+Verbose:        0
+Warnings:       1
+###############################################################################
+### END SECTION SETTINGS
+###############################################################################

@@ -1,0 +1,22 @@
+{# dev/parm/ufs/gocart/collections/inst_ni.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_ni (Nitrate aerosol concentrations). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# 3d aerosols - Nitrate
+#
+  inst_ni.format:         'CFIO' ,
+  inst_ni.descr:          '3d,Hourly,Instantaneous,Model-Level,Aerosol Concentrations',
+  inst_ni.template:       '%y4%m2%d2_%h2%n2z.nc4',
+  inst_ni.mode:           'instantaneous',
+  inst_ni.grid_label:     {{ model.aerosol.grid_label }} ,
+  inst_ni.frequency:      {{ model.aerosol.frequencies.inst_ni | default('010000') }} ,
+  inst_ni.duration:       010000 ,
+  inst_ni.ref_time:       000000 ,
+  inst_ni.nbits:          10,
+  inst_ni.fields:         'NH3'    , 'NI' ,
+                          'NH4a'   , 'NI' ,
+                          'NO3an1' , 'NI' ,
+                          'NO3an2' , 'NI' ,
+                          'NO3an3' , 'NI' ,
+                          ::

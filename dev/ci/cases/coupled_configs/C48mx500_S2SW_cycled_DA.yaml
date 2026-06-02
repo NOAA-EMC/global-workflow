@@ -1,0 +1,178 @@
+# ecFlow CI Case: C48mx500 S2SW Cycled — Coupled DA with Config Rendering
+#
+# Validates coupled-model config rendering in a full cycled DA context.
+# Exercises: All coupled templates + DAG generation with inter-cycle deps +
+# warm start ice (cycling implies warm start after first cycle).
+#
+# Traces to: coupled-model-configs Requirements 1.1, 3.3, 8.1, 8.2, 9.1
+#            immutable-dag Requirements 1.1, 2.1, 14.5
+
+case:
+  name: "C48mx500_S2SW_cycled_DA"
+  description: "Full cycled S2SW with coupled-model config rendering and DAG"
+  resolution: "C48"
+  app: "S2SW"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_cycled.yaml"
+  suite_name: "gfs_v17"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_cycled_DA"
+  version: "ci-{{ git_sha_short }}"
+
+model_context:
+  ocean:
+    resolution: "500"
+    dt_ocean: 7200
+    dt_therm: 14400
+    use_waves: true
+    oda_incupd: true
+    oda_incupd_nhours: 6
+    do_sppt: false
+    river_runoff: true
+    diag_coord_def_z_file: "oceanda_zgrid_75L.nc"
+    frunoff: "INPUT/runoff.daitren.clim.nc"
+    tasks: 12
+  ice:
+    nprocs: 12
+    decomposition: "slenderX2"
+    dt_ice: 7200
+    grid: "grid_cice_NEMS_mx500.nc"
+    mask: "kmtu_cice_NEMS_mx500.nc"
+    nx_glb: 72
+    ny_glb: 35
+    warm_start: true
+    histfreq_n: 1
+    hist_avg: true
+    dumpfreq: "d"
+    dumpfreq_n: 1
+    ktherm: 2
+    tr_pond_lvl: true
+  wave:
+    ice_input: "CPL"
+    current_input: "CPL"
+    output_params: "HS FP DP PHS PTP PDIR CHA"
+    dt_field_output: 10800
+    dt_point_output: 3600
+    grid_output_dir: "./"
+    point_output_dir: "./"
+    restart_output_dir: "./RESTART/"
+  post:
+    system: "gfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/ocean/MOM_input"
+      validator: "MOM6ParameterValidator"
+      expect_contains:
+        - "ODA_INCUPD = True"
+    - path: "parm/ufs/ice/ice_in"
+      validator: "NamelistValidator"
+      expect_contains:
+        - "runtype        = 'continue'"
+        - "use_restart_time = .true."
+    - path: "parm/ufs/wave/ww3_shel.nml"
+      validator: "NamelistValidator"
+  expected_task_count: 54
+  expected_families:
+    - "gdas/atmos/prep"
+    - "gdas/atmos/analysis"
+    - "gdas/atmos/forecast"
+    - "gdas/atmos/post"
+    - "gdas/atmos/verification"
+    - "gdas/atmos/archive"
+    - "gdas/enkf/analysis"
+    - "gdas/enkf/forecast"
+    - "gfs/atmos/analysis"
+    - "gfs/atmos/forecast"
+    - "gfs/atmos/post"
+    - "gfs/atmos/products"
+    - "gfs/atmos/verification"
+    - "gfs/atmos/archive"
+    - "gfs/wave"
+  has_inter_cycle_dependencies: true
+  no_legacy_tokens: true
+  no_symlinks: true
+
+steps:
+  - name: "deploy"
+    description: "Deploy full cycled workflow with coupled-model configs"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_cycled_DA \
+        --version ci-{{ git_sha_short }}
+    timeout: 180
+    expect_success: true
+
+  - name: "load_def"
+    description: "Load the generated suite definition into ecflow_server"
+    command: |
+      ecflow_client --port {{ ecflow_port }} --load \
+        {{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_cycled_DA/ecf/defs/gfs_v17.def
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_task_count"
+    description: "Verify the loaded suite has expected task count"
+    command: |
+      task_count=$(ecflow_client --port {{ ecflow_port }} \
+        --get /gfs_v17 2>/dev/null | grep "task " | wc -l)
+      if [ "${task_count}" -ne 54 ]; then
+        echo "FATAL ERROR: Expected 54 tasks, found ${task_count}"
+        exit 1
+      fi
+      echo "OK: Task count verified (${task_count} tasks)"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_coupled_configs_exist"
+    description: "Verify all coupled-model configs rendered in EXPDIR"
+    command: |
+      expdir="{{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_cycled_DA"
+      for f in parm/ufs/ocean/MOM_input \
+               parm/ufs/ocean/MOM6_data_table \
+               parm/ufs/ice/ice_in \
+               parm/ufs/wave/ww3_shel.nml; do
+        if [ ! -f "${expdir}/${f}" ]; then
+          echo "FATAL ERROR: ${f} not found in EXPDIR"
+          exit 1
+        fi
+      done
+      echo "OK: All coupled-model configs present"
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_dag_acyclicity"
+    description: "Verify the DAG has no cycles"
+    command: |
+      python3 -c "
+      import sys
+      sys.path.insert(0, '{{ HOMEglobal }}/dev/workflow')
+      from deployment.workflow_config import parse
+      dag = parse('{{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml')
+      dag.validate_acyclic()
+      print('OK: DAG acyclicity verified')
+      "
+    timeout: 30
+    expect_success: true
+
+  - name: "verify_no_legacy_tokens"
+    description: "Verify no @[VAR] atparse tokens in rendered configs"
+    command: |
+      if grep -r '@\[' {{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_cycled_DA/parm/ufs/; then
+        echo "FATAL ERROR: Legacy @[VAR] tokens found"
+        exit 1
+      fi
+      echo "OK: No legacy atparse tokens found"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "ecflow_client --port {{ ecflow_port }} --delete /gfs_v17 yes"
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C48mx500_S2SW_cycled_DA"

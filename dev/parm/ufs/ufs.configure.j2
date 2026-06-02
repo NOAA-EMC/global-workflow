@@ -1,0 +1,254 @@
+{# dev/parm/ufs/ufs.configure.j2 #}
+{# Traces to: Requirement 2, Requirement 6 AC2, Requirement 8 AC2 #}
+{# Generates ESMF/NUOPC coupling configuration from Model_Context #}
+{#
+   Required context variables:
+     model.active_components  - list of active component names
+     model.coupling_mode      - one of: atm, atmaero, s2s, s2sa, s2sw, s2swa
+     model.dt_atmos           - atmospheric timestep in seconds
+     model.fv3.total_tasks    - total ATM PET count
+     model.fv3.omp_threads    - ATM OpenMP threads (default: 1)
+     model.fv3.atm_model      - ATM model name (default: fv3)
+     model.ocean.tasks        - OCN PET count (when ocean active)
+     model.ocean.omp_threads  - OCN OpenMP threads (default: 1)
+     model.ice.nprocs         - ICE PET count (when ice active)
+     model.ice.omp_threads    - ICE OpenMP threads (default: 1)
+     model.wave.tasks         - WAV PET count (when wave active)
+     model.wave.omp_threads   - WAV OpenMP threads (default: 1)
+     model.coupling_interval_slow - slow coupling interval in seconds
+     model.coupling_interval_fast - fast coupling interval in seconds
+#}
+{# Compute PET offsets for each component #}
+{% set atm_pet_start = 0 %}
+{% set atm_pet_end = model.fv3.total_tasks - 1 %}
+{% set ocn_pet_start = model.fv3.total_tasks %}
+{% set ocn_pet_end = model.fv3.total_tasks + model.ocean.tasks - 1 if 'ocean' in model.active_components else 0 %}
+{% set ice_pet_start = model.fv3.total_tasks + model.ocean.tasks if 'ocean' in model.active_components else model.fv3.total_tasks %}
+{% set ice_pet_end = ice_pet_start + model.ice.nprocs - 1 if 'ice' in model.active_components else 0 %}
+{% set wav_pet_start = ice_pet_start + model.ice.nprocs if 'ice' in model.active_components else ice_pet_start %}
+{% set wav_pet_end = wav_pet_start + model.wave.tasks - 1 if 'wave' in model.active_components else 0 %}
+#############################################
+####  NEMS Run-Time Configuration File  #####
+#############################################
+
+EARTH_component_list: {% for comp in model.active_components %}{{ comp | upper }}{% if not loop.last %} {% endif %}{% endfor %}
+
+EARTH_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  Diagnostic = {{ model.get('diagnostic', 0) }}
+::
+
+{% if 'atmosphere' in model.active_components %}
+ATM_model:                      {{ model.fv3.atm_model | default('fv3') }}
+ATM_petlist_bounds:             {{ atm_pet_start }} {{ atm_pet_end }}
+ATM_omp_num_threads:            {{ model.fv3.omp_threads | default(1) }}
+{% endif %}
+
+{% if 'ocean' in model.active_components %}
+OCN_model:                      mom6
+OCN_petlist_bounds:             {{ ocn_pet_start }} {{ ocn_pet_end }}
+OCN_omp_num_threads:            {{ model.ocean.omp_threads | default(1) }}
+{% endif %}
+
+{% if 'ice' in model.active_components %}
+ICE_model:                      cice6
+ICE_petlist_bounds:             {{ ice_pet_start }} {{ ice_pet_end }}
+ICE_omp_num_threads:            {{ model.ice.omp_threads | default(1) }}
+{% endif %}
+
+{% if 'wave' in model.active_components %}
+WAV_model:                      ww3
+WAV_petlist_bounds:             {{ wav_pet_start }} {{ wav_pet_end }}
+WAV_omp_num_threads:            {{ model.wave.omp_threads | default(1) }}
+{% endif %}
+
+{% if 'aerosol' in model.active_components %}
+CHM_model:                      gocart
+CHM_petlist_bounds:             0 {{ atm_pet_end }}
+CHM_omp_num_threads:            {{ model.fv3.omp_threads | default(1) }}
+{% endif %}
+
+{% if model.coupling_mode not in ['atm', 'atmaero'] %}
+MED_model:                      cmeps
+MED_petlist_bounds:             0 {{ atm_pet_end }}
+MED_omp_num_threads:            {{ model.fv3.omp_threads | default(1) }}
+{% endif %}
+
+{# CMEPS attributes — only present when mediator is active #}
+{% if model.coupling_mode not in ['atm', 'atmaero'] %}
+DRIVER_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  cime_model = cesm
+  tbar_adj_limit_vector = {{ model.get('tbar_adj_limit_vector', 'true') }}
+::
+
+MED_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  Diagnostic = {{ model.get('diagnostic', 0) }}
+  ATM_model = {{ model.fv3.atm_model | default('fv3') }}
+  MED_model = cmeps
+  history_n = {{ model.get('med_history_n', 1000000) }}
+  coupling_mode = {{ model.get('cplmode', 'nems_frac') }}
+  normalization = none
+  merge_type = copy
+  pio_typename = {{ model.get('cmeps_pio_format', 'pnetcdf') }}
+  pio_stride = {{ model.get('cmeps_pio_stride', 4) }}
+  pio_iotasks = {{ model.get('cmeps_pio_iotasks', -99) }}
+  pio_root = {{ model.get('cmeps_pio_root', -99) }}
+  pio_rearranger = {{ model.get('pio_rearranger', 'box') }}
+  ocean_albedo_limit = {{ model.get('ocean_albedo_limit', 0.06) }}
+  mapuv3d = {{ model.get('mapuv3d', 'true') }}
+::
+
+ALLCOMP_attributes::
+  ATMTileSize = {{ model.fv3.npx - 1 }}
+  ScalarFieldCount = 4
+  ScalarFieldIdxGridNX = 1
+  ScalarFieldIdxGridNY = 2
+  ScalarFieldIdxGridNTile = 3
+  ScalarFieldIdxNextSwathCt = 4
+  ScalarFieldName = cpl_scalars
+  start_type = {{ model.get('cmeps_run_type', 'startup') }}
+  restart_dir = {{ model.get('cmeps_restart_dir', 'CMEPS_RESTART/') }}
+  case_name = ufs.cpld
+  restart_n = {{ model.get('restart_n', 999999) }}
+  restart_option = nseconds
+  restart_ymd = -999
+  dbug_flag = {{ model.get('cap_dbug_flag', 0) }}
+  use_coldstart = {{ model.get('use_coldstart', '.false.') }}
+  use_mommesh = {{ model.get('use_mommesh', 'true') }}
+  eps_imesh = {{ model.get('eps_imesh', '1.0e-1') }}
+  stop_n = ${FHMAX}
+  stop_option = nhours
+  stop_ymd = -999
+  write_endofrun_restart = {{ model.get('write_endofrun_restart', '.false.') }}
+::
+{% endif %}
+
+{% if 'ocean' in model.active_components %}
+OCN_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  Diagnostic = {{ model.get('diagnostic', 0) }}
+  cdf_impexp_freq = 3600
+  cpl_hour = 0
+  cpl_min = 0
+  cpl_sec = {{ model.coupling_interval_slow | default(model.dt_atmos) }}
+  base_dtg = ${PDY}${cyc}
+  merge_import = .true.
+  skip_first_import = .true.
+  MOM6_OUTPUT_DIR = {{ model.ocean.output_dir | default('./MOM6_OUTPUT') }}
+  MOM6_RESTART_DIR = {{ model.ocean.restart_dir | default('./MOM6_RESTART') }}
+  MOM6_HISTFREQ_N = {{ model.ocean.output_frequency_hours | default(6) }}
+  restartfreq = 0
+  use_hyper_thread = .false.
+::
+{% endif %}
+
+{% if 'ice' in model.active_components %}
+ICE_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  Diagnostic = {{ model.get('diagnostic', 0) }}
+  mesh_ice = {{ model.ice.get('mesh', 'mesh.cice.nc') }}
+  eps_imesh = {{ model.get('eps_imesh', '1.0e-1') }}
+  stop_n = ${FHMAX}
+  stop_option = nhours
+  stop_ymd = -999
+::
+{% endif %}
+
+{% if 'wave' in model.active_components %}
+WAV_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  Diagnostic = {{ model.get('diagnostic', 0) }}
+  OverwriteSlice = false
+  mesh_wav = {{ model.wave.get('mesh', 'mesh.ww3.' + model.wave.resolution) }}
+  user_histname = {{ model.wave.get('user_histname', 'false') }}
+  historync = {{ model.wave.get('historync', 'false') }}
+  restartnc = {{ model.wave.get('restartnc', 'true') }}
+  pio_typename = {{ model.wave.get('pio_format', 'pnetcdf') }}
+  pio_iotasks = {{ model.wave.get('pio_iotasks', -99) }}
+  pio_stride = {{ model.wave.get('pio_stride', 4) }}
+  pio_rearranger = {{ model.wave.get('pio_rearranger', 'box') }}
+  pio_root = {{ model.wave.get('pio_root', -99) }}
+::
+{% endif %}
+
+{% if 'aerosol' in model.active_components and model.coupling_mode == 'atmaero' %}
+CHM_attributes::
+  Verbosity = {{ model.get('verbosity', 0) }}
+  Diagnostic = {{ model.get('diagnostic', 0) }}
+::
+{% endif %}
+
+{# Run Sequence — coupling mode determines the sequence structure #}
+runSeq::
+{% if model.coupling_mode == 'atm' %}
+  @{{ model.dt_atmos }}
+    ATM
+  @
+{% elif model.coupling_mode == 'atmaero' %}
+  @{{ model.dt_atmos }}
+    ATM -> CHM
+    CHM -> ATM
+    ATM
+    CHM
+  @
+{% elif model.coupling_mode in ['s2s', 's2sa'] %}
+  @{{ model.coupling_interval_slow }}
+    MED med_phases_prep_ocn
+    MED med_phases_ocnalb_run
+    MED -> OCN :remapMethod=redist
+    OCN
+    @{{ model.coupling_interval_fast }}
+      MED med_phases_prep_atm
+      MED med_phases_prep_ice
+      MED -> ATM :remapMethod=redist
+      MED -> ICE :remapMethod=redist
+      ATM
+{% if model.coupling_mode == 's2sa' %}
+      ATM -> CHM
+      CHM
+      CHM -> ATM
+{% endif %}
+      ICE
+      ATM -> MED :remapMethod=redist
+      ICE -> MED :remapMethod=redist
+      MED med_phases_post_atm
+      MED med_phases_post_ice
+    @
+    OCN -> MED :remapMethod=redist
+    MED med_phases_post_ocn
+  @
+{% elif model.coupling_mode in ['s2sw', 's2swa'] %}
+  @{{ model.coupling_interval_slow }}
+    MED med_phases_prep_ocn
+    MED med_phases_ocnalb_run
+    MED -> OCN :remapMethod=redist
+    OCN
+    @{{ model.coupling_interval_fast }}
+      MED med_phases_prep_atm
+      MED med_phases_prep_ice
+      MED med_phases_prep_wav
+      MED -> ATM :remapMethod=redist
+      MED -> ICE :remapMethod=redist
+      MED -> WAV :remapMethod=redist
+      ATM
+{% if model.coupling_mode == 's2swa' %}
+      ATM -> CHM
+      CHM
+      CHM -> ATM
+{% endif %}
+      ICE
+      WAV
+      ATM -> MED :remapMethod=redist
+      ICE -> MED :remapMethod=redist
+      WAV -> MED :remapMethod=redist
+      MED med_phases_post_atm
+      MED med_phases_post_ice
+      MED med_phases_post_wav
+    @
+    OCN -> MED :remapMethod=redist
+    MED med_phases_post_ocn
+  @
+{% endif %}
+::

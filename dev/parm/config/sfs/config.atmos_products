@@ -1,1 +1,28 @@
-../gefs/config.atmos_products
+#! /usr/bin/env bash
+
+########## config.atmos_products ##########
+# atmosphere grib2 products specific
+
+echo "BEGIN: config.atmos_products"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" atmos_products
+
+# Maximum number of ecFlow tasks per member
+export MAX_TASKS=25
+
+if [[ "${FHMAX_HF_GFS:-0}" == "0" ]]; then
+    export FHOUT_PGBS=${FHOUT_GFS:-3}  # Output frequency of supplemental gfs pgb file at 1.0 and 0.5 deg
+else
+    export FHOUT_PGBS=${FHOUT_HF_GFS:-1}
+fi
+export FLXGF="NO"  # Create interpolated sflux.1p00 file
+
+# paramlist files for the different forecast hours and downsets
+export downset=2
+export paramlista="${PARMglobal}/product/${NET}.0p25.fFFF.paramlist.a.txt"
+export paramlista_anl="${PARMglobal}/product/${NET}.0p25.anl.paramlist.a.txt"
+export paramlista_f000="${PARMglobal}/product/${NET}.0p25.f000.paramlist.a.txt"
+export paramlistb="${PARMglobal}/product/${NET}.0p25.fFFF.paramlist.b.txt"
+
+echo "END: config.atmos_products"

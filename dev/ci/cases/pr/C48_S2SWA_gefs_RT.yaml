@@ -30,9 +30,6 @@ skip_ci_on_hosts:
   - awsepicglobalworkflow
 
 workflow:
-  engine: rocoto
-  rocoto:
-    maxtries: 2
-    cyclethrottle: 3
-    taskthrottle: 25
-    verbosity: 2
+  engine: ecflow
+  ecflow:
+    verbosity: 1

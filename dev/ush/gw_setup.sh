@@ -33,8 +33,8 @@ if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
     export PYTHONPATH
 fi
 
-# Source rocoto helper functions for use in the global-workflow
-source "${HOMEglobal}/dev/ush/rocoto_helpers.sh"
+# Source ecFlow helper functions for use in the global-workflow
+source "${HOMEglobal}/dev/ush/ecflow_helpers.sh"
 
 if [[ ${unset_homegfs} == "YES" ]]; then
     unset HOMEglobal

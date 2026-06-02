@@ -1,0 +1,46 @@
+#!/bin/bash
+# ============================================================
+# ecFlow Task Preamble (head.h)
+# ============================================================
+# Generated from: dev/workflow/ecflow/templates/head.h.j2
+# Traces to: Requirements 1.2, 6.1, 6.2
+#
+# This include is sourced at the top of every rendered .ecf task
+# script. It establishes the shell environment, tracing, error
+# traps, and ecFlow client communication before the task body.
+# ============================================================
+
+# --- ecFlow client: notify server that task is active ---
+%ecf_script_header%
+export ECF_PORT=%ECF_PORT%
+export ECF_HOST=%ECF_HOST%
+export ECF_NAME=%ECF_NAME%
+export ECF_PASS=%ECF_PASS%
+export ECF_TRYNO=%ECF_TRYNO%
+export ECF_RID=$$
+
+# Inform ecFlow that the task has started
+ecflow_client --init="$$"
+
+# --- Shell hardening ---
+set -x
+export PS4='+ $SECONDS + '
+umask 022
+
+# --- Trap: on ERR or EXIT, abort the ecFlow task ---
+_ecf_trap() {
+    local _exit_code=${1:-$?}
+    set +x
+    if [[ ${_exit_code} -ne 0 ]]; then
+        ecflow_client --abort="trap: exit code ${_exit_code}"
+        trap - EXIT
+        exit "${_exit_code}"
+    fi
+}
+trap '_ecf_trap $?' ERR
+trap '_ecf_trap $?' EXIT
+
+# --- Task metadata (available to downstream includes) ---
+export ECF_TASK_START_TIME=$(date +%s)
+export ECF_TASK_NAME=%ECF_NAME%
+export ECF_TASK_TRYNO=%ECF_TRYNO%

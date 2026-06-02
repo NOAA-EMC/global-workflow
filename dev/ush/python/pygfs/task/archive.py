@@ -1,0 +1,1010 @@
+#!/usr/bin/env python3
+
+import glob
+import os
+import shutil
+import tarfile
+from logging import getLogger
+from typing import List, Tuple, Union
+from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
+                    chgrp, get_gid, logit, mkdir_p, parse_j2yaml, rm_p, rmdir,
+                    strftime, to_YMDH, which, chdir, ProcessError, save_as_yaml,
+                    add_to_datetime)
+
+git_filename = "git_info.log"
+logger = getLogger(__name__.split('.')[-1])
+
+
+class Archive(Task):
+    """Task to archive ROTDIR data to HPSS (or locally)
+    """
+
+    def __init__(self, config: AttrDict) -> None:
+        """Constructor for the Archive task
+
+        Parameters
+        ----------
+        config : AttrDict
+            Incoming configuration for the task from the environment
+
+        Returns
+        -------
+        None
+        """
+        super().__init__(config)
+        # Boolean used for cleanup if the EXPDIR was archived
+        self.archive_expdir = False
+
+    @logit(logger)
+    def configure_vrfy(self, arch_dict: AttrDict) -> (AttrDict):
+        """Determine which files will need to be created to archive to arcdir.
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
+
+        Return
+        ------
+        arcdir_set : AttrDict
+            Set of FileHandler instructions to copy files to the ARCDIR
+        """
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        if arch_dict.RUN in ["gdas", "gfs"]:
+
+            # Copy the cyclone track files and rename the experiments
+            # TODO This really doesn't belong in archiving and should be moved elsewhere
+            Archive._rename_cyclone_expt(arch_dict)
+
+        archive_parm = os.path.join(arch_dict.PARMglobal, "archive")
+
+        # Collect the dataset to archive locally
+        # Select template based on RUN type: ensemble (enkf) or deterministic (NET)
+        if "enkf" in arch_dict.RUN:
+            arcdir_j2yaml = os.path.join(archive_parm, "enkf_arcdir.yaml.j2")
+        else:
+            arcdir_j2yaml = os.path.join(archive_parm, f"{arch_dict.NET}_arcdir.yaml.j2")
+
+        # Add the glob.glob function for capturing log filenames
+        arch_dict['glob'] = glob.glob
+
+        # Add the os.path.exists function to the dict for yaml parsing
+        arch_dict['path_exists'] = os.path.exists
+
+        # Parse the input jinja yaml template
+        arcdir_set = parse_j2yaml(arcdir_j2yaml, arch_dict, allow_missing=True)
+
+        # Collect datasets that need to be archived
+        self.tar_cmd = ""
+
+        return AttrDict(arcdir_set)
+
+    @logit(logger)
+    def configure_tars(self, arch_dict: AttrDict) -> (List[AttrDict]):
+        """Determine which tarballs will need to be created.
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Task specific keys, e.g. runtime options (DO_AERO_FCST, DO_ICE, etc)
+
+        Return
+        ------
+        atardir_sets : List[AttrDict]
+            List of tarballs and instructions for creating them via tar or htar
+        """
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        # Test if TARBALL_TYPE is defined.  If not, set to None.
+        # This variable is only used for gdas and gfs RUNs.
+        # TODO: Expand this to other RUNs.
+        if 'TARBALL_TYPE' not in arch_dict:
+            arch_dict['TARBALL_TYPE'] = None
+
+        # Only perform this if we are archiving tarball type gfsa or gdas
+        if arch_dict.TARBALL_TYPE and arch_dict.TARBALL_TYPE in ["gfsa", "gdas"]:
+
+            # Copy the cyclone track files and rename the experiments
+            # TODO: This really doesn't belong in archiving and should be moved elsewhere
+            Archive._rename_cyclone_expt(arch_dict)
+
+        # If this is a restart tarball, determine if we need to archive it this cycle
+        if arch_dict.TARBALL_TYPE is not None and "restart" in arch_dict.TARBALL_TYPE:
+            arch_dict['arch_increments'] = self._arch_warm_start_increments(arch_dict)
+            arch_dict['arch_warm_ics'] = self._arch_warm_restart_ics(arch_dict)
+
+            # Based on TARBALL_TYPE and parameters, determine if we are archiving warm restarts or warm ICs
+            if not self._arch_restart(arch_dict):
+                logger.info(f"Skipping archiving of {arch_dict.TARBALL_TYPE} tarballs for cycle {arch_dict.current_cycle} "
+                            f"as no warm restarts or warm ICs are to be archived.")
+                return []
+
+        archive_parm = os.path.join(arch_dict.PARMglobal, "archive")
+
+        # Add the glob.glob function for capturing log filenames
+        # TODO remove this kludge once log filenames are explicit
+        arch_dict['glob'] = glob.glob
+
+        # Add the os.path.exists function to the dict for yaml parsing
+        arch_dict['path_exists'] = os.path.exists
+
+        if not os.path.isdir(arch_dict.ROTDIR):
+            raise FileNotFoundError(f"FATAL ERROR: The ROTDIR ({arch_dict.ROTDIR}) does not exist!")
+
+        # Collect datasets that need to be archived
+        # Each dataset represents one tarball
+
+        if arch_dict.ARCHCOM_TO == "hpss":
+            self.tar_cmd = "htar"
+            self.hsi = Hsi()
+            self.htar = Htar()
+            self.cvf = self.htar.cvf
+            self.rm_cmd = self.hsi.rm
+            self.chgrp_cmd = self.hsi.chgrp
+            self.chmod_cmd = self.hsi.chmod
+        elif arch_dict.ARCHCOM_TO == "local":
+            self.tar_cmd = "tar"
+            self.cvf = Archive._create_tarball
+            self.chgrp_cmd = chgrp
+            self.chmod_cmd = os.chmod
+            self.rm_cmd = rm_p
+        else:
+            raise ValueError(f"FATAL ERROR: Invalid archiving method selected: {arch_dict.ARCHCOM_TO}")
+
+        # Determine if expdir archiving is requested this cycle (skip gfs/gdas ensembles)
+        # Construct master YAML filename based on RUN
+        if "enkf" in arch_dict.RUN:
+            arch_dict['archive_expdir'] = False
+            master_yaml = "master_enkf.yaml.j2"
+        else:
+            arch_dict['archive_expdir'] = self._archive_expdir(arch_dict)
+            master_yaml = f"master_{arch_dict.RUN}.yaml.j2"
+        master_yaml_path = os.path.join(archive_parm, master_yaml)
+
+        # Check if this is EnKF member archiving (ENSGRP != 0)
+        ensgrp = arch_dict.get('ENSGRP', 0)
+
+        if "enkf" in arch_dict.RUN and ensgrp != 0:
+            # For EnKF member archiving, render templates once per member
+            first_group_mem = arch_dict.get('first_group_mem')
+            last_group_mem = arch_dict.get('last_group_mem')
+            if first_group_mem is None or last_group_mem is None:
+                raise ValueError("EnKF member archiving requires first_group_mem and last_group_mem in arch_dict")
+            atardir_sets = self._parse_yaml_enkf_members(arch_dict, master_yaml_path, first_group_mem, last_group_mem)
+
+        elif (
+            ("enkf" in arch_dict.RUN and ensgrp == 0) or
+            arch_dict.RUN in ["gfs", "gefs", "gdas", "gcdas", "gcafs"]
+        ):
+            # Single-pass rendering for EnKF mean/spread and deterministic runs
+            parsed_sets = parse_j2yaml(master_yaml_path, arch_dict, allow_missing=False)
+            atardir_sets = self._process_additional_datasets(arch_dict, parsed_sets)
+        else:
+            raise ValueError(f"FATAL ERROR: Unsupported RUN type for archiving: {arch_dict.RUN}")
+
+        # Save the tarball list as a YAML in case we are using globus
+        group = arch_dict.get("ENSGRP", -1)
+        self._create_datasets_yaml(atardir_sets, group)
+
+        return atardir_sets
+
+    @logit(logger)
+    def _process_additional_datasets(self, arch_dict: AttrDict, parsed_sets: AttrDict) -> List[AttrDict]:
+        """Process parsed YAML datasets into final archive format with EXPDIR handling.
+
+        This method converts parsed datasets to the final atardir_sets format,
+        handling EXPDIR archiving logic, path conversion, fileset creation,
+        and rstprod checking. Used for:
+        - GFS/GDAS/GCAFS/GCDAS deterministic runs
+        - EnKF ensemble mean/spread (ENSGRP=0)
+        - EnKF member aggregation (called from _parse_yaml_enkf_members)
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Archive configuration dictionary
+        parsed_sets : AttrDict
+            Parsed YAML datasets from parse_j2yaml
+
+        Returns
+        -------
+        List[AttrDict]
+            List of datasets to archive
+        """
+
+        # Determine if we actually archiving the EXPDIR this cycle
+        # This will notify the cleanup function to remove the temporary copy
+        if arch_dict.get('archive_expdir', False):
+            # Check that "expdir" is in the set of archives to create
+            for dataset in parsed_sets.datasets.values():
+                if dataset.get('name') == "EXPDIR":
+                    # If found, check if we should archive this cycle
+                    self.archive_expdir = True
+                    break
+
+            # If requested, get workflow hashes/statuses/diffs for EXPDIR archiving
+            if self.archive_expdir and (arch_dict.get('ARCH_HASHES') or arch_dict.get('ARCH_DIFFS')):
+                self._pop_git_info(arch_dict)
+
+        atardir_sets = []
+
+        for dataset in parsed_sets.datasets.values():
+
+            # Convert COMIN paths from absolute to relative before creating fileset
+            dataset = self._convert_dataset_paths_to_relative(dataset, arch_dict['ROTDIR'])
+
+            dataset["fileset"] = Archive._create_fileset(dataset)
+            dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
+
+            atardir_sets.append(AttrDict(dataset))
+
+        return atardir_sets
+
+    @logit(logger)
+    def _parse_yaml_enkf_members(self, arch_dict: AttrDict, master_yaml_path: str,
+                                 first_group_mem: int, last_group_mem: int) -> List[AttrDict]:
+        """Per-member template rendering for EnKF member archiving.
+
+        This method renders templates once for each ensemble member, collecting
+        files from all members into the final datasets.
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Archive configuration dictionary (must have ENSGRP != 0 and member_vars key)
+        master_yaml_path : str
+            Full path to the master YAML template (e.g., /path/to/master_enkfgdas.yaml.j2)
+        first_group_mem : int
+            First member number in this archive group
+        last_group_mem : int
+            Last member number in this archive group
+
+        Returns
+        -------
+        List[AttrDict]
+            List of datasets to archive (aggregated across all members)
+        """
+
+        logger.info(f"Rendering templates for EnKF members {first_group_mem} to {last_group_mem}")
+
+        # Dictionary to accumulate datasets across all members
+        # Key: dataset name (e.g., "ENKF_GRP", "ENKF_RESTARTA_GRP", "ENKF_RESTARTB_GRP")
+        # Value: dataset dict with accumulated file lists
+        accumulated_datasets = AttrDict()
+
+        # Render template once per member
+        for mem in range(first_group_mem, last_group_mem + 1):
+            logger.debug(f"Rendering template for member {mem}")
+
+            # Create member-specific dict combining arch_dict with member COM paths
+            member_vars = arch_dict.get(f"com_set_{mem:02d}")
+            if member_vars is None:
+                raise ValueError(f"Member COM paths for com_set_{mem:02d} not found in arch_dict.")
+
+            # Create temporary AttrDict with member-specific variables
+            member_dict = AttrDict({**arch_dict, **member_vars})
+
+            # Parse template with member-specific variables
+            member_parsed_sets = parse_j2yaml(
+                master_yaml_path,
+                member_dict,
+                allow_missing=False)
+
+            # Accumulate datasets
+            for dataset_key, dataset in member_parsed_sets.datasets.items():
+                dataset_name = dataset.get('name')
+
+                if dataset_name not in accumulated_datasets:
+                    # First time seeing this dataset - initialize it
+                    accumulated_datasets[dataset_name] = {
+                        'name': dataset_name,
+                        'target': dataset.get('target'),
+                        'required': [],
+                        'optional': []
+                    }
+
+                # Append this member's files to the accumulated dataset
+                if 'required' in dataset:
+                    accumulated_datasets[dataset_name].required.extend(dataset['required'])
+                if 'optional' in dataset:
+                    accumulated_datasets[dataset_name].optional.extend(dataset['optional'])
+
+        # Convert accumulated datasets to parsed_sets format and process with standard method
+        member_parsed_sets = AttrDict({'datasets': accumulated_datasets})
+        atardir_sets = self._process_additional_datasets(arch_dict, member_parsed_sets)
+
+        logger.info(f"Accumulated {len(atardir_sets)} datasets from {last_group_mem - first_group_mem + 1} members")
+
+        return atardir_sets
+
+    @logit(logger)
+    def execute_store_products(self, arcdir_set: AttrDict) -> None:
+        """Perform local archiving of data products to ARCDIR.
+
+        Parameters
+        ----------
+        arcdir_set : AttrDict
+            FileHandler instructions to populate ARCDIR with
+
+        Return
+        ------
+        None
+        """
+
+        # Copy files to the local ARCDIR
+        FileHandler(arcdir_set).sync()
+
+    @logit(logger)
+    def execute_backup_dataset(self, atardir_set: AttrDict) -> None:
+        """Create a backup tarball from a yaml dict.
+
+        Parameters
+        ----------
+        atardir_set: AttrDict
+            Dict defining set of files to backup and the target tarball.
+
+        Return
+        ------
+        None
+        """
+
+        # Generate tarball
+        if len(atardir_set.fileset) == 0:
+            logger.warning(f"WARNING: skipping would-be empty archive {atardir_set.target}.")
+            return
+
+        if atardir_set.has_rstprod:
+
+            try:
+                self.cvf(atardir_set.target, atardir_set.fileset)
+            # Regardless of exception type, attempt to remove the target
+            except Exception:
+                self.rm_cmd(atardir_set.target)
+                raise RuntimeError(f"FATAL ERROR: Failed to create restricted archive {atardir_set.target}, deleting!")
+
+            self._protect_rstprod(atardir_set)
+
+        else:
+            self.cvf(atardir_set.target, atardir_set.fileset)
+
+    @staticmethod
+    @logit(logger)
+    def _create_fileset(atardir_set: AttrDict) -> List:
+        """
+        Collect the list of all available files from the parsed yaml dict.
+        Globs are expanded and if required files are missing, an error is
+        raised.
+
+        TODO: expand all globs in the jinja yaml files instead of expanding
+              them here and issue errors here if globbing patterns (*, ?, [])
+              are found.
+
+        Parameters
+        ----------
+        atardir_set: AttrDict
+            Contains full paths for required and optional files to be archived.
+        """
+
+        fileset = []
+        # Check if any external files need to be brought into the ROTDIR (i.e. EXPDIR contents)
+        if "FileHandler" in atardir_set:
+            # Run the file handler to stage files for archiving
+            FileHandler(atardir_set["FileHandler"]).sync()
+
+        # Check that all required files are present and add them to the list of files to archive
+        if "required" in atardir_set:
+            if atardir_set['required'] is not None:
+                for item in atardir_set['required']:
+                    glob_set = glob.glob(item)
+                    if len(glob_set) == 0:
+                        raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
+                    for entry in glob_set:
+                        fileset.append(entry)
+
+        # Check for optional files and add found items to the list of files to archive
+        if "optional" in atardir_set:
+            if atardir_set['optional'] is not None:
+                for item in atardir_set['optional']:
+                    glob_set = glob.glob(item)
+                    if len(glob_set) == 0:
+                        logger.warning(f"WARNING: optional file/glob {item} not found!")
+                    else:
+                        for entry in glob_set:
+                            fileset.append(entry)
+
+        return fileset
+
+    @staticmethod
+    @logit(logger)
+    def _has_rstprod(fileset: List) -> bool:
+        """
+        Checks if any files in the input fileset belongs to rstprod.
+
+        Parameters
+        ----------
+        fileset : List
+            List of filenames to check.
+        """
+
+        try:
+            rstprod_gid = get_gid("rstprod")
+        except KeyError:
+            # rstprod does not exist on this machine
+            return False
+
+        # Expand globs and check each file for group ownership
+        for file_or_glob in fileset:
+            glob_set = glob.glob(file_or_glob)
+            for filename in glob_set:
+                if os.stat(filename).st_gid == rstprod_gid:
+                    return True
+
+        return False
+
+    @logit(logger)
+    def _protect_rstprod(self, atardir_set: AttrDict) -> None:
+        """
+        Changes the group of the target tarball to rstprod and the permissions to
+        640.  If this fails for any reason, attempt to delete the file before exiting.
+
+        """
+
+        try:
+            self.chgrp_cmd("rstprod", atardir_set.target)
+            if self.tar_cmd == "htar":
+                self.chmod_cmd("640", atardir_set.target)
+            else:
+                self.chmod_cmd(atardir_set.target, 0o640)
+        # Regardless of exception type, attempt to remove the target
+        except Exception:
+            try:
+                self.rm_cmd(atardir_set.target)
+            finally:
+                raise RuntimeError(f"FATAL ERROR: Failed to protect {atardir_set.target}!\n"
+                                   f"Please verify that it has been deleted!!")
+
+    @staticmethod
+    @logit(logger)
+    def _create_tarball(target: str, fileset: List) -> None:
+        """Method to create a local tarball.
+
+        Parameters
+        ----------
+        target : str
+            Tarball to create
+
+        file_list : List
+            List of files to add to an archive
+        """
+
+        # TODO create a set of tar helper functions in wxflow
+        # Attempt to create the parent directory if it does not exist
+        mkdir_p(os.path.dirname(os.path.realpath(target)))
+
+        # Create the archive
+        with tarfile.open(target, "w") as tarball:
+            for filename in fileset:
+                tarball.add(filename)
+
+    @staticmethod
+    @logit(logger)
+    def _convert_dataset_paths_to_relative(dataset: AttrDict, rotdir: str) -> AttrDict:
+        """Convert all COMIN paths in a dataset from absolute to relative paths.
+
+        This method processes the 'required' and 'optional' lists in a rendered
+        dataset and converts any paths that start with ROTDIR to relative paths.
+        This ensures tarball contents use portable relative paths.
+
+        Parameters
+        ----------
+        dataset : AttrDict
+            Dataset dictionary from parsed YAML with 'required' and 'optional' lists
+        rotdir : str
+            ROTDIR path to strip from absolute paths
+
+        Returns
+        -------
+        AttrDict
+            Dataset with all COMIN paths converted to relative paths
+
+        Notes
+        -----
+        This method is called AFTER YAML rendering to convert paths that were
+        rendered with absolute COMIN variables into relative paths suitable for
+        tar archiving.
+
+        Examples
+        --------
+        >>> dataset = AttrDict({
+        ...     'required': ['/data/rotdir/gfs.20251218/00/atmos/file1.nc'],
+        ...     'optional': ['/data/rotdir/gfs.20251218/00/atmos/file2.nc']
+        ... })
+        >>> Archive._convert_dataset_paths_to_relative(dataset, '/data/rotdir')
+        {'required': ['gfs.20251218/00/atmos/file1.nc'],
+         'optional': ['gfs.20251218/00/atmos/file2.nc']}
+        """
+        rotdir_prefix = rotdir if rotdir.endswith(os.sep) else rotdir + os.sep
+
+        # Convert required paths
+        if 'required' in dataset and dataset['required'] is not None:
+            dataset['required'] = [
+                path.replace(rotdir_prefix, '') if rotdir_prefix in path else path
+                for path in dataset['required']
+            ]
+
+        # Convert optional paths
+        if 'optional' in dataset and dataset['optional'] is not None:
+            dataset['optional'] = [
+                path.replace(rotdir_prefix, '') if rotdir_prefix in path else path
+                for path in dataset['optional']
+            ]
+
+        logger.debug(f"Converted dataset '{dataset.get('name', 'UNKNOWN')}' paths to relative")
+        return dataset
+
+    @staticmethod
+    @logit(logger)
+    def _rename_cyclone_expt(arch_dict) -> None:
+
+        # Rename the experiment in the tracker files from "AVNO" to the
+        # first 4 letters of PSLOT.
+        pslot4 = arch_dict.PSLOT.upper()
+        if len(arch_dict.PSLOT) > 4:
+            pslot4 = arch_dict.PSLOT[0:4].upper()
+
+        track_dir_in = arch_dict.COMIN_ATMOS_TRACK
+        track_dir_out = arch_dict.COMOUT_ATMOS_TRACK
+        run = arch_dict.RUN
+        cycle_HH = strftime(arch_dict.current_cycle, "%H")
+
+        if run == "gfs":
+            in_track_file = (track_dir_in + "/avno.t" +
+                             cycle_HH + "z.cyclone.trackatcfunix")
+            in_track_p_file = (track_dir_in + "/avnop.t" +
+                               cycle_HH + "z.cyclone.trackatcfunix")
+        elif run == "gdas":
+            in_track_file = (track_dir_in + "/gdas.t" +
+                             cycle_HH + "z.cyclone.trackatcfunix")
+            in_track_p_file = (track_dir_in + "/gdasp.t" +
+                               cycle_HH + "z.cyclone.trackatcfunix")
+
+        if not os.path.isfile(in_track_file):
+            # Do not attempt to archive the outputs
+            return
+
+        out_track_file = track_dir_out + "/atcfunix." + run + "." + to_YMDH(arch_dict.current_cycle)
+        out_track_p_file = track_dir_out + "/atcfunixp." + run + "." + to_YMDH(arch_dict.current_cycle)
+
+        def replace_string_from_to_file(filename_in, filename_out, search_str, replace_str):
+            """Write a new file from the contents of an input file while searching
+            and replacing ASCII strings.  To prevent partial file creation, a
+            temporary file is created and moved to the final location only
+            after the search/replace is finished.
+
+            Parameters
+            ----------
+            filename_in : str
+                Input filename
+
+            filename_out : str
+                Output filename
+
+            search_str : str
+                ASCII string to search for
+
+            replace_str : str
+                ASCII string to replace the search_str with
+            """
+            with open(filename_in) as old_file:
+                lines = old_file.readlines()
+
+            out_lines = [line.replace(search_str, replace_str) for line in lines]
+
+            with open("/tmp/track_file", "w") as new_file:
+                new_file.writelines(out_lines)
+
+            shutil.move("/tmp/track_file", filename_out)
+
+        replace_string_from_to_file(in_track_file, out_track_file, "AVNO", pslot4)
+        replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
+
+        return
+
+    @logit(logger)
+    def _archive_expdir(self, arch_dict: AttrDict) -> bool:
+        """
+        This function checks if the EXPDIR should be archived this RUN/cycle
+        and returns the temporary path in the ROTDIR where the EXPDIR will be
+        copied to for archiving.
+
+        Parameters
+        ----------
+        arch_dict: AttrDict
+            Dictionary with required parameters, including the following:
+
+            current_cycle: Datetime
+                Date of the current cycle.
+            SDATE: Datetime
+                Starting cycle date.
+            EDATE: Datetime
+                Ending cycle date.
+            NET: str
+                The workflow type (gfs, gefs, or sfs)
+            ARCH_EXPDIR_FREQ: int
+                Frequency to perform EXPDIR archiving
+            ROTDIR: str
+                Full path to the ROTDIR
+        """
+
+        # Get commonly used variables
+        current_cycle = arch_dict.current_cycle
+        sdate = arch_dict.SDATE
+        edate = arch_dict.EDATE
+        mode = arch_dict.MODE
+        assim_freq = to_timedelta(f"+{arch_dict.assim_freq}H")
+        # Convert frequency to seconds from hours
+        freq = arch_dict.ARCH_EXPDIR_FREQ * 3600
+
+        # Skip gfs and enkf cycled RUNs (only archive during gdas RUNs)
+        # (do not skip forecast-only, regardless of RUN)
+        if arch_dict.NET == "gfs" and arch_dict.MODE == "cycled" and arch_dict.RUN != "gdas":
+            return False
+
+        # Determine if we should skip this cycle
+        # If the frequency is set to 0, only run on sdate (+assim_freq for cycled) and edate
+        first_full = sdate
+        if mode in ["cycled"]:
+            first_full += assim_freq
+
+        if current_cycle in [first_full, edate]:
+            # Always save the first and last
+            return True
+
+        elif freq != 0 and (current_cycle - first_full).total_seconds() % freq == 0:
+            # Otherwise, the frequency is in hours
+            return True
+
+        else:
+            return False
+
+    @logit(logger)
+    def _pop_git_info(self, arch_dict: AttrDict) -> None:
+        """
+        This function checks the configuration options ARCH_HASHES and ARCH_DIFFS
+        and ARCH_EXPDIR_FREQ to determine if the git hashes and/or diffs should be
+        added to the EXPDIR for archiving and execute the commands.  The hashes and
+        diffs will be stored in EXPDIR/git_info.log.
+
+        Parameters
+        ----------
+        arch_dict: AttrDict
+            Dictionary with required parameters, including the following:
+
+            EXPDIR: str
+                Location of the EXPDIR
+            HOMEglobal: str
+                Location of the HOMEglobal (the global workflow)
+            ARCH_HASHES: bool
+                Whether to archive git hashes of the workflow and submodules
+            ARCH_DIFFS: bool
+                Whether to archive git diffs of the workflow and submodules
+        """
+
+        # Get commonly used variables
+        arch_hashes = arch_dict.ARCH_HASHES
+        arch_diffs = arch_dict.ARCH_DIFFS
+        homeglobal = arch_dict.HOMEglobal
+        expdir = arch_dict.EXPDIR
+
+        # Find the git command
+        git = which('git')
+        if git is None:
+            raise FileNotFoundError("FATAL ERROR: the git command could not be found!")
+
+        output = ""
+        # Navigate to HOMEglobal to run the git commands
+        with chdir(homeglobal):
+
+            # Are we running git to get hashes?
+            if arch_hashes:
+                output += "Global workflow hash:\n"
+
+                try:
+                    output += git("rev-parse", "HEAD", output=str)
+                    output += "\nSubmodule hashes:\n"
+                    output += git("submodule", "status", output=str)
+                except ProcessError as pe:
+                    raise OSError("FATAL ERROR Failed to run git") from pe
+
+            # Are we running git to get diffs?
+            if arch_diffs:
+                output += "Global workflow diffs:\n"
+                # This command will only work on git v2.14+
+                try:
+                    output += git("diff", "--submodule=diff", output=str)
+                except ProcessError:
+                    # The version of git may be too old.  See if we can run just a surface diff.
+                    try:
+                        output += git("diff", output=str)
+                        print("WARNING git was unable to do a recursive diff.\n"
+                              "Only a top level diff was performed.\n"
+                              "Note that the git version must be >= 2.14 for this feature.")
+                    except ProcessError as pe:
+                        raise OSError("FATAL ERROR Failed to run 'git diff'") from pe
+
+        # Write out to the log file
+        try:
+            with open(os.path.join(expdir, git_filename), 'w') as output_file:
+                output_file.write(output)
+        except OSError as ose:
+            fname = os.path.join(expdir, git_filename)
+            raise OSError(f"FATAL ERROR Unable to write git output to '{fname}'") from ose
+
+        return
+
+    def _normalize_arch_cyc(self, arch_cyc: Union[int, List[int], Tuple[int, ...]]) -> List[int]:
+        """
+        Normalizes ARCH_CYC configuration to a list of integers.
+
+        Parameters
+        ----------
+        arch_cyc : int, list of int, or tuple of int
+            Cycle hour(s) for archiving
+
+        Returns
+        -------
+        List[int]
+            List of cycle hours as integers
+
+        Raises
+        ------
+        ValueError
+            If arch_cyc is not an int, list, or tuple, contains non-integer values,
+            or contains values outside the valid hour range [0, 23].
+        """
+        if isinstance(arch_cyc, int):
+            cycle_hours = [arch_cyc]
+        elif isinstance(arch_cyc, (list, tuple)):
+            try:
+                cycle_hours = [int(cyc) for cyc in arch_cyc]
+            except (ValueError, TypeError) as e:
+                raise ValueError(f"ARCH_CYC list must contain only integers: {e}")
+        else:
+            raise ValueError("ARCH_CYC must be an int or list/tuple of ints.")
+
+        # Validate that all cycle hours are within the valid 0-23 range
+        if any(not (0 <= hour <= 23) for hour in cycle_hours):
+            raise ValueError(f"ARCH_CYC values must be between 0-23, got: {cycle_hours}")
+
+        return cycle_hours
+
+    def _arch_warm_start_increments(self, arch_dict: AttrDict) -> bool:
+        """
+        Determines whether warm restart increments should be archived for the current cycle.
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Dictionary containing configuration options, including:
+            - ARCH_CYC (int or list of int): Valid cycle hours for archiving
+            - ARCH_FCSTICFREQ (int): Frequency in days for archiving forecast ICs
+            - current_cycle (datetime): The current cycle datetime
+            - SDATE (datetime): Reference start date
+            - assim_freq (int): Assimilation frequency in hours.
+        Returns
+        -------
+        bool
+            True if warm restart increments should be archived, False otherwise.
+        """
+
+        # Normalize ARCH_CYC to a list of integers
+        cycle_hours = self._normalize_arch_cyc(arch_dict.ARCH_CYC)
+
+        # Check if current cycle hour matches any configured cycle hour
+        cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
+        if cycle_HH not in cycle_hours:
+            return False
+
+        # Validate archiving frequency
+        try:
+            fcsticfreq = int(arch_dict.ARCH_FCSTICFREQ)
+        except (ValueError, TypeError) as e:
+            raise ValueError(f"ARCH_FCSTICFREQ must be an integer: {e}")
+
+        if fcsticfreq <= 0:
+            return False
+
+        # Calculate offset cycle and check day frequency
+        try:
+            SDATE = arch_dict.SDATE
+            assim_freq = int(arch_dict.assim_freq)
+            ics_offset_cycle = add_to_datetime(
+                arch_dict.current_cycle,
+                to_timedelta(f"+{assim_freq}H")
+            )
+        except (AttributeError, KeyError, ValueError, TypeError) as e:
+            raise ValueError(f"Invalid configuration for date calculations: {e}")
+
+        days_since_sdate = (ics_offset_cycle - SDATE).days
+        if days_since_sdate % fcsticfreq == 0:
+            return True
+
+        return False
+
+    def _arch_warm_restart_ics(self, arch_dict: AttrDict) -> bool:
+        """
+        Determines whether warm initial conditions (ICs) should be archived for the current cycle.
+
+        For GDAS and EnKFGDAS runs, the archive cycle hours are adjusted by subtracting the
+        assimilation frequency, as ICs lag forecast increments by that amount.
+
+        Parameters
+        ----------
+        arch_dict : AttrDict
+            Dictionary containing configuration options, including:
+            - ARCH_CYC (int or list of int): Target cycle hour(s) for archiving
+            - ARCH_WARMICFREQ (int): Frequency in days for archiving warm ICs
+            - current_cycle (datetime): The current cycle datetime
+            - SDATE (datetime): Reference start date
+            - assim_freq (int or str): Assimilation frequency in hours. If provided
+              as a string, it is converted to an integer internally.
+            - RUN (str): Run type identifier (e.g., "gdas", "gfs")
+
+        Returns
+        -------
+        bool
+            True if warm ICs should be archived, False otherwise.
+        """
+        HOURS_PER_DAY = 24
+
+        # Extract and validate basic configuration
+        try:
+            cycle_HH = int(strftime(arch_dict.current_cycle, "%H"))
+            SDATE = arch_dict.SDATE
+            RUN = arch_dict.RUN.lower()
+            assim_freq = int(arch_dict.assim_freq)
+            warmicfreq = int(arch_dict.ARCH_WARMICFREQ)
+        except (AttributeError, KeyError, ValueError, TypeError) as e:
+            raise ValueError(f"Invalid or missing configuration in arch_dict: {e}")
+
+        # Validate frequency
+        if warmicfreq <= 0:
+            return False
+
+        # Normalize ARCH_CYC to a list of integers
+        cycle_hours = self._normalize_arch_cyc(arch_dict.ARCH_CYC)
+
+        # Adjust cycle hours for GDAS runs
+        # GDAS and EnKFGDAS ICs lag forecast increments by assim_freq hours
+        is_gdas_run = RUN in ("gdas", "enkfgdas")
+        adjusted_cycle_hours = []
+        for cyc_hour in cycle_hours:
+            if is_gdas_run:
+                adjusted_hour = (cyc_hour - assim_freq) % HOURS_PER_DAY
+            else:
+                adjusted_hour = cyc_hour
+            adjusted_cycle_hours.append(adjusted_hour)
+
+        # Check if current cycle hour matches any adjusted cycle hour
+        if cycle_HH not in adjusted_cycle_hours:
+            return False
+
+        # Check if the day frequency criterion is met
+        days_since_sdate = (arch_dict.current_cycle - SDATE).days
+        if days_since_sdate % warmicfreq == 0:
+            return True
+
+        return False
+
+    def _arch_restart(self, arch_dict: AttrDict) -> bool:
+        """
+        This method determines if warm restarts or warm ICs are to be archived based on the
+        tar_type and the booleans arch_increments and arch_warm_ics.
+        """
+
+        # Get the variables needed to determine if warm restarts or warm ICs should be archived
+        tar_type = arch_dict.TARBALL_TYPE
+        run = arch_dict.RUN
+        arch_increments = arch_dict.get("arch_increments", False)
+        arch_warm_ics = arch_dict.get("arch_warm_ics", False)
+
+        # Restart archiving for gdas RUN
+        if run == "gdas":
+            # TODO: Always archive gdas ocean restarts (for GEFSv13 when project restarts)
+            if (tar_type == "gdasocean_restart") and arch_warm_ics:
+                return True
+
+            # Archive warm atmosphere and ice increments if requested
+            elif (tar_type == "gdas_restarta" or tar_type == "gdasice_restart") and arch_increments:
+                return True
+
+            # Archive warm atmosphere ICs if requested
+            elif (tar_type == "gdas_restartb" or tar_type == "gdaswave_restart") and arch_warm_ics:
+                return True
+
+            else:
+                # Nothing to do this cycle
+                return False
+
+        # Restart archiving for gfs RUN
+        elif run == "gfs":
+            # Always archive gfs atmosphere if increments are ICs are required
+            if (tar_type == "gfs_restarta") and arch_increments or arch_warm_ics:
+                return True
+            else:
+                # Nothing to do this cycle
+                return False
+
+        # For enkfgdas RUNs
+        elif run == "enkfgdas":
+            # Archive warm atmosphere increments if requested
+            if tar_type == "enkf_restarta_grp" and arch_increments:
+                return True
+            # Archive warm atmosphere ICs if requested
+            elif tar_type == "enkf_restartb_grp" and arch_warm_ics:
+                return True
+            else:
+                # Nothing to do this cycle
+                return False
+
+        # Otherwise, raise an NotImplementedError for the unsupported RUN
+        else:
+            raise NotImplementedError(f"FATAL ERROR: Unsupported RUN for archiving warm restarts: {run}.")
+
+    @logit(logger)
+    def _create_datasets_yaml(self, datasets, group=-1):
+        """
+        Go through the dataset dictionaries, extract the tarball names and has_rstprod
+        boolean, and write a YAML with the info in COM_CONF.  The group number is appended
+        to the YAML name if it is not -1.
+        Group definitions
+            group=-1: deterministic (non-ensemble)
+            group=0: ensemble aggregates (means, spreads, etc)
+            group=1..n: groups of individual ensemble members
+        """
+
+        if len(datasets) == 0:
+            logger.warning("WARNING: Skipping dataset YAML creation as no datasets were provided.")
+            return
+
+        com_conf = self.task_config.COMIN_CONF
+
+        if group < 0:
+            yaml_filename = "backup_tarballs.yaml"
+        else:
+            yaml_filename = f"backup_tarballs_group{group}.yaml"
+
+        yaml_filename = os.path.join(com_conf, yaml_filename)
+
+        output_yaml = {}
+
+        for dataset in datasets:
+            # Skip if the tarball will be empty
+            if len(dataset.fileset) > 0:
+                output_yaml[dataset.name] = {"target": dataset.target,
+                                             "has_rstprod": dataset.has_rstprod}
+
+        logger.debug(f"Writing the dataset YAML to {yaml_filename}")
+        logger.debug("YAML contents: \n" + f"{output_yaml}")
+        save_as_yaml(output_yaml, yaml_filename)
+
+    @logit(logger)
+    def clean(self):
+        """
+        Remove the temporary directories/files created by the Archive task.
+        Presently, this is only the ROTDIR/expdir directory if EXPDIR archiving
+        was performed.
+        """
+
+        if self.archive_expdir:
+            temp_expdir_path = os.path.join(self.task_config.ROTDIR, "expdir." +
+                                            to_YMDH(self.task_config.current_cycle))
+            logger.debug(f"Removing temporary EXPDIR copy at {temp_expdir_path}")
+            rmdir(temp_expdir_path)
+
+        return

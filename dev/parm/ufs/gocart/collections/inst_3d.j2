@@ -1,0 +1,40 @@
+{# dev/parm/ufs/gocart/collections/inst_3d.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_3d (3D aerosol diagnostics). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# 3d diagnostics
+#
+  inst_3d.format:     'CFIO' ,
+  inst_3d.template:   '%y4%m2%d2_%h2%n2z.nc4' ,
+  inst_3d.archive:    '%c/Y%y4' ,
+  inst_3d.mode:       'instantaneous'
+  inst_3d.frequency:  {{ model.aerosol.frequencies.inst_3d | default('010000') }},
+  inst_3d.duration:   010000,
+  inst_3d.ref_time:   000000,
+  inst_3d.grid_label: {{ model.aerosol.grid_label }}
+  inst_3d.fields:     'DUMASS'      , 'DU',
+                      'DUMASS25'    , 'DU',
+                      'DUCONC'      , 'DU',
+                      'SSMASS'      , 'SS',
+                      'SSMASS25'    , 'SS',
+                      'SSCONC'      , 'SS',
+                      'CAMASSCA.bc' , 'CA.bc' ,
+                      'CACONCCA.bc' , 'CA.bc' ,
+                      'CAMASSCA.oc' , 'CA.oc' ,
+                      'CACONCCA.oc' , 'CA.oc' ,
+                      'SO4MASS'     , 'SU',
+                      'SO4SAREA'    , 'SU',
+                      'SO4SNUM'     , 'SU',
+                      'SUCONC'      , 'SU',
+                      'PSO2'        , 'SU',
+                      'PMSA'        , 'SU',
+                      'PSO4'        , 'SU',
+                      'PSO4G'       , 'SU',
+                      'PSO4WET'     , 'SU',
+                      'PSO4AQ'      , 'SU',
+                      'DMS'         , 'SU',
+                      'SO2'         , 'SU',
+                      'SO4'         , 'SU',
+                      'MSA'         , 'SU',
+                      ::

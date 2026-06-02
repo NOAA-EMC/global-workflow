@@ -271,12 +271,12 @@ def test_get_all_case_files(validator):
 def test_extract_skip_hosts_no_skip_section(validator, tmp_path):
     """Test skip host extraction returns empty set without skip_ci_on_hosts section."""
     test_case = tmp_path / "test_case.yaml"
-    test_case.write_text("experiment:\n  app: ATM\nworkflow:\n  engine: rocoto\n")
+    test_case.write_text("experiment:\n  app: ATM\nworkflow:\n  engine: ecflow\n")
     assert validator.extract_skip_hosts(test_case) == set()
 
 
 def test_extract_skip_hosts_with_skips(validator, tmp_path):
     """Test skip host extraction correctly parses skip_ci_on_hosts section."""
     test_case = tmp_path / "test_case.yaml"
-    test_case.write_text("experiment:\n  app: ATM\n\nskip_ci_on_hosts:\n  - hera\n  - orion\n\nworkflow:\n  engine: rocoto\n")
+    test_case.write_text("experiment:\n  app: ATM\n\nskip_ci_on_hosts:\n  - hera\n  - orion\n\nworkflow:\n  engine: ecflow\n")
     assert validator.extract_skip_hosts(test_case) == {'hera', 'orion'}

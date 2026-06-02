@@ -1,0 +1,15 @@
+postxconfig-NT-GFS.txt (Submodule_Fixture stand-in)
+
+Minimal, byte-stable stand-in for the UPP post control file owned by the
+sorc/upp.fd submodule. It exists only so a fixture-backed verification deploy
+can copy a submodule source without a fatal missing-source error.
+
+Free of all templating tokens so the Token_Scan over a rendered EXPDIR passes.
+See the directory README for details.
+
+count_of_paramsets
+1
+count_of_params
+1
+HGT
+ON

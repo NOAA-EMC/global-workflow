@@ -7,8 +7,8 @@
         and then pass that to the ecflow_definitions.py module to create the
         suite definitions and to break down the lists, add triggers, etc.
     AUTHOR:
-        Kyle Nevins
-        kyle.nevins@noaa.gov
+        Barry Baker
+        barry.baker@noaa.gov
     FILE DEPENDENCIES:
         None
     OUTPUT:

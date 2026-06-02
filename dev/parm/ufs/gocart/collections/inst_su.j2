@@ -1,0 +1,21 @@
+{# dev/parm/ufs/gocart/collections/inst_su.j2 #}
+{# Traces to: Requirement 3 AC5 #}
+{# Per-collection field definition for inst_su (Sulfate aerosol concentrations). #}
+{# All @[VAR] atparse patterns converted to Jinja2 {{ var }} syntax. #}
+#
+# 3d aerosols - Sulfate
+#
+  inst_su.format:         'CFIO' ,
+  inst_su.descr:          '3d,Hourly,Instantaneous,Model-Level,Aerosol Concentrations',
+  inst_su.template:       '%y4%m2%d2_%h2%n2z.nc4',
+  inst_su.mode:           'instantaneous',
+  inst_su.grid_label:     {{ model.aerosol.grid_label }} ,
+  inst_su.frequency:      {{ model.aerosol.frequencies.inst_su | default('010000') }} ,
+  inst_su.duration:       010000 ,
+  inst_su.ref_time:       000000 ,
+  inst_su.nbits:          10,
+  inst_su.fields:         'DMS' , 'SU' ,
+                          'SO2' , 'SU' ,
+                          'SO4' , 'SU' ,
+                          'MSA' , 'SU' ,
+                          ::

@@ -1,0 +1,84 @@
+# ecFlow CI Case: C384 ATM 3DVar — Weekly Atmosphere-Only DA
+#
+# Validates atmosphere-only 3DVar DA at C384 (no coupling, no ensemble).
+# Tests atmosphere-only template rendering — confirms ocean/ice/wave templates
+# correctly skipped when app=ATM.
+#
+# Replaces legacy: dev/ci/cases/weekly/C384_atm3DVar.yaml (Rocoto)
+# Traces to: coupled-model-configs Requirements 1.1 (selective rendering)
+
+case:
+  name: "C384_atm3DVar"
+  description: "Weekly: C384 atmosphere-only 3DVar DA"
+  resolution: "C384"
+  app: "ATM"
+  mode: "cycled"
+
+workflow_config:
+  path: "dev/parm/workflow/gfs_cycled.yaml"
+  suite_name: "gfs_v17"
+
+platform: "CONTAINER"
+
+deployment:
+  expdir: "{{ RUNTESTS }}/EXPDIR/C384_atm3DVar"
+  version: "ci-{{ git_sha_short }}"
+
+experiment:
+  net: "gfs"
+  resdetatmos: 384
+  resensatmos: 192
+  resdetocean: 0.25
+  nens: 0
+  interval: 24
+  start: "cold"
+  idate: "2023040118"
+  edate: "2023040200"
+  icsdir: "{{ BASE_IC }}/C384C192/20240610"
+
+base:
+  DO_TEST_MODE: "YES"
+  DO_METP: "NO"
+
+model_context:
+  # Atmosphere-only — no ocean/ice/wave configs needed
+  post:
+    system: "gfs"
+
+validation:
+  rendered_configs:
+    - path: "parm/ufs/post/post_itag"
+      expect_contains: ["gfs"]
+  no_coupled_configs:
+    - "parm/ufs/ocean/MOM_input"
+    - "parm/ufs/ice/ice_in"
+    - "parm/ufs/wave/ww3_shel.nml"
+  no_legacy_tokens: true
+
+steps:
+  - name: "deploy"
+    command: |
+      deploy_workflow \
+        --config {{ HOMEglobal }}/dev/parm/workflow/gfs_cycled.yaml \
+        --platform CONTAINER \
+        --expdir {{ RUNTESTS }}/EXPDIR/C384_atm3DVar \
+        --version ci-{{ git_sha_short }}
+    timeout: 240
+    expect_success: true
+
+  - name: "verify_no_coupled_configs"
+    description: "Verify ocean/ice/wave configs NOT rendered for atmosphere-only app"
+    command: |
+      expdir={{ RUNTESTS }}/EXPDIR/C384_atm3DVar
+      for f in parm/ufs/ocean/MOM_input parm/ufs/ice/ice_in parm/ufs/wave/ww3_shel.nml; do
+        if [ -f "${expdir}/${f}" ]; then
+          echo "FATAL ERROR: ${f} should not exist for ATM app"
+          exit 1
+        fi
+      done
+      echo "OK: No coupled configs for ATM app"
+    timeout: 30
+    expect_success: true
+
+cleanup:
+  - "rm -rf {{ RUNTESTS }}/EXPDIR/C384_atm3DVar"

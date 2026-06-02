@@ -1,0 +1,87 @@
+{# dev/parm/ufs/gocart/CAP.rc.j2 #}
+{# Component interface configuration with configurable imports/exports/tracers #}
+{# Species activation driven by model.aerosol.species dict #}
+{%- set species = model.aerosol.species | default({}) %}
+{%- set dust_enabled = species.dust | default(true) %}
+{%- set seasalt_enabled = species.seasalt | default(true) %}
+{%- set sulfate_enabled = species.sulfate | default(true) %}
+{%- set carbon_enabled = species.carbon | default(true) %}
+{%- set nitrate_enabled = species.nitrate | default(false) %}
+MAPLROOT_COMPNAME: AERO
+        ROOT_NAME: AERO
+ROOT_CF:    AERO.rc
+HIST_CF:    AERO_HISTORY.rc
+EXTDATA_CF: AERO_ExtData.rc
+
+REPORT_THROUGHPUT: .false.
+
+USE_SHMEM: 0
+
+GridType: Cubed-Sphere
+
+MAPL_ENABLE_TIMERS: NO
+MAPL_ENABLE_MEMUTILS: NO
+PRINTSPEC: 0  # (0: OFF, 1: IMPORT & EXPORT, 2: IMPORT, 3: EXPORT)
+
+
+# Meteorological fields imported from atmospheric model
+# -----------------------------------------------------
+CAP_IMPORTS:
+{%- for field in model.aerosol.cap_imports | default([
+    'FROCEAN', 'FRACI', 'FRSNOW', 'LWI', 'U10M', 'V10M', 'USTAR',
+    'TS', 'DZ', 'FRLAKE', 'AREA', 'ZPBL', 'SH', 'Z0H',
+    'CN_PRCP', 'NCN_PRCP', 'AIRDENS', 'DELP', 'T', 'RH2',
+    'ZLE', 'PLE', 'PFL_LSAN', 'PFI_LSAN', 'U', 'V',
+    'WET1', 'SLC', 'FCLD']) %}
+    {{ field }}
+{%- endfor %}
+::
+
+
+# Prognostic Tracers Table
+# GOCARTname,GOCARTcomp.   AtmTracerName
+#---------------------------------------
+CAP_EXPORTS:
+{%- if seasalt_enabled %}
+   SS,SS                   seas*
+{%- endif %}
+{%- if dust_enabled %}
+   DU,DU                   dust*
+{%- endif %}
+{%- if sulfate_enabled %}
+   DMS,SU                  dms
+   MSA,SU                  msa
+   SO2,SU                  so2
+   SO4,SU                  so4
+{%- endif %}
+{%- if carbon_enabled %}
+   CA.bcphobic,CA.bc       bc1
+   CA.bcphilic,CA.bc       bc2
+   CA.ocphobic,CA.oc       oc1
+   CA.ocphilic,CA.oc       oc2
+{%- endif %}
+{%- if nitrate_enabled %}
+   NH3,NI                  nh3
+   NH4a,NI                 nh4a
+   NO3an1,NI               no3an1
+   NO3an2,NI               no3an2
+   NO3an3,NI               no3an3
+{%- endif %}
+::
+{%- if not nitrate_enabled %}
+#    NH3,NI                  nh3
+#    NH4a,NI                 nh4a
+#    NO3an1,NI               no3an1
+#    NO3an2,NI               no3an2
+#    NO3an3,NI               no3an3
+# ::
+{%- endif %}
+
+
+# Diagnostic Tracers Table (only PM10 & PM25 available)
+# InternalName             AtmTracerName
+#---------------------------------------
+CAP_DIAGNOSTICS:
+   PM10                    pm10
+   PM25                    pm25
+::

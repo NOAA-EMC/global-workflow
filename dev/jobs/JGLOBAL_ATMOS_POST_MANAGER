@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
-# TODO (#1227) This job is not used in the rocoto suite
+# TODO (#1227) This job is not used in the ecFlow suite
 
 source "${HOMEglobal}/ush/jjob_header.sh" -e "post" -c "base post"
 
