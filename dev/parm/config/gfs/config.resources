@@ -993,10 +993,11 @@ case ${step} in
     if [[ "${DO_WAVE}" == "YES" ]]; then
         (( ntasks += ${MGR_NTASKS_WW3:-2} ))
     fi
-    if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+    # Ocean/ice product managers only run for the full GFS cycle, not GDAS half-cycles.
+    if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
         (( ntasks += ${MGR_NTASKS_OCN:-1} ))
     fi
-    if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+    if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
         (( ntasks += ${MGR_NTASKS_ICE:-1} ))
     fi
     if [[ "${DO_AERO_FCST:-NO}" == "YES" ]]; then
