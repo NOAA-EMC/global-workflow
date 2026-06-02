@@ -115,7 +115,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     done
 fi
 
-if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
     OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for OCN product table at ${OCN_TABLE}"
     if ! wait_for_file "${OCN_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
@@ -129,7 +129,7 @@ if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     done
 fi
 
-if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
     ICE_TABLE="${DATAjob}/ice_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for ICE product table at ${ICE_TABLE}"
     if ! wait_for_file "${ICE_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
