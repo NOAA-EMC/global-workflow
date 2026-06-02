@@ -1,0 +1,14 @@
+#!/bin/bash -x
+
+########## config.anlstat ##########
+# Analysis Stat
+
+echo "BEGIN: config.anlstat"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" anlstat
+
+export JEDI_CONFIG_YAML="${PARMglobal}/gdas/anlstat/anlstat_jedi_config.yaml.j2"
+export BASE_CONFIG_YAML="${PARMglobal}/gdas/anlstat/anlstat_base_config.yaml.j2"
+
+echo "END: config.anlstat"

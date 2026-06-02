@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+
+########## config.esnowanl ##########
+# configuration common to snow ensemble analysis tasks
+
+echo "BEGIN: config.esnowanl"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" esnowanl
+
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/snow/snow_ens_config.yaml.j2"
+export OBS_LIST_YAML="${PARMglobal}/gdas/snow/snow_obs_list.yaml.j2"
+
+# Name of the executable that applies increment to bkg and its namelist template
+export APPLY_INCR_EXE="${EXECglobal}/gdas_apply_incr.x"
+export ENS_APPLY_INCR_NML_TMPL="${PARMglobal}/gdas/snow/ens_apply_incr_nml.j2"
+
+export PREP_SNOCVR_SNOMAD_YAML="${PARMglobal}/gdas/snow/prep/prep_snocvr_snomad.yaml.j2"
+export OBSBUILDER="${USHglobal}/bufr_snocvr_snomad.py"
+
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
+
+export ens_size=1
+export noincr_threshold=9999999.9
+export print_debug=".false."
+export truncate_incr=".true."
+
+echo "END: config.esnowanl"
