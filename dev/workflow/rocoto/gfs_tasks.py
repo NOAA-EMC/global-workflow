@@ -3171,7 +3171,10 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf", "")}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem001'}
+        # Depend on the efcs_manager for mem001 rather than the raw forecast task
+        # so that atmos history files for mem001 are guaranteed to be in COM
+        # before echgres tries to read them.
+        dep_dict = {'type': 'task', 'name': f'{self.run}_efcs_manager_mem001'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -3219,7 +3222,9 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        # Depend on the full efcs_manager metatask (all members) so that all
+        # per-member atm/sfc history files are in COM before epos reads them.
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_efcs_manager'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
