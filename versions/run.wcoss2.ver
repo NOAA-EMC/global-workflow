@@ -53,11 +53,7 @@ export ens_tracker_ver=v1.3.0
 export fit2obs_ver=1.1.10
 
 # Development-only below
-#### HOMEglobal
-export HOMEglobal=${HOMEglobal:-${HOMEgfs}}
-#### EXPDIR
 export RUN_ENVIR='emc'
-export EXPDIR='/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/retrov17_01_realtime'
 export NET='gfs'
 
 #### GFS prep step

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 # for now, leave environment and config files un-changed.
 source "${HOMEglobal}/ush/jjob_header.sh" -e "sfcanl_gcycle" -c "base sfcanl_gcycle"
 

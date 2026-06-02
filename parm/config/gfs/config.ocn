@@ -1,0 +1,34 @@
+#! /usr/bin/env bash
+
+echo "BEGIN: config.ocn"
+
+export MESH_OCN="mesh.mx${OCNRES}.nc"
+
+export DO_OCN_SPPT="NO"  # In MOM_input, this variable is determines OCN_SPPT (OCN_SPPT = True|False)
+export DO_OCN_PERT_EPBL="NO"  # In MOM_input, this variable determines PERT_EPBL (PERT_EPBL = True|False)
+
+# Templated variables in MOM_input_template
+export MOM6_USE_LI2016="True" # set to False for restart reproducibility
+export MOM6_THERMO_SPAN="False"
+
+if [[ "${DO_JEDIOCNVAR}" == "YES" ]]; then
+  export ODA_INCUPD="True"
+else
+  export ODA_INCUPD="False"
+fi
+
+# Time interval for applying the increment
+if [[ "${DOIAU}" == "YES" ]]; then
+  export ODA_INCUPD_NHOURS="6.0"
+else
+  export ODA_INCUPD_NHOURS="3.0"
+fi
+
+MOM6_INTERP_ICS="{{ MOM6_INTERP_ICS }}"
+if [[ "${MOM6_INTERP_ICS}" == "YES" ]]; then
+    export MOM6_RESTART_SETTING='n'
+    export MOM6_WARMSTART_FILE="MOM.res.nc"
+    export MOM6_INIT_FROM_Z='False'
+    export MOM6_INIT_UV='file'
+fi
+echo "END: config.ocn"

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 set -x
-
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 # TODO (#1222) This job is not part of the rocoto suite
 
 ############################################
