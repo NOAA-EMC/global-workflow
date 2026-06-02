@@ -1,0 +1,84 @@
+#! /usr/bin/env bash
+
+########## config.anal ##########
+# Analysis specific
+
+echo "BEGIN: config.anal"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" anal
+
+if [[ ${DONST} = "YES" ]]; then
+  source "${EXPDIR}/config.nsst"
+fi
+
+if [[ "${RUN}" == "gfs" ]] ; then
+  export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
+  export GENDIAG="NO"
+  export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,niter(2)=100,'
+  export DIAG_TARBALL="YES"
+fi
+
+# Set parameters specific to L127
+if [[ ${LEVS} = "128" ]]; then
+  export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
+  export SETUP="gpstop=55,nsig_ext=45,${SETUP:-}"
+fi
+
+# Set namelist option for LETKF
+export lobsdiag_forenkf=".false."  # anal does not need to write out jacobians
+                                   # set to .true. in config.eobs and config.eupd
+
+# Reduce number of iterations for testing mode
+if [[ ${DO_TEST_MODE} = "YES" ]]; then
+  export SETUP="${SETUP:-}niter(1)=5,niter(2)=5,"
+fi
+
+# Do not process the following datasets
+export GSNDBF=${GSNDBF:-/dev/null}
+export AMSREBF=${AMSREBF:-/dev/null}
+export SSMITBF=${SSMITBF:-/dev/null}
+export AMSR2BF=${AMSR2BF:-/dev/null}
+
+
+# Set default values for info files and observation error
+#  NOTE:  Remember to set PRVT in config.prep as OBERROR is set below
+export CONVINFO=${FIXglobal}/gsi/global_convinfo.txt
+export OZINFO=${FIXglobal}/gsi/global_ozinfo.txt
+export SATINFO=${FIXglobal}/gsi/global_satinfo.txt
+export OBERROR=${FIXglobal}/gsi/prepobs_errtable.global
+
+# Use 2m diagnostic for screen level obs
+export hofx_2m_sfcfile=".true."
+
+if [[ ${DO_GSISOILDA} = "YES" ]]; then
+    export reducedgrid=".false." # not possible for sfc analysis, Jeff Whitaker says it's not useful anyway
+    # NOTE: convinfo here will be over-written by date-specific files below.
+    export CONVINFO=${FIXglobal}/gsi/global_convinfo_2mObs.txt
+    export ANAVINFO=${FIXglobal}/gsi/global_anavinfo_soilanal.l127.txt
+fi
+
+if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
+   # these will be set based on date in scripts/exglobal_atmos_analysis.sh
+   export SATINFO="generate"
+   export CONVINFO="generate"
+   export OZINFO="generate"
+   # this can be over-ridden, for example to use NASA's netcdf ozone files use obs_input_reanl_nasa_ozone.txt.
+   export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_reanl_ncep_ozone.txt"
+
+   # Use 2m observations when constructing conventional obs info file
+   # can use 2m obs without enabling soil DA by setting USE_2M_OBS=YES in config.base
+   export USE_2M_OBS="${USE_2M_OBS:-${DO_GSISOILDA}}"
+else
+   export OBS_INPUT="${BUILD_GSINFO_DIR}/obs_input/obs_input_ops.txt"
+fi
+# path to "fixed" crtm coefficient files (needed for crtm < 3)
+export HIRS_FIX="${BUILD_GSINFO_DIR}/hirs_fix"
+
+# Flag to turn on (.true.) or off (.false.) the infrared cloud and aerosol detection software
+# for AIRS, CrIS, and IASI.  Default is .false.
+export AIRS_CADS=".false."
+export CRIS_CADS=".false."
+export IASI_CADS=".false."
+
+echo "END: config.anal"

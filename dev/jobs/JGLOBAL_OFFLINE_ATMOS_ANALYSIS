@@ -2,6 +2,7 @@
 #shellcheck disable=SC2155
 
 set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 source "${HOMEglobal}/ush/jjob_header.sh" -e "offlineanl" -c "base offlineanl"
 
 #{% if false %}

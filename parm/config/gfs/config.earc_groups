@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+
+########## config.earc_groups ########
+# Specifies the grouping strategy for ensemble archiving
+# This is used by the earc_tars and globus_earc jobs
+
+
+# Set the number of ensemble members to archive per earc_tars/globus_earc job
+case "${CASE_ENS}" in
+  "C48" | "C96")
+    export NMEM_EARCGRP=80
+    ;;
+  "C192")
+    export NMEM_EARCGRP=20
+    ;;
+  "C384" | "C768")
+    export NMEM_EARCGRP=10
+    ;;
+  "C1152")
+    export NMEM_EARCGRP=4
+    ;;
+  *)
+    echo "FATAL ERROR: Unknown ensemble resolution ${CASE_ENS}, ABORT!"
+    exit 1
+    ;;
+esac

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
-export version=v16.3.7
-export gfs_ver=v16.3.7
+export version=v17.0.0
+export gfs_ver=v17.0.0
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
@@ -47,10 +47,18 @@ export crtm_ver=2.4.0.2
 export met_ver=9.1.3
 export metplus_ver=3.1.1
 
-# Development-only below
-
 export obsproc_run_ver=1.2.0
 export prepobs_run_ver=1.1.3
-
 export ens_tracker_ver=v1.3.0
 export fit2obs_ver=1.1.10
+
+# Development-only below
+export RUN_ENVIR='emc'
+export NET='gfs'
+
+#### GFS prep step
+export HOMEprepobs=/lfs/h2/emc/global/save/emc.global/git/prepobs/v1.1.3
+export DMPDIR=/lfs/h2/emc/dump/noscrub/dump
+export DMPDIR_ocean=/lfs/h2/emc/global/noscrub/emc.global/ocean
+export IODADIR=/lfs/h2/emc/dump/noscrub/dump_ioda
+export COMINobsproc="/lfs/h2/emc/dump/noscrub/dump/gfs.${PDY}/${cyc}/atmos"

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+########## config.marinebmatinit ##########
+# configuration for the marine B-matrix
+
+echo "BEGIN: config.marinebmatinit"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" marinebmatinit
+
+echo "END: config.marinebmatinit"

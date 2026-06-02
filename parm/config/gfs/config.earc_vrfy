@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+########## config.earc_vrfy ##########
+# Ensemble archive specific
+
+echo "BEGIN: config.earc_vrfy"
+
+# Get task specific resources"
+. "${EXPDIR}/config.resources" "earc_vrfy"
+
+#--starting and ending hours of previous cycles to be removed from rotating directory
+export RMOLDSTD_ENKF=144
+export RMOLDEND_ENKF=24
+
+echo "END: config.earc_vrfy"

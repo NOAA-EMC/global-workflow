@@ -3,49 +3,52 @@ enkf:
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/{{ RUN }}.tar"
     required:
         # Logs
-        {% if is_gdas %}
-            {% for mem in range(1, nmem_ens + 1) %}
+        {% if ARCH_LOGS %}
+            {% if is_gdas %}
+                {% for mem in range(1, nmem_ens + 1) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_fcst_mem{{ '%03d' % mem }}.log"
-            {% endfor %}
-            {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
-            {% set ngrps = fhrs | length %}
-            {% for grp in range(0, ngrps) %}
+                {% endfor %}
+                {% set fhrs = range(fhmin, fhmax + fhout, fhout) %}
+                {% set ngrps = fhrs | length %}
+                {% for grp in range(0, ngrps) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_epos{{ '%03d' % grp }}.log"
-            {% endfor %}
-            {% if not DO_JEDIATMENS %}
+                {% endfor %}
+                {% if not DO_JEDIATMENS %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_echgres.log"
+                {% endif %}
             {% endif %}
-        {% endif %}
             {% if DO_GSISOILDA %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc_regrid.log"
             {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc_gcycle.log"
-        {% if not DO_JEDIATMENS %}
-            {% for grp in range(IAUFHRS | length) %}
+            {% if not DO_JEDIATMENS %}
+                {% for grp in range(IAUFHRS | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
+                {% endfor %}
+            {% endif %}
+
+            {% if lobsdiag_forenkf %}
+                {% if DO_JEDIATMENS %}
+                    {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
+                {% else %}
+                    {% set steps = ["eobs", "ediag", "eupd"] %}
+                {% endif %}
+            {% else %}
+                {% if DO_JEDIATMENS %}
+                    {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
+                {% else %}
+                    {% set steps = ["eobs", "eupd"] %}
+                {% endif %}
+            {% endif %}
+            {% if DOHYBVAR_OCN %}
+                {% set steps = steps + ["marineanlecen"] %}
+            {% endif %}
+
+            {% for step in steps %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_{{ step }}.log"
             {% endfor %}
         {% endif %}
-
-        {% if lobsdiag_forenkf %}
-           {% if DO_JEDIATMENS %}
-              {% set steps = ["atmensanlinit", "atmensanlobs", "atmensanlsol", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
-           {% else %}
-              {% set steps = ["eobs", "ediag", "eupd"] %}
-           {% endif %}
-        {% else %}
-           {% if DO_JEDIATMENS %}
-              {% set steps = ["atmensanlinit", "atmensanlletkf", "atmensanlfv3inc", "atmensanlfinal", "ecen_fv3jedi"] %}
-           {% else %}
-              {% set steps = ["eobs", "eupd"] %}
-           {% endif %}
-        {% endif %}
-        {% if DOHYBVAR_OCN %}
-          {% set steps = steps + ["marineanlecen"] %}
-        {% endif %}
-
-        {% for step in steps %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_{{ step }}.log"
-        {% endfor %}
+        # End logs
 
         # Ensemble resolution
         {% if is_gdas %}
