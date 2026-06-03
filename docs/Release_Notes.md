@@ -57,7 +57,14 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* Bug fixes in GSI sorc code
+* Bug fixes in GSI sorc code (https://github.com/NOAA-EMC/GSI/issues/1006):
+* Safeguard to prevent NaNs from CRTM affecting minimisation
+* Add PlanetiQ YAM-8 data with SAID 768 
+* Revert PR #837 changes to dev-v16 radinfo.f90 (Improves minimization)
+* Fix bug in calculation of Windborne and Saildrone Obs Errors
+* Additional variables in diag files for WDQMS
+* Correct additional windborne and saildrone bugs
+* Allow saildrone to assimilate either relative humidity or dew point.
 
 JOBS CHANGES
 ------------
