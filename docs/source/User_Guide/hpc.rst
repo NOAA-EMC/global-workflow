@@ -26,7 +26,7 @@ The system software requirements listed in the following table represent the min
 | lmod         | 8.3.1       |                                       |
 +--------------+-------------+---------------------------------------+
 | Slurm        | 23.02.7     | * Other schedulers may be supportable |
-+--------------+-------------+---------------------------------------+
+|                              OR                                    |
 | PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
 +--------------+-------------+---------------------------------------+
 | Git          | 2.29.0      | * Some components e.g. GDASApp may    |
