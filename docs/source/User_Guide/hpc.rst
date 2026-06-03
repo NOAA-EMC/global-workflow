@@ -281,6 +281,11 @@ If you need restricted data access on NOAA RDHPCS platforms:
 4. Provide justification explaining why you need restricted data access
 5. Submit the request here: https://aim.rdhpcs.noaa.gov/
 
+.. note::
+
+Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.
+
+
 ===========================================
 Stacksize on RDHPCS (e.g., Orion, Hercules)
 ===========================================
