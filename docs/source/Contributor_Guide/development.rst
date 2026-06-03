@@ -11,7 +11,7 @@ Code managers
 =============
 
  * David Huber - @DavidHuber-NOAA / david.huber@noaa.gov
- * Rahul Mahajan - @aerorahul / rahul.mahajan@noaa.gov
+ * Travis Elless - @TravisElles-NOAA / travis.j.elless@noaa.gov
 
 .. _development:
 
