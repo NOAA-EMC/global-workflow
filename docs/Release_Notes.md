@@ -80,14 +80,13 @@ SCRIPT CHANGES
 --------------
 
 * Corrects the index in the exgdas_enkf_update.sh script for the satellite observation's namelist entry of abi_q19.
-* Adds gmi_option=4 to exgglobal_atmos_analysis.sh script.
+* Adds gmi_option=4 to exglobal_atmos_analysis.sh script.
 
 FIX CHANGES
 -----------
 
 * The `fix_am/syndat_stmnames` file is updated to adjust some hurricane names for 2026/2027 seasons.
 * Addition of Sentinal-6 and PlanetIQ YAM-8 GNSSRO active assimilation.
-* Turn on GMI in monitor mode
 * Turn off Metop-B AMSU-A channel 8 which has become unusable.
 
 MODULE CHANGES
