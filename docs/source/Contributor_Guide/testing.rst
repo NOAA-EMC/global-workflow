@@ -64,7 +64,7 @@ The testing framework operates within a well-defined directory hierarchy:
     └── ...
 
 Configuration Management
-=========================
+========================
 
 Platform-specific configuration is defined in::
 

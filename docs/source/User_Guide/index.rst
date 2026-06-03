@@ -17,7 +17,6 @@ Table of Contents
    globus_arch.rst
    gfs_jobs.rst
    gcafs.rst
-   wave.rst
    run_hpc.rst
    setup_run_csp.rst
    plot_output.rst

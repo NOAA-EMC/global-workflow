@@ -25,9 +25,9 @@ The system software requirements listed in the following table represent the min
 +--------------+-------------+---------------------------------------+
 | lmod         | 8.3.1       |                                       |
 +--------------+-------------+---------------------------------------+
-| Slurm        | 23.02.7     | * Other schedulers may be supportable |
-|   OR         |             |                                       |
-| PBSpro       | 2022.1.1    | * Other schedulers may be supportable |
+| Slurm        | 23.02.7     |                                       |
+| OR           |             | * Other schedulers may be supportable |
+| PBSpro       | 2022.1.1    |                                       |
 +--------------+-------------+---------------------------------------+
 | Git          | 2.29.0      | * Some components e.g. GDASApp may    |
 |              |             |   need Git Large File Storage         |
@@ -168,36 +168,22 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
      -
      - X
      -
-* - Derecho
-- 1
-- X
-- X
-- X
-- X
-- X
-- X
-- X
-- X
--
--
-- X
--
--
-* - AWS (Native)
-- 2
-- X
-- X
-- X
-- X
-- X
-- X
-- X
-- X
--
--
-- X
--
--
+     -
+   * - AWS (Native)
+     - 2
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     - X
+     -
+     -
+     - X
+     -
+     -
    * - AWS (PW)
      - 3
      - X
@@ -244,9 +230,9 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
      -
      -
 
-================
+=============
 HPC Helpdesks
-================
+=============
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
 * Ursa: rdhpcs.ursa.help@noaa.gov
@@ -282,28 +268,4 @@ If you need restricted data access on NOAA RDHPCS platforms:
 5. Submit the request here: https://aim.rdhpcs.noaa.gov/
 
 .. note::
-
-Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.
-
-
-===========================================
-Stacksize on RDHPCS (e.g., Orion, Hercules)
-===========================================
-
-Some GFS components, such as the Unified Post Processor (UPP), need an unlimited stacksize. Add the following setting into your appropriate shell startup file (e.g, .cshrc, .bashrc) to support these components.
-
-For csh::
-
-    limit stacksize unlimited
-
-For sh, bash, or ksh::
-
-    ulimit -s unlimited
-
-==========================================
-
-Did you generate your ssh-keys with a passphrase? If so, recreate them without a passphrase. To test this, try ssh-ing to a different login node; you should be able to connect without being prompted for a passphrase.
-
-Is your public key in the authorized_keys file? If not, add it::
-
-   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+   Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.
