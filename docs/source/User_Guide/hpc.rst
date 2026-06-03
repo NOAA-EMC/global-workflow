@@ -21,7 +21,7 @@ The system software requirements listed in the following table represent the min
 |              | * 3.11.6+   | * 3.11.6 is packaged with spack-stack |
 |              |             | * 3.9.x is untested                   |
 +--------------+-------------+---------------------------------------+
-| Spack-Stack  | 1.6.0       | * Available everywhere but WCOSS2     |
+| Spack-Stack  | 1.9.2       | * Available everywhere but WCOSS2     |
 +--------------+-------------+---------------------------------------+
 | lmod         | 8.3.1       |                                       |
 +--------------+-------------+---------------------------------------+
