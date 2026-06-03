@@ -300,7 +300,6 @@ For sh, bash, or ksh::
 
     ulimit -s unlimited
 
-Forecast Hangs Caused by SSH Keys: The Fix
 ==========================================
 
 Did you generate your ssh-keys with a passphrase? If so, recreate them without a passphrase. To test this, try ssh-ing to a different login node; you should be able to connect without being prompted for a passphrase.
