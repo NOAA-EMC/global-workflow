@@ -300,7 +300,6 @@ For sh, bash, or ksh::
 
     ulimit -s unlimited
 
-==========================================
 Forecast Hangs Caused by SSH Keys: The Fix
 ==========================================
 
