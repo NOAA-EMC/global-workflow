@@ -168,7 +168,36 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
      -
      - X
      -
-     -
+* - Derecho
+- 1
+- X
+- X
+- X
+- X
+- X
+- X
+- X
+- X
+-
+-
+- X
+-
+-
+* - AWS (Native)
+- 2
+- X
+- X
+- X
+- X
+- X
+- X
+- X
+- X
+-
+-
+- X
+-
+-
    * - AWS (PW)
      - 3
      - X
