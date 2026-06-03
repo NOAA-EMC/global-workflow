@@ -245,7 +245,7 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
      -
 
 ================
-RDHPCS Helpdesks
+HPC Helpdesks
 ================
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
