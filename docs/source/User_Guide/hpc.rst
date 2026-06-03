@@ -36,7 +36,7 @@ The system software requirements listed in the following table represent the min
 | Rocoto       | 1.3.5       | * 1.3.7 is required for newer         |
 |              |             |   versions of Ruby (3.2+)             |
 +--------------+-------------+---------------------------------------+
-| Intel        | 2021.5.1    | * GNU compilers are not supported     |
+| Intel        | 2024.2.1    | * GNU compilers are not supported     |
 | Compilers    |             | * Intel LLVM compilers are not yet    |
 |              |             |   supported                           |
 |              |             | * Intel 19.x is only supported on     |
