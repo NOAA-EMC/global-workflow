@@ -3,7 +3,7 @@ GFS V16.3.31 RELEASE NOTES
 -------
 PRELUDE
 -------
-This removes an extraneous module path from the build script.
+Tropical storm name updates for the 2026-2027 hurricane seasons are made in the GFS syndat_stmnames fix file.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -15,7 +15,7 @@ cd $PACKAGEROOT
 
 mkdir gfs.v16.3.31
 cd gfs.v16.3.31
-git clone -b release/gfs.v16.3.31 https://github.com/NOAA-EMC/global-workflow.git .
+git clone -b EMC-v16.3.31 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -71,12 +71,12 @@ PARM/CONFIG CHANGES
 SCRIPT CHANGES
 --------------
 
-* This corrects the index in the exgdas_enkf_update.sh script for the satellite observation's namelist entry of abi_q19.
+* No changes from GFS v16.3.30.
 
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.3.30.
+* The `fix_am/syndat_stmnames` file is updated to adjust some hurricane names for 2026/2027 seasons.
 
 MODULE CHANGES
 --------------
