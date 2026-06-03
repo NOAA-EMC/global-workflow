@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.prep_sfc ##########
+# Surface prep specific
+
+echo "BEGIN: config.prep_sfc"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" prep_sfc
+
+echo "END: config.prep_sfc"

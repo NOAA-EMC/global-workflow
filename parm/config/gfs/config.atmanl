@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+########## config.atmanl ##########
+# configuration common to all atm var analysis tasks
+
+echo "BEGIN: config.atmanl"
+
+export OBS_LIST_YAML="${PARMglobal}/gdas/atm/atm_obs_list.yaml.j2"
+export VAR_JEDI_TEST_YAML=""
+export FV3INC_JEDI_TEST_YAML=""
+export STATICB_TYPE="gsibec"
+export layout_x_atmanl="8"
+export layout_y_atmanl="8"
+export io_layout_x="1"
+export io_layout_y="1"
+
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/atm/atm_det_config.yaml.j2"
+export BIAS_FILES_YAML="${PARMglobal}/gdas/atm/atm_bias_files.yaml.j2"
+
+export LOCALIZATION_TYPE="bump"
+
+export CASE_GSIBEC=${CASE_ANL}
+if [[ "${DOHYBVAR}" = "YES" && "${ATMINC_GRID}" = "gaussian" ]]; then
+    export CASE_GSIBEC=${CASE_HIST}
+    export CASE_HIST=${CASE_ANL}
+fi
+
+export NUMBER_OUTER_LOOPS=""
+export NINNER_LOOP1=""
+export NINNER_LOOP2=""
+
+echo "END: config.atmanl"
