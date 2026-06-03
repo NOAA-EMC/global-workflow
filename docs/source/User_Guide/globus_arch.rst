@@ -3,7 +3,6 @@
 .. note::
 
 Most users can skip this section. A globus connection is only required if you (a) want to archive data to NOAA's HPSS (tape archive) (b) Are running global workflow on a machine that does not have direct HPSS access, such as Hercules.
-
 .. note::
 
 Most users can skip this section. A globus connection is only required if you (a) want to archive data to NOAA's HPSS (tape archive) (b) Are running global workflow on a machine that does not have direct HPSS access, such as Hercules.
