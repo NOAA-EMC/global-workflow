@@ -15,7 +15,7 @@ cd $PACKAGEROOT
 
 mkdir gfs.v16.3.32
 cd gfs.v16.3.32
-git clone -b release/gfs.v16.3.32 https://github.com/NOAA-EMC/global-workflow.git .
+git clone -b OMD_gfs.v16.3.32 https://github.com/NOAA-EMC/global-workflow.git .
 
 cd sorc
 ./checkout.sh -o
