@@ -22,12 +22,20 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   set -x
 fi
 
+module load prod_util
 if [ -n "%PDY:%" ]; then
   export PDY=${PDY:-%PDY:%}
 else
   export PDY=$($NDATE | cut -c1-8)
 fi
 export CDATE=${PDY}%CYC:%
+
+if [ -d /apps/ops/prod ]; then # On WCOSS2
+  set +x
+  echo "Running "module reset""
+  module reset
+  set -x
+fi
 
 # Setting the model package location
 modelhome=%PACKAGEHOME:%
@@ -98,7 +106,7 @@ ERROR() {
      msg="Killed by signal $1"
   fi
   #To send email about failure, uncomment next line and update email list: 
-  #echo "${ECF_NAME} log file: ${ECF_JOBOUT}" | mail -s "GFSv17 ecflow realtime job failure: ${ECF_NAME}" firt.last@noaa.gov 
+  echo "${ECF_NAME} log file: ${ECF_JOBOUT}" | mail -s "GFSv17 ecflow realtime job failure: ${ECF_NAME}" ${USER}@noaa.gov 
   ecflow_client --abort="$msg"
   echo $msg
   if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
