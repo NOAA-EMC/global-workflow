@@ -8,7 +8,7 @@ suite gfs_v17_nco
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development'
     edit ENVIR 'prod'
-    edit QUEUE 'devhigh'
+    edit QUEUE 'devmax'
     edit QUEUE_ARCH 'dev_transfer'
     edit OUTPUTDIR '/lfs/h3/emc/eib/noscrub/ptmp/%EMC_USER%/ecflow_gfs/para/output/prod/today'
     family 00
