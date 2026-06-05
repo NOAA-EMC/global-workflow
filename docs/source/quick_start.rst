@@ -4,13 +4,16 @@ Quick Start Guide
 
 Run your first global workflow (GW) test case in no time!
 
-0. Determine where you will put your stuff:
+==========================================
+0. Determine where you will put your stuff
+==========================================
 
 Determine where is appropriate to set up your experiments on your chosen HPC and project. You will need two locations: a place to store the code (hereafter ``$MY_SAVE``) and a place to put your experiment directory and output (hereafter ``$MY_NOSCRUB``). A third place (``$STMP``) will be used for temporary run directories. This last location is already defined in scripts, though you may wish to change it later.
 
 Don't use your home directory (especially for output). Use available "scratch" or "lustre" space. Create the directories if they do not already exist.
 
 Recommended locations by supported HPC:
+
 +----------------+-------------------------------------------------+----------------------------------------------------+
 | Resource       | Save                                            | Noscrub                                            |
 +================+=================================================+====================================================+
@@ -29,7 +32,9 @@ Recommended locations by supported HPC:
 | AWS (native)   | /lustre/users/First.Last/save/gw                | /lustre/users/First.Last/noscrub/gw                |
 +----------------+-------------------------------------------------+----------------------------------------------------+
 
-1. Clone the official repository:
+================================
+1. Clone the official repository
+================================
 
 _code-block:: bash
 
@@ -41,9 +46,11 @@ You can change ``tutorial`` to be anything you wish.
 
 This will checkout the current develop branch of GW, including all its sub-components.
 
-2. Build components necessary to run GFS forecast-only and create necessary links:
+==========================================
+2. Build and Install for GFS forecast-only
+==========================================
 
-_code-block:: bash
+.. code-block:: bash
 
 cd sorc
 ./build_all.sh -cA <hpc_account> gfs
@@ -51,15 +58,17 @@ cd sorc
 
 This builds the executables necessary to run your first test case and then creates links for necessary scripts and static data (fix) files.
 
-_note::
+.. note::
 
 Code shown builds components using HPC compute nodes, which is highly recommended. You can build on the login node instead by omitting the ``-cA <hpc_account>``.
 
-_note::
+.. note::
 
 If you are running on native AWS, the hpc_account is irrelevant. Use any string.
 
+=====================================================
 3. Create your experiment directory for the test case
+=====================================================
 
 _code-block:: bash
 
@@ -69,11 +78,13 @@ source ../ush/gw_setup.sh
 
 Again, ``tutorial`` here can be changed to anything you wish (and does not need to match what you used for the code directory).
 
-This will create two directories in ${MY_NOSCRUB}/tutorial: a ``COMROOT``, where all the output will be stored, and an ``EXPROOT``, where all the experiment directories will be stored. In each, there will be a ``C48_ATM`` directory corresponding to the C48_ATM case configuration we specified. (Sourcing ``gw_setup.sh`` ensures you have the right environment set up, including rocoto).
+This will create two directories in ``${MY_NOSCRUB}/tutorial``: a ``COMROOT``, where all the output will be stored, and an ``EXPROOT``, where all the experiment directories will be stored. In each, there will be a ``C48_ATM`` directory corresponding to the C48_ATM case configuration we specified. (Sourcing ``gw_setup.sh`` ensures you have the right environment set up, including rocoto).
 
 This command will also print out a crontab line to run the experiment. Copy that, we will be using it in the next step.
 
+============================
 4. Set up cron to run rocoto
+============================
 
 Open up crontab in edit mode (``crontab -e``). On some systems, you will need to be on a certain or special login node to do this. Paste the line printed from the last step into your crontab, then save and exit.
 
@@ -81,7 +92,9 @@ This will set up rocoto to run every five minutes. Rocoto is the workflow manage
 
 It is recommended that you do not set the update frequency shorter than five minutes if you are on a shared HPC resource, as that can overload the system and make sysadmins unhappy.
 
+==============================
 5. Monitor experiment progress
+==============================
 
 To view the progress of your jobs, use the rocotostat command:
 
@@ -90,9 +103,9 @@ _code-block:: bash
 cd "${MY_NOSCRUB}/tutorial/EXPROOT/C48_ATM"
 rocotostat -w C48_ATM.xml -d C48_ATM.db
 
-This will show the status of every job in the workflow pipeline. ``C48_ATM.xml`` is the workflow definition file, and ``C48_ATM.db`` is the database where rocoto stores the last known status of all the jobs. If you have no C48_ATM.db in your experiment directory, then ``rocotorun`` has not been run yet.
+This will show the status of every job in the workflow pipeline. ``C48_ATM.xml`` is the workflow definition file, and ``C48_ATM.db`` is the database where rocoto stores the last known status of all the jobs. If you have no ``C48_ATM.db`` in your experiment directory, then ``rocotorun`` has not been run yet.
 
-Alternatively, OMD has developed a tool to called rocoto viewer which will provide an interactive display to view job status. The display updates regularly and can also be used to call other common rocoto commands (rocotocheck, rocotorewind, rocotoboot). This tool can be found in the ``dev/workflow`` directory as ``rocoto_viewer.py``. Rocoto viewer requires ``TERM`` to be set to ``xterm``, so it is recommended you create a bash function or otherwise make sure TERM=xterm before using:
+Alternatively, OMD has developed a tool to called rocoto viewer which will provide an interactive display to view job status. The display updates regularly and can also be used to call other common rocoto commands (rocotocheck, rocotorewind, rocotoboot). This tool can be found in the ``dev/workflow`` directory as ``rocoto_viewer.py``. Rocoto viewer requires ``TERM`` to be set to ``xterm``, so it is recommended you create a bash function or otherwise make sure TERM is set to 'xterm' before using:
 
 _code-block:: bash
 
@@ -103,15 +116,19 @@ function rocoto_viewer {
     export TERM="${oldterm}"
 }
 
-_note::
+.. note::
 
 You may wish to copy ``rocoto_viewer.py`` to a permanent location so you do not have to keep updating the function.
 
+=====================
 6. Checking log files
+=====================
 
 Log files for each job will be located in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_ATM/logs/2021032312``. The file names match the name of the job as listed in rocoto, with the suffix ``.log`` (e.g. ``gfs_stage_ic.log``, ``gfs_fcst_seg0.log``, etc.). If a job has been rerun, a number will be appended to the filename with ascending age (``gfs_stage_ic.log.0`` would be the previous run, ``gfs_stage_ic.log.1`` would be the run before that, etc.).
 
+==================
 7. Checking output
+==================
 
 Output will be placed in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_ATM``. Output is organized into a hierarchical structure:
 
@@ -161,7 +178,9 @@ gfs.20210323
 +-----------+-------------------------------------------------------+
 * Not present for C48_ATM case
 
+=================
 8. Try more cases
+=================
 
 Now that you have successfully run your first case, you are ready to try more cases.
 
@@ -238,9 +257,6 @@ Instead of specifying tests with ``-y``, you can also instead run all tests in a
 -S  Run all SFS cases
 
 Specifying ``-GECS`` would run all tests valid for the current system.
-
-
-
 
 
 
