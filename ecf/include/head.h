@@ -56,6 +56,9 @@ export KEEPDATA=NO
 export SENDDBN="NO"
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
 
+if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+if [ -n "%EXPDIR:%" ]; then export EXPDIR="%EXPDIR:%"; fi
+
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x
   if [ $(whoami) == ops.para ]; then
