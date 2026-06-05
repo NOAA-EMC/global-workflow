@@ -16,8 +16,10 @@ export cyc="%CYC%"
 ############################################################
 # Load modules
 ############################################################
-#TODO: load only the modules needed for each job
-source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
 
 module list
 ############################################################

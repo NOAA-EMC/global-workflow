@@ -27,8 +27,7 @@ module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load python/${python_ver}
-module use /apps/dev/modulefiles
-module load ve/gw/1.0
+
 module list
 
 #############################################################

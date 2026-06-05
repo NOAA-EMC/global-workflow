@@ -16,8 +16,15 @@ export cyc="%CYC%"
 ############################################################
 # Load modules
 ############################################################
-#TODO: load only the modules needed for each job
-source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load python/${python_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load crtm/${crtm_ver}
 
 module list
 ############################################################
