@@ -47,7 +47,7 @@ if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
 if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
 if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
-export KEEPDATA=YES
+export KEEPDATA=NO
 #### enkfgdas fcst job failure with SENDDBN="YES" as of 20260306 with expdir:
 ####   -rw-r--r-- 1 emc.global global 17K Mar  4 15:57 /lfs/h2/emc/gfstemp/emc.global/expdir/retrov17_01_realtime/config.base
 ####   GFS code hash with this issue caab01
