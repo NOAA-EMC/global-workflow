@@ -32,15 +32,17 @@ Recommended locations by supported HPC:
 | AWS (native)   | /lustre/users/First.Last/save/gw                | /lustre/users/First.Last/noscrub/gw                |
 +----------------+-------------------------------------------------+----------------------------------------------------+
 
+You will also need to know what your HPC account for the job scheduler is for the platform you choose.
+
 ================================
 1. Clone the official repository
 ================================
 
 .. code-block:: bash
 
-cd "${MY_SAVE}"
-git clone https://github.com/NOAA-EMC/global-workflow.git --recursive tutorial --jobs 8
-cd tutorial
+    cd "${MY_SAVE}"
+    git clone https://github.com/NOAA-EMC/global-workflow.git --recursive tutorial --jobs 8
+    cd tutorial
 
 You can change ``tutorial`` to be anything you wish.
 
@@ -60,11 +62,13 @@ This builds the executables necessary to run your first test case and then creat
 
 .. note::
 
-    Code shown builds components using HPC compute nodes, which is highly recommended. You can build on the login node instead by omitting the ``-cA <hpc_account>``.
+    If you are running on native AWS, the hpc_account is irrelevant. Use any string.
 
 .. note::
 
-    If you are running on native AWS, the hpc_account is irrelevant. Use any string.
+    Code shown builds components using HPC compute nodes, which is highly recommended.
+
+    You can build on the login node instead by omitting the ``-cA <hpc_account>``.
 
 =====================================================
 3. Create your experiment directory for the test case
@@ -78,7 +82,11 @@ This builds the executables necessary to run your first test case and then creat
 
 Again, ``tutorial`` here can be changed to anything you wish (and does not need to match what you used for the code directory).
 
-This will create two directories in ``${MY_NOSCRUB}/tutorial``: a ``COMROOT``, where all the output will be stored, and an ``EXPROOT``, where all the experiment directories will be stored. In each, there will be a ``C48_ATM`` directory corresponding to the C48_ATM case configuration we specified. (Sourcing ``gw_setup.sh`` ensures you have the right environment set up, including rocoto).
+This will create two directories in ``${MY_NOSCRUB}/tutorial``:
+- ``COMROOT``: where all the output will be stored
+- ``EXPROOT``: where all the experiment directories will be stored.
+
+In each, there will be a ``C48_ATM`` directory corresponding to the C48_ATM case configuration we specified. (Sourcing ``gw_setup.sh`` ensures you have the right environment set up, including rocoto).
 
 This command will also print out a crontab line to run the experiment. Copy that, we will be using it in the next step.
 
@@ -179,7 +187,7 @@ For this experiment, once complete you should see:
 | products  | derived products typically published                  |
 +-----------+-------------------------------------------------------+
 | * Not present for C48_ATM case                                    |
-+-----------+-------------------------------------------------------+
++-------------------------------------------------------------------+
 
 =================
 8. Try more cases
@@ -265,7 +273,7 @@ Specifying ``-GECS`` would run all tests valid for the current system.
 
 
 
-*** ED NOTE: probably move this next table to the full User's Guide ***
+*** ED NOTE: probably move the following to the full User's Guide ***
 
 Components built for each option:
 
@@ -294,10 +302,13 @@ Components built for each option:
 +------------------------------------------------------------------------+
 
 +------------------------------------------------------------------------+
-|  UFS model configurations (built with FV3/MOM6/CICE/WW3 unless noted)  |
-+========================================================================+
-| GFS model: Non-hydrostatic with unstructured wave grid (PDLIB=ON)      |
-| GEFS model: Non-hydrostatic with structured wave grid (PDLIB=OFF)      |
-| SFS model: Hydrostatic (built with waves, but not used)                |
-| GCAFS: Non-hydrostatic FV3/GOCART                                      |
-+------------------------------------------------------------------------+
+|  UFS model configurations (built with FV3/MOM6/CICE6/WW3 unless noted) |
++============+===========================================================+
+| GFS model  | Non-hydrostatic with unstructured wave grid (PDLIB=ON)    |
++------------+-----------------------------------------------------------+
+| GEFS model | Non-hydrostatic with structured wave grid (PDLIB=OFF)     |
++------------+-----------------------------------------------------------+
+| SFS model  | Hydrostatic (built with waves, but not used)              |
++------------+-----------------------------------------------------------+
+| GCAFS      | Non-hydrostatic FV3/GOCART                                |
++------------+-----------------------------------------------------------+
