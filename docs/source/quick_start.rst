@@ -53,7 +53,7 @@ You can change ``tutorial`` to be anything you wish.
 This will checkout the current develop branch of GW, including all its sub-components.
 
 ==========================================
-2. Build and Install for GFS forecast-only
+2. Build and install for GFS forecast-only
 ==========================================
 
 .. code-block:: bash
@@ -117,7 +117,7 @@ To view the progress of your jobs, use the rocotostat command:
 
 This will show the status of every job in the workflow pipeline. ``C48_ATM.xml`` is the workflow definition file, and ``C48_ATM.db`` is the database where rocoto stores the last known status of all the jobs. If you have no ``C48_ATM.db`` in your experiment directory, then ``rocotorun`` has not been run yet.
 
-Alternatively, OMD has developed a tool to called rocoto viewer which will provide an interactive display to view job status. The display updates regularly and can also be used to call other common rocoto commands (rocotocheck, rocotorewind, rocotoboot). This tool can be found in the ``dev/workflow`` directory as ``rocoto_viewer.py``. Rocoto viewer requires ``TERM`` to be set to ``xterm``, so it is recommended you create a bash function or otherwise make sure TERM is set to 'xterm' before using:
+Alternatively, OMD has developed a tool to called rocoto viewer which will provide an interactive display to view job status. The display updates regularly and can also be used to call other common rocoto commands (``rocotocheck``, ``rocotorewind``, ``rocotoboot``). This tool can be found in the ``dev/workflow`` directory as ``rocoto_viewer.py``. Rocoto viewer requires ``TERM`` to be set to ``xterm``, so it is recommended you create a bash function or otherwise make sure TERM is set to 'xterm' before using:
 
 .. code-block:: bash
 
