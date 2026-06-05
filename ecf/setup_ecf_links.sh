@@ -6,7 +6,7 @@ module load prod_util
 # GFS ecflow workflow resource configuration
 ECF_DIR=$(pwd)
 
-# Create tmp file for git exclude
+# Create tmp file for git exclude (note need to uncomment lines below to reactivate)
 tmp_exclude="${ECF_DIR}/exclude_list.tmp"
 
 # Function that loops over forecast hours and
@@ -34,8 +34,10 @@ create_ecf_file() {
 
 add_to_tmpfile() {
     local exclude_file="$1"
-    echo "${exclude_file}" >> "${tmp_exclude}"
-    echo "Added ${exclude_file} to ${tmp_exclude}"
+    #If you would like to create a ${tmp_exclude} file, uncomment 
+    #echo "${exclude_file}" >> "${tmp_exclude}"
+    #echo "Added ${exclude_file} to ${tmp_exclude}"
+    echo "${exclude_file} should not be tracked by git add to .gitignore if needed"
 }
 
 ################################################################################################
