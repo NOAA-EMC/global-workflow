@@ -34,6 +34,10 @@ Recommended locations by supported HPC:
 
 You will also need to know what your HPC account for the job scheduler is for the platform you choose.
 
+.. warning::
+
+    If you are working on a machine other than Derecho or AWS, you must have rstprod access. See :doc:`User_Guide/hpc`.
+
 ================================
 1. Clone the official repository
 ================================
