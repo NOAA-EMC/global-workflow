@@ -31,12 +31,12 @@ export CDATE=${PDY}%CYC:%
 
 # Setting the model package location
 modelhome=%PACKAGEHOME:%
-eval "export HOME${model:?"model undefined"}=$modelhome"
+eval "export HOME${model:?'model undefined'}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
-if [ -n "%rrfs_ver:%" ]; then export rrfs_ver=${rrfs_ver:-%rrfs_ver:%}; fi
-if [ -f "$versionfile" ]; then
-  . $versionfile 
-fi
+if [ -f "$versionfile" ]; then . $versionfile ; fi
+modelver=$(echo ${modelhome} | perl -pe "s:.*?/${model}\.(v[\d\.a-z]+).*:\1:")
+eval "export ${model}_ver=$modelver"
+
 export envir=%ENVIR%
 export MACHINE_SITE=%MACHINE_SITE%
 export RUN_ENVIR=${RUN_ENVIR:-nco}
