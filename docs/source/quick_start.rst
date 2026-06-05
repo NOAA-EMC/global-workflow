@@ -36,7 +36,7 @@ Recommended locations by supported HPC:
 1. Clone the official repository
 ================================
 
-_code-block:: bash
+.. code-block:: bash
 
 cd "${MY_SAVE}"
 git clone https://github.com/NOAA-EMC/global-workflow.git --recursive tutorial --jobs 8
@@ -70,7 +70,7 @@ This builds the executables necessary to run your first test case and then creat
 3. Create your experiment directory for the test case
 =====================================================
 
-_code-block:: bash
+.. code-block:: bash
 
     cd ../dev/workflow
     source ../ush/gw_setup.sh
@@ -98,7 +98,7 @@ It is recommended that you do not set the update frequency shorter than five min
 
 To view the progress of your jobs, use the rocotostat command:
 
-_code-block:: bash
+.. code-block:: bash
 
     cd "${MY_NOSCRUB}/tutorial/EXPROOT/C48_ATM"
     rocotostat -w C48_ATM.xml -d C48_ATM.db
