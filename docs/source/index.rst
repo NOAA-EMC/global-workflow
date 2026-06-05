@@ -24,6 +24,11 @@ GW Documentation, Version 1.0
 #############################
 
 .. toctree::
+   :maxdepth: 2
+   
+   quick_start.rst
+
+.. toctree::
    :maxdepth: 3
 
    User_Guide/index
