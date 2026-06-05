@@ -3,7 +3,7 @@ GFS V16.3.32 RELEASE NOTES
 -------
 PRELUDE
 -------
-Tropical storm name updates for the 2026-2027 hurricane seasons are made in the GFS syndat_stmnames fix file.
+Bug fixes to the GSI.  Addition of two new GNSSRO instruments. Turn off Metop-B AMSU-A channel 8 which has become unusable.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -85,7 +85,6 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* The `fix_am/syndat_stmnames` file is updated to adjust some hurricane names for 2026/2027 seasons.
 * Addition of Sentinal-6 and PlanetIQ YAM-8 GNSSRO active assimilation.
 * Turn off Metop-B AMSU-A channel 8 which has become unusable.
 
