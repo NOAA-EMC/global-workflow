@@ -27,6 +27,18 @@ module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
 module load grib_util/${grib_util_ver}
 
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
+
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
+
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
+
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
+
 module list
 ############################################################
 # CALL executable job script here
