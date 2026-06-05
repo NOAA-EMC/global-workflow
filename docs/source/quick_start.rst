@@ -52,19 +52,19 @@ This will checkout the current develop branch of GW, including all its sub-compo
 
 .. code-block:: bash
 
-cd sorc
-./build_all.sh -cA <hpc_account> gfs
-./link_workflow.sh
+    cd sorc
+    ./build_all.sh -cA <hpc_account> gfs
+    ./link_workflow.sh
 
 This builds the executables necessary to run your first test case and then creates links for necessary scripts and static data (fix) files.
 
 .. note::
 
-Code shown builds components using HPC compute nodes, which is highly recommended. You can build on the login node instead by omitting the ``-cA <hpc_account>``.
+    Code shown builds components using HPC compute nodes, which is highly recommended. You can build on the login node instead by omitting the ``-cA <hpc_account>``.
 
 .. note::
 
-If you are running on native AWS, the hpc_account is irrelevant. Use any string.
+    If you are running on native AWS, the hpc_account is irrelevant. Use any string.
 
 =====================================================
 3. Create your experiment directory for the test case
@@ -72,9 +72,9 @@ If you are running on native AWS, the hpc_account is irrelevant. Use any string.
 
 _code-block:: bash
 
-cd ../dev/workflow
-source ../ush/gw_setup.sh
-./generate_workflow.sh -A <hpc_account> -y C48_ATM "${MY_NOSCRUB}/tutorial"
+    cd ../dev/workflow
+    source ../ush/gw_setup.sh
+    ./generate_workflow.sh -A <hpc_account> -y C48_ATM "${MY_NOSCRUB}/tutorial"
 
 Again, ``tutorial`` here can be changed to anything you wish (and does not need to match what you used for the code directory).
 
@@ -100,25 +100,25 @@ To view the progress of your jobs, use the rocotostat command:
 
 _code-block:: bash
 
-cd "${MY_NOSCRUB}/tutorial/EXPROOT/C48_ATM"
-rocotostat -w C48_ATM.xml -d C48_ATM.db
+    cd "${MY_NOSCRUB}/tutorial/EXPROOT/C48_ATM"
+    rocotostat -w C48_ATM.xml -d C48_ATM.db
 
 This will show the status of every job in the workflow pipeline. ``C48_ATM.xml`` is the workflow definition file, and ``C48_ATM.db`` is the database where rocoto stores the last known status of all the jobs. If you have no ``C48_ATM.db`` in your experiment directory, then ``rocotorun`` has not been run yet.
 
 Alternatively, OMD has developed a tool to called rocoto viewer which will provide an interactive display to view job status. The display updates regularly and can also be used to call other common rocoto commands (rocotocheck, rocotorewind, rocotoboot). This tool can be found in the ``dev/workflow`` directory as ``rocoto_viewer.py``. Rocoto viewer requires ``TERM`` to be set to ``xterm``, so it is recommended you create a bash function or otherwise make sure TERM is set to 'xterm' before using:
 
-_code-block:: bash
+.. code-block:: bash
 
-function rocoto_viewer {
-    oldterm="${TERM}"
-    export TERM="xterm"
-    "${MY_SAVE}/tutorial/dev/workflow/rocoto_viewer.py" "$@"
-    export TERM="${oldterm}"
-}
+    function rocoto_viewer {
+        oldterm="${TERM}"
+        export TERM="xterm"
+        "${MY_SAVE}/tutorial/dev/workflow/rocoto_viewer.py" "$@"
+        export TERM="${oldterm}"
+    }
 
 .. note::
 
-You may wish to copy ``rocoto_viewer.py`` to a permanent location so you do not have to keep updating the function.
+    You may wish to copy ``rocoto_viewer.py`` to a permanent location so you do not have to keep updating the function.
 
 =====================
 6. Checking log files
@@ -132,34 +132,36 @@ Log files for each job will be located in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_A
 
 Output will be placed in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_ATM``. Output is organized into a hierarchical structure:
 
-${RUN}.${PDY}/${cyc}
-└ Member (if any)
-  └ Data category (conf/analysis/model/product)
-    └ Component (atmos/chem/ice/ocean/wave)
-      └ Data type
-        └ Grid/domain (if any)
+.. code ::
+
+    ${RUN}.${PDY}/${cyc}
+    └ Member (if any)
+      └ Data category (conf/analysis/model/product)
+        └ Component (atmos/chem/ice/ocean/wave)
+          └ Data type
+            └ Grid/domain (if any)
 
 For this experiment, once complete you should see:
 
 .. code::
 
-gfs.20210323
-└── 12
-    ├── conf
-    ├── model
-    │   └── atmos
-    │       ├── history
-    │       ├── input
-    │       └── master
-    └── products
-        └── atmos
-            ├── cyclone
-            │   ├── genesis_vital
-            │   └── tracks
-            └── grib2
-                ├── 0p25
-                ├── 0p50
-                └── 1p00
+    gfs.20210323
+    └── 12
+        ├── conf
+        ├── model
+        │   └── atmos
+        │       ├── history
+        │       ├── input
+        │       └── master
+        └── products
+            └── atmos
+                ├── cyclone
+                │   ├── genesis_vital
+                │   └── tracks
+                └── grib2
+                    ├── 0p25
+                    ├── 0p50
+                    └── 1p00
 
 +-----------+-------------------------------------------------------+
 | Directory | Contents                                              |
@@ -176,7 +178,8 @@ gfs.20210323
 +-----------+-------------------------------------------------------+
 | products  | derived products typically published                  |
 +-----------+-------------------------------------------------------+
-* Not present for C48_ATM case
+| * Not present for C48_ATM case                                    |
++-----------+-------------------------------------------------------+
 
 =================
 8. Try more cases
@@ -251,6 +254,7 @@ Available low-resolution cases (in the ``dev/ci/cases/pr`` directory):
 +--------------------------+-----------------+------------+------------+------------+------------+------------+------------+ 
 
 Instead of specifying tests with ``-y``, you can also instead run all tests in a family with the following options (multiple can be specified):
+
 -G  Run all GFS cases
 -E  Run all GEFS cases
 -C  Run all GCADS cases
@@ -288,6 +292,7 @@ Components built for each option:
 +----------------+-------+-------+-------+-------+-------+-------+-------+
 | gfs_utils, ufs_utils, and upp are always built                         |
 +------------------------------------------------------------------------+
+
 +------------------------------------------------------------------------+
 |  UFS model configurations (built with FV3/MOM6/CICE/WW3 unless noted)  |
 +========================================================================+
