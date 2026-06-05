@@ -34,7 +34,7 @@ create_ecf_file() {
 
 add_to_tmpfile() {
     local exclude_file="$1"
-    #If you would like to create a ${tmp_exclude} file, uncomment 
+    #If you would like to create a ${tmp_exclude} file, uncomment
     #echo "${exclude_file}" >> "${tmp_exclude}"
     #echo "Added ${exclude_file} to ${tmp_exclude}"
     echo "${exclude_file} should not be tracked by git add to .gitignore if needed"
