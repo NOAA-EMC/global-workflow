@@ -53,7 +53,7 @@ You can change ``tutorial`` to be anything you wish.
 This will checkout the current develop branch of GW, including all its sub-components.
 
 ==========================================
-2. Build and install for GFS forecast-only
+2. Build and install for forecast-only GFS
 ==========================================
 
 .. code-block:: bash
