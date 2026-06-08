@@ -6,7 +6,7 @@ module load prod_util
 # GFS ecflow workflow resource configuration
 ECF_DIR=$(pwd)
 
-# Create tmp file for git exclude (note need to uncomment line below 
+# Create tmp file for git exclude (note need to uncomment line below
 # and lines in add_to_tmpfile to reactivate)
 # tmp_exclude="${ECF_DIR}/exclude_list.tmp"
 
