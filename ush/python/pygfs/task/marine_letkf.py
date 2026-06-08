@@ -18,7 +18,6 @@ class MarineLETKF(Analysis):
     Class for global ocean and sea ice analysis LETKF task
     """
 
-    @logit(logger, name="MarineLETKF")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean and sea ice LETKF task
 

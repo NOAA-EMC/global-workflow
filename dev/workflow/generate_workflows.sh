@@ -25,8 +25,7 @@ function _usage() {
     -u Update submodules before building and/or generating experiments.
 
     -y "list of YAMLs to run"
-       If this option is not specified, the default case (C48_ATM) will be
-       run.  This option is incompatible with -G, -E, or -S.
+       This option is incompatible with -G, -E, -S, or -C.
        Example: -y "C48_ATM C48_S2SW C96C48_hybatmDA"
 
     -D Delete the RUNTESTS and DATAROOT directories if they already exist
@@ -97,7 +96,7 @@ _build=false
 _compute_build=false
 _build_flags=""
 _update_submods=false
-declare -a _yaml_list=("C48_ATM")
+declare -a _yaml_list=()
 _specified_yaml_list=false
 _yaml_dir="" # Will be set based off of HOMEglobal if not specified explicitly
 _specified_yaml_dir=false
@@ -121,6 +120,8 @@ _cwd=$(pwd)
 _runtests="${RUNTESTS:-${_runtests:-}}"
 _auto_del=false
 _nonflag_option_count=0
+_use_scron=false
+declare -a _scron_sh_files=()
 # --------------------------------------------------------------------------- #
 # Argument Parsing
 # --------------------------------------------------------------------------- #
@@ -312,6 +313,17 @@ fi
 # Resolve Initial Case Selection
 # --------------------------------------------------------------------------- #
 
+# Check that at least one case was selected via -y or -G, -E, -S, -C
+if [[ "${_specified_yaml_list}" == "false" && "${_run_all_gfs}" == "false" &&
+    "${_run_all_gefs}" == "false" && "${_run_all_gcafs}" == "false" &&
+    "${_run_all_sfs}" == "false" ]]; then
+
+    echo "No cases selected to run!"
+    echo "Please select which case(s) to run explicitly with -y \"list of case(s)\" or"
+    echo "by specifying -G (all GFS), -E (all GEFS), -C (all GCAFS) and/or -S (all SFS)."
+    exit 3
+fi
+
 # Empty the _yaml_list array if -G, -E, -S and/or -C were selected
 if [[ "${_run_all_gfs}" == "true" ||
     "${_run_all_gefs}" == "true" ||
@@ -326,7 +338,6 @@ if [[ "${_run_all_gfs}" == "true" ||
         exit 3
     fi
 
-    _yaml_list=()
 fi
 
 # Set HOMEglobal if it wasn't set by the user
@@ -696,16 +707,74 @@ for _case in "${_yaml_list[@]}"; do
     fi
 
     if [[ "${_use_scron}" == true ]]; then
-        {
-            grep "^####" "${cron_file}"
-            grep "^#SCRON" "${cron_file}"
-            grep "${scron_sh_file}" "${cron_file}"
-        } >> tests.cron
+        # Collect this experiment's scron script path; the master runner script
+        # will call them all sequentially to reduce simultaneous rocoto instances.
+        _scron_sh_files+=("${scron_sh_file}")
     else
         grep "${_pslot}" "${_runtests}/EXPDIR/${_pslot}/${_pslot}.crontab" >> tests.cron
     fi
 done
 echo
+
+# --------------------------------------------------------------------------- #
+# Build Master Runner Script for scrontab (if using scron)
+# --------------------------------------------------------------------------- #
+
+# When running on a SLURM-managed scron system (e.g. Gaea), running all rocoto
+# instances simultaneously can exhaust head-node memory.  Instead, generate a
+# single master script that cycles through every experiment scron script
+# sequentially, and place only that one entry in the scrontab.
+if [[ "${_use_scron}" == true && ${#_scron_sh_files[@]} -gt 0 ]]; then
+    _master_script="${_runtests}/EXPDIR/rocoto_master_run.sh"
+    {
+        printf '%s\n' '#!/usr/bin/env bash'
+        printf '%s\n' '# Master runner script - cycles through all experiments sequentially'
+        printf '%s\n' '# to reduce simultaneous rocoto instances on the head node.'
+        for _scron_sh in "${_scron_sh_files[@]}"; do
+            printf 'if [[ -x "%s" ]]; then\n' "${_scron_sh}"
+            printf '    "%s"\n' "${_scron_sh}"
+            printf '%s\n' 'fi'
+        done
+    } > "${_master_script}"
+    chmod +x "${_master_script}"
+
+    # Guard: _yaml_list must be non-empty if _scron_sh_files is non-empty,
+    # but verify explicitly to surface any unexpected state.
+    if [[ ${#_yaml_list[@]} -eq 0 ]]; then
+        echo "ERROR: _yaml_list is empty but scron scripts were collected. This is unexpected."
+        exit 14
+    fi
+
+    # Pull partition and account from the first experiment's crontab (note that cases can be removed, so we must search)
+    _indexes=("${!_yaml_list[@]}")
+    _first_index="${_indexes[0]}"
+    _first_pslot="${_yaml_list[${_first_index}]}${_tag}"
+    _first_cron_file="${_runtests}/EXPDIR/${_first_pslot}/${_first_pslot}.crontab"
+    _master_log="${_runtests}/EXPDIR/rocoto_master_run.log"
+
+    _scron_partition=$(grep "^#SCRON --partition=" "${_first_cron_file}" | head -1)
+    _scron_account=$(grep "^#SCRON --account=" "${_first_cron_file}" | head -1)
+    if [[ -z "${_scron_partition}" || -z "${_scron_account}" ]]; then
+        echo "ERROR: Could not find #SCRON --partition= or #SCRON --account= in ${_first_cron_file}"
+        exit 15
+    fi
+
+    master_job_name="master_scron${_tag}"
+
+    {
+        echo
+        echo "#################### ${master_job_name} ####################"
+        echo "${_scron_partition}"
+        echo "${_scron_account}"
+        echo "#SCRON --job-name=${master_job_name}"
+        echo "#SCRON --output=${_master_log}"
+        echo "#SCRON --time=00:10:00"
+        echo "#SCRON --dependency=singleton"
+        echo "*/5 * * * * ${_master_script}"
+        echo "#################################################################"
+        echo
+    } >> tests.cron
+fi
 
 # --------------------------------------------------------------------------- #
 # Configure Mail Behavior

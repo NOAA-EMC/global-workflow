@@ -106,7 +106,7 @@ fi
 
 # 2.b Run the postprocessor
 
-export pgm="${NET,,}_ww3_outp.x"
+export pgm="ww3_outp_${NET,,}.x"
 source prep_step
 
 echo "   Executing ${EXECglobal}/${pgm}"

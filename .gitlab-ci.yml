@@ -93,10 +93,18 @@ include:
       fi
 
       # Setup GitHub CLI for use throughout the pipeline
-      export GH=$(which gh 2>/dev/null || echo "${HOME}/bin/gh")
+      if [[ -x "${HOME}/bin/gh" ]]; then
+        export GH="${HOME}/bin/gh"
+      else
+        export GH="$(command -v gh 2>/dev/null)"
+      fi
       if [[ ! -x "${GH}" ]]; then
         echo "ERROR: GitHub CLI (gh) not found or not executable. Please install it."
         exit 1
+      else
+        echo "GitHub CLI (gh) binary resolved to: ${GH}"
+        echo "Found via PATH lookup (command -v): $(command -v gh 2>/dev/null || echo 'not in PATH')"
+        echo "And PATH has been set as: ${PATH}"
       fi
 
       # Configure GitLab native GitHub integration
@@ -157,6 +165,14 @@ include:
         git remote add github "${GW_REPO_URL}"
         git fetch github
         ${GH} pr checkout "${PR_NUMBER}"
+        # Re-pin branch upstream to NOAA-EMC after `gh pr checkout` (which points it
+        # at the author's fork). Fixes submodule "not our ref" on git <= 2.45.
+        # Remove once Gaea ships git >= 2.47.
+        git remote set-url origin "${GW_REPO_URL}"
+        _br=$(git branch --show-current)
+        git config "branch.${_br}.remote"     origin
+        git config "branch.${_br}.pushRemote" origin
+        unset _br
         git submodule update --init --recursive -j 8
       fi
 

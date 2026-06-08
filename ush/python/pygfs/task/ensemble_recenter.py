@@ -13,7 +13,6 @@ class EnsembleRecenter(Analysis):
     """
     Class for JEDI-based ensemble increment recentering
     """
-    @logit(logger, name="EnsembleRecenter")
     def __init__(self, config: Dict[str, Any]):
         """Constructor for atmospheric ensemble increment recentering task
 
