@@ -896,7 +896,7 @@ class GFSTasks(Tasks):
         # can run in parallel with marinebmat
         deps = []
         # LETKF recentering needs increments from LETKF and the deterministic analysis
-        if self._base.get('DOLETKF_OCN', True):
+        if self._base.get('DOLETKF_OCN_INC', True):
             dep_dict = {'type': 'task', 'name': f"{self.run}_marineanlletkf"}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_marineanlchkpt"}
@@ -965,7 +965,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlchkpt'}
         deps.append(rocoto.add_dependency(dep_dict))
         # let LETKF create increments and recenter before wiping DATA
-        if self._base.get('DOLETKF_OCN', True):
+        if self._base.get('DOLETKF_OCN_INC', True):
             dep_dict = {'type': 'task', 'name': f"enkfgdas_marineanlecen"}
             deps.append(rocoto.add_dependency(dep_dict))
         print(f"DEBUG: deps for marineanlfinal: {deps}")
@@ -3098,7 +3098,7 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
-        # wait for dtfanl/gdas.t??z.increment.dtf.i006.nc to exist
+        # wait for gdas.t??z.increment.dtf.i006.nc/dt to exist
         if self.run in ['enkfgdas']:
             dep_dict = {'type': 'task', 'name': f'gdas_anal'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -3348,7 +3348,7 @@ class GFSTasks(Tasks):
                 if not self.options['do_enkfonly_atm']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
                     deps.append(rocoto.add_dependency(dep_dict))
-            if self._base.get('DOLETKF_OCN', True):
+            if self._base.get('DOLETKF_OCN', True) or self._base.get('DOLETKF_OCN_INC', True):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlletkf'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -3362,7 +3362,7 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'task', 'name': f'gfs_marineanlfinal'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self._base.get('DOLETKF_OCN', True):
+            if self._base.get('DOLETKF_OCN', True) or self._base.get('DOLETKF_OCN_INC', True):
                 dep_dict = {'type': 'task', 'name': f'enkfgfs_marineanlletkf'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

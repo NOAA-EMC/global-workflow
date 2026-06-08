@@ -53,7 +53,7 @@ class MarineRecenter(Analysis):
             'ENSPERT_RELPATH': _enspert_relpath,
             'cice_rst_date': _cice_rst_date,
         }
-        if self.task_config.get('DOLETKF_OCN'):
+        if self.task_config.get('DOLETKF_OCN_INC'):
             update_dict['letkf_app'] = 'true'
 
         self.task_config.update(AttrDict(update_dict))

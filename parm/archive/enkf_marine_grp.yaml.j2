@@ -12,7 +12,7 @@ enkf_marine_grp:
         {% endif %}
 
         # Store the individual member analysis data
-        {% if DOLETKF_OCN %}
+        {% if DOLETKF_OCN or DOLETKF_OCN_INC %}
         - "{{ COMIN_OCEAN_ANALYSIS_MEM }}/{{ head }}mom6_increment.i006.nc"
         - "{{ COMIN_OCEAN_ANALYSIS_MEM }}/{{ head }}jedi_increment.i006.nc"
         - "{{ COMIN_ICE_ANALYSIS_MEM }}/{{ head }}jedi_increment.i006.nc"
