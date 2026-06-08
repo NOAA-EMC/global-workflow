@@ -3098,13 +3098,17 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
+        # wait for dtfanl/gdas.t??z.increment.dtf.i006.nc to exist
+        if self.run in ['enkfgdas']:
+            dep_dict = {'type': 'task', 'name': f'gdas_anal'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
+        if self.run in ['enkfgdas'] or self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
