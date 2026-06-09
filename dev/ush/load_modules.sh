@@ -18,6 +18,7 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     set +x
 fi
 
+            source "${HOMEglobal}/versions/run.ver"
 # Parse module type argument
 MODULE_TYPE="${1:-run}"
 
@@ -86,7 +87,6 @@ case "${MODULE_TYPE}" in
             module load wgrib2
         else
             export UTILROOT=${prod_util_ROOT}
-            source "${HOMEglobal}/versions/run.ver"
             module load "wgrib2/${wgrib2_ver}"
         fi
         export WGRIB2=wgrib2
@@ -180,19 +180,9 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
-        #### Work around for upp module loading issues that is inconsistance with run.ver
-        # Source versions file (except for upp)
-        if [[ "${mod_type}" != "upp" ]]; then
-            source "${HOMEglobal}/versions/run.ver"
-        fi
-        if [[ "${mod_type}" == "upp" ]]; then
-            export hdf5_ver="1.10.6"
-            export netcdf_ver="4.7.4"
-            export g2tmpl_ver="1.16.0"
-            export crtm_ver="2.4.0.1" #### gfs_goesupp
-            #### Workaround for access ${HOMEglobal}/sorc location
-            export PYTHONPATH=${HOMEglobal}/sorc/wxflow/src:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEglobal}/ush/python
-        fi
+        source "${HOMEglobal}/versions/run.ver"
+        #### Workaround for access ${HOMEglobal}/sorc location
+        export PYTHONPATH=${HOMEglobal}/sorc/wxflow/src:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEglobal}/ush/python
         if [[ "${mod_type}" == "run" ]]; then
             export PYTHONPATH=${HOMEglobal}/sorc/wxflow/src:/apps/ops/prod/nco/core/prod_util.v2.0.9/ush:/apps/dev/ve/intel/19.1.3.304/python/3.12.0/gw/1.0/lib/python3.12/site-packages:${HOMEglobal}/ush/python
         fi
