@@ -1001,19 +1001,26 @@ case ${step} in
     ;;
 
   "fcst_manager")
-    # Forecast manager: ATM always uses 5 fixed ranks (4 per-product + 1 barrier).
+    # Forecast manager: ATM uses MGR_NATM_INST instances.
+    # With inline post (WRITE_DOPOST=.true.): 5 ranks each (atmf+sfcf+grib+flux+barrier).
+    # Without inline post: 3 ranks each (atmf+sfcf+barrier).
     # WW3/OCN/ICE use MGR_NTASKS_<component> round-robin ranks each.
     # Walltime must be long enough to cover the full forecast run.
     is_exclusive=False
     prepost=True
-    (( ntasks = MGR_NATM_INST * 5 ))  # ATM: MGR_NATM_INST x (4 product + 1 barrier)
+    if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+        (( ntasks = MGR_NATM_INST * 5 ))  # ATM: MGR_NATM_INST x (4 product + 1 barrier)
+    else
+        (( ntasks = MGR_NATM_INST * 3 ))  # ATM: MGR_NATM_INST x (2 history + 1 barrier)
+    fi
     if [[ "${DO_WAVE}" == "YES" ]]; then
         (( ntasks += ${MGR_NTASKS_WW3:-2} ))
     fi
-    if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+    # Ocean/ice product managers only run for the full GFS cycle, not GDAS half-cycles.
+    if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
         (( ntasks += ${MGR_NTASKS_OCN:-1} ))
     fi
-    if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+    if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
         (( ntasks += ${MGR_NTASKS_ICE:-1} ))
     fi
     if [[ "${DO_AERO_FCST:-NO}" == "YES" ]]; then
