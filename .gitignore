@@ -24,6 +24,21 @@ build*/
 lib/
 install*/
 
+# Ignore ecf files that are created from templates 
+#-------------------------------------------------
+ecf/scripts/enkfgdas/analysis/recenter/jenkfgdas_atmos_ens_recenter0*.ecf
+ecf/scripts/enkfgdas/ensstat/jenkfgdas_ens_post0*.ecf
+ecf/scripts/gdas/product/atmos/gempak/gempak/jgdas_atmos_gempak_f*.ecf
+ecf/scripts/gdas/product/atmos/product/jgdas_atmos_product_f*.ecf
+ecf/scripts/gdas/product/wave/gridded/jgdas_wave_post_gridded_f*.ecf
+ecf/scripts/gfs/product/atmos/awips_20km_1p0/jgfs_atmos_awips_20km_1p0_f*.ecf
+ecf/scripts/gfs/product/atmos/gempak/gempak/jgfs_atmos_gempak_f*.ecf
+ecf/scripts/gfs/product/atmos/gempak/goesupp/jgfs_atmos_goesupp_f*.ecf
+ecf/scripts/gfs/product/atmos/gempak/grb2spec/jgfs_atmos_grb2spec_f*.ecf
+ecf/scripts/gfs/product/atmos/product/jgfs_atmos_product_f*.ecf
+ecf/scripts/gfs/product/wave/gempak/jgfs_wave_gempak_f*.ecf
+ecf/scripts/gfs/product/wave/gridded/jgfs_wave_post_gridded_f*.ecf
+
 # Ignore fix directory symlinks
 #------------------------------
 fix/0readme
