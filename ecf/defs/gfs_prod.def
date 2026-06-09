@@ -8,9 +8,10 @@ suite gfs_v17_nco
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development'
     edit ENVIR 'prod'
-    edit QUEUE 'devhigh'
+    edit QUEUE 'devmax'
     edit QUEUE_ARCH 'dev_transfer'
     edit OUTPUTDIR '/lfs/h3/emc/eib/noscrub/ptmp/%EMC_USER%/ecflow_gfs/para/output/prod/today'
+    edit EXPDIR '/lfs/h3/emc/eib/noscrub/%EMC_USER%/gfs/para/packages/gfs.%gfs_ver%/parm/config/gfs' 
     family 00
       edit CYC '00'
       edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
@@ -5622,7 +5623,7 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/recenter/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
+          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
@@ -11511,7 +11512,7 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/recenter/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
+          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
@@ -17400,7 +17401,7 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/recenter/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
+          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
@@ -23289,7 +23290,7 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/recenter/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
+          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
