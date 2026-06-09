@@ -1,0 +1,91 @@
+#! /usr/bin/env bash
+set -x
+
+#############################################################################
+# UNIX Script Documentation Block
+# Script name:         JGLOBAL_FORECAST_MANAGER
+# Script description:  Forecast manager job
+#
+# Abstract: Runs alongside the UFS model (JGLOBAL_FORECAST) to transfer
+#           output products to COM as they are written by the model. Shares
+#           the DATAjob umbrella directory with the forecast job and reads
+#           product tables from COMOUT_CONF that were written by the forecast
+#           job pre-run setup phase.
+#
+#           Currently manages real-time copy for components that emit per-file
+#           sentinel log files (FV3ATM and WW3). Ocean and ice history files
+#           are copied at the end of the forecast job by JGLOBAL_FORECAST.
+#############################################################################
+
+export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+export DATA="${DATAjob}/manager.${jobid}"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst_manager"
+
+#{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
+#{% if false %}
+# When running the workflow in development, source jjob_standard_vars.sh #}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{# When rendered for operations, place the contents of jjob_var_setup.j2 here #}
+#{# Note that the first line of jjob_var_setup.j2 will be commented #}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+source "${USHglobal}/set_strict.sh"
+
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+##############################################
+# Construct COM variables (mirrors JGLOBAL_FORECAST)
+##############################################
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+else
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+fi
+
+declare -rx COMOUT_CONF="${COMOUT}/conf"
+declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
+declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
+
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
+fi
+
+if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+    declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+fi
+
+if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+    declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+fi
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+FORECASTMGRSH="${FORECASTMGRSH:-${SCRglobal}/exglobal_forecast_manager.sh}"
+"${FORECASTMGRSH}" && true # The && true prevents the shell from exiting when set -e
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to run the ${RUN} forecast manager for ${PDY}${cyc}"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

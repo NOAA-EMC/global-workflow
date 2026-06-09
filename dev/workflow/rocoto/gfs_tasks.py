@@ -1107,6 +1107,55 @@ class GFSTasks(Tasks):
 
         return task
 
+    def fcst_manager(self):
+        # Product tables are written to DATAjob (shared between fcst and fcst_manager jobs).
+        # DATAjob = ${DATAROOT}/${RUN}_forecast.${PDY}${cyc}  (see JGLOBAL_FORECAST)
+        # Use bare @Y@m@d@H so _add_data_tag wraps the whole path in one <cyclestr>.
+        stmp = self._base.get('STMP')
+        pslot = self._base.get('PSLOT')
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}_forecast.@Y@m@d@H"
+        # Require both the product table (written at postdet) AND the started sentinel
+        # (written just before model launch). The sentinel prevents stale product tables
+        # from triggering manager segments immediately after a rewind.
+        # is_serial=True ensures seg1 only starts after seg0's manager finishes (i.e.
+        # after all seg0 products are copied to COM, which is after fcst_seg0 completes).
+        deps = []
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_atmf_products_seg#seg#_inst0.txt', 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_table_ready_seg#seg#', 'age': 5}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        if self.run in ['gfs']:
+            num_fcst_segments = len(self.options['fcst_segments']) - 1
+        else:
+            num_fcst_segments = 1
+
+        mgr_vars = self.envars.copy()
+        mgr_vars.append(rocoto.create_envar(name='FCST_SEGMENT', value='#seg#'))
+
+        resources = self.get_resource('fcst_manager')
+        task_name = f'{self.run}_fcst_manager_seg#seg#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': mgr_vars,
+                     'cycledef': self.run,
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        seg_var_dict = {'seg': ' '.join([f"{seg}" for seg in range(0, num_fcst_segments)])}
+        metatask_dict = {'task_name': f'{self.run}_fcst_manager',
+                         'is_serial': True,
+                         'var_dict': seg_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        return rocoto.create_task(metatask_dict)
+
     def atmanlupp(self):
         postenvars = self.envars.copy()
         postenvar_dict = {'FHR3': '000',
@@ -1251,10 +1300,10 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.log.f#fhr3_last#.txt'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_nextp1#.nc'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.log.f#fhr3_last#.txt'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
-                                 'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.f#fhr3_last#.nc'}}
+                                 'history_file_tmpl': f'{self.run}.t@Hz.log.ice.f#fhr3_last#.txt'}}
 
         component_dict = products_dict[component]
         config = component_dict['config']
@@ -1272,13 +1321,6 @@ class GFSTasks(Tasks):
 
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
-        # Delay triggering ocean products task to next next forecast hour to ensure all data is available
-        if component == 'ocean':
-            fhr3_next = fhr_var_dict['fhr3_next'].split(' ')
-            fhr3_nextp1 = fhr3_next[1:]
-            fhr3_nextp1.append(fhr3_next[-1])  # repeat last forecast hour to maintain same number of groups
-            fhr_var_dict['fhr3_nextp1'] = ' '.join(fhr3_nextp1)
-
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
@@ -1290,12 +1332,9 @@ class GFSTasks(Tasks):
 
         history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl])
         deps = []
-        data = f'{history_path}/{history_file_tmpl}'
-        dep_dict = {'type': 'data', 'data': data, 'age': 120}
+        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file_tmpl}', 'age': 120}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps, dep_condition='or')
+        dependencies = rocoto.create_dependency(dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
 
@@ -1400,8 +1439,15 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostpnt(self):
+        # Trigger from the last wave log in COM (copied by the ww3 manager component).
+        # When this file appears, all wave output for the segment is in COM.
+        wave_grid = self._configs['base']['waveGRD']
+        history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostpnt'], 'wave')
+        last_fhr = fhrs[-1]
+        history_file = f'{self.run}.t@Hz.{wave_grid}.f{last_fhr:03d}.log'
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1526,7 +1572,10 @@ class GFSTasks(Tasks):
 
     def postsnd(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        if 'fcst_manager' in self._configs:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
