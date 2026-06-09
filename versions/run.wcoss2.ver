@@ -15,7 +15,7 @@ export gempak_ver=7.15.1
 export nco_ver=5.2.4
 export grib_util_ver=1.2.4
 export bufr_dump_ver=1.3.2
-export wgrib2_ver=2.0.8
+export wgrib2_ver=2.0.8_wmo
 export bufr_ver=12.3.0
 
 export PrgEnv_intel_ver=8.5.0
@@ -52,7 +52,7 @@ export eigen_ver=3.4.0
 export eckit_ver=1.28.3
 export fckit_ver=0.13.2
 export atlas_ver=0.44.1
-export fmsD_ver=2024.01
+export fms_ver=2024.01
 export curl_ver=7.72.0
 export sp_ver=2.4.0
 export ip_ver=5.2.0
