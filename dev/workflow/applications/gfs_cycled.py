@@ -317,6 +317,8 @@ class GFSCycledAppConfig(AppConfig):
 
                 # gfs-specific products (half-cycle gdas does not generate ocean/ice products)
                 if run == 'gfs':
+                    task_names[run] += ['fcst_manager']
+
                     if options['do_ocean']:
                         task_names[run] += ['ocean_prod']
                     if options['do_ice']:

@@ -22,6 +22,7 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   set -x
 fi
 
+module load prod_util
 if [ -n "%PDY:%" ]; then
   export PDY=${PDY:-%PDY:%}
 else
@@ -29,14 +30,21 @@ else
 fi
 export CDATE=${PDY}%CYC:%
 
+if [ -d /apps/ops/prod ]; then # On WCOSS2
+  set +x
+  echo "Running "module reset""
+  module reset
+  set -x
+fi
+
 # Setting the model package location
 modelhome=%PACKAGEHOME:%
-eval "export HOME${model:?"model undefined"}=$modelhome"
+eval "export HOME${model:?'model undefined'}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
-if [ -n "%rrfs_ver:%" ]; then export rrfs_ver=${rrfs_ver:-%rrfs_ver:%}; fi
-if [ -f "$versionfile" ]; then
-  . $versionfile 
-fi
+if [ -f "$versionfile" ]; then . $versionfile ; fi
+modelver=$(echo ${modelhome} | perl -pe "s:.*?/${model}\.(v[\d\.a-z]+).*:\1:")
+eval "export ${model}_ver=$modelver"
+
 export envir=%ENVIR%
 export MACHINE_SITE=%MACHINE_SITE%
 export RUN_ENVIR=${RUN_ENVIR:-nco}
@@ -47,7 +55,7 @@ if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
 if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
 if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
-export KEEPDATA=YES
+export KEEPDATA=NO
 #### enkfgdas fcst job failure with SENDDBN="YES" as of 20260306 with expdir:
 ####   -rw-r--r-- 1 emc.global global 17K Mar  4 15:57 /lfs/h2/emc/gfstemp/emc.global/expdir/retrov17_01_realtime/config.base
 ####   GFS code hash with this issue caab01
@@ -55,6 +63,9 @@ export KEEPDATA=YES
 #### export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN="NO"
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
+
+if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+if [ -n "%EXPDIR:%" ]; then export EXPDIR="%EXPDIR:%"; fi
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x
@@ -94,6 +105,8 @@ ERROR() {
   else
      msg="Killed by signal $1"
   fi
+  #To send email about failure, uncomment next line and update email list: 
+  echo "${ECF_NAME} log file: ${ECF_JOBOUT}" | mail -s "GFSv17 ecflow realtime job failure: ${ECF_NAME}" ${USER}@noaa.gov 
   ecflow_client --abort="$msg"
   echo $msg
   if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
