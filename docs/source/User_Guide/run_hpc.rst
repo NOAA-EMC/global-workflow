@@ -9,7 +9,7 @@ The workflow can be executed in two modes:
 * **forecast-only** mode
 * **cycled mode** (Forecast + Data Assimilation) 
 
-Bacuse cycled mode requires a number of DA supporting repositories, the setup procedure differ slightly between the two modes for the initial build stage.
+Because cycled mode requires a number of DA supporting repositories, the setup procedure differ slightly between the two modes for the initial build stage.
 
 For guidance on testing individual workflow tasks using the CTest framework, refer to :doc:`../Contributor_Guide/testing`.
 

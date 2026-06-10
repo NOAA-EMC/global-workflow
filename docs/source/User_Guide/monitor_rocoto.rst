@@ -133,4 +133,3 @@ Advanced features:
 
       - Group - While group/metatask is collapsed (<) click “r” to rewind whole group/metatask.
       - Cycle - Use up arrow to move selector up past the first task until the entire left column is highlighted. Click “r” and the entire cycle will be rewound.
-

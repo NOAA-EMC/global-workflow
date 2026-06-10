@@ -35,17 +35,14 @@ Where to do development?
 Protected branches
 ==================
 
-The following global-workflow branches are protected by the code management team:
+All branches in the global-workflow authoritative repository are protected. All contributions must be made through pull requests (PRs). Merging of PRs is handled by the global workflow code management team.
 
-* develop (HEAD)
-* dev/gfs.v16 (kept aligned with current production, as well as ingests bug fixes and updates between release branches)
+The creation of new branches is restricted to members of the code management team. New branches in the authoritative repository are limited to long-running development needs that need to be kept separate from develop (e.g. for release preparation). If you believe you have reason to create a new branch in the authoritative repository, please reach out to the code management team with a list of POCs for the branch.
 
 These protected branches require the following to accept changes:
 
  1. a pull request with at least 1 reviewer sign-off
  2. a code manager to perform the commit
-
-Other authoritative repository branches may also be protected at the request of members of the global-workflow-developers team.
 
 .. _howto:
 

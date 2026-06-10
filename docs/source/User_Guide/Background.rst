@@ -11,7 +11,7 @@ The  **Global Workflow (GW)** is an end-to-end system designed to run global con
 Documentation Organization
 ==========================
 
-GW Documenation is organized to support both new users and adavanced users or developers:
+GW Documentation is organized to support both new users and advanced users or developers:
 
 * **User's Guide**
 
@@ -19,20 +19,19 @@ GW Documenation is organized to support both new users and adavanced users or de
   - **GW Components**: Components of Global Workflow and their repositories. 
   - **System Requirements & HPC Setup**: Platforms, prerequisites, and installation steps.
   - **Setup Globus Connection for HPSS**: Setting up connection for NOAA High Performance Storage System (HPSS) for data access.
-  - **GFS Configuration**: Global Forecast System Configartion and the list of jobs run in GFS
-  - **GCAFS Configuration**: Global Chemistry and Aerosol Forecast System (GCAFS) overview and seeting up and running GCAFS.
-  - **Wave Component**: Overview of WAVE-height, WATer depth and Current Hindcasting (WAVEWATCH) III, the community wave modeling framework, a component of the GW.
+  - **GFS Configuration**: Global Forecast System Configuration and the list of jobs run in GFS
+  - **GCAFS Configuration**: Global Chemistry and Aerosol Forecast System (GCAFS) overview and setting up and running GCAFS.
   - **Running GW on RDHPCS**: How to setup the experiment, configure, launch, monitor GW runs, and view the forecast output.
   - **Setup & Run GW on CSPs**: How to setup and run GW on Cloud Service Providers (CSPs).
-  - **Plotting Output**: Instrcutions for plotting analysis output and forecast output.
+  - **Plotting Output**: Instructions for plotting analysis output and forecast output.
   - **Common Errors and Known Issues**: List of common errors/issues and their solutions.
-  - **Advanced Topics**: Experimentation, workflow customization, and CI based development.
 
 * **Contributor's Guide**
 
   - **Contributing to the Global Workflow**: A section devoted to developers to contribute to the Global Workflow repository.
   - **Testing Global Workflow Jobs**: a comprehensive CTest framework for testing individual Rocoto workflow job.
   - **GitLab CI/CD Pipeline Infrastructure**: a comprehensive reference for the GitLab CI/CD pipeline infrastructure by GW and Troubleshooting.
+  - **Wave Component**: Overview of WAVE-height, WATer depth and Current Hindcasting (WAVEWATCH) III, the community wave modeling framework, a component of the GW.
 
 =========================
 Documentation Conventions

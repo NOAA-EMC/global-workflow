@@ -22,7 +22,7 @@ Component Repositories
 
 Components included as submodules:
 
-* **UFS-WM** (https://github.com/ufs-community/ufs-weather-model): This is the core weather model used by the GW to generate forecasts. The UFS-WM repository is an umbrella repository consisting of coupled component earth system that are all checked out when we check out the code at the top level of the repoitory.
+* **UFS-WM** (https://github.com/ufs-community/ufs-weather-model): This is the core weather model used by the GW to generate forecasts. The UFS-WM repository is an umbrella repository consisting of coupled component earth system that are all checked out when we check out the code at the top level of the repository.
 * **Global Data Assimilation System (GDAS)** (https://github.com/NOAA-EMC/GDASApp): Joint Effort for Data assimilation Integration (JEDI) based DA system. This system is currently being developed for marine DA and in time will replace GSI for atmospheric DA as well.
 * **Gridpoint Statistical Interpolation (GSI)** (https://github.com/NOAA-EMC/GSI): The core code base for atmospheric Data Assimilation (DA)
 * **GSI UTILS** (https://github.com/NOAA-EMC/GSI-Utils): Utility codes needed by GSI to create analysis
@@ -32,6 +32,7 @@ Components included as submodules:
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-WM
 * **wxflow** (https://github.com/NOAA-EMC/wxflow): Collection of python utilities for weather workflows
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses Model Evaluation Tools (MET) and METplus verfication tools. At this moment the verification package is limited to providing atmospheric metrics only.
+* **UPP** (https://github.com/NOAA-EMC/UPP): Unified Post Processor (UPP) is a submodule within UFS-WM. It is a software package designed to generate useful products from raw model output. 
 
 .. note::
    When running the system in forecast-only mode the DA components are not needed and are hence not built.
@@ -60,6 +61,8 @@ Additional documentation and resources relevant to GW is shown in the table belo
 | wxflow              | https://wxflow.readthedocs.io/en/latest/                                                |
 +---------------------+-----------------------------------------------------------------------------------------+
 | Verif Global        | https://github.com/NOAA-EMC/EMC_verif-global/wiki                                       |
++---------------------+-----------------------------------------------------------------------------------------+
+| UPP                 | https://upp.readthedocs.io/en/latest/                                                   |
 +---------------------+-----------------------------------------------------------------------------------------+
 
 =====================
@@ -115,7 +118,7 @@ The GDA also contains special versions of some datasets and experimental data th
 |        | upcoming upgrades.                                                                                   |
 +--------+------------------------------------------------------------------------------------------------------+
 | y      | Similar to "x" but only used when there is a duplicate experimental file in the x subfolder with the |
-|        | same name. Dfferent from both the production versions, if exists, and the x versions.                |
+|        | same name. Different from both the production versions, if exists, and the x versions.               |
 |        | This suffix is rarely used.                                                                          |
 +--------+------------------------------------------------------------------------------------------------------+
 | p      | Pre-production dataset copy, as produced by National Centers for Environmental                       |

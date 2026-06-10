@@ -173,7 +173,7 @@ NEXUS (Next-generation Emissions eXchange Utility System) preprocesses anthropog
    export NEXUS_DO_HTAPv2=.true.            # HTAP v2 emissions
    export NEXUS_DO_CAMS=.false.             # CAMS emissions
 
-### Emission Dataset Details
+**### Emission Dataset Details**
 
 **Fire Emissions:**
 
@@ -394,23 +394,26 @@ Output Products
 
 GCAFS produces standard meteorological outputs plus comprehensive aerosol fields including:
 
-**Core Aerosol Fields:**
-* Aerosol mass concentrations (dust, sea salt, sulfate, black carbon, organic carbon)
-* Aerosol optical depth fields at multiple wavelengths
-* PM2.5 and PM10 concentrations
-* Aerosol extinction coefficients
+**Core Aerosol Fields**
 
-**Process-Specific Diagnostics:**
-* Emission fields from fires and anthropogenic sources (when NEXUS diagnostics enabled)
-* Dry and wet deposition fluxes
-* Optical properties (single scattering albedo, asymmetry parameter)
-* Column-integrated aerosol mass
+*  Aerosol mass concentrations (dust, sea salt, sulfate, black carbon, organic carbon)
+*  Aerosol optical depth fields at multiple wavelengths
+*  PM2.5 and PM10 concentrations
+*  Aerosol extinction coefficients
 
-**Advanced Outputs:**
-* 3D aerosol concentrations on model levels
-* Aerosol number concentrations
-* Full chemical species concentrations when running with chemistry enabled
-* NEXUS diagnostic emissions for verification
+**Process-Specific Diagnostics**
+
+*  Emission fields from fires and anthropogenic sources (when NEXUS diagnostics enabled)
+*  Dry and wet deposition fluxes
+*  Optical properties (single scattering albedo, asymmetry parameter)
+*  Column-integrated aerosol mass
+
+**Advanced Outputs**
+
+*  3D aerosol concentrations on model levels
+*  Aerosol number concentrations
+*  Full chemical species concentrations when running with chemistry enabled
+*  NEXUS diagnostic emissions for verification
 
 Output frequency and collections are controlled through the ``AERO_HISTORY.rc`` configuration file,
 with standard global-workflow configuration options determining the base output settings.
