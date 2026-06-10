@@ -168,7 +168,7 @@ class ArchiveTarVars:
         - Restart: restart_interval_enkfgdas, restart_interval_enkfgfs
         - Hybrid/DA: DOHYBVAR, DOIAU, DO_CA, DO_CALC_INCREMENT, assim_freq
         - Archive timing: ARCH_CYC, ARCH_WARMICFREQ, ARCH_FCSTICFREQ
-        - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN
+        - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN, DOLETKF_OCN_INC
         - Other: DO_JEDISNOWDA, NET, DO_GSISOILDA, DO_LAND_IAU
 
         COM variable prefixes collected:
@@ -197,7 +197,7 @@ class ArchiveTarVars:
             'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
             'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
             # Ocean/Ice DA
-            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS', 'ARCH_MARINE_ENS',
+            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'DOLETKF_OCN_INC', 'NMEM_ENS', 'ARCH_MARINE_ENS',
             # Archive timing and control
             'ARCH_CYC', 'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
         ]
