@@ -99,6 +99,13 @@ elif [[ ${MACHINE_ID} = discover* ]]; then
     export PATH=${PATH}:${SPACK_ROOT}/bin
     . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
+elif [[ ${MACHINE_ID} = aws-ec* ]]; then
+    # We are on AWS ec2
+    if (! eval module help > /dev/null 2>&1); then
+        source /usr/share/lmod/lmod/init/bash
+    fi
+    module purge
+
 elif [[ ${MACHINE_ID} = derecho ]]; then
     # We are on NSF NCAR Derecho
     if (! eval module help > /dev/null 2>&1); then
