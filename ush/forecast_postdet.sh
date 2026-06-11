@@ -859,7 +859,7 @@ MOM6_postdet() {
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
-                source_file_log="${DATA}/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
 
                 # Forecast manager copies from DATA to COM; register in product table.
