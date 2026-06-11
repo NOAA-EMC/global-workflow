@@ -6,13 +6,13 @@ into a Rocoto XML workflow file.
 
 Workflow configuration is read from a Jinja2-templated YAML file
 (``dev/parm/aux/aux.yaml.j2``).  Most variables are derived automatically
-when ``--expdir`` is supplied; they are read from ``config.base`` in the
-target experiment directory.  Any variable that cannot be derived
-(e.g. ``ECF_OUT_gfs``) must be set explicitly in a copy of the template
-passed via ``--config``.
+from ``config.base`` in the experiment directory specified by ``--expdir``
+(defaults to ``<HOMEglobal>/parm/config/gfs``).  Any variable that cannot
+be derived (e.g. ``ECF_OUT_gfs``) must be set explicitly in a copy of the
+template passed via ``--config``.
 
-Optionally, a crontab entry that runs ``rocotorun`` every five minutes can
-be written alongside the XML by passing ``--crontab``.
+A crontab entry that runs ``rocotorun`` every five minutes is written
+alongside the rendered XML automatically.
 
 NOTES:
     The dev/ush/gw_setup.sh script must be sourced before running this script
@@ -214,10 +214,11 @@ def input_args():
         Renders the Jinja2-templated auxiliary workflow XML (aux.xml.j2)
         into a Rocoto XML workflow file for use with the Rocoto workflow manager.
 
-        Most configuration variables are derived automatically from the target
-        experiment's config.base when --expdir is provided.  Any variable not
-        present in config.base (e.g. ECF_OUT_gfs) must be set explicitly in a
-        copy of dev/parm/aux/aux.yaml.j2 passed via --config.
+        Configuration variables are derived from config.base in the experiment
+        directory specified by --expdir (defaults to
+        <HOMEglobal>/parm/config/gfs).  Any variable not present in config.base
+        (e.g. ECF_OUT_gfs) must be set explicitly in a copy of
+        dev/parm/aux/aux.yaml.j2 passed via --config.
 
         The dev/ush/gw_setup.sh script must be sourced before running this
         script to ensure the Python environment with wxflow is properly
@@ -230,10 +231,9 @@ def input_args():
     parser.add_argument('--expdir',
                         help='Full path to the experiment directory whose '
                              'config.base supplies the template variables '
-                             '(SDATE, EDATE, EXPDIR, ROTDIR, STMP, PSLOT, …). '
-                             'When omitted all variables must be provided '
-                             'explicitly in the --config file.',
-                        type=str, default=None)
+                             '(SDATE, EDATE, EXPDIR, ROTDIR, STMP, PSLOT, …).',
+                        type=str,
+                        default=os.path.join(_get_HOMEglobal(), 'parm', 'config', 'gfs'))
 
     parser.add_argument('--config',
                         help='Full path to the Jinja2-templated aux configuration '
@@ -254,13 +254,12 @@ def main():
     # Build the Jinja2 template context, starting with an empty dict
     template_context = AttrDict()
 
-    # If an experiment directory was provided, source config.base and merge its
-    # variables into the template context so the aux.yaml.j2 template can
-    # reference them (SDATE, EDATE, EXPDIR, ROTDIR, STMP, PSLOT, …)
-    if user_inputs.expdir is not None:
-        base_vars = read_config_base(user_inputs.expdir)
-        template_context.update(base_vars)
-        logger.info(f'Loaded {len(base_vars)} variables from config.base in {user_inputs.expdir}')
+    # Source config.base from the experiment directory and merge its variables
+    # into the template context so the aux.yaml.j2 template can reference them
+    # (SDATE, EDATE, EXPDIR, ROTDIR, STMP, PSLOT, …)
+    base_vars = read_config_base(user_inputs.expdir)
+    template_context.update(base_vars)
+    logger.info(f'Loaded {len(base_vars)} variables from config.base in {user_inputs.expdir}')
 
     # Always make HOMEglobal available (can be overridden by config.base)
     template_context.setdefault('HOMEglobal', HOMEglobal)
