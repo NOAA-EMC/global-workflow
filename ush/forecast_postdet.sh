@@ -829,7 +829,11 @@ MOM6_postdet() {
                 vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
                 # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
                 # NOAA-EMC/global-workflow#4946). Filename is YYYYMMDD.HHMMSS.mom6.HHh.
-                source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                if [[ ${fhr} -eq ${FHMAX} ]]; then
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${ihour}h"
+                else
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                fi
 
                 case "${RUN}" in
                     gdas | enkfgdas | gefs | sfs | gcafs)
@@ -873,7 +877,6 @@ MOM6_postdet() {
                 else
                     echo "cpfs ${ocn_local} ${ocn_com}" >> "${ocn_hist_cmdfile}"
                 fi
-
                 last_fhr=${fhr}
             done
             ;;
