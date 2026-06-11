@@ -64,11 +64,11 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
 fi
 
-if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
+if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
 fi
 
-if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
+if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
 fi
 

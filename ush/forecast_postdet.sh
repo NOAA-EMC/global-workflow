@@ -1015,8 +1015,8 @@ CICE_postdet() {
     # Determine whether to use the forecast manager for CICE output.
     local use_mgr_ice="NO"
     case "${RUN}" in
-        gfs) use_mgr_ice="YES" ;;
-        # TODO: enable forecast manager for gdas, enkfgdas, enkfgfs, gefs, sfs, gcafs once tested
+        gfs | gdas | enkfgdas) use_mgr_ice="YES" ;;
+        # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
@@ -1047,6 +1047,10 @@ CICE_postdet() {
         case "${RUN}" in
             gfs | enkfgfs | sfs | gcafs)
                 ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${ic_trigger_vdstr}.nc"
+                ;;
+            gdas | enkfgdas)
+                # gdas/enkfgdas use instantaneous output; first periodic file is the IC trigger.
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_inst.${ic_trigger_vdstr}.nc"
                 ;;
             gefs)
                 ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh.${ic_trigger_vdstr}.nc"
