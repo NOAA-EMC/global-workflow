@@ -1,0 +1,58 @@
+# Configuration file for setup_aux.py (Jinja2 template)
+#
+# Usage:
+#   Pass --expdir /path/to/expdir to setup_aux.py to derive most variables
+#   automatically from the experiment's config.base (SDATE, EXPDIR, ROTDIR, etc.).
+#   All remaining values may be customised by copying this file, filling in
+#   explicit paths, and passing the copy via --config /path/to/aux.yaml.j2.
+#
+# Jinja2 template variables available when --expdir is used:
+#   SDATE, EDATE, HOMEglobal, EXPDIR, ROTDIR, STMP, PSLOT, …
+#   (all variables exported by the target config.base)
+
+# ---------------------------------------------------------------------------
+# Cycle date range – YYYYMMDDHH00 format (minutes field required by Rocoto)
+# Derived from SDATE / EDATE in config.base when --expdir is used.
+# ---------------------------------------------------------------------------
+start_date: "{{ SDATE }}00"
+end_date: "{{ EDATE | default(SDATE) }}00"
+
+# ---------------------------------------------------------------------------
+# HOMEglobal – full path to the global-workflow repository root.
+# Uncomment and override only when this auxiliary workflow should use a
+# package installation that differs from the repository setup_aux.py lives in.
+# ---------------------------------------------------------------------------
+# HOMEglobal: "{{ HOMEglobal }}"
+
+# ---------------------------------------------------------------------------
+# EXP_aux – full path to the experiment directory (expdir).
+# Defaults to EXPDIR from config.base.
+# ---------------------------------------------------------------------------
+EXP_aux: "{{ EXPDIR }}"
+
+# ---------------------------------------------------------------------------
+# ECF_OUT_gfs – full path to the GFS ecFlow output directory (including the
+# /today suffix). Used as a cycle-trigger datadep in the auxiliary workflow.
+# Example: /lfs/h2/emc/gfstemp/emc.global/ecflow/output/today
+# No default – this path is site-specific and must be set explicitly.
+# ---------------------------------------------------------------------------
+ECF_OUT_gfs: "{{ ECF_OUT_gfs | default('') }}"
+
+# ---------------------------------------------------------------------------
+# COM_aux – full path to the auxiliary COM directory.
+# Defaults to ROTDIR from config.base (the COM root for the experiment).
+# Set to the live GFS COM only when going operational, not for testing.
+# ---------------------------------------------------------------------------
+COM_aux: "{{ ROTDIR }}"
+
+# ---------------------------------------------------------------------------
+# DATAROOT_aux – full path to the auxiliary DATAROOT (job working directories).
+# Defaults to STMP/RUNDIRS/PSLOT derived from config.base.
+# ---------------------------------------------------------------------------
+DATAROOT_aux: "{{ DATAROOT_aux | default(STMP + '/RUNDIRS/' + PSLOT) }}"
+
+# ---------------------------------------------------------------------------
+# output – where to write the rendered aux.xml.
+# Defaults to EXP_aux/aux.xml (i.e. EXPDIR/aux.xml from config.base).
+# ---------------------------------------------------------------------------
+output: "{{ output | default(EXPDIR + '/aux.xml') }}"
