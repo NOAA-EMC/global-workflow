@@ -1,6 +1,6 @@
-==========================
-Common Errors Known Issues
-==========================
+==============================
+Common Errors and Known Issues
+==============================
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Error: Reserved Variables Causing Workflow Issues

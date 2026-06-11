@@ -10,7 +10,7 @@ with interactive aerosol and atmospheric chemistry capabilities. It provides a u
 for predicting the evolution of atmospheric composition alongside traditional weather variables.
 
 Key Features
------------
+------------
 
 * Interactive GOCART aerosol module for forecasting dust, sea salt, sulfate, black carbon, and organic carbon
 * Optional full atmospheric chemistry with gas-phase and heterogeneous reactions
@@ -21,7 +21,7 @@ Key Features
 * Optional aerosol data assimilation
 
 Running GCAFS
-------------
+-------------
 
 GCAFS can be run using the global-workflow framework. To set up a free-forecast GCAFS experiment:
 
@@ -50,7 +50,7 @@ HPSS archive or a location stored on disk). The aerosol analysis is optional and
 `USE_AERO_ANL` to be "YES"
 
 GCAFS Workflow
--------------
+--------------
 
 The GCAFS workflow includes these main tasks:
 
@@ -65,7 +65,7 @@ The workflow is managed by the Rocoto workflow manager, with tasks defined in th
 ``workflow/rocoto/gcafs_tasks.py`` file.
 
 Configuration Files
-------------------
+-------------------
 
 GCAFS configuration is managed through several key files in the ``parm/config/gcafs/`` directory:
 
@@ -173,7 +173,7 @@ NEXUS (Next-generation Emissions eXchange Utility System) preprocesses anthropog
    export NEXUS_DO_HTAPv2=.true.            # HTAP v2 emissions
    export NEXUS_DO_CAMS=.false.             # CAMS emissions
 
-### Emission Dataset Details
+**### Emission Dataset Details**
 
 **Fire Emissions:**
 
@@ -394,23 +394,26 @@ Output Products
 
 GCAFS produces standard meteorological outputs plus comprehensive aerosol fields including:
 
-**Core Aerosol Fields:**
-* Aerosol mass concentrations (dust, sea salt, sulfate, black carbon, organic carbon)
-* Aerosol optical depth fields at multiple wavelengths
-* PM2.5 and PM10 concentrations
-* Aerosol extinction coefficients
+**Core Aerosol Fields**
 
-**Process-Specific Diagnostics:**
-* Emission fields from fires and anthropogenic sources (when NEXUS diagnostics enabled)
-* Dry and wet deposition fluxes
-* Optical properties (single scattering albedo, asymmetry parameter)
-* Column-integrated aerosol mass
+*  Aerosol mass concentrations (dust, sea salt, sulfate, black carbon, organic carbon)
+*  Aerosol optical depth fields at multiple wavelengths
+*  PM2.5 and PM10 concentrations
+*  Aerosol extinction coefficients
 
-**Advanced Outputs:**
-* 3D aerosol concentrations on model levels
-* Aerosol number concentrations
-* Full chemical species concentrations when running with chemistry enabled
-* NEXUS diagnostic emissions for verification
+**Process-Specific Diagnostics**
+
+*  Emission fields from fires and anthropogenic sources (when NEXUS diagnostics enabled)
+*  Dry and wet deposition fluxes
+*  Optical properties (single scattering albedo, asymmetry parameter)
+*  Column-integrated aerosol mass
+
+**Advanced Outputs**
+
+*  3D aerosol concentrations on model levels
+*  Aerosol number concentrations
+*  Full chemical species concentrations when running with chemistry enabled
+*  NEXUS diagnostic emissions for verification
 
 Output frequency and collections are controlled through the ``AERO_HISTORY.rc`` configuration file,
 with standard global-workflow configuration options determining the base output settings.
