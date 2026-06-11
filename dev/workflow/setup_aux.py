@@ -241,11 +241,6 @@ def input_args():
                              '<HOMEglobal>/dev/parm/aux/aux.yaml.j2',
                         type=str, default=None)
 
-    parser.add_argument('--crontab',
-                        help='Write a crontab fragment for rocotorun alongside '
-                             'the rendered XML file.',
-                        action='store_true', default=False)
-
     return parser.parse_args()
 
 
@@ -323,9 +318,8 @@ def main():
     Jinja(template_path, context).save(output_path)
     logger.info(f'Rendered aux.xml written to: {output_path}')
 
-    # Optionally write a crontab fragment for rocotorun
-    if user_inputs.crontab:
-        write_crontab(output_path)
+    # Write a crontab fragment for rocotorun
+    write_crontab(output_path)
 
 
 if __name__ == '__main__':
