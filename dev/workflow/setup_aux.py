@@ -291,8 +291,8 @@ def main():
                          f"{', '.join(must_set)}")
         raise KeyError(
             f"Required key(s) missing or empty in rendered config "
-            f"'{config_path}': {', '.join(missing_keys)}\n"
-            + '\n'.join(hints))
+            f"'{config_path}': {', '.join(missing_keys)}\n" +
+            '\n'.join(hints))
 
     # Derive METP cycle dates (18z-only verification tool)
     metp_start_date, metp_end_date = calc_start_end_metp_dates(
