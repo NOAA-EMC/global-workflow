@@ -929,13 +929,6 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
-        # if DOHYBVAR_OCN: "YES" and EUPD_CYC: "both"
-        # if self.options['do_hybvar_ocn'] and \
-        #         (('gfs' in self.app_config.ens_runs and
-        #          'gdas' in self.app_config.ens_runs) or
-        #          self.run == "gdas"):
-        #     dep_dict = {'type': 'task', 'name': f'enkf{self.run}_marineanlecen'}
-        #     deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_mergensst']:
             data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.analysis.sfc.a006.nc'
             dep_dict = {'type': 'data', 'data': data}
@@ -3113,7 +3106,8 @@ class GFSTasks(Tasks):
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['enkfgdas'] or self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
+        if self.run in ['enkfgdas'] or self.options['do_jedisnowda'] or \
+                (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)

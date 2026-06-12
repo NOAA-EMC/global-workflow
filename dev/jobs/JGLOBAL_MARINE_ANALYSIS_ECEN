@@ -41,8 +41,6 @@ declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/i
 declare -rx COMOUT_OCEAN_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ocean"
 declare -rx COMIN_ICE_RESTART="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
 declare -rx COMOUT_ICE_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
-#declare -rx COMIN_OCEAN_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ocean"
-#declare -rx COMIN_ICE_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
 
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "enkfgfs" ]]; then
