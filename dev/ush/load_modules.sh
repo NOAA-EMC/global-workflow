@@ -180,7 +180,7 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
-        # Source versions file 
+        # Source versions file
         source "${HOMEglobal}/versions/run.ver"
 
         #### Work around for upp module loading issues that is inconsistance with non-wcoss2 run.ver
