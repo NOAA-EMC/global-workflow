@@ -128,9 +128,6 @@ for ((nset = 1; nset <= downset; nset++)); do
         err_exit "FATAL ERROR: Some or all interpolations of the master grib file failed during MPMD execution!"
     fi
 
-    # We are in a loop over downset, save output from mpmd into nset specific output
-    mv mpmd.out "mpmd_${nset}.out"
-
     # Concatenate grib files from each processor into a single one
     # and clean-up as you go
     echo "INFO: Concatenating processor-specific grib2 files into a single product file"
