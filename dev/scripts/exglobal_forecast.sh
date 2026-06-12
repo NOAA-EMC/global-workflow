@@ -85,6 +85,9 @@ source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_confi
 
 source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
+# Default segment index to 0 if not set by the caller (multi-segment forecasts set this).
+FCST_SEGMENT=${FCST_SEGMENT:-0}
+
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
 cplflx=${cplflx:-.false.} # default off,import from outside source
@@ -144,6 +147,18 @@ if [[ "${cplchm}" == ".true." ]]; then
 fi
 echo "MAIN: Post-determination set up of run type finished"
 
+# Signal to the forecast manager that all product tables are ready.
+# This is created AFTER all component postdet functions complete to ensure
+# the manager only starts when all tables (ATM, WW3, OCN, ICE) are fully written.
+if [[ -n "${DATAjob:-}" ]]; then
+    echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready at $(date)" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
+    if [[ "${SENDECF}" == "YES" ]]; then
+        if [[ "${RUN}" == "gfs" ]]; then
+            ecflow_client --event release_gfs_fcst_manager
+        fi
+    fi
+fi
+
 echo "MAIN: Writing namelists and model configuration"
 FV3_nml
 if [[ "${cplflx}" == ".true." ]]; then
@@ -181,6 +196,8 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "The forecast failed to run to completion!"
 fi
+# Signal to the forecast manager that the model run has completed successfully for this segment.
+echo "${RUN}_fcst_seg${FCST_SEGMENT} done" > "${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
 
 FV3_out
 if [[ "${cplflx}" == ".true." ]]; then

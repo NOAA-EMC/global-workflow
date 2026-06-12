@@ -77,7 +77,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
         if options['do_fetch_hpss'] or options['do_fetch_local']:
             configs += ['fetch']
 
-        configs += ['stage_ic', 'fcst', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'fcst', 'fcst_manager', 'arch_vrfy', 'cleanup']
 
         if options['do_atm']:
 
@@ -181,6 +181,7 @@ class GFSForecastOnlyAppConfig(AppConfig):
             # ... forecast-only mode when APP=ATMW|S2SW
 
         tasks += ['fcst']
+        tasks += ['fcst_manager']
 
         if options['do_atm']:
 

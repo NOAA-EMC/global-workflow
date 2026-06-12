@@ -328,8 +328,8 @@ def setup_gfs_for_nco(link_or_copy='copy'):
 
 if __name__ == "__main__":
     # Get command line argument for whether to copy or link files, default to 'copy'
-    parser = argparse.ArgumentParser(description="Set up GFS workflow for NCO by copying or linking necessary files from dev to the global workflow directory.")
-    parser.add_argument('--link', action='store_true', )
+    parser = argparse.ArgumentParser(description="Set up GFS workflow for NCO by linking or copying necessary files from dev to the global workflow directory.")
+    parser.add_argument('--copy', action='store_true', )
     args = parser.parse_args()
-    link_or_copy = 'link' if args.link else 'copy'
+    link_or_copy = 'copy' if args.copy else 'link'
     setup_gfs_for_nco(link_or_copy=link_or_copy)

@@ -5,7 +5,7 @@ echo "Begin Cleanup ${DATAROOT}!"
 
 # Remove DATAoutput from the forecast model run
 # TODO: Handle this better
-DATAfcst="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+DATAfcst="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
 if [[ -d "${DATAfcst}" ]]; then
     rm -rf "${DATAfcst}"
 fi
