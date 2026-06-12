@@ -2310,6 +2310,9 @@ class GFSTasks(Tasks):
                         deps.append(rocoto.add_dependency(dep_dict))
                         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                         deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_wave']:
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavegempak'}
+                    deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_awips'] and self.run in ['gfs']:
 
@@ -3095,12 +3098,14 @@ class GFSTasks(Tasks):
         if self.options['do_jediatmens']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_atmensanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
-        else:
+        elif self.options['do_enkfonly_atm']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_eupd'}
             deps.append(rocoto.add_dependency(dep_dict))
-        # wait for gdas.t??z.increment.dtf.i006.nc/dt to exist
-        if self.run in ['enkfgdas']:
-            dep_dict = {'type': 'task', 'name': f'gdas_anal'}
+        elif self.options['do_jediatmvar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_atmanlfinal'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_anal'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}

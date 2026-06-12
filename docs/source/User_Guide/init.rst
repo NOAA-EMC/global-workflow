@@ -322,23 +322,31 @@ Warm-start Initial Conditions Generation
 Warm-start initial conditions are taken from either the GFS in production or an experiment "warmed" up (at least one cycle in). Below is a list of tarballs required for a warm-start cycled experiment.
 
 ATM:
+
 * Previous cycle:
-  * enkfgdas_restartb_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
-  * gdas_restartb.tar
+
+  - enkfgdas_restartb_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
+  - gdas_restartb.tar
+
 * Current cycle:
-  * enkfgdas_restarta_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
-  * gdas_restarta.tar
+
+  - enkfgdas_restarta_grp#.tar (where # = ensemble group number, 1-8 for 80 members at C384)
+  - gdas_restarta.tar
 
 Ocean/Ice:
+
 * Previous cycle:
-  * gdasocean_restart.tar
+
+  - gdasocean_restart.tar
+
 * Current cycle:
-  * gdasocean_analysis.tar
+
+  - gdasocean_analysis.tar
 
 Waves:
 * Previous cycle:
-  * gdaswave_restart.tar
 
+  - gdaswave_restart.tar
 
 If you are restarting an experiment that you are currently running (e.g. you had a failure and need to rewind a few cycles), then untar these tarballs directly into your ROTDIR.
 

@@ -216,3 +216,13 @@ ush/python/pygfs/ufswm/gfs.py @DavidHuber-NOAA
 ush/python/pygfs/ufswm/ufs.py @DavidHuber-NOAA
 ush/python/pygfs/utils/__init__.py @DavidHuber-NOAA
 ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NOAA
+
+# AWS
+dev/parm/config/gfs/config.resources.AWS-EC2 @WalterKolczynski-NOAA @weihuang-jedi
+dev/workflow/hosts/aws-ec2.yaml @WalterKolczynski-NOAA @weihuang-jedi
+env/AWS-EC2.env @WalterKolczynski-NOAA @weihuang-jedi
+modulefiles/gw_run.aws-ec2.lua @WalterKolczynski-NOAA @weihuang-jedi
+modulefiles/gw_setup.aws-ec2.lua @WalterKolczynski-NOAA @weihuang-jedi
+parm/fetch/gcafs_ATMA_gdas-anl_aws-ec2.yaml.j2 @WalterKolczynski-NOAA @weihuang-jedi
+versions/build.aws-ec2.ver @WalterKolczynski-NOAA @weihuang-jedi
+versions/run.aws-ec2.ver @WalterKolczynski-NOAA @weihuang-jedi
