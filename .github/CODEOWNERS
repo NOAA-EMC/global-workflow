@@ -68,6 +68,7 @@ dev/jobs/JGLOBAL_ATM_* @RussTreadon-NOAA @DavidNew-NOAA @CoryMartin-NOAA
 dev/jobs/JGLOBAL_CLEANUP @DavidHuber-NOAA
 dev/jobs/JGLOBAL_EXTRACTVARS @EricSinsky-NOAA
 dev/jobs/JGLOBAL_FORECAST @DavidHuber-NOAA
+dev/jobs/JGLOBAL_FORECAST_MANAGER @AntonMFernando-NOAA @DavidHuber-NOAA
 dev/jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
 dev/jobs/JGLOBAL_OCEANICE_PRODUCTS @JesseMeng-NOAA @ChristopherHill-NOAA
 dev/jobs/JGLOBAL_OFFLINE_ATMOS_ANALYSIS @CoryMartin-NOAA
@@ -128,6 +129,7 @@ dev/scripts/exglobal_diag.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_extractvars.sh @EricSinsky-NOAA
 dev/scripts/exglobal_forecast.py @aerorahul
 dev/scripts/exglobal_forecast.sh @DavidHuber-NOAA
+dev/scripts/exglobal_forecast_manager.sh @AntonMFernando-NOAA @DavidHuber-NOAA
 dev/scripts/exglobal_marine_analysis_* @guillaumevernieres @AndrewEichmann-NOAA
 dev/scripts/exglobal_marine_obs_* @guillaumevernieres @AndrewEichmann-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_marinebmat_initialize.py @guillaumevernieres @AndrewEichmann-NOAA
@@ -147,7 +149,9 @@ ush/calcanl_gfs.py @CoryMartin-NOAA
 ush/calcinc_gfs.py @CoryMartin-NOAA
 ush/create_gs_info.sh @jswhit2 @DavidHuber-NOAA
 ush/extractvars_tools.sh @EricSinsky-NOAA
+ush/forecast_atm_barrier.sh @AntonMFernando-NOAA @DavidHuber-NOAA
 ush/forecast_det.sh @DavidHuber-NOAA
+ush/forecast_manager.sh @AntonMFernando-NOAA @DavidHuber-NOAA
 ush/forecast_postdet.sh @DavidHuber-NOAA
 ush/forecast_predet.sh @DavidHuber-NOAA
 ush/gaussian_sfcanl.sh @BrianCurtis-NOAA

@@ -1,0 +1,38 @@
+#! /usr/bin/env bash
+
+########## config.fcst_manager ##########
+# Forecast manager specific configuration
+
+echo "BEGIN: config.fcst_manager"
+
+# Number of parallel ATM instance groups. Each group has 4 product copy ranks
+# (atmf, sfcf, grib, flux) plus 1 barrier rank = 5 ranks per instance.
+# Forecast hours are distributed round-robin across instances so all groups
+# copy in parallel. Total ATM ranks = MGR_NATM_INST * 5.
+# Must match the ntasks calculation in config.resources "fcst_manager".
+export MGR_NATM_INST=${MGR_NATM_INST:-2}
+
+# WW3/OCN/ICE: product table split into n sub-tables; one rank per sub-table.
+export MGR_NTASKS_WW3=${MGR_NTASKS_WW3:-2}
+export MGR_NTASKS_OCN=${MGR_NTASKS_OCN:-1}
+export MGR_NTASKS_ICE=${MGR_NTASKS_ICE:-1}
+
+# Maximum time (seconds) to wait for product tables to appear in COMOUT_CONF.
+# Must be less than the batch walltime of the fcst_manager job.
+export FCST_MGR_INIT_TIMEOUT=7200
+
+# Maximum time (seconds) to wait for the model to finish before the manager
+# declares a timeout and exits with an error (0 = no timeout).
+export FCST_MGR_TIMEOUT=0
+
+# Polling interval (seconds) between sentinel checks.
+export FCST_MGR_SLEEP=5
+
+# Seconds between the two size samples used to verify a data file is no longer
+# being written before copying it (size-stability guard). Set to 0 to disable.
+export FCST_MGR_STABILITY_WAIT=5
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" "fcst_manager"
+
+echo "END: config.fcst_manager"
