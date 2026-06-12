@@ -1,18 +1,4 @@
-#-if [ -n "%PDY:%" ]; then
--  export PDY=${PDY:-%PDY:%}
--else
--  export PDY=$($NDATE | cut -c1-8)
--fi
-+# if [ -n "%PDY:%" ]; then
-+#   export PDY=${PDY:-%PDY:%}
-+# else
-+#   export PDY=$($NDATE | cut -c1-8)
-+# fi
-+if [[ %CYC% == 00 || || %CYC% == 06 || %CYC% == 12 ]]; then
-+    export PDY=20260613
-+ else
-+    export PDY=20260612
-+ fi! /usr/bin/env bash
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps
