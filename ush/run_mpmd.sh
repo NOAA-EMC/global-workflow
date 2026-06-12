@@ -181,8 +181,17 @@ move_outputs() {
     after_run_dir="mpmd_${timestamp}_chunk${chunk_num}"
     mkdir -p "${after_run_dir}"
 
+    # Write logs back to stdout if requested.
+    if [[ "${CAT_MPMD_LOGS:NO}" == "YES" ]]; then
+        for out_file in ${out_files}; do
+            echo "INFO: Contents of ${out_file}:"
+            cat "${out_file}"
+        done
+    fi
+
     # shellcheck disable=SC2086
     mv -f ${out_files} "${after_run_dir}/"
+
     mv -f "${mpmd_cmdfile}.chunk${chunk_num}" "${after_run_dir}/"
 
     # Always copy the cmdfile to the after_run_dir for reference.
