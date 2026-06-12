@@ -11,7 +11,7 @@ Code managers
 =============
 
  * David Huber - @DavidHuber-NOAA / david.huber@noaa.gov
- * Rahul Mahajan - @aerorahul / rahul.mahajan@noaa.gov
+ * Travis Elless - @TravisElles-NOAA / travis.j.elless@noaa.gov
 
 .. _development:
 
@@ -35,17 +35,14 @@ Where to do development?
 Protected branches
 ==================
 
-The following global-workflow branches are protected by the code management team:
+All branches in the global-workflow authoritative repository are protected. All contributions must be made through pull requests (PRs). Merging of PRs is handled by the global workflow code management team.
 
-* develop (HEAD)
-* dev/gfs.v16 (kept aligned with current production, as well as ingests bug fixes and updates between release branches)
+The creation of new branches is restricted to members of the code management team. New branches in the authoritative repository are limited to long-running development needs that need to be kept separate from develop (e.g. for release preparation). If you believe you have reason to create a new branch in the authoritative repository, please reach out to the code management team with a list of POCs for the branch.
 
 These protected branches require the following to accept changes:
 
  1. a pull request with at least 1 reviewer sign-off
  2. a code manager to perform the commit
-
-Other authoritative repository branches may also be protected at the request of members of the global-workflow-developers team.
 
 .. _howto:
 
@@ -78,7 +75,7 @@ Continuous Integration (CI)
 
 The global workflow comes fitted with a suite of system tests that run various types of workflow.  These tests are commonly run for pull requests before they may be merged into the develop branch.  At a minimum, developers are expected to run the CI test(s) that will be impacted by their changes on at least one platform.
 
-The commonly run tests are written in YAML format and can be found in the ``dev/ci/cases/pr`` directory.  The ``dev/workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS, GCAFS, or SFS).  For instance, to build the workflow and run all of the tests, one would execute:
+The commonly run tests are written in YAML format and can be found in the ``dev/ci/cases/pr`` directory.  The ``dev/workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`../User_Guide/setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS, GCAFS, or SFS).  For instance, to build the workflow and run all of the tests, one would execute:
 
 ::
 

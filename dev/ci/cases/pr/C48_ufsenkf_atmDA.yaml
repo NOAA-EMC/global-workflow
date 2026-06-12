@@ -20,6 +20,7 @@ skip_ci_on_hosts:
   - orion
   - hercules
   - derecho
+  - aws-ec2
   - awsepicglobalworkflow
 
 workflow:

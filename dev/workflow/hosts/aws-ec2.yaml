@@ -1,0 +1,27 @@
+# Paths
+DMPDIR: '/lustre/global/data/dump_nr'
+IODADIR: '/lustre/global/data/dump_ioda_nr'
+BASE_GIT: '/lustre/global/external_programs'
+BASE_DATA: '/lustre/global/data'
+BASE_IC: '/lustre/global/data/ICSDIR'
+AERO_INPUTS_DIR: '/lustre/global/data/GEFS_ExtData/20250310'
+PACKAGEROOT: '' #TODO: This does not yet exist.
+HOMEDIR: '/lustre/noscrub'
+STMP: '/lustre/stmp'
+PTMP: '/lustre/ptmp'
+NOSCRUB: '${HOMEDIR}'
+COMINsyn: '/lustre/global/data/syndat'
+# BQS properties
+SCHEDULER: slurm
+QUEUE: batch
+PARTITION_BATCH: compute
+PARTITION_SERVICE: processing
+# HPSS properties
+ARCHCOM_TO: 'local'
+ATARDIR: '/bucket/archive/${PSLOT}' # TODO: This will not yet work from AWS.
+CHGRP_RSTPROD: 'NO' #TODO: rstprod group not yet supported.
+# Features
+SUPPORTED_RESOLUTIONS: ['C1152', 'C768', 'C384', 'C192', 'C96', 'C48']
+DO_ARCHCOM: 'NO'
+DO_GEMPAK: 'NO'
+FETCH_GCDAS_YAML_TMPL_LIST: '${PARMglobal}/fetch/${NET}_${APP}_gdas-anl_aws-ec2.yaml.j2,'
