@@ -20,12 +20,12 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0300 and :TIME < 0630
-              event 1 release_gfs_atmos_prep
-            task jgfs_atmos_prep
-              trigger jgfs_atmos_prep_fsm:release_gfs_atmos_prep and ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/gdas/product/atmos==complete
+            task jgfs_atmos_tropcy_qc_reloc
+              #event 1 jtwc_bull_email
+              time 02:41
+            task jgfs_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+              time 02:45
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -41,14 +41,16 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//wave
         endfamily		//init
         family analysis
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_anal
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              #trigger  /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -74,7 +76,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgfs_atmos_analsnow
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -5341,12 +5344,11 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0300 and :TIME < 0630
-              event 1 release_gdas_atmos_prep
-            task jgdas_atmos_prep
-              trigger jgdas_atmos_prep_fsm:release_gdas_atmos_prep and ../../../../18/gdas/product/atmos==complete
+            task jgdas_atmos_tropcy_qc_reloc
+              time 05:45
+            task jgdas_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+              time 05:48
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -5362,19 +5364,21 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily		//wave
         endfamily		//init
         family analysis
           family atmos
             task jgdas_atmos_anal
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
               trigger jgdas_atmos_analdiag==complete
             task jgdas_atmos_anal_sfc_regrid
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
+              trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
@@ -5400,7 +5404,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgdas_atmos_analsnow
-              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -5591,9 +5596,11 @@ suite gfs_v17_nco
         family analysis
           family create
             task jenkfgdas_atmos_ens_observer
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../18/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../18/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
@@ -5909,12 +5916,12 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0900 and :TIME < 1230
-              event 1 release_gfs_atmos_prep
-            task jgfs_atmos_prep
-              trigger jgfs_atmos_prep_fsm:release_gfs_atmos_prep and ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/gdas/product/atmos==complete
+            task jgfs_atmos_tropcy_qc_reloc
+              #event 1 jtwc_bull_email
+              time 08:41
+            task jgfs_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+              time 08:45
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -5930,14 +5937,16 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//wave
         endfamily		//init
         family analysis
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_anal
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              #trigger  /gfs_v16_3/primary/06/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -5963,7 +5972,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgfs_atmos_analsnow
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/06/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -11230,12 +11240,11 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0900 and :TIME < 1230
-              event 1 release_gdas_atmos_prep
-            task jgdas_atmos_prep
-              trigger jgdas_atmos_prep_fsm:release_gdas_atmos_prep and ../../../../00/gdas/product/atmos==complete
+            task jgdas_atmos_tropcy_qc_reloc
+              time 11:45
+            task jgdas_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+              time 11:48
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -11251,19 +11260,21 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//wave
         endfamily    		//init
         family analysis
           family atmos
             task jgdas_atmos_anal
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/06/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
               trigger jgdas_atmos_analdiag==complete
             task jgdas_atmos_anal_sfc_regrid
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
+              trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
@@ -11289,7 +11300,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgdas_atmos_analsnow
-              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/06/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -11480,9 +11492,11 @@ suite gfs_v17_nco
         family analysis
           family create
             task jenkfgdas_atmos_ens_observer
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/06/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../00/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/06/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../00/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
@@ -11798,12 +11812,12 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 1500 and :TIME < 1830
-              event 1 release_gfs_atmos_prep
-            task jgfs_atmos_prep
-              trigger jgfs_atmos_prep_fsm:release_gfs_atmos_prep and ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/gdas/product/atmos==complete
+            task jgfs_atmos_tropcy_qc_reloc
+              #event 1 jtwc_bull_email
+              time 14:41
+            task jgfs_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+              time 14:45
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -11819,14 +11833,16 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//wave
         endfamily		//init
         family analysis
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_anal
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              #trigger  /gfs_v16_3/primary/12/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -11852,7 +11868,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgfs_atmos_analsnow
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/12/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -17119,12 +17136,11 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 1500 and :TIME < 1830
-              event 1 release_gdas_atmos_prep
-            task jgdas_atmos_prep
-              trigger jgdas_atmos_prep_fsm:release_gdas_atmos_prep and ../../../../06/gdas/product/atmos==complete
+            task jgdas_atmos_tropcy_qc_reloc
+              time 17:45
+            task jgdas_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+              time 17:48
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -17140,19 +17156,21 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//wave
         endfamily    		//init
         family analysis
           family atmos
             task jgdas_atmos_anal
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/12/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
               trigger jgdas_atmos_analdiag==complete
             task jgdas_atmos_anal_sfc_regrid
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
+              trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
@@ -17178,7 +17196,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgdas_atmos_analsnow
-              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/12/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -17369,9 +17388,11 @@ suite gfs_v17_nco
         family analysis
           family create
             task jenkfgdas_atmos_ens_observer
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/12/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../06/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/12/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../06/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
@@ -17687,12 +17708,12 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 2100 and :TIME < 2359
-              event 1 release_gfs_atmos_prep
-            task jgfs_atmos_prep
-              trigger jgfs_atmos_prep_fsm:release_gfs_atmos_prep and ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/gdas/product/atmos==complete
+            task jgfs_atmos_tropcy_qc_reloc
+              #event 1 jtwc_bull_email
+              time 20:41
+            task jgfs_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
+              time 20:45
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -17708,14 +17729,16 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgfs_wave_init
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//wave
         endfamily		//init
         family analysis
           family atmos
             edit WGF 'atmos'
             task jgfs_atmos_anal
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              #trigger  /gfs_v16_3/primary/18/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -17741,7 +17764,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgfs_atmos_analsnow
-              trigger ../../prep/atmos/jgfs_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/18/obsproc/v1.0/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -23008,12 +23032,11 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 2100 and :TIME < 2359
-              event 1 release_gdas_atmos_prep
-            task jgdas_atmos_prep
-              trigger jgdas_atmos_prep_fsm:release_gdas_atmos_prep and ../../../../12/gdas/product/atmos==complete
+            task jgdas_atmos_tropcy_qc_reloc
+              time 23:45
+            task jgdas_atmos_emcsfc_sfc_prep
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
+              time 23:48
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -23029,19 +23052,21 @@ suite gfs_v17_nco
           family wave
             edit WGF 'wave'
             task jgdas_wave_init
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/00/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//wave
         endfamily    		//init
         family analysis
           family atmos
             task jgdas_atmos_anal
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/18/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
               trigger jgdas_atmos_analdiag==complete
             task jgdas_atmos_anal_sfc_regrid
-              trigger ../../prep/atmos/jgdas_atmos_prep==complete and ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
+              trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
@@ -23067,7 +23092,8 @@ suite gfs_v17_nco
           family snow
             edit WGF 'snow'
             task jgdas_atmos_analsnow
-              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../prep/atmos/jgdas_atmos_prep==complete
+              #trigger /gfs_v16_3/primary/18/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -23258,9 +23284,11 @@ suite gfs_v17_nco
         family analysis
           family create
             task jenkfgdas_atmos_ens_observer
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/18/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../12/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              #trigger /gfs_v16_3/primary/18/obsproc/v1.0/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../12/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
