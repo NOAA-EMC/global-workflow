@@ -36,7 +36,13 @@ GPREFIX_DET="${GDUMP}.t${gcyc}z."
 export GSUFFIX="ensmean."
 
 # Generate COM variables from templates
-declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    declare -rx COMIN_OBS
+else
+    declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
+fi
+
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 # shellcheck disable=SC2153
 declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${COMOUT_ATMOS_ANALYSIS}"

@@ -36,7 +36,12 @@ export COMPONENT="atmos"
 ##############################################
 # Define COM directories
 ##############################################
-declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    declare -rx COMIN_OBS
+else
+    declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+fi
 declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
 
 # Declare COMOUT_ATMOS_GEMPAK_GIF and COMOUT_ATMOS_GEMPAK_UPPER_AIR

@@ -59,7 +59,12 @@ declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
 declare -rx COMIN_ICE_RESTART="${COMIN}/model/ice/restart"
 declare -rx COMIN_ICE_GRIB="${COMIN}/products/ice/grib2"
 declare -rx COMIN_ICE_NETCDF="${COMIN}/products/ice/netcdf"
-declare -rx COMIN_OBS="${COMIN}/obs"
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    declare -rx COMIN_OBS
+else
+    declare -rx COMIN_OBS="${COMIN}/obs"
+fi
 declare -rx COMIN_TOP="${COMIN}"
 declare -rx COMIN_OCEAN_HISTORY="${COMIN}/model/ocean/history"
 declare -rx COMIN_OCEAN_RESTART="${COMIN}/model/ocean/restart"
