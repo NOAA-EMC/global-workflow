@@ -304,25 +304,127 @@ EOF
     #============================================================================
     if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
         local FH2 FH3
+        # For GFS/GEFS/SFS/GCAFS: build a product table consumed by the forecast manager.
+        # The model writes real files to DATAoutput; the manager copies them to COM.
+        # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
+        local use_mgr="NO"
+        case "${RUN}" in
+            gfs) use_mgr="YES" ;;
+                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+                # gefs | sfs | gcafs) use_mgr="YES" ;;
+            *) ;;
+        esac
+
+        # Per-product tables: MGR_NATM_INST instance groups, each with one rank
+        # per ATM file type plus one barrier rank (5 ranks per instance, 10 total
+        # for the default of 2). Forecast hours are distributed round-robin across
+        # instances so all groups copy in parallel, halving the serial copy time.
+        local natm_inst="${MGR_NATM_INST:-2}"
+        local seg="${FCST_SEGMENT:-0}"
+        local inst fhr_idx
+        local -a atm_atmf_tables atm_sfcf_tables atm_grib_tables atm_flux_tables atm_barrier_tables
+        for ((inst = 0; inst < natm_inst; inst++)); do
+            atm_atmf_tables[inst]="${DATAjob}/atm_atmf_products_seg${seg}_inst${inst}.txt"
+            atm_sfcf_tables[inst]="${DATAjob}/atm_sfcf_products_seg${seg}_inst${inst}.txt"
+            atm_grib_tables[inst]="${DATAjob}/atm_grib_products_seg${seg}_inst${inst}.txt"
+            atm_flux_tables[inst]="${DATAjob}/atm_flux_products_seg${seg}_inst${inst}.txt"
+            atm_barrier_tables[inst]="${DATAjob}/atm_barrier_seg${seg}_inst${inst}.txt"
+        done
+        if [[ "${use_mgr}" == "YES" ]]; then
+            for ((inst = 0; inst < natm_inst; inst++)); do
+                rm -f "${atm_atmf_tables[inst]}" "${atm_sfcf_tables[inst]}" \
+                    "${atm_grib_tables[inst]}" "${atm_flux_tables[inst]}" "${atm_barrier_tables[inst]}"
+            done
+            # Remove the table-ready sentinel to prevent the forecast manager from triggering
+            # on partial tables during table generation. The sentinel is recreated after all
+            # component tables (ATM, WW3, OCN, ICE) are complete.
+            rm -f "${DATAjob}/fcst_table_ready_seg${seg}"
+        fi
+
+        fhr_idx=0
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
             FH2=$(printf %02i "${fhr}")
-            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
-            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
-            ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+            inst=$((fhr_idx % natm_inst))
+            ((fhr_idx++)) || true
+
+            # Build (local_file, com_file) pairs once; used for both the manager
+            # product table and the NLN symlink paths.
+            local local_files=() com_files=()
+            local_files+=("${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc")
+            com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc")
+            local_files+=("${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc")
+            com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc")
             if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
-                ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc")
+                com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc")
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc")
+                com_files+=("${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc")
             fi
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}")
+                com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2")
+                local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}")
+                com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2")
                 if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                    local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02")
+                    com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2")
+                    local_files+=("${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02")
+                    com_files+=("${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2")
                 fi
             fi
+
+            # log.atm.fHHH is the sentinel written by the write component after
+            # atmfHHH.nc and sfcfHHH.nc are fully flushed to disk.
+            local local_log="${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
+            local com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt"
+            local i
+            if [[ "${use_mgr}" == "YES" ]]; then
+                # Per-product com_logs for parallel copy ranks.
+                local com_log_atmf="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.atm.atmf.f${FH3}.txt"
+                local com_log_sfcf="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.atm.sfcf.f${FH3}.txt"
+                # Atmospheric state netCDF rank
+                echo "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_tables[inst]}"
+                # Surface state netCDF rank
+                echo "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_tables[inst]}"
+                # Optional cubed-sphere grid files share the same nc rank as their Gaussian counterpart.
+                if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc ${com_log_atmf}" >> "${atm_atmf_tables[inst]}"
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc ${local_log} ${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc ${com_log_sfcf}" >> "${atm_sfcf_tables[inst]}"
+                fi
+                local barrier_deps="${com_log_atmf} ${com_log_sfcf}"
+                if [[ "${WRITE_DOPOST}" == ".true." ]]; then
+                    local com_log_grib="${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.log.atm.grib.f${FH3}.txt"
+                    local com_log_flux="${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.log.atm.flux.f${FH3}.txt"
+                    # GRIB2 gridded rank
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_tables[inst]}"
+                    # GRIB2 flux rank
+                    echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2} ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_tables[inst]}"
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2 ${com_log_grib}" >> "${atm_grib_tables[inst]}"
+                        echo "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02 ${local_log} ${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2 ${com_log_flux}" >> "${atm_flux_tables[inst]}"
+                    fi
+                    barrier_deps="${barrier_deps} ${com_log_grib} ${com_log_flux}"
+                fi
+                # Barrier row: final combined com_log followed by all per-product deps.
+                echo "${com_log} ${barrier_deps}" >> "${atm_barrier_tables[inst]}"
+            else
+                # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
+                for ((i = 0; i < ${#local_files[@]}; i++)); do
+                    ${NLN} "${com_files[i]}" "${local_files[i]}"
+                done
+                ${NLN} "${com_log}" "${local_log}"
+            fi
         done
+
+        ##############################################################
+        # Release the forecast manager once the product table is ready
+        # so it can begin copying output files to COM as they appear.
+        ##############################################################
+        if [[ "${SENDECF}" == "YES" && "${use_mgr}" == "YES" ]]; then
+            ecflow_client --event release_fcst_manager
+        fi
+
     fi
     #============================================================================
     restart_interval=${restart_interval:-${FHMAX}}
@@ -441,8 +543,13 @@ FV3_out() {
     fi
 }
 
-# Disable variable not used warnings
+################################################################################
+# forecast_postdet_ww3.sh
+################################################################################
+
 # shellcheck disable=SC2034
+# shellcheck disable=SC2178
+
 WW3_postdet() {
     echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
     # Copy initial condition files:
@@ -508,8 +615,23 @@ WW3_postdet() {
     #fi
     cd "${cwd}" || exit 1
 
-    # Link output files
-    ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    # For GFS/GEFS/SFS/GCAFS: build product tables for the forecast manager.
+    # For GDAS: keep NLN symlinks so downstream analysis jobs can read WW3 outputs.
+    local use_mgr_ww3="NO"
+    case "${RUN}" in
+        gfs) use_mgr_ww3="YES" ;;
+            # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+            # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
+        *) ;;
+    esac
+
+    # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
+    # (copied to COM in WW3_out). For GDAS it is symlinked to COM here.
+    if [[ "${use_mgr_ww3}" == "YES" ]]; then
+        : # log.ww3 will be a real file in DATA; WW3_out copies it after the run
+    else
+        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    fi
 
     # Loop for gridded output (uses FHINC)
     local fhr fhr3 FHINC
@@ -520,11 +642,24 @@ WW3_postdet() {
     else
         fhinc=${FHOUT_WAV}
     fi
+    local ww3_table="${DATAjob}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
+    if [[ "${use_mgr_ww3}" == "YES" ]]; then
+        rm -f "${ww3_table}"
+    fi
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+        local ww3_grd_local="${DATAoutput}/WW3_OUTPUT/${vdate}.out_grd.ww3"
+        local ww3_grd_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
+        local ww3_grd_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin"
+        local ww3_grd_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log"
+        if [[ "${use_mgr_ww3}" == "YES" ]]; then
+            # Each WW3 gridded file has its own per-file sentinel log
+            echo "${ww3_grd_local} ${ww3_grd_local_log} ${ww3_grd_com} ${ww3_grd_com_log}" >> "${ww3_table}"
+        else
+            ${NLN} "${ww3_grd_com}" "${ww3_grd_local}"
+            ${NLN} "${ww3_grd_com_log}" "${ww3_grd_local_log}"
+        fi
 
         if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
             fhinc=${FHOUT_WAV}
@@ -538,11 +673,21 @@ WW3_postdet() {
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc" "${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log" "${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+        local ww3_pnt_local="${DATAoutput}/WW3_OUTPUT/${vdate}.out_pnt.ww3.nc"
+        local ww3_pnt_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
+        local ww3_pnt_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"
+        local ww3_pnt_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log"
+        if [[ "${use_mgr_ww3}" == "YES" ]]; then
+            # Each WW3 point file has its own per-file sentinel log
+            echo "${ww3_pnt_local} ${ww3_pnt_local_log} ${ww3_pnt_com} ${ww3_pnt_com_log}" >> "${ww3_table}"
+        else
+            ${NLN} "${ww3_pnt_com}" "${ww3_pnt_local}"
+            ${NLN} "${ww3_pnt_com_log}" "${ww3_pnt_local_log}"
+        fi
 
         fhr=$((fhr + fhinc))
     done
+
 }
 
 WW3_nml() {
@@ -556,6 +701,18 @@ WW3_out() {
 
     # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
+
+    # Copy WW3 run log for GFS/GEFS/SFS/GCAFS (no pre-run symlink; model writes a real
+    # file in DATA which is copied to COM here at end of run)
+    case "${RUN}" in
+        gfs | gefs | sfs | gcafs)
+            if [[ -f "${DATA}/log.ww3" ]]; then
+                mkdir -p "${COMOUT_WAVE_HISTORY}"
+                cpfs "${DATA}/log.ww3" "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log"
+            fi
+            ;;
+        *) ;;
+    esac
 
     # Build MPMD cmdfile to copy WW3 restarts in parallel
     local cmdfile="${DATA}/cmdfile_ww3_out"
@@ -604,12 +761,29 @@ WW3_out() {
 
 }
 
+################################################################################
+# forecast_postdet_cmeps.sh
+################################################################################
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC2178
+
 CPL_out() {
     echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
     if [[ "${esmf_profile:-.false.}" == ".true." ]]; then
+        if [[ ! -d "${COMOUT_ATMOS_HISTORY}" ]]; then
+            echo "INFO: Directory ${COMOUT_ATMOS_HISTORY} does not exist, creating..."
+            mkdir -p "${COMOUT_ATMOS_HISTORY}"
+        fi
         cpfs "${DATA}/ESMF_Profile.summary" "${COMOUT_ATMOS_HISTORY}/ESMF_Profile.summary"
     fi
 }
+################################################################################
+# forecast_postdet_mom6.sh
+################################################################################
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC2178
 
 MOM6_postdet() {
     echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
@@ -650,9 +824,16 @@ MOM6_postdet() {
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
-            # Looping over MOM6 output hours
+        gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
+            local ocn_local ocn_com ocn_table use_mgr_ocn
+            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+            case "${RUN}" in
+                gfs) use_mgr_ocn="YES" ;;
+                *) use_mgr_ocn="NO" ;;
+            esac
+            ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
+            rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -665,28 +846,35 @@ MOM6_postdet() {
                 ((midpoint = last_fhr + interval / 2))
 
                 vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-                #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
+                # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
+                # Native model uses midpoint in filename; we map that to the end of the period for COM.
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
-                else
-                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-                fi
-
-                # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
-                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
+                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
                     source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
                 ihour=$(printf %02i "${interval}")
-                source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
-                dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
+                ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
+                source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
+
+                # Forecast manager copies from DATA to COM; register in product table.
+                # Others: NLN so model writes directly into COM.
+                if [[ "${use_mgr_ocn}" == "YES" ]]; then
+                    # Model-log-triggered: local_log (source_file_log) is the MOM6 period log
+                    # written by the model after the .nc is complete. Manager polls for it,
+                    # copies the .nc to COM, then copies the log to COM as the Rocoto sentinel.
+                    echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
+                else
+                    ${NLN} "${ocn_com}" "${ocn_local}"
+                    ${NLN} "${dest_file_log}" "${source_file_log}"
+                fi
 
                 last_fhr=${fhr}
-
             done
             ;;
 
@@ -696,6 +884,7 @@ MOM6_postdet() {
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+                # NLN symlink: GDAS analysis jobs need ocean backgrounds during the run
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${vdatestr}.nc"
             done
             ;;
@@ -783,6 +972,13 @@ MOM6_out() {
     fi
 }
 
+################################################################################
+# forecast_postdet_cice.sh
+################################################################################
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC2178
+
 CICE_postdet() {
     echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
@@ -809,24 +1005,66 @@ CICE_postdet() {
     # Copy CICE ICs
     cpreq "${cice_restart_file}" "${DATA}/cice_model.res.nc"
 
-    # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
-    # TODO: Is this file needed in COM? Is this going to be used for generating any products?
-    local vdate seconds vdatestr fhr fhr3 interval last_fhr
+    # Determine whether to use the forecast manager for CICE output.
+    local use_mgr_ice="NO"
+    case "${RUN}" in
+        gfs) use_mgr_ice="YES" ;;
+        # TODO: enable forecast manager for gdas, enkfgdas, enkfgfs, gefs, sfs, gcafs once tested
+        *) ;;
+    esac
+    local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
+    rm -f "${ice_table}"
+
+    local vdate seconds vdatestr fhr fhr3 interval
+
+    # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
+    # No per-period sentinel exists; the manager cannot track it in-flight.
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
-    ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    if [[ "${use_mgr_ice}" == "YES" ]]; then
+        # iceh_ic is written during CICE initialization before any time stepping.
+        # Use the first forecast-hour ice output as the trigger (same pattern as
+        # non-last entries in the loop below). iceh_ic is fully written before
+        # f006 appears, ensuring a complete copy.
+        local ic_trigger_fhr=${CICE_OUTPUT_FH[1]}
+        local ic_trigger_vdate ic_trigger_sec ic_trigger_vdstr ic_trigger
+        ic_trigger_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${ic_trigger_fhr} hours" +%Y%m%d%H)
+        ic_trigger_sec=$(to_seconds "${ic_trigger_vdate:8:2}0000")
+        ic_trigger_vdstr="${ic_trigger_vdate:0:4}-${ic_trigger_vdate:4:2}-${ic_trigger_vdate:6:2}-${ic_trigger_sec}"
+        case "${RUN}" in
+            gfs | enkfgfs | sfs | gcafs)
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${ic_trigger_vdstr}.nc"
+                ;;
+            gefs)
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh.${ic_trigger_vdstr}.nc"
+                ;;
+            *)
+                echo "FATAL ERROR: Unsupported RUN ${RUN} for iceh_ic trigger in CICE postdet" >&2
+                exit 10
+                ;;
+        esac
+        echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
+            "${ic_trigger}" \
+            "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
+            "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.ic.txt" >> "${ice_table}"
+    else
+        # Non-manager: NLN so the model writes directly into COM via symlink.
+        if [[ ! -d "${COMOUT_ICE_HISTORY}" ]]; then mkdir -p "${COMOUT_ICE_HISTORY}"; fi
+        ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
+    fi
 
-    # Link CICE forecast output files from DATAoutput/CICE_OUTPUT to COM
+    # Build CICE product table entries for each forecast hour.
+    # Column layout: local_data  local_trigger  com_data  com_log
+    #   local_trigger: next hour's output file for non-last entries, or
+    #                  fcst_done_seg for the last entry.  The manager writes
+    #                  com_log synthetically when the trigger appears.
     local source_file dest_file
-    for fhr in "${CICE_OUTPUT_FH[@]}"; do
-
-        if [[ -z ${last_fhr:-} ]]; then
-            last_fhr=${fhr}
-            continue
-        fi
-
+    local n_fhr=${#CICE_OUTPUT_FH[@]}
+    for ((idx = 1; idx < n_fhr; idx++)); do
+        fhr=${CICE_OUTPUT_FH[idx]}
+        local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
+        ((interval = fhr - prev_fhr))
         fhr3=$(printf %03i "${fhr}")
-        ((interval = fhr - last_fhr))
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
@@ -851,11 +1089,39 @@ CICE_postdet() {
                 ;;
         esac
 
-        ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
-
-        last_fhr=${fhr}
+        local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
+        local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
+        local ice_log_local ice_log_com
+        ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
+        if [[ "${use_mgr_ice}" == "YES" ]]; then
+            if [[ $((idx + 1)) -lt n_fhr ]]; then
+                # Non-last: trigger = next forecast hour's ice output on DATA.
+                local next_fhr=${CICE_OUTPUT_FH[idx + 1]}
+                local next_vdate next_sec next_vdstr
+                next_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${next_fhr} hours" +%Y%m%d%H)
+                next_sec=$(to_seconds "${next_vdate:8:2}0000")
+                next_vdstr="${next_vdate:0:4}-${next_vdate:4:2}-${next_vdate:6:2}-${next_sec}"
+                case "${RUN}" in
+                    gfs | enkfgfs | sfs | gcafs)
+                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${next_vdstr}.nc"
+                        ;;
+                    gefs)
+                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh.${next_vdstr}.nc"
+                        ;;
+                    *)
+                        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet ice trigger"
+                        exit 10
+                        ;;
+                esac
+            else
+                # Last forecast hour: trigger = forecast completion sentinel.
+                ice_log_local="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
+            fi
+            echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
+        else
+            ${NLN} "${ice_com}" "${ice_local}"
+        fi
     done
-
 }
 
 CICE_nml() {
@@ -913,6 +1179,13 @@ CICE_out() {
     fi
 }
 
+################################################################################
+# forecast_postdet_gocart.sh
+################################################################################
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC2178
+
 GOCART_rc() {
     echo "SUB ${FUNCNAME[0]}: Linking input data and copying config files for GOCART"
     # set input directory containing GOCART input data and configuration files
@@ -920,6 +1193,7 @@ GOCART_rc() {
 
     # link directory containing GOCART input dataset, if provided
     if [[ -n "${AERO_INPUTS_DIR}" ]]; then
+        #TODO: add only necessary files and remove unneeded ones to minimize data volume
         ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
         status=$?
         if [[ ${status} -ne 0 ]]; then
@@ -984,6 +1258,7 @@ GOCART_out() {
 
     for fhr in $(GOCART_output_fh); do
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+
         for file_type in "${file_types[@]}"; do
             if [[ -e "${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" ]]; then
                 echo "cpfs ${DATA}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4 ${COMOUT_CHEM_HISTORY}/gocart.${file_type}.${vdate:0:8}_${vdate:8:2}00z.nc4" >> "${cmdfile}"
