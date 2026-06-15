@@ -1,11 +1,12 @@
+#####################
+Build AWS EC2 Cluster
+#####################
+
 .. warning::
 
 	These instructions are only necessary if you wish to set up your own AWS instance to run global workflow. Anyone using an existing HPC cluster can skip this section.
 
-#####################
-Build AWS EC2 Cluster
-#####################
-The global workflow can be run in Amazon Web Services using their HPC platform product AWS Parallelcluster. There are some pre-requisites, first the user will need two software packages, the AWS Parallelcluster client version 3.13.2 and Hashicorp Packer 1.15. It is recommended that you install these on a small Amazon Linux 2 EC2 utility host (t3.micro or similar). The utility host should have connectivity in the same subnet that you are planning to use for your AWS Parallelcluster. Take note that all of our activities occur in the AWS region us-east-1. This WILL not work properly in another region (i.e. us-east-2 or us-west-1).
+The global workflow can be run in Amazon Web Services using their HPC platform product AWS Parallelcluster. There are some pre-requisites. First the user will need two software packages, the AWS Parallelcluster client version 3.13.2 and Hashicorp Packer 1.15. It is recommended that you install these on a small Amazon Linux 2 EC2 utility host (t3.micro or similar). The utility host should have connectivity in the same subnet that you are planning to use for your AWS Parallelcluster. Take note that all of our activities occur in the AWS region us-east-1. This WILL not work properly in another region (i.e. us-east-2 or us-west-1).
 
 .. info::
 
@@ -24,33 +25,33 @@ https://us-east-1.console.aws.amazon.com/ec2/home
 
 Fill in the "Launch an instance" form with the following:
 
-* Name and tags: Whatever you want (I use GW_Bootstrap)
+- Name and tags: Whatever you want (GW_Bootstrap is used in this documentation)
 
 .. figure:: ../_static/aws_instance_name.png
 
-* Application and OS Image:
-	* AMI: Amazon Linux
-		* Architecture: 64-bit (x86)
+- Application and OS Image:
+	- AMI: Amazon Linux
+	- Architecture: 64-bit (x86)
 
 .. figure:: ../_static/aws_instance_os.png
 
-* Instance type: t3.micro
-* Key pair: Click “Create new key pair”
-	* Give the key a name and click "Create key pair"
-	* This only needs to be done once. In the future, the keypair should appear in the drop-down.
+- Instance type: t3.micro
+- Key pair: Click “Create new key pair”
+	- Give the key a name and click "Create key pair"
+	- This only needs to be done once. In the future, the keypair should appear in the drop-down.
 
 .. figure:: ../_static/aws_instance_type.png
 
 .. figure:: ../_static/aws_create_keypair.png
 
-* Network settings: Leave as defaults
-* Configure storage
-	* 1x 8 GiB gp3
-	* File system: None
+- Network settings: Leave as defaults
+- Configure storage
+	- 1x 8 GiB gp3
+	- File system: None
 
 .. figure:: ../_static/aws_instance_storage.png
 
-* Advanced details: Leave as defaults
+- Advanced details: Leave as defaults
 
 When you have filled in all the settings, launch the instance using the sidebar on the right (or at the bottom, if using a narrow window):
 
@@ -75,6 +76,7 @@ Now it is time to connect to the boostrap instance to prepare and build the clus
 First, copy the key file that was downloaded in the previous step somewhere convienent. Then, use ssh to connect to the instance using the key file and the public IP with the username "ec2-user":
 
 .. code-block:: bash
+
 	ssh -i "/path/to/GW_Bootstrap.pem" ec2-user@<public_ip>
 
 Now that we are into the bootstrap instance, we need to install Packer and Parallelcluster

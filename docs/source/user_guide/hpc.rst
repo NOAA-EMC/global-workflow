@@ -124,4 +124,5 @@ Requesting restricted data access on Orion/Hercules
 Contact your PI and request access.
 
 .. note::
+
    Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.
