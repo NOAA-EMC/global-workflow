@@ -35,6 +35,7 @@ Components included as submodules:
 * **UPP** (https://github.com/NOAA-EMC/UPP): Unified Post Processor (UPP) is a submodule within UFS-WM. It is a software package designed to generate useful products from raw model output.
 
 .. note::
+
    When running the system in forecast-only mode the DA components are not needed and are hence not built.
 
 ==================================
@@ -130,6 +131,7 @@ The GDA also contains special versions of some datasets and experimental data th
 +--------+------------------------------------------------------------------------------------------------------+
 
 .. info::
+
    The provided dump on Derecho and AWS are both non-restricted, but omit the ``nr`` from the PDY directory.
 
 ***************

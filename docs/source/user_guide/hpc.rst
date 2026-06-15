@@ -82,8 +82,8 @@ HPC Helpdesks
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
 * Ursa: rdhpcs.ursa.help@noaa.gov
-* Orion:  rdhpcs.orion.help@noaa.gov
-* Hercules:  rdhpcs.hercules.help@noaa.gov
+* Orion: rdhpcs.orion.help@noaa.gov
+* Hercules: rdhpcs.hercules.help@noaa.gov
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
 * Cloud: rdhpcs.cloud.help@noaa.gov
@@ -99,20 +99,29 @@ The GFS system ingests dump data files that contain global observational data. S
 
 To request ``rstprod`` access, follow one or both of the options below depending on the platform you need access for:
 
-* Requesting restricted data access on WCOSS2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requesting restricted data access on WCOSS2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need access on WCOSS2, review restricted data policy and submit the request here:
 https://www.nco.ncep.noaa.gov/sib/restricted_data/restricted_data_sib/
 
-* Requesting restricted data access on NOAA RDHPCS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requesting restricted data access on NOAA RDHPCS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need restricted data access on NOAA RDHPCS platforms:
 
-1. Login to the NOAA AIM portal
+1. Login to the `NOAA AIM portal <https://aim.rdhpcs.noaa.gov/>`__
 2. select **Request new access to a project**
 3. Choose ``rstprod`` project
 4. Provide justification explaining why you need restricted data access
-5. Submit the request here: https://aim.rdhpcs.noaa.gov/
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requesting restricted data access on Orion/Hercules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Contact your PI and request access.
 
 .. note::
    Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.
