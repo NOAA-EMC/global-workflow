@@ -32,6 +32,9 @@ module load ve/gw/${gw_ve_ver}
 
 
 
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load ncdiag-A/${ncdiag_ver}
 module list
 ############################################################
 # CALL executable job script here

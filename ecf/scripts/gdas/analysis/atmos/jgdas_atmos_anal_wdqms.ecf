@@ -23,6 +23,9 @@ module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load python/${python_ver}
 
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load ncdiag-A/${ncdiag_ver}
 module list
 ############################################################
 # CALL executable job script here
