@@ -15,7 +15,7 @@ Table of Contents
    hpc.rst
    aws_cluster_build.rst
    globus_arch.rst
-   gfs_jobs.rst
+   jobs.rst
    gcafs.rst
    run_hpc.rst
    setup_run_csp.rst
