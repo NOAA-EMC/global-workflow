@@ -161,7 +161,7 @@ move_outputs() {
     mkdir -p "${after_run_dir}"
 
     # Write logs back to stdout if requested.
-    if [[ "${CAT_MPMD_LOGS:NO}" == "YES" ]]; then
+    if [[ "${CAT_MPMD_LOGS:-NO}" == "YES" ]]; then
         for out_file in ${out_files}; do
             echo "INFO: Contents of ${out_file}:"
             cat "${out_file}"
