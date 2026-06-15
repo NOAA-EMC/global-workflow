@@ -12,9 +12,9 @@ The global workflow can be run in Amazon Web Services using their HPC platform p
 =============================
 Create a utility AWS instance
 =============================
-First create a utility instance to bootstrap cluster creation. 
+First create a utility instance to bootstrap cluster creation.
 
-.. _a link: https://us-east-1.console.aws.amazon.com/ec2/home
+https://us-east-1.console.aws.amazon.com/ec2/home
 
 .. figure:: ../_static/set_aws_region.png
 
@@ -69,17 +69,15 @@ Now it is time to connect to the boostrap instance to prepare and build the clus
 First, copy the key file that was downloaded in the previous step somewhere convienent. Then, use ssh to connect to the instance using the key file and the public IP with the username "ec2-user":
 
 .. code-block:: bash
-
 	ssh -i "/path/to/GW_Bootstrap.pem" ec2-user@<public_ip>
 
 Now that we are into the bootstrap instance, we need to install Packer and Parallelcluster
 
 Directions on installing Hashicorp Packer and AWS Parallelcluster can both be found here:
 
-.. _a link: https://developer.hashicorp.com/packer/install
+https://developer.hashicorp.com/packer/install
 
 .. code-block:: bash
-
 	sudo yum install -y yum-utils shadow-utils
 	sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 	sudo yum install packer
@@ -89,26 +87,23 @@ Note: it is required to use the Amazon EC2 plugin in conjunction with Packer
 This can be installed by issuing the following command with Packer:
 
 .. code-block:: bash
-
-	packer plugins install github.com/hashicorp/amazon 
+	packer plugins install github.com/hashicorp/amazon
 	sudo yum install python-pip git
 
-.. _a link: https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3-pip.html
+https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3-pip.html
 
 It is recommended to set the version specific to 3.13.2
 
 .. code-block:: bash
-
 	pip install aws-parallelcluster==3.13.2
 
-Once the utility host has the appropriate build tools now the baseline image can be built. 
+Once the utility host has the appropriate build tools now the baseline image can be built.
 
 Download the configuration file templates from Github located in the following repository:
 
-.. _a link: https://github.com/NOAA-EPIC/global-workflow-AWS
+https://github.com/NOAA-EPIC/global-workflow-AWS
 
 .. code-block:: bash
-
 	git clone https://github.com/NOAA-EPIC/global-workflow-AWS.git
 	cd global-workflow-AWS
 
@@ -117,17 +112,15 @@ Update the parameter ``subnet_id`` in the configuration file ``build_da_cluster.
 It is also recommended that the screen command be installed on your utility EC2 host to ensure the terminal does not time out during the lengthy build process. This can be done using the command.
 
 .. code-block:: bash
-	
 	sudo yum install screen
 
-Once installed, start a screen by simply issuing the command “screen”. Once the current terminal is attached to a screen (this can be verified by issuing the command ``screen -ls``) now use packer to build the initial baseline image. 
+Once installed, start a screen by simply issuing the command “screen”. Once the current terminal is attached to a screen (this can be verified by issuing the command ``screen -ls``) now use packer to build the initial baseline image.
 
 Before we begin, ensure your terminal session has valid AWS CLI credentials in order to run packer in AWS. To learn more about this check out the following resources…
 
-.. _a link: https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-authentication.html
+https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-authentication.html
 
 .. code-block:: bash
-	
 	aws login --remote
 
 Copy the authentication link to a local browser, choose the correct account, then copy resulting code back to terminal.
@@ -136,22 +129,19 @@ Copy the authentication link to a local browser, choose the correct account, the
 
 Once the terminal session has been properly authenticated, you are now ready to build the initial baseline image. This can be accomplished by issuing the commands:
 
-First set the environment variable to create a logfile 
+First set the environment variable to create a logfile
 
 .. code-block:: bash
-
 	export PACKER_LOG_PATH="packer.log"
 
 Then set the environment variable to ensure the logfile is easily readable
 
 .. code-block:: bash
-
 	export PACKER_NO_COLOR=1
 
 Now begin building the initial image using the following command…
 
 .. code-block:: bash
-
 	packer build build_da_cluster.pkr.hcl
 
 This process will take almost 2 hours to complete. It is recommended that you detach from the building screen (ctrl-A + ctrl-D) and simply follow the build through the `packer.log` logfile.
@@ -170,13 +160,11 @@ Now that the initial base image build is complete, the cluster can be initialize
 Also populating the rest of the yaml configuration with the appropriate values depending on the desired configuration. Note that once again the AWS cloud region us-east-1 is being used and is recommended. Once the yaml has the appropriate configuration values the cluster can be created using the AWS Parallelcluster CLI tool. Issue the command below to create the initial cluster.
 
 .. code-block:: bash
-
 	pcluster create-cluster --region us-east-1 --cluster name <your cluster name> --cluster configuration <cluster configuration yaml name>
 
 This process should take about 20 minutes to complete. You can view the status of your cluster through the AWS Parallelcluster CLI tool by issuing the following command:
 
 .. code-block:: bash
-
 	pcluster list-clusters --region us-east-1
 
 The results should list the cluster status as CREATE_COMPLETE once the operation has successfully completed.

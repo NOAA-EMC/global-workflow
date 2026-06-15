@@ -2,7 +2,6 @@
 User's Guide
 ############
 
-
 =================
 Table of Contents
 =================
@@ -10,7 +9,7 @@ Table of Contents
 .. toctree::
    :numbered:
    :maxdepth: 2
-   
+
    background.rst
    components.rst
    hpc.rst

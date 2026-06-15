@@ -50,184 +50,31 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
 
 .. _HPC_Capabilities_Matrix:
 
-.. list-table:: Capabilities matrix by HPC
-   :header-rows: 1
-   :align: center
-
-   * - HPC
-     - Tier
-     - Coupled
-       GFS
-     - Coupled
-       GEFS
-     - Coupled
-       GCAFS
-     - Coupled
-       SFS
-     - GSI
-       DA
-     - GDASApp
-       DA
-     - Coupled
-       DA
-     - TC Tracker
-     - AWIPS
-     - MOS
-     - Fit2Obs
-     - METplus
-       Verification
-     - HPSS
-       Archiving
-   * - WCOSS2
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-   * - Ursa
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     - X
-   * - Hercules
-     - 1
-     - X
-     - X
-     -
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     -
-     - X
-     -
-     - X
-   * - Gaea C6
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     - X
-   * - Orion
-     - 2
-     - X
-     - X
-     -
-     - X
-     - X
-     - X
-     -
-     - X
-     -
-     -
-     - X
-     -
-     - X
-   * - Derecho
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     -
-   * - AWS (Native)
-     - 2
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     -
-   * - AWS (PW)
-     - 3
-     - X
-     - X
-     -
-     - X
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-   * - GCP (PW)
-     - 3
-     - X
-     - X
-     -
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-   * - Azure
-     - 3
-     - X
-     - X
-     -
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
++-----------------+------+-----+------+-------+-----+-------------------------+---------+-------+-----+---------+--------------+-----------+
+|                 |      |     |      |       |     |            DA           |    TC   |       |     |         |    METplus   |    HPSS   |
+| HPC             | Tier | GFS | GEFS | GCAFS | SFS | GSI | GDASApp | Coupled | Tracker | AWIPS | MOS | Fit2Obs | Verification | Archiving |
++=================+======+=====+======+=======+=====+=====+=========+=========+=========+=======+=====+=========+==============+===========+
+| WCOSS2          |   1  |  X  |   X  |   X   |  X  |  X  |    X    |    X    |    X    |   X   |  X  |    X    |       X      |     X     |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| Ursa            |   1  |  X  |   X  |   X   |  X  |  X  |    X    |    X    |    X    |       |     |    X    |              |     X     |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| Hercules        |   1  |  X  |   X  |       |  X  |  X  |    X    |    X    |         |       |     |    X    |              |     *     |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| Gaea C6         |   1  |  X  |   X  |   X   |  X  |  X  |    X    |    X    |    X    |       |     |    X    |              |     X     |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| Derecho         |   1  |  X  |   X  |   X   |  X  |  X  |    X    |    X    |    X    |       |     |    X    |              |           |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| AWS (native)    |   1  |  X  |   X  |   X   |  X  |  X  |    X    |    X    |    X    |       |     |    X    |              |           |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| Orion           |   1  |  X  |   X  |       |  X  |  X  |    X    |         |    X    |       |     |    X    |              |     *     |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| AWS (NOAA PW)   |   1  |  X  |   X  |       |  X  |  X  |         |         |         |       |     |         |              |           |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| GCP (NOAA PW)   |   1  |  X  |   X  |       |  X  |     |         |         |         |       |     |         |              |           |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+| Azure (NOAA PW) |   1  |  X  |   X  |       |  X  |     |         |         |         |       |     |         |              |           |
++-----------------+------+-----+------+-------+-----+-----+---------+---------+---------+-------+-----+---------+--------------+-----------+
+* HPSS archival via globus, see :doc:`globus_arch`
 
 =============
 HPC Helpdesks
@@ -254,17 +101,16 @@ To request ``rstprod`` access, follow one or both of the options below depending
 
 * Requesting restricted data access on WCOSS2
 
-If you need access on WCOSS2, review restricted data policy and submit the request here: 
+If you need access on WCOSS2, review restricted data policy and submit the request here:
 https://www.nco.ncep.noaa.gov/sib/restricted_data/restricted_data_sib/
-
 
 * Requesting restricted data access on NOAA RDHPCS
 
-If you need restricted data access on NOAA RDHPCS platforms: 
+If you need restricted data access on NOAA RDHPCS platforms:
 
 1. Login to the NOAA AIM portal
-2. select **Request new access to a project** 
-3. Choose ``rstprod`` project 
+2. select **Request new access to a project**
+3. Choose ``rstprod`` project
 4. Provide justification explaining why you need restricted data access
 5. Submit the request here: https://aim.rdhpcs.noaa.gov/
 
