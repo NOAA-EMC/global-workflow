@@ -60,181 +60,182 @@ These jobs are run only in development mode and examples include:
   - **cleanup**: removes temporary or intermediate files
 
 A **comprehensive list of jobs run in the GFS configuration** is listed in the following table.
+
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
 | JOB NAME            | PURPOSE                                                                                                               |
 +=====================+=======================================================================================================================+
 | fetch               | Fetch initial conditions from HPSS                                                                                    |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| fetchatmanlbias     | Fetch atmosphere observation bias from HPSS
+| fetchatmanlbias     | Fetch atmosphere observation bias from HPSS                                                                           |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| stage_ic            | Stage initial conditions in COM
+| stage_ic            | Stage initial conditions in COM                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| prep_sfc            | Prepare surface observations for DA
+| prep_sfc            | Prepare surface observations for DA                                                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| prep                | Prepare atmosphere observations for DA
+| prep                | Prepare atmosphere observations for DA                                                                                |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| prepatmanlbias      | Prepare atmosphere observation bias for DA
+| prepatmanlbias      | Prepare atmosphere observation bias for DA                                                                            |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| anal                | Runs GSI analysis for atmosphere
+| anal                | Runs GSI analysis for atmosphere                                                                                      |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| sfcanl_gcycle       | Runs surface analysis
-| esfc_gcycle         |
+| sfcanl_gcycle       | Runs surface analysis                                                                                                 |
+| esfc_gcycle         |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| sfcanl_regrid       | Regrids surface analysis
-| esfc_regrid         |
+| sfcanl_regrid       | Regrids surface analysis                                                                                              |
+| esfc_regrid         |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
 | analcalc            | Add the analysis increments to previous cycle’s forecasts to produce atmospheric analysis files. Produces surface     |
 |                     | analysis file on Gaussian grid                                                                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmanlupp           | Create grib files on gaussian grid for atmosphere analysis
+| atmanlupp           | Create grib files on gaussian grid for atmosphere analysis                                                            |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmanlprod          | Regrid atmosphere analysis grib files to lat-lon grids
+| atmanlprod          | Regrid atmosphere analysis grib files to lat-lon grids                                                                |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
 | analdiag            | Create netCDF diagnostic files containing observation values, innovation (O-F), error, quality control, as well as    |
 | ediag               | other analysis-related quantities (cnvstat.tar, radstat.tar, ozstat.tar files)                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| eobs                | Data selection for EnKF update
+| eobs                | Data selection for EnKF update                                                                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| echgres             | Regrid forecast to ensemble resolution for EnKF recentering
+| echgres             | Regrid forecast to ensemble resolution for EnKF recentering                                                           |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| ecen                | Recenter ensemble around analysis
+| ecen                | Recenter ensemble around analysis                                                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| eupd                | Perform EnKF update
+| eupd                | Perform EnKF update                                                                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| verfozn             | Extract and validate data for the ozone monitor DA package
+| verfozn             | Extract and validate data for the ozone monitor DA package                                                            |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| verfrad             | Extract and validate data for the radiation monitor DA package
+| verfrad             | Extract and validate data for the radiation monitor DA package                                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| vminmon             | Extract and validate GSI normalization diagnostic
+| vminmon             | Extract and validate GSI normalization diagnostic                                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| fit2obs             | Verfies analysis against observations
+| fit2obs             | Verfies analysis against observations                                                                                 |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| anlstat             | Produce summary performance statistics for analysis
+| anlstat             | Produce summary performance statistics for analysis                                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmanlinit          | Initialize JEDI-based atmosphere data assimilation
-| atmensanlinit       |
+| atmanlinit          | Initialize JEDI-based atmosphere data assimilation                                                                    |
+| atmensanlinit       |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmanlvar           | Run JEDI-based atmosphere variational assimilation
+| atmanlvar           | Run JEDI-based atmosphere variational assimilation                                                                    |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmanlfv3inc        | Calculate JEDI-based atmosphere analysis increment
+| atmanlfv3inc        | Calculate JEDI-based atmosphere analysis increment                                                                    |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmanlfinal         | Complete JEDI-based atmosphere analysis by copying results back to COM
+| atmanlfinal         | Complete JEDI-based atmosphere analysis by copying results back to COM                                                |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmensanlobs        | Data selection for EnKF update using JEDI
+| atmensanlobs        | Data selection for EnKF update using JEDI                                                                             |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmensanlsol        | Run JEDI LETKF in solver mode
+| atmensanlsol        | Run JEDI LETKF in solver mode                                                                                         |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmensanlletkf      | Run JEDI-based LETKF
+| atmensanlletkf      | Run JEDI-based LETKF                                                                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmensanlfv3inc     | Create FV3 ensemble increments (JEDI-based)
+| atmensanlfv3inc     | Create FV3 ensemble increments (JEDI-based)                                                                           |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmensanlfinal      | Finalize JEDI-based analysis by copying outputs to COM
+| atmensanlfinal      | Finalize JEDI-based analysis by copying outputs to COM                                                                |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| ecen_fv3jedi        | Recenter ensemble around analysis using JEDI
+| ecen_fv3jedi        | Recenter ensemble around analysis using JEDI                                                                          |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| analcalc_fv3jedi    | Add the JEDI-based analysis increments to previous cycle’s forecasts to produce atmospheric analysis files
+| analcalc_fv3jedi    | Add the JEDI-based analysis increments to previous cycle’s forecasts to produce atmospheric analysis files            |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| aerosol_init        | Prepares aerosol inputs
+| aerosol_init        | Prepares aerosol inputs                                                                                               |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| aeroanlgenb         | Generate background error covariances for aerosol data assimilation
+| aeroanlgenb         | Generate background error covariances for aerosol data assimilation                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| aeroanlinit         | Initialize aerosol data assimilation (JEDI-based)
+| aeroanlinit         | Initialize aerosol data assimilation (JEDI-based)                                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| aeroanlvar          | Run aerosol variational assimilation (JEDI-based)
+| aeroanlvar          | Run aerosol variational assimilation (JEDI-based)                                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| aeroanlfinal        | Complete aerosol analysis by copying results back to COM (JEDI-based)
+| aeroanlfinal        | Complete aerosol analysis by copying results back to COM (JEDI-based)                                                 |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| snowanl             | Run snow analysis (JEDI-based)
-| esnowanl            |
+| snowanl             | Run snow analysis (JEDI-based)                                                                                        |
+| esnowanl            |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| prepoceanobs        | Prepare ocean observations for data assimilation (JEDI-based)
+| prepoceanobs        | Prepare ocean observations for data assimilation (JEDI-based)                                                         |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marinebmatinit      | Initialize background error covariance for marine data assimilation (JEDI-based)
+| marinebmatinit      | Initialize background error covariance for marine data assimilation (JEDI-based)                                      |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marinebmat          | Update background error covariance for marine data assimilation (JEDI-based)
+| marinebmat          | Update background error covariance for marine data assimilation (JEDI-based)                                          |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marineanlinit       | Initialize marine data assimilation (JEDI-based)
+| marineanlinit       | Initialize marine data assimilation (JEDI-based)                                                                      |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marineanlletkf      | Run LETKF phase of marine data assimilation (JEDI-based)
+| marineanlletkf      | Run LETKF phase of marine data assimilation (JEDI-based)                                                              |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marineanlvar        | Run variational phase of marine data assimilation (JEDI-based)
+| marineanlvar        | Run variational phase of marine data assimilation (JEDI-based)                                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marineanlecen       | Recenter ensemble around marine analysis (JEDI-based)
+| marineanlecen       | Recenter ensemble around marine analysis (JEDI-based)                                                                 |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marineanlchkpt      | Insert sea ice analysis into restart or creates MOM6 IAU increment
+| marineanlchkpt      | Insert sea ice analysis into restart or creates MOM6 IAU increment                                                    |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| marineanlfinal      | Complete marine analysis by copying results back to COM (JEDI-based)
+| marineanlfinal      | Complete marine analysis by copying results back to COM (JEDI-based)                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| waveinit            | Create wave model definition files
+| waveinit            | Create wave model definition files                                                                                    |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| waveprep            | Prepares wave inputs
+| waveprep            | Prepares wave inputs                                                                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| fcst                | Run forecast
-| efcs                |
+| fcst                | Run forecast                                                                                                          |
+| efcs                |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmupp              | Create grib files on gaussian grid for atmosphere forecast
-| epos                |
+| atmupp              | Create grib files on gaussian grid for atmosphere forecast                                                            |
+| epos                |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| goesupp             | Create grib files on gaussian grid for special GOES variables for FAA
+| goesupp             | Create grib files on gaussian grid for special GOES variables for FAA                                                 |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| atmos_prod          | Regrid atmosphere forecast grib files to lat-lon grids
+| atmos_prod          | Regrid atmosphere forecast grib files to lat-lon grids                                                                |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| ocean_prod          | Regrid ocean forecast
+| ocean_prod          | Regrid ocean forecast                                                                                                 |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| ice_prod            | Regrid ice forecast
+| ice_prod            | Regrid ice forecast                                                                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| wavepostsbs         | Create gridded wave output from forecast
+| wavepostsbs         | Create gridded wave output from forecast                                                                              |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| wavepostpnt         | Create wave forecast output and bulletins at specific points (e.g. buoys)
+| wavepostpnt         | Create wave forecast output and bulletins at specific points (e.g. buoys)                                             |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| wavepostbndpnt      | Create wave forecast output at specific points in boundary waters
+| wavepostbndpnt      | Create wave forecast output at specific points in boundary waters                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| wavepostbndpntbll   | Create bulletins for wave forecast output in boundary waters
+| wavepostbndpntbll   | Create bulletins for wave forecast output in boundary waters                                                          |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| wavegempak          | Create gempak files for wave grids
+| wavegempak          | Create gempak files for wave grids                                                                                    |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| waveawipsgridded    | Create AWIPS products for gridded wave output
+| waveawipsgridded    | Create AWIPS products for gridded wave output                                                                         |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| waveawipsbulls      | Create AWIPS products for wave bulletins
+| waveawipsbulls      | Create AWIPS products for wave bulletins                                                                              |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| postsnd             | Produce forecast model soundings at select locations
+| postsnd             | Produce forecast model soundings at select locations                                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| fbwind              | Create aviation products for Hawai'i and other Pacific locations
+| fbwind              | Create aviation products for Hawai'i and other Pacific locations                                                      |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| awips_20km_1p0deg   | Regrid forecasts to 20-km and 1-deg AWIPS grids
+| awips_20km_1p0deg   | Regrid forecasts to 20-km and 1-deg AWIPS grids                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| npoess_pgrb2_0p5deg | Generate grib files with simluated NPOESS variables
+| npoess_pgrb2_0p5deg | Generate grib files with simluated NPOESS variables                                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| gempak              | Converts atmosphere forecast output to gempak format
+| gempak              | Converts atmosphere forecast output to gempak format                                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| gempakmeta          | Create gempak meta files for atmosphere gempak files
+| gempakmeta          | Create gempak meta files for atmosphere gempak files                                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| gempakmetancdc      | Create gempak meta files for atmosphere gempak over North America
+| gempakmetancdc      | Create gempak meta files for atmosphere gempak over North America                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| gempakncdcupapgif   | Generate gempak skew-T diagrams
+| gempakncdcupapgif   | Generate gempak skew-T diagrams                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| gempakpgrb2spec     | Generate gempak files for simulated NPOESS products
+| gempakpgrb2spec     | Generate gempak files for simulated NPOESS products                                                                   |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| tracker             | Run tropical cyclone tracker on forecast
+| tracker             | Run tropical cyclone tracker on forecast                                                                              |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| genesis             | Run tropical cyclone genesis
+| genesis             | Run tropical cyclone genesis                                                                                          |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| genesis_fsu         | Run tropical cyclone genesis using FSU method
+| genesis_fsu         | Run tropical cyclone genesis using FSU method                                                                         |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| metp                | Run forecast verification using MET-Plus
+| metp                | Run forecast verification using MET-Plus                                                                              |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| arch_vrfy           | Archive select files from the deterministic model and cleans up older data
+| arch_vrfy           | Archive select files from the deterministic model and cleans up older data                                            |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| arch_tars           | Back up the COM data structure
+| arch_tars           | Back up the COM data structure                                                                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| globus_arch         | Send the tarballs generated by arch_tars to HPSS via globus
-| globus_earc         |
+| globus_arch         | Send the tarballs generated by arch_tars to HPSS via globus                                                           |
+| globus_earc         |                                                                                                                       |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| earc_vrfy           | Archive grib files for ensemble mean verification
+| earc_vrfy           | Archive grib files for ensemble mean verification                                                                     |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| earc_tars           | Archive ensemble member restarts into tarballs
+| earc_tars           | Archive ensemble member restarts into tarballs                                                                        |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
-| cleanup             | Remove data from COM that is no longer needed
+| cleanup             | Remove data from COM that is no longer needed                                                                         |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------+
 
 ============================================
