@@ -614,7 +614,7 @@ WW3_postdet() {
     # Build product tables for the forecast manager.
     local use_mgr_ww3="NO"
     case "${RUN}" in
-        gfs | gdas | enkfgdas) use_mgr_ww3="YES" ;;
+        gfs | gdas) use_mgr_ww3="YES" ;;
             # TODO: enable forecast manager for gefs, sfs, gcafs once tested
             # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
         *) ;;
