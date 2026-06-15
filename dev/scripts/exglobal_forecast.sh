@@ -176,6 +176,11 @@ fi
 UFS_configure
 echo "MAIN: Name lists and model configuration written"
 
+# check for and log dead links in ${DATA} before running executables
+if [[ ${CHECK_DEAD_LINKS} == "YES" ]]; then
+    "${HOMEglobal}/dev/ush/check_dead_links.sh" "${DATA}"
+fi
+
 #------------------------------------------------------------------
 # run the executable
 
