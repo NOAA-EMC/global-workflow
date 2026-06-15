@@ -14,6 +14,7 @@ Table of Contents
    background.rst
    components.rst
    hpc.rst
+   aws_cluster_build.rst
    globus_arch.rst
    gfs_jobs.rst
    gcafs.rst
