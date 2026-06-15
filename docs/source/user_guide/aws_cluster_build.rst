@@ -1,5 +1,4 @@
-.. _warning::
-
+.. warning::
 	These instructions are only necessary if you wish to set up your own AWS instance to run global workflow. Anyone using an existing HPC cluster can skip this section.
 
 #####################
@@ -7,8 +6,7 @@ Build AWS EC2 Cluster
 #####################
 The global workflow can be run in Amazon Web Services using their HPC platform product AWS Parallelcluster. There are some pre-requisites, first the user will need two software packages, the AWS Parallelcluster client version 3.13.2 and Hashicorp Packer 1.15. It is recommended that you install these on a small Amazon Linux 2 EC2 utility host (t3.micro or similar). The utility host should have connectivity in the same subnet that you are planning to use for your AWS Parallelcluster. Take note that all of our activities occur in the AWS region us-east-1. This WILL not work properly in another region (i.e. us-east-2 or us-west-1).
 
-.. _info::
-
+.. info::
 	To proceed you will need to have an paid AWS account. Free accounts will not be able to proceed past building the cluster.
 
 =============================
