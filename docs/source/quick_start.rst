@@ -40,7 +40,7 @@ You will also need to know what your HPC account for the job scheduler is for th
 
 .. warning::
 
-    If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :doc:`user_guide/hpc`.
+    If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :doc:`restricted_data`.
 
 ================================
 1. Clone the official repository

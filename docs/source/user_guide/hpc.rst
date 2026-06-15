@@ -242,6 +242,8 @@ HPC Helpdesks
 * Cloud: rdhpcs.cloud.help@noaa.gov
 * Derecho: https://rchelp.ucar.edu
 
+.. _restricted_data:
+
 ======================
 Restricted Data Access
 ======================
