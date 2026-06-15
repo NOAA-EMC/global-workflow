@@ -11,7 +11,7 @@ The workflow can be executed in two modes:
 
 Because cycled mode requires a number of DA supporting repositories, the setup procedure differ slightly between the two modes for the initial build stage.
 
-For guidance on testing individual workflow tasks using the CTest framework, refer to :doc:`../Contributor_Guide/testing`.
+For guidance on testing individual workflow tasks using the CTest framework, refer to :doc:`../contributor_guide/testing`.
 
 .. toctree::
 

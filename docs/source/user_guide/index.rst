@@ -11,7 +11,7 @@ Table of Contents
    :numbered:
    :maxdepth: 2
    
-   Background.rst
+   background.rst
    components.rst
    hpc.rst
    globus_arch.rst

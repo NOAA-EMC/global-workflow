@@ -4,6 +4,10 @@ Quick Start Guide
 
 Run your first global workflow (GW) test case in no time!
 
+.. info::
+
+    If you wish to use your own AWS instance, you need to complete the :doc:`user_guide/aws_cluster_build` instructions first.
+
 ==========================================
 0. Determine where you will put your stuff
 ==========================================
@@ -36,7 +40,7 @@ You will also need to know what your HPC account for the job scheduler is for th
 
 .. warning::
 
-    If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :doc:`User_Guide/hpc`.
+    If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :doc:`user_guide/hpc`.
 
 ================================
 1. Clone the official repository
