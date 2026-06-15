@@ -22,10 +22,33 @@ module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
+export USE_CFP=YES
 module load python/${python_ver}
+module use /apps/dev/modulefiles
+module load ve/gw/${gw_ve_ver}
 module load gempak/${gempak_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf_ver}
+module load perl/${perl_ver}
+module load libjpeg/${libjpeg_ver}
+module load udunits/${udunits_ver}
+module load gsl/${gsl_ver}
+module load cdo/${cdo_ver}
+module load imagemagick/${imagemagick_ver}
+module load hdf5-D/${hdf5_ver}
+module load pnetcdf-D/${pnetcdf_ver}
+module load netcdf-D/${netcdf_ver}
+module load esmf-D/${esmf_ver}
+module load nco/${nco_ver}
+module load grib_util/${grib_util_ver}
+module load bufr_dump/${bufr_dump_ver}
+module load util_shared/${util_shared_ver}
+module load g2tmpl/${g2tmpl_ver}
+module load ncdiag-A/${ncdiag_ver}
+module load crtm/${crtm_ver}
+module load wgrib2/${wgrib2_ver}
+module use /apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304
+export HPC_OPT=/apps/ops/para/libs
+module load met/${met_ver}
+module load metplus/${metplus_ver}
 
 module list
 ############################################################
