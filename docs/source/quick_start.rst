@@ -6,7 +6,7 @@ Run your first global workflow (GW) test case in no time!
 
 .. info::
 
-    If you wish to use your own AWS instance, you need to complete the :doc:`user_guide/aws_cluster_build` instructions first.
+    If you wish to use your own AWS instance, you need to complete the :doc:`aws_setup` instructions first.
 
 ==========================================
 0. Determine where you will put your stuff
@@ -267,7 +267,7 @@ Available low-resolution cases (in the ``dev/ci/cases/pr`` directory):
 | C96_gcafs_cycled_noDA    | gcafs           |     X      |     X      |            |     X      |     X      |     X      |
 +--------------------------+-----------------+------------+------------+------------+------------+------------+------------+
 | C96mx100_S2S             | sfs             |     X      |     X      |     X      |     X      |     X      |     X      |
-+--------------------------+-----------------+------------+------------+------------+------------+------------+------------+ 
++--------------------------+-----------------+------------+------------+------------+------------+------------+------------+
 
 Instead of specifying tests with ``-y``, you can also instead run all tests in a family with the following options (multiple can be specified):
 
