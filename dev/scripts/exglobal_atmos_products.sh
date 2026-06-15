@@ -38,7 +38,11 @@ fi
 IFS=':' read -ra grids <<< "${grid_string}"
 
 # Files needed by ${USHglobal}/interp_atmos_master.sh
-MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
+if [[ "${fhr3}" == "analysis" ]]; then
+    MASTER_FILE="${COMIN_ATMOS_ANALYSIS}/${PREFIX}master.${fhr3}.grib2"
+else
+    MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
+fi
 
 # Create an index file for the master
 ${WGRIB2} -s "${MASTER_FILE}" > "${MASTER_FILE}.idx"
