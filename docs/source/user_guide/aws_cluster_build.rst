@@ -1,4 +1,5 @@
-.. aws_setup:
+.. _aws_setup:
+
 #####################
 Build AWS EC2 Cluster
 #####################
