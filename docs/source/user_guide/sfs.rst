@@ -8,7 +8,7 @@ Overview
 
 The Seasonal Forecast System (SFS) produces a coupled global ensemble forecast for use in seasonal forecasting.
 
-.. info::
+.. note::
 
 	The SFS is still undergoing intial development and some key features are still incomplete.
 

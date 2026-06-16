@@ -4,13 +4,13 @@ Quick Start Guide
 
 Run your first global workflow (GW) test case in no time!
 
-.. info::
+.. note::
 
     If you wish to use your own AWS instance, you need to complete the :ref:`_aws_setup` instructions first.
 
-==========================================
-0. Determine where you will put your stuff
-==========================================
+=======================================
+Determine where you will put your stuff
+=======================================
 
 Determine where is appropriate to set up your experiments on your chosen HPC and project. You will need two locations: a place to store the code (hereafter ``$MY_SAVE``) and a place to put your experiment directory and output (hereafter ``$MY_NOSCRUB``). A third place (``$STMP``) will be used for temporary run directories. This last location is already defined in scripts, though you may wish to change it later.
 
@@ -42,9 +42,9 @@ You will also need to know what your HPC account for the job scheduler is for th
 
     If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :ref:`restricted_data`.
 
-================================
-1. Clone the official repository
-================================
+=============================
+Clone the official repository
+=============================
 
 .. code-block:: bash
 
@@ -56,9 +56,9 @@ You can change ``tutorial`` to be anything you wish.
 
 This will checkout the current develop branch of GW, including all its sub-components.
 
-==========================================
-2. Build and install for forecast-only GFS
-==========================================
+=======================================
+Build and install for forecast-only GFS
+=======================================
 
 .. code-block:: bash
 
@@ -78,9 +78,9 @@ This builds the executables necessary to run your first test case and then creat
 
     You can build on the login node instead by omitting the ``-cA <hpc_account>``.
 
-=====================================================
-3. Create your experiment directory for the test case
-=====================================================
+==================================================
+Create your experiment directory for the test case
+==================================================
 
 .. code-block:: bash
 
@@ -91,6 +91,7 @@ This builds the executables necessary to run your first test case and then creat
 Again, ``tutorial`` here can be changed to anything you wish (and does not need to match what you used for the code directory).
 
 This will create two directories in ``${MY_NOSCRUB}/tutorial``:
+
 - ``COMROOT``: where all the output will be stored
 - ``EXPROOT``: where all the experiment directories will be stored.
 
@@ -98,13 +99,13 @@ In each, there will be a ``C48_ATM`` directory corresponding to the C48_ATM case
 
 This command will also print out a crontab line to run the experiment. Copy that, we will be using it in the next step.
 
-============================
-4. Set up cron to run rocoto
-============================
+=========================
+Set up cron to run rocoto
+=========================
 
 Open up crontab in edit mode (``crontab -e``). On some systems, you will need to be on a certain or special login node to do this. Paste the line printed from the last step into your crontab, then save and exit.
 
-.. info::
+.. note::
 
     On Gaea C6, you will need to use the scrontab utility instead of crontab. Please refer to the :ref:`scrontab` section for additional needed settings.
 
@@ -112,9 +113,9 @@ This will set up rocoto to run every five minutes. Rocoto is the workflow manage
 
 It is recommended that you do not set the update frequency shorter than five minutes if you are on a shared HPC resource, as that can overload the system and make sysadmins unhappy.
 
-==============================
-5. Monitor experiment progress
-==============================
+===========================
+Monitor experiment progress
+===========================
 
 To view the progress of your jobs, use the rocotostat command:
 
@@ -142,15 +143,15 @@ Alternatively, OMD has developed a tool to called rocoto viewer which will provi
 
 See also :doc:`user_guide/monitor_rocoto`.
 
-=====================
-6. Checking log files
-=====================
+==================
+Checking log files
+==================
 
 Log files for each job will be located in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_ATM/logs/2021032312``. The file names match the name of the job as listed in rocoto, with the suffix ``.log`` (e.g. ``gfs_stage_ic.log``, ``gfs_fcst_seg0.log``, etc.). If a job has been rerun, a number will be appended to the filename with ascending age (``gfs_stage_ic.log.0`` would be the previous run, ``gfs_stage_ic.log.1`` would be the run before that, etc.).
 
-==================
-7. Checking output
-==================
+===============
+Checking output
+===============
 
 Output will be placed in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_ATM``. Output is organized into a hierarchical structure:
 
@@ -200,12 +201,12 @@ For this experiment, once complete you should see:
 +-----------+-------------------------------------------------------+
 | products  | derived products typically published                  |
 +-----------+-------------------------------------------------------+
-| * Not present for C48_ATM case                                    |
+| | * Not present for C48_ATM case                                  |
 +-------------------------------------------------------------------+
 
-=================
-8. Try more cases
-=================
+==============
+Try more cases
+==============
 
 Now that you have successfully run your first case, you are ready to try more cases.
 
@@ -229,7 +230,7 @@ To run many of the other cases, you will first need to rebuild with additional c
 | all    | build everything                                          |
 +--------+-----------------------------------------------------------+
 
-For a full list of what is built for each option, see ref:`_build_options`.
+For a full list of what is built for each option, see :ref:`_build_options`.
 
 You can run a different test case(s) by changing what you pass into ``generate_workflows.sh`` with the ``-y`` option. By default, the script will look in the ``dev/ci/cases/pr`` directory for the case. You can change this by passing a different directory with the ``-Y`` option. You can also specify multiple cases by placing quotes around the argument and a space between each case (e.g. ``-y "C48_ATM C96_atm3DVar"``).
 

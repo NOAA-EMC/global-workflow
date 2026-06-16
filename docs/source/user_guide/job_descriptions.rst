@@ -27,8 +27,8 @@ Short descriptions of every job available in the workflow are listed below, alon
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | anal                | Run GSI analysis for atmosphere                                                                    |   X   |       |       |       |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
-| | sfcanl_gcycle     | Run surface analysis                                                                               | | X   |       |       |   X   |
-| | esfc_gcycle       |                                                                                                    | | X   |       |       |       |
+| | sfcanl_gcycle     | Run surface analysis                                                                               | | X   |       |       | | X   |
+| | esfc_gcycle       |                                                                                                    | | X   |       |       | |     |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | | sfcanl_regrid     | Regrid surface analysis                                                                            | | X   |       |       |       |
 | | esfc_regrid       |                                                                                                    | | X   |       |       |       |
@@ -61,8 +61,8 @@ Short descriptions of every job available in the workflow are listed below, alon
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | anlstat             | Produce summary performance statistics for analysis                                                |   X   |       |       |   X   |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
-| | atmanlinit        | Initialize JEDI-based atmosphere data assimilation                                                 | | X   |       |       |   X   |
-| | atmensanlinit     |                                                                                                    | | X   |       |       |       |
+| | atmanlinit        | Initialize JEDI-based atmosphere data assimilation                                                 | | X   |       |       | | X   |
+| | atmensanlinit     |                                                                                                    | | X   |       |       | |     |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | atmanlvar           | Run JEDI-based atmosphere variational assimilation                                                 |   X   |       |       |   X   |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
@@ -125,8 +125,8 @@ Short descriptions of every job available in the workflow are listed below, alon
 | | fcst              | Run forecast                                                                                       | | X   | | X   | | X   | | X   |
 | | efcs              |                                                                                                    | | X   | | X   | | X   | | X   |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
-| | atmupp            | Create grib files on Gaussian grid for atmosphere forecast                                         | | X   |       |       |   X   |
-| | epos              |                                                                                                    | | X   |       |       |       |
+| | atmupp            | Create grib files on Gaussian grid for atmosphere forecast                                         | | X   |       |       | | X   |
+| | epos              |                                                                                                    | | X   |       |       | |     |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | goesupp             | Create grib files on Gaussian grid for special GOES variables for FAA                              |   X   |       |       |   X   |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+

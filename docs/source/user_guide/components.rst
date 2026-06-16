@@ -132,7 +132,7 @@ The GDA also contains special versions of some datasets and experimental data th
 |        | Not always archived.                                                                                 |
 +--------+------------------------------------------------------------------------------------------------------+
 
-.. info::
+.. note::
 
    The provided dump on Derecho and AWS are both non-restricted, but omit the ``nr`` from the PDY directory.
 

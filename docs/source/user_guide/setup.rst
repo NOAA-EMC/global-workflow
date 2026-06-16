@@ -244,7 +244,7 @@ Where test_case is the file name in ``dev/ci/cases/pr`` (with or without the ``.
 
 This will generate two directories in ``/path/for/output``: ``EXPDIR`` and ``COMROOT``. Inside each will be a test_case directory for the test case selected. The EXPDIR is where your experiment and workflow are generated. Output will then be placed in COMROOT.
 
-.. info::
+.. note::
 
    The path to output is known as the RUNTESTS directory
 
@@ -268,7 +268,7 @@ If you wish to run test cases from a different directory (either another in ``de
 
    ./generate_workflows.sh -A <hpc_account> -Y /path/to/cases -y 'test_case_1 test_case_2' /path/for/output
 
-.. info::
+.. note::
 
    There is currently no way to combine cases from multiple directories at the same time
 

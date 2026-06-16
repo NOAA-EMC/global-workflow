@@ -25,33 +25,33 @@ https://us-east-1.console.aws.amazon.com/ec2/home
 
 Fill in the "Launch an instance" form with the following:
 
-\* Name and tags: Whatever you want (GW_Bootstrap is used in this documentation)
+* Name and tags: Whatever you want (GW_Bootstrap is used in this documentation)
 
 .. figure:: ../_static/aws_instance_name.png
 
-\* Application and OS Image:
-	\* AMI: Amazon Linux
-	\* Architecture: 64-bit (x86)
+* Application and OS Image:
+	* AMI: Amazon Linux
+	* Architecture: 64-bit (x86)
 
 .. figure:: ../_static/aws_instance_os.png
 
-\* Instance type: t3.micro
-\* Key pair: Click “Create new key pair”
-	\* Give the key a name and click "Create key pair"
-	\* This only needs to be done once. In the future, the keypair should appear in the drop-down.
+* Instance type: t3.micro
+* Key pair: Click “Create new key pair”
+	* Give the key a name and click "Create key pair"
+	* This only needs to be done once. In the future, the keypair should appear in the drop-down.
 
 .. figure:: ../_static/aws_instance_type.png
 
 .. figure:: ../_static/aws_create_keypair.png
 
-\* Network settings: Leave as defaults
-\* Configure storage
-	\* 1x 8 GiB gp3
-	\* File system: None
+* Network settings: Leave as defaults
+* Configure storage
+	* 1x 8 GiB gp3
+	* File system: None
 
 .. figure:: ../_static/aws_instance_storage.png
 
-\* Advanced details: Leave as defaults
+* Advanced details: Leave as defaults
 
 When you have filled in all the settings, launch the instance using the sidebar on the right (or at the bottom, if using a narrow window):
 
