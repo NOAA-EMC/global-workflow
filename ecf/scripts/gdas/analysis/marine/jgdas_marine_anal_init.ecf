@@ -37,4 +37,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_marine_anal_init
+
+PURPOSE: Initializes marine DA for the GDAS cycle. Same shared
+JGLOBAL_MARINE_ANALYSIS_INITIALIZE J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_anl_init. Check background restarts
+from previous GDAS cycle forecast and observation files from
+prepoceanobs.
+
 %end

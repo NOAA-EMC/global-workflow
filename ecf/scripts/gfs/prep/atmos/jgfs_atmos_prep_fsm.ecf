@@ -37,4 +37,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_atmos_prep_fsm
+
+PURPOSE: File/Segment Manager for atmospheric prep -- monitors prep execution and
+releases dependent tasks.
+
+TROUBLESHOOTING
+
+FSM coordination job. Rarely fails on its own. If stuck, check prep task
+status. Long walltime (6hr) is intentional wait time. If prep completes
+but FSM does not release, check ecFlow communication.
+
 %end

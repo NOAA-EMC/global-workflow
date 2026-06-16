@@ -37,4 +37,19 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_anal
+
+PURPOSE: GDAS atmospheric analysis -- GSI Hybrid-EnKF. 100 nodes. THE primary DA
+cycle running every 6 hours. Provides ICs for both GDAS and GFS
+forecasts.
+
+TROUBLESHOOTING
+
+Same as GFS atmos_anal but MORE CRITICAL -- GDAS analysis failure breaks
+the entire DA cycling. This job requires enormous amounts of
+observational data, the full EnKF ensemble, and GDAS background. Many
+upstream failures can cascade here. Call on-call staff unless failure is
+immediately obvious (downed node, filesystem crash). Check GSI stdout
+fort.220 for minimization convergence.
+
 %end

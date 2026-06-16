@@ -37,5 +37,18 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_gempak_meta
 
+PURPOSE: Generates GEMPAK metafiles (pre-rendered weather charts: jet stream,
+thickness, precipitation panels). Single-instance task looping
+internally over hours.
+
+TROUBLESHOOTING
+
+Very long walltime (6hr) because it loops through all forecast hours
+generating plots. If it fails, check which internal hour caused the
+problem in stdout. Depends on GEMPAK grid files from gempak_master. If
+those are missing, metafile generation fails. MPI-parallel GEMPAK
+processes can hang on bad input.
+
+%end

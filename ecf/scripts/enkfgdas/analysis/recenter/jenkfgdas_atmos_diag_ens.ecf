@@ -37,4 +37,14 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_atmos_diag_ens
+
+PURPOSE: EnKF ensemble diagnostics -- creates diagnostic files for ensemble
+analysis members.
+
+TROUBLESHOOTING
+
+Depends on EnKF update (eupd) completion. If update failed, no
+diagnostics to produce. Lightweight job. Non-blocking for forecast path.
+
 %end

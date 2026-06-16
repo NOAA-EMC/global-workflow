@@ -37,5 +37,20 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_fcst
 
+PURPOSE: Runs the 16-day (384-hour) coupled UFS Weather Model
+(FV3+MOM6+CICE6+WW3) deterministic GFS forecast. 295 nodes = 37760 MPI
+ranks. THE critical job.
+
+TROUBLESHOOTING
+
+Most complex job in the suite. Failures can be model instability (CFL
+violation, NaN in dynamics), MPI errors (node failures, interconnect),
+missing restart/IC files, or walltime exceeded. Check model stdout
+(logf.*) for FATAL messages. Check for downed compute nodes. If model
+blows up early, check analysis quality. Expert assistance typically
+needed -- call on-call staff unless failure is obvious (downed node,
+filesystem crash).
+
+%end

@@ -35,4 +35,14 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_prep
+
+PURPOSE: GDAS atmospheric observation prep. Same structure as GFS prep -- calls
+prep.sh Rocoto card.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS atmos_prep. Critical for GDAS analysis.
+Check observation data feed timeliness.
+
 %end

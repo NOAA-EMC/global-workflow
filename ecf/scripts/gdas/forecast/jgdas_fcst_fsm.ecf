@@ -36,4 +36,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_fcst_fsm
+
+PURPOSE: GDAS Forecast Segmentation Manager -- coordinates multi-segment GDAS
+9-hour forecast execution.
+
+TROUBLESHOOTING
+
+FSM coordination job. Shorter walltime (40min) vs GFS (6hr) reflecting
+shorter GDAS forecast. If stuck, check jgdas_fcst status. FSM itself
+rarely fails.
+
 %end

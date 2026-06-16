@@ -40,5 +40,18 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK enkfgdas_fcst_master
 
+PURPOSE: EnKF ensemble member forecast -- runs 9-hour coupled UFS for a single
+ensemble member. 8 nodes per member. Per-member _master template (80
+members).
+
+TROUBLESHOOTING
+
+Same UFS model as deterministic but smaller scale. Failures per-member:
+check model stdout for that ENSMEM. MPI errors, node failures, or model
+instability. If multiple members fail simultaneously, suspect systemic
+issue (filesystem, interconnect). Individual member failures are
+tolerable if enough members complete for EnKF update.
+
+%end

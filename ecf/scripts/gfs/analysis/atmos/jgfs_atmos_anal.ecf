@@ -37,5 +37,19 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_anal
 
+PURPOSE: Runs GSI atmospheric analysis (Hybrid-4DEnVar). 100 nodes. THE core DA
+step producing atmospheric initial conditions for GFS forecast.
+
+TROUBLESHOOTING
+
+This job requires an enormous amount of observational data, the entire
+GDAS EnKF ensemble, GDAS background, and many other inputs. Hence there
+are many ways that failures elsewhere in the production suite can cause
+the GSI to fail. Debugging requires expert assistance -- call on-call
+staff unless the failure is immediately obvious (downed node, filesystem
+crash). Check GSI stdout for FATAL ERROR messages and minimization
+convergence in fort.220.
+
+%end

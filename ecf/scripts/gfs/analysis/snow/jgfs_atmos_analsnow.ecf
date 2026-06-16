@@ -37,5 +37,18 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_analsnow
 
+PURPOSE: JEDI snow analysis -- assimilates satellite snow cover/depth
+observations (IMS, GHCN, SNODEP) to update land surface snow state. 4
+nodes.
+
+TROUBLESHOOTING
+
+JEDI-based (Python driver). Check Python traceback in stdout. Common
+failures: missing snow observation files (IMS data), missing background
+snow fields from previous cycle, or JEDI configuration YAML errors. If
+IMS data feed is delayed, snow analysis will fail. The job can proceed
+without some obs (data of opportunity) but not without background.
+
+%end

@@ -37,4 +37,18 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_atmos_ens_update
+
+PURPOSE: EnKF update -- THE core Ensemble Kalman Filter algorithm. 35 nodes =
+4410 cores. Produces ensemble analysis increments.
+
+TROUBLESHOOTING
+
+CRITICAL and resource-intensive. Depends on eobs (observation
+innovations) completing. If eobs failed, eupd has no observation-space
+data. Failures: non-convergence, memory exhaustion (35 nodes x 126
+cpus), MPI errors. Check EnKF stdout for error messages. If the ensemble
+spread is too small, filter can diverge. Expert assistance required for
+non-obvious failures.
+
 %end

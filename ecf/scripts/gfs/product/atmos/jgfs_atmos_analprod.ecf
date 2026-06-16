@@ -38,5 +38,15 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_analprod
 
+PURPOSE: Analysis product generation from atmospheric analysis fields. NOT ON
+DISK in v17 -- functionality merged into atmanlupp.
+
+TROUBLESHOOTING
+
+SKIPPED -- script not present in v17 worktree. Functionality handled by
+jgfs_atmos_atmanlupp (UPP on analysis). If this task is triggered by
+suite definition, it will fail.
+
+%end

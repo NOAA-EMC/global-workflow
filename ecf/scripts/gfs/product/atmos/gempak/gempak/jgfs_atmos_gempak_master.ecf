@@ -41,4 +41,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_atmos_gempak_master
+
+PURPOSE: Converts GFS GRIB2 forecast output to GEMPAK/NAWIPS grid format for each
+forecast hour. Per-hour _master template.
+
+TROUBLESHOOTING
+
+Depends on upstream atmos_product output. If GRIB2 input files are
+missing for a given forecast hour, that hour will fail but others
+continue. Check COMOUT from atmos_product_master for the failing hour.
+Module load failures are rare but check gempak module availability.
+
 %end

@@ -44,4 +44,17 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_atmos_ens_recenter_master
+
+PURPOSE: EnKF recentering -- recenters ensemble member analyses around the high-
+resolution deterministic analysis. Per-group _master template.
+
+TROUBLESHOOTING
+
+Depends on both the deterministic GDAS analysis (atmos_anal) and the
+EnKF update (eupd). If either upstream failed, recentering cannot
+proceed. Check that both deterministic and ensemble analyses exist. If
+recentering produces large increments, check analysis consistency
+between deterministic and ensemble.
+
 %end

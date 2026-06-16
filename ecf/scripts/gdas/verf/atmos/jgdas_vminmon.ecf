@@ -37,5 +37,14 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gdas_vminmon
 
+PURPOSE: GDAS VMinMon -- monitors GSI minimization convergence for GDAS analysis.
+Same shared J-Job.
+
+TROUBLESHOOTING
+
+Same as GFS vminmon. Non-critical monitoring job. If analysis did not
+run, no minimization data to monitor.
+
+%end

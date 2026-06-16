@@ -37,5 +37,17 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gdas_fcst
 
+PURPOSE: Runs the 9-hour coupled UFS Weather Model GDAS deterministic forecast.
+95 nodes = 12160 MPI ranks. Provides background for next cycle analysis.
+
+TROUBLESHOOTING
+
+Same model as GFS but shorter (9hr vs 384hr). Same troubleshooting as
+jgfs_fcst -- check model stdout for FATAL messages, node failures, MPI
+errors. CRITICAL -- if GDAS forecast fails, the entire DA cycling stops
+because next cycle has no background. Expert assistance required for
+non-obvious failures.
+
+%end

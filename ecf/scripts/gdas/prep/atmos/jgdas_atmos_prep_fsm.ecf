@@ -37,4 +37,12 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_prep_fsm
+
+PURPOSE: GDAS atmospheric prep FSM. Same shared JGLOBAL_FSM.
+
+TROUBLESHOOTING
+
+FSM coordination. Same troubleshooting as GFS prep_fsm.
+
 %end

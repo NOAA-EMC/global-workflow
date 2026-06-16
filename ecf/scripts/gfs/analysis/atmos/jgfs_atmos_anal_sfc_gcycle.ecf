@@ -37,5 +37,17 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_anal_sfc_gcycle
 
+PURPOSE: Surface analysis global cycle (GCycle) -- updates SST, sea ice, soil
+moisture/temperature, vegetation using observations.
+
+TROUBLESHOOTING
+
+Depends on observation data (SST from NSST, ice from OSTIA, soil from
+previous cycle). If upstream data feeds are missing, GCycle may proceed
+with degraded data and log warnings. Actual failures usually indicate
+missing background tiles from previous forecast or corrupted restart
+files. Check for global_cycle executable errors in stdout.
+
+%end

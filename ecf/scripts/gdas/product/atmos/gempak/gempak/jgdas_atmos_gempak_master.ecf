@@ -41,4 +41,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_gempak_master
+
+PURPOSE: Converts GDAS GRIB2 output to GEMPAK grids for the 9-hour GDAS forecast.
+Per-hour _master template.
+
+TROUBLESHOOTING
+
+Same as GFS gempak_master but for GDAS 9-hour output. Depends on gdas
+atmos_product_master output. Lightweight (2 cpus). If GDAS forecast
+output is missing for this hour, fails. Usually straightforward -- check
+input GRIB2 file existence.
+
 %end

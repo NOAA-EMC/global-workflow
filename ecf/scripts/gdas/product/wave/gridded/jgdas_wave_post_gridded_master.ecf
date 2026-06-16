@@ -42,4 +42,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_wave_post_gridded_master
+
+PURPOSE: Converts GDAS WW3 wave output to gridded GRIB2 per forecast hour. Per-
+hour _master template.
+
+TROUBLESHOOTING
+
+Same as GFS version but for 9-hour GDAS wave output. Depends on GDAS
+wave forecast output. Check COMIN_WAVE_HISTORY. Shorter walltime means
+less likely to timeout.
+
 %end

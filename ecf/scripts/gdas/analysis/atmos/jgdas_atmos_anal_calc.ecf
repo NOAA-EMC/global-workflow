@@ -37,4 +37,14 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_anal_calc
+
+PURPOSE: GDAS analysis calc -- applies increments to produce full analysis
+fields. Same shared J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS analcalc. Depends on successful GDAS
+analysis completion.
+
 %end

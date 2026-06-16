@@ -42,4 +42,17 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_ocean_product_master
+
+PURPOSE: Generates MOM6 ocean GRIB2 products from forecast output per hour. Per-
+hour _master template.
+
+TROUBLESHOOTING
+
+Depends on MOM6 forecast output (ocean history files). If coupled
+forecast did not write ocean output for this hour, product generation
+fails. Lightweight job (1 cpu). Check COMOUT_OCEAN_HISTORY for the
+target forecast hour. If ocean model component failed during forecast,
+all ocean products will be missing.
+
 %end

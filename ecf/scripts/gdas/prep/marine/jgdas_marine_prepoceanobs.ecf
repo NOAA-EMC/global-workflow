@@ -37,4 +37,13 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_marine_prepoceanobs
+
+PURPOSE: GDAS ocean observation prep -- IODA converters. Same shared J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_prepoceanobs. Check raw observation
+file availability and IODA converter Python tracebacks.
+
 %end

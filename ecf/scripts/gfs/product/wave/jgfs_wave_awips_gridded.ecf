@@ -37,4 +37,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_wave_awips_gridded
+
+PURPOSE: Generates AWIPS-compatible gridded wave bulletins (WMO GRIB2) from WW3
+output for NWS forecast offices. Single-instance task.
+
+TROUBLESHOOTING
+
+Depends on wave_postsbs_master gridded output. If wave GRIB2 files are
+missing, AWIPS generation fails. Check $COMOUT_WAVE_GRID. Also check
+tocgrib2 and wgrib2 utilities loaded correctly. If WMO headers are
+wrong, products may generate but be rejected downstream.
+
 %end
