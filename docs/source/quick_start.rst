@@ -93,7 +93,7 @@ Again, ``tutorial`` here can be changed to anything you wish (and does not need 
 This will create two directories in ``${MY_NOSCRUB}/tutorial``:
 
 - ``COMROOT``: where all the output will be stored
-- ``EXPROOT``: where all the experiment directories will be stored.
+- ``EXPDIR``: where all the experiment directories will be stored.
 
 In each, there will be a ``C48_ATM`` directory corresponding to the C48_ATM case configuration we specified. (Sourcing ``gw_setup.sh`` ensures you have the right environment set up, including rocoto).
 
