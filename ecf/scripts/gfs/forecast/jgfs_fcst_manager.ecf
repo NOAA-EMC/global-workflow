@@ -17,12 +17,14 @@ export cyc="%CYC%"
 ############################################################
 # Load modules
 #TODO: load only the modules needed for each job
-source ${HOMEglobal}/dev/ush/load_modules.sh run
+source ${HOMEgfs}/dev/ush/load_modules.sh run
 
 module list
 ############################################################
 # CALL executable job script here
 ############################################################
+export CDATE=${PDY}${cyc}
+export HOMEglobal=${HOMEgfs}
 export FCST_SEGMENT='0'
 
 ${HOMEglobal}/jobs/JGLOBAL_FORECAST_MANAGER

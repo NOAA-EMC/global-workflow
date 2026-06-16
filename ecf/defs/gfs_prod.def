@@ -1687,7 +1687,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
+              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -5481,7 +5481,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
+              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -7583,7 +7583,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
+              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -11377,7 +11377,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
+              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -13479,7 +13479,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
+              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -17273,7 +17273,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
+              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -19375,7 +19375,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f000
+              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -23169,7 +23169,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f000
+              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
