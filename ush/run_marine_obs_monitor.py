@@ -4,10 +4,10 @@ import sys
 import os
 import datetime
 from datetime import datetime
-from scanner import scan_cycle
-from history import load_history, compute_averages
-from report import generate_report, save_report, save_json
-from utils import load_config, discover_cycles, select_cycles
+from pygfs.obsprep.monitor.scanner import scan_cycle
+from pygfs.obsprep.monitor.history import load_history, compute_averages
+from pygfs.obsprep.monitor.report import generate_report, save_report, save_json
+from pygfs.obsprep.monitor.utils import load_config, discover_cycles, select_cycles
 
 
 def process_cycle(config, cycle):
@@ -22,7 +22,7 @@ def process_cycle(config, cycle):
 
 def main():
     if len(sys.argv) <= 1:
-        raise RuntimeError("Usage: python monitor.py <config.yaml>")
+        raise RuntimeError(f"Usage: python {sys.argv[0]} <config.yaml>")
 
     config_path = sys.argv[1]
 
