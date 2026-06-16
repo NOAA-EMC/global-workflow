@@ -25,8 +25,8 @@ def str_to_int(s):
     return int(s)
 
 def discover_cycles(config):
-    base = config["data_root"]
-    model = config["model"]
+    base = os.env["ROTDIR"]
+    model = os.env["RUN"]
 
     cycles = []
 

@@ -5,7 +5,7 @@
 # global marine assimilation
 import os
 
-from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, parse_j2yaml
+from wxflow import AttrDict, Executable, Logger, cast_strdict_as_dtypedict, parse_j2yaml
 from pygfs.task.marine_prepobs import MarineObsPrep
 
 # Initialize root logger
@@ -27,3 +27,18 @@ if __name__ == '__main__':
     marineObs.initialize()
     marineObs.execute()
     marineObs.finalize()
+
+    # run external ascii monitor dump script
+    monitor_script = os.path.join(config['USHglobal'], 'run_marine_obs_monitor.py')
+    monitor_config = os.path.join(config['PARMglobal'], 'gdas', 'marine_obs_monitor_config.yaml')
+
+    logger.info(f"Running marine obs monitor")
+    exec_cmd = Executable("python")
+    exec_cmd.add_default_arg(monitor_script)
+    exec_cmd.add_default_arg(monitor_config)
+
+    logger.info(f"Executing {exec_cmd}")
+    try:
+        exec_cmd()
+    except Exception as e:
+        raise WorkflowException(f"An error occurred during execution of {exec_cmd}:\n{e}") from e
