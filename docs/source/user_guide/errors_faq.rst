@@ -10,6 +10,34 @@ Several variables are reserved in the workflow and should not be used as environ
 ``HOMEglobal``, ``machine``, ``ROTDIR``, ``COMROT``, ``COMROOT``, ``COMOUT``, ``COMIN``, ``STMP``, ``PTMP``, ``DATAROOT``, ``DATA``, ``ACCOUNT``, ``PDY``, ``cyc``, ``RUN``, etc.
 If you are using any of these variables in your shell, you may encounter unexpected behavior in the workflow.
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: AttributeError: 'AttrDict' object has no attribute '__frozen' when running workflow setup
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Example::
+
+  ./create_experiment.py -y /path/to/gw/dev/ci/cases/pr/C48_ATM.yaml
+
+  ...
+
+  2026-06-16 03:44:30,587 - INFO     - setup_workflow: BEGIN: setup_workflow.main.main: /path/to/gw/dev/workflow/setup_workflow.py
+  Traceback (most recent call last):
+    File "/path/to/gw/dev/workflow/./create_experiment.py", line 141, in <module>
+      setup_workflow.main(setup_workflow_args)
+    File "/path/to/gw/sorc/wxflow/src/wxflow/logger.py", line 278, in wrapper
+      retval = func(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^
+    File "/path/to/gw/dev/workflow/setup_workflow.py", line 116, in main
+      if not check_dir_writable(base[dk]):
+                                ~~~~^^^^
+    File "/path/to/gw/sorc/wxflow/src/wxflow/attrdict.py", line 84, in __missing__
+      raise KeyError(name)
+  KeyError: 'PTMP'
+
+**Cause:** Variable name collision with your environment (usually ``PTMP``)
+
+**Solution:** Make sure your environment does not have one of the above reserved variables set
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Error: "ImportError" message when running setup script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -104,6 +104,10 @@ This command will also print out a crontab line to run the experiment. Copy that
 
 Open up crontab in edit mode (``crontab -e``). On some systems, you will need to be on a certain or special login node to do this. Paste the line printed from the last step into your crontab, then save and exit.
 
+.. info::
+
+    On Gaea C6, you will need to use the scrontab utility instead of crontab. Please refer to the :ref:`scrontab` section for additional needed settings.
+
 This will set up rocoto to run every five minutes. Rocoto is the workflow manager used for GW in development mode. When run, it will poll the job scheduler to get the status of any running jobs and then submit any jobs that have all their prerequisites met.
 
 It is recommended that you do not set the update frequency shorter than five minutes if you are on a shared HPC resource, as that can overload the system and make sysadmins unhappy.
@@ -136,6 +140,8 @@ Alternatively, OMD has developed a tool to called rocoto viewer which will provi
 
     You may wish to copy ``rocoto_viewer.py`` to a permanent location so you do not have to keep updating the function.
 
+See also :doc:`user_guide/monitor_rocoto`.
+
 =====================
 6. Checking log files
 =====================
@@ -148,7 +154,7 @@ Log files for each job will be located in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_A
 
 Output will be placed in ``${MY_NOSCRUB}/tutorial/COMROOT/C48_ATM``. Output is organized into a hierarchical structure:
 
-.. code ::
+.. code::
 
     ${RUN}.${PDY}/${cyc}
     └ Member (if any)

@@ -4,7 +4,7 @@ Initial Conditions
 
 There are two types of initial conditions for the global-workflow:
 
-#. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in).
+#. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in) with all model variable populated.
 #. Cold start: any ICs converted to a new resolution or grid (e.g. C768 -> C384). These ICs are often prepared by chgres_cube (change resolution utility).
 
 Most users will initiate their experiments with cold start ICs unless running high resolution (C768 deterministic with C384 EnKF) for a date with warm starts available. It is `not recommended` to run high resolution unless required or as part of final testing.

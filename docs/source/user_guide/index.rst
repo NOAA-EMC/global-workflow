@@ -20,7 +20,7 @@ Table of Contents
    sfs.rst
    gcafs.rst
    run_hpc.rst
+   setup_run_pworks.rst
    job_descriptions.rst
-   setup_run_csp.rst
    plot_output.rst
    errors_faq.rst

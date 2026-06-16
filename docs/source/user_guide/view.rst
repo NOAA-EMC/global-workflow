@@ -2,44 +2,205 @@
 View Experiment output
 ======================
 
-The output from your run will be found in the ``ROTDIR`` you established. This is also where you placed your initial conditions. Within your ``ROTDIR`` you will have the following directory structure (based on the type of experiment you run):
+The output from your run will be found in the ``ROTDIR`` you established. This is also where you placed your initial conditions. Within your ``ROTDIR`` your output will be structured in the following hierarchical structure:
 
-^^^^^^^^^^^^^
-Forecast-only
-^^^^^^^^^^^^^
+.. code::
 
-::
+    ${RUN}.${PDY}/${cyc}
+    └ Member (for ensemble)
+      └ Data category (conf/analysis/model/product)
+        └ Component (atmos/chem/ice/ocean/wave)
+          └ Data type
+            └ Grid/domain (if any)
 
-   gfs.YYYYMMDD/CC/atmos          <- contains deterministic long forecast gfs inputs/outputs (atmosphere)
-   gfs.YYYYMMDD/CC/wave           <- contains deterministic long forecast gfs inputs/outputs (wave)
-   logs/                          <- logs for each cycle in the run
-   vrfyarch/                      <- contains files related to verification and archival
+An example directory structure may look like (here for the C96C48mx500_S2SW_cyc_gfs case):
 
-^^^^^^
-Cycled
-^^^^^^
+.. code::
 
-::
+   C96C48mx500_S2SW_cyc_gfs
+   ├── enkfgdas.20211220
+   │   ├── 06
+   │   │   ├── mem001
+   │   │   │   └── model
+   │   │   │       └── ocean
+   │   │   │           └── restart
+   │   │   └── mem002
+   │   │       └── model
+   │   │           └── ocean
+   │   │               └── restart
+   │   ├── 12
+   │   │   ├── ensstat
+   │   │   │   └── model
+   │   │   │       └── atmos
+   │   │   │           └── history
+   │   │   ├── mem001
+   │   │   │   ├── analysis
+   │   │   │   │   ├── ice
+   │   │   │   │   └── ocean
+   │   │   │   ├── conf
+   │   │   │   └── model
+   │   │   │       ├── atmos
+   │   │   │       │   ├── history
+   │   │   │       │   ├── input
+   │   │   │       │   └── restart
+   │   │   │       ├── ice
+   │   │   │       │   ├── history
+   │   │   │       │   └── restart
+   │   │   │       ├── med
+   │   │   │       │   └── restart
+   │   │   │       └── ocean
+   │   │   │           ├── history
+   │   │   │           └── restart
+   │   │   └── mem002
+   │   │       ├── analysis
+   │   │       │   ├── ice
+   │   │       │   └── ocean
+   │   │       ├── conf
+   │   │       └── model
+   │   │           ├── atmos
+   │   │           │   ├── history
+   │   │           │   ├── input
+   │   │           │   └── restart
+   │   │           ├── ice
+   │   │           │   ├── history
+   │   │           │   └── restart
+   │   │           ├── med
+   │   │           │   └── restart
+   │   │           └── ocean
+   │   │               ├── history
+   │   │               └── restart
+   │   └── 18
+   │       ├── conf
+   │       ├── ensstat
+   │       │   └── analysis
+   │       │       ├── atmos
+   │       │       ├── ice
+   │       │       ├── ocean
+   │       │       └── snow
+   │       ├── mem001
+   │       │   └── analysis
+   │       │       ├── atmos
+   │       │       ├── ice
+   │       │       ├── ocean
+   │       │       └── snow
+   │       └── mem002
+   │           └── analysis
+   │               ├── atmos
+   │               ├── ice
+   │               ├── ocean
+   │               └── snow
+   ├── enkfgfs.20211220
+   │   └── 18
+   │       ├── conf
+   │       ├── ensstat
+   │       │   └── analysis
+   │       │       ├── atmos
+   │       │       ├── ice
+   │       │       ├── ocean
+   │       │       └── snow
+   │       ├── mem001
+   │       │   └── analysis
+   │       │       ├── atmos
+   │       │       ├── ice
+   │       │       ├── ocean
+   │       │       └── snow
+   │       └── mem002
+   │           └── analysis
+   │               ├── atmos
+   │               ├── ice
+   │               ├── ocean
+   │               └── snow
+   ├── fix
+   ├── gdas.20211220
+   │   ├── 06
+   │   │   └── model
+   │   │       ├── ocean
+   │   │       │   └── restart
+   │   │       └── wave
+   │   │           └── restart
+   │   ├── 12
+   │   │   ├── analysis
+   │   │   │   ├── atmos
+   │   │   │   ├── ice
+   │   │   │   └── ocean
+   │   │   ├── conf
+   │   │   ├── model
+   │   │   │   ├── atmos
+   │   │   │   │   ├── history
+   │   │   │   │   ├── input
+   │   │   │   │   ├── master
+   │   │   │   │   └── restart
+   │   │   │   ├── ice
+   │   │   │   │   ├── history
+   │   │   │   │   └── restart
+   │   │   │   ├── med
+   │   │   │   │   └── restart
+   │   │   │   ├── ocean
+   │   │   │   │   ├── history
+   │   │   │   │   └── restart
+   │   │   │   └── wave
+   │   │   │       ├── history
+   │   │   │       ├── prep
+   │   │   │       └── restart
+   │   │   └── products
+   │   │       └── atmos
+   │   │           └── grib2
+   │   │               ├── 0p25
+   │   │               ├── 0p50
+   │   │               └── 1p00
+   │   └── 18
+   │       ├── analysis
+   │       │   ├── atmos
+   │       │   ├── ice
+   │       │   ├── ocean
+   │       │   │   ├── bump
+   │       │   │   └── diags
+   │       │   └── snow
+   │       ├── bmatrix
+   │       │   ├── ice
+   │       │   └── ocean
+   │       ├── conf
+   │       ├── model
+   │       │   ├── atmos
+   │       │   │   └── restart
+   │       │   └── wave
+   │       │       └── prep
+   │       └── obs
+   ├── gfs.20211220
+   │   └── 18
+   │       ├── analysis
+   │       │   ├── atmos
+   │       │   ├── ice
+   │       │   ├── ocean
+   │       │   │   ├── bump
+   │       │   │   └── diags
+   │       │   └── snow
+   │       ├── bmatrix
+   │       │   ├── ice
+   │       │   └── ocean
+   │       ├── conf
+   │       ├── model
+   │       │   └── wave
+   │       │       └── prep
+   │       └── obs
+   └── logs
+       ├── 2021122012
+       └── 2021122018
 
-   enkfgdas.YYYYMMDD/CC/mem###/atmos    <- contains EnKF inputs/outputs for each cycle and each member
-   gdas.YYYYMMDD/CC/atmos               <- contains deterministic gdas inputs/outputs (atmosphere)
-   gdas.YYYYMMDD/CC/wave                <- contains deterministic gdas inputs/outputs (wave)
-   gfs.YYYYMMDD/CC/atmos                <- contains deterministic long forecast gfs inputs/outputs (atmosphere)
-   gfs.YYYYMMDD/CC/wave                 <- contains deterministic long forecast gfs inputs/outputs (wave)
-   logs/                                <- logs for each cycle in the run
-   vrfyarch/                            <- contains files related to verification and archival
-
-Here is an example ``ROTDIR`` for a cycled run as it may look several cycles in (note the archival steps remove older cycle folders as the run progresses):
-
-::
-
-   -bash-4.2$ ll /scratch3/NCEPDEV/stmp/Joe.Schmo/comroot/testcyc192
-   total 88
-   drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 04:50 enkfgdas.20190529
-   drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 07:20 enkfgdas.20190530
-   drwxr-sr-x   6 Joe.Schmo stmp  4096 Oct 22 03:15 gdas.20190529
-   drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 07:15 gdas.20190530
-   drwxr-sr-x   6 Joe.Schmo stmp  4096 Oct 22 03:15 gfs.20190529
-   drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 07:15 gfs.20190530
-   drwxr-sr-x 120 Joe.Schmo stmp 12288 Oct 22 07:15 logs
-   drwxr-sr-x  13 Joe.Schmo stmp  4096 Oct 22 07:07 vrfyarch
++-----------+-----------------------------------------------------------+
+| Category  | Contents                                                  |
++===========+===========================================================+
+| analysis* | analysis files                                            |
++-----------+-----------------------------------------------------------+
+| bmatrix*  | background error for analysis                             |
++-----------+-----------------------------------------------------------+
+| conf      | select configuration files, mostly forecast namelists     |
++-----------+-----------------------------------------------------------+
+| model     | direct input/output from the forecast, including restarts |
++-----------+-----------------------------------------------------------+
+| obs*      | observations used for data assimilation                   |
++-----------+-----------------------------------------------------------+
+| products  | derived products typically published                      |
++-----------+-----------------------------------------------------------+
+| * Not present for forecast-only cases                                 |
++-----------------------------------------------------------------------+

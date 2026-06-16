@@ -153,6 +153,7 @@ For examples of how to use this script, see :ref:`build examples <build_examples
 .. _build_options:
 
 Components built for each option:
+
 +----------------+-------+-------+-------+-------+-------+-------+-------+
 | Component      |  gfs  |  gsi  | gdas  | gefs  |  sfs  | gcafs |  all  |
 +================+=======+=======+=======+=======+=======+=======+=======+
@@ -197,7 +198,7 @@ At runtime the global-workflow needs all pieces in place within the main superst
 
 After running the checkout and build scripts run the link script:
 
-::
+.. code-block:: bash
 
    ./link_workflow.sh [-o]
 

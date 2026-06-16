@@ -55,6 +55,8 @@ Crontab uses following format::
 
    */5 * * * * /path/to/rocotorun -w /path/to/workflow/definition/file -d /path/to/workflow/database/file
 
+.. _scrontab:
+
 Scrontab instead launches a script and requires SCRON directives to launch an sbatch job with the following format::
 
    #SCRON --partition=<cron partition>

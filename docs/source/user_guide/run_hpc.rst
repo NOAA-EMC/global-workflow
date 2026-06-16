@@ -4,7 +4,7 @@ Running Global Workflow on Supported HPC
 
 This section describes how to run an experiment using the Global Workflow. The GW continues to evolve, and the underlying weather model (UFS-WM) supports multiple configurations. Therefore, this documentation will be updated periodically to reflect current capabilities.
 
-.. info::
+.. note::
 
    New users are recommended to try the :doc:`quick_start <Quick-Start Guide>` first. Then come back here for more detailed explanation.
 
