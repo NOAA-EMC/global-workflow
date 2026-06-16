@@ -65,9 +65,9 @@ The GCAFS workflow includes these main tasks:
 #. **arch_vrfy** and **arch_tars** - Archive verification data and create tarballs
 
 The workflow is managed by the rocoto workflow manager, with tasks defined in the
-``workflow/rocoto/gcafs_tasks.py`` file.
+``dev/workflow/rocoto/gcafs_tasks.py`` file.
 
-For a list of descriptions for all jobs, see :ref:`_job_descriptions`.
+For a list of descriptions for all jobs, see :ref:`job_descriptions`.
 
 ===================
 Configuration Files

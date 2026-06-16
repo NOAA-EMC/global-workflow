@@ -6,7 +6,7 @@ This section describes how to run an experiment using the Global Workflow. The G
 
 .. note::
 
-   New users are recommended to try the :doc:`quick_start <Quick-Start Guide>` first. Then come back here for more detailed explanation.
+   New users are recommended to try the :doc:`../quick_start` first. Then come back here for more detailed explanation.
 
 The workflow can be executed in two modes:
 

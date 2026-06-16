@@ -16,25 +16,33 @@ Error: AttributeError: 'AttrDict' object has no attribute '__frozen' when runnin
 
 Example::
 
-  ./create_experiment.py -y /path/to/gw/dev/ci/cases/pr/C48_ATM.yaml
-
-  ...
-
-  2026-06-16 03:44:30,587 - INFO     - setup_workflow: BEGIN: setup_workflow.main.main: /path/to/gw/dev/workflow/setup_workflow.py
+  2026-06-10 22:01:12,954 - INFO         - setup_workflow: BEGIN: setup_workflow.main.main: /path/to/gw/dev/workflow/setup_workflow.py
+  2026-06-10 22:01:13,059 - INFO         - applications: Generating the XML for a forecast-only_gfs case
   Traceback (most recent call last):
-    File "/path/to/gw/dev/workflow/./create_experiment.py", line 141, in <module>
-      setup_workflow.main(setup_workflow_args)
-    File "/path/to/gw/sorc/wxflow/src/wxflow/logger.py", line 278, in wrapper
-      retval = func(*args, **kwargs)
-               ^^^^^^^^^^^^^^^^^^^^^
-    File "/path/to/gw/dev/workflow/setup_workflow.py", line 116, in main
-      if not check_dir_writable(base[dk]):
-                                ~~~~^^^^
-    File "/path/to/gw/sorc/wxflow/src/wxflow/attrdict.py", line 84, in __missing__
-      raise KeyError(name)
-  KeyError: 'PTMP'
+      File "/path/to/gw/dev/workflow/./create_experiment.py", line 147, in <module>
+          setup_workflow.main(setup_workflow_args)
+      File "/path/to/gw/ush/python/wxflow/logger.py", line 278, in wrapper
+          retval = func(*args, **kwargs)
+                            ^^^^^^^^^^^^^^^^^^^^^
+      File "/path/to/gw/dev/workflow/setup_workflow.py", line 152, in main
+          workflow = ENGINE_MAP[workflow_engine].create(f'{net}_{mode}', app_config, workflow_config)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/path/to/gw/ush/python/wxflow/factory.py", line 71, in create
+          return self._builders[key](*args, **kwargs)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/path/to/gw/dev/workflow/rocoto/gfs_forecast_only_xml.py", line 43, in __init__
+          super().__init__(app_config, rocoto_config)
+      File "/path/to/gw/dev/workflow/rocoto/rocoto_xml.py", line 23, in __init__
+          super().__init__(app_config, rocoto_config)
+      File "/path/to/gw/dev/workflow/workflow_suite.py", line 59, in __init__
+          self.HOMEglobal = self._base['HOMEglobal']
+                                              ~~~~~~~~~~^^^^^^^^^^^^^^
+      File "/path/to/gw/ush/python/wxflow/attrdict.py", line 82, in __missing__
+          if object.__getattribute__(self, '__frozen'):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  AttributeError: 'AttrDict' object has no attribute '__frozen'
 
-**Cause:** Variable name collision with your environment (usually ``PTMP``)
+**Cause:** Variable name collision with your environment
 
 **Solution:** Make sure your environment does not have one of the above reserved variables set
 
@@ -44,8 +52,8 @@ Error: "ImportError" message when running setup script
 
 Example::
 
-   $ ./setup_workflow.py /path/to/your/experiment/directory
-   /usr/bin/env: python3: No such file or directory
+  $ ./setup_workflow.py /path/to/your/experiment/directory
+  /usr/bin/env: python3: No such file or directory
 
 **Cause:** Missing python module in your environment
 
@@ -57,15 +65,15 @@ Error: curses default colors when running viewer
 
 Example::
 
-   $ ./rocoto_viewer.py -d blah.db -w blah.xml
-   Traceback (most recent call last):
-     File "./rocoto_viewer.py", line 2376, in <module>
-       curses.wrapper(main)
-     File "/contrib/anaconda/anaconda2/4.4.0/lib/python2.7/curses/wrapper.py", line 43, in wrapper
-       return func(stdscr, *args, **kwds)
-     File "./rocoto_viewer.py", line 1202, in main
-       curses.use_default_colors()
-    _curses.error: use_default_colors() returned ERR
+  $ ./rocoto_viewer.py -d blah.db -w blah.xml
+  Traceback (most recent call last):
+    File "./rocoto_viewer.py", line 2376, in <module>
+      curses.wrapper(main)
+    File "/contrib/anaconda/anaconda2/4.4.0/lib/python2.7/curses/wrapper.py", line 43, in wrapper
+      return func(stdscr, *args, **kwds)
+    File "./rocoto_viewer.py", line 1202, in main
+      curses.use_default_colors()
+   _curses.error: use_default_colors() returned ERR
 
 **Cause:** wrong TERM setting for curses
 
