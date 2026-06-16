@@ -5,7 +5,7 @@ export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
 export rtofs_ver=v2.3
-export obsproc_ver=v1.1
+export obsproc_ver=v1.2
 export imagemagick_ver=7.0.8-7
 export cdo_ver=1.9.8
 export perl_ver=5.32.0
@@ -56,7 +56,7 @@ export fit2obs_ver=1.1.10
 export RUN_ENVIR='emc'
 export NET='gfs'
 
-export COMPATH="/lfs/h1/ops/prod/com/ukmet:/lfs/h1/ops/prod/com/ecmwf:/lfs/h1/ops/prod/com/nam:/lfs/h1/ops/prod/com/rtofs:/lfs/h1/ops/prod/com/obsproc:/lfs/h2/emc/ptmp/${USER}/gfs/ops/para/com/gfs"
+export COMPATH="/lfs/h1/ops/prod/com/ukmet:/lfs/h1/ops/prod/com/ecmwf:/lfs/h1/ops/prod/com/nam:/lfs/h1/ops/prod/com/rtofs:/lfs/h1/ops/prod/com/obsproc:/lfs/h2/emc/da/noscrub/catherine.thomas/ecflow"
 
 #### GFS prep step
 export HOMEprepobs=/lfs/h2/emc/global/save/emc.global/git/prepobs/v1.1.3
