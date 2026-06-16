@@ -626,31 +626,6 @@ if [[ "${JCAP}" -ne "${JCAP_A}" ]]; then
 fi
 
 ##############################################################
-# Output files
-#${NLN} "${ATMANL}" siganl
-#${NLN} "${ATMINC}" siginc.nc
-#if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
-#    ${NLN} "${ATMA03}" siga03
-#    ${NLN} "${ATMI03}" sigi03.nc
-#    ${NLN} "${ATMA04}" siga04
-#    ${NLN} "${ATMI04}" sigi04.nc
-#    ${NLN} "${ATMA05}" siga05
-#    ${NLN} "${ATMI05}" sigi05.nc
-#    ${NLN} "${ATMA07}" siga07
-#    ${NLN} "${ATMI07}" sigi07.nc
-#    ${NLN} "${ATMA08}" siga08
-#    ${NLN} "${ATMI08}" sigi08.nc
-#    ${NLN} "${ATMA09}" siga09
-#    ${NLN} "${ATMI09}" sigi09.nc
-#fi
-#${NLN} "${ABIAS}" satbias_out
-#${NLN} "${ABIASPC}" satbias_pc.out
-#${NLN} "${ABIASAIR}" aircftbias_out
-
-#if [[ "${DONST}" == "YES" ]]; then
-#    ${NLN} "${DTFINC}" dtfanl
-#fi
-
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
 if [[ "${USE_SELECT}" == "YES" ]]; then
     rm -f obs_input.*
