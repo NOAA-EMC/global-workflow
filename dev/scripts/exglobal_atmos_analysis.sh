@@ -859,7 +859,7 @@ if [[ ${RUN_SELECT} == "NO" ]]; then
     fi	    
     cpreq satbias_out     "${ABIAS}" 
     cpreq satbias_pc.out  "${ABIASPC}" 
-    cpreq aircrftbias_out "${ABIASAIR}"
+    cpreq aircftbias_out "${ABIASAIR}"
 
     if [[ "${DONST}" == "YES" ]]; then
         cpreq dtfanl "${DTFINC}"
