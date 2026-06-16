@@ -31,9 +31,13 @@ def main():
 
     config = load_config(config_path)
 
-    required = ["data_root", "report_root", "model", "system", "obs_spaces"]
+    required = ["obs_spaces"]
     for k in required:
         assert k in config, f"Missing config key: {k}"
+    config["data_root"] = os.environ["ROTDIR"]
+    config["report_root"] = os.environ["ROTDIR"]
+    config["model"] = os.environ["RUN"]
+    config["system"] = "obs"
 
     cycles = select_cycles(config)
     print(f"processing {len(cycles)} cycles")
