@@ -627,29 +627,29 @@ fi
 
 ##############################################################
 # Output files
-${NLN} "${ATMANL}" siganl
-${NLN} "${ATMINC}" siginc.nc
-if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
-    ${NLN} "${ATMA03}" siga03
-    ${NLN} "${ATMI03}" sigi03.nc
-    ${NLN} "${ATMA04}" siga04
-    ${NLN} "${ATMI04}" sigi04.nc
-    ${NLN} "${ATMA05}" siga05
-    ${NLN} "${ATMI05}" sigi05.nc
-    ${NLN} "${ATMA07}" siga07
-    ${NLN} "${ATMI07}" sigi07.nc
-    ${NLN} "${ATMA08}" siga08
-    ${NLN} "${ATMI08}" sigi08.nc
-    ${NLN} "${ATMA09}" siga09
-    ${NLN} "${ATMI09}" sigi09.nc
-fi
-${NLN} "${ABIAS}" satbias_out
-${NLN} "${ABIASPC}" satbias_pc.out
-${NLN} "${ABIASAIR}" aircftbias_out
+#${NLN} "${ATMANL}" siganl
+#${NLN} "${ATMINC}" siginc.nc
+#if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+#    ${NLN} "${ATMA03}" siga03
+#    ${NLN} "${ATMI03}" sigi03.nc
+#    ${NLN} "${ATMA04}" siga04
+#    ${NLN} "${ATMI04}" sigi04.nc
+#    ${NLN} "${ATMA05}" siga05
+#    ${NLN} "${ATMI05}" sigi05.nc
+#    ${NLN} "${ATMA07}" siga07
+#    ${NLN} "${ATMI07}" sigi07.nc
+#    ${NLN} "${ATMA08}" siga08
+#    ${NLN} "${ATMI08}" sigi08.nc
+#    ${NLN} "${ATMA09}" siga09
+#    ${NLN} "${ATMI09}" sigi09.nc
+#fi
+#${NLN} "${ABIAS}" satbias_out
+#${NLN} "${ABIASPC}" satbias_pc.out
+#${NLN} "${ABIASAIR}" aircftbias_out
 
-if [[ "${DONST}" == "YES" ]]; then
-    ${NLN} "${DTFINC}" dtfanl
-fi
+#if [[ "${DONST}" == "YES" ]]; then
+#    ${NLN} "${DTFINC}" dtfanl
+#fi
 
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
 if [[ "${USE_SELECT}" == "YES" ]]; then
@@ -859,6 +859,36 @@ ${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the GSI analysis!"
+fi
+
+#  Copy output
+
+if [[ ${RUN_SELECT} == "NO" ]]; then
+    if [[ ${DO_CALC_INCREMENT} == "NO" ]]; then
+        cpreq siginc.nc "${ATMINC}" 
+        if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+            cpreq sigi03.nc "${ATMI03}" 
+            cpreq sigi09.nc "${ATMI09}" 
+        fi
+    else
+        cpreq siganl "${ATMANL}" 
+	if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+            cpreq siga03 "${ATMA03}"
+            cpreq siga04 "${ATMA04}"
+            cpreq siga05 "${ATMA05}"
+            cpreq siga07 "${ATMA07}"
+            cpreq siga08 "${ATMA08}"
+            cpreq siga09 "${ATMA09}"
+        fi
+
+    fi	    
+    cpreq satbias_out     "${ABIAS}" 
+    cpreq satbias_pc.out  "${ABIASPC}" 
+    cpreq aircrftbias_out "${ABIASAIR}"
+
+    if [[ "${DONST}" == "YES" ]]; then
+        cpreq dtfanl "${DTFINC}"
+    fi
 fi
 
 ##############################################################

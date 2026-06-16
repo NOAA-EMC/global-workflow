@@ -135,10 +135,6 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
 
     declare -x COMIN_ATMOS_HISTORY_MEM_PREV=${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/${gmemchar}/model/atmos/history
 
-    declare -x COMOUT_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
-
-    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
-
     for FHR in ${nfhrs}; do
         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}atm.f00${FHR}${ENKF_SUFFIX}.nc" \
             "sfg_${PDY}${cyc}_fhr0${FHR}_${memchar}"
@@ -149,19 +145,6 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
         if [[ "${cnvw_option}" == ".true." ]]; then
             ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX}sfc.f00${FHR}.nc" \
                 "sfgsfc_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-        fi
-
-        if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc" \
-                "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-        else
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc" \
-                "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
-        fi
-
-        if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-            ${NLN} "${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" \
-                "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}"
         fi
     done
 done
@@ -331,6 +314,36 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
+
+# Copy output
+
+for imem in $(seq 1 "${NMEM_ENS}"); do
+    smem=$((imem + mem_offset))
+    if [[ ${smem} -gt ${NMEM_ENS_MAX} ]]; then
+        smem=$((smem - NMEM_ENS_MAX))
+    fi
+    gmemchar="mem"$(printf "%03i" "${smem}")
+    memchar="mem"$(printf "%03i" "${imem}")
+
+    declare -x COMOUT_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
+
+    mkdir -p "${COMOUT_ATMOS_ANALYSIS_MEM}"
+
+    for FHR in ${nfhrs}; do
+        if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
+            cpreq "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
+		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc"
+        else
+            cpreq "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
+		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc"    
+        fi
+    
+        if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+            cpreq "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
+		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" 
+        fi
+    done
+done
 
 ################################################################################
 #  Postprocessing
