@@ -80,6 +80,8 @@ For more information:
 
 https://github.com/JCSDA/spack-stack/wiki/Porting-spack-stack-to-a-new-system
 
+.. _dump_archive:
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Observation data (OBSPROC/prep)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

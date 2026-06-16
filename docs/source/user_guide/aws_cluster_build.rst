@@ -167,6 +167,13 @@ Once the build is complete you should see an AMI listed under your Amazon Machin
 
 .. figure:: ../_static/aws_ami_id.png
 
+===================================
+Create Persistent Lustre Filesystem
+===================================
+You will also need to create a large persistent lustre file system to hold all of the code and data. This file system will be mounted by the cluster for use during operation and will persist even if the cluster is shut down until it is separately destroyed.
+
+<Insert instructions here>
+
 ================================
 Building the AWS Parallelcluster
 ================================
@@ -174,7 +181,7 @@ Now that the initial base image build is complete, the cluster can be initialize
 
 .. figure:: ../_static/aws_set_ami_yaml.png
 
-Also populating the rest of the yaml configuration with the appropriate values depending on the desired configuration. Note that once again the AWS cloud region us-east-1 is being used and is recommended. Once the yaml has the appropriate configuration values the cluster can be created using the AWS Parallelcluster CLI tool. Issue the command below to create the initial cluster.
+Also update the subnet IDs and the ``FileSystemId`` for the lustre system you created. Note that once again the AWS cloud region us-east-1 is being used and is recommended. Once the yaml has the appropriate configuration values the cluster can be created using the AWS Parallelcluster CLI tool. Issue the command below to create the initial cluster.
 
 .. code-block:: bash
 

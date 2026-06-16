@@ -6,7 +6,7 @@ Run your first global workflow (GW) test case in no time!
 
 .. info::
 
-    If you wish to use your own AWS instance, you need to complete the :doc:`aws_setup` instructions first.
+    If you wish to use your own AWS instance, you need to complete the :ref:`_aws_setup` instructions first.
 
 ==========================================
 0. Determine where you will put your stuff
@@ -40,7 +40,7 @@ You will also need to know what your HPC account for the job scheduler is for th
 
 .. warning::
 
-    If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :doc:`restricted_data`.
+    If you are working on a machine other than Derecho or AWS, you must have rstprod to access observations for any case using data assimilation. See :ref:`restricted_data`.
 
 ================================
 1. Clone the official repository
@@ -223,7 +223,11 @@ To run many of the other cases, you will first need to rebuild with additional c
 | all    | build everything                                          |
 +--------+-----------------------------------------------------------+
 
+For a full list of what is built for each option, see ref:`_build_options`.
+
 You can run a different test case(s) by changing what you pass into ``generate_workflows.sh`` with the ``-y`` option. By default, the script will look in the ``dev/ci/cases/pr`` directory for the case. You can change this by passing a different directory with the ``-Y`` option. You can also specify multiple cases by placing quotes around the argument and a space between each case (e.g. ``-y "C48_ATM C96_atm3DVar"``).
+
+.. _test_configurations:
 
 Available low-resolution cases (in the ``dev/ci/cases/pr`` directory):
 
@@ -277,46 +281,3 @@ Instead of specifying tests with ``-y``, you can also instead run all tests in a
 -S  Run all SFS cases
 
 Specifying ``-GECS`` would run all tests valid for the current system.
-
-
-
-
-*** ED NOTE: probably move the following to the full User's Guide ***
-
-Components built for each option:
-
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| Component      |  gfs  |  gsi  | gdas  | gefs  |  sfs  | gcafs |  all  |
-+================+=======+=======+=======+=======+=======+=======+=======+
-| gdas           |       |       |   X   |       |       |       |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| gsi_enkf       |       |   X   |       |       |       |       |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| gsi_monitor    |       |   X   |   X   |       |       |       |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| gsi_utils      |       |   X   |   X   |       |       |   X   |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| nexus          |       |       |       |       |       |   X   |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| ufs_model      |  gfs  |       |       |  gefs |  sfs  | gcafs |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| verif-global   |       |       |       |       |       |       |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| ww3_prepost    |   X   |       |       |   X   |       |       |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| wxflow         |       |       |       |       |       |       |       |
-+----------------+-------+-------+-------+-------+-------+-------+-------+
-| gfs_utils, ufs_utils, and upp are always built                         |
-+------------------------------------------------------------------------+
-
-+------------------------------------------------------------------------+
-|  UFS model configurations (built with FV3/MOM6/CICE6/WW3 unless noted) |
-+============+===========================================================+
-| GFS model  | Non-hydrostatic with unstructured wave grid (PDLIB=ON)    |
-+------------+-----------------------------------------------------------+
-| GEFS model | Non-hydrostatic with structured wave grid (PDLIB=OFF)     |
-+------------+-----------------------------------------------------------+
-| SFS model  | Hydrostatic (built with waves, but not used)              |
-+------------+-----------------------------------------------------------+
-| GCAFS      | Non-hydrostatic FV3/GOCART                                |
-+------------+-----------------------------------------------------------+

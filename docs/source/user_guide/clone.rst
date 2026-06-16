@@ -150,6 +150,45 @@ To configure the build with specific flags or options for the various components
 
 For examples of how to use this script, see :ref:`build examples <build_examples>`.
 
+.. _build_options:
+
+Components built for each option:
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| Component      |  gfs  |  gsi  | gdas  | gefs  |  sfs  | gcafs |  all  |
++================+=======+=======+=======+=======+=======+=======+=======+
+| gdas           |       |       |   X   |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gsi_enkf       |       |   X   |       |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gsi_monitor    |       |   X   |   X   |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gsi_utils      |       |   X   |   X   |       |       |   X   |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| nexus          |       |       |       |       |       |   X   |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| ufs_model      |  gfs  |       |       |  gefs |  sfs  | gcafs |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| verif-global   |       |       |       |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| ww3_prepost    |   X   |       |       |   X   |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| wxflow         |       |       |       |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gfs_utils, ufs_utils, and upp are always built                         |
++------------------------------------------------------------------------+
+
++------------------------------------------------------------------------+
+|  UFS model configurations (built with FV3/MOM6/CICE6/WW3 unless noted) |
++============+===========================================================+
+| GFS model  | Non-hydrostatic with unstructured wave grid (PDLIB=ON)    |
++------------+-----------------------------------------------------------+
+| GEFS model | Non-hydrostatic with structured wave grid (PDLIB=OFF)     |
++------------+-----------------------------------------------------------+
+| SFS model  | Hydrostatic (built with waves, but not used)              |
++------------+-----------------------------------------------------------+
+| GCAFS      | Non-hydrostatic FV3/GOCART                                |
++------------+-----------------------------------------------------------+
+
 ^^^^^^^^^^^^^^^
 Link components
 ^^^^^^^^^^^^^^^
@@ -163,4 +202,4 @@ After running the checkout and build scripts run the link script:
    ./link_workflow.sh [-o]
 
 Where:
-   ``-o``: Run in operations (NCO) mode. This creates copies instead of using symlinks and is generally only used by NCO during installation into production.
+   ``-o``: Run in operations (NCO) mode. This creates copies instead of using symlinks and is generally only used by NCO during installation into production. It uses much more space, and can hide local changes when examining with git.
