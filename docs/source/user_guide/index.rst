@@ -19,8 +19,8 @@ Table of Contents
    gefs.rst
    sfs.rst
    gcafs.rst
+   job_descriptions.rst
    run_hpc.rst
    setup_run_pworks.rst
-   job_descriptions.rst
    plot_output.rst
    errors_faq.rst
