@@ -19,7 +19,7 @@ from datetime import datetime
 
 project = 'Global-workflow'
 year = datetime.now().year
-copyright = f"2015-{year} NOAA/NWS/NCEP/EMC"
+copyright = f"2015-{year} NOAA/NWS/OOO/OMD"
 author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, and numerous collaborators and contributors'
 
 # The full version, including alpha/beta/rc tags
@@ -121,4 +121,3 @@ def setup(app):
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Global-Workflow'
-
