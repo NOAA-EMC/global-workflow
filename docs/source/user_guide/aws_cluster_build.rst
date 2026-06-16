@@ -171,9 +171,17 @@ Once the build is complete you should see an AMI listed under your Amazon Machin
 ===================================
 Create Persistent Lustre Filesystem
 ===================================
-You will also need to create a large persistent lustre file system to hold all of the code and data. This file system will be mounted by the cluster for use during operation and will persist even if the cluster is shut down until it is separately destroyed.
+Due to the heavy I/O load necessary to run the Global Workflow it is recommended that a Lustre FSx be used to eliminate bottlenecks with running the system.  This can be done outside of the AWS Parallelcluster through the AWS UI or CLI tool.  Instructions on how to do this can be found here: https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html#getting-started-step1
 
-<Insert instructions here>
+Using scratch SSD should be fine for development cases, however for running in an operational environment it is recommended to use type persistent SSD to ensure consistent I/O performance.
+
+For a basic development configuration a type of SSD scratch2 with no compression and 12TB of disk storage capacity should suffice.
+
+If the Lustre filesystem is created outside of AWS Parallelcluster by hand then it will need to be added to the Parallelcluster’s YAML configuration under the section “Shared Storage”.  The FileSystemId will need to be added to the ``da_hpc.yaml`` configuration as in the example below.
+
+.. figure:: ../_static/aws_lustre_id.png
+
+Should the user decide to have the AWS Parallelcluster create the Lustre FSx file system during the cluster build process, please see these steps below in the “Building the AWS Parallecluster” section.
 
 ================================
 Building the AWS Parallelcluster
@@ -182,7 +190,17 @@ Now that the initial base image build is complete, the cluster can be initialize
 
 .. figure:: ../_static/aws_set_ami_yaml.png
 
-Also update the subnet IDs and the ``FileSystemId`` for the lustre system you created. Note that once again the AWS cloud region us-east-1 is being used and is recommended. Once the yaml has the appropriate configuration values the cluster can be created using the AWS Parallelcluster CLI tool. Issue the command below to create the initial cluster.
+Also update the subnet IDs and the ``FileSystemId`` for the lustre system you created. Note that once again the AWS cloud region us-east-1 is being used and is recommended. Once the yaml has the appropriate configuration values the cluster can be created using the AWS Parallelcluster CLI tool.
+
+Should the user decide to have the AWS Parallelcluster create the Lustre FSx filesystem instead of performing the allocation manually, they will need to set this in the “Shared Storage” section as in the example below.
+
+For additional information refer to the AWS Parallelcluster documentation
+
+https://docs.aws.amazon.com/parallelcluster/latest/ug/shared-storage-config-fsxlustre-v3.html
+
+.. figure:: ../_static/aws_lustre_conf.png
+
+Issue this command below to create the initial cluster:
 
 .. code-block:: bash
 
