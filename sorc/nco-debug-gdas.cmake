@@ -2,7 +2,7 @@
 
 # define the default set of flags
 set(GDAS_Fortran_FLAGS "-g -ftrapuv -check all")
-set(GDAS_CXX_FLAGS "-ftrapuv -check=unint -debug all -g -traceback")
+set(GDAS_CXX_FLAGS "-ftrapuv -check=uninit -debug all -g -traceback")
 
 # Turn off Fortran temporary array warnings
 set(GDAS_Fortran_FLAGS "${GDAS_Fortran_FLAGS},noarg_temp_created")
