@@ -71,9 +71,9 @@ These jobs are run only in development mode and examples include:
   - **cleanup**: removes temporary or intermediate files
 
 In development, the workflow is managed by the rocoto workflow manager, with tasks defined in the
-``workflow/rocoto/gfs_tasks.py`` file.
+``dev/workflow/rocoto/gfs_tasks.py`` file.
 
-For a list of descriptions for all jobs, see :ref:`_job_descriptions`.
+For a list of descriptions for all jobs, see :ref:`job_descriptions`.
 
 .. _gfs_config_files:
 

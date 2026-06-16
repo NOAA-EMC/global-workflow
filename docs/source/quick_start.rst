@@ -63,7 +63,7 @@ Build and install for forecast-only GFS
 .. code-block:: bash
 
     cd sorc
-    ./build_all.sh -cA <hpc_account> gfs
+    ./build_all.sh -c -A <hpc_account> gfs
     ./link_workflow.sh
 
 This builds the executables necessary to run your first test case and then creates links for necessary scripts and static data (fix) files.
@@ -76,7 +76,7 @@ This builds the executables necessary to run your first test case and then creat
 
     Code shown builds components using HPC compute nodes, which is highly recommended.
 
-    You can build on the login node instead by omitting the ``-cA <hpc_account>``.
+    You can build on the login node instead by omitting the ``-c -A <hpc_account>``.
 
 ==================================================
 Create your experiment directory for the test case
@@ -86,7 +86,7 @@ Create your experiment directory for the test case
 
     cd ../dev/workflow
     source ../ush/gw_setup.sh
-    ./generate_workflow.sh -A <hpc_account> -y C48_ATM "${MY_NOSCRUB}/tutorial"
+    ./generate_workflows.sh -A <hpc_account> -y C48_ATM "${MY_NOSCRUB}/tutorial"
 
 Again, ``tutorial`` here can be changed to anything you wish (and does not need to match what you used for the code directory).
 
@@ -121,7 +121,7 @@ To view the progress of your jobs, use the rocotostat command:
 
 .. code-block:: bash
 
-    cd "${MY_NOSCRUB}/tutorial/EXPROOT/C48_ATM"
+    cd "${MY_NOSCRUB}/tutorial/EXPDIR/C48_ATM"
     rocotostat -w C48_ATM.xml -d C48_ATM.db
 
 This will show the status of every job in the workflow pipeline. ``C48_ATM.xml`` is the workflow definition file, and ``C48_ATM.db`` is the database where rocoto stores the last known status of all the jobs. If you have no ``C48_ATM.db`` in your experiment directory, then ``rocotorun`` has not been run yet.

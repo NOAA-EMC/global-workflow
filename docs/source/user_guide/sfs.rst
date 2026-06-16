@@ -10,7 +10,7 @@ The Seasonal Forecast System (SFS) produces a coupled global ensemble forecast f
 
 .. note::
 
-	The SFS is still undergoing intial development and some key features are still incomplete.
+   The SFS is still undergoing initial development and some key features are still incomplete.
 
 ============
 Key Features
@@ -26,9 +26,9 @@ SFS Workflow
 The SFS is planned to have its own data assimilation system that mirrors that of GFS. The resulting workflow will be a mixture of that of GFS, with a DA portion, and GEFS, with a full-length ensemble forecast. For now, only a forecast-only version is available.
 
 The workflow is managed by the rocoto workflow manager, with tasks defined in the
-``workflow/rocoto/sfs_tasks.py`` file.
+``dev/workflow/rocoto/sfs_tasks.py`` file.
 
-For a list of descriptions for all jobs, see :ref:`_job_descriptions`.
+For a list of descriptions for all jobs, see :ref:`job_descriptions`.
 
 ===================
 Configuration Files

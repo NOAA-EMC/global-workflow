@@ -22,7 +22,7 @@ There are two main ways to run GW experiments:
    - ``dev/workflow/setup_expt.py``
    - ``dev/workflow/setup_workflow.py``
 - Using case files to combine experiment directory and workflow generation into a single step. This is the method used in the :doc:`../quick_start.rst`. This is useful if you are running experiments with existing configurations, especially those from the CI test system. It also allows the generation of multiple experiments at once. Script used:
-   - ``dev/workflow/generate_workflow.sh``
+   - ``dev/workflow/generate_workflows.sh``
 
 ****************************************************
 Generating experiment and workflow in separate steps
@@ -280,7 +280,7 @@ There is also an option to add a tag (label) to the experiment name using the ``
 
 This will append the label to the experiment name for each case, distinguishing it from others you may run.
 
-There are a number of other options. Here is the full list of options available to ``generate_workflow.sh``:
+There are a number of other options. Here is the full list of options available to ``generate_workflows.sh``:
 
 .. code-block:: none
 
