@@ -202,5 +202,5 @@ An example directory structure may look like (here for the C96C48mx500_S2SW_cyc_
 +-----------+-----------------------------------------------------------+
 | products  | derived products typically published                      |
 +-----------+-----------------------------------------------------------+
-| * Not present for forecast-only cases                                 |
+| \* Not present for forecast-only cases                                |
 +-----------------------------------------------------------------------+

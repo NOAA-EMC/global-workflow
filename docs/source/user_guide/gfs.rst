@@ -120,10 +120,6 @@ Experimental run is different from operational runs in the following ways:
   - **arch_tars**
   - **cleanup**
 
-.. note::
-
-   Downstream production jobs (e.g., **AWIPS**, **GEMPAK**) are not included in :numref:`GFS_v16_flowchart` because these jobs are not normally run in developmental setups.
-
 ^^^^^^^^^^^^^^^^^^^
 For New Users
 ^^^^^^^^^^^^^^^^^^^

@@ -42,13 +42,13 @@ The system software requirements listed in the following table represent the min
 |              |             |   WCOSS2                              |
 +--------------+-------------+---------------------------------------+
 
-==============================
-Feature availability by RDHPCS
-==============================
+.. _feature_availability:
+
+================================
+Feature availability by platform
+================================
 
 The GW provides capabilities for deterministic and ensemble forecasts, along with DA, across multiple platforms. However, not all features are currently supported on every system. The table below summarizes available features by platform and states their level of support.
-
-.. _HPC_Capabilities_Matrix:
 
 +-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
 | HPC             | Tier | GFS | GEFS | GCAFS | SFS | GSI | GDASApp | Coupled DA | TC Tracker | AWIPS | MOS | Fit2Obs | METplus | HPSS |

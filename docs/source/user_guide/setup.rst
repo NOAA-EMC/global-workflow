@@ -17,6 +17,7 @@ Experiment Setup
    Bash shell is required to source gw_setup.sh
 
 There are two main ways to run GW experiments:
+
 - Create the experiment directory and generate the workflow in separate steps. This is useful if you need to change settings in the experiment config files before execution. Scripts that will be used:
    - ``dev/workflow/setup_expt.py``
    - ``dev/workflow/setup_workflow.py``
@@ -27,9 +28,9 @@ There are two main ways to run GW experiments:
 Generating experiment and workflow in separate steps
 ****************************************************
 
-====================
-1: Set user settings
-====================
+=================
+Set user settings
+=================
 
 To make it easy for a user to specify the some of the user specific variables, users can create a ``.gwrc`` file in their home directory.  An example is provided in ``$TOP_OF_CLONE/dev/parm/workflow/gwrc`` that contains the following variables:
 
@@ -41,9 +42,9 @@ To make it easy for a user to specify the some of the user specific variables, u
 
 This file is read by the ``setup_expt.py`` script to set the user specific variables. If you do not have a ``.gwrc`` file, the setup script will revert to the default values in the repository.
 
-==================================
-2: Run experiment generator script
-==================================
+===============================
+Run experiment generator script
+===============================
 
 The following command examples include variables for reference but users should not use environmental variables but explicit values to submit the commands. Exporting variables like EXPDIR to your environment causes an error when the python scripts run. Please explicitly include the argument inputs when running both setup scripts:
 
@@ -128,9 +129,9 @@ Cycled with the Atmosphere-only model (including ensembles) in the GFS:
    cd dev/workflow
    ./setup_expt.py gfs cycled --app ATM --pslot cycled_test --idate 2013040100 --edate 2013040100 --comroot /some_large_disk_area/Joe.Schmo/comroot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdetatmos 384 --resensatmos 192 --nens 80 --interval 6
 
-=====================================
-3: Check user and experiment settings
-=====================================
+==================================
+Check user and experiment settings
+==================================
 
 Go to your ``EXPDIR`` and check the following variables within your ``config.base`` now before running the next script:
 
@@ -150,9 +151,9 @@ Some of those variables will be found within a machine-specific if-block so make
 Now is also the time to change any other variables/settings you wish to change in ``config.base`` or other configs. `Do that now.` Once done making changes to the configs in your EXPDIR go back to your clone to run the second setup script. See :doc:configure.rst for more information on configuring your run.
 Go to your ``EXPDIR`` and check/change the following variables within your ``config.base`` now before running the next script.
 
-================================
-4: Run workflow generator script
-================================
+=============================
+Run workflow generator script
+=============================
 
 This step sets up the files needed by the Workflow Manager/Driver. At this moment only Rocoto configurations are generated:
 
@@ -170,9 +171,9 @@ Additional options for setting up Rocoto or ecFlow are available with `setup_wor
 
 Presently, only the Rocoto workflow engine is supported.  EcFlow capabilities are a work in progress.
 
-===================================
-5: Confirm files from setup scripts
-===================================
+================================
+Confirm files from setup scripts
+================================
 
 You will now have a rocoto xml file in your ``$EXPDIR`` (``$PSLOT.xml``) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_workflow.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
 
@@ -189,9 +190,7 @@ Case files
 ==========
 Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend (low-resolution) cases in the ``dev/ci/cases/pr`` directory. These are actually a cascade of yamls used to generate experiment settings.
 
-* The main case file, which largely consists of just the settings that would be provided manually to ``setup_expt.py`` when running separately. The case file also points to a second yaml via ``experiment:yaml:``.
-
-   Example from C48_ATM.yaml:
+* The main case file, which largely consists of just the settings that would be provided manually to ``setup_expt.py`` when running separately. The case file also points to a second yaml via ``experiment:yaml:``. Example from C48_ATM.yaml:
 
    .. code-block:: yaml
       experiment:
@@ -240,7 +239,7 @@ To run experiments from cases files, use the ``generate_workflows.sh`` script in
 
    ./generate_workflows.sh -A <hpc_account> -y 'test_case' /path/for/output
 
-Where test_case is the file name in ``dev/ci/cases/pr`` (with or without the ``.yaml`` extension).
+Where ``test_case`` is the file name in ``dev/ci/cases/pr`` (with or without the ``.yaml`` extension).
 
 This will generate two directories in ``/path/for/output``: ``EXPDIR`` and ``COMROOT``. Inside each will be a test_case directory for the test case selected. The EXPDIR is where your experiment and workflow are generated. Output will then be placed in COMROOT.
 
@@ -255,10 +254,11 @@ To run multiple cases at once, simply add additional case names to the ``-y`` op
    ./generate_workflows.sh -A <hpc_account> -y 'test_case_1 test_case_2' /path/for/output
 
 Instead of specifying individual cases, you can also run all test cases for one or more systems by using one or more of the following options instead of ``-y``:
-``-G``: Run all GFS cases
-``-E``: Run all GEFS cases
-``-C``: Run all GCADS cases
-``-S``: Run all SFS cases
+
+-G Run all GFS cases
+-E Run all GEFS cases
+-C Run all GCADS cases
+-S Run all SFS cases
 
 Specifying ``-GECS`` would run all tests valid for the current system. Some tests are turned off on certain systems.
 
@@ -282,7 +282,7 @@ This will append the label to the experiment name for each case, distinguishing 
 
 There are a number of other options. Here is the full list of options available to ``generate_workflow.sh``:
 
-.. code-block:: bash
+.. code-block:: none
 
     -H Root directory of the global workflow.
        If not specified, then the directory is assumed to be one parent
