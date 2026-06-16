@@ -241,3 +241,27 @@ This process should take about 20 minutes to complete. You can view the status o
 The results should list the cluster status as CREATE_COMPLETE once the operation has successfully completed.
 
 .. figure:: ../_static/aws_cluster_settings_yaml.png
+
+===========================
+Importing Data Repositories
+===========================
+
+Once the AWS Parallelcluster has been successfully built, there are a couple of datasets that should be imported to assist with running the Global Workflow. These can be imported directly into the Lustre FSx filesystem through data repository association.  These two datasets are noaa-epic-global-release-pds and noaa-nws-global-pds. They are associated with the respective S3 buckets s3://noaa-epic-global-release-pds and s3://noaa-nws-global-pds respectively.
+
+These can be added to the Lustre filesystem by using the “Create data repository association” button on the Data repository menu tab
+
+.. figure:: ../_static/aws_s3_create.png
+
+After clicking the "Create data repository association” button, you will get a dialog box. Populate the “File system path” dialog box with ``/noaa-epic-global-release-pds`` and the Data repository path dialog box with ``s3://noaa-epic-global-release-pds``. Highlight the “Import metadata from repository” checkbox.  Click “deselect all” for both the import and export settings and then click the “Create” button.  This process will take a few minutes to complete.
+
+.. figure:: ../_static/aws_s3_create_popup.png
+
+Repeat this process for the second repository, noaa-nws-global-pds, using the values ``/noaa-nws-global-pds`` and ``s3://noaa-nws-global-pds`` respectively for the File system path and Data repository path parameters. After completion, the two S3 buckets should appear in the list of associations:
+
+.. figure:: ../_static/aws_s3_list.png
+
+Additional information on how to perform this task can be found in the following documentation link:
+
+https://docs.aws.amazon.com/fsx/latest/LustreGuide/overview-dra-data-repo.html
+
+
