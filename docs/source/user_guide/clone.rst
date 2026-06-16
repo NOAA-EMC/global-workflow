@@ -50,7 +50,7 @@ For coupled cycling (using only new UFSDA) execute:
 
 This builds all of the same executables, except it builds the GDASApp instead of the GSI.
 
-To run GEFS (forecast-only) execute:
+To build GEFS (forecast-only) execute:
 
 .. code-block:: bash
 
