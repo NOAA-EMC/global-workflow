@@ -510,7 +510,7 @@
 
 # 3.c Create bundled grib2 file with all parameters
 
-  cat ${WAV_MOD_TAG}.t${cyc}z.mean.${GRDNAME}.${GRDRES}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+  cat ${WAV_MOD_TAG}.t${cyc}z.{mean,prob,spread}.${GRDNAME}.${GRDRES}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1
 
   if [ -s gribfile ]
   then
