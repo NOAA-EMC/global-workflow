@@ -39,8 +39,8 @@ fi
 
 TASK gdas_wave_init
 
-PURPOSE: Creates WW3 grid definition files (mod_def.*) that is used for WW3
-forecast and products.
+PURPOSE: Creates WW3 grid definition files (mod_def.*) used for WW3
+forecasts and products
 
 TROUBLESHOOTING
 
