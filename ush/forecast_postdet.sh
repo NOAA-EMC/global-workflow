@@ -117,12 +117,12 @@ FV3_postdet() {
     # Regardless of warm_start or not, the sfc_data and orography files should be consistent
     # Check for consistency
     # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
-    if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
-        "${USHglobal}/check_land_input_orography.py" \
+    if [[ "${CHECK_LAND_RESTART_SOILVEG:-NO}" == "YES" ]]; then
+        "${USHglobal}/check_land_input_soilveg.py" \
             --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
         err=$?
         if [[ ${err} -ne 0 ]]; then
-            echo "FATAL ERROR: check_land_input_orography.py returned error code ${err}, ABORT!"
+            echo "FATAL ERROR: check_land_input_soilveg.py returned error code ${err}, ABORT!"
             exit "${err}"
         fi
     fi
