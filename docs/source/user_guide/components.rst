@@ -32,6 +32,7 @@ Components included as submodules:
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-WM
 * **wxflow** (https://github.com/NOAA-EMC/wxflow): Collection of python utilities for weather workflows
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses Model Evaluation Tools (MET) and METplus verfication tools. At this moment the verification package is limited to providing atmospheric metrics only.
+* **CCPP** ( https://github.com/NCAR/ccpp-physics): Common Community Physics Package (CCPP) is a submodule within UFS-WM. It is the collection of physics parameterizations used by the UFS-WM. 
 * **UPP** (https://github.com/NOAA-EMC/UPP): Unified Post Processor (UPP) is a submodule within UFS-WM. It is a software package designed to generate useful products from raw model output.
 
 .. note::
@@ -57,11 +58,13 @@ Additional documentation and resources relevant to GW is shown in the table belo
 +---------------------+-----------------------------------------------------------------------------------------+
 | GDAS                | https://www.ncei.noaa.gov/products/weather-climate-models/global-data-assimilation      |
 +---------------------+-----------------------------------------------------------------------------------------+
-| GSI                 | https://github.com/NOAA-EMC/GSI/tree/develop/doc                                       |
+| GSI                 | https://github.com/NOAA-EMC/GSI/tree/develop/doc                                        |
 +---------------------+-----------------------------------------------------------------------------------------+
 | wxflow              | https://wxflow.readthedocs.io/en/latest/                                                |
 +---------------------+-----------------------------------------------------------------------------------------+
 | Verif Global        | https://github.com/NOAA-EMC/EMC_verif-global/wiki                                       |
++---------------------+-----------------------------------------------------------------------------------------+
+| CCPP                | https://ncar.github.io/ccpp-physics/GWv1/                                               |
 +---------------------+-----------------------------------------------------------------------------------------+
 | UPP                 | https://upp.readthedocs.io/en/latest/                                                   |
 +---------------------+-----------------------------------------------------------------------------------------+

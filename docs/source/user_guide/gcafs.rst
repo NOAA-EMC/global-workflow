@@ -75,7 +75,7 @@ Configuration Files
 
 GCAFS configuration is managed through several key files in the ``dev/parm/config/gcafs/`` directory:
 
-### config.aero.j2
+### **config.aero.j2**
 
 The primary configuration file for aerosol settings, containing:
 

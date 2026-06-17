@@ -172,7 +172,7 @@ Copy the authentication link to a local browser, choose the correct account, the
 
 Once the terminal session has been properly authenticated, you are now ready to build the initial baseline image. This can be accomplished by issuing the following commands:
 
-*First, set the environment variable to create a logfile:
+*First, set the environment variable to create a logfile:*
 
 .. code-block:: bash
 
@@ -202,7 +202,7 @@ Once the build is complete, you should see an AMI listed under your Amazon Machi
 ===================================
 Create Persistent Lustre Filesystem
 ===================================
-Due to the heavy I/O load necessary to run the Global Workflow it is recommended that an **FSx**, an AWS managed high-performance file system service, can be created for Lustre file system to eliminate bottlenecks. This can be done outside of AWS ParallelCluster through the AWS UI or CLI tool.  Users may refer to this `Getting started with Amazon FSx for Lustre guide ,https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html#getting-started-step1`_. 
+Due to the heavy I/O load necessary to run the Global Workflow it is recommended that an **FSx**, an AWS managed high-performance file system service, can be created for Lustre file system to eliminate bottlenecks. This can be done outside of AWS ParallelCluster through the AWS UI or CLI tool.  Users may refer to this `Getting started with Amazon FSx for Lustre guide <https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html#getting-started-step1>`_. 
 
 Using **scratch SSD** should be fine for development cases, however for running in an operational environment it is recommended to use **Persistent SSD** to ensure consistent I/O performance.
 
@@ -273,3 +273,29 @@ The results should list the cluster status as **CREATE_COMPLETE** once the opera
 .. container:: border-figure add-space
    
    .. figure:: ../_static/aws_cluster_settings_yaml.png
+
+===========================
+Importing Data Repositories
+===========================
+
+Once the **AWS Parallelcluster** has been successfully built, certain datasets should be imported to support running the GW. These can be imported directly into the **Lustre FSx filesystem** through a *data repository association*.  The required datasets are **noaa-epic-global-release-pds** and **noaa-nws-global-pds**, which correspond to the S3 buckets *s3://noaa-epic-global-release-pds* and *s3://noaa-nws-global-pds*, respectively.
+
+These can be added to the Lustre filesystem by using the “Create data repository association” button on the Data repository menu tab
+
+.. container:: border-figure add-space
+   
+   .. figure:: ../_static/aws_s3_create.png
+
+After clicking the **Create data repository association** button, you will get a dialog box. Populate the *File system path* dialog box with ``/noaa-epic-global-release-pds`` and the *Data repository path* dialog box with ``s3://noaa-epic-global-release-pds``. Highlight the **Import metadata from repository** checkbox.  Click **deselect all** for both the import and export settings and then click the **Create** button.  This process will take a few minutes to complete.
+
+.. container:: border-figure add-space
+   
+   .. figure:: ../_static/aws_s3_create_popup.png
+
+Repeat this process for the second repository, noaa-nws-global-pds, using the values ``/noaa-nws-global-pds`` and ``s3://noaa-nws-global-pds`` respectively for the *File system path* and *Data repository path* parameters. After completion, the two S3 buckets should appear in the list of associations:
+
+.. container:: border-figure add-space
+   
+   .. figure:: ../_static/aws_s3_list.png
+
+Additional information on how to perform this task can be found in this `Overview of data repositories <https://docs.aws.amazon.com/fsx/latest/LustreGuide/overview-dra-data-repo.html>`_ documentation.

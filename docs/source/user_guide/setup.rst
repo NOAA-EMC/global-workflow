@@ -21,7 +21,7 @@ There are two main ways to run GW experiments:
 - Create the experiment directory and generate the workflow in separate steps. This is useful if you need to change settings in the experiment config files before execution. Scripts that will be used:
    - ``dev/workflow/setup_expt.py``
    - ``dev/workflow/setup_workflow.py``
-- Using case files to combine experiment directory and workflow generation into a single step. This is the method used in the :doc:`../quick_start.rst`. This is useful if you are running experiments with existing configurations, especially those from the CI test system. It also allows the generation of multiple experiments at once. Script used:
+- Using case files to combine experiment directory and workflow generation into a single step. This is the method used in the :doc:`../quick_start`. This is useful if you are running experiments with existing configurations, especially those from the CI test system. It also allows the generation of multiple experiments at once. Script used:
    - ``dev/workflow/generate_workflows.sh``
 
 ****************************************************
@@ -192,27 +192,27 @@ Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend
 
 * The main case file, which largely consists of just the settings that would be provided manually to ``setup_expt.py`` when running separately. The case file also points to a second yaml via ``experiment:yaml:``. Example from C48_ATM.yaml:
 
-   .. code-block:: yaml
-      experiment:
-        net: gfs
-        mode: forecast-only
-        pslot: {{ 'pslot' | getenv }}
-        app: ATM
-        resdetatmos: 48
-        comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
-        expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-        icsdir: {{ BASE_IC }}/C48mx500/20250808
-        idate: 2021032312
-        edate: 2021032312
-        yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+.. code-block:: yaml
+   experiment:
+      net: gfs
+      mode: forecast-only
+      pslot: {{ 'pslot' | getenv }}
+      app: ATM
+      resdetatmos: 48
+      comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+      expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+      icsdir: {{ BASE_IC }}/C48mx500/20250808
+      idate: 2021032312
+      edate: 2021032312
+      yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
 
-      workflow:
-        engine: rocoto
-        rocoto:
-          maxtries: 2
-          cyclethrottle: 3
-          taskthrottle: 25
-          verbosity: 2
+   workflow:
+      engine: rocoto
+      rocoto:
+        maxtries: 2
+        cyclethrottle: 3
+        taskthrottle: 25
+        verbosity: 2
 
 - The second yaml points to a third yaml that contains default values, along with settings that override those in the default yaml. Other than the defaults section, other blocks refer to the config file the settings belong to (i.e. settings in ``base:`` modify ``config.base``). For the included cases, these are found in ``dev/ci/cases/yaml``. Continuing with our example:
 

@@ -73,7 +73,8 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
 +-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
 | Azure (NOAA PW) | 3    |  X  |   X  |       |  X  |     |         |            |      X     |       |     |         |         |      |
 +-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
-\*HPSS archival via globus, see :doc:`globus_arch`
+
+\* For setting up HPSS archival via globus, see :doc:`globus_arch`
 
 =============
 HPC Helpdesks
