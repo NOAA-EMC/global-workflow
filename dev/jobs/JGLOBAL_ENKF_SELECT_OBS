@@ -37,7 +37,7 @@ export GSUFFIX="ensmean."
 
 # Generate COM variables from templates
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN/enkf/}.${PDY}/${cyc}/atmos"
     declare -rx COMIN_OBS
 else
     declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"

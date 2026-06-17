@@ -40,7 +40,7 @@ declare -rx COMIN_ATMOS_TRACK="${COMIN}/products/atmos/cyclone/tracks"
 declare -rx COMIN_CHEM_ANALYSIS="${COMIN}/analysis/chem"
 declare -rx COMIN_SNOW_ANALYSIS="${COMIN}/analysis/snow"
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN/enkf/}.${PDY}/${cyc}/atmos"
     declare -rx COMIN_OBS
 else
     declare -rx COMIN_OBS="${COMIN}/obs"
