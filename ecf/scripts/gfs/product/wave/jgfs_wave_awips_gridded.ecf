@@ -39,8 +39,8 @@ fi
 
 TASK gfs_wave_awips_gridded
 
-PURPOSE: Generates AWIPS-compatible gridded wave bulletins (WMO GRIB2) from WW3
-output for NWS forecast offices. Single-instance task.
+PURPOSE: Generates AWIPS-compatible gridded wave bulletins (WMO GRIB2)
+from WW3 output for NWS forecast offices. Single-instance task.
 
 TROUBLESHOOTING
 
