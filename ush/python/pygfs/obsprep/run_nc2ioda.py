@@ -24,7 +24,7 @@ def run_nc2ioda(task_config: dict, obs_space: str, context: dict) -> int:
     save_as_yaml(yaml_config, nc2ioda_yaml)
 
     # Run the ioda converter
-    nc2ioda_exe = join(task_config['EXECgfs'], 'gdas_obsprovider2ioda.x')
+    nc2ioda_exe = join(task_config['EXECglobal'], 'gdas_obsprovider2ioda.x')
     exec_cmd = Executable(nc2ioda_exe)
     exec_cmd.add_default_arg(nc2ioda_yaml)
 
