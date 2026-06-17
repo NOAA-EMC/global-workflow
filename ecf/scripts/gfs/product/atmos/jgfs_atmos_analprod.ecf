@@ -40,13 +40,13 @@ fi
 
 TASK gfs_atmos_analprod
 
-PURPOSE: Analysis product generation from atmospheric analysis fields. NOT ON
-DISK in v17 -- functionality merged into atmanlupp.
+PURPOSE: Analysis product generation from atmospheric analysis fields.
+In v17 this task is deprecated; functionality is handled by
+jgfs_atmos_atmanlupp (UPP on analysis).
 
 TROUBLESHOOTING
 
-SKIPPED -- script not present in v17 worktree. Functionality handled by
-jgfs_atmos_atmanlupp (UPP on analysis). If this task is triggered by
-suite definition, it will fail.
+If this task is still referenced by the suite definition, remove it or
+replace it with jgfs_atmos_atmanlupp; otherwise job submission will fail.
 
 %end
