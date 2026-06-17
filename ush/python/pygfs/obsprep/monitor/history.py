@@ -12,8 +12,7 @@ def load_history(config, cycle):
         ymd = d.strftime("%Y%m%d")
         hh = cycle["hour"]
 
-        path = f"{base}/{config['system']}/{config['model']}/{ymd}/" \
-               f"{config['system']}_{config['model']}_{ymd}_{hh:02d}.json"
+        path = f"{base}/{config['model']}.{ymd}/updated.status/{config['model']}.t{hh:02d}z.updated.status.json"
 
         if os.path.exists(path):
             try:

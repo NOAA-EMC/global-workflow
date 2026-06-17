@@ -94,5 +94,4 @@ def build_path(config, cycle, ext):
     # ymd = cycle[:8]
     # hh = int(cycle[8:])
 
-    return f"{base}/{config['system']}/{config['model']}/{ymd}/" \
-           f"{config['system']}_{config['model']}_{ymd}_{hh:02d}.{ext}"
+    return f"{base}/{config['model']}.{ymd}/updated.status/{config['model']}.t{hh:02d}z.updated.status.marine.{ext}"
