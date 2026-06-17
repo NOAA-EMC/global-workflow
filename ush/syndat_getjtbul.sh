@@ -66,7 +66,7 @@ find="${ymd} ${cyc}"
 echo "looking for string ${find} in ${jtwcdir}/tropcyc"
 
 rm -f jtwcbul
-grep "${ymd} ${cyc}" "${jtwcdir}/tropcyc" | grep JTWC > jtwcbul
+grep "${ymd} ${cyc}" "${jtwcdir}/tropcyc" | grep JTWC > jtwcbul || true
 if [[ -s jtwcbul ]]; then
     echo "String found: contents of JTWC bulletin are:"
     cat jtwcbul
@@ -75,7 +75,7 @@ else
 fi
 
 if [[ "${cyc}" == "00" ]]; then
-    grep "${ymd} ${cyc}" "${jtwcdirm1}/tropcyc" | grep JTWC >> jtwcbul
+    grep "${ymd} ${cyc}" "${jtwcdirm1}/tropcyc" | grep JTWC >> jtwcbul || true
     if [[ -s jtwcbul ]]; then
         echo "String found: contents of JTWC bulletin are:"
         cat jtwcbul
