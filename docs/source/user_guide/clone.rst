@@ -28,7 +28,7 @@ The `build_all.sh` script can be used to build all required components of the gl
    - ``-v``: Execute all build scripts with -v option to turn on verbose where supported
    - ``-h``: Print help message and exit
 
-The accepted arguments is a list of systems to be built.  This includes builds for **GFS**, **GEFS**, and **SFS** forecast-only experiments, **GSI** and **GDASApp**-based DA for **cycled GFS** experiments.  See :ref:`feature availability <feature_availability>` to see which system(s) are available on each supported system.
+The accepted arguments is a list of systems to be built.  This includes builds for **GFS**, **GEFS**, **GCAFS**, and **SFS** forecast-only experiments, **GSI** and **GDASApp**-based DA for **cycled GFS** experiments.  See :ref:`feature availability <feature_availability>` to see which system(s) are available on each supported system.
 
 .. code-block:: bash
 
