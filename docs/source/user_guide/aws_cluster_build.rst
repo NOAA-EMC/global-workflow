@@ -11,7 +11,7 @@ The global workflow can be run in Amazon Web Services using their HPC platform p
 
 .. warning::
 
-	To proceed you will need to have a paid AWS account. An AWS Free Tier account can build the cluster but cannot run it due to limited compute resources.
+	To proceed you will need to have a paid AWS account.
 
 =============================
 Create a utility AWS instance
@@ -120,9 +120,7 @@ Users may refer to the directions on `Installing HashiCorp Packer and AWS Parall
 
 .. note::
    
-   It is required to use the Amazon EC2 plugin in conjunction with Packer
-
-Amazon EC2 plugin can be installed by issuing the following command with Packer:
+   It is required to use the Amazon EC2 plugin in conjunction with Packer. Amazon EC2 plugin can be installed by issuing the following command with Packer:
 
 .. code-block:: bash
 
