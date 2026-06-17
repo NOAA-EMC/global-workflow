@@ -83,12 +83,15 @@ export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 # CONVENIENT utility scripts and other environment parameters
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
-export VERBOSE="YES"
-export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="YES"
 export CHGRP_CMD="chgrp rstprod"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
 export NCLEN="${HOMEglobal}/ush/getncdimlen"
+
+export VERBOSE="YES"
+export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
+export CAT_MPMD_LOGS="NO"  # Copy MPMD logs to the parent log. Useful for debugging.
+export CHECK_DEAD_LINKS="NO" # Whether to check for dead links in DATA directories before execution
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="${HOMEglobal}/env"

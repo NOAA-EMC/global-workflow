@@ -39,6 +39,27 @@ EOF
 
 # shellcheck disable=SC2155
 readonly HOMEglobal=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
+
+#------------------------------------
+# GET MACHINE
+#------------------------------------
+export COMPILER="intel"
+source "${HOMEglobal}/ush/detect_machine.sh"
+source "${HOMEglobal}/ush/module-setup.sh"
+if [[ -z "${MACHINE_ID}" ]]; then
+    echo "FATAL: Unable to determine target machine"
+    exit 1
+fi
+
+#------------------------------------
+# SOURCE BUILD VERSION FILES ON WCOSS2
+#------------------------------------
+if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+    cd "${HOMEglobal}/versions" || exit 1
+    ln -sf "${HOMEglobal}"/versions/build."${MACHINE_ID}".ver "${HOMEglobal}"/versions/build.ver
+    source "${HOMEglobal}"/versions/build.ver
+fi
+
 cd "${HOMEglobal}/sorc" || exit 1
 
 _build_ufs_opt=""
@@ -160,26 +181,6 @@ for system in ${selected_systems}; do
         _usage
     fi
 done
-
-#------------------------------------
-# GET MACHINE
-#------------------------------------
-export COMPILER="intel"
-source "${HOMEglobal}/ush/detect_machine.sh"
-source "${HOMEglobal}/ush/module-setup.sh"
-if [[ -z "${MACHINE_ID}" ]]; then
-    echo "FATAL: Unable to determine target machine"
-    exit 1
-fi
-
-# Create the log directory
-mkdir -p "${HOMEglobal}/sorc/logs"
-
-#------------------------------------
-# SOURCE BUILD VERSION FILES
-#------------------------------------
-# TODO: Commented out until components aligned for build
-#source ../versions/build.ver
 
 #------------------------------------
 # Exception Handling Init

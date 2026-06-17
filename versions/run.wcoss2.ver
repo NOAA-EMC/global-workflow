@@ -4,7 +4,7 @@ export gfs_ver=v17.0.0
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
-export rtofs_ver=v2.3
+export rtofs_ver=v2.5
 export obsproc_ver=v1.2
 export imagemagick_ver=7.0.8-7
 export cdo_ver=1.9.8
@@ -12,20 +12,17 @@ export perl_ver=5.32.0
 export python_ver=3.12.0
 export gw_ve_ver=1.0
 export gempak_ver=7.15.1
-export nco_ver=5.0.6
-export grib_util_ver=1.2.3
-export bufr_dump_ver=1.0.0
-export wgrib2_ver=2.0.8
+export nco_ver=5.2.4
+export grib_util_ver=1.2.4
+export bufr_dump_ver=1.3.2
+export wgrib2_ver=2.0.8_wmo
+export bufr_ver=12.3.0
 
-export envvar_ver=1.0
-export prod_envir_ver=${prod_envir_ver:-2.0.4} # Allow override from ops ecflow
-export prod_util_ver=${prod_util_ver:-2.0.9}   # Allow override from ops ecflow
-
-export PrgEnv_intel_ver=8.1.0
+export PrgEnv_intel_ver=8.5.0
 export intel_ver=19.1.3.304
-export craype_ver=2.7.13
-export cray_mpich_ver=8.1.9
-export cray_pals_ver=1.0.17
+export craype_ver=2.7.17
+export cray_mpich_ver=8.1.19
+export cray_pals_ver=1.3.2
 export cfp_ver=2.0.4
 
 export libjpeg_ver=9c
@@ -39,20 +36,46 @@ export hdf5_ver=1.14.0
 export pnetcdf_ver=1.12.2
 export netcdf_ver=4.9.2
 export esmf_ver=8.8.0
-
-export util_shared_ver=1.4.0
+export mapl_ver=2.53.0
+export pio_ver=2.5.10
+export util_shared_ver=1.5.1
 export ncdiag_ver=1.1.2
-export g2tmpl_ver=1.10.2
+export g2tmpl_ver=1.17.0
+export g2_ver=3.5.1
 export crtm_ver=2.4.0.2
-export met_ver=9.1.3
-export metplus_ver=3.1.1
 
+export zstd_ver=1.5.0
+export pigz_ver=2.3.4
+export nccmp_ver=1.8.9.0
+export boost_ver=1.79.0
+export eigen_ver=3.4.0
+export eckit_ver=1.28.3
+export fckit_ver=0.13.2
+export atlas_ver=0.44.1
+export fms_ver=2024.01
+export curl_ver=7.72.0
+export sp_ver=2.4.0
+export ip_ver=5.2.0
+export gsl_lit_ver=v0.40.0
+export bacio_ver=2.4.1
+export w3emc_ver=2.12.0
+export w3nco_ver=2.4.1
+export nemsio_ver=2.5.4
+export sigio_ver=2.3.2
+export wrf_io_ver=1.2.0
+export scotch_ver=7.0.4
+# Development-only below
+
+export envvar_ver=1.0
+export prod_envir_ver=${prod_envir_ver:-2.0.4} # Allow override from ops ecflow
+export prod_util_ver=${prod_util_ver:-2.0.9}   # Allow override from ops ecflow
 export obsproc_run_ver=1.2.0
 export prepobs_run_ver=1.1.3
+export met_ver=9.1.3
+export metplus_ver=3.1.1
 export ens_tracker_ver=v1.3.0
 export fit2obs_ver=1.1.10
 
-# Development-only below
 export RUN_ENVIR='emc'
 export NET='gfs'
 
@@ -64,4 +87,3 @@ export DMPDIR=/lfs/h2/emc/dump/noscrub/dump
 export DMPDIR_ocean=/lfs/h2/emc/global/noscrub/emc.global/ocean
 export IODADIR=/lfs/h2/emc/dump/noscrub/dump_ioda
 export COMINobsproc="/lfs/h2/emc/dump/noscrub/dump/gfs.${PDY}/${cyc}/atmos"
-
