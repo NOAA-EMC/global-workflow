@@ -23,7 +23,8 @@ def scan_cycle(config, cycle):
     hh = cycle["hour"]
 
     path = f"{base}/{model}.{ymd}/{hh:02d}/{system}"
-    assert os.path.exists(path), f"Missing data path: {path}"
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Missing data path: {path}")
 
     counts = {}
 

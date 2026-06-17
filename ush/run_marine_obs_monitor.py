@@ -33,7 +33,8 @@ def main():
 
     required = ["obs_spaces"]
     for k in required:
-        assert k in config, f"Missing config key: {k}"
+        if k not in config:
+            raise KeyError(f"Missing config key: {k}")
     config["data_root"] = os.environ["ROTDIR"]
     config["report_root"] = os.path.join(os.environ["ROTDIR"], "sdm_rtdm", "obcount_30day")
     config["model"] = os.environ["RUN"]

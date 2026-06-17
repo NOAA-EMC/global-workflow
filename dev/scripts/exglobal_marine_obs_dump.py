@@ -5,7 +5,7 @@
 # global marine assimilation
 import os
 
-from wxflow import AttrDict, Executable, Logger, cast_strdict_as_dtypedict, parse_j2yaml
+from wxflow import AttrDict, Executable, Logger, WorkflowException, cast_strdict_as_dtypedict, parse_j2yaml
 from pygfs.task.marine_prepobs import MarineObsPrep
 
 # Initialize root logger

@@ -25,13 +25,12 @@ def str_to_int(s):
     return int(s)
 
 def discover_cycles(config):
-    base = os.env["ROTDIR"]
-    model = os.env["RUN"]
+    base = os.environ["ROTDIR"]
+    model = os.environ["RUN"]
 
     cycles = []
 
     # ONLY top-level model dirs
-    pattern = os.path.join(base, f"{model}.[0-9]" * 8)
     pattern = os.path.join(base, f"{model}.*")  # safer
 
     for day_path in glob.glob(pattern):
@@ -55,11 +54,11 @@ def select_cycles(config):
     start = config.get("start_cycle")
     end = config.get("end_cycle")
 
-    if start:
-        assert len(start) == 10, "start_cycle must be YYYYMMDDHH"
+    if start and len(start) != 10:
+        raise ValueError("start_cycle must be YYYYMMDDHH")
 
-    if end:
-        assert len(end) == 10, "end_cycle must be YYYYMMDDHH"
+    if end and len(end) != 10:
+        raise ValueError("end_cycle must be YYYYMMDDHH")
 
     available = discover_cycles(config)  # from filesystem
 
@@ -80,6 +79,8 @@ def select_cycles(config):
                 if cycle_to_int(c) <= end_i]
 
     else:
+        if not available:
+            raise RuntimeError("No cycles found on the filesystem.")
         cycles = [max(available, key=lambda c: (int(c["date"]), int(c["hour"])))]
 
     return cycles

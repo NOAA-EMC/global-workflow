@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def format_row(count, avg, flag, code, desc):
@@ -32,7 +32,7 @@ def generate_report(config, cycle, counts, averages):
 
     data_rows = "\n".join(rows)
 
-    now = datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")
+    now = datetime.now(timezone.utc).strftime("%a %b %d %H:%M:%S UTC %Y")
 
     return f"""********************************************************************************
 *                                                                              *
@@ -71,7 +71,7 @@ def save_json(config, cycle, counts):
         "cycle": f"{cycle['date']}_{cycle['hour']:02d}",
         "model": config["model"],
         "system": config["system"],
-        "generated": datetime.utcnow().isoformat() + "Z",
+        "generated": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "counts": counts,
     }
 
