@@ -44,7 +44,7 @@ suite gfs_v17_nco
             task jgfs_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete
           endfamily		//wave
         endfamily		//init
         family analysis
@@ -81,7 +81,7 @@ suite gfs_v17_nco
             task jgfs_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted and ../../../../18/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -5371,7 +5371,7 @@ suite gfs_v17_nco
             task jgdas_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete
           endfamily		//wave
         endfamily		//init
         family analysis
@@ -5413,7 +5413,7 @@ suite gfs_v17_nco
             task jgdas_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../18/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -5606,11 +5606,11 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_observer
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
@@ -5950,7 +5950,7 @@ suite gfs_v17_nco
             task jgfs_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete
           endfamily		//wave
         endfamily		//init
         family analysis
@@ -5987,7 +5987,7 @@ suite gfs_v17_nco
             task jgfs_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted and ../../../../00/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -11277,7 +11277,7 @@ suite gfs_v17_nco
             task jgdas_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete
           endfamily  		//wave
         endfamily    		//init
         family analysis
@@ -11319,7 +11319,7 @@ suite gfs_v17_nco
             task jgdas_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../00/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -11512,11 +11512,11 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_observer
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
@@ -11856,7 +11856,7 @@ suite gfs_v17_nco
             task jgfs_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete
           endfamily		//wave
         endfamily		//init
         family analysis
@@ -11893,7 +11893,7 @@ suite gfs_v17_nco
             task jgfs_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted and ../../../../06/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -17183,7 +17183,7 @@ suite gfs_v17_nco
             task jgdas_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete
           endfamily  		//wave
         endfamily    		//init
         family analysis
@@ -17225,7 +17225,7 @@ suite gfs_v17_nco
             task jgdas_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../06/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -17418,11 +17418,11 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_observer
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
@@ -17762,7 +17762,7 @@ suite gfs_v17_nco
             task jgfs_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete
           endfamily		//wave
         endfamily		//init
         family analysis
@@ -17799,7 +17799,7 @@ suite gfs_v17_nco
             task jgfs_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==submitted and ../../../../12/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -23089,7 +23089,7 @@ suite gfs_v17_nco
             task jgdas_wave_init
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete
           endfamily  		//wave
         endfamily    		//init
         family analysis
@@ -23131,7 +23131,7 @@ suite gfs_v17_nco
             task jgdas_atmos_analsnow
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../12/gdas/forecast/jgdas_fcst==complete 
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -23324,11 +23324,11 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_observer
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
-              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==submitted and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../../gdas/prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
             task jenkfgdas_atmos_ens_update
               trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
