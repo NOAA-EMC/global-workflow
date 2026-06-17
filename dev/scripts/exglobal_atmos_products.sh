@@ -38,7 +38,11 @@ fi
 IFS=':' read -ra grids <<< "${grid_string}"
 
 # Files needed by ${USHglobal}/interp_atmos_master.sh
-MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
+if [[ "${fhr3}" == "analysis" ]]; then
+    MASTER_FILE="${COMIN_ATMOS_ANALYSIS}/${PREFIX}master.${fhr3}.grib2"
+else
+    MASTER_FILE="${COMIN_ATMOS_MASTER}/${PREFIX}master.${fhr3}.grib2"
+fi
 
 # Create an index file for the master
 ${WGRIB2} -s "${MASTER_FILE}" > "${MASTER_FILE}.idx"
@@ -125,9 +129,6 @@ for ((nset = 1; nset <= downset; nset++)); do
     if [[ ${err} -ne 0 ]]; then
         err_exit "FATAL ERROR: Some or all interpolations of the master grib file failed during MPMD execution!"
     fi
-
-    # We are in a loop over downset, save output from mpmd into nset specific output
-    mv mpmd.out "mpmd_${nset}.out"
 
     # Concatenate grib files from each processor into a single one
     # and clean-up as you go

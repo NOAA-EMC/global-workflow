@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
-export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT/enkf/}/${RUN/enkf/}_marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlecen"
 export DATAens="${DATAjob}/ensdata"
 
@@ -24,10 +24,6 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
-
-## HOTFIX
-# TODO Fix this in the input.nml template so RESTART doesn't get created in the first place.
-mkdir -p "${DATA}/RESTART"
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
