@@ -43,4 +43,3 @@ Here is an example ``ROTDIR`` for a cycled run as it may look several cycles in 
    drwxr-sr-x   4 Joe.Schmo stmp  4096 Oct 22 07:15 gfs.20190530
    drwxr-sr-x 120 Joe.Schmo stmp 12288 Oct 22 07:15 logs
    drwxr-sr-x  13 Joe.Schmo stmp  4096 Oct 22 07:07 vrfyarch
-

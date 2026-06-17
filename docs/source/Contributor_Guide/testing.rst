@@ -31,9 +31,9 @@ The testing framework consists of four primary execution phases:
 
 Each phase is orchestrated through CMake/CTest, providing seamless integration with continuous integration (CI) pipelines and local development workflows.
 
-*********************
+**********************
 Framework Architecture
-*********************
+**********************
 
 Directory Structure
 ===================
@@ -64,7 +64,7 @@ The testing framework operates within a well-defined directory hierarchy:
     └── ...
 
 Configuration Management
-=========================
+========================
 
 Platform-specific configuration is defined in::
 
@@ -111,9 +111,9 @@ This function generates four CTest test cases:
 
 Each test depends on the previous phase, ensuring proper execution order.
 
-*************************
+***********************
 Test Case Configuration
-*************************
+***********************
 
 Naming Conventions
 ==================
@@ -226,9 +226,9 @@ Some tests require data from multiple cycles (e.g., coupled forecasts needing re
 
 This creates directory structures for **both** current and previous cycles in the test environment.
 
-**************************
+********************
 Common Test Patterns
-**************************
+********************
 
 Atmosphere-Only Forecast
 ========================
@@ -315,9 +315,9 @@ Product Generation Test
 * Validates product file formats
 * Multiple forecast hour handling
 
-**************************
+************************
 Running Tests with CMake
-**************************
+************************
 
 Environment Setup
 =================
@@ -459,12 +459,12 @@ Set validation mode before running tests:
     export CTEST_VALIDATION_MODE=STRICT
     ctest -R test_C48_ATM-gfs_fcst_seg0_validate -V
 
-************************
+****************
 Adding New Tests
-************************
+****************
 
 Step-by-Step Procedure
-=======================
+======================
 
 **Step 1: Add Test Definition to CMakeLists.txt**
 
@@ -566,9 +566,9 @@ Best Practices
 6. **Check Both Cycles**: For coupled tests, verify both current and previous cycle files exist
 7. **Validate Early**: Run validation frequently during development to catch issues
 
-****************************
+*****************
 CI/CD Integration
-****************************
+*****************
 
 GitLab CI Pipeline
 ==================
@@ -623,9 +623,9 @@ CTest framework runs on all Tier 1 and Tier 2 platforms:
 
 Platform-specific configurations are maintained in ``dev/ci/platforms/config.$MACHINE_ID``.
 
-****************************
+***************
 Troubleshooting
-****************************
+***************
 
 Common Issues
 =============
@@ -778,16 +778,16 @@ Debugging Strategies
     config = parse_j2yaml('cases/C48_ATM-gfs_fcst_seg0.yaml', data)
     print(config)
 
-****************************
+********************
 Additional Resources
-****************************
+********************
 
 Related Documentation
 =====================
 
 * :doc:`development` - Contributing guidelines and development workflow
-* :doc:`jobs` - Job descriptions and workflow structure
-* :doc:`configure` - Configuration switches and options
+* :doc:`../User_Guide/gfs_jobs` - Job descriptions and workflow structure
+* :doc:`../User_Guide/configure` - Configuration switches and options
 
 Directory Reference
 ===================

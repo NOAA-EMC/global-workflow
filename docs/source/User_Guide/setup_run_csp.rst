@@ -1,16 +1,20 @@
 .. role:: red-text
 
-########################################
-Configuring NOAA Cloud Service Providers
-########################################
+#####################################
+Setup and Run Global Workflow on CSPs 
+#####################################
 
 The NOAA Cloud Service Providers (CSPs) support the forecast-only,
-coupled, and GEFS configurations for global-workflow.
+coupled, and GEFS configurations for Global Workflow.
 Once a suitable CSP instance and cluster is defined/created,
-the global-workflow may be executed similarly to the on-premises (on-prem) machines.
+the Global Workflow may be executed similarly to the on-premises (on-prem) machines.
 Currently, the global-workflow supports the following
 instance and storage types as a function of CSP and forecast
 resolution.
+
+=====================
+Configuring NOAA CSPs
+=====================
 
 .. list-table::
    :widths: auto
@@ -84,7 +88,7 @@ Configure the NOAA CSP Instance
 Once logged into the NOAA CSP, navigate to the ``Marketplace`` section
 in the left sidebar as indicated by the red arrow in :numref:`Figure %s <pw-marketplace>`, and click.
 Scroll down to select "AWS EPIC Wei c7i.24xlarge", circled in red.
-Note that the current global-workflow is now using Rocky8 spack-stack.
+Note that the current Global Workflow is now using Rocky8 spack-stack.
 
 .. _pw-marketplace:
 
@@ -146,11 +150,11 @@ Existing clusters may also be modified.
 However, it is best practice to fork from Marketplace with something similar to your requests
 (rather than modifying an existing cluster).
 
-******************************
+************************* 
 Add CSP Lustre Filesystem
-******************************
+************************* 
 
-To run global-workflow on CSPs, we need to attach the ``/lustre`` filesystem as a run directory.
+To run Global Workflow on CSPs, we need to attach the ``/lustre`` filesystem as a run directory.
 First, we need to add/define our ``/lustre`` filesystem.
 To do so, navigate to the middle of the NOAA PW website left side panel and select *Lustre*
 (see the red arrow in :numref:`Figure %s <select-lustre>`), and then click *Add Storage*
@@ -225,7 +229,7 @@ Then follow the steps illustrated in :numref:`Figure %s <config-lustre>` below:
 
    Defining the Lustre Filesystem Capacity
 
-For the storage to be allocated for the global-workflow application,
+For the storage to be allocated for the Global Workflow application,
 it is suggested that the ``Mount Point`` be ``/lustre``. Once the storage
 has been configured, follow the steps below to attach the ``/lustre`` filesystem.
 
@@ -277,7 +281,7 @@ which are also shown in :numref:`Figure %s <change-settings>`.
 
 #. In the *Storage* box, select the lustre filesystem defined above, as in red arrow 1.
 #. In the *Mount Point* box, name it ``/lustre`` (the common and default choice), as indicated by red arrow 2.
-   If you choose a different name, make sure that the name chosen here uses the name from the global-workflow setup step.
+   If you choose a different name, make sure that the name chosen here uses the name from the Global Workflow setup step.
 
 If you have a S3 bucket, one can attached as:
 
@@ -327,7 +331,7 @@ When the cluster is activated, users will see the following indicators of succes
 
 Please note, as soon as the cluster is activated, AWS/PW starts charging you for use of the cluster.
 As this cluster is exclusive for yourself, AWS keeps charging you as long as the cluster is active.
-For running global-workflow, one needs to keep the cluster active if there are any Rocoto jobs running
+For running Global Workflow, one needs to keep the cluster active if there are any Rocoto jobs running
 because Rocoto uses `crontab`, which needs the cluster active all the time, or the crontab job will be terminated.
 
 .. _cluster-on:
@@ -352,21 +356,21 @@ A window will pop up; click the red *Turn Off* button to switch off the cluster.
 
    Terminating the Cluster
 
-***************************
-Running the Global Workflow
-***************************
+===============================
+Running Global Workflow on CSPs
+===============================
 
 Assuming you have an AWS cluster running, after logging in to the cluster through ``ssh`` from your laptop terminal
-or accessing the cluster from your web terminal, you can start to clone, compile, and run global-workflow.
+or accessing the cluster from your web terminal, you can start to clone, compile, and run Global Workflow.
 
-#. Clone global-workflow (assumes you have set up access to GitHub):
+#. Clone Global Workflow (assumes you have set up access to GitHub):
 
    .. code-block:: console
 
       cd /contrib/$USER   #you should have a username and have a directory at /contrib, where we save our permanent files.
       git clone --recursive git@github.com:NOAA-EMC/global-workflow.git global-workflow
 
-#. Compile global-workflow:
+#. Compile Global Workflow:
 
    .. code-block:: console
 
@@ -397,7 +401,7 @@ or accessing the cluster from your web terminal, you can start to clone, compile
       build_all.sh -w
       link_workflow.sh
 
-#. Run global-workflow C48 ATM test case (assumes user has ``/lustre`` filesystem attached):
+#. Run Global Workflow C48 ATM test case (assumes user has ``/lustre`` filesystem attached):
 
    .. code-block:: console
 
@@ -412,5 +416,5 @@ or accessing the cluster from your web terminal, you can start to clone, compile
 
 EPIC has copied the C48 and C96 ATM, GEFS, and some other data to AWS, and the current code has been set up to use those data.
 If users want to run their own case, they need to make changes to the IC path and others to make it work.
-The execution of the global-workflow should now follow the same steps
+The execution of the Global Workflow should now follow the same steps
 as those for the RDHPCS on-premises hosts.
