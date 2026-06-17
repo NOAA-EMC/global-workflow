@@ -51,7 +51,6 @@ TROUBLESHOOTING
 
 Depends on wave_postsbs_master output (wave GRIB2 files). If wave post-
 processing did not produce GRIB2 for this hour, GEMPAK conversion fails.
-Check $COMOUT_WAVE_GRID for the target forecast hour. Heavy cpus (128)
-but usually completes quickly.
+Check $COMOUT_WAVE_GRID for the target forecast hour.
 
 %end
