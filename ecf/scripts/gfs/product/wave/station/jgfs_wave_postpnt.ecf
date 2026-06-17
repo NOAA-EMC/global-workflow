@@ -39,8 +39,8 @@ fi
 
 TASK gfs_wave_postpnt
 
-PURPOSE: Generates wave station/point spectral data and text bulletins at buoy
-locations. Single-instance per cycle.
+PURPOSE: Generates wave station/point spectral data and text bulletins
+at buoy locations. Single-instance per cycle.
 
 TROUBLESHOOTING
 
