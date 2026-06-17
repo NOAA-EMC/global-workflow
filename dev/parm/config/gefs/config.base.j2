@@ -77,13 +77,16 @@ export HOMEpost="${HOMEglobal}"
 # CONVENIENT utility scripts and other environment parameters
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
-export VERBOSE="YES"
-export CHECK_DEAD_LINKS="NO"
-export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
 export CHGRP_CMD="{{ CHGRP_CMD }}"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
 export NCLEN="${HOMEglobal}/ush/getncdimlen"
+
+# Log control
+export VERBOSE="YES"
+export CHECK_DEAD_LINKS="NO"
+export CAT_MPMD_LOGS="YES"  # Copy MPMD logs to the parent log. Remove or set to NO when delivering to NCO.
+export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="${HOMEglobal}/env"

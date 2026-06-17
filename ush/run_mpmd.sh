@@ -76,6 +76,9 @@ export OMP_NUM_THREADS=1
 mpmd_cmdfile="${DATA:-}/mpmd_cmdfile"
 rm -f "${mpmd_cmdfile}"*
 
+# Get the starting timestamp for the log/command output directory.
+timestamp=$(date +%Y%m%d_%H%M%S)
+
 # Functions to support MPMD execution
 chunk_mpmd() {
     # Usage chunk_mpmd cmdfile chunk_size chunk_num chunk_file
@@ -132,30 +135,46 @@ chunk_mpmd() {
     return 0
 }
 
-cat_outputs() {
-    # This function concatenates the output files from the MPMD job and prints them to stdout.
-    # It also removes the individual output files after concatenation.
+move_outputs() {
+    # This function makes an after-run directory (mpmd_<timestamp>) and moves the run scripts
+    # and outputs to this directory.
+    # Usage: move_outputs chunk_num
 
-    # Optional argument to issue error if no output files are found.
-    _err_on_empty="${1:-false}"
-    out_files=$(find . -name 'mpmd.*.out')
-    if [[ -z "${out_files}" ]]; then
-        if [[ "${_err_on_empty}" == "true" ]]; then
-            echo "ERROR: No output files found for MPMD job"
-            return 1
-        else
-            # Nothing to do, return success.
-            return 0
-        fi
+    if [[ $# -ne 1 ]]; then
+        echo "ERROR: move_outputs function requires 1 argument: the chunk number."
+        return 1
     fi
-    for file in ${out_files}; do
-        {
-            echo "BEGIN OUTPUT FROM ${file}"
-            cat "${file}"
-            echo "END OUTPUT FROM ${file}"
-        } >> mpmd.out
-        rm -f "${file}"
-    done
+
+    local chunk_num="${1}"
+
+    # Only find the output files for this chunk, which should be named mpmd.*.out
+    out_files=$(find "${DATA:-}" -maxdepth 1 -type f -name "mpmd.*.out" -print)
+    if [[ -z "${out_files}" ]]; then
+        # Nothing to do, raise a warning and exit successfully
+        echo "WARNING: No output files found from MPMD jobs."
+        return 0
+    fi
+
+    echo "INFO: Moving MPMD output files for chunk ${chunk_num} to after-run directory."
+
+    after_run_dir="mpmd_${timestamp}_chunk${chunk_num}"
+    mkdir -p "${after_run_dir}"
+
+    # Write logs back to stdout if requested.
+    if [[ "${CAT_MPMD_LOGS:-NO}" == "YES" ]]; then
+        for out_file in ${out_files}; do
+            echo "INFO: Contents of ${out_file}:"
+            cat "${out_file}"
+        done
+    fi
+
+    # shellcheck disable=SC2086
+    mv -f ${out_files} "${after_run_dir}/"
+
+    mv -f "${mpmd_cmdfile}.chunk${chunk_num}" "${after_run_dir}/"
+
+    # Always copy the cmdfile to the after_run_dir for reference.
+    cp "${cmdfile}" "${after_run_dir}/"
 }
 
 cat << EOF
@@ -176,6 +195,7 @@ if [[ ${nm} -gt ${max_tasks_per_node:-1} ]]; then
     echo "INFO: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
     echo "      Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
     chunk_size=${max_tasks_per_node:-1}
+    # Calculate the number of chunks needed (ceil (nm / chunk_size))
 else
     # Otherwise, we can run all MPMD tasks in one chunk.
     chunk_size=${nm}
@@ -209,27 +229,9 @@ for ((i = 0; i < nm; i += chunk_size)); do
         echo "ERROR: MPMD job failed for ${chunk_file}"
         break
     fi
-    # Call cat_outputs and error if no outputs are found.
-    cat_outputs "true"
-    err=$?
-    if [[ ${err} -ne 0 ]]; then
-        echo "ERROR: No output files found for MPMD job for chunk file '${chunk_file}'"
-        break
-    fi
+    # Move just the log files for this chunk.
+    move_outputs "${chunk_num}"
     ((chunk_num = chunk_num + 1))
 done
-
-# On success remove the command file and any chunk files.
-if [[ ${err} -eq 0 ]]; then
-    rm -f "${mpmd_cmdfile}.chunk"*
-fi
-
-# Concatenate any remaining output files if they exist
-cat_outputs
-if [[ -s mpmd.out ]]; then
-    cat mpmd.out
-else
-    echo "WARNING: No output files found for MPMD job"
-fi
 
 exit "${err}"
