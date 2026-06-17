@@ -70,7 +70,7 @@ dev/jobs/JGLOBAL_EXTRACTVARS @EricSinsky-NOAA
 dev/jobs/JGLOBAL_FORECAST @DavidHuber-NOAA
 dev/jobs/JGLOBAL_FORECAST_MANAGER @AntonMFernando-NOAA @DavidHuber-NOAA
 dev/jobs/JGLOBAL_MARINE_* @guillaumevernieres @AndrewEichmann-NOAA
-dev/jobs/JGLOBAL_OCEANICE_PRODUCTS @JesseMeng-NOAA @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
+dev/jobs/JGLOBAL_OCEANICE_PRODUCTS @JesseMeng-NOAA @BenjaminBlake-NOAA @WenMeng-NOAA
 dev/jobs/JGLOBAL_OFFLINE_ATMOS_ANALYSIS @CoryMartin-NOAA
 dev/jobs/JGLOBAL_PREP_EMISSIONS @bbakernoaa
 dev/jobs/JGLOBAL_PREP_OCEAN_OBS @guillaumevernieres @AndrewEichmann-NOAA
