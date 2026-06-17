@@ -26,6 +26,7 @@ systems:
     - "gsi_utils"
     - "gsi_monitor"
   gefs:
+    - "nexus"
     - "gefs_model"
     - "gefs_ww3_prepost"
   sfs:
