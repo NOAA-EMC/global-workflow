@@ -38,8 +38,7 @@ fi
 
 TASK gfs_fcst_fsm
 
-PURPOSE: Forecast Segmentation Manager -- lightweight coordination job monitoring
-multi-segment forecast execution and releasing dependent tasks.
+PURPOSE: File Service Manger releases dependent tasks by creating ecflow events.
 
 TROUBLESHOOTING
 
