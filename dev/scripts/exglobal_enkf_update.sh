@@ -317,6 +317,9 @@ cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 
 # Copy output
 
+cmdfile="${DATA}/cmdfile_enkf_out"
+rm -f "${cmdfile}"
+
 for imem in $(seq 1 "${NMEM_ENS}"); do
     smem=$((imem + mem_offset))
     if [[ ${smem} -gt ${NMEM_ENS_MAX} ]]; then
@@ -331,19 +334,27 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
 
     for FHR in ${nfhrs}; do
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
-            cpreq "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
-		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc"
+            echo "cpreq "sanl_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
+		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}analysis.atm.a00${FHR}.nc"" >> "${cmdfile}"
         else
-            cpreq "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
-		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc"    
+            echo "cpreq "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
+		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc"" >> "${cmdfile}"    
         fi
     
         if [[ "${DO_GSISOILDA}" == "YES" ]]; then
-            cpreq "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
-		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc" 
+            echo "cpreq "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
+		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc"" >> "${cmdfile}" 
         fi
     done
 done
+
+if [[ -s "${cmdfile}" ]]; then
+    "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+    export err=$?
+    if [[ ${err} -ne 0 ]]; then
+        err_exit "run_mpmd.sh failed to copy enkf output files!"
+    fi
+fi
 
 ################################################################################
 #  Postprocessing
