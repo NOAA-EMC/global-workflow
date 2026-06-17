@@ -57,7 +57,7 @@ Additional documentation and resources relevant to GW is shown in the table belo
 +---------------------+-----------------------------------------------------------------------------------------+
 | GDAS                | https://www.ncei.noaa.gov/products/weather-climate-models/global-data-assimilation      |
 +---------------------+-----------------------------------------------------------------------------------------+
-| GSI                 | https://github.com/NOAA-EMC/GSI/tree/develop/doc                                       |
+| GSI                 | https://github.com/NOAA-EMC/GSI/tree/develop/doc                                        |
 +---------------------+-----------------------------------------------------------------------------------------+
 | wxflow              | https://wxflow.readthedocs.io/en/latest/                                                |
 +---------------------+-----------------------------------------------------------------------------------------+

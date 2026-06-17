@@ -230,7 +230,7 @@ To run many of the other cases, you will first need to rebuild with additional c
 | all    | build everything                                          |
 +--------+-----------------------------------------------------------+
 
-For a full list of what is built for each option, see :ref:`build_options`.
+For a full list of what is built for each option, see :ref:`build options <build_options>`.
 
 You can run a different test case(s) by changing what you pass into ``generate_workflows.sh`` with the ``-y`` option. By default, the script will look in the ``dev/ci/cases/pr`` directory for the case. You can change this by passing a different directory with the ``-Y`` option. You can also specify multiple cases by placing quotes around the argument and a space between each case (e.g. ``-y "C48_ATM C96_atm3DVar"``).
 
