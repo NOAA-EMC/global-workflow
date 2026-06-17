@@ -50,7 +50,6 @@ hour _master template.
 TROUBLESHOOTING
 
 Same as GFS version but for 9-hour GDAS wave output. Depends on GDAS
-wave forecast output. Check COMIN_WAVE_HISTORY. Shorter walltime means
-less likely to timeout.
+wave forecast output. Check COMIN_WAVE_HISTORY.
 
 %end
