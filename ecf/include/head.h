@@ -2,7 +2,7 @@ date
 hostname
 set -xe  # print commands as they are executed and enable signal trapping
 
-export PS4="+ $SECONDS + "
+export PS4='+ $SECONDS + '
 
 # Variables needed for communication with ecFlow
 export ECF_NAME=%ECF_NAME%
@@ -17,13 +17,12 @@ export ecflow_ver=%ecflow_ver%
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x
-  echo "Running "module reset""
+  echo "Running 'module reset'"
   module reset
   set -x
 fi
 
 module load prod_util
-
 export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
 export CDATE=${PDY}%CYC:%
 
@@ -71,7 +70,7 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   fi
   echo "Running module load ecflow/$ecflow_ver"
   module load ecflow/$ecflow_ver
-  echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed "s/:$//")"
+  echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed 's/:$//')"
   set -x
   . ${ECF_ROOT}/versions/run.ver
   set +x
@@ -80,18 +79,24 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   echo "Listing modules from head.h:"
   module list
   set -x
+  if [[ ! " ops.prod ops.para " =~ " $(whoami) " ]]; then
+    echo "Allow over-riding defaults for developers"
+    if [ -n "%COMROOT:%" ]; then export COMROOT="%COMROOT:%"; fi
+    if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT="%DCOMROOT:%"; fi
+  fi
 fi
 
 timeout 300 ecflow_client --init=${ECF_RID}
 
 if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
   POST_OUT=${POST_OUT:-/lfs/h1/ops/%ENVIR%/tmp/posts/ecflow_post_in.${ECF_RID}}
-  echo "export ECF_NAME=${ECF_NAME}" > $POST_OUT
-  echo "export ECF_HOST=${ECF_HOST}" >> $POST_OUT
-  echo "export ECF_PORT=${ECF_PORT}" >> $POST_OUT
-  echo "export ECF_PASS=${ECF_PASS}" >> $POST_OUT
-  echo "export ECF_TRYNO=${ECF_TRYNO}" >> $POST_OUT
-  echo "export ECF_RID=${ECF_RID}" >> $POST_OUT
+  echo 'export ECF_NAME=${ECF_NAME}' > $POST_OUT
+  echo 'export ECF_HOST=${ECF_HOST}' >> $POST_OUT
+  echo 'export ECF_PORT=${ECF_PORT}' >> $POST_OUT
+  echo 'export ECF_PASS=${ECF_PASS}' >> $POST_OUT
+  echo 'export ECF_TRYNO=${ECF_TRYNO}' >> $POST_OUT
+  echo 'export ECF_RID=${ECF_RID}' >> $POST_OUT
 fi
 
 # Define error handler
@@ -112,5 +117,5 @@ ERROR() {
   trap $1; exit $1
 }
 # Trap all error and exit signals
-trap "ERROR $?" ERR EXIT
+trap 'ERROR $?' ERR EXIT
 
