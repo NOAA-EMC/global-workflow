@@ -22,7 +22,7 @@ source "${USHglobal}/set_strict.sh"
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-# Output observation location 
+# Output observation location
 declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 # Output observation report for SDM location
 declare -rx COMOUT_OBS_REPORT="${ROTDIR}/sdm_rtdm/obcount_30day/${RUN}.${PDY}/updated.status/"
