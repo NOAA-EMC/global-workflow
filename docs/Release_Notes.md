@@ -8,47 +8,60 @@ Major implementation of GFS to include ....
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
-The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used to manage the GFS code.  The SPA(s) handling the GFS implementation need to have permissions to clone VLab Gerrit repositories.  All NOAA-EMC organization repositories on GitHub are publicly readable and do not require access permissions.  Please proceed with the following steps to install the package on WCOSS2:
+The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used to manage the GFS code.  All NOAA-EMC organization repositories on GitHub are publicly readable and do not require access permissions.  Please proceed with the following steps to install the package on WCOSS2:
 
 ```bash
 cd $PACKAGEROOT
-
-mkdir gfs.v16.3.32
-cd gfs.v16.3.32
-git clone -b OMD-gfs.v16.3.32 https://github.com/NOAA-EMC/global-workflow.git .
-
-cd sorc
-./checkout.sh -o
 ```
 
-The checkout script extracts the following GFS components:
+# Clone the repository
+```bash
+git clone -b dev/gfs.v17 --recursive https://github.com/noaa-emc/global-workflow.git gfs.v17.0.0
+```
+
+
+# Set gfs.v17.0.0 as HOMEGFS and cd into it
+```bash
+export HOMEgfs=$PWD/gfs.v17.0.0
+cd ${HOMEgfs}
+```
+
+#TO DO: update
+The clone extracts the following GFS components:
 
 | Component  | Tag                          | POC                     |
 | ---------- | ---------------------------- | ----------------------- |
-| MODEL      | GFS.v16.3.26                 | Jun.Wang@noaa.gov       |
-| GLDAS      | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov      |
-| GSI        | gfsda.v16.3.32               | Andrew.Collard@noaa.gov |
-| UFS_UTILS  | ops-gfsv16.3.20              | George.Gayno@noaa.gov   |
-| POST       | upp_v8.3.0                   | Wen.Meng@noaa.gov       |
-| GSI-Utils  | gsiutil.v16.3.26             | Andrew.Collard@noaa.gov |
-| GSI-Monitor| gsimon_v16.3.26              | Edward.Safford@noaa.gov |
+| MODEL      | GFS.v16.3.26                 | First.Last@noaa.gov       |
 
-To build all the GFS components, execute:
+
+
+Build all executables and link them: The `build_all.sh` script compiles all GFS components. Runtime output from the build for each package is written to log files in directory logs. To build an individual program, for instance, gsi, use `build_gsi.sh`.
 ```bash
-./build_all.sh
+cd ${HOMEgfs}/sorc
+./build_all.sh gfs gdas gsi 
 ```
-The `build_all.sh` script compiles all GFS components. Runtime output from the build for each package is written to log files in directory logs. To build an individual program, for instance, gsi, use `build_gsi.sh`.
 
 Next, link the executables, fix files, parm files, etc in their final respective locations by executing:
 ```bash
-./link_fv3gfs.sh nco wcoss2
+./link_workflow.sh -o 
 ```
 
-Lastly, link the ecf scripts by moving back up to the ecf folder and executing:
+Setup gfs for NCO 
 ```bash
-cd ../ecf
-./setup_ecf_links.sh
+cd ${HOMEgfs}/dev/ush
+source gw_setup.sh
+./setup_gfs_for_nco.py
 ```
+
+Create ecf links to create files for each forecast hour 
+```bash
+cd ${HOMEgfs}/ecf 
+./setup_ecf_links.sh 
+```
+
+Note, cp /lfs/h2/emc/obsproc/noscrub/iliana.genkova/marine_dumplist $COMROOT_GFS/sdm_rtdm/. needs added to the release notes somehow
+
+
 VERSION FILE CHANGES
 --------------------
 
