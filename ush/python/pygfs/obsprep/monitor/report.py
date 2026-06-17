@@ -76,7 +76,7 @@ def save_json(config, cycle, counts):
     }
 
     # with open(path, "w") as f:
-        # json.dump(payload, f, indent=2)
+    #     json.dump(payload, f, indent=2)
 
     # replacing direct write for safety
     tmp = path + ".tmp"

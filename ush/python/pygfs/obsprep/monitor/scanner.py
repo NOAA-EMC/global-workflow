@@ -50,6 +50,7 @@ def scan_cycle(config, cycle):
 
     return counts
 
+
 def extract_code(filename, config):
     # remove extension
     base = filename.replace(".nc", "").replace(".bufr", "")

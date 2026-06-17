@@ -11,6 +11,7 @@ def load_config(path):
 
     return cfg
 
+
 def make_cycle(ymd, hh):
     return {
         "date": ymd,
@@ -18,11 +19,14 @@ def make_cycle(ymd, hh):
         "datetime": datetime.strptime(f"{ymd}{int(hh):02d}", "%Y%m%d%H"),
     }
 
+
 def cycle_to_int(c):
     return int(c["date"]) * 100 + c["hour"]
 
+
 def str_to_int(s):
     return int(s)
+
 
 def discover_cycles(config):
     base = os.environ["ROTDIR"]
@@ -50,6 +54,7 @@ def discover_cycles(config):
 
     return cycles
 
+
 def select_cycles(config):
     start = config.get("start_cycle")
     end = config.get("end_cycle")
@@ -66,17 +71,17 @@ def select_cycles(config):
         start_i = str_to_int(start)
         end_i = str_to_int(end)
         cycles = [c for c in available
-                if start_i <= cycle_to_int(c) <= end_i]
+                  if start_i <= cycle_to_int(c) <= end_i]
 
     elif start:
         start_i = str_to_int(start)
         cycles = [c for c in available
-                if cycle_to_int(c) >= start_i]
+                  if cycle_to_int(c) >= start_i]
 
     elif end:
         end_i = str_to_int(end)
         cycles = [c for c in available
-                if cycle_to_int(c) <= end_i]
+                  if cycle_to_int(c) <= end_i]
 
     else:
         if not available:
