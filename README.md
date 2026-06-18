@@ -32,8 +32,10 @@ The Global Workflow currently supports the following machines at the indicated t
 | Ursa<br>NOAA RDHPCS                     | 1    |                                                                            |
 | Hercules<br>MSU                         | 1    |                                                                            |
 | Gaea C6<br>RDHPCS                       | 1    |                                                                            |
+| Derecho<br>NSF/NCAR                     | 1    | Supported by EPIC                                                          |
 | Hera<br>NOAA RDHPCS                     | 2    |                                                                            |
 | Orion<br>MSU                            | 2    | The GSI runs very slowly.                                                  |
+| Native AWS                              | 2    | Supported by EPIC. Requires paid AWS account.                              |
 | AWS, GCP, Azure <br>NOAA Parallel Works | 3    | Supported by EPIC.                                                         |
 
 <ins>**Tier Definitions**</ins>
