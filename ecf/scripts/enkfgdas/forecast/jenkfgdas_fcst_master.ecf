@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export WGF="%WGF%"
 export ENSMEM="%ENSMEM%"

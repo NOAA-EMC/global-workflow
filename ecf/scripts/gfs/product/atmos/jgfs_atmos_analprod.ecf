@@ -25,7 +25,6 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 export FORECAST_HOUR='-1'
-CDATE=${PDY}${cyc}
 export FHR_LIST='-1'
 #### ${HOMEgfs}/dev/job_cards/rocoto/atmos_products.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_PRODUCTS

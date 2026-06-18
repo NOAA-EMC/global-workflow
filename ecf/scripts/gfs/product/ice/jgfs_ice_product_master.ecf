@@ -28,7 +28,6 @@ export COMPONENT=ice
 ############################################################
 # CALL executable job script here
 ############################################################
-CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/oceanice_products.sh

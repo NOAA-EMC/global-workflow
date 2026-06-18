@@ -29,7 +29,6 @@ export UPP_RUN="goes"
 ############################################################
 # CALL executable job script here
 ############################################################
-CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/upp.sh

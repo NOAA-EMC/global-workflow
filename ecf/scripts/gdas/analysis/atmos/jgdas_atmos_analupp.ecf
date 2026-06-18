@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export FORECAST_HOUR='0'
 export FHR3='000'

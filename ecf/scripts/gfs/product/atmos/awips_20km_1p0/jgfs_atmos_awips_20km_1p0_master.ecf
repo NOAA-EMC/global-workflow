@@ -27,7 +27,6 @@ export FHR_LIST="%FHR_LIST%"
 ############################################################
 # CALL executable job script here
 ############################################################
-CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/awips_20km_1p0deg.sh
