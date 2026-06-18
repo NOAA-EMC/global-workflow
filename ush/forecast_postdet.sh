@@ -831,11 +831,12 @@ MOM6_postdet() {
                 ihour=$(printf %02i "${interval}")
                 vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
                 # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
-                # NOAA-EMC/global-workflow#4946). Filename is YYYYMMDD.HHMMSS.mom6.HHh.
+                # NOAA-EMC/global-workflow#4946). With MOM6_HISTFREQ_N=1, sentinels are
+                # written hourly as .01h files, regardless of the MOM6_OUTPUT_FH interval.
                 if [[ ${fhr} -eq ${FHMAX} ]]; then
-                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${ihour}h"
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.01h"
                 else
-                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.01h"
                 fi
 
                 case "${RUN}" in
