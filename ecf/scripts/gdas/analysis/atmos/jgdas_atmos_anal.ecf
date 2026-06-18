@@ -39,7 +39,7 @@ fi
 
 TASK gdas_atmos_anal
 
-PURPOSE: GDAS atmospheric analysis -- GSI Hybrid-EnKF. 100 nodes. THE primary DA
+PURPOSE: GDAS atmospheric deterministic analysis -- GSI Hybrid-4DEnVar. 100 nodes. THE primary DA
 cycle running every 6 hours. Provides ICs for both GDAS and GFS
 forecasts.
 
