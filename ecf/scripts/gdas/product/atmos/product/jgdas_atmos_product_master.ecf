@@ -49,7 +49,7 @@ from GDAS 9-hour forecast. Same shared J-Job.
 TROUBLESHOOTING
 
 Same troubleshooting as GFS atmos_product_master. GDAS produces products
-for f000-f009 only (vs GFS f000-f384). Check forecast output
+for f000-f009 only (vs GFS f000-f384). Check forecast output (atmos master files)
 availability.
 
 %end
