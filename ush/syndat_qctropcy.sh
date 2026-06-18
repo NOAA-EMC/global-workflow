@@ -256,14 +256,16 @@ if [[ "${copy_back}" == 'YES' ]]; then
     cpfs sthista "${ARCHSYND}/syndat_sthista"
 fi
 
-diff nhc nhc.ORIG > /dev/null
-errdiff=$?
 
 ###################################
 #  Update NHC file in ${HOMENHC}
 ###################################
 
-if [[ "${errdiff}" -ne 0 ]]; then
+if  diff nhc nhc.ORIG > /dev/null; then
+
+    echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not changed by syndat_qctropcy"
+
+else 
 
     if [[ "${copy_back}" == 'YES' && ${envir} == 'prod' ]]; then
         if [[ -s "${HOMENHC}/tcvitals" ]]; then
@@ -279,11 +281,6 @@ if [[ "${errdiff}" -ne 0 ]]; then
         fi
 
     fi
-
-else
-
-    echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not changed by syndat_qctropcy"
-
 fi
 
 ###################################
