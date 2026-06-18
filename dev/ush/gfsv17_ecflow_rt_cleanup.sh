@@ -44,7 +44,7 @@ done
 # Clean COM
 # COM retain 3 full days - 195TB (65T /day on production frequency)
 cd "${COMROOT}"
-for dir_to_remove in $(find ./* -maxdepth 0 -type d | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "${PDYm2}" | grep -v "${PDYm3}" | grep -v "fix"); do
+for dir_to_remove in $(find ./* -maxdepth 0 -type d | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "fix"); do
     echo "Removing directory ${COMROOT}/${dir_to_remove}"
     rm -rf "${dir_to_remove}"
 done
