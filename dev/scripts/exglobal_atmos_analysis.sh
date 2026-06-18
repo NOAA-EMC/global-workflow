@@ -846,8 +846,8 @@ if [[ "${RUN_SELECT}" == "NO" ]]; then
             cpreq sigi09.nc "${ATMI09}"
         fi
     else
-        cpreq siganl "${ATMANL}" 
-	if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
+        cpreq siganl "${ATMANL}"
+        if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
             cpreq siga03 "${ATMA03}"
             cpreq siga04 "${ATMA04}"
             cpreq siga05 "${ATMA05}"
