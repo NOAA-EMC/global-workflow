@@ -17733,7 +17733,7 @@ suite gfs_v17_nco
               trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
-              trigger :TIME >= 2045 and :TIME < 0030
+              trigger :TIME >= 2045 or :TIME < 0030
           endfamily		//marine
         endfamily		//prep
         family init
@@ -23058,7 +23058,7 @@ suite gfs_v17_nco
               trigger jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
             task jgdas_marine_obs_dump
               # this should start when the obsproc job starts
-              trigger :TIME >= 2345 and :TIME < 0030
+              trigger :TIME >= 2345 or :TIME < 0030
           endfamily  		//marine
         endfamily    		//prep
         family init
