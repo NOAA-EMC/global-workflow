@@ -840,7 +840,7 @@ fi
 
 if [[ "${RUN_SELECT}" == "NO" ]]; then
     if [[ "${DO_CALC_INCREMENT}" == "NO" ]]; then
-        cpreq siginc.nc "${ATMINC}" 
+        cpreq siginc.nc "${ATMINC}"
         if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" == ".true." ]]; then
             cpreq sigi03.nc "${ATMI03}" 
             cpreq sigi09.nc "${ATMI09}" 
