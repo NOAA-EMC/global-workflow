@@ -24,7 +24,7 @@ fi
 
 module load prod_util
 export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
-export CDATE=${PDY}%CYC:%
+CDATE=${PDY}%CYC:%
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x

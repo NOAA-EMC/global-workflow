@@ -29,7 +29,7 @@ module list
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
-export CDATE=${PDY}${cyc}
+CDATE=${PDY}${cyc}
 
 ${HOMEgfs}/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS
 if [ $? -ne 0 ]; then

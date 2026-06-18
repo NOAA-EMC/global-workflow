@@ -16,7 +16,6 @@ cd "${DATA}"
 export cycle="t${cyc}z"
 setpdy.sh
 source ./PDY
-export CDATE="${PDY}${cyc}"
 
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
 export ROTDIR

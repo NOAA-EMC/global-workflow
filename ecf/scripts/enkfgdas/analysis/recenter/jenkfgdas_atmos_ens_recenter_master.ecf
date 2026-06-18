@@ -29,7 +29,7 @@ export FHRLST="%FHRLST%"
 export FHMIN_ECEN="${FHRLST}"
 export FHMAX_ECEN="${FHRLST}"
 export FHOUT_ECEN="${FHRLST}"
-export CDATE=${PDY}${cyc}
+CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export COMPONENT=${WGF}
 

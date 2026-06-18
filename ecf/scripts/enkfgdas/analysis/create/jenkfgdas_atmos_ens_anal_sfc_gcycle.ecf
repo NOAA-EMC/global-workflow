@@ -24,7 +24,7 @@ module list
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
-export CDATE=${PDY}${cyc}
+CDATE=${PDY}${cyc}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/esfc.sh
 ${HOMEgfs}/jobs/JGLOBAL_ENKF_SFC_GCYCLE

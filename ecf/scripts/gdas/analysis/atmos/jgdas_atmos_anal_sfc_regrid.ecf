@@ -24,7 +24,7 @@ module list
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
-export CDATE=${PDY}${cyc}
+CDATE=${PDY}${cyc}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/sfcanl.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_SFCANL_REGRID

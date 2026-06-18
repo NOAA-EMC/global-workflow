@@ -27,7 +27,7 @@ export FORECAST_HOUR="${FHR_LIST}"
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
+CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/wavepostsbs.sh
