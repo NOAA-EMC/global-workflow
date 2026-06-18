@@ -40,7 +40,7 @@ fi
 TASK gfs_atmos_postsnd
 
 PURPOSE: Generates BUFR sounding profiles at ~1800 station locations worldwide.
-16 nodes, heavy I/O. Single-instance looping internally.
+It has heavy I/O and single-instance looping internally.
 
 TROUBLESHOOTING
 
