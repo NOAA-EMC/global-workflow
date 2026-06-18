@@ -40,8 +40,8 @@ fi
 TASK gfs_fcst
 
 PURPOSE: Runs the 16-day (384-hour) coupled UFS Weather Model
-(FV3+MOM6+CICE6+WW3) deterministic GFS forecast.
-THE critical job.
+(NaN, CFL violation, or many warnings of massive unrealistic values
+for temperature/wind) deterministic GFS forecast. THE critical job.
 
 TROUBLESHOOTING
 
