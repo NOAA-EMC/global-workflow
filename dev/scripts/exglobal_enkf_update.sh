@@ -340,7 +340,6 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
             echo "cpreq "incr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
 		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.atm.i00${FHR}.nc"" >> "${cmdfile}"
         fi
-    
         if [[ "${DO_GSISOILDA}" == "YES" ]]; then
             echo "cpreq "sfcincr_${PDY}${cyc}_fhr0${FHR}_${memchar}" \
 		"${COMOUT_ATMOS_ANALYSIS_MEM}/${APREFIX}increment.sfc.i00${FHR}.nc"" >> "${cmdfile}" 
