@@ -40,7 +40,7 @@ fi
 TASK gfs_fcst
 
 PURPOSE: Runs the 16-day (384-hour) coupled UFS Weather Model
-(FV3+MOM6+CICE6+WW3) deterministic GFS forecast with 37760 MPI ranks.
+(FV3+MOM6+CICE6+WW3) deterministic GFS forecast.
 THE critical job.
 
 TROUBLESHOOTING
