@@ -45,8 +45,8 @@ GSI analysis. GDAS-specific task.
 TROUBLESHOOTING
 
 Depends on successful GDAS analysis. If analysis failed, no diagnostics
-to produce. Relatively simple job -- check that GSI diagnostic output
-(fort.* files) exist. Feeds verfozn and verfrad downstream. Non-blocking
+to produce. Relatively simple job -- check that GSI diagnostic output directories
+containing netCDF files exist. Feeds verfozn and verfrad downstream. Non-blocking
 for forecast path.
 
 %end
