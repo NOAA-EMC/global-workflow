@@ -36,19 +36,17 @@ fi
 cd "${DATAROOT}"
 excluded_pdy=${PDY}
 excluded_cdate_m1=${PDYm1}18
-for dir_to_remove in $(find * -maxdepth 0 -type d | grep -v "${excluded_pdy}" | grep -v "${excluded_cdate_m1}" | grep -v "DBNLOG" | grep -v "ecflow"); do
-    dir_to_remove="${dir_to_remove%/}"
+for dir_to_remove in $(find ./* -maxdepth 0 -type d | grep -v "${excluded_pdy}" | grep -v "${excluded_cdate_m1}" | grep -v "DBNLOG" | grep -v "ecflow"); do
     echo "Removing directory ${DATAROOT}/${dir_to_remove}"
-    rm -rf "${DATAROOT}/${dir_to_remove}"
+    rm -rf "${dir_to_remove}"
 done
 
 # Clean COM
 # COM retain 3 full days - 195TB (65T /day on production frequency)
 cd "${COMROOT}"
-for dir_to_remove in $(find * -maxdepth 0 -type d | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "${PDYm2}" | grep -v "${PDYm3}" | grep -v "fix"); do
-    dir_to_remove="${dir_to_remove%/}"
+for dir_to_remove in $(find ./* -maxdepth 0 -type d | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "${PDYm2}" | grep -v "${PDYm3}" | grep -v "fix"); do
     echo "Removing directory ${COMROOT}/${dir_to_remove}"
-    rm -rf "${COMROOT}/${dir_to_remove}"
+    rm -rf "${dir_to_remove}"
 done
 
 echo "Finished cleaning up at $(date)"
