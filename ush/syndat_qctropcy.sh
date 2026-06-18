@@ -265,7 +265,7 @@ if  diff nhc nhc.ORIG > /dev/null; then
 
     echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not changed by syndat_qctropcy"
 
-else 
+else
 
     if [[ "${copy_back}" == 'YES' && ${envir} == 'prod' ]]; then
         if [[ -s "${HOMENHC}/tcvitals" ]]; then
