@@ -11,6 +11,8 @@
 
 The Global Workflow supporting the Global Forecast System (GFS), the Global Ensemble Forecasting System (GEFS), and the Seasonal Forecast System (SFS) with the [UFS-weather-model](https://github.com/ufs-community/ufs-weather-model).  Data assimilation, currently only available for the GFS, is provided by both the [GSI](https://github.com/NOAA-EMC/GSI)- and [GDASApp (JEDI)](https://github.com/NOAA-EMC/GDASApp)-based Data Assimilation systems.
 
+Community GW v1.0.0 has been released! Community members, please use the [discussion board](https://github.com/NOAA-EMC/global-workflow/discussions) if you need user support.
+
 In progress [documentation](https://global-workflow.readthedocs.io/en/latest/) is available.
 
 # Prerequisites
