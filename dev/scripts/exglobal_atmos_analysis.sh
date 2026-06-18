@@ -856,9 +856,9 @@ if [[ "${RUN_SELECT}" == "NO" ]]; then
             cpreq siga09 "${ATMA09}"
         fi
 
-    fi	    
-    cpreq satbias_out     "${ABIAS}" 
-    cpreq satbias_pc.out  "${ABIASPC}" 
+    fi
+    cpreq satbias_out "${ABIAS}"
+    cpreq satbias_pc.out "${ABIASPC}"
     cpreq aircftbias_out "${ABIASAIR}"
 
     if [[ "${DONST}" == "YES" ]]; then
