@@ -278,6 +278,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd" ]]; then
         fix_ver="gdas_${gdas_sub}_ver"
         safe_link_or_copy "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
+    ${LINK_OR_COPY} "/lfs/h2/emc/da/noscrub/common/validation/RECCAP2_region_masks_all_v20221025.nc" .
 fi
 
 #------------------------------
@@ -323,6 +324,15 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd/build" ]]; then
     cd "${HOMEglobal}/ush" || exit 1
     safe_link_or_copy "${HOMEglobal}/sorc/gdas.cd/ush/gsi_satbias2ioda_all.sh" .
     safe_link_or_copy "${HOMEglobal}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
+    mkdir -p "${HOMEglobal}/ush/bufr2ioda"
+    cd "${HOMEglobal}/ush/bufr2ioda" || exit 1
+    b2i_src_dir="${HOMEglobal}/sorc/gdas.cd/ush/b2i"
+    b2i_python_scripts=("${b2i_src_dir}"/*.py)
+    if [[ -e "${b2i_python_scripts[0]}" ]]; then
+        for script in "${b2i_python_scripts[@]}"; do
+            safe_link_or_copy "${script}" .
+        done
+    fi
 fi
 
 #------------------------------
