@@ -1,9 +1,9 @@
-GFS V16.3.31 RELEASE NOTES
+GFS V16.3.33 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Tropical storm name updates for the 2026-2027 hurricane seasons are made in the GFS syndat_stmnames fix file.
+Downstream update due to RRFSv1.0 implementation/retirement of NAMv4.2. This update removes gempak products that are dependent on the NAM and are no longer needed. 
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,10 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.31
-cd gfs.v16.3.31
-git clone -b EMC-v16.3.31 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.33
+cd gfs.v16.3.33
+git clone -b OMD-gfs.v16.3.33 https://github.com/NOAA-EMC/global-workflow.git .
+
 cd sorc
 ./checkout.sh -o
 ```
@@ -26,7 +27,7 @@ The checkout script extracts the following GFS components:
 | ---------- | ---------------------------- | ----------------------- |
 | MODEL      | GFS.v16.3.26                 | Jun.Wang@noaa.gov       |
 | GLDAS      | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov      |
-| GSI        | gfsda.v16.3.26               | Andrew.Collard@noaa.gov |
+| GSI        | gfsda.v16.3.32               | Andrew.Collard@noaa.gov |
 | UFS_UTILS  | ops-gfsv16.3.20              | George.Gayno@noaa.gov   |
 | POST       | upp_v8.3.0                   | Wen.Meng@noaa.gov       |
 | GSI-Utils  | gsiutil.v16.3.26             | Andrew.Collard@noaa.gov |
@@ -51,47 +52,49 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.31` and `gfs_ver=v16.3.31`
+* in `versions/run.ver` change `version=v16.3.33` and `gfs_ver=v16.3.33`
+* in `versions/run.ver` remove `nam_ver=v4.2`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.30
+* No changes from GFS v16.3.32 
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.30
+* Remove COMINnam from jobs/JGFS_ATMOS_GEMPAK_META
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.30
+* No changes from GFS v16.3.32
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.30.
+* Removes ush/gfs_meta_comp.sh and ush/gfs_meta_mar_comp.sh scripts.
 
 FIX CHANGES
 -----------
 
-* The `fix_am/syndat_stmnames` file is updated to adjust some hurricane names for 2026/2027 seasons.
+* Updates gempak/fix/gfs_meta file to account for script removal. 
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.30.
+* No changes from GFS v16.3.32.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No changes from GFS v16.3.30.
+* Removes files written to /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_comp.
+* Removes files written to /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_mar_comp
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.30.
+* No changes from GFS v16.3.32.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -104,23 +107,27 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.30
+* Removes DBN alerts for availability of /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_comp 
+* Removes DBN alerts for availability of /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_mar_comp 
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.30
+* No changes from GFS v16.3.32
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.30
+* No changes from GFS v16.3.32
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.30
+* No changes from GFS v16.3.32
 
 PREPARED BY
 -----------
+Travis.J.Elless@noaa.gov
+Benjamin.Blake@noaa.gov
 David.Huber@noaa.gov
+Wen.Meng@noaa.gov
