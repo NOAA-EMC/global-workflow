@@ -256,7 +256,6 @@ if [[ "${copy_back}" == 'YES' ]]; then
     cpfs sthista "${ARCHSYND}/syndat_sthista"
 fi
 
-
 ###################################
 #  Update NHC file in ${HOMENHC}
 ###################################
