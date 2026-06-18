@@ -44,7 +44,7 @@ fi
 TASK gdas_atmos_gempak_master
 
 PURPOSE: Converts GDAS GRIB2 output to GEMPAK grids for the 9-hour GDAS forecast.
-Per-hour _master template.
+Per-hour master template.
 
 TROUBLESHOOTING
 
