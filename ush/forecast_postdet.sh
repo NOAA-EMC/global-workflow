@@ -819,6 +819,15 @@ MOM6_postdet() {
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
             rm -f "${ocn_table}"
+            # MOM6 sentinel suffix matches MOM6_HISTFREQ_N in parsing_ufs_configure.sh:
+            # gdas/enkfgdas use N=1 (hourly) → '.01h'; gfs/enkfgfs use FHOUT_OCN (e.g. 6) → '.06h'.
+            local mom6_hist_n
+            case "${RUN}" in
+                gdas | enkfgdas) mom6_hist_n=1 ;;
+                *) mom6_hist_n="${FHOUT_OCN:-6}" ;;
+            esac
+            local mom6_sentinel_sfx
+            mom6_sentinel_sfx="$(printf "%02i" "${mom6_hist_n}")h"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -831,12 +840,12 @@ MOM6_postdet() {
                 ihour=$(printf %02i "${interval}")
                 vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
                 # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
-                # NOAA-EMC/global-workflow#4946). With MOM6_HISTFREQ_N=1, sentinels are
-                # written hourly as .01h files, regardless of the MOM6_OUTPUT_FH interval.
+                # NOAA-EMC/global-workflow#4946). Sentinel suffix matches MOM6_HISTFREQ_N:
+                # '.01h' for gdas/enkfgdas (hourly), '.06h' (or similar) for gfs/enkfgfs.
                 if [[ ${fhr} -eq ${FHMAX} ]]; then
-                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.01h"
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${mom6_sentinel_sfx}"
                 else
-                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.01h"
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${mom6_sentinel_sfx}"
                 fi
 
                 case "${RUN}" in
