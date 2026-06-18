@@ -42,7 +42,6 @@ for dir_to_remove in $(find * -maxdepth 0 -type d | grep -v "${excluded_pdy}" | 
     rm -rf "${DATAROOT}/${dir_to_remove}"
 done
 
-
 # Clean COM
 # COM retain 3 full days - 195TB (65T /day on production frequency)
 cd "${COMROOT}"
