@@ -260,7 +260,7 @@ fi
 #  Update NHC file in ${HOMENHC}
 ###################################
 
-if  diff nhc nhc.ORIG > /dev/null; then
+if diff nhc nhc.ORIG > /dev/null; then
 
     echo "Previous NHC Synthetic Data Record File ${HOMENHC}/tcvitals not changed by syndat_qctropcy"
 
