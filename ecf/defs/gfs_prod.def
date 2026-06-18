@@ -63,7 +63,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgfs_marine_bmat_init
-              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -5394,7 +5395,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgdas_marine_bmat_init
-              trigger ../../../../18/gdas/forecast/jgdas_fcst==complete and ../../../../18/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -5603,8 +5605,10 @@ suite gfs_v17_nco
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+            task jenkfgdas_atmos_diag_ens
+              trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
+              trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
@@ -5615,8 +5619,6 @@ suite gfs_v17_nco
           family recenter
             task jenkfgdas_marine_ens_recenter
               trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
-            task jenkfgdas_atmos_diag_ens
-              trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
               trigger ../create/jenkfgdas_atmos_ens_update==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
               edit FHRGRP '000'
@@ -5961,7 +5963,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgfs_marine_bmat_init
-              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -11289,7 +11292,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgdas_marine_bmat_init
-              trigger ../../../../00/gdas/forecast/jgdas_fcst==complete and ../../../../00/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -11498,8 +11502,10 @@ suite gfs_v17_nco
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+            task jenkfgdas_atmos_diag_ens
+              trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
+              trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
@@ -11510,8 +11516,6 @@ suite gfs_v17_nco
           family recenter
             task jenkfgdas_marine_ens_recenter
               trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
-            task jenkfgdas_atmos_diag_ens
-              trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
               trigger ../create/jenkfgdas_atmos_ens_update==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
               edit FHRGRP '000'
@@ -11856,7 +11860,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgfs_marine_bmat_init
-              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -17185,7 +17190,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgdas_marine_bmat_init
-              trigger ../../../../06/gdas/forecast/jgdas_fcst==complete and ../../../../06/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -17394,8 +17400,10 @@ suite gfs_v17_nco
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+            task jenkfgdas_atmos_diag_ens
+              trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
+              trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
@@ -17406,8 +17414,6 @@ suite gfs_v17_nco
           family recenter
             task jenkfgdas_marine_ens_recenter
               trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
-            task jenkfgdas_atmos_diag_ens
-              trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
               trigger ../create/jenkfgdas_atmos_ens_update==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
               edit FHRGRP '000'
@@ -17727,7 +17733,7 @@ suite gfs_v17_nco
               trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
-              trigger :TIME >= 2045 and :TIME < 0030
+              trigger :TIME >= 2045 or :TIME < 0030
           endfamily		//marine
         endfamily		//prep
         family init
@@ -17752,7 +17758,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgfs_marine_bmat_init
-              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -23051,7 +23058,7 @@ suite gfs_v17_nco
               trigger jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
             task jgdas_marine_obs_dump
               # this should start when the obsproc job starts
-              trigger :TIME >= 2345 and :TIME < 0030
+              trigger :TIME >= 2345 or :TIME < 0030
           endfamily  		//marine
         endfamily    		//prep
         family init
@@ -23081,7 +23088,8 @@ suite gfs_v17_nco
           family marine
             edit WGF 'marine'
             task jgdas_marine_bmat_init
-              trigger ../../../../12/gdas/forecast/jgdas_fcst==complete and ../../../../12/enkfgdas/forecast==complete
+              # TODO make this trigger off of obsproc dump job completion
+              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -23290,8 +23298,10 @@ suite gfs_v17_nco
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
             task jenkfgdas_snow_anal_ens
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+            task jenkfgdas_atmos_diag_ens
+              trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger ../recenter/jenkfgdas_atmos_diag_ens==complete
+              trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
@@ -23302,8 +23312,6 @@ suite gfs_v17_nco
           family recenter
             task jenkfgdas_marine_ens_recenter
               trigger ../../../gdas/analysis/marine/jgdas_marine_bmat_init==complete
-            task jenkfgdas_atmos_diag_ens
-              trigger ../create/jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_recenter000
               trigger ../create/jenkfgdas_atmos_ens_update==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
               edit FHRGRP '000'
