@@ -129,7 +129,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     done
 fi
 
-if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
+if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for OCN product table at ${OCN_TABLE}"
     if ! wait_for_file "${OCN_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then

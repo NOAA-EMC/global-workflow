@@ -999,9 +999,8 @@ case ${step} in
     if [[ "${DO_WAVE}" == "YES" ]]; then
         (( ntasks += ${MGR_NTASKS_WW3:-2} ))
     fi
-    # Ocean product manager only runs for the full GFS cycle (gdas/enkfgdas use cmdfile copy).
-    # Ice product manager runs for gfs and the gdas/enkfgdas data-assimilation cycles.
-    if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" == "gfs" ]]; then
+    # Ocean and ice product managers run for gfs and the gdas/enkfgdas data-assimilation cycles.
+    if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
         (( ntasks += ${MGR_NTASKS_OCN:-1} ))
     fi
     if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then

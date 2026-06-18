@@ -807,15 +807,18 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gdas | enkfgdas) # Set up MOM6 output files
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid ihour source_file dest_file source_file_log dest_file_log
-            local ocn_local ocn_com ocn_table ocn_hist_cmdfile use_mgr_ocn
-            # Forecast manager handles gfs|enkfgfs; gdas|enkfgdas use cmdfile copied in MOM6_out.
+            local ocn_local ocn_com ocn_table
+            # Forecast manager handles gfs|enkfgfs|gdas|enkfgdas: MOM6 cap writes per-period
+            # YYYYMMDD.HHMMSS.mom6.HHh sentinels (UFSWM update,
+            # NOAA-EMC/global-workflow#4946) once each history .nc is fully flushed.
+            local use_mgr_ocn="NO"
             case "${RUN}" in
-                gfs | enkfgfs) use_mgr_ocn="YES" ;;
-                *) use_mgr_ocn="NO" ;;
+                gfs | enkfgfs | gdas | enkfgdas) use_mgr_ocn="YES" ;;
+                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+                *) ;;
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
-            ocn_hist_cmdfile="${DATA}/cmdfile_mom6_hist"
-            rm -f "${ocn_table}" "${ocn_hist_cmdfile}"
+            rm -f "${ocn_table}"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -836,10 +839,11 @@ MOM6_postdet() {
                 fi
 
                 case "${RUN}" in
-                    gdas | enkfgdas | gefs | sfs | gcafs)
-                        # Instantaneous MOM6 backgrounds; filename uses underscore-separated date.
-                        local vdatestr_da="${vdate:0:4}_${vdate:4:2}_${vdate:6:2}_${vdate:8:2}"
-                        source_file="ocn_da_${vdatestr_da}.nc"
+                    gdas | enkfgdas)
+                        # Instantaneous MOM6 backgrounds; filename uses underscore-separated
+                        # date including 2-digit minutes (always _00 since FHOUT_OCN is hourly).
+                        local vdatestr_inst="${vdate:0:4}_${vdate:4:2}_${vdate:6:2}_${vdate:8:2}_00"
+                        source_file="ocn_${vdatestr_inst}.nc"
                         dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
                         dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.log.f${fhr3}.txt"
                         ;;
@@ -867,15 +871,11 @@ MOM6_postdet() {
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
 
-                # For manager runs (gfs|enkfgfs): source_file_log is the MOM6 period log written
-                # by the model after the .nc is complete. Manager polls for it, copies the .nc
-                # to COM, then copies the log to COM as the Rocoto sentinel.
-                # For non-manager runs (gdas|enkfgdas): MOM6 does not produce a period log file,
-                # so only the history .nc is queued; files are copied after the model completes.
+                # source_file_log is the MOM6 period log written by the model after the .nc
+                # is complete. Manager polls for it, copies the .nc to COM, then copies the
+                # log to COM as the Rocoto sentinel.
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
                     echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
-                else
-                    echo "cpfs ${ocn_local} ${ocn_com}" >> "${ocn_hist_cmdfile}"
                 fi
                 last_fhr=${fhr}
             done
@@ -962,22 +962,6 @@ MOM6_out() {
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
         fi
-    fi
-
-    # Copy MOM6 history files from DATA to COM for non-manager runs (gdas, enkfgdas).
-    # For manager runs (gfs, enkfgfs) this is handled by the forecast manager.
-    local ocn_hist_cmdfile="${DATA}/cmdfile_mom6_hist"
-    if [[ -s "${ocn_hist_cmdfile}" ]]; then
-        if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then
-            echo "INFO: Directory ${COMOUT_OCEAN_HISTORY} does not exist, creating..."
-            mkdir -p "${COMOUT_OCEAN_HISTORY}"
-        fi
-        "${USHglobal}/run_mpmd.sh" "${ocn_hist_cmdfile}" && true
-        export err=$?
-        if [[ ${err} -ne 0 ]]; then
-            err_exit "run_mpmd.sh failed to copy MOM6 history files!"
-        fi
-        echo "SUB ${FUNCNAME[0]}: MOM6 history files copied to COM"
     fi
 
 }
