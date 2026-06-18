@@ -1,9 +1,9 @@
-GFS V16.3.32 RELEASE NOTES
+GFS V16.3.33 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Bug fixes to the GSI.  Addition of two new GNSSRO instruments. Turn off Metop-B AMSU-A channel 8 which has become unusable.
+Downstream update due to RRFSv1.0 implementation/retirement of NAMv4.2. This update removes gempak products that are dependent on the NAM and are no longer needed. 
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.32
-cd gfs.v16.3.32
-git clone -b OMD-gfs.v16.3.32 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.33
+cd gfs.v16.3.33
+git clone -b OMD-gfs.v16.3.33 https://github.com/NOAA-EMC/global-workflow.git .
 
 cd sorc
 ./checkout.sh -o
@@ -52,56 +52,49 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.32` and `gfs_ver=v16.3.32`
+* in `versions/run.ver` change `version=v16.3.33` and `gfs_ver=v16.3.33`
+* in `versions/run.ver` remove `nam_ver=v4.2`
 
 SORC CHANGES
 ------------
 
-* Bug fixes in GSI sorc code (https://github.com/NOAA-EMC/GSI/issues/1006):
-* Safeguard to prevent NaNs from CRTM affecting minimisation
-* Add PlanetiQ YAM-8 data with SAID 768 
-* Revert PR #837 changes to dev-v16 radinfo.f90 (Improves minimization)
-* Fix bug in calculation of Windborne and Saildrone Obs Errors
-* Additional variables in diag files for WDQMS
-* Correct additional windborne and saildrone bugs
-* Allow saildrone to assimilate either relative humidity or dew point.
+* No changes from GFS v16.3.32 
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.31
+* Remove COMINnam from jobs/JGFS_ATMOS_GEMPAK_META
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.31
+* No changes from GFS v16.3.32
 
 SCRIPT CHANGES
 --------------
 
-* Corrects the index in the exgdas_enkf_update.sh script for the satellite observation's namelist entry of abi_q19.
-* Adds gmi_option=4 to exglobal_atmos_analysis.sh script.
+* Removes ush/gfs_meta_comp.sh and ush/gfs_meta_mar_comp.sh scripts.
 
 FIX CHANGES
 -----------
 
-* Addition of Sentinal-6 and PlanetIQ YAM-8 GNSSRO active assimilation.
-* Turn off Metop-B AMSU-A channel 8 which has become unusable.
+* Updates gempak/fix/gfs_meta file to account for script removal. 
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.31.
+* No changes from GFS v16.3.32.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No significant changes from GFS v16.3.31.
+* Removes files written to /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_comp.
+* Removes files written to /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_mar_comp
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.31.
+* No changes from GFS v16.3.32.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -114,25 +107,27 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.31
+* Removes DBN alerts for availability of /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_comp 
+* Removes DBN alerts for availability of /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_mar_comp 
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.31
+* No changes from GFS v16.3.32
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.31
+* No changes from GFS v16.3.32
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.31
+* No changes from GFS v16.3.32
 
 PREPARED BY
 -----------
+Travis.J.Elless@noaa.gov
+Benjamin.Blake@noaa.gov
 David.Huber@noaa.gov
-Andrew.Collard@noaa.gov
-Russ.Treadon@noaa.gov
+Wen.Meng@noaa.gov
