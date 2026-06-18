@@ -51,9 +51,7 @@ fi
 declare -rx COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 declare -rx COM_OBSPROC_TMPL COM_RTOFS_TMPL COM_OBSFORGE_TMPL
 
-# MEMDIR is set to 'memNNN' for ensemble runs (enkfgdas, enkfgfs); empty for gfs/gdas.
-# Use conditional expansion so non-ensemble paths don't get a trailing //.
-COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}${MEMDIR:+/${MEMDIR}}'
+COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
 
 declare -rx COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 

@@ -166,9 +166,15 @@ class Tasks:
 
         rocoto_conversion_dict.update(subs_dict)
 
-        return Template.substitute_structure(template,
-                                             TemplateConstants.DOLLAR_CURLY_BRACE,
-                                             rocoto_conversion_dict.get)
+        result = Template.substitute_structure(template,
+                                               TemplateConstants.DOLLAR_CURLY_BRACE,
+                                               rocoto_conversion_dict.get)
+        # Normalize consecutive slashes that arise when MEMDIR is empty
+        # (e.g. '@H//model' -> '@H/model'). Preserve Rocoto entities like
+        # &ROTDIR; which do not contain slashes.
+        import re
+        result = re.sub(r'/{2,}', '/', result)
+        return result
 
     @staticmethod
     def _get_forecast_hours(run, config, component='atmos') -> List[str]:
