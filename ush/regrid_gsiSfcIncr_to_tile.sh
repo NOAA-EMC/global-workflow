@@ -224,7 +224,6 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "run_mpmd.sh failed to copy input and fix data!"
 fi
-mv mpmd.out mpmd_in.out
 
 # Finish defining input/output directory list
 export out_dir="${in_dir}"
@@ -279,6 +278,5 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "run_mpmd.sh failed to copy output files to COMOUT, ABORT!"
 fi
-mv mpmd.out mpmd_out.out
 
 exit 0

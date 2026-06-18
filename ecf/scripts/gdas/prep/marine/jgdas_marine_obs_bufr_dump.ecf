@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N gdas_marine_prepoceanobs_%CYC%
+#PBS -N gdas_marine_obs_bufr_dump_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:10:00
-#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=48GB
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=32GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -26,8 +26,7 @@ module list
 export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/prepoceanobs.sh
-${HOMEgfs}/jobs/JGLOBAL_PREP_OCEAN_OBS
+${HOMEgfs}/jobs/JGLOBAL_MARINE_OBS_BUFR_DUMP
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -37,13 +36,17 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_marine_prepoceanobs
+TASK gfs_marine_prepoceanobs
 
-PURPOSE: GDAS ocean observation prep -- IODA converters. Same shared J-Job.
+PURPOSE: Ocean observation preparation -- converts raw ocean obs (T/S profiles,
+altimetry, SST, sea ice) to IODA format for SOCA.
 
 TROUBLESHOOTING
 
-Same troubleshooting as GFS marine_prepoceanobs. Check raw observation
-file availability and IODA converter Python tracebacks.
+Python-based IODA converters. Check Python traceback in stdout. Common
+failures: missing raw observation files from data feeds, IODA converter
+bugs on unusual data formats, or filesystem permission issues on input
+directories. Non-critical obs may be skipped (data of opportunity) but
+core obs (Argo profiles, satellite altimetry) are required.
 
 %end
