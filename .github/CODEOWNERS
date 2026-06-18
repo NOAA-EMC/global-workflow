@@ -131,6 +131,7 @@ dev/scripts/exglobal_forecast.py @aerorahul
 dev/scripts/exglobal_forecast.sh @DavidHuber-NOAA
 dev/scripts/exglobal_forecast_manager.sh @AntonMFernando-NOAA @DavidHuber-NOAA
 dev/scripts/exglobal_marine_analysis_* @guillaumevernieres @AndrewEichmann-NOAA
+dev/scripts/exglobal_marine_obs_* @guillaumevernieres @AndrewEichmann-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_marinebmat_initialize.py @guillaumevernieres @AndrewEichmann-NOAA
 dev/scripts/exglobal_marinebmat.py @guillaumevernieres @AndrewEichmann-NOAA
 dev/scripts/exglobal_oceanice_products.py @JesseMeng-NOAA @ChristopherHill-NOAA
@@ -199,6 +200,8 @@ ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
 # ush/python
 ush/python/pygfs/jedi/__init__.py @TravisElless-NOAA @DavidNew-NOAA
 ush/python/pygfs/jedi/jedi.py @DavidNew-NOAA
+ush/python/pygfs/obsprep/*.py @guillaumevernieres @AndrewEichmann-NOAA @CoryMartin-NOAA
+ush/python/pygfs/obsprep/obsdb*.py @guillaumevernieres @AndrewEichmann-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/__init__.py @DavidHuber-NOAA
 ush/python/pygfs/task/aero_analysis.py @DavidNew-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/aero_bmatrix.py @DavidNew-NOAA @CoryMartin-NOAA
@@ -213,7 +216,9 @@ ush/python/pygfs/task/bmatrix.py @DavidNew-NOAA
 ush/python/pygfs/task/gfs_forecast.py @aerorahul
 ush/python/pygfs/task/marine_analysis.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/marine_bmat.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
+ush/python/pygfs/task/marine_bufr_prepobs.py @guillaumevernieres @AndrewEichmann-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/marine_letkf.py @guillaumevernieres @AndrewEichmann-NOAA @DavidNew-NOAA
+ush/python/pygfs/task/marine_prepobs.py @guillaumevernieres @AndrewEichmann-NOAA @CoryMartin-NOAA
 ush/python/pygfs/task/oceanice_products.py @JesseMeng-NOAA @ChristopherHill-NOAA @DavidNew-NOAA
 ush/python/pygfs/task/offline_analysis.py @CoryMartin-NOAA
 ush/python/pygfs/task/snow_analysis.py @jiaruidong2017 @DavidNew-NOAA
