@@ -37,7 +37,8 @@ export IODADIR="/lfs/h2/emc/dump/noscrub/dump_ioda"
 export USE_IODADIR="{{ USE_IODADIR }}"
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
 export ROTDIR
-
+export COMROOT=${ROTDIR}
+export SDATE=2026060100
 # Gempak from external models
 # Default locations are to dummy locations for testing
 export COMINnam="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam"
