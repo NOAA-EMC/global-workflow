@@ -50,7 +50,7 @@ _master template. PRIMARY product generation.
 
 TROUBLESHOOTING
 
-Depends directly on forecast output (atmos history files). If forecast
+Depends directly on forecast output (atmos master files). If forecast
 did not produce master file for this hour, product generation fails.
 Check nemsio/netcdf history file existence. wgrib2 and UPP utilities
 must load correctly. If a single hour fails, other hours are unaffected
