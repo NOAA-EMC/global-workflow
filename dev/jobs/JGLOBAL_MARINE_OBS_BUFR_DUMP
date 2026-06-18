@@ -1,0 +1,64 @@
+#! /usr/bin/env bash
+set -x
+
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineobsbufrdump" -c "base marineobsbufrdump"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+_obsproc_base=$(compath.py "${envir}/obsproc/${obsproc_ver}" 2> /dev/null) || _obsproc_base="${DMPDIR}"
+export COMIN_OBSPROC="${_obsproc_base}/${RUN}.${PDY}/${cyc}"
+
+declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+mkdir -m 775 -p "${COMOUT_OBS}"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${DUMPMARINEBUFRPY:-${HOMEglobal}/scripts/exglobal_marine_obs_bufr_dump.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0

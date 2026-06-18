@@ -184,6 +184,7 @@ sorc/ocnicepost.fd
 # scripts symlinks
 dev/scripts/exglobal_prep_ocean_obs.py
 # ush symlinks
+ush/bufr2ioda
 ush/bufr2ioda_insitu_profile_argo.py
 ush/bufr2ioda_insitu_profile_bathy.py
 ush/bufr2ioda_insitu_profile_glider.py
@@ -207,6 +208,7 @@ ush/ghcn_snod2ioda.py
 ush/bufr_snocvr_snomad.py
 ush/atparse.bash
 ush/bufr2ioda_insitu*
+ush/python/b2iconverter
 ush/python/gsincdiag_to_ioda
 ush/python/ufsda
 ush/python/pyiodaconv

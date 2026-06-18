@@ -180,12 +180,11 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
-        #### Work around for upp module loading issues that is inconsistance with run.ver
-        # Source versions file (except for upp)
-        if [[ "${mod_type}" != "upp" ]]; then
-            source "${HOMEglobal}/versions/run.ver"
-        fi
-        if [[ "${mod_type}" == "upp" ]]; then
+        # Source versions file
+        source "${HOMEglobal}/versions/run.ver"
+
+        #### Work around for upp module loading issues that is inconsistance with non-wcoss2 run.ver
+        if [[ "${mod_type}" == "upp" && "${MACHINE_ID}" != "wcoss2" ]]; then
             export hdf5_ver="1.10.6"
             export netcdf_ver="4.7.4"
             export g2tmpl_ver="1.16.0"
