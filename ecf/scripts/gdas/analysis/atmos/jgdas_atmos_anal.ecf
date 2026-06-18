@@ -47,7 +47,7 @@ TROUBLESHOOTING
 
 Same as GFS atmos_anal but MORE CRITICAL -- GDAS analysis failure breaks
 the entire DA cycling. This job requires enormous amounts of
-observational data, the full EnKF ensemble, and GDAS background. Many
+observational data, the full EnKF ensemble forecast, and GDAS forecast from the previous cycle. Many
 upstream failures can cascade here. Call on-call staff unless failure is
 immediately obvious (downed node, filesystem crash). Check GSI stdout
 fort.220 for minimization convergence.
