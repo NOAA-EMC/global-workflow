@@ -33,7 +33,7 @@ fi
 
 # set up soil analysis
 if [[ "${DO_JEDISOILDAENS}" == "YES" ]]; then
-    export SFCANALSH="${SCRglobal}/exglobal_soil_letkf_analysis.py"
+    export ENKFSFCGCYCLESH="${SCRglobal}/exglobal_soil_letkf_analysis.py"
 elif [[ ${DO_GSISOILDA} == "YES" ]]; then
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         export GCYCLE_DO_SOILINCR=".false."
