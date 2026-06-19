@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+# exglobal_soil_letkf_analysis.py
+# (adapted from exglobal_snowens_analysis.py)
+# This script creates an SoilLetkfAnalysis class instance from soil_letkf_analysis,
+# which will process soil observations, run a LETKF analysis, and add increments
+# to background ensmbles to create an ensemble of soil analyses
+import os
+
+from wxflow import Logger, cast_strdict_as_dtypedict
+from pygfs.task.soil_letkf_analysis import SoilLetkfAnalysis
+
+# Initialize root logger
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
+
+
+if __name__ == '__main__':
+
+    # Take configuration from environment and cast it as python dictionary
+    config = cast_strdict_as_dtypedict(os.environ)
+
+    # Instantiate the soil ensemble analysis task
+    soil_letkf_anl = SoilLetkfAnalysis(config)
+
+    # Initialize JEDI 2DVar soil analysis
+    soil_letkf_anl.initialize()
+
+    # stage ensemble mean backgrounds: TODO: thjis is already done in init?
+
+    # Process Obs (if applicable)
+#    if soil_letkf_anl.task_config.DO_OBSNAME:   #insert_OBSNAME_here#:
+#        soil_letkf_anl.prepare_OBSNAME()
+
+    # Execute JEDI soil analysis
+    soil_letkf_anl.execute('soilletkfanl')
+
+    # Add increments
+#    if soil_letkf_anl.task_config.DO_INC:   #TODO: recentering and adding inc
+#        soil_letkf_anl.execute('soilletkfaddinc')
+    soil_letkf_anl.add_increments()
+
+    # Finalize JEDI soil analysis
+    soil_letkf_anl.finalize()

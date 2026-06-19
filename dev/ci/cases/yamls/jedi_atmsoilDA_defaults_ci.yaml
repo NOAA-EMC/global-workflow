@@ -1,0 +1,15 @@
+defaults:
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
+base:
+  DOIAU: "YES"
+  DO_JEDISNOWDA: "YES"
+  DO_GSISOILDA: "NO"
+  DO_JEDISOILDAVAR: "YES"
+  DO_JEDISOILDAENS: "YES"
+  DO_SOILENKFONLY: "NO"
+  DO_LAND_IAU: ".true."
+  INTERVAL_GFS: 24
+  SDATE_GFS: 2022051512
+  FHMAX_GFS: 120
+  FHMAX_HF_GFS: 48
+  DO_TEST_MODE: "NO"
