@@ -18,12 +18,16 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
-if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+#TODO:reconcycle with gsi_soilda
+if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
+    export SFCANALSH="${SCRglobal}/exglobal_soil_analysis.py"
+elif [[ "${DO_GSISOILDA}" == "YES" ]]; then
     if [[ ${DO_LAND_IAU} = ".true." ]]; then
         export GCYCLE_DO_SOILINCR=".false."
     else
         export GCYCLE_DO_SOILINCR=".true."
     fi
 fi
+
 
 echo "END: config.sfcanl_gcycle"
