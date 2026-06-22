@@ -1,6 +1,7 @@
 [submodule "sorc/ufs_model.fd"]
   path = sorc/ufs_model.fd
   url = https://github.com/ufs-community/ufs-weather-model
+  branch = production/GFS.v17
   ignore = dirty
 [submodule "sorc/wxflow"]
   path = sorc/wxflow
@@ -8,22 +9,28 @@
 [submodule "sorc/gfs_utils.fd"]
   path = sorc/gfs_utils.fd
   url = https://github.com/NOAA-EMC/gfs-utils
+  branch = production/GFS.v17.0.0
 [submodule "sorc/ufs_utils.fd"]
   path = sorc/ufs_utils.fd
   url = https://github.com/ufs-community/UFS_UTILS.git
+  branch = production/GFS.v17.0.0 
 [submodule "sorc/verif-global.fd"]
   path = sorc/verif-global.fd
   url = https://github.com/NOAA-EMC/EMC_verif-global.git
+  branch = release/gfs.v17
 [submodule "sorc/gsi_enkf.fd"]
   path = sorc/gsi_enkf.fd
   url = https://github.com/NOAA-EMC/GSI.git
+  branch = release/gfsda.v17 
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
   url = https://github.com/NOAA-EMC/GDASApp.git
+  branch = release/gfs.v17
   ignore = dirty
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
   url = https://github.com/NOAA-EMC/GSI-Utils.git
+  branch = production/GFS.v17.0.0
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
