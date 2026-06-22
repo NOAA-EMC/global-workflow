@@ -48,7 +48,7 @@ members).
 
 TROUBLESHOOTING
 
-Same UFS model as deterministic but smaller scale. Failures per-member:
+Same UFS model as deterministic but lower resolution and without wave coupling. 
 check model stdout for that ENSMEM. MPI errors, node failures, or model
 instability. If multiple members fail simultaneously, suspect systemic
 issue (filesystem, interconnect). Individual member failures are
