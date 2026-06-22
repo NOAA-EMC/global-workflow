@@ -94,6 +94,7 @@ fi
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"
+    rm -rf "${DATAjob}"
 fi
 
 exit 0
