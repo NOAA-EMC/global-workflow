@@ -38,13 +38,13 @@ fi
 
 TASK gdas_fcst_fsm
 
-PURPOSE: GDAS Forecast Segmentation Manager -- coordinates multi-segment GDAS
-9-hour forecast execution.
+PURPOSE: File Service Manger releases dependent tasks by creating ecflow events.
 
 TROUBLESHOOTING
 
-FSM coordination job. Shorter walltime (40min) vs GFS (6hr) reflecting
-shorter GDAS forecast. If stuck, check jgdas_fcst status. FSM itself
-rarely fails.
+FSM itself rarely fails. If it does, check ecFlow communicationExpand commentComment on line R45Resolved
+(ecflow_client). If FSM is stuck, the forecast segments may be hung --
+check jgfs_fcst status. FSM has very long walltime (6hr) to wait for
+segments; a timeout means the forecast never completed.
 
 %end
