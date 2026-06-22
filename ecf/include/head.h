@@ -23,11 +23,7 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
 fi
 
 module load prod_util
-if [ -n "%PDY:%" ]; then
-  export PDY=${PDY:-%PDY:%}
-else
-  export PDY=$($NDATE | cut -c1-8)
-fi
+export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
 export CDATE=${PDY}%CYC:%
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
@@ -112,7 +108,7 @@ ERROR() {
      msg="Killed by signal $1"
   fi
   #To send email about failure, uncomment next line and update email list: 
-  echo "${ECF_NAME} log file: ${ECF_JOBOUT}" | mail -s "GFSv17 ecflow realtime job failure: ${ECF_NAME}" ${USER}@noaa.gov 
+#echo "${ECF_NAME} log file: ${ECF_JOBOUT}" | mail -s "GFSv17 ecflow realtime job failure: ${ECF_NAME}" ${USER}@noaa.gov 
   ecflow_client --abort="$msg"
   echo $msg
   if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
