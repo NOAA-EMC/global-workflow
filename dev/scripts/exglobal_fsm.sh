@@ -4,7 +4,7 @@ set -x
 # File Service Manager (FSM) for Global Workfow
 # WGF (Workflow Group Family Assignment) - atmos, ocean
 # RJN (Request Job Name) - prep, forecast
-previous_cycle=$("${NDATE}" -6 "${CDATE}")
+previous_cycle=$("${NDATE}" -6 "${PDY}${cyc}")
 previous_cycle_PDY="${previous_cycle:0:8}"
 previous_cycle_cyc="${previous_cycle:8:2}"
 

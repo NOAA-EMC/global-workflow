@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/waveinit.sh
@@ -36,5 +35,17 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gfs_wave_init
+
+PURPOSE: Creates grid definition files (mod_def.*) for WW3 forecasts and post
+programs.
+
+TROUBLESHOOTING
+
+Critical upstream dependency for all wave tasks. If this fails, no wave
+forecast or post-processing can run. Check for ww3_grid executable and
+grid input files. Common failure: mod_def generation fails if grid
+configuration is inconsistent. Verify wave grid configs in parm/wave/.
 
 %end

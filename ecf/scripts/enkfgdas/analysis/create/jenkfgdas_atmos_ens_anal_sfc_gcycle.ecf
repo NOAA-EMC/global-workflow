@@ -24,7 +24,6 @@ module list
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
-export CDATE=${PDY}${cyc}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/esfc.sh
 ${HOMEgfs}/jobs/JGLOBAL_ENKF_SFC_GCYCLE
@@ -36,5 +35,17 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK enkfgdas_atmos_ens_anal_sfc_gcycle
+
+PURPOSE: EnKF ensemble surface analysis -- runs global_cycle on ensemble member
+tiles to update SST, sea ice, soil, vegetation per member.
+
+TROUBLESHOOTING
+
+Depends on observation data and previous cycle ensemble surface fields.
+If obs data is missing, GCycle may use degraded data with warnings.
+Check global_cycle stdout for per-member errors. Individual member
+failures do not block other members.
 
 %end

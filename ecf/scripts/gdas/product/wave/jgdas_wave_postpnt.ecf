@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/wavepostpnt.sh
@@ -36,5 +35,16 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_wave_postpnt
+
+PURPOSE: Generates wave station/point spectral and bulletin output from GDAS
+9-hour WW3 forecast.
+
+TROUBLESHOOTING
+
+Same as GFS wave_postpnt but for GDAS cycle. Depends on GDAS wave
+forecast point output. If wave component of GDAS forecast failed, no
+point data exists.
 
 %end

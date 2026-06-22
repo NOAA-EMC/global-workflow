@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/marinebmatinit.sh
@@ -36,5 +35,14 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_marine_bmat_init
+
+PURPOSE: Initializes B-matrix computation for GDAS marine DA. Staging job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_bmat_init. Check ensemble member
+restart file availability.
 
 %end

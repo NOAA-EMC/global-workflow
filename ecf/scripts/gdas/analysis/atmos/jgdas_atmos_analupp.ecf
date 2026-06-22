@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export FORECAST_HOUR='0'
 export FHR3='000'
@@ -39,5 +38,15 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_atmos_analupp
+
+PURPOSE: GDAS analysis UPP -- runs UPP on GDAS analysis fields. Same shared
+J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS atmanlupp. Depends on GDAS analysis output.
+Check UPP module and itag configuration.
 
 %end

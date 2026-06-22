@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/wavepostpnt.sh
@@ -36,5 +35,18 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gfs_wave_postpnt
+
+PURPOSE: Generates wave station/point spectral data and text bulletins
+at buoy locations. Single-instance per cycle.
+
+TROUBLESHOOTING
+
+Depends on WW3 forecast point output. If wave forecast failed or was
+incomplete, point data will be missing. Check wave model logs for point
+output write errors. Feeds downstream to awips_bulls. While improved
+from v16, this job will slow down or fail when there are filesystem
+issues.
 
 %end

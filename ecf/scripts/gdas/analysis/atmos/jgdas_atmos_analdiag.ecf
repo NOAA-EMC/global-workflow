@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/analdiag.sh
@@ -36,5 +35,17 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_atmos_analdiag
+
+PURPOSE: Creates NetCDF diagnostic files (cnvstat, radstat, ozstat) from the GDAS
+GSI analysis. GDAS-specific task.
+
+TROUBLESHOOTING
+
+Depends on successful GDAS analysis. If analysis failed, no diagnostics
+to produce. Relatively simple job -- check that GSI diagnostic output directories
+containing netCDF files exist. Feeds verfozn and verfrad downstream. Non-blocking
+for forecast path.
 
 %end

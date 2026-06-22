@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export WGF="%WGF%"
 export FHRGRP="%FHRGRP%"
@@ -43,5 +42,16 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK enkfgdas_ens_post_master
 
+PURPOSE: EnKF ensemble post -- generates ensemble mean and spread from all member
+forecasts. Per-hour-group _master template.
+
+TROUBLESHOOTING
+
+Depends on ALL ensemble member forecasts completing. If too many members
+failed, ensemble statistics are unreliable. Check which members
+completed. High memory (500 GB) -- OOM possible. If only a few members
+missing, may still produce usable output with reduced ensemble size.
+
+%end

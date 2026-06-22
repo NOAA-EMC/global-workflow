@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/analcalc.sh
@@ -36,5 +35,15 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_atmos_anal_calc
+
+PURPOSE: GDAS analysis calc -- applies increments to produce full analysis
+fields for products
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS analcalc. Depends on successful GDAS
+analysis completion.
 
 %end
