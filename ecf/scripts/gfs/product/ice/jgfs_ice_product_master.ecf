@@ -52,8 +52,7 @@ TROUBLESHOOTING
 
 Depends on CICE6 forecast output (ice history files). If coupled
 forecast did not write ice output for this time period, product generation
-fails. Lightweight job (1 cpu). Check for ice history file existence in
-COMOUT_ICE_HISTORY. If ice model component failed during forecast, all
-ice products will be missing.
+fails. Check for ice history file existence in. Check for ice history file
+existence in COMOUT_ICE_HISTORY.
 
 %end
