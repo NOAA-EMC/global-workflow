@@ -3,7 +3,6 @@ export version=v17.0.0
 export gfs_ver=v17.0.0
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
-export nam_ver=v4.2
 export rtofs_ver=v2.5
 export obsproc_ver=v1.2
 export imagemagick_ver=7.0.8-7
