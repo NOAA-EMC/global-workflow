@@ -1,4 +1,4 @@
-suite v17_bmat_triggers
+suite gfs_v17_nco
   family primary
     edit gfs_ver 'v17.0'
     edit PACKAGEHOME '/lfs/h3/emc/eib/noscrub/%EMC_USER%/gfs/para/packages/gfs.%gfs_ver%'
@@ -5397,7 +5397,6 @@ suite v17_bmat_triggers
             task jgdas_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
               trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs and ../../../../18/enkfgdas/forecast==complete and ../../../../18/gdas/forecast==complete
-
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -5966,7 +5965,6 @@ suite v17_bmat_triggers
             task jgfs_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
               trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs and ../../../../00/enkfgdas/forecast==complete and ../../../../00/gdas/forecast==complete
-
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
