@@ -103,185 +103,187 @@ The ecflow definition file is ${HOMEgfs}/ecf/defs/gfs_prod.def
 VERSION FILE CHANGES
 --------------------
 
-* In versions/build.ver the following are changed
-PrgEnv_intel_ver=8.5.0
-craype_ver-2.7.17
-cray_mpich_ver=8.1.19
-cmake_ver=3.27.9
-python_ver=3.12.0
-hdf5_ver=1.13.0
-netcdf_ver=4.9.2
-esmf_ver=8.8.0
-wgrib2_ver=2.8.0_wmo
-g2tmp_ver=1.17.0
-w3emc_ver=2.12.0
-bufr_ver=12.3.0
-g2_ver=3.5.1
-sp_ver=2.4.0
-ip_ver=5.2.0
-wrf_io_ver=1.2.0
-ncio_ver=1.1.2
-ncdiag_ver=1.1.2
-* In versions/build.ver the following are removed
-gempak_ver=7.14.1
-gfsio_ver=1.4.1
-upp_ver=8.3.0
-*In versions/build.ver the following are added
-cray-pals_ver 1.3.2
-zstd_ver=1.5.0
-libjpeg_ver=9c
-pnetcdf_ver=1.12.2
-pio_ver=2.5.10
-fms_ver=2024.01
-mapl_ver=2.53.0
-scotch_ver=7.0.4
-udunits_ver=2.2.28
-nemsiogfs_ver=2.5.3
-gsl_ver=2.7
-crtm_fix_ver=2.4.0.2
-Gftl_shared_ver-1.6.1
-landsfcutil_ver=2.4.1
+In versions/build.ver the following are changed
+* PrgEnv_intel_ver=8.5.0
+* craype_ver-2.7.17
+* cray_mpich_ver=8.1.19
+* cmake_ver=3.27.9
+* python_ver=3.12.0
+* hdf5_ver=1.13.0
+* netcdf_ver=4.9.2
+* esmf_ver=8.8.0
+* wgrib2_ver=2.8.0_wmo
+* g2tmp_ver=1.17.0
+* w3emc_ver=2.12.0
+* bufr_ver=12.3.0
+* g2_ver=3.5.1
+* sp_ver=2.4.0
+* ip_ver=5.2.0
+* wrf_io_ver=1.2.0
+* ncio_ver=1.1.2
+* ncdiag_ver=1.1.2
 
-* In versions/run.ver the following are changed
-version=v17.0.0 
-gfs_ver=v17.0.0
-PrgEnv_intel_ver=8.5.0
-craype_ver=2.7.17
-cray_mpich_ver=8.1.19
-cray_pals_ver=1.3.2
-python_ver=3.12.0
-gempak_ver=7.15.1
-hdf5_ver=1.14.0
-netcdf_ver=4.9.2
-esmf_ver=8.8.0
-nco_ver=5.2.4
-bufr_dump_ver=1.3.2
-util_shared_ver=1.5.1
-grib_util_ver=1.2.4
-wgrib2_ver=2.0.8_wmo
-g2tmpl_ver=1.17.0
-nemsio_ver=2.5.4
-w3emc_ver=2.12.0
-g2_ver=3.5.1
-sp_ver=2.4.0
-ip_ver=5.2.0
-ncdiag_ver=1.1.2
+In versions/build.ver the following are removed
+* gempak_ver=7.14.1
+* gfsio_ver=1.4.1
+* upp_ver=8.3.0
 
-* In versions/run.ver the following are removed 
-radarl2_ver=v1.2 
-cmdaccel_ver=1.1 
-rtofs_ver=v2.5
+In versions/build.ver the following are added
+* cray-pals_ver 1.3.2
+* zstd_ver=1.5.0
+* libjpeg_ver=9c
+* pnetcdf_ver=1.12.2
+* pio_ver=2.5.10
+* fms_ver=2024.01
+* mapl_ver=2.53.0
+* scotch_ver=7.0.4
+* udunits_ver=2.2.28
+* nemsiogfs_ver=2.5.3
+* gsl_ver=2.7
+* crtm_fix_ver=2.4.0.2
+* Gftl_shared_ver-1.6.1
+* landsfcutil_ver=2.4.1
 
-* In versions/run.ver the following are added:
-gw_ve_ver=17.0
-bufr_ver=12.3.0
-pnetcdf_ver=1.12.2
-mapl_ver=2.53.0
-pio_ver=2.5.10
-zstd_ver=1.5.0
-pigz_ver=2.3.4
-nccmp_ver=1.8.9.0
-boost_ver=1.79.0
-eigen_ver=3.4.0
-eckit_ver_1.28.0
-fckit_ver=0.13.1
-atlas_ver=0.39.0
-fms_ver=2024.01
-curl_ver=7.72.0
-gsl_lit_ver=v0.40.0
-wrf_io_ver=1.2.0
-scotch_ver=7.0.4
+In versions/run.ver the following are changed
+* version=v17.0.0 
+* gfs_ver=v17.0.0
+* PrgEnv_intel_ver=8.5.0
+* craype_ver=2.7.17
+* cray_mpich_ver=8.1.19
+* cray_pals_ver=1.3.2
+* python_ver=3.12.0
+* gempak_ver=7.15.1
+* hdf5_ver=1.14.0
+* netcdf_ver=4.9.2
+* esmf_ver=8.8.0
+* nco_ver=5.2.4
+* bufr_dump_ver=1.3.2
+* util_shared_ver=1.5.1
+* grib_util_ver=1.2.4
+* wgrib2_ver=2.0.8_wmo
+* g2tmpl_ver=1.17.0
+* nemsio_ver=2.5.4
+* w3emc_ver=2.12.0
+* g2_ver=3.5.1
+* sp_ver=2.4.0
+* ip_ver=5.2.0
+* ncdiag_ver=1.1.2
+
+In versions/run.ver the following are removed 
+* radarl2_ver=v1.2 
+* cmdaccel_ver=1.1 
+* rtofs_ver=v2.5
+
+In versions/run.ver the following are added:
+* gw_ve_ver=17.0
+* bufr_ver=12.3.0
+* pnetcdf_ver=1.12.2
+* mapl_ver=2.53.0
+* pio_ver=2.5.10
+* zstd_ver=1.5.0
+* pigz_ver=2.3.4
+* nccmp_ver=1.8.9.0
+* boost_ver=1.79.0
+* eigen_ver=3.4.0
+* eckit_ver_1.28.0
+* fckit_ver=0.13.1
+* atlas_ver=0.39.0
+* fms_ver=2024.01
+* curl_ver=7.72.0
+* gsl_lit_ver=v0.40.0
+* wrf_io_ver=1.2.0
+* scotch_ver=7.0.4
 
 SORC CHANGES
 ------------
 
 Renamed sorc directories:
-fv3gfs.fd -> ufs_model.fd 
-gsi.fd -> gsi_enkf.fd
-Global_enkf.fd -> enkf.fd
-Global_gsi.fd -> gsi.fd
-Global_chgres.fd -> chgres_cube.fd
+* fv3gfs.fd -> ufs_model.fd 
+* gsi.fd -> gsi_enkf.fd
+* Global_enkf.fd -> enkf.fd
+* Global_gsi.fd -> gsi.fd
+* Global_chgres.fd -> chgres_cube.fd
 
 Removed sorc directories:
-Enkf_chres_recenter.fd
-Filter_topo.fd
-fregrid.fd
-fv3nc2nemsio.fd
-gdas2gldas.fd
-gfs_post.fd
-gldas.fd
-gldas2gdas.fd
-Gldas_forcing.fd
-Gldas_model.fd
-Gldas_post.fd
-Gldas_rst.fd
-Make_hgrid.fd
-make_solo_mosaic.fd
-ncdiag_cat.fd
-nst_tf_chg.fd
-orog.fd
-Regrid_nemsio.fd
-shave.fd
+* Enkf_chres_recenter.fd
+* Filter_topo.fd
+* fregrid.fd
+* fv3nc2nemsio.fd
+* gdas2gldas.fd
+* gfs_post.fd
+* gldas.fd
+* gldas2gdas.fd
+* Gldas_forcing.fd
+* Gldas_model.fd
+* Gldas_post.fd
+* Gldas_rst.fd
+* Make_hgrid.fd
+* make_solo_mosaic.fd
+* ncdiag_cat.fd
+* nst_tf_chg.fd
+* orog.fd
+* Regrid_nemsio.fd
+* shave.fd
 
 Added sorc directories:
-ensadd.fd
-ensppf.fd
-ensstat.fd
-gdas.cd
-mkgfsawps.fd
-ocnicepost.fd
-overgridid.fd
-rdbfmsua.fd
-regridStates.fd
-Tref_calc.fd
-upp.fd
-Wave_stat.fd
-webtitle.fd
-WW3.fd 
+* ensadd.fd
+* ensppf.fd
+* ensstat.fd
+* gdas.cd
+* mkgfsawps.fd
+* ocnicepost.fd
+* overgridid.fd
+* rdbfmsua.fd
+* regridStates.fd
+* Tref_calc.fd
+* upp.fd
+* Wave_stat.fd
+* webtitle.fd
+* WW3.fd 
 
 
 JOBS CHANGES
 ------------
 
 Many job scripts have been added, removed, or renamed to support the coupled forecast
+
 Renamed job scripts are:
-JGDAS_ATMOS_ANALYSIS_DIAG -> JGLOBAL_ATMOS_ANALYSIS_DIAG
-JGDAS_ENKF_DIAG -> JGLOBAL_ENKF_DIAG
-JGDAS_ENKF_ECEN -> JGLOBAL_ENKF_ECEN
-JGDAS_ENKF_SELECT_OBS -> JGLOBAL_ENKF_SELECT_OBS
-JGDAS_ENKF_UPDATE -> JGLOBAL_ENKF_UPDATE
-JGDAS/JGFS_VMINMON -> JGLOBAL_VMINMON
-JGLOBAL_WAVE_POST_SBS -> JGLOBAL_WAVE_POST_GRIDDED
+* JGDAS_ATMOS_ANALYSIS_DIAG -> JGLOBAL_ATMOS_ANALYSIS_DIAG
+* JGDAS_ENKF_DIAG -> JGLOBAL_ENKF_DIAG
+* JGDAS_ENKF_ECEN -> JGLOBAL_ENKF_ECEN
+* JGDAS_ENKF_SELECT_OBS -> JGLOBAL_ENKF_SELECT_OBS
+* JGDAS_ENKF_UPDATE -> JGLOBAL_ENKF_UPDATE
+* JGDAS/JGFS_VMINMON -> JGLOBAL_VMINMON
+* JGLOBAL_WAVE_POST_SBS -> JGLOBAL_WAVE_POST_GRIDDED
 
 Removed jobs scripts are:
-JGDAS_ATMOS_GLDAS
-JGDAS_ENKF_SFC
-JGLOBAL_ATMOS_NCEPPOST
-JGLOBAL_ATMOS_POST_MANAGER
-JGLOBAL_WAVE_PREP
+* JGDAS_ATMOS_GLDAS
+* JGDAS_ENKF_SFC
+* JGLOBAL_ATMOS_NCEPPOST
+* JGLOBAL_ATMOS_POST_MANAGER
+* JGLOBAL_WAVE_PREP
 
 New job scripts are:
-JGLOBAL_ATMOS_SFCANL_GCYCLE
-JGLOBAL_ATMOS_SFCANL_REGRID
-JGLOBAL_ATMOS_PRODUCTS
-JGLOBAL_ATMOS_UPP
-JGLOBAL_ENKF_SFC_GCYCLE
-JGLOBAL_ENKF_SFC_REGRID
-JGLOBAL_FORECAST_MANAGER
-JGLOBAL_FSM
-JGLOBAL_MARINE_ANALYSIS_CHECKPOINT
-JGLOBAL_MARINE_ANALYSIS_ECEN
-JGLOBAL_MARINE_ANALYSIS_FINALIZE
-JGLOBAL_MARINE_ANALYSIS_INITIALIZE
-JGLOBAL_MARINE_ANALYSIS_VARIATIONAL
-JGLOBAL_MARINE_BMAT
-JGLOBAL_MARINE_BMAT_INITIALIZE
-JGLOBAL_MARINE_OBS_BUFR_DUMP
-JGLOBAL_MARINE_OBS_DUMP
-JGLOBAL_OCEANICE_PRODUCTS
-JGLOBAL_SNOW_ANALYSIS
-JGLOBAL_SNOWENS_ANALYSIS
-
+* JGLOBAL_ATMOS_SFCANL_GCYCLE
+* JGLOBAL_ATMOS_SFCANL_REGRID
+* JGLOBAL_ATMOS_PRODUCTS
+* JGLOBAL_ATMOS_UPP
+* JGLOBAL_ENKF_SFC_GCYCLE
+* JGLOBAL_ENKF_SFC_REGRID
+* JGLOBAL_FORECAST_MANAGER
+* JGLOBAL_FSM
+* JGLOBAL_MARINE_ANALYSIS_CHECKPOINT
+* JGLOBAL_MARINE_ANALYSIS_ECEN
+* JGLOBAL_MARINE_ANALYSIS_FINALIZE
+* JGLOBAL_MARINE_ANALYSIS_INITIALIZE
+* JGLOBAL_MARINE_ANALYSIS_VARIATIONAL
+* JGLOBAL_MARINE_BMAT
+* JGLOBAL_MARINE_BMAT_INITIALIZE
+* JGLOBAL_MARINE_OBS_BUFR_DUMP
+* JGLOBAL_MARINE_OBS_DUMP
+* JGLOBAL_OCEANICE_PRODUCTS
+* JGLOBAL_SNOW_ANALYSIS
+* JGLOBAL_SNOWENS_ANALYSIS
 
 PARM/CONFIG CHANGES
 -------------------
@@ -326,7 +328,7 @@ The total COM will increase from 8.9TB/cycle to 14.5 TB/cycle.
 
 The follow jobs have significant time or resource changes: 
 
-* JGDAS_ENKF_ECEN 
+* JGDAS_ENKF_ECEN
 increases in runtime from 3.6-3.9 min to 9-11.5 min 
 * JGDAS_ENKF_SFC 
 Increases in runtime from 1.6-1.8 to 9.5-13 min 
@@ -375,8 +377,9 @@ JOB DEPENDENCIES AND FLOW DIAGRAM
 
 PREPARED BY
 -----------
-Travis.J.Elless@noaa.gov
-Jessica.Meixner@noaa.gov
-Catherine.Thomas@noaa.gov
-Ruiyu.Sun@noaa.gov
-David.Huber@noaa.gov
+
+* Travis.J.Elless@noaa.gov
+* Jessica.Meixner@noaa.gov
+* Catherine.Thomas@noaa.gov
+* Ruiyu.Sun@noaa.gov
+* David.Huber@noaa.gov
