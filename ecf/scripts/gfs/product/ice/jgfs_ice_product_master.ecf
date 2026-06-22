@@ -41,4 +41,17 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_ice_product_master
+
+PURPOSE: Generates CICE6 sea-ice GRIB2 products from forecast
+output per time-averaged output period.
+For each time-averaged output period, a _master template.
+
+TROUBLESHOOTING
+
+Depends on CICE6 forecast output (ice history files). If coupled
+forecast did not write ice output for this time period, product generation
+fails. Check for ice history file existence in. Check for ice history file
+existence in COMOUT_ICE_HISTORY.
+
 %end

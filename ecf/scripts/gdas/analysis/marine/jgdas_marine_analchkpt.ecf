@@ -36,4 +36,13 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_marine_analchkpt
+
+PURPOSE: GDAS marine analysis checkpoint. Same shared J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_anlchkpt. Simple I/O job -- check
+filesystem and input from solver.
+
 %end

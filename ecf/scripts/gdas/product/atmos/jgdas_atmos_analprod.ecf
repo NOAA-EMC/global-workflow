@@ -38,4 +38,13 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_analprod
+
+PURPOSE: GDAS analysis product generation. On disk as jgdas_atmos_analprod.ecf --
+name differs from manifest.
+
+TROUBLESHOOTING
+
+Depends on GDAS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gdas.${PDY}/${cyc}/analysis/atmos/gdas.t${cyc}z.master.analysis.grib2).
+
 %end

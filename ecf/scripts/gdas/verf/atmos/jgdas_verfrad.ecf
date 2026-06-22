@@ -36,5 +36,17 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gdas_verfrad
 
+PURPOSE: Archives satellite radiance diagnostics from GDAS GSI for bias
+correction monitoring. GDAS-specific. Heavy I/O (40min wall).
+
+TROUBLESHOOTING
+
+Depends on GDAS analysis diagnostic output (radstat files). Large data
+volume from satellite instruments. If analysis produced incomplete
+radstat, verfrad may partially fail. Non-critical for downstream but
+important for monitoring instrument health and bias corrections. Check
+disk space -- radstat files can be very large.
+
+%end

@@ -36,5 +36,16 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_gempak_ncdcupapgif
 
+PURPOSE: Generates NCDC upper-air GIF images (Skew-T/Log-P diagrams) from GFS
+GEMPAK grids for archival. Single-instance task.
+
+TROUBLESHOOTING
+
+Depends on GEMPAK grid output from gempak_master. If GEMPAK grids were
+not produced, this job fails. Lightweight job -- failures are almost
+always missing input. Check that GEMPAK module loaded correctly and
+GEMDATA path resolves.
+
+%end

@@ -40,4 +40,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_atmos_grb2spec_master
+
+PURPOSE: Converts simulated GOES satellite imagery (GRIB2) to GEMPAK grid format
+for downstream NAWIPS/AWIPS display. Per-hour _master template.
+
+TROUBLESHOOTING
+
+Depends on goesupp_master output (simulated GOES GRIB2). If goesupp did
+not produce output for this hour, grb2spec will fail. Check
+$COMOUT/gfs.$PDY/$cyc/atmos/ for the GOES pgrb2 files. Lightweight job
+-- failures usually indicate missing input, not resource issues.
+
 %end

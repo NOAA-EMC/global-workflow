@@ -41,4 +41,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_wave_gempak_master
+
+PURPOSE: Converts WW3 gridded wave output (GRIB2) to GEMPAK format for NAWIPS
+display. Per-hour _master template.
+
+TROUBLESHOOTING
+
+Depends on wave_postsbs_master output (wave GRIB2 files). If wave post-
+processing did not produce GRIB2 for this hour, GEMPAK conversion fails.
+Check $COMOUT_WAVE_GRID for the target forecast hour.
+
 %end

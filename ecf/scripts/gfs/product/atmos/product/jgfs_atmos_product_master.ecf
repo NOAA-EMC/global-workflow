@@ -41,4 +41,18 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_atmos_product_master
+
+PURPOSE: Generates standard atmospheric GRIB2 products (0.25/0.50/1.00-degree
+pressure-level and flux files) from GFS forecast output. Per-hour
+_master template. PRIMARY product generation.
+
+TROUBLESHOOTING
+
+Depends directly on forecast output (atmos master files). If forecast
+did not produce master file for this hour, product generation fails.
+Check GRIB2 master file existence. wgrib2 and related utilities
+must load correctly. If a single hour fails, other hours are unaffected
+(_master template). Check DATA directory for space issues.
+
 %end

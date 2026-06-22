@@ -36,4 +36,17 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_marine_bmat
+
+PURPOSE: Computes the marine background error covariance matrix (B-matrix) using
+ensemble statistics. 8 nodes, heavy compute.
+
+TROUBLESHOOTING
+
+Requires ensemble member ocean restart files. If EnKF forecasts did not
+complete, B-matrix computation fails. Check for sufficient ensemble
+members available. SOCA B-matrix code can fail on singular matrices if
+ensemble spread is too small. Expert assistance recommended for non-
+obvious failures.
+
 %end

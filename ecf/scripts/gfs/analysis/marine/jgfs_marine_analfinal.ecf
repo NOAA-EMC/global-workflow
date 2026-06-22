@@ -36,4 +36,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_marine_analfinal
+
+PURPOSE: Marine analysis finalization -- applies increments to background,
+performs QC, produces final analysis files for forecast.
+
+TROUBLESHOOTING
+
+Depends on marine_anlvar and marine_anlchkpt. If solver failed,
+finalization has no valid increments. Check that checkpoint files exist.
+Also performs quality control -- may reject analysis if increments are
+unreasonably large (indicates solver problem upstream).
+
 %end

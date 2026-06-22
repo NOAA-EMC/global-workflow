@@ -36,4 +36,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_wave_postbndpntbll
+
+PURPOSE: Generates wave boundary-point bulletin products for nested regional wave
+model forcing. Single-instance per cycle.
+
+TROUBLESHOOTING
+
+Depends on WW3 forecast point output at boundary locations. If forecast
+did not write boundary point data, this fails. Check COMIN_WAVE_HISTORY
+for boundary point output files. Not critical for downstream.
+
 %end

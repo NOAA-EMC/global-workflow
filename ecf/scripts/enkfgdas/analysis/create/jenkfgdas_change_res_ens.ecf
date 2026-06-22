@@ -36,4 +36,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_change_res_ens
+
+PURPOSE: Runs chgres_cube to regrid deterministic forecast to ensemble resolution
+for EnKF recentering.
+
+TROUBLESHOOTING
+
+Depends on deterministic forecast fields at ensemble resolution. Check
+that chgres_cube executable and input files are available. If resolution
+mismatch in grid specs, chgres will fail with grid dimension errors.
+
 %end

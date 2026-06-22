@@ -36,4 +36,17 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_atmos_ens_observer
+
+PURPOSE: EnKF observation selection -- runs GSI in observer mode to compute
+innovations (O-F) for all ensemble members. 4 nodes.
+
+TROUBLESHOOTING
+
+Prerequisite for eupd. Depends on ensemble member forecasts and
+observation data (from prep). If prep failed or ensemble forecasts are
+missing, eobs cannot compute innovations. Check GSI observer mode stdout
+for missing data types or computation errors. If most observations are
+rejected in QC, check observation input quality.
+
 %end

@@ -37,5 +37,13 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_analprod
 
+PURPOSE: Analysis product generation from atmospheric analysis fields.
+
+TROUBLESHOOTING
+
+
+Depends on GFS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gfs.${PDY}/${cyc}/analysis/atmos/gfs.t${cyc}z.master.analysis.grib2)
+
+%end

@@ -40,4 +40,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_product_master
+
+PURPOSE: GDAS atmospheric product generation -- per-hour _master producing GRIB2
+from GDAS 9-hour forecast. Same shared J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS atmos_product_master. GDAS produces products
+for f000-f009 only (vs GFS f000-f384). Check forecast output (atmos master files)
+availability.
+
 %end

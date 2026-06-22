@@ -36,4 +36,14 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_analsnow
+
+PURPOSE: GDAS JEDI snow analysis -- same as GFS version. Assimilates snow obs to
+update land surface snow state.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS snowanl. Check for missing IMS/GHCN/SNODEP
+observations and background snow fields.
+
 %end

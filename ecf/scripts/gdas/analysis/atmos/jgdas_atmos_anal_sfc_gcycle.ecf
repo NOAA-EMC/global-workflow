@@ -36,5 +36,14 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gdas_atmos_anal_sfc_gcycle
 
+PURPOSE: GDAS surface analysis (GCycle). Same shared J-Job as GFS. Updates SST,
+sea ice, soil, vegetation.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS sfcanl. Check observation data feeds and
+previous cycle surface restart files.
+
+%end

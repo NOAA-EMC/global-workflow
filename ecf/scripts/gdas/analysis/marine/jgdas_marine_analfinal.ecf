@@ -36,4 +36,13 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_marine_analfinal
+
+PURPOSE: GDAS marine analysis finalization. Same shared J-Job as GFS.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_anlfinal. Depends on marine_anlvar
+and marine_anlchkpt.
+
 %end

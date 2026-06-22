@@ -37,4 +37,12 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_marine_prep_fsm
+
+PURPOSE: GDAS marine prep FSM. Same shared JGLOBAL_FSM.
+
+TROUBLESHOOTING
+
+FSM coordination. Same troubleshooting as GFS marine_prep_fsm.
+
 %end

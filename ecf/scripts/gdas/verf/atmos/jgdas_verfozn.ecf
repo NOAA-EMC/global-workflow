@@ -36,5 +36,16 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gdas_verfozn
 
+PURPOSE: Archives ozone-related analysis diagnostics from GDAS GSI for time-
+series monitoring. GDAS-specific (no GFS counterpart).
+
+TROUBLESHOOTING
+
+Depends on GDAS analysis diagnostic output (ozstat files). If analysis
+or analdiag did not produce ozone diagnostics, verfozn has no input.
+Non-critical -- failure does not block downstream. Check that
+cnvstat/radstat/ozstat files exist in COMOUT.
+
+%end

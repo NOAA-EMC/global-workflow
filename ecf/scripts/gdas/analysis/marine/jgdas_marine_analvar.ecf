@@ -36,4 +36,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_marine_analvar
+
+PURPOSE: GDAS marine variational analysis (SOCA solver). 8 nodes. Same shared
+J-Job. CRITICAL for ocean/ice ICs.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_anlvar. Expert assistance for solver
+non-convergence. Check observations, background, and B-matrix
+availability.
+
 %end
