@@ -34,7 +34,8 @@ fi
 # Clean DATA
 # DATA retain current PDY   ~   60TB
 cd "${DATAROOT}"
-for dir_to_remove in $(find ./* -maxdepth 0 -type d -mtime +1 | grep -v "DBNLOG" | grep -v "ecflow"); do
+# Delete any directories older than 48 hours
+for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "DBNLOG" | grep -v "ecflow"); do
     echo "Removing directory ${DATAROOT}/${dir_to_remove}"
     rm -rf "${dir_to_remove}"
 done
