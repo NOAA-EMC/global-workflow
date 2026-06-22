@@ -46,7 +46,6 @@ name differs from manifest.
 
 TROUBLESHOOTING
 
-Check actual on-disk filename. If the ecFlow task references the wrong
-filename, job submission fails. Depends on GDAS analysis output (atmos master files).
+Depends on GDAS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gdas.${PDY}/${cyc}/analysis/atmos/gdas.t${cyc}z.master.analysis.grib2).
 
 %end

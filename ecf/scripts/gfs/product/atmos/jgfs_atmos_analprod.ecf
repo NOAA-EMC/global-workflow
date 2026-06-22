@@ -41,12 +41,10 @@ fi
 TASK gfs_atmos_analprod
 
 PURPOSE: Analysis product generation from atmospheric analysis fields.
-In v17 this task is deprecated; functionality is handled by
-jgfs_atmos_atmanlupp (UPP on analysis).
 
 TROUBLESHOOTING
 
-If this task is still referenced by the suite definition, remove it or
-replace it with jgfs_atmos_atmanlupp; otherwise job submission will fail.
+
+Depends on GFS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gfs.${PDY}/${cyc}/analysis/atmos/gfs.t${cyc}z.master.analysis.grib2)
 
 %end
