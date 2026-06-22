@@ -27,7 +27,6 @@ export WGF="%WGF%"
 export FHR="%FHR%"
 export FHR_LIST="%FHR_LIST%"
 export FORECAST_HOUR="${FHR_LIST}"
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export COMPONENT=${WGF}
 

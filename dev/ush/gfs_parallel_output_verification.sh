@@ -4,7 +4,7 @@ set -eux
 # This utility script is designed to compare the COM from two parallels for reproducibility
 #   The requirement of these two parallels (control and target) if running GFS realtime are:
 #     1. Same RUN
-#     2. Same CDATE
+#     2. Same PDY/cyc
 #     3. Same Package checkout with no know result changing difference
 #     4. Identical setup. Such as frequency, resolution, ETC.
 #     5. Only the the control parallel will run the prep jobs:
@@ -45,10 +45,9 @@ echo "Start configuration"
 #export PDY="20260430"
 #export cyc="00"
 #export cycle=t${cyc}z
-#export CDATE="${PDY}${cyc}"
 #export COMROOT_Parallel_1="/lfs/h2/emc/gfstemp/emc.global/comroot/retrov17_01_realtime"
 #export COMROOT_Parallel_2="/lfs/f2/t2o/ptmp/emc/emc.global/ecflow_gfsv17_rt/ptmp/emc.global/ecflow_gfs/para/com"
-#export DATAROOT="/lfs/h3/emc/eib/noscrub/ptmp/lin.gan/ecflow_gfs/para/output/prod/today/dir_scan_data_${CDATE}_$$"
+#export DATAROOT="/lfs/h3/emc/eib/noscrub/ptmp/lin.gan/ecflow_gfs/para/output/prod/today/dir_scan_data_${PDY}${cyc}_$$"
 # End of Example
 array_element_com[0]="gfs.${PDY}/${cyc}"      #COMgfs
 array_element_com[1]="gdas.${PDY}/${cyc}"     #COMgdas
@@ -66,7 +65,8 @@ array_element_com[5]="NONE"
 # array_element_com[5]="NONE"
 
 echo "Summary of the configuration:"
-echo "  CDATE: ${CDATE}"
+echo "  PDY: ${PDY}"
+echo "  cyc: ${cyc}"
 echo "  COMROOT_Parallel_1:"
 echo "    ${COMROOT_Parallel_1}"
 echo "  COMROOT_Parallel_2:"

@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 export FCST_SEGMENT='0'
 #### ${HOMEgfs}/dev/job_cards/rocoto/fcst.sh
