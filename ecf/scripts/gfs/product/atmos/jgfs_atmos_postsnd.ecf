@@ -39,14 +39,14 @@ fi
 
 TASK gfs_atmos_postsnd
 
-PURPOSE: Generates BUFR sounding profiles at ~1800 station locations worldwide.
+PURPOSE: Generates BUFR sounding profiles at 2246 station locations worldwide.
 It has heavy I/O and single-instance looping internally.
 
 TROUBLESHOOTING
 
-Complex MPI job (9mpi x 14omp) processing all stations. Depends on
-forecast output for all hours. If forecast was incomplete, postsnd fails
-at that hour internally. Check stdout for which station/hour failed.
+Complex MPI job (9mpi x 14omp) processing all forecast hour data simultaneously.
+Depends onforecast output for all hours. If forecast was incomplete, postsnd
+fails at that hour internally. Check stdout for which station/hour failed.
 Memory-intensive -- can OOM on some configurations. Long walltime (2hr)
 -- walltime kills indicate incomplete forecast or slow I/O.
 
