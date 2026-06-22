@@ -282,7 +282,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd" ]]; then
     cd "${HOMEglobal}/parm" || exit 1
     mkdir -p gdas
     cd gdas || exit 1
-    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soil" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
     for comp in "${gdasapp_comps[@]}"; do
         if [[ -d "${comp}" ]]; then
             rm -rf "${comp}"
