@@ -44,13 +44,14 @@ fi
 
 TASK gfs_ice_product_master
 
-PURPOSE: Generates CICE6 sea-ice GRIB2 products from forecast output per hour.
-Per-hour _master template.
+PURPOSE: Generates CICE6 sea-ice GRIB2 products from forecast
+output per time-averaged output period.
+For each time-averaged output period, a _master template.
 
 TROUBLESHOOTING
 
 Depends on CICE6 forecast output (ice history files). If coupled
-forecast did not write ice output for this hour, product generation
+forecast did not write ice output for this time period, product generation
 fails. Lightweight job (1 cpu). Check for ice history file existence in
 COMOUT_ICE_HISTORY. If ice model component failed during forecast, all
 ice products will be missing.
