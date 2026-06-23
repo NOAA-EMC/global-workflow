@@ -3,6 +3,7 @@ from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS, to_timedelta
 import rocoto.rocoto as rocoto
 import numpy as np
+import os
 
 
 class GFSTasks(Tasks):
@@ -666,7 +667,7 @@ class GFSTasks(Tasks):
         # Set COMIN_OBS
         snowanl_vars = self.envars.copy()
         snowanl_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
-        for key, value in anal_envars_dict.items():
+        for key, value in snowanl_envars_dict.items():
             snowanl_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('snowanl')
@@ -674,7 +675,7 @@ class GFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': snowanl_envars,
+                     'envars': snowanl_vars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/snowanl.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -699,7 +700,7 @@ class GFSTasks(Tasks):
         # NOTE: The ensemble snow analysis needs to read the observations from the deterministic run.
         cdump = self.run.replace('enkf', '')
         esnowanl_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{cdump}.@Y@m@d/@H/obs</cyclestr>')}
-        for key, value in anal_envars_dict.items():
+        for key, value in esnowanl_envars_dict.items():
             esnowanl_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('esnowanl')
@@ -1816,7 +1817,7 @@ class GFSTasks(Tasks):
         # Set COMIN_OBS
         gempakmetancdc_vars = self.envars.copy()
         gempakmetancdc_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
-        for key, value in anal_envars_dict.items():
+        for key, value in gempakmetancdc_envars_dict.items():
             gempakmetancdc_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('gempak')
@@ -2021,7 +2022,7 @@ class GFSTasks(Tasks):
         # Set COMIN_OBS
         anlstat_vars = self.envars.copy()
         anlstat_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
-        for key, value in anal_envars_dict.items():
+        for key, value in anlstat_envars_dict.items():
             anlstat_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('anlstat')
@@ -2029,7 +2030,7 @@ class GFSTasks(Tasks):
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': anlstat_envars,
+                     'envars': anlstat_vars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/anlstat.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -2119,7 +2120,7 @@ class GFSTasks(Tasks):
         # Set COMIN_OBS
         fit2obs_vars = self.envars.copy()
         fit2obs_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
-        for key, value in anal_envars_dict.items():
+        for key, value in fit2obs_envars_dict.items():
             fit2obs_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('fit2obs')
