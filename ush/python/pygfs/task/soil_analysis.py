@@ -182,7 +182,7 @@ class SoilAnalysis(Analysis):
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
 #TODO: update this for csg files
-        if self.task_config.DOIAU:
+        if self.task_config.DOIAU and not self.task_config.csg_increment:
             logger.info("Copying increments to beginning of window")
             template_in = f'soilinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             template_out = f'soilinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'

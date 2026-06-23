@@ -427,12 +427,19 @@ fi
 export ENKF_SPREAD="YES"
 
 #Soil DA and whether it is (land) IAU
+export DO_JEDISOILDAVAR="{{ DO_JEDISOILDAVAR }}"
+export DO_JEDISOILDAENS="{{ DO_JEDISOILDAENS }}"
+export DO_SOILENKFONLY="{{ DO_SOILENKFONLY }}"
 if [[ "${RUN}" == "gdas" || "${RUN}" == "enkfgdas" ]]; then
     export DO_GSISOILDA="{{ DO_GSISOILDA }}"
     export DO_LAND_IAU="{{ DO_LAND_IAU }}"
 else
     export DO_GSISOILDA="NO"
     export DO_LAND_IAU=".false."
+
+    export DO_JEDISOILDAVAR="NO"
+    export DO_JEDISOILDAENS="NO"
+    export DO_SOILENKFONLY="NO"
 fi
 export LSOIL_INCR=2
 

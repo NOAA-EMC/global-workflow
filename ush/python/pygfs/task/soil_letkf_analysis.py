@@ -72,7 +72,7 @@ class SoilLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['soilletkfanl', 'soilletkfaddinc'] #, 'soilensanlobs', 'soilensanlsol']
+        expected_keys = ['soilletkfanl']  #, 'soilletkfaddinc'] #, 'soilensanlobs', 'soilensanlsol']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -105,7 +105,7 @@ class SoilLetkfAnalysis(Analysis):
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['soilletkfanl'].initialize(clean_empty_obsspaces=False)
-        self.jedi_dict['soilletkfaddinc'].initialize(self.task_config)
+        #self.jedi_dict['soilletkfaddinc'].initialize(self.task_config)
         #self.jedi_dict['soilensanlobs'].initialize() #clean_empty_obsspaces=False)
         #self.jedi_dict['soilensanlsol'].initialize() #clean_empty_obsspaces=False)
         
@@ -144,7 +144,7 @@ class SoilLetkfAnalysis(Analysis):
 
         # Compress and save diag files to COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['soilletkfanl'].save_obsdataout(self.task_config.COMOUT_SOIL_DIAG,
+        self.jedi_dict['soilletkfanl'].save_obsdataout(self.task_config.COMOUT_SOIL_DIAG_ENS,
                                                     f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.soil_analysis.ioda_hofx")
 
         # Save files to COM
@@ -164,7 +164,7 @@ class SoilLetkfAnalysis(Analysis):
 
         #backgrounds needed to create analysis (b+inc) already copied to DATA/anl/mem by soil_letkf_config.yaml.j2
 #TODO: update this for csg files
-        if self.task_config.DOIAU:
+        if self.task_config.DOIAU and not self.task_config.csg_increment:
             logger.info("Copying increments to beginning of window")
             template_in = f'soilinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             template_out = f'soilinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
@@ -192,7 +192,7 @@ class SoilLetkfAnalysis(Analysis):
             logger.info(f"Create namelist for APPLY_INCR_EXE")
             nml_template = self.task_config.APPLY_INCR_NML_TMPL
             if self.task_config.csg_increment:
-                inc_prefix=f'soilinc_{self.task_config.GPREFIX}csg_sfc.f006'
+                inc_prefix=f'soilinc_{self.task_config.GPREFIX_ENS}csg_sfc.f006'
             else:
                 inc_prefix=self.task_config.INC_PREFIX
             nml_config = {
