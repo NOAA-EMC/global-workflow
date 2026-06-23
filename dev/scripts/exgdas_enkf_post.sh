@@ -88,7 +88,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         for imem in $(seq 1 "${NMEM_ENS}"); do
             memchar="mem"$(printf %03i "${imem}")
             declare -x COMIN_ATMOS_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/history
-            ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
+            ${NLN} ${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}${ENKF_SUFFIX}.nc "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
         done
     fi
     if [[ "${ENKF_SPREAD}" == "YES" ]]; then
