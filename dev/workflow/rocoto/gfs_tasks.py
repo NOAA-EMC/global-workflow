@@ -3,7 +3,6 @@ from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS, to_timedelta
 import rocoto.rocoto as rocoto
 import numpy as np
-import os
 
 
 class GFSTasks(Tasks):
