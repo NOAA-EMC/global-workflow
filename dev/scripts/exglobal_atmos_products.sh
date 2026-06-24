@@ -253,7 +253,7 @@ if [[ "${SENDDBN:-}" == "YES" ]]; then
                 ;;
             gfs)
                 "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.${fhr3}.nc"
-                if [[ ${fhr} -gt 0 && ${fhr} -le 84 || ${fhr} -eq 120 ]]; then
+                if [[ ${fhr} -gt 0 && 10#${fhr3} -le 84 || 10#${fhr3} -eq 120 ]]; then
                     "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.${fhr3}.nc"
                 fi
 
