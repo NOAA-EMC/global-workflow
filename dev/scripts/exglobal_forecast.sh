@@ -153,9 +153,11 @@ echo "MAIN: Post-determination set up of run type finished"
 if [[ -n "${DATAjob:-}" ]]; then
     echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready at $(date)" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
     if [[ "${SENDECF}" == "YES" ]]; then
-        if [[ "${RUN}" == "gfs" ]]; then
-            ecflow_client --event release_gfs_fcst_manager
-        fi
+        case "${RUN}" in
+            gfs|gdas)
+                ecflow_client --event "release_${RUN}_fcst_manager"
+                ;;
+        esac
     fi
 fi
 
