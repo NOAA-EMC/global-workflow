@@ -23,7 +23,7 @@ This document provides comprehensive guidance for AI agents working on the NOAA 
 
 # Build specific systems
 ./build_all.sh gfs               # GFS forecast system
-./build_all.sh gefs              # GEFS ensemble system  
+./build_all.sh gefs              # GEFS ensemble system
 ./build_all.sh sfs               # Seasonal forecast system
 ./build_all.sh gcafs             # Climate analysis system
 ./build_all.sh gsi               # GSI data assimilation
@@ -55,7 +55,7 @@ python setup_xml.py /path/to/experiment
 ```bash
 # Supported platforms (use detect_machine.sh)
 WCOSS2    # Tier 1 - Full operational support
-Hercules  # Tier 1 - MSU, no TC Tracker  
+Hercules  # Tier 1 - MSU, no TC Tracker
 Hera      # Tier 2 - NOAA RDHPCS
 Orion     # Tier 2 - MSU, GSI runs slowly
 Gaea      # Cloud platforms via EPIC
@@ -74,7 +74,7 @@ Gaea      # Cloud platforms via EPIC
 ```
 jobs/                         # Production Job Control Language (JCL) scripts (89 files)
 ├── JGDAS_*                   # GDAS (Global Data Assimilation System) jobs
-├── JGFS_*                    # GFS (Global Forecast System) jobs  
+├── JGFS_*                    # GFS (Global Forecast System) jobs
 ├── JGLOBAL_*                 # Cross-system global jobs
 ├── Analysis Jobs (41)        # Data assimilation and analysis
 ├── Forecast Jobs (13)        # Model forecast execution
@@ -158,7 +158,7 @@ dev/workflow/rocoto/       # Rocoto-specific implementations
 ├── tasks.py               # Base Tasks class with common task functionality
 ├── workflow_tasks.py      # Task orchestration and dependency management
 ├── gfs_*.py               # GFS-specific implementations
-├── gefs_*.py              # GEFS-specific implementations  
+├── gefs_*.py              # GEFS-specific implementations
 ├── sfs_*.py               # SFS-specific implementations
 └── gcafs_*.py             # GCAFS-specific implementations
 
@@ -368,7 +368,6 @@ envar_dict = {
     'EXPDIR': self._base.get('EXPDIR'),
     'NET': self._base.get('NET'),
     'RUN': self.run,
-    'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
     'PDY': '<cyclestr>@Y@m@d</cyclestr>',
     'cyc': '<cyclestr>@H</cyclestr>',
 }
@@ -426,7 +425,7 @@ def test_task_creation():
 
 ### New Hosts
 1. Add machine detection in `detect_machine.sh`
-2. Create host configuration in `hosts/` directory  
+2. Create host configuration in `hosts/` directory
 3. Create modulefiles for environment setup
 4. Update environment configurations in `env/` directory
 
@@ -476,7 +475,7 @@ This repository includes a specialized Model Context Protocol (MCP) server with 
 When using MCP tools, acknowledge their usage to demonstrate intelligent tool selection:
 
 ```markdown
-**Research Approach:** Using `mcp_globalworkflo_search_documentation` to find relevant 
+**Research Approach:** Using `mcp_globalworkflo_search_documentation` to find relevant
 examples and `mcp_globalworkflo_get_operational_guidance` for HPC-specific procedures.
 ```
 
@@ -494,7 +493,7 @@ These tools are actively being developed and refined on the `MCP_node.js-RAG_dev
 
 **MCP Server Location**: All MCP tools are implemented in `dev/ci/scripts/utils/Copilot/mcp_server_node/`:
 - `mcp-server-rag.js` - Main RAG-enhanced server with 9 workflow tools
-- `mcp-server-github-rag.js` - GitHub ecosystem integration with 14 total tools  
+- `mcp-server-github-rag.js` - GitHub ecosystem integration with 14 total tools
 - `start-mcp-server-node.sh` - Primary startup script
 - Configuration files: `mcp-config.env`, `package.json`, `package-rag.json`
 

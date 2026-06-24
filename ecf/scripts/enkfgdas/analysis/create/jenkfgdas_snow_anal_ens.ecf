@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/esnowanl.sh
@@ -36,5 +35,17 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK enkfgdas_snow_anal_ens
+
+PURPOSE: Applies snow analysis to ensemble members -- ensures consistent snow
+state across all members.
+
+TROUBLESHOOTING
+
+Depends on deterministic snow analysis (snowanl) completing. If snow
+analysis failed, ensemble snow update cannot proceed. Check that snow
+analysis output exists. Per-member update -- individual failures
+possible but non-critical.
 
 %end

@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/marineanlecen.sh
@@ -36,5 +35,16 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK enkfgdas_marine_ens_recenter
+
+PURPOSE: Recenters ensemble ocean/ice analysis around the deterministic marine
+analysis.
+
+TROUBLESHOOTING
+
+Depends on both deterministic marine analysis (marine_anlfinal) and
+ensemble member ocean states. If deterministic marine analysis failed,
+cannot recenter. Check SOCA output availability.
 
 %end

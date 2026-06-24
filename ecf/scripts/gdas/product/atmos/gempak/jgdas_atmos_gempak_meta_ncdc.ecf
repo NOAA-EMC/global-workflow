@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/gempakmetancdc.sh
@@ -37,5 +36,15 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gdas_atmos_gempak_meta_ncdc
 
+PURPOSE: Generates GEMPAK metafiles and NCDC archival products from GDAS output.
+Single-instance per cycle.
+
+TROUBLESHOOTING
+
+Depends on GDAS GEMPAK grid files from gempak_master. If those are
+missing, metafile generation fails. Lightweight job. Non-critical for
+operations -- primarily archival.
+
+%end

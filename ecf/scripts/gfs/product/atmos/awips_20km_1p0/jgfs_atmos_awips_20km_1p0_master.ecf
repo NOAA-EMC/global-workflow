@@ -27,7 +27,6 @@ export FHR_LIST="%FHR_LIST%"
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/awips_20km_1p0deg.sh
@@ -40,5 +39,18 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gfs_atmos_awips_20km_1p0_master
+
+PURPOSE: Generates AWIPS-compatible atmospheric gridded products on 20-km and
+1.0-degree grids for NWS offices. Per-hour _master template.
+
+TROUBLESHOOTING
+
+Depends on atmos_product_master output (GRIB2 on standard grids). If
+upstream product generation failed for this hour, AWIPS conversion
+fails. Check for tocgrib2 errors and WMO header issues. If products
+generate but are rejected by AWIPS, check bulletin headers match
+expected formats.
 
 %end

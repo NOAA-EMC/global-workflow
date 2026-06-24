@@ -32,7 +32,14 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
-declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+# TODO: Rework this so that COMIN_OBS can be defined in development cases without referencing `RUN_ENVIR`
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    declare -rx COMIN_OBS
+else
+    declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+fi
+
 declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 

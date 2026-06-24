@@ -29,7 +29,6 @@ export UPP_RUN="goes"
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/upp.sh
@@ -42,5 +41,17 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gfs_atmos_goesupp_master
+
+PURPOSE: Runs UPP in GOES supplemental mode to generate simulated geostationary
+satellite imagery from GFS forecast output. Per-hour _master template.
+
+TROUBLESHOOTING
+
+UPP-dependent -- check UPP module loads and itag/postxconfig files.
+Requires forecast history files from jgfs_fcst for the given hour. If
+the forecast did not complete to this hour, goesupp will fail. Heavy
+memory (120 cpus) -- OOM kills possible on shared nodes.
 
 %end

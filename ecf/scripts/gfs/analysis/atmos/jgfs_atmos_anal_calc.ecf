@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/analcalc.sh
@@ -37,5 +36,16 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_anal_calc
 
+PURPOSE: Post-analysis calculations -- applies GSI increments to background to
+produce full analysis fields and diagnostics.
+
+TROUBLESHOOTING
+
+Depends on successful completion of atmos_anal. If analysis failed,
+analcalc has no input. Relatively simple job -- failures are usually
+missing analysis increment files or module load issues. Check that
+COMOUT from analysis step has the expected files (siganl, sfcanl).
+
+%end

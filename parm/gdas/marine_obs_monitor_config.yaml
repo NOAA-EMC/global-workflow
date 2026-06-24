@@ -1,0 +1,158 @@
+# get these from environment
+#system: ocean
+#model: gdas
+
+# get these from the environment
+#data_root: /lfs/h2/emc/da/noscrub/emc.da/obsForge/COMROOT/realtime
+#report_root: /lfs/h2/emc/obsproc/noscrub/edward.givelberg/newmonitor/reports
+
+cycles: [0, 6, 12, 18]
+detect_from_filesystem: true
+
+# scan start and end dates (optional)
+# if no scan dates are specified, the single latest found cycle
+# is scanned
+# start_cycle: '2026042200'
+# end_cycle: '2026042418'
+
+history:
+  window_days: 30
+
+thresholds:
+  ratio: 0.8
+
+flags:
+  low: "+"
+  medium: "*"
+  high: "**"
+
+report:
+  include_comment_header: true
+
+# =========================================
+# OBS SPACES (ORDER DEFINES REPORT ORDER)
+# =========================================
+obs_spaces:
+
+  - name: rads_adt_3a
+    code: adtr3a
+    description: "ADT RADS 3A"
+    criticality: low
+
+  - name: rads_adt_3b
+    code: adtr3b
+    description: "ADT RADS 3B"
+    criticality: low
+
+  - name: rads_adt_6a
+    code: adtr6a
+    description: "ADT RADS 6A"
+    criticality: low
+
+  - name: rads_adt_c2
+    code: adtrc2
+    description: "ADT RADS C2"
+    criticality: low
+
+  - name: rads_adt_j3
+    code: adtrj3
+    description: "ADT RADS J3"
+    criticality: low
+
+  - name: rads_adt_sa
+    code: adtrsa
+    description: "ADT RADS SA"
+    criticality: low
+
+  - name: rads_adt_sw
+    code: adtrsw
+    description: "ADT RADS SW"
+    criticality: low
+
+
+  - name: icec_amsr2_north
+    code: iamsrn
+    description: "Ice AMSR2 North"
+    criticality: medium
+
+  - name: icec_amsr2_south
+    code: iamsrs
+    description: "Ice AMSR2 South"
+    criticality: medium
+
+  - name: icec_amsu_ma1_l2
+    code: iamsum
+    description: "Ice AMSU MA1"
+    criticality: medium
+
+  - name: icec_atms_n20_l2
+    code: iatm20
+    description: "Ice ATMS N20"
+    criticality: medium
+
+  - name: icec_atms_n21_l2
+    code: iatm21
+    description: "Ice ATMS N21"
+    criticality: medium
+
+  - name: icec_atms_npp_l2
+    code: iatmnp
+    description: "Ice ATMS NPP"
+    criticality: medium
+
+  - name: icec_viirs_j01_l2
+    code: ivii20
+    description: "Ice VIIRS J01"
+    criticality: medium
+
+  - name: icec_viirs_n21_l2
+    code: ivii21
+    description: "Ice VIIRS N21"
+    criticality: medium
+
+  - name: icec_viirs_npp_l2
+    code: iviinp
+    description: "Ice VIIRS NPP"
+    criticality: medium
+
+
+  - name: sss_smap_l2
+    code: sssmap
+    description: "SSS SMAP L2"
+    criticality: medium
+
+  - name: sss_smos_l2
+    code: sssmos
+    description: "SSS SMOS L2"
+    criticality: medium
+
+
+  - name: sst_abi_g18_13c
+    code: sstabi
+    description: "SST ABI G18"
+    criticality: high
+
+  - name: sst_avhrrf_mb_l3u
+    code: sstamb
+    description: "SST AVHRR MB"
+    criticality: high
+
+  - name: sst_avhrrf_mc_l3u
+    code: sstamc
+    description: "SST AVHRR MC"
+    criticality: high
+
+  - name: sst_viirs_n20_l3u
+    code: sstv20
+    description: "SST VIIRS N20"
+    criticality: high
+
+  - name: sst_viirs_n21_l3u
+    code: sstv21
+    description: "SST VIIRS N21"
+    criticality: high
+
+  - name: sst_viirs_npp_l3u
+    code: sstvnp
+    description: "SST VIIRS NPP"
+    criticality: high

@@ -24,7 +24,6 @@ module list
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
-export CDATE=${PDY}${cyc}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/npoess.sh
 ${HOMEgfs}/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS
@@ -37,5 +36,18 @@ fi
 %include <tail.h>
 %manual
 
-%end
+TASK gfs_atmos_npoess_pgrb2_0p5
 
+PURPOSE: Produces NPOESS 0.5-degree GRIB2 subsets and simulated GOES imagery
+regridded to 0.25-degree/CONUS grids. Single-instance task looping over
+all hours internally.
+
+TROUBLESHOOTING
+
+Long-running (3.5hr wall) single job processing all forecast hours
+sequentially. A failure at any internal hour aborts the whole job. Check
+the stdout for which hour failed. Input depends on atmos_product output.
+If NPOESS is slow, it may hit walltime -- check if the job completed
+normally vs PBS killed.
+
+%end

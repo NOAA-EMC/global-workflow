@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/waveinit.sh
@@ -36,5 +35,15 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_wave_init
+
+PURPOSE: Creates WW3 grid definition files (mod_def.*) used for WW3
+forecasts and products
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS wave_init. Critical upstream for GDAS wave
+tasks. Check mod_def generation and grid config consistency.
 
 %end

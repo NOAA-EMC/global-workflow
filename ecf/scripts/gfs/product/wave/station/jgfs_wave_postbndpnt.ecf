@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/wavepostbndpnt.sh
@@ -36,5 +35,19 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gfs_wave_postbndpnt
+
+PURPOSE: Generates wave boundary-point spectral data for nested regional wave
+models. Single-instance per cycle.
+
+TROUBLESHOOTING
+
+Similar to postbndpntbll but produces spectral (not bulletin) output.
+Depends on WW3 boundary point output from forecast. If boundary location
+configuration changed, mod_def mismatch can cause segfaults. Check wave
+grid definitions match between init and post. Downstream models use this
+job, but can use previous cycle as back-up. While improved from v16,
+this job will slow down or fail when there are filesystem issues.
 
 %end

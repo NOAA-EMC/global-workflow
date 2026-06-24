@@ -23,7 +23,6 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
 
 #### ${HOMEgfs}/dev/job_cards/rocoto/marinebmat.sh
@@ -36,5 +35,15 @@ fi
 
 %include <tail.h>
 %manual
+
+TASK gdas_marine_bmat
+
+PURPOSE: Computes marine B-matrix for GDAS cycle. 8 nodes, heavy compute. Same
+shared J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS marine_bmat. Requires EnKF ensemble member
+ocean restarts.
 
 %end

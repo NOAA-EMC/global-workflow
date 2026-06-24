@@ -36,4 +36,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_fcst_fsm
+
+PURPOSE: File Service Manger releases dependent tasks by creating ecflow events.
+
+TROUBLESHOOTING
+
+FSM itself rarely fails. If it does, check ecFlow communicationExpand commentComment on line R45Resolved
+(ecflow_client). If FSM is stuck, the forecast segments may be hung --
+check jgfs_fcst status. FSM has very long walltime (6hr) to wait for
+segments; a timeout means the forecast never completed.
+
 %end
