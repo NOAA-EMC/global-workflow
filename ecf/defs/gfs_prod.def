@@ -26,7 +26,7 @@ suite gfs_v17_nco
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 02:47
+              time 03:07
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -5358,7 +5358,7 @@ suite gfs_v17_nco
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 05:50
+              time 06:10
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -5943,7 +5943,7 @@ suite gfs_v17_nco
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 08:47
+              time 09:07
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -11275,7 +11275,7 @@ suite gfs_v17_nco
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 11:50
+              time 12:10
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -11857,7 +11857,7 @@ suite gfs_v17_nco
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 14:47
+              time 15:07
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -17189,7 +17189,7 @@ suite gfs_v17_nco
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 17:50
+              time 18:10
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -17772,7 +17772,7 @@ suite gfs_v17_nco
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 20:47
+              time 21:07
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -23104,7 +23104,7 @@ suite gfs_v17_nco
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 23:50
+              time 00:10
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
