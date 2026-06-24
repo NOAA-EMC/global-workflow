@@ -107,8 +107,9 @@ export ARCDIR="/lfs/h2/emc/gfstemp/emc.global/archive/${PSLOT}"
 export ATARDIR="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS2/GFSv17/${PSLOT}"
 export FETCHDIR="{{ FETCHDIR }}"
 
-# Get all the COM path templates
-source "${EXPDIR}/config.com"
+# COM path templates are now managed by dev/workflow/com_paths.py
+# and injected at experiment setup time, or defined at job runtime
+# via declare_from_tmpl in ush/preamble.sh
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
 
