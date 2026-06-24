@@ -154,7 +154,7 @@ if [[ -n "${DATAjob:-}" ]]; then
     echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready at $(date)" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
     if [[ "${SENDECF}" == "YES" ]]; then
         case "${RUN}" in
-            gfs|gdas)
+            gfs | gdas)
                 ecflow_client --event "release_${RUN}_fcst_manager"
                 ;;
         esac
