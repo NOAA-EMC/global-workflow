@@ -278,7 +278,7 @@ class GFSTasks(Tasks):
 
         # Set COMIN_OBS
         anal_vars = self.envars.copy()
-        anal_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
+        anal_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in anal_envars_dict.items():
             anal_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -666,7 +666,7 @@ class GFSTasks(Tasks):
 
         # Set COMIN_OBS
         snowanl_vars = self.envars.copy()
-        snowanl_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
+        snowanl_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in snowanl_envars_dict.items():
             snowanl_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -699,7 +699,7 @@ class GFSTasks(Tasks):
         esnowanl_vars = self.envars.copy()
         # NOTE: The ensemble snow analysis needs to read the observations from the deterministic run.
         cdump = self.run.replace('enkf', '')
-        esnowanl_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{cdump}.@Y@m@d/@H/obs</cyclestr>')}
+        esnowanl_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{cdump}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in esnowanl_envars_dict.items():
             esnowanl_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -1816,7 +1816,7 @@ class GFSTasks(Tasks):
 
         # Set COMIN_OBS
         gempakmetancdc_vars = self.envars.copy()
-        gempakmetancdc_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
+        gempakmetancdc_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in gempakmetancdc_envars_dict.items():
             gempakmetancdc_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -2021,7 +2021,7 @@ class GFSTasks(Tasks):
 
         # Set COMIN_OBS
         anlstat_vars = self.envars.copy()
-        anlstat_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
+        anlstat_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in anlstat_envars_dict.items():
             anlstat_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -2119,7 +2119,7 @@ class GFSTasks(Tasks):
 
         # Set COMIN_OBS
         fit2obs_vars = self.envars.copy()
-        fit2obs_envars_dict = {'COMIN_OBS': os.path.join(self._base.get('COMROOT'), f'<cyclestr>{self.run}.@Y@m@d/@H/obs</cyclestr>')}
+        fit2obs_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in fit2obs_envars_dict.items():
             fit2obs_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
