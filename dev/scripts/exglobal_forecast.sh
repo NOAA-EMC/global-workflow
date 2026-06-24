@@ -157,6 +157,7 @@ if [[ -n "${DATAjob:-}" ]]; then
             gfs | gdas)
                 ecflow_client --event "release_${RUN}_fcst_manager"
                 ;;
+            *) ;;
         esac
     fi
 fi
