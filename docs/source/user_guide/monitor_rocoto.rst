@@ -1,5 +1,5 @@
 ==================
-Monitor ROCOTO Run
+Monitor rocoto Run
 ==================
 
 Click `here <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__ to view full rocoto documentation on GitHub
@@ -9,7 +9,7 @@ Click `here <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__
 Using command line
 ^^^^^^^^^^^^^^^^^^
 
-You can use Rocoto commands with arguments to check the status of your experiment. 
+You can use Rocoto commands with arguments to check the status of your experiment.
 
 Start or continue a run:
 
@@ -57,10 +57,10 @@ Set a task to complete (overwrites current state):
 Several dates and task names may be specified in the same command by adding more -c and -t options. However, lists are not allowed.
 
 ^^^^^^^^^^^^^^^^^
-Use ROCOTO viewer
+Use rocoto viewer
 ^^^^^^^^^^^^^^^^^
 
-An alternative approach is to use a GUI that was designed to assist with monitoring global workflow  experiments that use ROCOTO. It can be found under the ``workflow`` folder in global-workflow.
+An alternative approach is to use a GUI that was designed to assist with monitoring global workflow  experiments that use rocoto. It can be found under the ``workflow`` folder in global-workflow.
 
 *****
 Usage

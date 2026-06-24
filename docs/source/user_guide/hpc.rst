@@ -42,192 +42,39 @@ The system software requirements listed in the following table represent the min
 |              |             |   WCOSS2                              |
 +--------------+-------------+---------------------------------------+
 
-==============================
-Feature availability by RDHPCS
-==============================
+.. _feature_availability:
+
+================================
+Feature availability by platform
+================================
 
 The GW provides capabilities for deterministic and ensemble forecasts, along with DA, across multiple platforms. However, not all features are currently supported on every system. The table below summarizes available features by platform and states their level of support.
 
-.. _HPC_Capabilities_Matrix:
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| HPC             | Tier | GFS | GEFS | GCAFS | SFS | GSI | GDASApp | Coupled DA | TC Tracker | AWIPS | MOS | Fit2Obs | METplus | HPSS |
++=================+======+=====+======+=======+=====+=====+=========+============+============+=======+=====+=========+=========+======+
+| WCOSS2          | 1    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |   X   |  X  |    X    |    X    |   X  |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| Ursa            | 1    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |   X  |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| Hercules        | 1    |  X  |   X  |       |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |  \*  |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| Gaea C6         | 1    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |   X  |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| Derecho         | 1    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |      |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| AWS (native)    | 2    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |      |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| Orion           | 2    |  X  |   X  |       |  X  |  X  |    X    |            |      X     |       |     |    X    |         |  \*  |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| AWS (NOAA PW)   | 3    |  X  |   X  |       |  X  |  X  |         |            |      X     |       |     |         |         |      |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| GCP (NOAA PW)   | 3    |  X  |   X  |       |  X  |     |         |            |      X     |       |     |         |         |      |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
+| Azure (NOAA PW) | 3    |  X  |   X  |       |  X  |     |         |            |      X     |       |     |         |         |      |
++-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
 
-.. list-table:: Capabilities matrix by HPC
-   :header-rows: 1
-   :align: center
-
-   * - HPC
-     - Tier
-     - Coupled
-       GFS
-     - Coupled
-       GEFS
-     - Coupled
-       GCAFS
-     - Coupled
-       SFS
-     - GSI
-       DA
-     - GDASApp
-       DA
-     - Coupled
-       DA
-     - TC Tracker
-     - AWIPS
-     - MOS
-     - Fit2Obs
-     - METplus
-       Verification
-     - HPSS
-       Archiving
-   * - WCOSS2
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-   * - Ursa
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     - X
-   * - Hercules
-     - 1
-     - X
-     - X
-     -
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     -
-     - X
-     -
-     - X
-   * - Gaea C6
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     - X
-   * - Orion
-     - 2
-     - X
-     - X
-     -
-     - X
-     - X
-     - X
-     -
-     - X
-     -
-     -
-     - X
-     -
-     - X
-   * - Derecho
-     - 1
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     -
-   * - AWS (Native)
-     - 2
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     - X
-     -
-     -
-     - X
-     -
-     -
-   * - AWS (PW)
-     - 3
-     - X
-     - X
-     -
-     - X
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-   * - GCP (PW)
-     - 3
-     - X
-     - X
-     -
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-   * - Azure
-     - 3
-     - X
-     - X
-     -
-     - X
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
-     -
+\* For setting up HPSS archival via globus, see :doc:`globus_arch`
 
 =============
 HPC Helpdesks
@@ -235,12 +82,14 @@ HPC Helpdesks
 
 * WCOSS2: hpc.wcoss2-help@noaa.gov
 * Ursa: rdhpcs.ursa.help@noaa.gov
-* Orion:  rdhpcs.orion.help@noaa.gov
-* Hercules:  rdhpcs.hercules.help@noaa.gov
+* Orion: rdhpcs.orion.help@noaa.gov
+* Hercules: rdhpcs.hercules.help@noaa.gov
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
-* Cloud: rdhpcs.cloud.help@noaa.gov
+* NOAA Cloud: rdhpcs.cloud.help@noaa.gov
 * Derecho: https://rchelp.ucar.edu
+
+.. _restricted_data:
 
 ======================
 Restricted Data Access
@@ -250,21 +99,30 @@ The GFS system ingests dump data files that contain global observational data. S
 
 To request ``rstprod`` access, follow one or both of the options below depending on the platform you need access for:
 
-* Requesting restricted data access on WCOSS2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requesting restricted data access on WCOSS2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you need access on WCOSS2, review restricted data policy and submit the request here: 
+If you need access on WCOSS2, review restricted data policy and submit the request here:
 https://www.nco.ncep.noaa.gov/sib/restricted_data/restricted_data_sib/
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requesting restricted data access on NOAA RDHPCS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Requesting restricted data access on NOAA RDHPCS
+If you need restricted data access on NOAA RDHPCS platforms:
 
-If you need restricted data access on NOAA RDHPCS platforms: 
-
-1. Login to the NOAA AIM portal
-2. select **Request new access to a project** 
-3. Choose ``rstprod`` project 
+1. Login to the `NOAA AIM portal <https://aim.rdhpcs.noaa.gov/>`__
+2. select **Request new access to a project**
+3. Choose ``rstprod`` project
 4. Provide justification explaining why you need restricted data access
-5. Submit the request here: https://aim.rdhpcs.noaa.gov/
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requesting restricted data access on Orion/Hercules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Contact your PI and request access.
 
 .. note::
+
    Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.

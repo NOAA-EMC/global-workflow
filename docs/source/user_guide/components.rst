@@ -8,7 +8,7 @@ The major components of the GW system are:
 
 * Workflow
 * Pre-processing
-* Analysis
+* Analysis/Data Assimilation
 * Forecast
 * Post-processing
 * Verification
@@ -32,9 +32,10 @@ Components included as submodules:
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-WM
 * **wxflow** (https://github.com/NOAA-EMC/wxflow): Collection of python utilities for weather workflows
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses Model Evaluation Tools (MET) and METplus verfication tools. At this moment the verification package is limited to providing atmospheric metrics only.
-* **UPP** (https://github.com/NOAA-EMC/UPP): Unified Post Processor (UPP) is a submodule within UFS-WM. It is a software package designed to generate useful products from raw model output. 
+* **UPP** (https://github.com/NOAA-EMC/UPP): Unified Post Processor (UPP) is a submodule within UFS-WM. It is a software package designed to generate useful products from raw model output.
 
 .. note::
+
    When running the system in forecast-only mode the DA components are not needed and are hence not built.
 
 ==================================
@@ -46,7 +47,7 @@ Additional documentation and resources relevant to GW is shown in the table belo
 +---------------------+-----------------------------------------------------------------------------------------+
 | **Documentation**   | **Location**                                                                            |
 +=====================+=========================================================================================+
-| UFS_WM              | https://ufs-weather-model.readthedocs.io/en/develop/                                    |
+| UFS Weather Model   | https://ufs-weather-model.readthedocs.io/en/develop/                                    |
 +---------------------+-----------------------------------------------------------------------------------------+
 | UFS UTILS           | https://noaa-emcufs-utils.readthedocs.io/en/latest/                                     |
 +---------------------+-----------------------------------------------------------------------------------------+
@@ -56,7 +57,7 @@ Additional documentation and resources relevant to GW is shown in the table belo
 +---------------------+-----------------------------------------------------------------------------------------+
 | GDAS                | https://www.ncei.noaa.gov/products/weather-climate-models/global-data-assimilation      |
 +---------------------+-----------------------------------------------------------------------------------------+
-| GSI                 |  https://github.com/NOAA-EMC/GSI/tree/develop/doc                                       |
+| GSI                 | https://github.com/NOAA-EMC/GSI/tree/develop/doc                                        |
 +---------------------+-----------------------------------------------------------------------------------------+
 | wxflow              | https://wxflow.readthedocs.io/en/latest/                                                |
 +---------------------+-----------------------------------------------------------------------------------------+
@@ -79,6 +80,8 @@ For more information:
 
 https://github.com/JCSDA/spack-stack/wiki/Porting-spack-stack-to-a-new-system
 
+.. _dump_archive:
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Observation data (OBSPROC/prep)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -88,10 +91,13 @@ Data
 
 Observation data, also known as dump data, is prepared in production and then archived in the Global Dump Archive (GDA) for use in cycled experiments. The GDA is available on supported platforms and is identified as ``$DMPDIR`` in the workflow. The workflow automatically knows where to find GDA data on supported platforms:
 
-* Ursa: ``/scratch3/NCEPDEV/global/role.glopara/dump``
-* Orion/Hercules: ``/work/noaa/rstprod/dump``
 * WCOSS2: ``/lfs/h2/emc/global/noscrub/emc.global/dump``
-* Derecho: ``/lustre/desc1/p/nral0032/global/dump_nr`` (unrestricted)
+* Ursa: ``/scratch3/NCEPDEV/global/role.glopara/dump``
+* Hercules/Orion: ``/work/noaa/rstprod/dump``
+* Gaea C6: ``/gpfs/f6/drsa-precip3/world-shared/role.glopara/dump``
+* Derecho: ``/lustre/desc1/p/nral0032/global/dump_nr`` (non-restricted)
+* AWS S3 Bucket: https://noaa-epic-global-release-pds.s3.amazonaws.com/index.html#dump_nr/ (non-restricted)
+   * Mounted in AWS instance to ``/lustre/noaa-epic-global-release-pds``
 
 -------------
 GDA Structure
@@ -125,6 +131,10 @@ The GDA also contains special versions of some datasets and experimental data th
 |        | Prediction (NCEP) Central Operations (NCO) during final 30-day parallel ahead of implementation.     |
 |        | Not always archived.                                                                                 |
 +--------+------------------------------------------------------------------------------------------------------+
+
+.. note::
+
+   The provided dump on Derecho and AWS are both non-restricted, but omit the ``nr`` from the PDY directory.
 
 ***************
 Data processing

@@ -23,6 +23,8 @@ The first jobs of your run should now be queued or already running (depending on
 
 You'll now have a "logs" folder in both your ``ROTDIR`` and ``EXPDIR``. The EXPDIR log folder contains workflow log files (e.g. rocoto command results) and the ``ROTDIR`` log folder will contain logs for each job (previously known as dayfiles).
 
+.. _scrontab:
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Set up your experiment cron or scron
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -31,6 +33,7 @@ Most systems allow users to write to their crontabs.  However, some systems, lik
 
 
 .. note::
+
    Orion and Hercules currently only support cron on Orion-login-1 and Hercules-login-1, respectively. Cron support for other login nodes is coming in the future.
 
 ::
@@ -68,6 +71,7 @@ Scrontab instead launches a script and requires SCRON directives to launch an sb
    */5 * * * * /path/to/rocoto/launch/script
 
 .. note::
+
    When running rocoto via scrontab, it is not possible to run rocoto's queue server, so this feature must be disabled.  This is accomplished by editing the rocotorc file.  This file is created when rocotorun is executed.  If you have not run that script yet, then you may need to create it yourself.
 
    The file is located here: ``~/.rocoto/<rocoto version>/rocotorc``.  Here is a sample working version of this file:

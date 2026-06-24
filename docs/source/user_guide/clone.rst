@@ -9,11 +9,11 @@ Quick Instructions
 Quick clone/build/link instructions (more detailed instructions below).
 
 .. note::
-   Here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`../Contributor_Guide/development`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from.
+   Here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`../contributor_guide/development`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from.
 
 Clone the `global-workflow` and `cd` into the `sorc` directory:
 
-::
+.. code-block:: bash
 
    git clone --recursive https://github.com/NOAA-EMC/global-workflow
    cd global-workflow/sorc
@@ -28,15 +28,15 @@ The `build_all.sh` script can be used to build all required components of the gl
    - ``-v``: Execute all build scripts with -v option to turn on verbose where supported
    - ``-h``: Print help message and exit
 
-The accepted arguments is a list of systems to be built.  This includes builds for GFS, GEFS, and SFS forecast-only experiments, GSI and GDASApp-based DA for cycled GFS experiments.  See `feature availability <hpc.html#feature-availability-by-hpc>`__ to see which system(s) are available on each supported system.
+The accepted arguments is a list of systems to be built.  This includes builds for **GFS**, **GEFS**, **GCAFS**, and **SFS** forecast-only experiments, **GSI** and **GDASApp**-based DA for **cycled GFS** experiments.  See :ref:`feature availability <feature_availability>` to see which system(s) are available on each supported system.
 
-::
+.. code-block:: bash
 
    ./build_all.sh [gfs] [gefs] [sfs] [gcafs] [gsi] [gdas] [all]
 
 For example, to run GFS experiments with GSI DA, execute:
 
-::
+.. code-block:: bash
 
    ./build_all.sh gfs gsi
 
@@ -44,15 +44,15 @@ This builds the GFS, UFS-utils, GFS-utils, WW3 with PDLIB (structured wave grids
 
 For coupled cycling (using only new UFSDA) execute:
 
-::
+.. code-block:: bash
 
    ./build_all.sh gfs gdas
 
 This builds all of the same executables, except it builds the GDASApp instead of the GSI.
 
-To run GEFS (forecast-only) execute:
+To build GEFS (forecast-only) execute:
 
-::
+.. code-block:: bash
 
    ./build_all.sh gefs
 
@@ -60,7 +60,7 @@ This builds the GEFS, UFS-utils, GFS-utils, WW3 *without* PDLIB (unstructure wav
 
 To run SFS (forecast-only) execute:
 
-::
+.. code-block:: bash
 
    ./build_all.sh sfs
 
@@ -68,13 +68,13 @@ This builds the same components as GEFS, except the UFS model is built in hydros
 
 To run GCAFS execute:
 
-::
+.. code-block:: bash
 
    ./build_all.sh gcafs gdas
 
 This builds everything you need to run GCAFS in forecast-only or cycled mode.
 
-::
+.. code-block:: bash
 
    ./link_workflow.sh
 
@@ -89,13 +89,13 @@ Workflow
 
 There are several ways to clone repositories from GitHub. Below we describe how to clone the global-workflow using the `https` method.
 
-::
+.. code-block:: bash
 
    git clone https://github.com/NOAA-EMC/global-workflow
 
 Check what you just cloned (by default you will have only the `develop` branch):
 
-::
+.. code-block:: bash
 
    cd global-workflow
    git branch
@@ -103,20 +103,21 @@ Check what you just cloned (by default you will have only the `develop` branch):
 
 You now have a cloned copy of the global-workflow git repository. To checkout a branch or tag in your clone:
 
-::
+.. code-block:: bash
 
    git checkout --recurse-submodules BRANCH_NAME
 
 .. note::
+
    Branch must already exist. If it does not you need to make a new branch using the ``-b`` flag:
 
-::
+.. code-block:: bash
 
    git checkout -b BRANCH_NAME
 
 The ``checkout`` command will checkout BRANCH_NAME and switch your clone to that branch. Example:
 
-::
+.. code-block:: bash
 
    git checkout --recurse-submodules my_branch
    git branch
@@ -149,6 +150,50 @@ To configure the build with specific flags or options for the various components
 
 For examples of how to use this script, see :ref:`build examples <build_examples>`.
 
+.. _build_options:
+
+^^^^^^^^^^^^^
+Build Options
+^^^^^^^^^^^^^
+
+**Components built for each build option**
+
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| Component      |  gfs  |  gsi  | gdas  | gefs  |  sfs  | gcafs |  all  |
++================+=======+=======+=======+=======+=======+=======+=======+
+| gdas           |       |       |   X   |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gsi_enkf       |       |   X   |       |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gsi_monitor    |       |   X   |   X   |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gsi_utils      |       |   X   |   X   |       |       |   X   |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| nexus          |       |       |       |   X   |       |   X   |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| ufs_model      |  gfs  |       |       |  gefs |  sfs  | gcafs |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| verif-global   |       |       |       |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| ww3_prepost    |   X   |       |       |   X   |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| wxflow         |       |       |       |       |       |       |       |
++----------------+-------+-------+-------+-------+-------+-------+-------+
+| gfs_utils, ufs_utils, and upp are always built                         |
++------------------------------------------------------------------------+
+
++------------------------------------------------------------------------+
+|  UFS model configurations (built with FV3/MOM6/CICE6/WW3 unless noted) |
++============+===========================================================+
+| GFS model  | Non-hydrostatic with unstructured wave grid (PDLIB=ON)    |
++------------+-----------------------------------------------------------+
+| GEFS model | Non-hydrostatic with structured wave grid (PDLIB=OFF)     |
++------------+-----------------------------------------------------------+
+| SFS model  | Hydrostatic (built with waves, but not used)              |
++------------+-----------------------------------------------------------+
+| GCAFS      | Non-hydrostatic FV3/GOCART                                |
++------------+-----------------------------------------------------------+
+
 ^^^^^^^^^^^^^^^
 Link components
 ^^^^^^^^^^^^^^^
@@ -157,9 +202,9 @@ At runtime the global-workflow needs all pieces in place within the main superst
 
 After running the checkout and build scripts run the link script:
 
-::
+.. code-block:: bash
 
    ./link_workflow.sh [-o]
 
 Where:
-   ``-o``: Run in operations (NCO) mode. This creates copies instead of using symlinks and is generally only used by NCO during installation into production.
+   ``-o``: Run in operations (NCO) mode. This creates copies instead of using symlinks and is generally only used by NCO during installation into production. It uses much more space, and can hide local changes when examining with git.

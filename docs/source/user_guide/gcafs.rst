@@ -1,16 +1,18 @@
-====================================================
+####################################################
 Global Chemistry and Aerosol Forecast System (GCAFS)
-====================================================
+####################################################
 
+========
 Overview
---------
+========
 
 The Global Chemistry and Aerosol Forecast System (GCAFS) extends the Global Forecast System (GFS)
 with interactive aerosol and atmospheric chemistry capabilities. It provides a unified framework
 for predicting the evolution of atmospheric composition alongside traditional weather variables.
 
+============
 Key Features
-------------
+============
 
 * Interactive GOCART aerosol module for forecasting dust, sea salt, sulfate, black carbon, and organic carbon
 * Optional full atmospheric chemistry with gas-phase and heterogeneous reactions
@@ -20,8 +22,9 @@ Key Features
 * Aerosol-radiation-cloud interactions
 * Optional aerosol data assimilation
 
+=============
 Running GCAFS
--------------
+=============
 
 GCAFS can be run using the global-workflow framework. To set up a free-forecast GCAFS experiment:
 
@@ -32,7 +35,7 @@ GCAFS can be run using the global-workflow framework. To set up a free-forecast 
                 --resdetatmos 384 --comroot /path/to/com --expdir /path/to/exp
 
 Configuration is managed through the standard global-workflow configuration files. GCAFS-specific
-settings are documented in :doc:`gcafs_config`.
+settings are documented in :ref:`gcafs_config`.
 
 After setting up the experiment, build the workflow XML and launch it:
 
@@ -49,27 +52,30 @@ For GCAFS, the meteorological analysis in 'cycled' mode is taken from the GDAS (
 HPSS archive or a location stored on disk). The aerosol analysis is optional and controlled by setting
 `USE_AERO_ANL` to be "YES"
 
+==============
 GCAFS Workflow
---------------
+==============
 
 The GCAFS workflow includes these main tasks:
+#. **stage_ic** - Stage initial conditions
+#. **prep_emissions** - Prepare emissions data files
+#. **aerosol_init** - Initialize aerosol fields
+#. **fcst** - Run the UFS model with aerosols/chemistry
+#. **atmos_prod** - Post-process atmosphere/aerosol output
+#. **arch_vrfy** and **arch_tars** - Archive verification data and create tarballs
 
-1. **stage_ic** - Stage initial conditions
-2. **prep_emissions** - Prepare emissions data files
-3. **aerosol_init** - Initialize aerosol fields
-4. **fcst** - Run the UFS model with aerosols/chemistry
-5. **atmos_prod** - Post-process atmosphere/aerosol output
-6. **arch_vrfy** and **arch_tars** - Archive verification data and create tarballs
+The workflow is managed by the rocoto workflow manager, with tasks defined in the
+``dev/workflow/rocoto/gcafs_tasks.py`` file.
 
-The workflow is managed by the Rocoto workflow manager, with tasks defined in the
-``workflow/rocoto/gcafs_tasks.py`` file.
+For a list of descriptions for all jobs, see :ref:`job_descriptions`.
 
+===================
 Configuration Files
--------------------
+===================
 
-GCAFS configuration is managed through several key files in the ``parm/config/gcafs/`` directory:
+GCAFS configuration is managed through several key files in the ``dev/parm/config/gcafs/`` directory:
 
-### config.aero.j2
+### **config.aero.j2**
 
 The primary configuration file for aerosol settings, containing:
 
@@ -103,35 +109,38 @@ The primary configuration file for aerosol settings, containing:
 These settings are processed as Jinja2 templates, allowing for experiment-specific customization
 through template variables like ``{{ NEXUS_CONFIG | default('gocart') }}``.
 
+=======================
 Emissions Preprocessing
------------------------
+=======================
 
 The ``prep_emissions`` task is a critical component of the GCAFS workflow that prepares all necessary emissions data and configuration files for the model run.
 
-### Overview of prep_emissions
+--------------------------
+Overview of prep_emissions
+--------------------------
 
 This task performs several important functions:
-
-1. **Configuration Generation**: Creates customized GOCART configuration files from templates
-2. **Fire Emissions Processing**: Handles biomass burning emissions from QFED or GBBEPx datasets
-3. **NEXUS Preprocessing**: Processes anthropogenic and biogenic emissions through the NEXUS system
-4. **Emissions File Preparation**: Generates model-ready emissions data files
-5. **Historical Data Handling**: Retrieves historical emissions when needed for testing or spin-up
-6. **Template Variable Processing**: Processes all template variables in the configuration files
+#. **Configuration Generation**: Creates customized GOCART configuration files from templates
+#. **Fire Emissions Processing**: Handles biomass burning emissions from QFED or GBBEPx datasets
+#. **NEXUS Preprocessing**: Processes anthropogenic and biogenic emissions through the NEXUS system
+#. **Emissions File Preparation**: Generates model-ready emissions data files
+#. **Historical Data Handling**: Retrieves historical emissions when needed for testing or spin-up
+#. **Template Variable Processing**: Processes all template variables in the configuration files
 
 The task is implemented in ``ush/python/pygfs/task/aero_emissions.py`` as the ``AerosolEmissions`` class.
 
-### Fire Emissions Configuration
+----------------------------
+Fire Emissions Configuration
+----------------------------
 
 GCAFS supports multiple biomass burning emission datasets that can be configured through the ``config.aero`` file:
 
 **Available Fire Emission Datasets:**
+- **GBBEPx** (Global Biomass Burning Emissions Product): NOAA/NWS operational fire emissions
+- **QFED** (Quick Fire Emission Dataset): NASA fire emissions with near-real-time updates
+- **None**: Disable fire emissions entirely
 
-* **GBBEPx** (Global Biomass Burning Emissions Product): NOAA/NWS operational fire emissions
-* **QFED** (Quick Fire Emission Dataset): NASA fire emissions with near-real-time updates  
-* **None**: Disable fire emissions entirely
-
-**Configuration Options:**
+**Configuration Options**:
 
 .. code-block:: bash
 
@@ -139,88 +148,98 @@ GCAFS supports multiple biomass burning emission datasets that can be configured
    export AERO_EMIS_FIRE="gbbepx"           # Options: gbbepx, qfed, none
    export AERO_EMIS_FIRE_VERSION="061"      # Dataset version
    export AERO_EMIS_FIRE_HIST=1             # Use historical (1) or near-real-time (0)
-   
+
    # Directories for emissions data
    export FIRE_EMIS_NRT_DIR=""              # Near-real-time data location
    export FIRE_EMIS_DIR=""                  # Historical data location
 
-### NEXUS Emissions Preprocessing
+-----------------------------
+NEXUS Emissions Preprocessing
+-----------------------------
 
 NEXUS (Next-generation Emissions eXchange Utility System) preprocesses anthropogenic and biogenic emissions from multiple global inventories:
 
-**Supported Emission Inventories:**
+**Supported Emission Inventories**:
+- **CEDS** (Community Emissions Data System): Global anthropogenic emissions (2019/2024 versions)
+- **HTAP** (Hemispheric Transport of Air Pollution): Regional high-resolution emissions (v2/v3)
+- **CAMS** (Copernicus Atmosphere Monitoring Service): European reanalysis emissions
+- **MEGAN** (Model of Emissions of Gases and Aerosols from Nature): Biogenic emissions (future)
 
-* **CEDS** (Community Emissions Data System): Global anthropogenic emissions (2019/2024 versions)
-* **HTAP** (Hemispheric Transport of Air Pollution): Regional high-resolution emissions (v2/v3)
-* **CAMS** (Copernicus Atmosphere Monitoring Service): European reanalysis emissions
-* **MEGAN** (Model of Emissions of Gases and Aerosols from Nature): Biogenic emissions (future)
-
-**NEXUS Configuration:**
+**NEXUS Configuration**:
 
 .. code-block:: bash
 
    # NEXUS system configuration
    export NEXUS_CONFIG="gocart"             # Configuration set (gocart, none)
    export NEXUS_TSTEP=3600                  # Time step in seconds
-   
+
    # Grid specification (0.25-degree global)
    export NEXUS_NX=1440                     # Longitude points
    export NEXUS_NY=720                      # Latitude points
-   
+
    # Enable/disable emission inventories
    export NEXUS_DO_CEDS2019=.true.          # CEDS 2019 emissions
-   export NEXUS_DO_CEDS2024=.false.         # CEDS 2024 emissions  
+   export NEXUS_DO_CEDS2024=.false.         # CEDS 2024 emissions
    export NEXUS_DO_HTAPv2=.true.            # HTAP v2 emissions
    export NEXUS_DO_CAMS=.false.             # CAMS emissions
 
-**### Emission Dataset Details**
+------------------------
+Emission Dataset Details
+------------------------
 
-**Fire Emissions:**
+^^^^^^^^^^^^^^
+Fire Emissions
+^^^^^^^^^^^^^^
 
-* **GBBEPx (Global Biomass Burning Emissions Product)**: 
-  - Operational NOAA/NWS fire emissions based on VIIRS satellite data
-  - Near-real-time updates with ~6-hour latency
-  - Includes wildfire, agricultural burning, and prescribed burns
-  
-* **QFED (Quick Fire Emission Dataset)**:
-  - NASA fire emissions using MODIS satellite observations
-  - Available in near-real-time and historical versions
-  - High spatial resolution with detailed speciation
+- **GBBEPx (Global Biomass Burning Emissions Product)**:
+   - Operational NOAA/NWS fire emissions based on VIIRS satellite data
+   - Near-real-time updates with ~6-hour latency
+   - Includes wildfire, agricultural burning, and prescribed burns
 
-**Anthropogenic/Biogenic Emissions:**
+- **QFED (Quick Fire Emission Dataset)**:
+   - NASA fire emissions using MODIS satellite observations
+   - Available in near-real-time and historical versions
+   - High spatial resolution with detailed speciation
 
-* **CEDS (Community Emissions Data System)**:
-  - Global gridded emissions inventory (1750-2019/2024)
-  - Anthropogenic sources: energy, industry, transport, residential, agriculture
-  - Species: SO2, NOx, CO, NH3, black carbon, organic carbon, PM2.5
-  
-* **HTAP (Hemispheric Transport of Air Pollution)**:
-  - Regional high-resolution emissions for Europe, Asia, North America
-  - Focuses on transboundary air pollution
-  - Complements CEDS with finer spatial detail
-  
-* **CAMS (Copernicus Atmosphere Monitoring Service)**:
-  - European Centre reanalysis emissions
-  - Consistent with meteorological fields
-  - Includes temporal disaggregation capabilities
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Anthropogenic/Biogenic Emissions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+- **CEDS (Community Emissions Data System)**:
+   - Global gridded emissions inventory (1750-2019/2024)
+   - Anthropogenic sources: energy, industry, transport, residential, agriculture
+   - Species: SO2, NOx, CO, NH3, black carbon, organic carbon, PM2.5
+
+- **HTAP (Hemispheric Transport of Air Pollution)**:
+   - Regional high-resolution emissions for Europe, Asia, North America
+   - Focuses on transboundary air pollution
+   - Complements CEDS with finer spatial detail
+
+- **CAMS (Copernicus Atmosphere Monitoring Service)**:
+   - European Centre reanalysis emissions
+   - Consistent with meteorological fields
+   - Includes temporal disaggregation capabilities
+
+==========================
 GOCART Configuration Files
---------------------------
+==========================
 
 The GOCART aerosol module in GCAFS is configured through a set of resource (.rc) files located in
 ``parm/ufs/gocart/``. These files control the behavior of the aerosol components, emissions,
 and diagnostics. The key configuration files include:
 
+------------------
 Core Configuration
-~~~~~~~~~~~~~~~~~~
+------------------
 
 - **AERO.rc**: Core aerosol module configuration with grid resolution settings
 - **AGCM.rc**: Atmospheric model interface configuration
 - **CAP.rc**: Component interface specifications defining imports/exports and tracer mappings
 - **GOCART2G_GridComp.rc**: Defines active aerosol species instances (DU, SS, SU, CA, NI)
 
+-----------------------------
 Aerosol Species Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 
 Each aerosol species has its own configuration file with specific parameters:
 
@@ -231,8 +250,9 @@ Each aerosol species has its own configuration file with specific parameters:
 - **CA2G_instance_CA.oc.rc**: Organic carbon configuration including SOA formation
 - **NI2G_instance_NI.rc**: Nitrate aerosol specification (optional species)
 
+----------------------
 Output and Diagnostics
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 - **AERO_HISTORY.rc**: Controls aerosol output diagnostics including:
   - Aerosol concentrations (inst_du_ss, inst_ca, inst_ni, inst_su)
@@ -243,19 +263,18 @@ Output and Diagnostics
 The frequency parameters for output are specified as variables (e.g., ``@[inst_aod_freq]``) that
 are replaced at runtime with values from the workflow configuration.
 
+-----------------------
 Emissions Configuration
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 External data sources for emissions are configured through ExtData resource files:
-
 - **ExtData.gbbepx**: GBBEPx biomass burning emissions configuration
-- **ExtData.qfed**: QFED fire emissions configuration  
+- **ExtData.qfed**: QFED fire emissions configuration
 - **ExtData.nexus**: NEXUS-processed anthropogenic/biogenic emissions
 - **ExtData.other**: Additional emission sources (volcanic, lightning, etc.)
 - **ExtData.none**: Placeholder configuration when emissions are disabled
 
 The NEXUS system processes emissions through HEMCO (Harmonized Emissions Component) configuration files:
-
 - **NEXUS_Config.rc**: Master configuration orchestrating all emission sources
 - **HEMCO_sa_Grid.rc**: Grid definition and interpolation settings
 - **HEMCO_sa_Time.rc**: Temporal scaling patterns (diurnal, weekly, seasonal)
@@ -265,8 +284,9 @@ The NEXUS system processes emissions through HEMCO (Harmonized Emissions Compone
 To modify the aerosol configuration, edit these files or create custom versions in your experiment
 directory. The file ``gocart_tracer.list`` defines the complete set of aerosol tracers used in the model.
 
+---------------------------
 ExtData File Format Details
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 The ExtData configuration files specify how external data sources are imported into the model. Each entry follows this format:
 
@@ -276,7 +296,6 @@ The ExtData configuration files specify how external data sources are imported i
    OC_BIOMASS NA  N Y %y4-%m2-%d2t12:00:00 none 0.7778 OC ChemInput/FIRE_EMIS.%y4%m2%d2.nc4
 
 Field descriptions:
-
 - **Import Name**: Internal variable name used by GOCART (e.g., OC_BIOMASS, SU_BIOMASS)
 - **Units**: Units for the imported field or NA if not applicable
 - **Clim**: Climate file flag (Y/N) - Y indicates a static/climatological file
@@ -310,8 +329,8 @@ The NEXUS-processed emissions are configured through **ExtData.nexus**, which ha
 
    # Anthropogenic SO2 from CEDS
    SU_ANTHRO NA N Y %y4-%m2-%d2t12:00:00 none none so2_anthro ExtData/nexus/CEDS/%y4/CEDS.emis_so2.%y4%m2%d2.nc4
-   
-   # Black carbon from HTAP  
+
+   # Black carbon from HTAP
    BC_ANTHRO NA N Y %y4-%m2-%d2t12:00:00 none none bc_anthro ExtData/nexus/HTAP/%y4/HTAP.emis_bc.%y4%m2%d2.nc4
 
 The NEXUS preprocessing system generates these files by:
@@ -321,8 +340,9 @@ The NEXUS preprocessing system generates these files by:
 3. Regridding to the model resolution
 4. Outputting model-ready netCDF files with standardized variable names
 
+----------------------------
 AERO_HISTORY.rc File Details
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------
 
 The AERO_HISTORY.rc file controls all diagnostic outputs from the aerosol module. It defines:
 
@@ -364,7 +384,6 @@ For each collection, several parameters are defined:
                          ...
 
 Where:
-
 - **format**: Output file format ('CFIO' for NetCDF)
 - **template**: File naming template with time tokens
 - **mode**: Output type ('instantaneous' or 'time-averaged')
@@ -378,7 +397,6 @@ values from the workflow configuration. These variables are typically set in the
 preprocessing step and use the format HHMMSS (hours, minutes, seconds).
 
 Common collections include:
-
 - **inst_aod**: Instantaneous aerosol optical depth
 - **inst_du_ss**: Dust and sea salt concentrations
 - **inst_ca**: Carbonaceous aerosol (BC/OC) concentrations
@@ -389,27 +407,25 @@ Common collections include:
 To enable specific collections, uncomment them in the COLLECTIONS section and ensure the
 corresponding frequency parameters are properly set in your workflow.
 
+===============
 Output Products
----------------
+===============
 
 GCAFS produces standard meteorological outputs plus comprehensive aerosol fields including:
 
 **Core Aerosol Fields**
-
 *  Aerosol mass concentrations (dust, sea salt, sulfate, black carbon, organic carbon)
 *  Aerosol optical depth fields at multiple wavelengths
 *  PM2.5 and PM10 concentrations
 *  Aerosol extinction coefficients
 
 **Process-Specific Diagnostics**
-
 *  Emission fields from fires and anthropogenic sources (when NEXUS diagnostics enabled)
 *  Dry and wet deposition fluxes
 *  Optical properties (single scattering albedo, asymmetry parameter)
 *  Column-integrated aerosol mass
 
 **Advanced Outputs**
-
 *  3D aerosol concentrations on model levels
 *  Aerosol number concentrations
 *  Full chemical species concentrations when running with chemistry enabled
