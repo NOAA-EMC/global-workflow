@@ -8,18 +8,9 @@ This module constructs cycle and member-specific COM directory path variables
 required for initial conditions for the Stage IC task.
 """
 import os
-import sys
 from logging import getLogger
 from typing import Any, Dict, Tuple, Optional
 from wxflow import FileHandler, Task, logit, parse_j2yaml, AttrDict, to_YMD, to_fv3time, add_to_datetime, to_timedelta
-
-# Import com_paths from dev/workflow to get the canonical COM_*_TMPL definitions.
-# HOMEglobal is always set in the job environment.
-_homeglobal = os.environ.get('HOMEglobal', '')
-_workflow_dir = os.path.join(_homeglobal, 'dev', 'workflow')
-if _workflow_dir not in sys.path:
-    sys.path.insert(0, _workflow_dir)
-from com_paths import get_com_templates  # noqa: E402
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -160,25 +151,6 @@ class Stage(Task):
         }
 
     @logit(logger)
-    def _copy_com_templates(self) -> Dict[str, str]:
-        """Copy COM templates from task_config, falling back to com_paths defaults.
-
-        Uses the canonical templates from dev/workflow/com_paths.py as the base
-        so they are available regardless of whether config.base exports them.
-        Any matching environment variables override the defaults.
-
-        Returns
-        -------
-        Dict[str, str]
-            Dictionary with COM template paths
-        """
-        templates = get_com_templates()
-        env_overrides = {key: self.task_config[key] for key in self.task_config.keys()
-                         if key.startswith('COM_') and key.endswith('_TMPL')}
-        templates.update(env_overrides)
-        return templates
-
-    @logit(logger)
     def create_stage_dict(self) -> AttrDict:
         """Create staging dictionary with all necessary variables for YAML templates
 
@@ -201,8 +173,7 @@ class Stage(Task):
         # Create cycle directories for template substitution
         stage_dict.update(self._create_cycle_dicts(stage_dict.ROTDIR, stage_dict.RUN))
 
-        # Copy COM templates
-        stage_dict.update(self._copy_com_templates())
+        # COM_*_TMPL templates are injected into stage_dict by the exscript.
 
         # Add GEFSTYPE if available (for GEFS runs)
         if 'GEFSTYPE' in self.task_config:
