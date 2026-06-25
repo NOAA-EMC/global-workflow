@@ -40,10 +40,8 @@ Logging
 All public operational functions are decorated with @logit (TODO) to log entry, exit, and return values.
 """
 import os
-import sys
 from logging import getLogger
 from typing import Any, Dict
-
 from wxflow import AttrDict, to_YMD, to_YMDH
 # from wxflow import logit  # Uncomment if logit decorator is available
 
@@ -145,7 +143,6 @@ class ArchiveVrfyVars:
                 logger.warning(f"Config key '{key}' not found in config_dict; skipping.")
 
         # Import COM* directory and template variables created by job scripts;
-        # these override the defaults above (e.g. NCO compath.py values).
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
                 general_dict[key] = config_dict.get(key)
