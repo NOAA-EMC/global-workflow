@@ -470,7 +470,7 @@ export DO_ARCHCOM="YES"    # Tar and archive the COM directories
 export ARCHCOM_TO="hpss"    # Valid options are hpss, globus_hpss, and local
 
 # Execute the postamble (disable for production)
-export TRAP_POSTAMBLE=YES
+export TRAP_POSTAMBLE=NO
 
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
