@@ -2,6 +2,14 @@
 set -eu
 declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'
 
+# Add a dry-run option
+if [[ "${1:-}" == "--dry-run" ]]; then
+    echo "Dry run mode: No files will be deleted."
+    DRY_RUN=true
+else
+    DRY_RUN=false
+fi
+
 module reset
 module load prod_envir prod_util
 
@@ -35,7 +43,9 @@ fi
 cd "${DATAROOT}"
 for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "DBNLOG" | grep -v "ecflow"); do
     echo "Removing directory ${DATAROOT}/${dir_to_remove}"
-    rm -rf "${dir_to_remove}"
+    if [[ "${DRY_RUN}" == false ]]; then
+        rm -rf "${dir_to_remove}"
+    fi
 done
 
 # Clean COM
@@ -43,7 +53,9 @@ done
 cd "${COMROOT}"
 for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "fix" | grep -v "syndat"); do
     echo "Removing directory ${COMROOT}/${dir_to_remove}"
-    rm -rf "${dir_to_remove}"
+    if [[ "${DRY_RUN}" == false ]]; then
+        rm -rf "${dir_to_remove}"
+    fi
 done
 
 echo "Finished cleaning up at $(date)"
