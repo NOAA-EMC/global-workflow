@@ -1813,18 +1813,12 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        # Set COMIN_OBS
-        gempakmetancdc_vars = self.envars.copy()
-        gempakmetancdc_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
-        for key, value in gempakmetancdc_envars_dict.items():
-            gempakmetancdc_vars.append(rocoto.create_envar(name=key, value=str(value)))
-
         resources = self.get_resource('gempak')
         task_name = f'{self.run}_gempakmetancdc'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': gempakmetancdc_vars,
+                     'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakmetancdc.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -1842,12 +1836,18 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        # Set COMIN_OBS
+        gempakncdcupapgif_vars = self.envars.copy()
+        gempakncdcupapgif_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
+        for key, value in gempakmetancdc_envars_dict.items():
+            gempakncdcupapgif_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
         resources = self.get_resource('gempak')
         task_name = f'{self.run}_gempakncdcupapgif'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': gempakncdcupapgif_vars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakncdcupapgif.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
@@ -2703,6 +2703,12 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        # Set COMIN_OBS (note we need gdas/gfs, not enkfgdas/enkfgfs)
+        anal_vars = self.envars.copy()
+        anal_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run.replace("enkf","")}.@Y@m@d/@H/obs</cyclestr>'}
+        for key, value in anal_envars_dict.items():
+            anal_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('eobs')
         task_name = f'{self.run}_eobs'
