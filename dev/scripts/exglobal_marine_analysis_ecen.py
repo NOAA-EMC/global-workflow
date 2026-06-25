@@ -30,7 +30,6 @@ if __name__ == '__main__':
         if _key not in config and _key in _com_defaults:
             config[_key] = _com_defaults[_key]
 
-    #
     MarineRecen = MarineRecenter(config)
     MarineRecen.initialize()
     MarineRecen.execute('ens_handler')
