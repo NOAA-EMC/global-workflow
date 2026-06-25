@@ -90,7 +90,7 @@ class MarineRecenter(Analysis):
             Dictionary with COM_OCEAN_RESTART_TMPL and COM_ICE_RESTART_TMPL
         """
         com_templates = get_com_templates()
-        needed_templates = ['COM_OCEAN_RESTART_TMPL', 'COM_ICE_RESTART_TMPL']
+        needed_templates = ['COM_OCEAN_RESTART_TMPL', 'COM_ICE_RESTART_TMPL', 'COM_OCEAN_ANALYSIS_TMPL', 'COM_ICE_ANALYSIS_TMPL']
         templates = {key: com_templates[key] for key in needed_templates if key in com_templates}
         env_overrides = {key: self.task_config[key] for key in needed_templates if key in self.task_config}
         templates.update(env_overrides)
