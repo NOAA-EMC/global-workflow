@@ -40,8 +40,16 @@ Logging
 All public operational functions are decorated with @logit (TODO) to log entry, exit, and return values.
 """
 import os
+import sys
 from logging import getLogger
 from typing import Any, Dict
+
+# Import com_paths from dev/workflow to get the canonical COM_*_TMPL definitions.
+_homeglobal = os.environ.get('HOMEglobal', '')
+_workflow_dir = os.path.join(_homeglobal, 'dev', 'workflow')
+if _workflow_dir not in sys.path:
+    sys.path.insert(0, _workflow_dir)
+from com_paths import get_com_templates  # noqa: E402
 from wxflow import AttrDict, to_YMD, to_YMDH
 # from wxflow import logit  # Uncomment if logit decorator is available
 
@@ -142,7 +150,13 @@ class ArchiveVrfyVars:
             else:
                 logger.warning(f"Config key '{key}' not found in config_dict; skipping.")
 
-        # Import COM* directory and template variables created by job scripts
+        # Seed all fixed COM_*_TMPL paths from com_paths.py so they are
+        # available even when config.base does not export them.
+        for key, val in get_com_templates().items():
+            general_dict.setdefault(key, val)
+
+        # Import COM* directory and template variables created by job scripts;
+        # these override the defaults above (e.g. NCO compath.py values).
         for key in config_dict.keys():
             if key.startswith(("COM_", "COMIN_", "COMOUT_")):
                 general_dict[key] = config_dict.get(key)
