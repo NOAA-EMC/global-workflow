@@ -4,7 +4,7 @@ Initial Conditions
 
 There are two types of initial conditions for the global-workflow:
 
-#. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in).
+#. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in) with all model variable populated.
 #. Cold start: any ICs converted to a new resolution or grid (e.g. C768 -> C384). These ICs are often prepared by chgres_cube (change resolution utility).
 
 Most users will initiate their experiments with cold start ICs unless running high resolution (C768 deterministic with C384 EnKF) for a date with warm starts available. It is `not recommended` to run high resolution unless required or as part of final testing.
@@ -125,94 +125,94 @@ Start date = 2021032312
 
    -bash-4.2$  tree /scratch3/NCEPDEV/global/role.glopara/data/ICSDIR/C48C48mx500
    ├── enkfgdas.20210323
-   │   ├── 06
-   │   │   ├── mem001
-   │   │   │   └── model -> ../../../gdas.20210323/06/model
-   │   │   ├── mem002
-   │   │   │   └── model -> ../../../gdas.20210323/06/model
-   │   │   ├── mem003
-   │   │   │   └── model -> ../../../gdas.20210323/06/model
+   │   ├── 06
+   │   │   ├── mem001
+   │   │   │   └── model -> ../../../gdas.20210323/06/model
+   │   │   ├── mem002
+   │   │   │   └── model -> ../../../gdas.20210323/06/model
+   │   │   ├── mem003
+   │   │   │   └── model -> ../../../gdas.20210323/06/model
    ...
-   │   │   └── mem080
-   │   │       └── model -> ../../../gdas.20210323/06/model
-   │   └── 12
-   │       ├── mem001
-   │       │   └── analysis
-   │       │       └── ocean
-   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
-   │       ├── mem002
-   │       │   └── analysis
-   │       │       └── ocean
-   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
-   │       ├── mem003
-   │       │   └── analysis
-   │       │       └── ocean
-   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
+   │   │   └── mem080
+   │   │       └── model -> ../../../gdas.20210323/06/model
+   │   └── 12
+   │       ├── mem001
+   │       │   └── analysis
+   │       │       └── ocean
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
+   │       ├── mem002
+   │       │   └── analysis
+   │       │       └── ocean
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
+   │       ├── mem003
+   │       │   └── analysis
+   │       │       └── ocean
+   │       │           └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    ...
-   │       └── mem080
-   │           └── analysis
-   │               └── ocean
-   │                   └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
+   │       └── mem080
+   │           └── analysis
+   │               └── ocean
+   │                   └── gdas.t12z.mom6_increment.i006.nc -> ../../../../../gdas.20210323/12/analysis/ocean/gdas.t12z.mom6_increment.i006.nc
    └── gdas.20210323
        ├── 06
-       │   └── model
-       │       ├── atmos
-       │       │   └── restart
-       │       │       ├── 20210323.120000.ca_data.tile1.nc
-       │       │       ├── 20210323.120000.ca_data.tile2.nc
-       │       │       ├── 20210323.120000.ca_data.tile3.nc
-       │       │       ├── 20210323.120000.ca_data.tile4.nc
-       │       │       ├── 20210323.120000.ca_data.tile5.nc
-       │       │       ├── 20210323.120000.ca_data.tile6.nc
-       │       │       ├── 20210323.120000.coupler.res
-       │       │       ├── 20210323.120000.fv_core.res.nc
-       │       │       ├── 20210323.120000.fv_core.res.tile1.nc
-       │       │       ├── 20210323.120000.fv_core.res.tile2.nc
-       │       │       ├── 20210323.120000.fv_core.res.tile3.nc
-       │       │       ├── 20210323.120000.fv_core.res.tile4.nc
-       │       │       ├── 20210323.120000.fv_core.res.tile5.nc
-       │       │       ├── 20210323.120000.fv_core.res.tile6.nc
-       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile1.nc
-       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile2.nc
-       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile3.nc
-       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile4.nc
-       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile5.nc
-       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile6.nc
-       │       │       ├── 20210323.120000.fv_tracer.res.tile1.nc
-       │       │       ├── 20210323.120000.fv_tracer.res.tile2.nc
-       │       │       ├── 20210323.120000.fv_tracer.res.tile3.nc
-       │       │       ├── 20210323.120000.fv_tracer.res.tile4.nc
-       │       │       ├── 20210323.120000.fv_tracer.res.tile5.nc
-       │       │       ├── 20210323.120000.fv_tracer.res.tile6.nc
-       │       │       ├── 20210323.120000.phy_data.tile1.nc
-       │       │       ├── 20210323.120000.phy_data.tile2.nc
-       │       │       ├── 20210323.120000.phy_data.tile3.nc
-       │       │       ├── 20210323.120000.phy_data.tile4.nc
-       │       │       ├── 20210323.120000.phy_data.tile5.nc
-       │       │       ├── 20210323.120000.phy_data.tile6.nc
-       │       │       ├── 20210323.120000.sfc_data.tile1.nc
-       │       │       ├── 20210323.120000.sfc_data.tile2.nc
-       │       │       ├── 20210323.120000.sfc_data.tile3.nc
-       │       │       ├── 20210323.120000.sfc_data.tile4.nc
-       │       │       ├── 20210323.120000.sfc_data.tile5.nc
-       │       │       └── 20210323.120000.sfc_data.tile6.nc
-       │       ├── ice
-       │       │   └── restart
-       │       │       └── 20210323.120000.cice_model.res.nc
-       │       ├── med
-       │       │   └── restart
-       │       │       └── 20210323.120000.ufs.cpld.cpl.r.nc
-       │       └── ocean
-       │           └── restart
-       │               └── 20210323.120000.MOM.res.nc
+       │   └── model
+       │       ├── atmos
+       │       │   └── restart
+       │       │       ├── 20210323.120000.ca_data.tile1.nc
+       │       │       ├── 20210323.120000.ca_data.tile2.nc
+       │       │       ├── 20210323.120000.ca_data.tile3.nc
+       │       │       ├── 20210323.120000.ca_data.tile4.nc
+       │       │       ├── 20210323.120000.ca_data.tile5.nc
+       │       │       ├── 20210323.120000.ca_data.tile6.nc
+       │       │       ├── 20210323.120000.coupler.res
+       │       │       ├── 20210323.120000.fv_core.res.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile1.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile2.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile3.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile4.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile5.nc
+       │       │       ├── 20210323.120000.fv_core.res.tile6.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile1.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile2.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile3.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile4.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile5.nc
+       │       │       ├── 20210323.120000.fv_srf_wnd.res.tile6.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile1.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile2.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile3.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile4.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile5.nc
+       │       │       ├── 20210323.120000.fv_tracer.res.tile6.nc
+       │       │       ├── 20210323.120000.phy_data.tile1.nc
+       │       │       ├── 20210323.120000.phy_data.tile2.nc
+       │       │       ├── 20210323.120000.phy_data.tile3.nc
+       │       │       ├── 20210323.120000.phy_data.tile4.nc
+       │       │       ├── 20210323.120000.phy_data.tile5.nc
+       │       │       ├── 20210323.120000.phy_data.tile6.nc
+       │       │       ├── 20210323.120000.sfc_data.tile1.nc
+       │       │       ├── 20210323.120000.sfc_data.tile2.nc
+       │       │       ├── 20210323.120000.sfc_data.tile3.nc
+       │       │       ├── 20210323.120000.sfc_data.tile4.nc
+       │       │       ├── 20210323.120000.sfc_data.tile5.nc
+       │       │       └── 20210323.120000.sfc_data.tile6.nc
+       │       ├── ice
+       │       │   └── restart
+       │       │       └── 20210323.120000.cice_model.res.nc
+       │       ├── med
+       │       │   └── restart
+       │       │       └── 20210323.120000.ufs.cpld.cpl.r.nc
+       │       └── ocean
+       │           └── restart
+       │               └── 20210323.120000.MOM.res.nc
        └── 12
            └── analysis
                ├── atmos
-               │   ├── gdas.t12z.abias.txt
-               │   ├── gdas.t12z.abias_air.txt
-               │   ├── gdas.t12z.abias_int.txt
-               │   ├── gdas.t12z.abias_pc.txt
-               │   └── gdas.t12z.radstat.tar
+               │   ├── gdas.t12z.abias.txt
+               │   ├── gdas.t12z.abias_air.txt
+               │   ├── gdas.t12z.abias_int.txt
+               │   ├── gdas.t12z.abias_pc.txt
+               │   └── gdas.t12z.radstat.tar
                └── ocean
                    └── gdas.t12z.mom6_increment.i006.nc
 
@@ -421,7 +421,9 @@ This script converts filenames from the older (pre-EE2) naming convention to EE2
 
 * **Example Workflow:**
 
-  After extracting warm restart tarballs using ``get_warm_s2sw_restart_tarballs.sh`` (or manually from HPSS), run the link script if your restart files use the old naming convention::
+After extracting warm restart tarballs using ``get_warm_s2sw_restart_tarballs.sh`` (or manually from HPSS), run the link script if your restart files use the old naming convention
+
+.. code-block:: bash
 
     cd $ROTDIR
     /path/to/global-workflow/dev/ush/make_ee2_links.sh .

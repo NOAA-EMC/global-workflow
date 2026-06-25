@@ -1,8 +1,8 @@
 .. role:: red-text
 
-#####################################
-Setup and Run Global Workflow on CSPs 
-#####################################
+############################################################
+Setup and Run Global Workflow on CSPs via NOAA ParallelWorks
+############################################################
 
 The NOAA Cloud Service Providers (CSPs) support the forecast-only,
 coupled, and GEFS configurations for Global Workflow.
@@ -150,9 +150,9 @@ Existing clusters may also be modified.
 However, it is best practice to fork from Marketplace with something similar to your requests
 (rather than modifying an existing cluster).
 
-************************* 
+*************************
 Add CSP Lustre Filesystem
-************************* 
+*************************
 
 To run Global Workflow on CSPs, we need to attach the ``/lustre`` filesystem as a run directory.
 First, we need to add/define our ``/lustre`` filesystem.
