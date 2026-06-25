@@ -4,6 +4,7 @@
 # and runs the initialize, run, and finalize methods
 # which currently are stubs
 import os
+import sys
 
 from wxflow import Logger, cast_strdict_as_dtypedict
 from pygfs.task.marine_letkf import MarineLETKF
