@@ -1839,7 +1839,7 @@ class GFSTasks(Tasks):
         # Set COMIN_OBS
         gempakncdcupapgif_vars = self.envars.copy()
         gempakncdcupapgif_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
-        for key, value in gempakmetancdc_envars_dict.items():
+        for key, value in gempakncdcupapgif_envars_dict.items():
             gempakncdcupapgif_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('gempak')
