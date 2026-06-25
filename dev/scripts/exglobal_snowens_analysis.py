@@ -27,9 +27,13 @@ if __name__ == '__main__':
 
     # Inject COM_*_TMPL defaults from com_paths.py; environment values win.
     _com_defaults = get_com_templates()
-    for _key in ('COM_ATMOS_RESTART_TMPL', 'COM_SNOW_ANALYSIS_TMPL'):
-        if _key not in config and _key in _com_defaults:
-            config[_key] = _com_defaults[_key]
+    # Inject COM_*_TMPL templates: canonical defaults from com_paths.py
+    # overridden by any matching values present in the environment.
+    com_templates = get_com_templates()
+    env_overrides = {k: v for k, v in os.environ.items()
+                     if k.startswith('COM_') and k.endswith('_TMPL')}
+    com_templates.update(env_overrides)
+    config.update(com_templates)
 
     # Instantiate the snow ensemble analysis task
     snow_ens_anl = SnowEnsAnalysis(config)
