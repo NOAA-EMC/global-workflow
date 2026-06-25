@@ -76,5 +76,28 @@ ${mom6_res}=025
      OCNTIM=900
      DT_THERM_MOM6='900'
 
+ACTIONS FOR RECONFIGURING NODE/TASK ALLOCATIONS:
+
+If the node and core allocation needs to be modified in any way, then here are a set of guidelines on where to find relevant variables and how calculations are made.
+
+Ideally, the job scripts should be used to fill out the namelist and configuration templates. 
+
+The atmosphere component requires the largest amount of tasks. The total task allocation is calculated as:
+( (layout(1) * layout(2) * 6) + (write_groups * write_tasks_per_group) ) * ATM_omp_num_threads
+ - layout is defined in input.nml
+ - write_groups and write_tasks_per_group are defined in model_configure
+ - ATM_omp_num_threads is defined in ufs.configure
+This total should be the same as the ATM allocation (ATM_petlist_bounds) located in ufs.configure.
+
+The CMEPS mediator uses a portion of the tasks allocated to the atmosphere. The ideal number of tasks for the forecast is between 1200 - 4800 tasks.
+The tasks are defined in ufs.configure under MED_petlist_bounds. The number of threads should match the atmosphere. The CMEPS processes are running on
+the tasks allocated to the atmosphere so this allocation is not added to the final number of tasks needed by the model.
+
+The MOM6 ocean model requires less tasks and default settings are tied to ocean model resolution. The number of tasks allocated to 
+MOM6 (ufs.configure: OCN_petlist_bounds) is usually matched to the number of CICE tasks (ufs.configure: ICE_petlist_bounds) but the number of threads
+of CICE and MOM6 should always be the same.
+
+The WW3 wave model tasks are also allocated in ufs.configure (WAV_petlist_bounds). The default number of tasks in the forecast is 3000.
+
 
 %end

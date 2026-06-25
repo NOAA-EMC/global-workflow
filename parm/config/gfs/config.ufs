@@ -288,34 +288,34 @@ case "${fv3_res}" in
         fi
         ;;
     "C1152")
-        export DELTIM=150
-        export nthreads_fv3=4
-        export nthreads_ufs=4
-        export WRITE_GROUP=4
+        export DELTIM=150     # model timestep in seconds
+        export nthreads_fv3=4 # number of threads for atmosphere model
+        export nthreads_ufs=4 # number of threads for ufs driver
+        export WRITE_GROUP=4  # number of asynchronous write tasks
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
                                                         # For GAEAC6 use 60
         if [[ "${RUN}" = *gdas ]]; then
-          export layout_x=16
-          export layout_y=24
+          export layout_x=16  # number of processors in x-dir per tile
+          export layout_y=24  # number of processors in y-dir per tile
         elif [[ "${RUN}" = gfs ]]; then
-          export layout_x=32
-          export layout_y=32
+          export layout_x=32  # number of processors in x-dir per tile
+          export layout_y=32  # number of processors in y-dir per tile
           export blocksize=36 # Note, default is 32 and MOD((resolution/layout_x)*(resolution/layout_y),blocksize) == 0
-          export WRITE_GROUP=8
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=50
+          export WRITE_GROUP=8  # number of write groups
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=50 # number of tasks per write group
         elif [[ "${RUN}" = *gcafs ]]; then
-          export layout_x=16
-          export layout_y=24
+          export layout_x=16  # number of processors in x-dir per tile
+          export layout_y=24  # number of processors in y-dir per tile
         fi
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
-        export psl_gwd_dx_factor=2.0
+        export psl_gwd_dx_factor=2.0         # scaling factor for stress line in gravity wave drag
         export knob_ugwp_tauamp=0.35e-3      # setting for UGWPv1 non-stationary GWD
-        export k_split=2
-        export n_split=6
-        export tau=2.5
-        export rf_cutoff=300.0
-        export fv_sg_adj=450
+        export k_split=2      # number of vertical remappings per DELTIM
+        export n_split=6      # number of small dynamic timesteps per DELTIM
+        export tau=2.5        # Rayleigh damping timescale
+        export rf_cutoff=300.0 # pressure below where no rayleigh damping is applied
+        export fv_sg_adj=450  # timescale (sec) to remove two-delta-z instability when local Richardson number < 1 
         ;;
     "C3072")
         export DELTIM=90
@@ -341,6 +341,14 @@ case "${fv3_res}" in
         ;;
 esac
 
+# How to calculate total atmospheric tasks:
+# Total atm tasks will be set in ufs.configure file
+# Total tasks: ((layout_x * layout_y * 6) + (WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * WRITE_GROUP)) * nthreads
+#
+# GFSv17 default example:
+# ATM_petlist_bounds:             0 58751
+# Total tasks = (( 32 * 64 * 6) + (8 * 300)) * 4 = (12288 + 2400) * 4 = 58752 total tasks
+
 (( WRTTASK_PER_GROUP_PER_THREAD = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6 ))
 export WRTTASK_PER_GROUP_PER_THREAD
 
@@ -355,6 +363,9 @@ export ntasks_quilt
 
 # Determine whether to use compression in the write grid component
 # and whether to use parallel NetCDF based on resolution
+#
+# ideflate and zstandard can not both be on for a given set of files (output or restart)
+# Setting both to true for the same filetype will cause a failure
 case ${fv3_res} in
   "C48" | "C96" | "C192")
     zstandard_level=0
@@ -366,11 +377,11 @@ case ${fv3_res} in
     OUTPUT_FILETYPE_SFC="netcdf"
     ;;
   "C384" | "C768" | "C1152" | "C3072")
-    zstandard_level=0
-    ideflate=1
-    zstandard_level_rst=0
-    ideflate_rst=0
-    quantize_nsd=14
+    zstandard_level=0 # zstandard compression for model output
+    ideflate=1        # ideflate compression for model output
+    zstandard_level_rst=0  # zstandard compression for model restart files
+    ideflate_rst=0         # ideflate compression for model restart files
+    quantize_nsd=14        # digits to keep in lossy compression
     OUTPUT_FILETYPE_ATM="netcdf_parallel"
     if [[ "${fv3_res}" == "C384" ]]; then
       OUTPUT_FILETYPE_SFC="netcdf"  # For C384, the write grid component is better off with serial netcdf
@@ -500,19 +511,19 @@ if [[ "${skip_mom6}" == "false" ]]; then
       ;;
     "025")
       if [[ "${RUN}" = enkfgdas ]]; then
-        ntasks_mom6=160
+        ntasks_mom6=160  # number of tasks for MOM6 model
       elif [[ "${RUN}" = gdas ]]; then
-        ntasks_mom6=100
+        ntasks_mom6=100  # number of tasks for MOM6 model
       elif [[ "${RUN}" = gfs ]]; then
-        ntasks_mom6=240
+        ntasks_mom6=240  # number of tasks for MOM6 model
       else
-        ntasks_mom6=220
+        ntasks_mom6=220  # number of tasks for MOM6 model
       fi
-      OCNTIM=1800
-      NX_GLB=1440
-      NY_GLB=1080
-      DT_DYNAM_MOM6='900'
-      DT_THERM_MOM6='1800'
+      OCNTIM=1800   # MOM6 coupling timestep
+      NX_GLB=1440   # grid dimensions x
+      NY_GLB=1080   # grid dimensions y
+      DT_DYNAM_MOM6='900'  # internal dynamical timestep
+      DT_THERM_MOM6='1800' # internal thermodynamic timestep
       FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
       CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
       MOM6_RIVER_RUNOFF='True'
@@ -583,11 +594,11 @@ if [[ "${skip_cice6}" == "false" ]]; then
       ;;
     "025")
       if [[ "${RUN}" = gfs ]]; then
-        ntasks_cice6=240
+        ntasks_cice6=240  # number of tasks for CICE model
       elif [[ "${RUN}" = enkfgdas ]]; then
-        ntasks_cice6=40
+        ntasks_cice6=40   # number of tasks for CICE model
       else
-        ntasks_cice6=40
+        ntasks_cice6=40   # number of tasks for CICE model
       fi
       cice6_processor_shape="slenderX2"
       ;;
@@ -608,34 +619,34 @@ if [[ "${skip_ww3}" == "false" ]]; then
   export cplwav=".true."
   export cplwav2atm=".true."
   model_list="${model_list}.wave"
-  nthreads_ww3=1
+  nthreads_ww3=1  # number of threads for WW3; always set to 1
   case "${ww3_res}" in
     "gwes_30m")
-      ntasks_ww3=100
+      ntasks_ww3=100  # number of tasks for WW3 model
       ;;
     "glo_025")
-      ntasks_ww3=262
+      ntasks_ww3=262  # number of tasks for WW3 model
       ;;
     "glo_100")
-      ntasks_ww3=20
+      ntasks_ww3=20   # number of tasks for WW3 model
       ;;
     "glo_200")
-      ntasks_ww3=30
+      ntasks_ww3=30   # number of tasks for WW3 model
       ;;
     "glo_500")
-      ntasks_ww3=12
+      ntasks_ww3=12   # number of tasks for WW3 model
       ;;
     "mx025")
-      ntasks_ww3=80
+      ntasks_ww3=80   # number of tasks for WW3 model
       ;;
     "uglo_15km")
-      ntasks_ww3=884
+      ntasks_ww3=884  # number of tasks for WW3 model
       if [[ "${RUN}" = gfs ]]; then
-        ntasks_ww3=3000
+        ntasks_ww3=3000 # number of tasks for WW3 model
       fi
       ;;
     "uglo_100km")
-      ntasks_ww3=40
+      ntasks_ww3=40   # number of tasks for WW3 model
       ;;
     *)
       echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"
