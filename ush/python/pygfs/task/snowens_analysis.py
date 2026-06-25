@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 from logging import getLogger
 from typing import Dict, List, Optional, Any
 from pprint import pformat
@@ -21,6 +22,14 @@ from wxflow import (AttrDict,
                     logit,
                     Executable,
                     WorkflowException)
+
+# Import com_paths from dev/workflow to get the canonical COM_*_TMPL definitions.
+# HOMEglobal is always set in the job environment.
+_homeglobal = os.environ.get('HOMEglobal', '')
+_workflow_dir = os.path.join(_homeglobal, 'dev', 'workflow')
+if _workflow_dir not in sys.path:
+    sys.path.insert(0, _workflow_dir)
+from com_paths import get_com_templates  # noqa: E402
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -83,12 +92,34 @@ class SnowEnsAnalysis(Analysis):
             }
         ))
 
+        # Load COM templates so they are available for Jinja2 rendering
+        self.task_config.update(self._copy_com_templates())
+
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
         expected_keys = ['scf_to_ioda', 'snowanlvar', 'esnowanlensmean']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
+
+    @logit(logger)
+    def _copy_com_templates(self) -> Dict[str, str]:
+        """Copy COM templates needed for snow jobs.
+
+        Gets only the atmosphere restart and snow analysis templates from dev/workflow/com_paths.py.
+        Any matching environment variables override the defaults.
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary with COM_ATMOS_RESTART_TMPL and COM_SNOW_ANALYSIS_TMPL
+        """
+        com_templates = get_com_templates()
+        needed_templates = ['COM_ATMOS_RESTART_TMPL', 'COM_SNOW_ANALYSIS_TMPL']
+        templates = {key: com_templates[key] for key in needed_templates if key in com_templates}
+        env_overrides = {key: self.task_config[key] for key in needed_templates if key in self.task_config}
+        templates.update(env_overrides)
+        return templates
 
     @logit(logger)
     def initialize(self) -> None:
