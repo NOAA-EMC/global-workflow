@@ -6,8 +6,16 @@ declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LIN
 if [[ "${1:-}" == "--dry-run" ]]; then
     echo "Dry run mode: No files will be deleted."
     DRY_RUN=true
-else
+elif [[ "${1:-}" == "--go" ]]; then
     DRY_RUN=false
+elif [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: $0 [--dry-run | --go]"
+    echo "  --dry-run : Show what would be deleted without actually deleting anything."
+    echo "  --go      : Perform the cleanup and delete files."
+    exit 0
+else
+    echo "Invalid option. Use --help for usage information."
+    exit 1
 fi
 
 module reset
