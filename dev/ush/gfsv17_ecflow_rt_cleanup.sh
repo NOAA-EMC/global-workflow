@@ -59,7 +59,7 @@ done
 # Clean COM
 # COM retain 2 full days
 cd "${COMROOT}"
-for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "fix" | grep -v "syndat"); do
+for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "fix" | grep -v "syndat" | grep -v "sdm_rtdm" ); do
     echo "Removing directory ${COMROOT}/${dir_to_remove}"
     if [[ "${DRY_RUN}" == false ]]; then
         rm -rf "${dir_to_remove}"
