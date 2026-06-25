@@ -539,7 +539,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ntasks_ww3=80
       ;;
     "uglo_15km")
-      # Resolution used in GFSv17 # Resolution used in GFSv17 
+      # Resolution used in GFSv17
       ntasks_ww3=884  # number of tasks for WW3 model
       if [[ "${RUN}" = gfs ]]; then
         ntasks_ww3=3000 # number of tasks for WW3 model
