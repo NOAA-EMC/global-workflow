@@ -31,19 +31,17 @@ if [[ ! -d "${COMROOT}/enkfgdas.${PDY}/06" ]]; then
     exit 9
 fi
 
-# Clean DATA
-# DATA retain current PDY   ~   60TB
+# Clean DATA directories older than 48 hours
 cd "${DATAROOT}"
-# Delete any directories older than 48 hours
 for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "DBNLOG" | grep -v "ecflow"); do
     echo "Removing directory ${DATAROOT}/${dir_to_remove}"
     rm -rf "${dir_to_remove}"
 done
 
 # Clean COM
-# COM retain 2 full days - 195TB (65T /day on production frequency)
+# COM retain 2 full days
 cd "${COMROOT}"
-for dir_to_remove in $(find ./* -maxdepth 0 -type d | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "fix" | grep -v "syndat"); do
+for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "${PDY}" | grep -v "${PDYm1}" | grep -v "fix" | grep -v "syndat"); do
     echo "Removing directory ${COMROOT}/${dir_to_remove}"
     rm -rf "${dir_to_remove}"
 done
