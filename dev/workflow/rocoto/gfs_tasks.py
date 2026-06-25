@@ -2705,17 +2705,17 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         # Set COMIN_OBS (note we need gdas/gfs, not enkfgdas/enkfgfs)
-        anal_vars = self.envars.copy()
-        anal_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run.replace("enkf","")}.@Y@m@d/@H/obs</cyclestr>'}
-        for key, value in anal_envars_dict.items():
-            anal_vars.append(rocoto.create_envar(name=key, value=str(value)))
+        eobs_vars = self.envars.copy()
+        eobs_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run.replace("enkf","")}.@Y@m@d/@H/obs</cyclestr>'}
+        for key, value in eobs_envars_dict.items():
+            eobs_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
         resources = self.get_resource('eobs')
         task_name = f'{self.run}_eobs'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
-                     'envars': self.envars,
+                     'envars': eobs_vars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/eobs.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
