@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 
 from pygfs.task.archive import Archive
 from wxflow import AttrDict, Logger, cast_strdict_as_dtypedict, logit, chdir
+
+# Add dev/workflow to path for com_paths import
+sys.path.insert(0, os.path.join(os.environ.get('HOMEglobal', '.'), 'dev/workflow'))
+from com_paths import get_com_templates
 
 # initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
@@ -53,6 +58,11 @@ def main():
     for key in archive.task_config.keys():
         if key.startswith(("COM_", "COMIN_", "COMOUT_")):
             archive_dict[key] = archive.task_config.get(key)
+
+    # Import all COM_*_TMPL from com_paths.py to ensure Jinja2 templates have access
+    com_templates = get_com_templates()
+    for key, value in com_templates.items():
+        archive_dict[key] = value
 
     with chdir(config.ROTDIR):
         logger.debug(f"Changed working directory to {config.ROTDIR}")
