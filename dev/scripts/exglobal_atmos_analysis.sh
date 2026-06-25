@@ -868,7 +868,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
     if [[ "${RUN}" == "gdas" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_pc "${job}" "${ABIASPC}"
         "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_air "${job}" "${ABIASAIR}"
-    if [[ "${RUN}" == "gfs" ]]; then
+    elif [[ "${RUN}" == "gfs" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_abias "${job}" "${ABIAS}"
     fi
 fi
