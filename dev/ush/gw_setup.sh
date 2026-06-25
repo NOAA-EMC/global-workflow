@@ -28,7 +28,6 @@ if [[ "${err}" -ne 0 ]]; then
 fi
 
 # Set up the PYTHONPATH to include wxflow from HOMEglobal
-# IMPORTANT: This must come AFTER module load to ensure local wxflow takes precedence
 if [[ -d "${HOMEglobal}/sorc/wxflow/src" ]]; then
     PYTHONPATH="${HOMEglobal}/sorc/wxflow/src${PYTHONPATH:+:${PYTHONPATH}}"
     export PYTHONPATH
