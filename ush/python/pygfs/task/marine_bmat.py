@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import glob
 from logging import getLogger
+from typing import Dict
 import pygfs.utils.marine_da_utils as mdau
 from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler, Executable,
@@ -12,6 +14,14 @@ from wxflow import (AttrDict, FileHandler, Executable,
                     logit)
 
 from pygfs.jedi import Jedi
+
+# Import com_paths from dev/workflow to get the canonical COM_*_TMPL definitions.
+# HOMEglobal is always set in the job environment.
+_homeglobal = os.environ.get('HOMEglobal', '')
+_workflow_dir = os.path.join(_homeglobal, 'dev', 'workflow')
+if _workflow_dir not in sys.path:
+    sys.path.insert(0, _workflow_dir)
+from com_paths import get_com_templates  # noqa: E402
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -57,6 +67,9 @@ class MarineBMat(Analysis):
             }
         ))
 
+        # Load COM templates so they are available for Jinja2 rendering
+        self.task_config.update(self._copy_com_templates())
+
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
@@ -64,6 +77,25 @@ class MarineBMat(Analysis):
         expected_keys = ['soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
                          'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
+
+    @logit(logger)
+    def _copy_com_templates(self) -> Dict[str, str]:
+        """Copy COM templates needed for marine jobs.
+
+        Gets only the ocean and ice history templates from dev/workflow/com_paths.py.
+        Any matching environment variables override the defaults.
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary with COM_OCEAN_HISTORY_TMPL and COM_ICE_HISTORY_TMPL
+        """
+        com_templates = get_com_templates()
+        needed_templates = ['COM_OCEAN_HISTORY_TMPL', 'COM_ICE_HISTORY_TMPL']
+        templates = {key: com_templates[key] for key in needed_templates if key in com_templates}
+        env_overrides = {key: self.task_config[key] for key in needed_templates if key in self.task_config}
+        templates.update(env_overrides)
+        return templates
 
     @logit(logger)
     def initialize(self) -> None:
