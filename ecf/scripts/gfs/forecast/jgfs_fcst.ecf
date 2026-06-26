@@ -80,24 +80,31 @@ ACTIONS FOR RECONFIGURING NODE/TASK ALLOCATIONS:
 
 These guidelines describe where to find relevant variables and how PET calculations are made in case node and core allocations need to be modified in any way.
 
-Ideally, the job scripts should be used to fill out the namelist and configuration templates. 
+Ideally, the job scripts should be used to fill out the namelist and configuration templates.
+The following are the configurable variables in parm/config/gfs/config.ufs that can be used to change the core allocations.
+Variables that are not defined in this document should be considered as constants in the config.ufs script.
 
 The atmosphere component requires the largest amount of tasks. The total task allocation is calculated as:
-( ( layout_x* layout_x * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3
+( ( layout_x* layout_y * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3
  - layout_x, layout_y are set in parm/config/gfs/config.ufs and ultimately set in input.nml
- - write_groups and write_tasks_per_group are defined in model_configure
- - nthreads_fv3 is defined in parm/config/gfs/config.ufs and  then set in ufs.configure
+ - WRITE_GROUP and WRTTASK_PER_GROUP_PER_THREAD_PER_TILE are defined in parm/config/gfs/config.ufs and then set as 
+      the total number of write_tasks_per_group and write_groups in model_configure
+ - nthreads_fv3 is defined in parm/config/gfs/config.ufs and then set in ufs.configure
+
 This total should be the same as the ATM allocation (ATM_petlist_bounds) located in ufs.configure.
 
-The CMEPS mediator uses a portion of the tasks allocated to the atmosphere. The ideal number of tasks for the forecast is between 1200 - 4800 tasks.
-The tasks are defined in ufs.configure under MED_petlist_bounds. The number of threads should match the atmosphere. CMEPS processes are running on tasks 
-allocated to the atmosphere, so this allocation is not added to the final number of tasks needed by the overall model.
-
 The MOM6 ocean model requires less tasks and default settings are tied to ocean model resolution. The number of tasks allocated to 
-MOM6 (ufs.configure: OCN_petlist_bounds) is usually matched to the number of CICE tasks (ufs.configure: ICE_petlist_bounds). The number of threads
-of CICE and MOM6 should always be the same.
+MOM6 (ntasks_mom6 in parm/config/gfs/config.ufs) is matched to the number of CICE tasks for the GFSv17 default configuration 
+(ntasks_cice6 in parm/config/gfs/config.ufs) at 240 cores each. If these need to be adjusted, the number of cores for the MOM6 and CICE 
+components do not need to be equal.
 
-The WW3 wave model tasks are also allocated in ufs.configure (WAV_petlist_bounds). The default number of tasks in the forecast is 3000.
+The WW3 wave model tasks are also allocated in parm/config/gfs/config.ufs via ntasks_ww3. The default number of tasks in the forecast is 3000.
+
+Once the parm/config/gfs/config.ufs is set and executed, the ufs.configure file is created and will ultimately store the component PET allocations.
+The total UFS weather model PET requirements are the sum of the components (ATM_PET (defined above) + MOM6_PET + CICE_PET + WW3_PET)
+
+ex. ( ( layout_x* layout_y * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3 + ntasks_mom6 + ntasks_cice6 + ntasks_ww3
+    ((32 * 64 *6) + (8 * 50 * 6)) * 4 + 240 + 240 + 3000 = (12288 + 2400) * 4 + 240 + 240 + 3000 = 62232 total cores
 
 
 %end
