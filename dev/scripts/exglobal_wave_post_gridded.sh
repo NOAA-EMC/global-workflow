@@ -122,6 +122,7 @@ echo "INFO: Running MPMD job with ${count} commands"
 "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="run_mpmd.sh"
     err_exit "run_mpmd.sh failed!"
 fi
 
@@ -132,6 +133,7 @@ com_dir=${!com_varname}
 gribchk="${RUN}.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
 if [[ ! -s "${com_dir}/${gribchk}" ]]; then
     export err=2
+    export pgm="run_mpmd.sh"
     err_exit "'${gribchk}' not generated in this job"
 fi
 

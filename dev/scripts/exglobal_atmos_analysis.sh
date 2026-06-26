@@ -712,6 +712,7 @@ EOF
     "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        export pgm="run_mpmd.sh"
         err_exit "Failed to unzip at least one rad diag file!"
     fi
 fi # if [[ $USE_RADSTAT == "YES" ]
@@ -858,6 +859,7 @@ cpreq "${GSIEXEC}" "${DATA}"
 ${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="${APRUN_GSI}"
     err_exit "Failed to run the GSI analysis!"
 fi
 
@@ -868,6 +870,7 @@ if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
     ${CALCINCPY}
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        export pgm="${CALCINCPY}"
         err_exit "Failed to calculate the analysis increment!"
     fi
 fi

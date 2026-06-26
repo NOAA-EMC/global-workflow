@@ -53,6 +53,7 @@ cpreq "${COMIN_OBS}/${RUN}.${cycle}.adpupa.tm00.bufr_d" fort.40
 "${HOMEglobal}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm=rdbfmsua.x
     err_exit "Failed to run rdbfmsua!"
 fi
 

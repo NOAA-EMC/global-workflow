@@ -86,6 +86,7 @@ ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMglobal}/product/gfs_awips_parml
     ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="${WGRIB2}"
     err_exit "masterfile does not exist."
 fi
 
@@ -98,6 +99,7 @@ ${WGRIB2} masterfile | grep -v ":PWAT:entire atmosphere" | ${WGRIB2} -i -grib te
 ${WGRIB2} gfs_pwat.grb -set_byte 4 23 10 -grib gfs_pwat_levels_10.grb && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="${WGRIB2}"
     err_exit "Failed to redefine PWAT for the entire atmosphere!"
 fi
 
@@ -179,6 +181,7 @@ for GRID in conus ak prico pac 003; do
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            # pgm is already assigned
             err_exit "Failed to generate the awips Grib2 file!"
         fi
         echo "Complex2 compression/packing for grib2.awpgfs${fcsthr}.${GRID}"
@@ -187,6 +190,7 @@ for GRID in conus ak prico pac 003; do
             -grib_out "grib2.awpgfs${fcsthr}.${GRID}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${WGRIB2}"
             err_exit "Failed to compress and repack the awips Grib2 file!"
         fi
 
@@ -225,6 +229,7 @@ for GRID in conus ak prico pac 003; do
             -grib_out "grib2.awpgfs_20km_${GRID}_f${fcsthr}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${WGRIB2}"
             err_exit "Failed to compress and repack the AWIPS grib2 file!"
         fi
 

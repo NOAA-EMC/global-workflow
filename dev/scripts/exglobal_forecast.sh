@@ -199,6 +199,7 @@ cpreq "${EXECglobal}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="${FCSTEXEC}"
     err_exit "The forecast failed to run to completion!"
 fi
 # Signal to the forecast manager that the model run has completed successfully for this segment.

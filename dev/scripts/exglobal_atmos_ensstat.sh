@@ -16,5 +16,6 @@ fi
 "${USHglobal}/run_mpmd.sh" mpmd_script
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="run_mpmd.sh"
     err_exit "One or more MPMD jobs failed to calculate ensemble statistics!"
 fi

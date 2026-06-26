@@ -94,6 +94,7 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
     export err=$?
 
     if [[ ${err} -ne 0 ]]; then
+        export pgm="tropcy_relocate.sh"
         err_exit "Failed while updating tropical cyclone data!"
     fi
 

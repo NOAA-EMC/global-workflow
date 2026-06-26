@@ -65,6 +65,7 @@ cpreq "${PARMglobal}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 "${EXECglobal}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm=fbwndgfs.x
     err_exit "Failed to run fbwnd for the Pacific!"
 fi
 

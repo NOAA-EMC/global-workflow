@@ -238,6 +238,7 @@ EOF
             ${APRUN_CHGRES} ./chgres.x
             export err=$?
             if [[ ${err} -ne 0 ]]; then
+                export pgm="${CHGRESNC}"
                 err_exit "Failed to change the resolution of the deterministic analysis to the ensemble resolution!"
             fi
         fi

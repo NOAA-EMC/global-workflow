@@ -90,6 +90,7 @@ export CHEM="${CHEM_INVOBS}"
 "${ANALYSISSH}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="${ANALYSISSH}"
     err_exit "Failed to run the GSI!"
 fi
 

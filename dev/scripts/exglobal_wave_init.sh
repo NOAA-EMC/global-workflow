@@ -58,6 +58,7 @@ done
 "${USHglobal}/run_mpmd.sh" "${DATA}/mpmd_script" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="run_mpmd.sh"
     err_exit "run_mpmd.sh failed!"
 fi
 
@@ -67,6 +68,7 @@ for grdID in "${grdALL[@]}"; do
         echo "INFO: mod_def.${grdID} succesfully created/copied"
     else
         export err=3
+        export pgm="run_mpmd.sh"
         err_exit "No model definition file for grid ${grdID}"
     fi
 done

@@ -55,6 +55,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     "${REGRIDSH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        export pgm="${REGRIDSH}"
         err_exit "Failed to regrid the surface inrement file!"
     fi
 

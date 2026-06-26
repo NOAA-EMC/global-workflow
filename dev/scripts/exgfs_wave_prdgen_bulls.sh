@@ -53,6 +53,7 @@ if [[ ${OK} -eq 0 ]]; then
     rm -f cbull.tar
 else
     export err=2
+    export pgm=tar
     err_exit "ERROR IN BULLETIN TAR FILE"
 fi
 
