@@ -22,11 +22,11 @@ suite gfs_v17_nco
             edit WGF 'atmos'
             task jgfs_atmos_tropcy_qc_reloc
               #event 1 jtwc_bull_email
-              time 02:41
+              trigger :TIME >= 0241 and :TIME < 0245
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 03:07
+              trigger :TIME >= 0307 and :TIME < 0312
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -57,7 +57,7 @@ suite gfs_v17_nco
             task jgfs_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger  /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete and ../../../../18/gdas/forecast==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -5354,11 +5354,11 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_tropcy_qc_reloc
-              time 05:45
+              trigger :TIME >= 0545 and :TIME < 0550
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 06:10
+              trigger :TIME >= 0610 and :TIME < 0615
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -5389,7 +5389,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../18/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../18/enkfgdas/ensstat==complete and ../../../../18/gdas/forecast==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
@@ -5939,11 +5939,11 @@ suite gfs_v17_nco
             edit WGF 'atmos'
             task jgfs_atmos_tropcy_qc_reloc
               #event 1 jtwc_bull_email
-              time 08:41
+              trigger :TIME >= 0841 and :TIME < 0845
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 09:07
+              trigger :TIME >= 0907 and :TIME < 0912
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -5974,7 +5974,7 @@ suite gfs_v17_nco
             task jgfs_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger  /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete and ../../../../00/gdas/forecast==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -11271,11 +11271,11 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_tropcy_qc_reloc
-              time 11:45
+              trigger :TIME >= 1145 and :TIME < 1150
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 12:10
+              trigger :TIME >= 1210 and :TIME < 1215
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -11303,7 +11303,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../00/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../00/enkfgdas/ensstat==complete and ../../../../00/gdas/forecast==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
@@ -11853,11 +11853,11 @@ suite gfs_v17_nco
             edit WGF 'atmos'
             task jgfs_atmos_tropcy_qc_reloc
               #event 1 jtwc_bull_email
-              time 14:41
+              trigger :TIME >= 1441 and :TIME < 1445
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 15:07
+              trigger :TIME >= 1507 and :TIME < 1512
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -11888,7 +11888,7 @@ suite gfs_v17_nco
             task jgfs_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger  /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete and ../../../../06/gdas/forecast==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -17185,11 +17185,11 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_tropcy_qc_reloc
-              time 17:45
+              trigger :TIME >= 1745 and :TIME < 1750
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 18:10
+              trigger :TIME >= 1810 and :TIME < 1815
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -17218,7 +17218,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../06/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../06/enkfgdas/ensstat==complete and ../../../../06/gdas/forecast==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
@@ -17768,11 +17768,11 @@ suite gfs_v17_nco
             edit WGF 'atmos'
             task jgfs_atmos_tropcy_qc_reloc
               #event 1 jtwc_bull_email
-              time 20:41
+              trigger :TIME >= 2041 and :TIME < 2045
             task jgfs_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/dump/jobsproc_gfs_atmos_dump:release_sfcprep
-              time 21:07
+              trigger :TIME >= 2107 and :TIME < 2112
           endfamily		//atmos
           family marine
             edit WGF 'marine'
@@ -17803,7 +17803,7 @@ suite gfs_v17_nco
             task jgfs_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger  /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and  ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgfs_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete and ../../../../12/gdas/forecast==complete
             task jgfs_atmos_anal_sfc_gcycle
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_atmos_analsnow==complete
             task jgfs_atmos_anal_calc
@@ -23100,11 +23100,11 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_tropcy_qc_reloc
-              time 23:45
+              trigger :TIME >= 2345 and :TIME < 2350
             task jgdas_atmos_emcsfc_sfc_prep
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/dump/jobsproc_gdas_atmos_dump:release_sfcprep
-              time 00:10
+              trigger :TIME >= 0010 and :TIME < 0015
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
@@ -23133,7 +23133,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep == complete and ../../../../12/enkfgdas/ensstat==complete
-              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete
+              trigger ../../prep/atmos/jgdas_atmos_emcsfc_sfc_prep==complete and ../../../../12/enkfgdas/ensstat==complete and ../../../../12/gdas/forecast==complete
             task jgdas_atmos_analdiag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
