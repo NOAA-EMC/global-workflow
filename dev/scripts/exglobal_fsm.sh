@@ -4,6 +4,10 @@ set -x
 # File Service Manager (FSM) for Global Workfow
 # WGF (Workflow Group Family Assignment) - atmos, ocean
 # RJN (Request Job Name) - prep, forecast
+
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 previous_cycle=$("${NDATE}" -6 "${PDY}${cyc}")
 previous_cycle_PDY="${previous_cycle:0:8}"
 previous_cycle_cyc="${previous_cycle:8:2}"
