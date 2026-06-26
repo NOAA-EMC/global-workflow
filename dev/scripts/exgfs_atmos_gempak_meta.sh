@@ -26,6 +26,9 @@ do_all=0
 
 fhr3=$(printf "%03d" "${fhr}")
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 #loop through and process needed forecast hours
 while [[ ${fhr} -le ${fhend} ]]; do
     #

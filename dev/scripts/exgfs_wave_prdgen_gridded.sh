@@ -66,6 +66,9 @@ nparam=$(echo "${arrpar[@]}" | wc -w)
 sleep_interval=5
 max_tries=1000
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 fhcnt="${fstart}"
 while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
     fhr=$(printf "%03d" "${fhcnt}")
@@ -170,6 +173,8 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
             "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
         fi
         rm -f "${AWIPSGRB}.${grdID}.f${fhr}" "${pgmout}"
+        # Restore default pgm after prep_step override
+        export pgm=$(basename "${BASH_SOURCE[0]}")
     done # For grids
 
     if [[ ${fhcnt} -ge ${FHMAX_HF_WAV} ]]; then

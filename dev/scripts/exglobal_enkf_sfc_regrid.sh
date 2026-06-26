@@ -52,6 +52,9 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
         export LFHR=6 # PDYcyc
     fi
 
+    # Set default pgm for err_exit
+    export pgm=$(basename "${BASH_SOURCE[0]}")
+
     "${REGRIDSH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then

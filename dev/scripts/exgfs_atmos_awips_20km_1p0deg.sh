@@ -75,6 +75,9 @@ export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
 ###############################################################
@@ -251,6 +254,8 @@ for GRID in conus ak prico pac 003; do
             echo "File ${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr} not posted to db_net."
         fi
     fi
+    # Restore default pgm after prep_step override
+    export pgm=$(basename "${BASH_SOURCE[0]}")
     echo "Awip Processing ${fcsthr} hour completed normally"
 
 done

@@ -94,6 +94,9 @@ if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
     ENKF_SUFFIX=""
 fi
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 ################################################################################
 # Link ensemble member guess, analysis and increment files
 for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
@@ -144,6 +147,8 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         if [[ ${err} -ne 0 ]]; then
             err_exit "FATAL ERROR: Failed to recenter the ensemble analyses!"
         fi
+        # Restore default pgm after prep_step override
+        export pgm=$(basename "${BASH_SOURCE[0]}")
     else
         # Link ensemble mean increment
         ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
@@ -163,6 +168,8 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         if [[ ${err} -ne 0 ]]; then
             err_exit "Failed to recenter the ensemble increments!"
         fi
+        # Restore default pgm after prep_step override
+        export pgm=$(basename "${BASH_SOURCE[0]}")
 
         # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
         if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
@@ -182,6 +189,8 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             if [[ ${err} -ne 0 ]]; then
                 err_exit "Failed to recenter the ensemble mean guess!"
             fi
+            # Restore default pgm after prep_step override
+            export pgm=$(basename "${BASH_SOURCE[0]}")
         fi
     fi
 

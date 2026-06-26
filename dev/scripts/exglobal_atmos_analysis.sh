@@ -344,6 +344,9 @@ if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" =
     ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc}
 fi
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 ##############################################################
 # Fixed files
 ${NLN} "${BERROR}" berror_stats
@@ -862,6 +865,8 @@ if [[ ${err} -ne 0 ]]; then
     export pgm="${APRUN_GSI}"
     err_exit "Failed to run the GSI analysis!"
 fi
+# Restore default pgm after prep_step override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ##############################################################
 # If full analysis field written, calculate analysis increment

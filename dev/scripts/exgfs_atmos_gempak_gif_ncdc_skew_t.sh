@@ -11,6 +11,9 @@ cd "${DATA}" || exit 1
 
 export NTS="${HOMEglobal}/gempak/ush/restore"
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 if [[ "${MODEL}" == GDAS ]] || [[ "${MODEL}" == GFS ]]; then
     case "${MODEL}" in
         GDAS) fcsthrs="0" ;;

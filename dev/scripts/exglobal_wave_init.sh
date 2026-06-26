@@ -20,6 +20,9 @@
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cat << EOF
 
 Preparing input files :

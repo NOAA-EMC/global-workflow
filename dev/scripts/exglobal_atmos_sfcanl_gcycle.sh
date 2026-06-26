@@ -98,6 +98,9 @@ export APRUNCY="${APRUN_CYCLE}"
 export OMP_NUM_THREADS_CY="${NTHREADS_CYCLE}"
 export MAX_TASKS_CY="${ntiles}"
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Copy fix files required by global_cycle to DATA just once
 for ((nn = 1; nn <= ntiles; nn++)); do
     cpreq "${FIXglobal}/orog/${CASE}/${CASE}_grid.tile${nn}.nc" "${DATA}/fngrid.00${nn}"

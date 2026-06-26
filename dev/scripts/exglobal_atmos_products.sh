@@ -37,6 +37,9 @@ fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Files needed by ${USHglobal}/interp_atmos_master.sh
 if [[ "${fhr3}" == "analysis" ]]; then
     MASTER_FILE="${COMIN_ATMOS_ANALYSIS}/${PREFIX}master.${fhr3}.grib2"

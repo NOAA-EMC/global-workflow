@@ -51,6 +51,9 @@ export SLEEP_INT=${SLEEP_TIME:-5}
 
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # TODO: Does this section do anything? I retained if for clarity of
 # changes/updates, but it does not appear to do anything.
 

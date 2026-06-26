@@ -45,6 +45,9 @@ export NINT1=${FHOUT_HF_GFS:-1}
 export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 GETDIM="${USHglobal}/getncdimlen"
 LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f000.${atmfm}" pfull)
 declare -x LEVS

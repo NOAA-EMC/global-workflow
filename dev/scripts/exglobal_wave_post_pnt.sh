@@ -30,6 +30,9 @@
 
 export WAV_MOD_TAG="${RUN}.t${cyc}z"
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
 if [[ -z "${NTASKS}" ]]; then
@@ -168,6 +171,8 @@ if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
     export err=5
     err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
 fi
+# Restore default pgm after prep_step override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Create new buoy_log.ww3
 awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags

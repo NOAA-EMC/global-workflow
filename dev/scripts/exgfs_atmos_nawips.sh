@@ -62,6 +62,9 @@ export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 case ${grid} in
     # TODO: Why aren't we interpolating from the 0p25 grids for 35-km and 40-km?
     '0p50' | '0p25') grid_in=${grid} ;;

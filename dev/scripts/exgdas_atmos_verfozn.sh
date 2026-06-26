@@ -9,6 +9,9 @@
 ################################################################################
 export err=0
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 if [[ -s "${oznstat}" ]]; then
     #------------------------------------------------------------------
     #  Copy data files file to local data directory.

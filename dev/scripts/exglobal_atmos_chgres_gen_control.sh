@@ -6,6 +6,10 @@
 # Script description:  Runs chgres on changing resolution of GEFS stage ic control member
 ################################################################################
 # copy input files to DATA from the source directory
+
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cpreq "${FIXglobal}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
 cpreq "${FIXglobal}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"
 cpreq "${ATM_FILE}" "${DATA}/atm_input.nc"

@@ -13,6 +13,9 @@ fi
     done
 } > mpmd_script
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 "${USHglobal}/run_mpmd.sh" mpmd_script
 export err=$?
 if [[ ${err} -ne 0 ]]; then

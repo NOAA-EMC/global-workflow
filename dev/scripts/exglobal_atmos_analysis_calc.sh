@@ -108,6 +108,9 @@ if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" =
     ATMI09=${ATMI09:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc"}
 fi
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 ################################################################################
 # Clean the run-directory
 rm -rf dir.*

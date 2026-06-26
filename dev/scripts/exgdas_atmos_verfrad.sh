@@ -20,6 +20,9 @@
 # Do not exit on errors so that restricted data can be protected
 source "${USHglobal}/unset_strict.sh"
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 if [[ ! -s "${radstat}" || ! -s "${biascr}" ]]; then
     export err=1
     err_exit "Required data files ${radstat} and/or ${biascr} are missing!!"

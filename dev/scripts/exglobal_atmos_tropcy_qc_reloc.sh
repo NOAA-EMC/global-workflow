@@ -19,6 +19,9 @@ cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
 NET_uc=${RUN^^}
 tmmark_uc=${tmmark^^}
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 if [[ "${RUN}" = ndas ]]; then
     if [[ "${DO_RELOCATE}" = NO ]]; then
         echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS ${cdate10}"

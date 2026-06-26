@@ -41,6 +41,9 @@ l
 r
 EOF
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Loop over the grids
 for grid in ${grids}; do
     case ${grid} in

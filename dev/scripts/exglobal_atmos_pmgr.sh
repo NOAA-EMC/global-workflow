@@ -29,6 +29,10 @@ done
 #
 # Wait for all fcst hours to finish
 #
+
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 sleep_interval=10
 max_tries=1000
 for fhr in "${posthours[@]}"; do

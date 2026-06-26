@@ -85,6 +85,9 @@ source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_confi
 
 source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Default segment index to 0 if not set by the caller (multi-segment forecasts set this).
 FCST_SEGMENT=${FCST_SEGMENT:-0}
 

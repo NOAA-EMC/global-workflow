@@ -20,6 +20,9 @@
 # Dependent Scripts and Executables
 REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 if [[ "${DO_GSISOILDA}" == "YES" ]]; then
 
     # Collect the dates in the window to update surface restarts

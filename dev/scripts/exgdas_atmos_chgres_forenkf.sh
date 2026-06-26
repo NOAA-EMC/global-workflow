@@ -87,6 +87,9 @@ fi
 ################################################################################
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # get resolution information
 LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMFCST_ENSRES}" grid_xt)} # get LONB_ENKF
 LATB_ENKF=${LATB_ENKF:-$(${NCLEN} "${ATMFCST_ENSRES}" grid_yt)} # get LATB_ENFK

@@ -10,6 +10,9 @@ fhr3=$1
 # "Import" functions used in this script
 source "${USHglobal}/product_functions.sh"
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
     source_table="${HOMEglobal}/gempak/fix/${table}"
     if [[ ! -f "${source_table}" ]]; then

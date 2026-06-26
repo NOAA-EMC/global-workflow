@@ -32,6 +32,9 @@ export pgm="wave prdgen"
 export date=${PDY}
 export YMDH=${PDY}${cyc}
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # 1.  Get necessary files
 echo "   Copying bulletins from ${COMIN_WAVE_STATION}"
 

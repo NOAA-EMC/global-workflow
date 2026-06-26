@@ -48,6 +48,9 @@ cd "${DATA}" || (
     exit 2
 )
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 #-------------------------------------------------------------------------------
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
 # These should always be available
