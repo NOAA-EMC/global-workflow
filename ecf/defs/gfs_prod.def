@@ -1700,7 +1700,7 @@ suite gfs_v17_nco
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f032
+              trigger ../product/jgfs_atmos_product_f006 == complete and ../../post/jgfs_atmos_product_f012 == complete and ../../post/jgfs_atmos_product_f024 == complete
             family awips_20km_1p0
               task jgfs_atmos_awips_20km_1p0_f000
                 edit FHR '000'
@@ -7617,7 +7617,7 @@ suite gfs_v17_nco
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f032
+              trigger ../product/jgfs_atmos_product_f006 == complete and ../../post/jgfs_atmos_product_f012 == complete and ../../post/jgfs_atmos_product_f024 == complete
             family awips_20km_1p0
               task jgfs_atmos_awips_20km_1p0_f000
                 edit FHR '000'
@@ -13531,7 +13531,7 @@ suite gfs_v17_nco
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f032
+              trigger ../product/jgfs_atmos_product_f006 == complete and ../../post/jgfs_atmos_product_f012 == complete and ../../post/jgfs_atmos_product_f024 == complete
             family awips_20km_1p0
               task jgfs_atmos_awips_20km_1p0_f000
                 edit FHR '000'
@@ -19446,7 +19446,7 @@ suite gfs_v17_nco
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
-              trigger ../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f032
+              trigger ../product/jgfs_atmos_product_f006 == complete and ../../post/jgfs_atmos_product_f012 == complete and ../../post/jgfs_atmos_product_f024 == complete
             family awips_20km_1p0
               task jgfs_atmos_awips_20km_1p0_f000
                 edit FHR '000'
