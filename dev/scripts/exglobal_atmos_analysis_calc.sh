@@ -18,6 +18,8 @@
 ################################################################################
 
 #  Set environment.
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 #  Directories.
 pwd=$(pwd)
@@ -107,9 +109,6 @@ if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" =
     ATMA09=${ATMA09:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a009.nc"}
     ATMI09=${ATMI09:-"${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc"}
 fi
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ################################################################################
 # Clean the run-directory

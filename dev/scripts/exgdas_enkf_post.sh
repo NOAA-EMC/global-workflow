@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Directories.
 pwd=$(pwd)
 
@@ -101,34 +104,38 @@ if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
     cpreq "${HYBENSMOOTH}" ./hybens_smoothinfo
 fi
 
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
-
 for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     fhrchar=$(printf %03i "${fhr}")
 
     export pgm=${GETSFCENSMEANEXEC}
     source prep_step
+    # Restore default pgm after prep_step override
+    export pgm=$(basename "${BASH_SOURCE[0]}")
 
     ${APRUN_EPOS} "${DATA}/$(basename "${GETSFCENSMEANEXEC}")" ./ "sfcf${fhrchar}.ensmean" "sfcf${fhrchar}" "${NMEM_ENS}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        export pgm="${APRUN_EPOS}"
         err_exit "Failed to calculate ensemble surface mean for forecast hour ${fhr}"
     fi
 
     export pgm=${GETATMENSMEANEXEC}
     source prep_step
+    # Restore default pgm after prep_step override
+    export pgm=$(basename "${BASH_SOURCE[0]}")
 
     if [[ "${ENKF_SPREAD}" == "YES" ]]; then
         ${APRUN_EPOS} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${APRUN_EPOS}"
             err_exit "Failed to calculate ensemble atmospheric mean and spread for forecast hour ${fhr}"
         fi
     else
         ${APRUN_EPOS} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${APRUN_EPOS}"
             err_exit "Failed to calculate ensemble atmospheric mean for forecast hour ${fhr}"
         fi
     fi

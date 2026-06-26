@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 if [[ -e mpmd_script ]]; then
@@ -12,9 +15,6 @@ fi
         # echo "${USHglobal}/atmos_ensstat.sh ${grid} ${fhr3} b"
     done
 } > mpmd_script
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 "${USHglobal}/run_mpmd.sh" mpmd_script
 export err=$?

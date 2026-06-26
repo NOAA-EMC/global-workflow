@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Directories.
 cd "${DATA}" || exit 1
 
@@ -61,9 +64,6 @@ DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
 hofx_2m_sfcfile=${hofx_2m_sfcfile:-".false."}
 
 ################################################################################
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX}ensmean.atm.f006.nc"
 LONB_ENKF=${LONB_ENKF:-$(${NCLEN} "${ATMGES_ENSMEAN}" grid_xt)} # get LONB_ENKF
@@ -325,15 +325,16 @@ EOFnml
 export OMP_NUM_THREADS=${NTHREADS_ENKF}
 export pgm=${ENKFEXEC}
 source prep_step
+# Restore default pgm after prep_step override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpreq "${ENKFEXEC}" "${DATA}"
 ${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 2>&1 | tee enkfstat.txt && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    export pgm="${APRUN_ENKF}"
     err_exit "Failed to run the EnKF!"
 fi
-# Restore default pgm after prep_step override
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 

@@ -26,12 +26,12 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # 0.a Basic modes of operation
 
 export WAV_MOD_TAG="${RUN}.t${cyc}z"
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -242,6 +242,8 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
 fi
+# Restore default pgm after override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # --------------------------------------------------------------------------- #
 # 3. Compress point output data into tar files

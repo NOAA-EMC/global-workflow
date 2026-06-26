@@ -23,6 +23,9 @@ set -x
 #   != 0 : non-fatal error encountered while generating output file
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Input GSI diagnostic file containing inputs to wdqms.py
 CNVSTAT="${RUN}.t${cyc}z.cnvstat.tar"
 
@@ -47,9 +50,6 @@ cd "${DATA}" || (
     echo "FATAL ERROR: Unable to cd into '${DATA}', ABORT!"
     exit 2
 )
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 #-------------------------------------------------------------------------------
 # Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py

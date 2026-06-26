@@ -6,12 +6,12 @@
 # in the future, we should move it above somewhere else.
 ##############################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cd "${DATA}" || exit 2
 
 export NTS="${HOMEglobal}/gempak/ush/restore"
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 if [[ ${MODEL} == GDAS ]]; then
     fcsthrs="000"

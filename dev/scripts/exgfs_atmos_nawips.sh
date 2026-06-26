@@ -4,6 +4,9 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 #### If EMC GFS PARA runs hourly file are not available, The ILPOST
 #### will set to 3 hour in EMC GFS PARA.
 #### Note:  ILPOST default set to 1
@@ -62,9 +65,6 @@ export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
 
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
-
 case ${grid} in
     # TODO: Why aren't we interpolating from the 0p25 grids for 35-km and 40-km?
     '0p50' | '0p25') grid_in=${grid} ;;
@@ -120,6 +120,8 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to convert ${grid} grid from GRIB to GEMPAK for forecast hour ${fhr3}"
 fi
+# Restore default pgm after override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
 

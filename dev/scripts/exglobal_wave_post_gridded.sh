@@ -21,6 +21,9 @@
 #
 ###############################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 source "${USHglobal}/wave_domain_grid.sh"
 
 DOGRI_WAV=${DOGRI_WAV:-"NO"}  # Interpolate to a grid
@@ -39,9 +42,6 @@ EOF
 
 fhr3=$(printf %03i "${FORECAST_HOUR}")
 valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Copy model definition files
 for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do

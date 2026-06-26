@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 #  Set environment.
 cd "${DATA}" || exit 8
 
@@ -46,9 +49,6 @@ if [[ "${DIAG_COMPRESS:-}" == "YES" ]]; then
     COMPRESS_SUFFIX=".gz"
 fi
 DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Set script / GSI control parameters
 

@@ -32,9 +32,6 @@ export pgm="wave prdgen"
 export date=${PDY}
 export YMDH=${PDY}${cyc}
 
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
-
 # 1.  Get necessary files
 echo "   Copying bulletins from ${COMIN_WAVE_STATION}"
 
@@ -56,7 +53,6 @@ if [[ ${OK} -eq 0 ]]; then
     rm -f cbull.tar
 else
     export err=2
-    export pgm=tar
     err_exit "ERROR IN BULLETIN TAR FILE"
 fi
 

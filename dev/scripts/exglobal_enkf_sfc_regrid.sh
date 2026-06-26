@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Directories.
 pwd=$(pwd)
 
@@ -51,9 +54,6 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     else
         export LFHR=6 # PDYcyc
     fi
-
-    # Set default pgm for err_exit
-    export pgm=$(basename "${BASH_SOURCE[0]}")
 
     "${REGRIDSH}" && true
     export err=$?

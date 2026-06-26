@@ -14,6 +14,9 @@
 # echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
 #####################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cd "${DATA}" || exit 2
 
 ######################
@@ -31,10 +34,10 @@ cat << EOF
 
 EOF
 
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 export pgm=bulls_fbwndgfs
 source prep_step
+# Restore default pgm after prep_step override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 for fhr3 in 006 012 024; do
     cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_a.0p25.f${fhr3}.grib2" "tmp_pgrb2_0p25${fhr3}"

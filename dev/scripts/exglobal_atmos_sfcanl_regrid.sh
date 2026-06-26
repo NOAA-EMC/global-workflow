@@ -17,11 +17,11 @@
 #
 ################################################################################
 
-# Dependent Scripts and Executables
-REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
-
 # Set default pgm for err_exit
 export pgm=$(basename "${BASH_SOURCE[0]}")
+
+# Dependent Scripts and Executables
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 
 if [[ "${DO_GSISOILDA}" == "YES" ]]; then
 

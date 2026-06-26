@@ -4,14 +4,14 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cd "${DATA}" || exit 1
 fhr3=$1
 
 # "Import" functions used in this script
 source "${USHglobal}/product_functions.sh"
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
     source_table="${HOMEglobal}/gempak/fix/${table}"
@@ -83,6 +83,8 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run ${NAGRIB}!"
 fi
+# Restore default pgm after override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]]; then

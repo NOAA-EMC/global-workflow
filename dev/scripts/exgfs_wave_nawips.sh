@@ -10,6 +10,9 @@
 #  March-2020 Roberto.Padilla@noaa.gov
 #####################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 source "${USHglobal}/wave_domain_grid.sh"
 source "${USHglobal}/atparse.bash"
 
@@ -40,9 +43,6 @@ PDSEXT   = no
 l
 r
 EOF
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Loop over the grids
 for grid in ${grids}; do
@@ -110,6 +110,9 @@ for grid in ${grids}; do
     if [[ ${err} -ne 0 ]]; then
         err_exit "${pgm} failed during the generation of ${GEMGRD}"
     fi
+    # Restore default pgm after override
+    export pgm=$(basename "${BASH_SOURCE[0]}")
+
     #####################################################
     # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
     # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK

@@ -84,7 +84,7 @@ EOF
 ${APRUN_CHGRES} "${EXECglobal}/chgres_cube"
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    export pgm=chgres_cube
+    export pgm=${APRUN_CHGRES}
     err_exit "chgres_cube failed to create cold start ICs, ABORT!"
 fi
 ################################################################################

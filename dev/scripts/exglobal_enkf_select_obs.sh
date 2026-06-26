@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Directories.
 pwd=$(pwd)
 
@@ -42,9 +45,6 @@ LAGDATA_INVOBS=${LAGDATA_INVOBS:-""}
 HYBRID_ENSEMBLE_INVOBS=${HYBRID_ENSEMBLE_INVOBS:-""}
 RAPIDREFRESH_CLDSURF_INVOBS=${RAPIDREFRESH_CLDSURF_INVOBS:-""}
 CHEM_INVOBS=${CHEM_INVOBS:-""}
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ################################################################################
 # ObsInput file from ensemble mean

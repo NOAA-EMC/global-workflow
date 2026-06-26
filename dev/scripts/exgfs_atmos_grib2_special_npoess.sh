@@ -7,6 +7,9 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cd "${DATA}" || exit 2
 
 ############################################################
@@ -50,9 +53,6 @@ export SLEEP_TIME=${SLEEP_TIME:-900}
 export SLEEP_INT=${SLEEP_TIME:-5}
 
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # TODO: Does this section do anything? I retained if for clarity of
 # changes/updates, but it does not appear to do anything.
@@ -133,6 +133,9 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
 
 done
 
+# Restore default pgm after override
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 ################################################################
 # Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files
 ################################################################
@@ -198,5 +201,8 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     fi
 
 done
+
+# Restore default pgm after prep_step override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ################## END OF SCRIPT #######################

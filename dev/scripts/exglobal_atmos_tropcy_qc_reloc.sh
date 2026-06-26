@@ -10,6 +10,9 @@
 # echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
 ############################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Make sure we are in the $DATA directory
 cd "${DATA}" || exit 1
 
@@ -18,9 +21,6 @@ cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
 
 NET_uc=${RUN^^}
 tmmark_uc=${tmmark^^}
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 if [[ "${RUN}" = ndas ]]; then
     if [[ "${DO_RELOCATE}" = NO ]]; then

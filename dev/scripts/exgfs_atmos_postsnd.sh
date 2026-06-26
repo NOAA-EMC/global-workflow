@@ -23,6 +23,9 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 runscript="${USHglobal}/gfs_bufr.sh"
 
 cd "${DATA}" || exit 2
@@ -44,9 +47,6 @@ export logfm="txt"
 export NINT1=${FHOUT_HF_GFS:-1}
 export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 GETDIM="${USHglobal}/getncdimlen"
 LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f000.${atmfm}" pfull)

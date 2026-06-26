@@ -18,6 +18,8 @@
 #################################################################################
 
 #  Set environment.
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 #  Directories.
 # shellcheck disable=SC2153
@@ -343,9 +345,6 @@ if [[ "${DOHYBVAR}" == "YES" && "${l4densvar}" == ".true." && "${lwrite4danl}" =
     ATMA09=${ATMA09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.atm.a009.nc}
     ATMI09=${ATMI09:-${COMOUT_ATMOS_ANALYSIS}/${APREFIX}increment.atm.i009.nc}
 fi
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ##############################################################
 # Fixed files
@@ -857,6 +856,8 @@ cat gsiparm.anl
 export OMP_NUM_THREADS=${NTHREADS_GSI}
 export pgm=${GSIEXEC}
 source prep_step
+# Restore default pgm after prep_step override
+export pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpreq "${GSIEXEC}" "${DATA}"
 ${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2
@@ -865,8 +866,6 @@ if [[ ${err} -ne 0 ]]; then
     export pgm="${APRUN_GSI}"
     err_exit "Failed to run the GSI analysis!"
 fi
-# Restore default pgm after prep_step override
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ##############################################################
 # If full analysis field written, calculate analysis increment

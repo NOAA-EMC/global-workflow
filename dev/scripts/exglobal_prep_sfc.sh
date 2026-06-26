@@ -56,6 +56,9 @@
 #
 #########################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 ##############################################################
 # Input data for emcsfc_ice_blend and emcsfc_snow2mdl programs
 ##############################################################
@@ -85,9 +88,6 @@ export BLENDICEEXEC=${BLENDICEEXEC:-${EXECglobal}/emcsfc_ice_blend}
 
 # standard output file
 export pgmout=${pgmout:-OUTPUT}
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 #-----------------------------------------------------------------------
 # call utility script to create global ice blend data.

@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Base variables
 DONST=${DONST:-"NO"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
@@ -132,9 +135,6 @@ fi
 export APRUNCY=${APRUN_CYCLE:-${APRUN:-""}}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-${NTHREADS_ESFC}}
 export MAX_TASKS_CY=${NMEM_ENS}
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 if [[ "${DOIAU}" == "YES" ]]; then
     # Update surface restarts at beginning of window when IAU is ON

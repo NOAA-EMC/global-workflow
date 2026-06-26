@@ -33,6 +33,9 @@ if [[ ${num} -ne 1 ]]; then
     exit 16
 fi
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cd "${DATA}" || exit 2
 
 # "Import" functions used in this script
@@ -74,9 +77,6 @@ export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
 export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
@@ -173,6 +173,8 @@ for GRID in conus ak prico pac 003; do
     export pgm
     prep_step
     startmsg
+    # Restore default pgm after override
+    export pgm=$(basename "${BASH_SOURCE[0]}")
 
     if [[ ${GRID} = "003" && $((10#${fcsthr} % 6)) == 0 ]]; then
         export FORT11="awps_file_f${fcsthr}_${GRID}"
@@ -184,7 +186,7 @@ for GRID in conus ak prico pac 003; do
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            # pgm is already assigned
+            export pgm="${TOCGRIB2}"
             err_exit "Failed to generate the awips Grib2 file!"
         fi
         echo "Complex2 compression/packing for grib2.awpgfs${fcsthr}.${GRID}"
@@ -224,6 +226,7 @@ for GRID in conus ak prico pac 003; do
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${TOCGRIB2}"
             err_exit "Failed to write the AWIPS grib2 file"
         fi
         echo "Complex2 compression/packing for grib2.awpgfs_20km_${GRID}_f${fcsthr}"
@@ -254,8 +257,6 @@ for GRID in conus ak prico pac 003; do
             echo "File ${COMOUT_ATMOS_WMO}/grib2.awpgfs_20km_${GRID}_f${fcsthr} not posted to db_net."
         fi
     fi
-    # Restore default pgm after prep_step override
-    export pgm=$(basename "${BASH_SOURCE[0]}")
     echo "Awip Processing ${fcsthr} hour completed normally"
 
 done

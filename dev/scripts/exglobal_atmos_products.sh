@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 cd "${DATA}" || exit 1
 
 # Set paramlist files based on FORECAST_HOUR (-1, 0, 3, 6, etc.)
@@ -36,9 +39,6 @@ else
 fi
 # Also transform the ${grid_string} into an array for processing
 IFS=':' read -ra grids <<< "${grid_string}"
-
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Files needed by ${USHglobal}/interp_atmos_master.sh
 if [[ "${fhr3}" == "analysis" ]]; then

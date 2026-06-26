@@ -17,6 +17,9 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+export pgm=$(basename "${BASH_SOURCE[0]}")
+
 # Directories.
 pwd=$(pwd)
 
@@ -94,9 +97,6 @@ if [[ "${SMOOTH_ENKF}" == "NO" ]]; then
     ENKF_SUFFIX=""
 fi
 
-# Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
-
 ################################################################################
 # Link ensemble member guess, analysis and increment files
 for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
@@ -140,15 +140,16 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         export OMP_NUM_THREADS=${NTHREADS_ECEN}
         export pgm=${GETATMENSMEANEXEC}
         source prep_step
+        # Restore default pgm after prep_step override
+        export pgm=$(basename "${BASH_SOURCE[0]}")
 
         cpreq "${GETATMENSMEANEXEC}" "${DATA}"
         ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMANLMEANNAME}" "${ATMANLNAME}" "${NMEM_ENS}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${APRUN_ECEN}"
             err_exit "FATAL ERROR: Failed to recenter the ensemble analyses!"
         fi
-        # Restore default pgm after prep_step override
-        export pgm=$(basename "${BASH_SOURCE[0]}")
     else
         # Link ensemble mean increment
         ${NLN} "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX_ENS}ensmean_increment.atm.i00${FHR}.nc" "./atminc_ensmean"
@@ -161,15 +162,16 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         export OMP_NUM_THREADS=${NTHREADS_ECEN}
         export pgm=${GETATMENSMEANEXEC}
         source prep_step
+        # Restore default pgm after prep_step override
+        export pgm=$(basename "${BASH_SOURCE[0]}")
 
         cpreq "${GETATMENSMEANEXEC}" "${DATA}"
         ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMINCMEANNAME}" "${ATMINCNAME}" "${NMEM_ENS}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${APRUN_ECEN}"
             err_exit "Failed to recenter the ensemble increments!"
         fi
-        # Restore default pgm after prep_step override
-        export pgm=$(basename "${BASH_SOURCE[0]}")
 
         # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
         if [[ -s "${COMIN_ATMOS_HISTORY_STAT_PREV}/${GPREFIX_ENS}ensmean.atm.f00${FHR}.nc" ]]; then
@@ -182,15 +184,16 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             export OMP_NUM_THREADS=${NTHREADS_ECEN}
             export pgm=${GETATMENSMEANEXEC}
             source prep_step
+            # Restore default pgm after prep_step override
+            export pgm=$(basename "${BASH_SOURCE[0]}")
 
             cpreq "${GETATMENSMEANEXEC}" "${DATA}"
             ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMGESMEANNAME}" "${ATMGESNAME}" "${NMEM_ENS}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
+                export pgm="${APRUN_ECEN}"
                 err_exit "Failed to recenter the ensemble mean guess!"
             fi
-            # Restore default pgm after prep_step override
-            export pgm=$(basename "${BASH_SOURCE[0]}")
         fi
     fi
 
@@ -247,7 +250,7 @@ EOF
             ${APRUN_CHGRES} ./chgres.x
             export err=$?
             if [[ ${err} -ne 0 ]]; then
-                export pgm="${CHGRESNC}"
+                export pgm="${APRUN_CHGRES}"
                 err_exit "Failed to change the resolution of the deterministic analysis to the ensemble resolution!"
             fi
         fi
@@ -264,11 +267,14 @@ EOF
             export OMP_NUM_THREADS=${NTHREADS_ECEN}
             export pgm=${RECENATMEXEC}
             source prep_step
+            # Restore default pgm after prep_step override
+            export pgm=$(basename "${BASH_SOURCE[0]}")
 
             cpreq "${RECENATMEXEC}" "${DATA}"
             ${APRUN_ECEN} "${DATA}/$(basename "${RECENATMEXEC}")" "${FILENAMEIN}" "${FILENAME_MEANIN}" "${FILENAME_MEANOUT}" "${FILENAMEOUT}" "${NMEM_ENS}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
+                export pgm="${APRUN_ECEN}"
                 err_exit "Failed to recenter the ensemble resolution mean analysis"
             fi
         else
@@ -295,11 +301,14 @@ EOF
 
             export pgm=${RECENATMEXEC}
             source prep_step
+            # Restore default pgm after prep_step override
+            export pgm=$(basename "${BASH_SOURCE[0]}")
 
             cpreq "${RECENATMEXEC}" "${DATA}"
             ${APRUN_ECEN} "${DATA}/$(basename "${RECENATMEXEC}")" "${FILENAMEIN}" "${FILENAME_INCMEANIN}" "${FILENAME_GSIDET}" "${FILENAMEOUT}" "${NMEM_ENS}" "${FILENAME_GESMEANIN}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
+                export pgm="${APRUN_ECEN}"
                 err_exit "Failed to recenter the mean ensemble resolution increments!"
             fi
         fi
@@ -342,6 +351,7 @@ EOF
         ${APRUN_CALCINC} "${DATA}/$(basename "${CALCINCEXEC}")"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            export pgm="${APRUN_CALCINC}"
             err_exit "Failed to calculate the increment from the ensemble guess!"
         fi
     fi
