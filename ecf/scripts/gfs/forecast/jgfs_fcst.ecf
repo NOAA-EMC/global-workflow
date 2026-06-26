@@ -86,7 +86,7 @@ The atmosphere component requires the largest amount of tasks. The total task al
 ( ( layout_x* layout_x * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3
  - layout_x, layout_y are set in parm/config/gfs/config.ufs and ultimately set in input.nml
  - write_groups and write_tasks_per_group are defined in model_configure
- - ATM_omp_num_threads is defined in ufs.configure
+ - nthreads_fv3 is defined in parm/config/gfs/config.ufs and  then set in ufs.configure
 This total should be the same as the ATM allocation (ATM_petlist_bounds) located in ufs.configure.
 
 The CMEPS mediator uses a portion of the tasks allocated to the atmosphere. The ideal number of tasks for the forecast is between 1200 - 4800 tasks.
