@@ -12,8 +12,7 @@ sys.path.insert(0, os.path.join(os.environ.get('HOMEglobal', '.'), 'dev/workflow
 from com_paths import get_com_templates
 
 # initialize root logger
-logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True
-)
+logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
 
 
 @logit(logger)
