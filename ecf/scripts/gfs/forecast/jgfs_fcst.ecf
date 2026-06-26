@@ -84,7 +84,7 @@ Ideally, the job scripts should be used to fill out the namelist and configurati
 
 The atmosphere component requires the largest amount of tasks. The total task allocation is calculated as:
 ( ( layout_x* layout_x * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3
- - layout is defined in input.nml
+ - layout_x, layout_y are set in parm/config/gfs/config.ufs and ultimately set in input.nml
  - write_groups and write_tasks_per_group are defined in model_configure
  - ATM_omp_num_threads is defined in ufs.configure
 This total should be the same as the ATM allocation (ATM_petlist_bounds) located in ufs.configure.
