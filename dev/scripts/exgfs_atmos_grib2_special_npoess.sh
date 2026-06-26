@@ -8,7 +8,8 @@
 #####################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cd "${DATA}" || exit 2
 
@@ -134,7 +135,8 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
 done
 
 # Restore default pgm after override
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 ################################################################
 # Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files
@@ -203,6 +205,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
 done
 
 # Restore default pgm after prep_step override
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 ################## END OF SCRIPT #######################

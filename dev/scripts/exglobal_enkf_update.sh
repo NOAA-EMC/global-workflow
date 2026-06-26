@@ -18,7 +18,8 @@
 ################################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 # Directories.
 cd "${DATA}" || exit 1
@@ -326,7 +327,8 @@ export OMP_NUM_THREADS=${NTHREADS_ENKF}
 export pgm=${ENKFEXEC}
 source prep_step
 # Restore default pgm after prep_step override
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cpreq "${ENKFEXEC}" "${DATA}"
 ${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 2>&1 | tee enkfstat.txt && true

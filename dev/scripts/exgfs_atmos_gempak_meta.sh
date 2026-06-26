@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 GEMGRD1="${RUN}_1p00_${PDY}${cyc}f"
 

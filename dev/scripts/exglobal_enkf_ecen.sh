@@ -18,7 +18,8 @@
 ################################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 # Directories.
 pwd=$(pwd)
@@ -141,7 +142,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         export pgm=${GETATMENSMEANEXEC}
         source prep_step
         # Restore default pgm after prep_step override
-        export pgm=$(basename "${BASH_SOURCE[0]}")
+        pgm=$(basename "${BASH_SOURCE[0]}")
 
         cpreq "${GETATMENSMEANEXEC}" "${DATA}"
         ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMANLMEANNAME}" "${ATMANLNAME}" "${NMEM_ENS}"
@@ -163,7 +164,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         export pgm=${GETATMENSMEANEXEC}
         source prep_step
         # Restore default pgm after prep_step override
-        export pgm=$(basename "${BASH_SOURCE[0]}")
+        pgm=$(basename "${BASH_SOURCE[0]}")
 
         cpreq "${GETATMENSMEANEXEC}" "${DATA}"
         ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMINCMEANNAME}" "${ATMINCNAME}" "${NMEM_ENS}"
@@ -185,7 +186,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             export pgm=${GETATMENSMEANEXEC}
             source prep_step
             # Restore default pgm after prep_step override
-            export pgm=$(basename "${BASH_SOURCE[0]}")
+            pgm=$(basename "${BASH_SOURCE[0]}")
 
             cpreq "${GETATMENSMEANEXEC}" "${DATA}"
             ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMGESMEANNAME}" "${ATMGESNAME}" "${NMEM_ENS}"
@@ -268,7 +269,7 @@ EOF
             export pgm=${RECENATMEXEC}
             source prep_step
             # Restore default pgm after prep_step override
-            export pgm=$(basename "${BASH_SOURCE[0]}")
+            pgm=$(basename "${BASH_SOURCE[0]}")
 
             cpreq "${RECENATMEXEC}" "${DATA}"
             ${APRUN_ECEN} "${DATA}/$(basename "${RECENATMEXEC}")" "${FILENAMEIN}" "${FILENAME_MEANIN}" "${FILENAME_MEANOUT}" "${FILENAMEOUT}" "${NMEM_ENS}"
@@ -302,7 +303,7 @@ EOF
             export pgm=${RECENATMEXEC}
             source prep_step
             # Restore default pgm after prep_step override
-            export pgm=$(basename "${BASH_SOURCE[0]}")
+            pgm=$(basename "${BASH_SOURCE[0]}")
 
             cpreq "${RECENATMEXEC}" "${DATA}"
             ${APRUN_ECEN} "${DATA}/$(basename "${RECENATMEXEC}")" "${FILENAMEIN}" "${FILENAME_INCMEANIN}" "${FILENAME_GSIDET}" "${FILENAMEOUT}" "${NMEM_ENS}" "${FILENAME_GESMEANIN}"

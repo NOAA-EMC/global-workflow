@@ -8,7 +8,8 @@
 # copy input files to DATA from the source directory
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cpreq "${FIXglobal}/am/global_hyblev.l${LEVS}.txt" "${DATA}/"
 cpreq "${FIXglobal}/orog/${CASE}/${CASE}_mosaic.nc" "${DATA}/"

@@ -19,7 +19,8 @@
 
 #  Set environment.
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 #  Directories.
 # shellcheck disable=SC2153
@@ -857,7 +858,8 @@ export OMP_NUM_THREADS=${NTHREADS_GSI}
 export pgm=${GSIEXEC}
 source prep_step
 # Restore default pgm after prep_step override
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cpreq "${GSIEXEC}" "${DATA}"
 ${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2

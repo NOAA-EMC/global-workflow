@@ -11,7 +11,8 @@
 ############################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 # Make sure we are in the $DATA directory
 cd "${DATA}" || exit 1

@@ -15,7 +15,8 @@
 #####################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cd "${DATA}" || exit 2
 
@@ -37,7 +38,8 @@ EOF
 export pgm=bulls_fbwndgfs
 source prep_step
 # Restore default pgm after prep_step override
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 for fhr3 in 006 012 024; do
     cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_a.0p25.f${fhr3}.grib2" "tmp_pgrb2_0p25${fhr3}"

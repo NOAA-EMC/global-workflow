@@ -6,7 +6,8 @@ set -x
 # RJN (Request Job Name) - prep, forecast
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 previous_cycle=$("${NDATE}" -6 "${PDY}${cyc}")
 previous_cycle_PDY="${previous_cycle:0:8}"

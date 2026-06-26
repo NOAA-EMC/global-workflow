@@ -21,7 +21,8 @@
 # 1.  Get files that are used by most child scripts
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cat << EOF
 

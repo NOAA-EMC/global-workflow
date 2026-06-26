@@ -11,7 +11,8 @@
 #####################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 source "${USHglobal}/wave_domain_grid.sh"
 source "${USHglobal}/atparse.bash"
@@ -111,7 +112,7 @@ for grid in ${grids}; do
         err_exit "${pgm} failed during the generation of ${GEMGRD}"
     fi
     # Restore default pgm after override
-    export pgm=$(basename "${BASH_SOURCE[0]}")
+    pgm=$(basename "${BASH_SOURCE[0]}")
 
     #####################################################
     # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE

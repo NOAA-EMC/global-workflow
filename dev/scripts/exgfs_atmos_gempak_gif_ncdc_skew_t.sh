@@ -8,7 +8,8 @@
 ##############################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cd "${DATA}" || exit 1
 

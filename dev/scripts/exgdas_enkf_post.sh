@@ -18,7 +18,8 @@
 ################################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 # Directories.
 pwd=$(pwd)
@@ -110,7 +111,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     export pgm=${GETSFCENSMEANEXEC}
     source prep_step
     # Restore default pgm after prep_step override
-    export pgm=$(basename "${BASH_SOURCE[0]}")
+    pgm=$(basename "${BASH_SOURCE[0]}")
 
     ${APRUN_EPOS} "${DATA}/$(basename "${GETSFCENSMEANEXEC}")" ./ "sfcf${fhrchar}.ensmean" "sfcf${fhrchar}" "${NMEM_ENS}" && true
     export err=$?
@@ -122,7 +123,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     export pgm=${GETATMENSMEANEXEC}
     source prep_step
     # Restore default pgm after prep_step override
-    export pgm=$(basename "${BASH_SOURCE[0]}")
+    pgm=$(basename "${BASH_SOURCE[0]}")
 
     if [[ "${ENKF_SPREAD}" == "YES" ]]; then
         ${APRUN_EPOS} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true

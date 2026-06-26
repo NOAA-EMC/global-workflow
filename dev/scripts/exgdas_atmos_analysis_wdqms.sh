@@ -24,7 +24,8 @@ set -x
 ################################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 # Input GSI diagnostic file containing inputs to wdqms.py
 CNVSTAT="${RUN}.t${cyc}z.cnvstat.tar"

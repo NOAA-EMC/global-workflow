@@ -5,7 +5,8 @@
 ###################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cd "${DATA}" || exit 1
 fhr3=$1
@@ -84,7 +85,8 @@ if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run ${NAGRIB}!"
 fi
 # Restore default pgm after override
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]]; then

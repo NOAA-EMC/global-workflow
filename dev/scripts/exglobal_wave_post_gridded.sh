@@ -22,7 +22,8 @@
 ###############################################################################
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 source "${USHglobal}/wave_domain_grid.sh"
 

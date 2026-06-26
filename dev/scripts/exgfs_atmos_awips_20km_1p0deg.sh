@@ -34,7 +34,8 @@ if [[ ${num} -ne 1 ]]; then
 fi
 
 # Set default pgm for err_exit
-export pgm=$(basename "${BASH_SOURCE[0]}")
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 cd "${DATA}" || exit 2
 
@@ -174,7 +175,7 @@ for GRID in conus ak prico pac 003; do
     prep_step
     startmsg
     # Restore default pgm after override
-    export pgm=$(basename "${BASH_SOURCE[0]}")
+    pgm=$(basename "${BASH_SOURCE[0]}")
 
     if [[ ${GRID} = "003" && $((10#${fcsthr} % 6)) == 0 ]]; then
         export FORT11="awps_file_f${fcsthr}_${GRID}"
