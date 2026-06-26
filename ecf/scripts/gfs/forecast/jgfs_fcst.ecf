@@ -83,7 +83,7 @@ These guidelines describe where to find relevant variables and how PET calculati
 Ideally, the job scripts should be used to fill out the namelist and configuration templates. 
 
 The atmosphere component requires the largest amount of tasks. The total task allocation is calculated as:
-( (layout(1) * layout(2) * 6) + (write_groups * write_tasks_per_group) ) * ATM_omp_num_threads
+( ( layout_x* layout_x * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3
  - layout is defined in input.nml
  - write_groups and write_tasks_per_group are defined in model_configure
  - ATM_omp_num_threads is defined in ufs.configure
