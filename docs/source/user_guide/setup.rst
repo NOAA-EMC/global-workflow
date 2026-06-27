@@ -193,6 +193,7 @@ Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend
 * The main case file, which largely consists of just the settings that would be provided manually to ``setup_expt.py`` when running separately. The case file also points to a second yaml via ``experiment:yaml:``. Example from C48_ATM.yaml:
 
    .. code-block:: yaml
+
       experiment:
          net: gfs
          mode: forecast-only
