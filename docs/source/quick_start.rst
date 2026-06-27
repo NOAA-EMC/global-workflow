@@ -223,7 +223,7 @@ To run many of the other cases, you will first need to rebuild with additional c
 +--------+-----------------------------------------------------------+
 | gefs   | components for medium-range global ensemble               |
 +--------+-----------------------------------------------------------+
-| sfs    | components for sub-seasonal forecast system               |
+| sfs    | components for seasonal forecast system                   |
 +--------+-----------------------------------------------------------+
 | gcafs  | components for global chemistry & aerosol forecast system |
 +--------+-----------------------------------------------------------+
