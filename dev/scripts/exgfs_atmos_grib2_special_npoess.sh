@@ -185,7 +185,6 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
             "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
     fi
 
-
     echo "${PDY}${cyc}${fhr}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"
     rm -f pgb2file2 pgb2ifile
 
