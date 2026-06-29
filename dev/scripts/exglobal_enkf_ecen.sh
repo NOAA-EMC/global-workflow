@@ -329,6 +329,8 @@ EOF
 
         export pgm=${CALCINCEXEC}
         source prep_step
+        # Restore default pgm after prep_step override
+        pgm=$(basename "${BASH_SOURCE[0]}")
 
         cpreq "${CALCINCEXEC}" "${DATA}"
         rm -f calc_increment.nml
