@@ -7,13 +7,7 @@ gfswave:
         # Wave GRIB2 regional forecast products
         {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
         {% for grd in WAVE_OUT_GRIDS_list %}
-        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                              '${RUN}':RUN,
-                              '${YMD}':cycle_YMD,
-                              '${HH}':cycle_HH,
-                              '${MEMDIR}':'',
-                              '${GRDRESNAME}':grd}) %}
-        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set file_path = ROTDIR ~ '/' ~ RUN ~ '.' ~ cycle_YMD ~ '/' ~ cycle_HH ~ '/products/wave/gridded/' ~ grd %}
 
         {% for fh in range(0, FHMAX_HF_WAV + FHOUT_HF_WAV, FHOUT_HF_WAV) %}
         # NOTE This is as explicit as possible without major logic to parse wavepostGRD.

@@ -10,13 +10,7 @@ gdaswave:
         # TODO explicitly name the wave grid files to archive
         {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
         {% for grd in WAVE_OUT_GRIDS_list %}
-        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                              '${RUN}':RUN,
-                              '${YMD}':cycle_YMD,
-                              '${HH}':cycle_HH,
-                              '${MEMDIR}':'',
-                              '${GRDRESNAME}':grd}) %}
-        {% set file_path = COM_WAVE_GRID_RES_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set file_path = ROTDIR ~ '/' ~ RUN ~ '.' ~ cycle_YMD ~ '/' ~ cycle_HH ~ '/products/wave/gridded/' ~ grd %}
         - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*"
         {% endfor %}
 
