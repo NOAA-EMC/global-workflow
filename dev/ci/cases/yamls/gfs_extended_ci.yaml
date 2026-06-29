@@ -14,3 +14,7 @@ base:
   FHMAX_HF_GFS: 120
   DO_TEST_MODE: "NO"
   DO_ARCHCOM: "YES"
+
+skip_ci_on_hosts:
+  - aws-ec2
+

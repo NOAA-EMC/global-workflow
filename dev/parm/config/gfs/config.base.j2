@@ -492,7 +492,7 @@ export DO_CA="YES"
 # TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
 # export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
 case "${machine}" in
-    URSA | GAEAC6 | ORION | HERCULES | DERECHO) export DO_METP=NO;;
+    URSA | GAEAC6 | ORION | HERCULES | DERECHO | AWS-EC2) export DO_METP=NO;;
     *) export DO_METP="{{ DO_METP }}";;
 esac
 export DO_FIT2OBS="YES"      # Run fit to observations package

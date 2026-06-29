@@ -27,7 +27,7 @@ TARGET_DIR=${5:-${ROTDIR}/${RUN}.${YMD}/${HH}/${COMPONENT}}
 DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
 # Exit if SOURCE_DIR does not exist
-if [[ ! -s "${SOURCE_DIR}" ]]; then
+if [[ ! -d "${SOURCE_DIR}" ]]; then
     echo "***ERROR*** DUMP SOURCE_DIR=${SOURCE_DIR} does not exist"
     exit 99
 fi
