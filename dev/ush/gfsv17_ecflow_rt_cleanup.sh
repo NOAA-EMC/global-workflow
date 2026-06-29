@@ -34,18 +34,32 @@ PDY=$("${NDATE}" | cut -c1-8)
 export PDY
 export cycle=t00z
 
+# Exception handling - if the realtime state has fallen behind, then subtract one from the PDY and try again.
+max_tries=5
+found=0
+attempts=0
+while [[ ${found} -eq 0 && ${attempts} -lt ${max_tries} ]]; do
+    attempts=$((attempts + 1))
+    if [[ ! -d "${COMROOT}/enkfgdas.${PDY}/06" ]]; then
+        echo "WARNING: The ${COMROOT}/enkfgdas.${PDY}/06 was not found; subtracting 1 from PDY and trying again"
+        PDY=$("${NDATE}" -24 | cut -c1-8)
+        export PDY
+    else
+        found=1
+    fi
+done
+
+if [[ ${found} -ne 1 ]]; then
+    echo "FATAL ERROR: Could not find any available COM data in the past 5 days. Aborting."
+    exit 9
+fi
+
 cd "${DATA}"
 setpdy.sh
 source PDY
 # PDYm1 PDY PDYp1
 
 echo "Start cleanup at $(date)"
-
-# Exception handling - if the realtime state is delay
-if [[ ! -d "${COMROOT}/enkfgdas.${PDY}/06" ]]; then
-    echo "FATAL ERROR: The ${COMROOT}/enkfgdas.${PDY}/06 is not found"
-    exit 9
-fi
 
 # Clean DATA directories older than 48 hours
 cd "${DATAROOT}"
