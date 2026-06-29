@@ -203,4 +203,3 @@ if __name__ == "__main__":
                     colored_log=os.environ.get("COLORED_LOG", False))
 
     compare_landfrac_soilveg(input_dir=args.input_dir, orog_dir=args.orog_dir, fatal=args.fatal)
-
