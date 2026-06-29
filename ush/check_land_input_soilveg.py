@@ -12,7 +12,7 @@ It checks whether grid points classified as land (land_frac > 0)
 have valid vegetation (vtype) and soil (stype) category values.
 
 The script is typically used in global workflow preprocessing/QA
-to detect bad or missing land surface classifications.
+to detect invalid or missing land surface classifications.
 
 ------------------------------------------------------------
 Expected files per tile:
@@ -87,18 +87,18 @@ def compare_landfrac_soilveg(input_dir: str,
     -------
     Dict (AttrDict)
         Summary containing:
-          - bad_veg: dict of per-tile vegetation error counts
-          - bad_soil: dict of per-tile soil error counts
-          - total_bad_veg: total count with invalid vegetation type
-          - total_bad_soil: total count with invalid soil type
+          - invalid_veg: dict of per-tile vegetation error counts
+          - invalid_soil: dict of per-tile soil error counts
+          - total_invalid_veg: total count with invalid vegetation type
+          - total_invalid_soil: total count with invalid soil type
     """
 
     summary = AttrDict()
-    summary.bad_veg = {}
-    summary.bad_soil = {}
+    summary.invalid_veg = {}
+    summary.invalid_soil = {}
 
-    total_bad_veg = 0
-    total_bad_soil = 0
+    total_invalid_veg = 0
+    total_invalid_soil = 0
 
     # Loop over FV3 tiles (1–6)
     for tile in range(1, NTILES + 1):
@@ -129,58 +129,58 @@ def compare_landfrac_soilveg(input_dir: str,
         )
 
         # Only evaluate land points
-        bad_veg = (land_frac > 0) & (~valid_veg)
-        bad_soil = (land_frac > 0) & (~valid_soil)
+        invalid_veg = (land_frac > 0) & (~valid_veg)
+        invalid_soil = (land_frac > 0) & (~valid_soil)
 
-        n_bad_veg = np.count_nonzero(bad_veg)
-        n_bad_soil = np.count_nonzero(bad_soil)
+        n_invalid_veg = np.count_nonzero(invalid_veg)
+        n_invalid_soil = np.count_nonzero(invalid_soil)
 
-        total_bad_veg += n_bad_veg
-        total_bad_soil += n_bad_soil
+        total_invalid_veg += n_invalid_veg
+        total_invalid_soil += n_invalid_soil
 
-        summary.bad_veg[f"tile{tile}"] = n_bad_veg
-        summary.bad_soil[f"tile{tile}"] = n_bad_soil
+        summary.invalid_veg[f"tile{tile}"] = n_invalid_veg
+        summary.invalid_soil[f"tile{tile}"] = n_invalid_soil
 
         logger.info(
-            f"Tile {tile}: bad vegetation={n_bad_veg}, bad soil={n_bad_soil}"
+            f"Tile {tile}: invalid vegetation points={n_invalid_veg}, invalid soil points={n_invalid_soil}"
         )
 
-        # Log individual bad vegetation points
-        if n_bad_veg > 0:
-            j_bad, i_bad = np.where(bad_veg)
-            for j, i in zip(j_bad, i_bad):
+        # Log individual invalid vegetation points
+        if n_invalid_veg > 0:
+            j_fail, i_fail = np.where(invalid_veg)
+            for j, i in zip(j_fail, i_fail):
                 logger.warning(
-                    f"Tile {tile}: bad veg at ({j},{i}) "
+                    f"Tile {tile}: invalid veg at ({j},{i}) "
                     f"land_frac={land_frac[j,i]:.3f} "
                     f"vtype={veg_type[j,i]}"
                 )
 
-        # Log individual bad soil points
-        if n_bad_soil > 0:
-            j_bad, i_bad = np.where(bad_soil)
-            for j, i in zip(j_bad, i_bad):
+        # Log individual invalid soil points
+        if n_invalid_soil > 0:
+            j_fail, i_fail = np.where(invalid_soil)
+            for j, i in zip(j_fail, i_fail):
                 logger.warning(
-                    f"Tile {tile}: bad soil at ({j},{i}) "
+                    f"Tile {tile}: invalid soil at ({j},{i}) "
                     f"land_frac={land_frac[j,i]:.3f} "
                     f"stype={soil_type[j,i]}"
                 )
 
         # Optional strict mode
-        if fatal and (n_bad_veg > 0 or n_bad_soil > 0):
+        if fatal and (n_invalid_veg > 0 or n_invalid_soil > 0):
             raise ValueError(
                 f"Tile {tile} contains invalid vegetation/soil points"
             )
 
-    logger.info("Summary bad reports for each tile")
+    logger.info("Summary invalid reports for each tile")
     for tile in range(1, NTILES + 1):
-        logger.info(f"Tile {tile}: bad vegetation={summary.bad_veg[f'tile{tile}']}, "
-                    f"bad soil={summary.bad_soil[f'tile{tile}']}")
+        logger.info(f"Tile {tile}: invalid vegetation points={summary.invalid_veg[f'tile{tile}']}, "
+                    f"invalid soil points={summary.invalid_soil[f'tile{tile}']}")
 
-    logger.info(f"Total bad vegetation points: {total_bad_veg}")
-    logger.info(f"Total bad soil points: {total_bad_soil}")
+    logger.info(f"Total invalid vegetation points: {total_invalid_veg}")
+    logger.info(f"Total invalid soil points: {total_invalid_soil}")
 
-    summary.total_bad_veg = total_bad_veg
-    summary.total_bad_soil = total_bad_soil
+    summary.total_invalid_veg = total_invalid_veg
+    summary.total_invalid_soil = total_invalid_soil
 
     return summary
 
@@ -203,3 +203,4 @@ if __name__ == "__main__":
                     colored_log=os.environ.get("COLORED_LOG", False))
 
     compare_landfrac_soilveg(input_dir=args.input_dir, orog_dir=args.orog_dir, fatal=args.fatal)
+
