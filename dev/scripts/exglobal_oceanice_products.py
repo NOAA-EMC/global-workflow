@@ -63,5 +63,6 @@ def main():
             alert = produtil.dbnalert.DBNAlert(['MODEL', alert_type, '{job}', message])
             alert()
 
+
 if __name__ == '__main__':
     main()
