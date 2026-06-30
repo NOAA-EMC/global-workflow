@@ -865,7 +865,7 @@ cpreq "${GSIEXEC}" "${DATA}"
 ${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    export pgm="${APRUN_GSI}"
+    export pgm="$(basename "${GSIEXEC}")"
     err_exit "Failed to run the GSI analysis!"
 fi
 

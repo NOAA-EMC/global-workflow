@@ -148,7 +148,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMANLMEANNAME}" "${ATMANLNAME}" "${NMEM_ENS}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${APRUN_ECEN}"
+            export pgm="$(basename "${GETATMENSMEANEXEC}")"
             err_exit "FATAL ERROR: Failed to recenter the ensemble analyses!"
         fi
     else
@@ -170,7 +170,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMINCMEANNAME}" "${ATMINCNAME}" "${NMEM_ENS}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${APRUN_ECEN}"
+            export pgm="$(basename "${GETATMENSMEANEXEC}")"
             err_exit "Failed to recenter the ensemble increments!"
         fi
 
@@ -192,7 +192,7 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             ${APRUN_ECEN} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" "${DATAPATH}" "${ATMGESMEANNAME}" "${ATMGESNAME}" "${NMEM_ENS}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
-                export pgm="${APRUN_ECEN}"
+                export pgm="$(basename "${GETATMENSMEANEXEC}")"
                 err_exit "Failed to recenter the ensemble mean guess!"
             fi
         fi
@@ -251,7 +251,7 @@ EOF
             ${APRUN_CHGRES} ./chgres.x
             export err=$?
             if [[ ${err} -ne 0 ]]; then
-                export pgm="${APRUN_CHGRES}"
+                export pgm="chgres.x"
                 err_exit "Failed to change the resolution of the deterministic analysis to the ensemble resolution!"
             fi
         fi
@@ -275,7 +275,7 @@ EOF
             ${APRUN_ECEN} "${DATA}/$(basename "${RECENATMEXEC}")" "${FILENAMEIN}" "${FILENAME_MEANIN}" "${FILENAME_MEANOUT}" "${FILENAMEOUT}" "${NMEM_ENS}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
-                export pgm="${APRUN_ECEN}"
+                export pgm="$(basename "${RECENATMEXEC}")"
                 err_exit "Failed to recenter the ensemble resolution mean analysis"
             fi
         else
@@ -309,7 +309,7 @@ EOF
             ${APRUN_ECEN} "${DATA}/$(basename "${RECENATMEXEC}")" "${FILENAMEIN}" "${FILENAME_INCMEANIN}" "${FILENAME_GSIDET}" "${FILENAMEOUT}" "${NMEM_ENS}" "${FILENAME_GESMEANIN}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
-                export pgm="${APRUN_ECEN}"
+                export pgm="$(basename "${RECENATMEXEC}")"
                 err_exit "Failed to recenter the mean ensemble resolution increments!"
             fi
         fi
@@ -354,7 +354,7 @@ EOF
         ${APRUN_CALCINC} "${DATA}/$(basename "${CALCINCEXEC}")"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${APRUN_CALCINC}"
+            export pgm="$(basename "${CALCINCEXEC}")"
             err_exit "Failed to calculate the increment from the ensemble guess!"
         fi
     fi

@@ -116,7 +116,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     ${APRUN_EPOS} "${DATA}/$(basename "${GETSFCENSMEANEXEC}")" ./ "sfcf${fhrchar}.ensmean" "sfcf${fhrchar}" "${NMEM_ENS}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        export pgm="${APRUN_EPOS}"
+        export pgm="$(basename "${GETSFCENSMEANEXEC}")"
         err_exit "Failed to calculate ensemble surface mean for forecast hour ${fhr}"
     fi
 
@@ -129,14 +129,14 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         ${APRUN_EPOS} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${APRUN_EPOS}"
+            export pgm="$(basename "${GETATMENSMEANEXEC}")"
             err_exit "Failed to calculate ensemble atmospheric mean and spread for forecast hour ${fhr}"
         fi
     else
         ${APRUN_EPOS} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${APRUN_EPOS}"
+            export pgm="$(basename "${GETATMENSMEANEXEC}")"
             err_exit "Failed to calculate ensemble atmospheric mean for forecast hour ${fhr}"
         fi
     fi
