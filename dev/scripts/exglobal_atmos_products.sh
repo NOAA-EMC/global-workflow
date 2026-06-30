@@ -153,11 +153,14 @@ for ((nset = 1; nset <= downset; nset++)); do
 
         # Send DBN alerts for the 0.25-degree products
         if [[ "${SENDDBN:-}" == "YES" && "${grid}" == "0p25" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
-            if [[ "${RUN}" == "gfs" ]]; then
-                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2"
-                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2.idx"
+            if [[ "${grp}" == "a" ]]; then
+                # Send pres_a for both the GDAS and GFS RUNs
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2"
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2.idx"
+            elif [[ "${RUN}" == "gfs" && "${grp}" == "b" ]]; then
+                # Only send pres_b files for the GFS
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2"
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2.idx"
             fi
         fi
     done
