@@ -19,7 +19,7 @@ def main():
     oceanice = OceanIceProducts(config)
 
     # Pull out all the configuration keys needed to run the rest of steps
-    keys = ['HOMEglobal', 'DATA', 'current_cycle', 'RUN', 'NET', 
+    keys = ['HOMEglobal', 'DATA', 'current_cycle', 'RUN', 'NET',
             'job', 'cycle',
             f'COMIN_{oceanice.task_config.component.upper()}_HISTORY',
             f'COMOUT_{oceanice.task_config.component.upper()}_GRIB',
@@ -51,16 +51,16 @@ def main():
     oceanice.finalize(oceanice_dict)
 
     # DBN alerts for output going to NOMADS
-    if os.environ.get('SENDDBN').upper()=='YES':
-        if {component}=='ocean':
-            comout=str('{COMOUT_OCEAN_NETCDF}')
-        elif {component}=='ice':
-            comout=str('{COMOUT_ICE_NETCDF}')
-        fhour=str('{forecast_hour}').zfill(3)
-        message=str(comout+'/native/{RUN}.{cycle}.native.f'+fhour+'.nc')
-        alert_type=str('{RUN}_{component}_NA_NETCDF').upper()
+    if os.environ.get('SENDDBN').upper() == 'YES':
+        if {component} == 'ocean':
+            comout = str('{COMOUT_OCEAN_NETCDF}')
+        elif {component} == 'ice':
+            comout = str('{COMOUT_ICE_NETCDF}')
+        fhour = str('{forecast_hour}').zfill(3)
+        message = str(comout + '/native/{RUN}.{cycle}.native.f' + fhour + '.nc')
+        alert_type = str('{RUN}_{component}_NA_NETCDF').upper()
         if os.path.exists(message):
-            alert=produtil.dbnalert.DBNAlert(['MODEL',alert_type,'{job}',message])
+            alert = produtil.dbnalert.DBNAlert(['MODEL', alert_type, '{job}', message])
             alert()
 
 if __name__ == '__main__':
