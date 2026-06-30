@@ -413,6 +413,19 @@ EOF
             fi
         done
 
+        if [[ "${use_mgr}" == "YES" ]]; then
+            # Append the model-done sentinel as the last row of instance-0's atmf table.
+            # forecast_manager.sh treats fcst_done_seg* as a data-file trigger: it waits
+            # for this file (written by the UFS model on completion), copies it to COM,
+            # and writes the COM log. This ensures the manager rank for instance 0 exits
+            # only after the model finishes, preventing DATA directory cleanup from racing
+            # with restart file copies in the forecast job.
+            local fcst_done_local="${DATAjob}/fcst_done_seg${seg}"
+            local fcst_done_com="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.fcst_done"
+            local fcst_done_com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.fcst_done.txt"
+            echo "${fcst_done_local} ${fcst_done_local} ${fcst_done_com} ${fcst_done_com_log}" >> "${atm_atmf_tables[0]}"
+        fi
+
         ##############################################################
         # Release the forecast manager once the product table is ready
         # so it can begin copying output files to COM as they appear.
