@@ -109,8 +109,9 @@ if [[ ${gwd_opt} -eq 2 ]]; then
     export do_gsl_drag_ls_bl=".true."
     export do_gsl_drag_ss=".false."
     export do_gsl_drag_tofd=".true."
-    export do_gwd_opt_psl=".true."
+    export do_gwd_opt_psl=".false."
     export do_ugwp_v1_orog_only=".false."
+    export alpha_fd=35.0
     export do_ngw_ec=".true."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level

@@ -203,6 +203,7 @@ FV3_namelists() {
     local DO_GSL_DRAG_SS=${do_gsl_drag_ss:-".true."}
     local DO_GSL_DRAG_TOFD=${do_gsl_drag_tofd:-".true."}
     local DO_GWD_OPT_PSL=${do_gwd_opt_psl:-".false."}
+    local ALPHA_FD=${alpha_fd:-"12.0"}
     local DO_UGWP_V1_OROG_ONLY=${do_ugwp_v1_orog_only:-".false."}
     local MIN_LAKEICE=${min_lakeice:-"0.15"}
     local MIN_SEAICE=${min_seaice:-"0.15"}
