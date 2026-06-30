@@ -22,6 +22,7 @@ skip_ci_on_hosts:
   - hercules
   - derecho
   - awsepicglobalworkflow
+  - aws-ec2
 
 workflow:
   engine: rocoto

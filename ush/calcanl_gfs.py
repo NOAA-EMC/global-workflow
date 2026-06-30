@@ -178,6 +178,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         ExecCMDMPI1_host = 'mpiexec -l -n 1 --cpu-bind depth --depth ' + str(NThreads)
         ExecCMDMPI13_host = 'mpiexec -l -n 13 --cpu-bind depth --depth ' + str(NThreads)
     elif launcher == 'srun':
+        srun_suffix = os.getenv('SRUN_SUFFIX', '')
         nodes = os.getenv('SLURM_JOB_NODELIST', '')
         hosts_tmp = subprocess.check_output('scontrol show hostnames ' + nodes, shell=True)
         if (sys.version_info > (3, 0)):
@@ -191,17 +192,17 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,
         hosts = []
         [hosts.append(x) for x in hosts_tmp if x not in hosts]
         nhosts = len(hosts)
-        ExecCMDMPI_host = 'srun -n ' + str(nFH) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
+        ExecCMDMPI_host = 'srun -n ' + str(nFH) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores' + srun_suffix
         # need to account for when fewer than LEVS tasks are available
         tasks = int(os.getenv('SLURM_NPROCS', 1))
         if levs > tasks:
-            ExecCMDMPILevs_host = 'srun -n ' + str(tasks) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
+            ExecCMDMPILevs_host = 'srun -n ' + str(tasks) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores' + srun_suffix
             ExecCMDMPILevs_nohost = 'srun -n ' + str(tasks) + ' --verbose --export=ALL'
         else:
-            ExecCMDMPILevs_host = 'srun -n ' + str(levs) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
-            ExecCMDMPILevs_nohost = 'srun -n ' + str(levs) + ' --verbose --export=ALL'
-        ExecCMDMPI1_host = 'srun -n 1 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
-        ExecCMDMPI13_host = 'srun -n 13 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
+            ExecCMDMPILevs_host = 'srun -n ' + str(levs) + ' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores' + srun_suffix
+            ExecCMDMPILevs_nohost = 'srun -n ' + str(levs) + ' --verbose --export=ALL' + srun_suffix
+        ExecCMDMPI1_host = 'srun -n 1 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores' + srun_suffix
+        ExecCMDMPI13_host = 'srun -n 13 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores' + srun_suffix
     elif launcher == 'aprun':
         hostfile = os.getenv('LSB_DJOB_HOSTFILE', '')
         with open(hostfile) as f:

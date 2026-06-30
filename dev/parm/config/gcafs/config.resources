@@ -63,6 +63,13 @@ case ${machine} in
               max_tasks_per_node=80
               mem_node_max="500GB"
     ;;
+  "AWS-EC2")
+              export PARTITION_BATCH="compute"
+              npe_node_max=48
+              max_tasks_per_node=48
+              # TODO Supply a max mem/node value for AWS
+              mem_node_max=""
+    ;;
   "DERECHO")
               max_tasks_per_node=128
               mem_node_max="235GB"
