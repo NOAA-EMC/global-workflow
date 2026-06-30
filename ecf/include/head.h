@@ -57,6 +57,7 @@ export KEEPDATA=NO
 #### Therefore, set the SENDDBN to NO for now
 #### export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN="NO"
+export DBNLOG="NO"
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
 
 if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
