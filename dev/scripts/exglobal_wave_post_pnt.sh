@@ -170,7 +170,7 @@ export err=$?
 if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
     cat buoy_tmp.loc || true
     export err=5
-    err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
+    err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : buoy log file failed to be created."
 fi
 # Restore default pgm after prep_step override
 pgm=$(basename "${BASH_SOURCE[0]}")
