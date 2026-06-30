@@ -86,7 +86,6 @@ if [[ ${err} -ne 0 ]]; then
 fi
 # Restore default pgm after override
 pgm=$(basename "${BASH_SOURCE[0]}")
-export pgm
 
 cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]]; then

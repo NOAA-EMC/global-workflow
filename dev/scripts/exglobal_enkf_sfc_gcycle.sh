@@ -192,7 +192,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${CYCLESH}"
+            pgm="${CYCLESH}"
             err_exit "Failed to update surface fields!"
         fi
 
@@ -265,7 +265,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="${CYCLESH}"
+            pgm="${CYCLESH}"
             err_exit "Failed to update surface increment!"
         fi
 

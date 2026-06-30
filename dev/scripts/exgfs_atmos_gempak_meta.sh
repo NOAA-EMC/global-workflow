@@ -90,7 +90,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
         "${HOMEglobal}/ush/run_mpmd.sh" poescript && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="run_mpmd.sh"
+            pgm="run_mpmd.sh"
             err_exit "Failed to generate one or more gempak meta plots!"
         fi
 

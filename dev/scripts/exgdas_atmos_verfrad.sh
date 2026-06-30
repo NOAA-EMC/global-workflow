@@ -136,7 +136,7 @@ rc_angle=$?
 
 # Allow all scripts to run.  Call err_exit at the end, after files are restricted.
 if [[ ${rc_angle} -ne 0 ]]; then
-    export pgm="radmon_verf_angle.sh"
+    pgm="radmon_verf_angle.sh"
     echo "FATAL ERROR: radmon_verf_angle.sh failed!"
 fi
 
@@ -145,7 +145,7 @@ rc_bcoef=$?
 "${USHglobal}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
-    export pgm="radmon_verf_bcoef.sh"
+    pgm="radmon_verf_bcoef.sh"
     echo "FATAL ERROR: radmon_verf_bcoef.sh failed!"
 fi
 
@@ -154,7 +154,7 @@ rc_bcor=$?
 "${USHglobal}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
-    export pgm="radmon_verf_bcor.sh"
+    pgm="radmon_verf_bcor.sh"
     echo "FATAL ERROR: radmon_verf_bcor.sh failed!"
 fi
 
@@ -163,7 +163,7 @@ rc_time=$?
 "${USHglobal}/rstprod.sh"
 
 if [[ ${rc_bcoef} -ne 0 ]]; then
-    export pgm="radmon_verf_time.sh"
+    pgm="radmon_verf_time.sh"
     echo "FATAL ERROR: radmon_verf_time.sh failed!"
 fi
 

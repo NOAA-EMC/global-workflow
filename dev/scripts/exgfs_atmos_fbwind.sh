@@ -39,7 +39,6 @@ export pgm=bulls_fbwndgfs
 source prep_step
 # Restore default pgm after prep_step override
 pgm=$(basename "${BASH_SOURCE[0]}")
-export pgm
 
 for fhr3 in 006 012 024; do
     cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.${cycle}.pres_a.0p25.f${fhr3}.grib2" "tmp_pgrb2_0p25${fhr3}"
@@ -72,7 +71,7 @@ cpreq "${PARMglobal}/product/fbwnd_pacific.stnlist" fbwnd_pacific.stnlist
 "${EXECglobal}/fbwndgfs.x" < fbwnd_pacific.stnlist >> "${pgmout}" 2> errfile && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    export pgm=fbwndgfs.x
+    pgm=fbwndgfs.x
     err_exit "Failed to run fbwnd for the Pacific!"
 fi
 

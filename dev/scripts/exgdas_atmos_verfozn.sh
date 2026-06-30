@@ -36,7 +36,7 @@ if [[ -s "${oznstat}" ]]; then
     "${USHglobal}/ozn_xtrct.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        export pgm="ozn_xtrct.sh"
+        pgm="ozn_xtrct.sh"
         err_exit "ozn_xtrct.sh failed!"
     fi
 

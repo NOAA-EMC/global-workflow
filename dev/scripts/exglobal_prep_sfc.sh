@@ -115,7 +115,7 @@ if [[ ${err} -ne 0 ]]; then
         cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
         export err=0
     else
-        export pgm="prep_sfc_ice_blend.sh"
+        pgm="prep_sfc_ice_blend.sh"
         err_exit "FATAL ERROR: CURRENT ICE FILE AND 6-HR OLD ICE FILE MISSING"
     fi
 fi
@@ -160,7 +160,7 @@ if [[ ${err} -ne 0 ]]; then
         cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
         export err=0
     else
-        export pgm="prep_sfc_snow.sh"
+        pgm="prep_sfc_snow.sh"
         err_exit "CURRENT AND 6-HR OLD ${JCAP_CASE} SNOW MISSING, ABORT!"
     fi # check of missing 6-hr snow file
 fi     # return code check
@@ -197,7 +197,7 @@ if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
             cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
             export err=0
         else
-            export pgm="prep_sfc_snow.sh"
+            pgm="prep_sfc_snow.sh"
             err_exit "CURRENT AND 6-HR OLD ENKF SNOW MISSING"
         fi # check of missing 6-hr snow file
     fi     # return code check

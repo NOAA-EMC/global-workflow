@@ -161,7 +161,7 @@ if [[ "${DO_CALC_ANALYSIS}" == "YES" ]]; then
     ${CALCANLPY}
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        export pgm="${CALCANLPY}"
+        pgm="${CALCANLPY}"
         err_exit "Failed to run ${CALCANLPY}"
     fi
 else
@@ -177,7 +177,7 @@ if [[ "${DOGAUSFCANL}" == "YES" ]]; then
     ${GAUSFCANLSH}
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        export pgm="${GAUSFCANLSH}"
+        pgm="${GAUSFCANLSH}"
         err_exit "Gaussian grid surface file was not generated!"
     fi
 fi

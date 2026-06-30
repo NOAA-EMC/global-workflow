@@ -121,7 +121,7 @@ done
 "${USHglobal}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    export pgm="run_mpmd.sh"
+    pgm="run_mpmd.sh"
     err_exit "One or more BUFR MPMD tasks failed!"
 fi
 
@@ -155,7 +155,7 @@ fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    export pgm="${runscript}"
+    pgm="${runscript}"
     err_exit "Failed to generate BUFR sounding files for forecast hour ${fhr}!"
 fi
 

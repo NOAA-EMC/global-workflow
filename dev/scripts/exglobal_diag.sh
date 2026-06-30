@@ -201,7 +201,7 @@ for partfile in ${cmdfile_parts}; do
     "${USHglobal}/run_mpmd.sh" "${partfile}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        export pgm="run_mpmd.sh"
+        pgm="run_mpmd.sh"
         err_exit "Failed to create one or more observation diagnostic files for ${partfile}!"
     fi
 done
@@ -232,7 +232,7 @@ if [[ "${DIAG_TARBALL}" == "YES" ]]; then
             tar "${TAROPTS}" "${diagfile[n]}" -T "${diaglist[n]}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
-                export pgm=tar
+                pgm=tar
                 err_exit "Unable to create ${diagfile[n]}!"
             fi
         else

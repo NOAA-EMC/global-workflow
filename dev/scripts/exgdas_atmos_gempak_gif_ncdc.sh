@@ -41,7 +41,7 @@ if [[ ${MODEL} == GDAS ]]; then
         "${HOMEglobal}/gempak/ush/gempak_${RUN}_f${fhr3}_gif.sh" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            export pgm="gempak_${RUN}_f${fhr3}_gif.sh"
+            pgm="gempak_${RUN}_f${fhr3}_gif.sh"
             err_exit "Failed to generate GIF for forecast hour ${fhr3}"
         fi
     done

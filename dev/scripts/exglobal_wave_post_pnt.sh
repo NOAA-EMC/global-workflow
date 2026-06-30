@@ -174,7 +174,6 @@ if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
 fi
 # Restore default pgm after prep_step override
 pgm=$(basename "${BASH_SOURCE[0]}")
-export pgm
 
 # Create new buoy_log.ww3
 awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags
@@ -246,7 +245,6 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
 fi
 # Restore default pgm after override
 pgm=$(basename "${BASH_SOURCE[0]}")
-export pgm
 
 # --------------------------------------------------------------------------- #
 # 3. Compress point output data into tar files
