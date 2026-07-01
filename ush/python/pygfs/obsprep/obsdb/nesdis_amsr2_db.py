@@ -11,8 +11,10 @@ class NesdisAmsr2Database(BaseDatabase):
     """Class to manage an observation file database for data assimilation."""
 
     def __init__(self, db_name="nesdis_amsr2.db",
-                 dcom_dir="/lfs/h1/ops/prod/dcom/",
+                 dcom_dir=None,
                  obs_dir="seaice/pda"):
+        if dcom_dir is None:
+            dcom_dir = os.environ.get("DCOMROOT", "/lfs/h1/ops/prod/dcom/")
         base_dir = os.path.join(dcom_dir, '*', obs_dir)
         super().__init__(db_name, base_dir)
 
