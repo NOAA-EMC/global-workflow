@@ -122,8 +122,6 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
 
     export pgm=${GETATMENSMEANEXEC}
     source prep_step
-    # Restore default pgm after prep_step override
-    pgm=$(basename "${BASH_SOURCE[0]}")
 
     if [[ "${ENKF_SPREAD}" == "YES" ]]; then
         ${APRUN_EPOS} "${DATA}/$(basename "${GETATMENSMEANEXEC}")" ./ "atmf${fhrchar}.ensmean" "atmf${fhrchar}" "${NMEM_ENS}" "atmf${fhrchar}.ensspread" && true
@@ -140,6 +138,9 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
             err_exit "Failed to calculate ensemble atmospheric mean for forecast hour ${fhr}"
         fi
     fi
+
+    # Restore default pgm after prep_step override
+    pgm=$(basename "${BASH_SOURCE[0]}")
 done
 
 ################################################################################
