@@ -10,8 +10,8 @@ gdaswave:
         # TODO explicitly name the wave grid files to archive
         {% set WAVE_OUT_GRIDS_list = WAVE_OUT_GRIDS.split(' ') %}
         {% for grd in WAVE_OUT_GRIDS_list %}
-        {% set file_path = ROTDIR ~ '/' ~ RUN ~ '.' ~ cycle_YMD ~ '/' ~ cycle_HH ~ '/products/wave/gridded/' ~ grd %}
-        - "{{ file_path | relpath(ROTDIR) }}/{{ head }}*"
+        {% set COMIN_WAVE_GRIDDED = ROTDIR ~ '/' ~ RUN ~ '.' ~ cycle_YMD ~ '/' ~ cycle_HH ~ '/products/wave/gridded/' ~ grd %}
+        - "{{ COMIN_WAVE_GRIDDED | relpath(ROTDIR) }}/{{ head }}*"
         {% endfor %}
 
         # Wave point output
