@@ -875,7 +875,7 @@ if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
     ${CALCINCPY}
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        pgm="${CALCINCPY}"
+        pgm="$(basename "${CALCINCPY}")"
         err_exit "Failed to calculate the analysis increment!"
     fi
 fi

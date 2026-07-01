@@ -72,7 +72,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${parmfile}" | ${WGRIB2} -i -grib "${tmpfile}" "${MASTER_FILE}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        pgm="${WGRIB2}"
+        pgm="$(basename "${WGRIB2}")"
         err_exit "FATAL ERROR: wgrib2 failed to create intermediate grib2 file from '${MASTER_FILE}' using '${parmfile}'"
     fi
 
@@ -112,7 +112,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         ${WGRIB2} "${tmpfile}" -for "${first}":"${last}" -grib "${tmpfile}_${iproc}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
-            pgm="${WGRIB2}"
+            pgm="$(basename "${WGRIB2}")"
             err_exit "wgrib2 failed to geneate an intermediate grib2 file from ${tmpfile} records ${first} to ${last}"
         fi
         input_file="${tmpfile}_${iproc}"

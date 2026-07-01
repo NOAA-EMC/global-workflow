@@ -46,7 +46,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     "${REGRIDSH}"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        pgm="${REGRIDSH}"
+        pgm="$(basename "${REGRIDSH}")"
         err_exit "Soil increment file was not regridded correctly!"
     fi
 

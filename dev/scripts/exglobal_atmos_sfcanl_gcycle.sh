@@ -158,7 +158,7 @@ for hr in "${!gcycle_dates[@]}"; do
     "${CYCLESH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        pgm="${CYCLESH}"
+        pgm="$(basename "${CYCLESH}")"
         err_exit "Unable to update surface data from guess and analysis!"
     fi
 

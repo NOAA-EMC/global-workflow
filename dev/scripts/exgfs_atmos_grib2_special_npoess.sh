@@ -117,7 +117,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib pgb2file tmpfile && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        pgm="${WGRIB2}"
+        pgm="$(basename "${WGRIB2}")"
         err_exit "FATAL ERROR: Failed to write pgb2file from the specified parm file \"${paramlist}\"!"
     fi
 

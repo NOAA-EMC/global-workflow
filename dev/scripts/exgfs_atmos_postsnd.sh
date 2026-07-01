@@ -155,7 +155,7 @@ fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    pgm="${runscript}"
+    pgm="$(basename "${runscript}")"
     err_exit "Failed to generate BUFR sounding files for forecast hour ${fhr}!"
 fi
 
