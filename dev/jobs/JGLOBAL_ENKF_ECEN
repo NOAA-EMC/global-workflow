@@ -43,8 +43,8 @@ declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/a
 declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
 # Additional variables are set in scripts/exglobal_enkf_ecen.sh in order to loop over ensemble members:
-#  COMOUT_ATMOS_ANALYSIS_MEM (from COM_ATMOS_ANALYSIS_TMPL)
-#  COMIN_ATMOS_HISTORY_MEM_PREV (from COM_ATMOS_HISTORY_TMPL)
+#  COMOUT_ATMOS_ANALYSIS_MEM
+#  COMIN_ATMOS_HISTORY_MEM_PREV
 
 ###############################################################
 # Run relevant script

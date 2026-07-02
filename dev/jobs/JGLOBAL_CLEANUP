@@ -16,7 +16,7 @@ source "${USHglobal}/set_strict.sh"
 
 # Additional variables are set in scripts/exglobal_cleanup.sh in order to loop over the previous
 # cycles being cleaned up:
-#  COMOUT_TOP (from COM_TOP_TMPL)
+#  COMOUT_TOP
 
 "${SCRglobal}/exglobal_cleanup.sh" && true
 export err=$?

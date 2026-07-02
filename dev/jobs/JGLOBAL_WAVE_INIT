@@ -31,7 +31,7 @@ mkdir -p "${COMOUT_WAVE_INIT}"
 
 # Additional variables are set in scripts/exglobal_wave_init.sh in order to loop over
 # ensemble members (gefs only):
-#  COMOUT_WAVE_INIT_MEM (from COM_WAVE_INIT_TMPL)
+#  COMOUT_WAVE_INIT_MEM
 
 # Set mpi serial command
 export wavempexec=${wavempexec:-"mpirun -n"}
