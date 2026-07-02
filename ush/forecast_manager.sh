@@ -79,7 +79,7 @@ fi
 
 remaining=${count}
 start_time=$(date +%s)
-fcst_done_idle=0
+fcst_history_done_idle=0
 
 while [[ ${remaining} -gt 0 ]]; do
     remaining_before=${remaining}
@@ -88,12 +88,12 @@ while [[ ${remaining} -gt 0 ]]; do
             continue
         fi
 
-        _fcst_done_fallback=0
+        _fcst_history_done_fallback=0
         _missing_sentinel=0
         _data_file_trigger=0
         _size_check_msgs=""
         if [[ ! -f "${local_log[i]}" ]]; then
-            # Model-done fallback for ocean and ice.
+            # History-done fallback for ocean and ice.
             # Ocean (MOM6): sentinel may be absent for any output period due
             # to NFS metadata lag (period log written at the start of the
             # next averaging period, so the final window's log is never
@@ -102,25 +102,26 @@ while [[ ${remaining} -gt 0 ]]; do
             # NFS metadata lag or a cice_fhr_offset mismatch.
             # Both cases: warn, copy, and run a post-copy size check.
             if [[ ("${component}" == "ocn" || "${component}" == "ice") &&
-                -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" &&
+                -n "${FCST_HISTORY_DONE_SENTINEL:-}" && -f "${FCST_HISTORY_DONE_SENTINEL}" &&
                 -f "${local_data[i]}" ]]; then
-                _fcst_done_fallback=1
+                _fcst_history_done_fallback=1
                 _missing_sentinel=1
-                echo "WARNING: [${component}] sentinel '$(basename "${local_log[i]}")' not found; forecast complete and data present -- copying without sentinel"
+                echo "WARNING: [${component}] sentinel '$(basename "${local_log[i]}")' not found; model history complete and data present -- copying without sentinel"
             else
                 continue
             fi
         fi
 
-        # Sentinel exists, or fcst_done fallback active; process all rows that share this sentinel
+        # Sentinel exists, or history-done fallback active; process all rows that share this sentinel
         this_ll="${local_log[i]}"
         this_cl="${com_log[i]}"
         _ll_base=$(basename "${this_ll}")
-        # Data-file trigger: sentinel column holds the next-hour ice output (*.nc)
-        # or the forecast-done sentinel (fcst_done_seg*) rather than a text log.
-        # The trigger signals current-hour data is ready; the manager writes a
-        # synthetic COM log instead of copying the trigger file itself.
-        if [[ "${this_ll}" == *.nc || "${_ll_base}" == fcst_done_seg* ]]; then
+        # Data-file trigger: sentinel column holds the next-hour ice output (*.nc),
+        # the history-done sentinel (fcst_history_done_seg*), or the job-finalized
+        # sentinel (fcst_finalized_seg*) rather than a text log. The trigger signals
+        # current-hour data is ready; the manager writes a synthetic COM log instead
+        # of copying the trigger file itself.
+        if [[ "${this_ll}" == *.nc || "${_ll_base}" == fcst_history_done_seg* || "${_ll_base}" == fcst_finalized_seg* ]]; then
             _data_file_trigger=1
         fi
 
@@ -230,8 +231,8 @@ while [[ ${remaining} -gt 0 ]]; do
             if [[ ! -d "${cl_dir}" ]]; then
                 mkdir -p "${cl_dir}"
             fi
-            if [[ ${_fcst_done_fallback} -eq 1 ]]; then
-                # fcst_done fallback: model never wrote the period log; write a synthetic COM marker.
+            if [[ ${_fcst_history_done_fallback} -eq 1 ]]; then
+                # history-done fallback: model never wrote the period log; write a synthetic COM marker.
                 _cl_base=$(basename "${this_cl}")
                 {
                     echo "synthetic sentinel created (model sentinel unavailable): ${_cl_base} at $(date --utc +%Y%m%d%H%M%S)"
@@ -245,8 +246,8 @@ while [[ ${remaining} -gt 0 ]]; do
                 log_err=0
             elif [[ ${_data_file_trigger} -eq 1 ]]; then
                 # Data-file trigger: sentinel column is the next-hour ice output
-                # (*.nc) or fcst_done_seg -- not a text log to copy to COM.
-                # Write a compact synthetic COM sentinel instead.
+                # (*.nc), fcst_history_done_seg, or fcst_finalized_seg -- not a text
+                # log to copy to COM. Write a compact synthetic COM sentinel instead.
                 _cl_base=$(basename "${this_cl}")
                 {
                     echo "sentinel created from data-file trigger '${_ll_base}': ${_cl_base} at $(date --utc +%Y%m%d%H%M%S)"
@@ -286,18 +287,19 @@ while [[ ${remaining} -gt 0 ]]; do
         exit 1
     fi
 
-    # Graceful exit: once the model has finished (fcst_done sentinel present), count
-    # consecutive poll cycles where no new files were processed. After
-    # FCST_MGR_DONE_IDLE_MAX idle cycles (default 3) exit with a warning for any
-    # entries the model never produced (e.g. optional GOCART output types).
-    if [[ -n "${FCST_DONE_SENTINEL:-}" && -f "${FCST_DONE_SENTINEL}" ]]; then
+    # Graceful exit: once the model has finished writing history (fcst_history_done
+    # sentinel present), count consecutive poll cycles where no new files were
+    # processed. After FCST_MGR_DONE_IDLE_MAX idle cycles (default 3) exit with a
+    # warning for any entries the model never produced (e.g. optional GOCART output
+    # types).
+    if [[ -n "${FCST_HISTORY_DONE_SENTINEL:-}" && -f "${FCST_HISTORY_DONE_SENTINEL}" ]]; then
         if [[ ${remaining} -lt ${remaining_before} ]]; then
-            fcst_done_idle=0
+            fcst_history_done_idle=0
         else
-            ((fcst_done_idle++)) || true
+            ((fcst_history_done_idle++)) || true
             idle_max=${FCST_MGR_DONE_IDLE_MAX:-3}
-            if [[ ${fcst_done_idle} -ge ${idle_max} ]]; then
-                echo "WARNING: [${component}] Model run complete; no new files for ${fcst_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model — skipping."
+            if [[ ${fcst_history_done_idle} -ge ${idle_max} ]]; then
+                echo "WARNING: [${component}] Model history complete; no new files for ${fcst_history_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model — skipping."
                 break
             fi
         fi

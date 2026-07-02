@@ -160,10 +160,11 @@ fi
 num_ranks=$(wc -l < "${FCST_MANAGER_CMDFILE}")
 echo "INFO: Launching ${num_ranks} MPMD component manager rank(s)"
 
-# Tell forecast_manager.sh where to find the model-completion sentinel so it can
-# exit gracefully when the model is done but some product files were not produced.
+# Tell forecast_manager.sh where to find the history-complete sentinel so it can
+# exit gracefully when the model has finished writing history but some optional
+# product files were not produced.
 export FCST_TABLE_READY_SENTINEL="${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
-export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
+export FCST_HISTORY_DONE_SENTINEL="${DATAjob}/fcst_history_done_seg${FCST_SEGMENT}"
 
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
