@@ -2,9 +2,8 @@
 
 import os
 
-from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict
+from wxflow import AttrDict, Logger, logit, cast_strdict_as_dtypedict, Executable
 from pygfs.task.oceanice_products import OceanIceProducts
-import produtil.dbnalert
 
 # initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
@@ -52,16 +51,23 @@ def main():
 
     # DBN alerts for output going to NOMADS
     if os.environ.get('SENDDBN').upper() == 'YES':
-        if {component} == 'ocean':
-            comout = str('{COMOUT_OCEAN_NETCDF}')
-        elif {component} == 'ice':
-            comout = str('{COMOUT_ICE_NETCDF}')
-        fhour = str('{forecast_hour}').zfill(3)
-        message = str(comout + '/native/{RUN}.{cycle}.native.f' + fhour + '.nc')
-        alert_type = str('{RUN}_{component}_NA_NETCDF').upper()
-        if os.path.exists(message):
-            alert = produtil.dbnalert.DBNAlert(['MODEL', alert_type, '{job}', message])
-            alert()
+        logger.debug("Sending DBN alerts")
+        component = oceanice_dict.component
+        if component == 'ocean':
+            comout = f'{oceanice_dict.COMOUT_OCEAN_NETCDF}'
+        elif component == 'ice':
+            comout = f'{oceanice_dict.COMOUT_ICE_NETCDF}'
+        fhour = f'{oceanice_dict.forecast_hour}'.zfill(3)
+        file = os.path.join(comout, 'native', f'{oceanice_dict.RUN}.{oceanice_dict.cycle}.native.f{fhour}.nc')
+        alert_type = f'{oceanice_dict.RUN}_{component}_NA_NETCDF'.upper()
+        if os.path.exists(file):
+            dbnroot = os.environ.get('DBNROOT')
+            if dbnroot is None:
+                raise KeyError("DBNROOT is not defined! Cannot call dbn_alert!!")
+            dbnalert = Executable(os.path.join(os.environ.get('DBNROOT'), 'bin', 'dbn_alert'))
+            dbnalert('MODEL', alert_type, '{job}', file, output=str, err=str)
+        else:
+            raise FileNotFoundError(f"{file} does not exit! Cannot send DBN alert!")
 
 
 if __name__ == '__main__':
