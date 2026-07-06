@@ -4,6 +4,9 @@
 # Hera-specific job resources
 
 case ${step} in
+  "prep_emissions")
+    export walltime="00:45:00"
+
   "prep")
     # Run on 7 nodes for memory requirement
     tasks_per_node=2
@@ -21,6 +24,9 @@ case ${step} in
     memory="96GB"
     ;;
 
+  "eobs")
+    walltime="00:25:00"
+    ;;
 
   "atmanlvar" | "atmensanlobs" | "atmensanlsol")
     export tasks_per_node=12
@@ -30,7 +36,7 @@ case ${step} in
     export tasks_per_node=20
     export memory="96GB"
     ;;
-  
+
   "eupd")
     case "${CASE}" in
       "C1152" | "C768")

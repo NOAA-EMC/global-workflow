@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+# shellcheck disable=SC2034
+
+# GaeaC6-specific job resources
+
+unset memory
+unset "memory_${RUN}"
+
+case ${step} in
+  "prep_emissions")
+    export walltime="00:45:00"
+
+  *)
+    ;;
+esac
