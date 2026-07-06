@@ -7,14 +7,20 @@ set -x
 # Script description:  Forecast manager job
 #
 # Abstract: Runs alongside the UFS model (JGLOBAL_FORECAST) to transfer
-#           output products to COM as they are written by the model. Shares
-#           the DATAjob umbrella directory with the forecast job and reads
-#           product tables from COMOUT_CONF that were written by the forecast
-#           job pre-run setup phase.
+#           history / product files to COM as they are written by the model.
+#           Shares the DATAjob umbrella directory with the forecast job and
+#           reads product tables written in DATAjob by the forecast job's
+#           pre-run setup phase (forecast_postdet.sh).
 #
-#           Currently manages real-time copy for components that emit per-file
-#           sentinel log files (FV3ATM and WW3). Ocean and ice history files
-#           are copied at the end of the forecast job by JGLOBAL_FORECAST.
+#           Manages real-time copy for every RUN in {gfs, gdas, enkfgdas} of:
+#             - FV3ATM history (atmf, sfcf; grib, flux when WRITE_DOPOST=.true.)
+#             - WW3  history   (when DO_WAVE=YES)
+#             - MOM6 ocean history (when DO_OCN=YES)
+#             - CICE ice   history (when DO_ICE=YES)
+#
+#           Restart files (FV3, MOM6, CICE, CMEPS mediator, GOCART) are NOT
+#           handled here; the forecast job's per-component *_out functions
+#           copy those to COM after model exec completes.
 #############################################################################
 
 if ((10#${ENSMEM:--1} >= 0)); then
