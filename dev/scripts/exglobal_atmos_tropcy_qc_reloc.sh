@@ -10,6 +10,10 @@
 # echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
 ############################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Make sure we are in the $DATA directory
 cd "${DATA}" || exit 1
 
@@ -94,6 +98,7 @@ if [[ "${DO_RELOCATE}" = 'YES' ]]; then
     export err=$?
 
     if [[ ${err} -ne 0 ]]; then
+        pgm="tropcy_relocate.sh"
         err_exit "Failed while updating tropical cyclone data!"
     fi
 

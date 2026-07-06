@@ -1,0 +1,46 @@
+#!/bin/bash
+
+date
+export PS4='+ $SECONDS + '
+set -xue
+
+#-----------------------------------------------------------------------
+# GFS File Service Manager for ATMOS Prep Step
+#-----------------------------------------------------------------------
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+export pid=${pid:-$$}
+export outid=${outid:-"LL${job}"}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p "${DATA}"
+cd "${DATA}"
+export cycle="t${cyc}z"
+setpdy.sh
+source ./PDY
+
+ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
+export ROTDIR
+
+declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+
+declare -rx COMIN_ATMOS_HISTORY="${COMIN}/model/atmos/history"
+declare -rx COMIN_ATMOS_MASTER="${COMIN}/model/atmos/master"
+
+declare -rx COMIN_WAVE_HISTORY="${COMIN}/model/wave/history"
+declare -rx COMIN_OCEAN_HISTORY="${COMIN}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
+
+"${HOMEglobal}"/scripts/exglobal_fsm.sh
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to run the files system manager for!"
+fi
+
+##################################################
+# Remove the Temporary working directory
+##################################################
+if [[ "${KEEPDATA^^}" != YES ]]; then
+    cd "${DATAROOT}"
+    rm -rf "${DATA}"
+fi
