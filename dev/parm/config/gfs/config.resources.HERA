@@ -4,10 +4,6 @@
 # Hera-specific job resources
 
 case ${step} in
-  "prep_emissions")
-    export walltime="00:45:00"
-    ;;
-
   "prep")
     # Run on 7 nodes for memory requirement
     tasks_per_node=2
