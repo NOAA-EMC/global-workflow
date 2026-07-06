@@ -1,10 +1,7 @@
 #! /usr/bin/env bash
 # shellcheck disable=SC2034
 
-# GaeaC6-specific job resources
-
-unset memory
-unset "memory_${RUN}"
+# Hera-specific job resources
 
 case ${step} in
   "prep_emissions")
