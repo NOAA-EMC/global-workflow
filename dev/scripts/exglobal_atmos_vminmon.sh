@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 if [[ ! -s "${gsistat}" ]]; then
 
     export err=1

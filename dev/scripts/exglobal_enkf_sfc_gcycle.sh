@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Base variables
 DONST=${DONST:-"NO"}
 DO_GSISOILDA=${DO_GSISOILDA:-"NO"}
@@ -188,6 +192,7 @@ if [[ "${DOIAU}" == "YES" ]]; then
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${CYCLESH}")"
             err_exit "Failed to update surface fields!"
         fi
 
@@ -260,6 +265,7 @@ if [[ "${DOSFCANL_ENKF}" == "YES" ]]; then
         "${CYCLESH}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${CYCLESH}")"
             err_exit "Failed to update surface increment!"
         fi
 
