@@ -1648,7 +1648,12 @@ class GFSTasks(Tasks):
             fhmax = config['FHMAX_GFS']
             fhout = config['FHOUT_GFS']
             fhmax_hf = config['FHMAX_HF_GFS']
-            fhout_hf = config['FHOUT_HF_GFS']
+            # AWIPS 20km parm files are provided every 3 hours in the HF
+            # range, not hourly like FHOUT_HF_GFS. Use the AWIPS-specific
+            # override so the metatask does not fan out at hours that have
+            # no parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR} file. Falls back
+            # to FHOUT_HF_GFS when the override is unset.
+            fhout_hf = config.get('FHOUT_HF_GFS_AWIPS', config['FHOUT_HF_GFS'])
             if fhmax > 240:
                 fhmax = 240
             if fhmax_hf > 240:
