@@ -6,6 +6,7 @@
 case ${step} in
   "prep_emissions")
     export walltime="00:45:00"
+    ;;
 
   *)
     ;;
