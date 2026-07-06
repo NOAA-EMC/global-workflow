@@ -11,6 +11,9 @@ export machine="WCOSS2"
 # EMC parallel or NCO production
 export RUN_ENVIR="nco"
 
+# Do not run strict mode (set -e) for production
+export STRICT="NO"
+
 # Directories relative to installation areas:
 export EXECglobal="${HOMEglobal}/exec"
 export FIXglobal="${HOMEglobal}/fix"
