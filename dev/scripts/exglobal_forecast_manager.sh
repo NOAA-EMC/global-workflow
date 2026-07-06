@@ -165,6 +165,9 @@ echo "INFO: Launching ${num_ranks} MPMD component manager rank(s)"
 # product files were not produced.
 export FCST_TABLE_READY_SENTINEL="${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
 export FCST_HISTORY_DONE_SENTINEL="${DATAjob}/fcst_history_done_seg${FCST_SEGMENT}"
+# ...and the forecast-finalized sentinel so each rank can propagate JGLOBAL_FORECAST
+# failure. If its content matches "aborted rc=<rc>" the manager exits <rc>.
+export FCST_FINALIZED_SENTINEL="${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}"
 
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
