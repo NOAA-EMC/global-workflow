@@ -37,13 +37,8 @@ export APREFIX="${rCDUMP}.t${cyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
-# TODO: Rework this so that COMIN_OBS can be defined in development cases without referencing `RUN_ENVIR`
-if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
-    declare -rx COMIN_OBS
-else
-    declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
-fi
+COMIN_OBS=${COMIN_OBS:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"}
+declare -rx COMIN_OBS
 declare -rx COMIN_OBS_TC="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
 
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
@@ -112,15 +107,6 @@ ${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the GSI atmospheric analysis"
-fi
-
-##############################################
-# Send Alerts
-##############################################
-if [[ "${SENDDBN}" == "YES" ]] && [[ "${RUN}" == "gdas" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias.txt"
-    "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_pc "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_pc.txt"
-    "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_air "${job}" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}abias_air.txt"
 fi
 
 ##############################################

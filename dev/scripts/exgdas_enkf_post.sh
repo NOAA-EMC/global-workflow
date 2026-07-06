@@ -141,6 +141,14 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
 
     # Restore default pgm after prep_step override
     pgm=$(basename "${BASH_SOURCE[0]}")
+    # Send DBN alerts
+    if [[ "${SENDDBN}" == "YES" ]]; then
+        if ((fhr % 3 == 0)); then
+            if [[ -s "./sfcf${fhrchar}.ensmean" ]]; then
+                "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_ENKF" "${job}" "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc"
+            fi
+        fi
+    fi
 done
 
 ################################################################################
@@ -154,19 +162,6 @@ if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
                 memchar="mem"$(printf "%03i" "${imem}")
                 cpreq "atmf${fhrchar}_${memchar}" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
             done
-        fi
-    done
-fi
-
-################################################################################
-# Send DBN alerts
-if [[ "${SENDDBN}" == "YES" ]]; then
-    for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
-        fhrchar=$(printf "%03i" "${fhr}")
-        if ((fhr % 3 == 0)); then
-            if [[ -s "./sfcf${fhrchar}.ensmean" ]]; then
-                "${DBNROOT}/bin/dbn_alert" "MODEL" "GFS_ENKF" "${job}" "${COMOUT_ATMOS_HISTORY_STAT}/${PREFIX}ensmean.sfc.f${fhrchar}.nc"
-            fi
         fi
     done
 fi

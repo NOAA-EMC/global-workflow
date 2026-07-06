@@ -868,6 +868,18 @@ if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the GSI analysis!"
 fi
 
+##############################################
+# Send Alerts
+##############################################
+if [[ "${SENDDBN}" == "YES" ]]; then
+    if [[ "${RUN}" == "gdas" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_pc "${job}" "${ABIASPC}"
+        "${DBNROOT}/bin/dbn_alert" MODEL GDAS_MSC_abias_air "${job}" "${ABIASAIR}"
+    elif [[ "${RUN}" == "gfs" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL GFS_abias "${job}" "${ABIAS}"
+    fi
+fi
+
 ##############################################################
 # If full analysis field written, calculate analysis increment
 # here before releasing FV3 forecast
@@ -904,14 +916,6 @@ if [[ ${RUN_SELECT} == "YES" ]]; then
     ${CHGRP_CMD} "${SELECT_OBS}"
     rm -f obsinput.tar
     echo "$(date) END tar obs_input" >&2
-fi
-
-################################################################################
-# Send alerts
-if [[ "${SENDDBN}" == "YES" ]]; then
-    if [[ "${RUN}" == "gfs" ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL GFS_abias "${job}" "${ABIAS}"
-    fi
 fi
 
 ################################################################################

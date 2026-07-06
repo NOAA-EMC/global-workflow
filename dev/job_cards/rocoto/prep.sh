@@ -157,6 +157,8 @@ export COMSP=${COMSP:-"${COMIN_OBS}/${RUN_local}.t${cyc}z."}
 # Create or Copy prepbufr, prepbufr.acft_profiles, nsstbufr files
 # Do not fail on external errors
 if [[ ${MAKE_PREPBUFR:-"YES"} == "YES" ]]; then
+    # Set HOMEgfs for obsproc
+    export HOMEgfs=${HOMEglobal}
     source "${USHglobal}/unset_strict.sh"
     "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP" && true
     export err=$?
