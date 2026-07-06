@@ -11,11 +11,15 @@ echo "BEGIN: config.awips"
 # No. of concurrent awips jobs
 export MAX_TASKS=42
 
-# AWIPS high-frequency output interval (overrides FHOUT_HF_GFS on the awips path).
-# The AWIPS 20km job is driven by per-fhr WMO header parm files at
+# AWIPS forecast-hour frequency (overrides the model FHOUT_HF_GFS / FHMAX_HF_GFS
+# / FHOUT_GFS on the awips path). The AWIPS 20km job is driven by per-fhr WMO
+# header parm files at
 #   ${PARMglobal}/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
-# which are only provided every 3 hours in the high-frequency range, so the
-# metatask must fan out every 3 hours (not at the model FHOUT_HF_GFS=1 rate).
+# which are only provided every 3 hours out to f084 and every 6 hours to f240,
+# so the metatask must fan out at exactly those hours (not at the model
+# FHOUT_HF_GFS=1 / FHMAX_HF_GFS=120 / FHOUT_GFS=3 rates).
 export FHOUT_HF_GFS_AWIPS=3
+export FHMAX_HF_GFS_AWIPS=84
+export FHOUT_GFS_AWIPS=6
 
 echo "END: config.awips"
