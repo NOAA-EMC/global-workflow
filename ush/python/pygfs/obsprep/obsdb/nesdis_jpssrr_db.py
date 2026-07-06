@@ -11,9 +11,12 @@ class NesdisJpssrrDatabase(BaseDatabase):
     """Class to manage an observation file database for data assimilation."""
 
     def __init__(self, db_name="nesdis_jpssrr.db",
-                 dcom_dir="/lfs/h1/ops/prod/dcom/",
+                 dcom_dir=None,
                  obs_dir="wgrdbul/IST"):
-
+        if dcom_dir is None:
+            dcom_dir = os.environ.get("DCOMROOT")
+            if dcom_dir is None:
+                raise KeyError("DCOMROOT environment variable is not set")
         base_dir = os.path.join(dcom_dir, '*', obs_dir)
         super().__init__(db_name, base_dir)
 

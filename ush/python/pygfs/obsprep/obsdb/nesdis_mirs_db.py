@@ -10,7 +10,11 @@ logger = getLogger(__name__.split('.')[-1])
 class NesdisMirsDatabase(BaseDatabase):
     """Class to manage an observation file database for data assimilation."""
 
-    def __init__(self, obs_dirs, db_name="nesdis_mirs.db", dcom_dir="/lfs/h1/ops/prod/dcom/"):
+    def __init__(self, obs_dirs, db_name="nesdis_mirs.db", dcom_dir=None):
+        if dcom_dir is None:
+            dcom_dir = os.environ.get("DCOMROOT")
+            if dcom_dir is None:
+                raise KeyError("DCOMROOT environment variable is not set")
         base_dirs = [os.path.join(dcom_dir, '*', obs_dir) for obs_dir in obs_dirs]
         super().__init__(db_name=db_name, base_dir=base_dirs)
 
