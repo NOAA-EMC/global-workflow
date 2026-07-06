@@ -53,6 +53,7 @@ export SCRIPTSglobal="${HOMEglobal}/scripts"
 ##############################################
 export pid="${pid:-$$}"
 export pgmout="OUTPUT.${pid}"
+[[ -e "${pgmout}" ]] || touch "${pgmout}"
 export pgmerr=errfile
 
 ##############################################

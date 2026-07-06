@@ -12,7 +12,7 @@
 #   setup_data_dir <dir>
 #
 # Requires in environment:
-#   err_exit  - (from err_exit.sh)
+#   err_exit  - (from the prod_util module)
 # Optional:
 #   WIPE_DATA - whether to delete any existing directory [default: "YES"]
 #######
