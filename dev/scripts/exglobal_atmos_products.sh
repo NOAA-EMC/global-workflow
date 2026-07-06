@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 1
 
 # Set paramlist files based on FORECAST_HOUR (-1, 0, 3, 6, etc.)
@@ -68,6 +72,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${parmfile}" | ${WGRIB2} -i -grib "${tmpfile}" "${MASTER_FILE}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${WGRIB2}")"
         err_exit "FATAL ERROR: wgrib2 failed to create intermediate grib2 file from '${MASTER_FILE}' using '${parmfile}'"
     fi
 
@@ -107,6 +112,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         ${WGRIB2} "${tmpfile}" -for "${first}":"${last}" -grib "${tmpfile}_${iproc}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${WGRIB2}")"
             err_exit "wgrib2 failed to geneate an intermediate grib2 file from ${tmpfile} records ${first} to ${last}"
         fi
         input_file="${tmpfile}_${iproc}"
@@ -127,6 +133,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="run_mpmd.sh"
         err_exit "FATAL ERROR: Some or all interpolations of the master grib file failed during MPMD execution!"
     fi
 
@@ -150,6 +157,19 @@ for ((nset = 1; nset <= downset; nset++)); do
         prod_dir="COMOUT_ATMOS_GRIB_${grid}"
         cpfs "pgb2${grp}file_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.grib2"
         cpfs "pgb2${grp}file_${fhr3}_${grid}.idx" "${!prod_dir}/${PREFIX}pres_${grp}.${grid}.${fhr3}.grib2.idx"
+
+        # Send DBN alerts for the 0.25-degree products
+        if [[ "${SENDDBN:-}" == "YES" && "${grid}" == "0p25" ]]; then
+            if [[ "${grp}" == "a" ]]; then
+                # Send pres_a for both the GDAS and GFS RUNs
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2"
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2.idx"
+            elif [[ "${RUN}" == "gfs" && "${grp}" == "b" ]]; then
+                # Only send pres_b files for the GFS
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2"
+                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2.idx"
+            fi
+        fi
     done
 
     echo "INFO: Finished processing nset = ${nset}"
@@ -175,6 +195,7 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
     "${USHglobal}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="interp_atmos_sflux.sh"
         err_exit "FATAL ERROR: Unable to interpolate the surface flux grib2 files!"
     fi
 
@@ -183,8 +204,35 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
     for grid in "${grids[@]}"; do
         ${WGRIB2} -s "sflux_${fhr3}_${grid}" > "sflux_${fhr3}_${grid}.idx"
         prod_dir="COMOUT_ATMOS_GRIB_${grid}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            export pgm="wgrib2"
+            err_exit "FATAL ERROR: Unable to create index file for sflux_${fhr3}_${grid}"
+        fi
         cpfs "sflux_${fhr3}_${grid}" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2"
         cpfs "sflux_${fhr3}_${grid}.idx" "${!prod_dir}/${PREFIX}flux.${grid}.${fhr3}.grib2.idx"
+
+        if [[ "${SENDDBN:-}" == "YES" && "${grid}" == "1p00" ]]; then
+            case "${RUN}" in
+                gdas)
+                    if ((FORECAST_HOUR % 3 == 0)); then
+                        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
+                        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
+                    fi
+                    ;;
+                gfs)
+                    if [[ -s "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2" ]]; then
+                        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
+                        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
+                    fi
+                    ;;
+                *)
+                    export pgm="${RUN}_atmos_products"
+                    export err=1
+                    err_exit "Unsupported RUN value '${RUN}' for SENDDBN section"
+                    ;;
+            esac
+        fi
     done
 fi
 
@@ -196,77 +244,19 @@ if [[ "${WGNE:-}" == "YES" ]]; then
         ${WGRIB2} "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_${grp}.0p25.${fhr3}.grib2" \
             -d "${APCP_MSG:-598}" \
             -grib "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
+
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            export pgm="wgrib2"
+            err_exit "FATAL ERROR: Unable to create WGNE grib2 file from pres_${grp}.0p25.${fhr3}.grib2"
+        fi
+
+        if [[ "${SENDDBN:-}" == "YES" ]]; then
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
+        fi
     fi
 fi
 
 #---------------------------------------------------------------
-
-# Start sending DBN alerts
-# Everything below this line is for sending files to DBN (SENDDBN=YES)
-if [[ "${SENDDBN:-}" == "YES" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_a.0p25.${fhr3}.grib2.idx"
-    if [[ "${RUN}" == "gfs" ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P25_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}pres_b.0p25.${fhr3}.grib2.idx"
-        if [[ -s "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2"
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_0P5_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_a.0p50.${fhr3}.grib2.idx"
-        fi
-        if [[ -s "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_b.0p50.${fhr3}.grib2" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_b.0p50.${fhr3}.grib2"
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_0P5_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_0p50}/${PREFIX}pres_b.0p50.${fhr3}.grib2.idx"
-        fi
-        if [[ -s "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2_1P0_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
-        fi
-        if [[ -s "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_b.1p00.${fhr3}.grib2" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_b.1p00.${fhr3}.grib2"
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB2B_1P0_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_b.1p00.${fhr3}.grib2.idx"
-        fi
-        if [[ "${WGNE:-}" == "YES" ]] && [[ -s "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WGNE" "${job}" "${COMOUT_ATMOS_GRIB_0p25}/${PREFIX}wgne.${fhr3}.grib2"
-        fi
-    fi
-
-    if [[ "${fhr3}" == "analysis" ]]; then
-
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.sfc.a006.nc"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SA" "${job}" "${COMIN_ATMOS_ANALYSIS}/${PREFIX}analysis.atm.a006.nc"
-
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGA_GB2_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
-
-    else # forecast hours f000, f003, f006, etc.
-
-        case "${RUN}" in
-            gdas)
-                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2"
-                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_PGB_GB2_WIDX" "${job}" "${COMOUT_ATMOS_GRIB_1p00}/${PREFIX}pres_a.1p00.${fhr3}.grib2.idx"
-                if ((FORECAST_HOUR % 3 == 0)); then
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.${fhr3}.nc"
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.${fhr3}.nc"
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
-                fi
-                ;;
-            gfs)
-                "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.${fhr3}.nc"
-                if [[ $((10#${fhr3})) -gt 0 && $((10#${fhr3})) -le 84 || $((10#${fhr3})) -eq 120 ]]; then
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_BF" "${job}" "${COMIN_ATMOS_HISTORY}/${PREFIX}sfc.${fhr3}.nc"
-                fi
-
-                if [[ -s "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2" ]]; then
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2"
-                    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_SGB_GB2_WIDX" "${job}" "${COMIN_ATMOS_MASTER}/${PREFIX}sflux.f${fhr3}.grib2.idx"
-                fi
-                ;;
-            *)
-                err_exit "Unsupported RUN value '${RUN}' for SENDDBN section"
-                ;;
-        esac
-    fi
-fi # end if SENDDBN=YES
 
 exit 0

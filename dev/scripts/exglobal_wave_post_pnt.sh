@@ -26,6 +26,10 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # 0.a Basic modes of operation
 
 export WAV_MOD_TAG="${RUN}.t${cyc}z"
@@ -166,8 +170,10 @@ export err=$?
 if [[ ${err} -ne 0 && ! -f buoy_log.ww3 ]]; then
     cat buoy_tmp.loc || true
     export err=5
-    err_exit "${WAV_MOD_TAG} post ${date} ${cycle} : buoy log file failed to be created."
+    err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : buoy log file failed to be created."
 fi
+# Restore default pgm after prep_step override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 # Create new buoy_log.ww3
 awk '{print $3}' buoy.loc | sed 's/'\''//g' > ibp_tags
@@ -237,6 +243,8 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
 fi
+# Restore default pgm after override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 # --------------------------------------------------------------------------- #
 # 3. Compress point output data into tar files

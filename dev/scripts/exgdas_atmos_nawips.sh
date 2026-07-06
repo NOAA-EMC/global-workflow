@@ -4,6 +4,10 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 1
 grid=$1
 fhr3=$2
@@ -73,6 +77,8 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "${NAGRIB} failed to create ${GEMGRD}!"
 fi
+# Restore default pgm after override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
 if [[ "${SENDDBN}" == "YES" ]]; then

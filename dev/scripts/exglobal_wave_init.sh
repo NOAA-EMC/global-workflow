@@ -20,6 +20,10 @@
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cat << EOF
 
 Preparing input files :
@@ -58,6 +62,7 @@ done
 "${USHglobal}/run_mpmd.sh" "${DATA}/mpmd_script" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="run_mpmd.sh"
     err_exit "run_mpmd.sh failed!"
 fi
 
@@ -67,6 +72,7 @@ for grdID in "${grdALL[@]}"; do
         echo "INFO: mod_def.${grdID} succesfully created/copied"
     else
         export err=3
+        pgm="run_mpmd.sh"
         err_exit "No model definition file for grid ${grdID}"
     fi
 done

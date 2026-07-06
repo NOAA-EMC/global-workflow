@@ -115,7 +115,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p "${EXECglobal}/${pgm}" 2> errfile
+time -p "${EXECglobal}/${pgm}" 2> errfile && true
 errget=$?
 cat errfile
 rm errfile
