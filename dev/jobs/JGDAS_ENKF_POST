@@ -27,6 +27,10 @@ export PREFIX="${RUN}.t${cyc}z."
 
 export LEVS=$((LEVS - 1))
 
+# Additional variables are set in scripts/exgdas_enkf_post.sh:
+#  COMIN_ATMOS_HISTORY, set in a loop over ensemble members
+#  COMOUT_ATMOS_HISTORY_STAT
+
 ###############################################################
 # Run relevant script
 

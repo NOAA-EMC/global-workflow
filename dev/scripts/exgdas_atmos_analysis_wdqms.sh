@@ -23,6 +23,10 @@ set -x
 #   != 0 : non-fatal error encountered while generating output file
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Input GSI diagnostic file containing inputs to wdqms.py
 CNVSTAT="${RUN}.t${cyc}z.cnvstat.tar"
 

@@ -85,6 +85,10 @@ source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_confi
 
 source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Default segment index to 0 if not set by the caller (multi-segment forecasts set this).
 FCST_SEGMENT=${FCST_SEGMENT:-0}
 
@@ -199,6 +203,7 @@ cpreq "${EXECglobal}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${FCSTEXEC}")"
     err_exit "The forecast failed to run to completion!"
 fi
 # Signal to the forecast manager that the model run has completed successfully for this segment.

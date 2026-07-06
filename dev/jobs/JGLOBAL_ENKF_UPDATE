@@ -34,6 +34,10 @@ declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/a
 
 declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/enkfgdas.${GDATE:0:8}/${GDATE:8:2}/ensstat/model/atmos/history"
 
+# Additional variables are set in scripts/exglobal_enkf_update.sh in order to loop over ensemble members:
+#  COMIN_ATMOS_HISTORY_MEM_PREV
+#  COMOUT_ATMOS_ANALYSIS_MEM
+
 ###############################################################
 # Run relevant script
 
@@ -41,13 +45,6 @@ ${ENKFUPDSH:-${SCRglobal}/exglobal_enkf_update.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to update the ensemble"
-fi
-
-##############################################
-# Send Alerts
-##############################################
-if [[ "${SENDDBN}" == "YES" ]]; then
-    "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 fi
 
 ##############################################

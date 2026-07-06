@@ -11,6 +11,9 @@ export machine="WCOSS2"
 # EMC parallel or NCO production
 export RUN_ENVIR="nco"
 
+# Do not run strict mode (set -e) for production
+export STRICT="NO"
+
 # Directories relative to installation areas:
 export EXECglobal="${HOMEglobal}/exec"
 export FIXglobal="${HOMEglobal}/fix"
@@ -32,7 +35,6 @@ export FIXgdas="${FIXglobal}/gdas"
 # GLOBAL static environment parameters
 export PACKAGEROOT="${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}"    # TODO: set via prod_envir in Ops
 export COMINsyn="/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
-export DMPDIR="/lfs/h2/emc/dump/noscrub/dump"
 export IODADIR="/lfs/h2/emc/dump/noscrub/dump_ioda"
 export USE_IODADIR="{{ USE_IODADIR }}"
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
@@ -470,7 +472,7 @@ export DO_ARCHCOM="YES"    # Tar and archive the COM directories
 export ARCHCOM_TO="hpss"    # Valid options are hpss, globus_hpss, and local
 
 # Execute the postamble (disable for production)
-export TRAP_POSTAMBLE=YES
+export TRAP_POSTAMBLE=NO
 
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
