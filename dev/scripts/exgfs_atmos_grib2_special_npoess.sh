@@ -124,6 +124,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     else
         echo "File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
     fi
+
     echo "${PDY}${cyc}${fhr3}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
     rm -f tmpfile pgb2file
 
@@ -149,7 +150,6 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     # existence of the restart files
     ###############################
     export pgm="postcheck"
-    # grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.goesmasterf${fhr3}.grb2"
     grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.master-goes.f${fhr3}.grib2"
     if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
         export err=9
@@ -176,13 +176,13 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     cpfs pgb2ifile "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
     cpfs pgb2file2 "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
 
-    if [[ ${SENDDBN} == "YES" ]]; then
+    if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25 "${job}" \
-            "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}"
+            "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}"
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMPGB2_0P25_WIDX "${job}" \
-            "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx"
+            "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr3}.idx"
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_GOESSIMGRD221_PGB2 "${job}" \
-            "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221"
+            "${COMOUT_ATMOS_GOES}/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221"
     fi
 
     echo "${PDY}${cyc}${fhr}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb"

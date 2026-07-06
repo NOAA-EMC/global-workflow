@@ -63,7 +63,9 @@ export envir=${envir:-"prod"}
 export KEEPDATA=${KEEPDATA:-"NO"}
 export SENDECF=${SENDECF:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
+export DBNLOG=${DBNLOG:-"NO"}
+export NODBNFCHK=${NODBNFCHK:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-""}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 ##############################################
