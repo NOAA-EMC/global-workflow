@@ -37,3 +37,6 @@ prep:
   CONVERT_BIASCOR: "NO"
   SOURCE_BIASCOR: "NO" 
 
+esnowanl:
+  IO_LAYOUT_X: 1 
+  IO_LAYOUT_Y: 1
