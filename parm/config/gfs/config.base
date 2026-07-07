@@ -35,8 +35,7 @@ export FIXgdas="${FIXglobal}/gdas"
 # GLOBAL static environment parameters
 export PACKAGEROOT="${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}"    # TODO: set via prod_envir in Ops
 export COMINsyn="/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
-export IODADIR="/lfs/h2/emc/dump/noscrub/dump_ioda"
-export USE_IODADIR="{{ USE_IODADIR }}"
+export USE_IODADIR="NO"
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
 export ROTDIR
 export COMROOT=${ROTDIR}
