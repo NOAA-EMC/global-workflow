@@ -77,8 +77,8 @@ if [[ "${RJN}" == "forecast" ]]; then
     fi
 fi
 
-#### COMINobsproc=${COMINobsproc:-${DMPDIR}/gfs.${PDY}/${cyc}/atmos}
-COMINgdasobs="${COMINgdasobs:-${DMPDIR}/gdas.${previous_cycle_PDY}/${previous_cycle_cyc}/atmos}"
+COMINgdasobs=${COMINgdasobs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}"}
+COMINgfsobs=${COMINgfsobs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gfs.${PDY}/${cyc}"}
 
 proceed_trigger_scan="YES"
 while [[ "${proceed_trigger_scan}" == "YES" ]]; do
@@ -87,10 +87,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     #### release_gfs_atmos_prep
     if [[ "${scan_release_gfs_atmos_prep}" == "YES" ]]; then
         echo "Proceeding with scan_release_gfs_atmos_prep"
-        COMINobsproc=${DMPDIR}/gfs.${PDY}/${cyc}/atmos
         # TODO: try to remove the use of ls.
         # shellcheck disable=SC2012
-        if [[ -s "${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMINobsproc}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMINobsproc}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
+        if [[ -s "${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMINgfsobs}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMINgfsobs}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
             ecflow_client --event release_gfs_atmos_prep
             scan_release_gfs_atmos_prep="NO"
         else
@@ -264,8 +263,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     #### release_gdas_atmos_prep
     if [[ "${scan_release_gdas_atmos_prep}" == "YES" ]]; then
         echo "Proceeding with scan_release_gdas_atmos_prep"
-        COMINobsproc=${DMPDIR}/gdas.${PDY}/${cyc}/atmos
-        if [[ -s ${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMINobsproc}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMINobsproc}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
+        if [[ -s ${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMINgdasobs}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMINgdasobs}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
             ecflow_client --event release_gdas_atmos_prep
             scan_release_gdas_atmos_prep="NO"
         else
