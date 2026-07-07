@@ -9,11 +9,11 @@ echo "BEGIN: config.awips"
 . "${EXPDIR}/config.resources" awips
 
 # No. of concurrent awips jobs
-# Chosen so np.array_split(55 fhrs, MAX_TASKS) yields packed groups of ~4
-# (13 groups of 4 + 1 group of 3) instead of singleton buckets. Adjust if
-# FHOUT_HF_GFS_AWIPS / FHMAX_HF_GFS_AWIPS / FHOUT_GFS_AWIPS changes the
-# total AWIPS fhr count.
-export MAX_TASKS=14
+# Sized so the HF (29 fhrs, 3-hourly to f084) and LF (26 fhrs, 6-hourly to
+# f240) bands split cleanly into ~4-per groups when _get_awipsgroups
+# processes them independently: 8 HF groups + 7 LF groups = 15 total, with
+# the 3h -> 6h transition on the group boundary at f084/f090.
+export MAX_TASKS=15
 
 # AWIPS forecast-hour frequency (overrides the model FHOUT_HF_GFS / FHMAX_HF_GFS
 # / FHOUT_GFS on the awips path). The AWIPS 20km job is driven by per-fhr WMO

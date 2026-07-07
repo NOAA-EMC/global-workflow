@@ -1657,13 +1657,15 @@ class GFSTasks(Tasks):
     def _get_awipsgroups(run, config):
 
         fhmin = config['FHMIN']
-        fhmax = config['FHMAX']
-        fhout = config['FHOUT']
 
-        # Get a list of all forecast hours
-        fhrs = []
+        # Compute forecast-hour bands. HF is the high-frequency band; LF is
+        # the low-frequency band and stays empty for single-step runs (GDAS).
+        fhrs_hf = []
+        fhrs_lf = []
         if run in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
+            fhmax = config['FHMAX']
+            fhout = config['FHOUT']
+            fhrs_hf = list(range(fhmin, fhmax + fhout, fhout))
         elif run in ['gfs']:
             # AWIPS 20km parm files (parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR})
             # are only provided every 3 hours to f084 and every 6 hours to
@@ -1680,18 +1682,34 @@ class GFSTasks(Tasks):
             if fhmax_hf > 240:
                 fhmax_hf = 240
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-            fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs_lf = list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
+        # Split HF and LF bands independently so any step change (e.g., the
+        # AWIPS 3h -> 6h transition at f084/f090) always falls on a group
+        # boundary, never inside a group. Group counts are proportional to
+        # each band's fhr count so groups stay balanced across bands, capped
+        # by MAX_TASKS in total.
+        total_fhrs = len(fhrs_hf) + len(fhrs_lf)
         nawipsgrp = config['MAX_TASKS']
-        ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+        ntotal = nawipsgrp if total_fhrs > nawipsgrp else total_fhrs
 
-        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-        fhrs = np.array_split(fhrs, ngrps)
-        fhrs = [fhr.tolist() for fhr in fhrs]
+        if fhrs_lf:
+            n_hf = max(1, min(len(fhrs_hf), round(ntotal * len(fhrs_hf) / total_fhrs)))
+            n_lf = max(1, min(len(fhrs_lf), ntotal - n_hf))
+        else:
+            n_hf = ntotal
+            n_lf = 0
 
-        # Groups with a single forecast hour render as `_f078` instead of
-        # `_f078-f078` so metatask names stay readable when np.array_split
-        # produces singleton buckets (e.g. 55 AWIPS fhrs across MAX_TASKS=42).
+        groups = []
+        if n_hf > 0:
+            groups.extend(np.array_split([f'f{fhr:03d}' for fhr in fhrs_hf], n_hf))
+        if n_lf > 0:
+            groups.extend(np.array_split([f'f{fhr:03d}' for fhr in fhrs_lf], n_lf))
+        fhrs = [g.tolist() for g in groups]
+
+        # Groups with a single forecast hour render as `_f084` instead of
+        # `_f084-f084` so metatask names stay readable when np.array_split
+        # produces singleton buckets.
         grp = ' '.join([f'_{fhr[0]}' if fhr[0] == fhr[-1] else f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
         dep = ' '.join([fhr[-1] for fhr in fhrs])
         lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
