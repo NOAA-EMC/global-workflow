@@ -2,7 +2,7 @@
 
 .. note::
 
-   Most users can skip this section. A globus connection is only required if you (a) want to archive data to NOAA's HPSS (tape archive) (b) Are running global workflow on a machine that does not have direct HPSS access, such as Hercules.
+   Most users can skip this section. A globus connection is only required if you (a) want to archive data to NOAA's HPSS (tape archive) and (b) are running global workflow on a machine that does not have direct HPSS access, such as Hercules.
 
 =================================
 Setup Globus Connections for HPSS
@@ -43,7 +43,7 @@ Note that the globus connection stays active for 7 days.  If your experiment fai
 For some users, the new system, Mercury, occasionally fails to add all necessary permissions necessary to run globus transfers.  If you receive an error about needing to add ``data_access`` in the logs, then login to Mercury and execute
 
 .. code-block:: bash
-   
+
     module load globus-cli
     globus session update --all
     # Get the host UUID

@@ -75,9 +75,9 @@ Continuous Integration (CI)
 
 The global workflow comes fitted with a suite of system tests that run various types of workflow.  These tests are commonly run for pull requests before they may be merged into the develop branch.  At a minimum, developers are expected to run the CI test(s) that will be impacted by their changes on at least one platform.
 
-The commonly run tests are written in YAML format and can be found in the ``dev/ci/cases/pr`` directory.  The ``dev/workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`../User_Guide/setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS, GCAFS, or SFS).  For instance, to build the workflow and run all of the tests, one would execute:
+The commonly run tests are written in YAML format and can be found in the ``dev/ci/cases/pr`` directory.  The ``dev/workflow/generate_workflows.sh`` tool is available to aid running these cases.  See the help documentation by running ``./generate_workflows.sh -h``.  The script has the capability to prepare the EXPDIR and COMROOT directories for a specified or implied suite of CI tests (see :doc:`../user_guide/setup` for details on these directories).  The script also has options to automatically build and run all tests for a given system (i.e. GFS, GEFS, GCAFS, or SFS).  For instance, to build the workflow and run all of the tests, one would execute:
 
-::
+.. code-block:: bash
 
     cd workflow
     ./generate_workflows.sh -A "your_hpc_account" -b -GESC -c /path/to/RUNTESTS/directory
@@ -100,7 +100,7 @@ Once the tests are setup and running, developers can use the command-line helper
 When opening a pull request, developers should indicate which CI tests were run and on which platform(s).
 They should report the results of the tests in the PR description.  Developers should include the output of the ``gw_cistat`` command for the tests they ran in the PR description.
 E.g.
-::
+.. code-block:: bash
 
     gw_cistat -r /path/to/RUNTESTS/directory
 
@@ -130,7 +130,7 @@ To ensure your Python code meets PEP-8 standards, you can use the ``pycodestyle`
 
 To check your code:
 
-::
+.. code-block:: bash
 
     pycodestyle -v --config ./.pycodestyle ./
 
@@ -138,7 +138,7 @@ This command will recursively check all Python files in the current directory ag
 
 For specific files or directories:
 
-::
+.. code-block:: bash
 
     pycodestyle -v --config ./.pycodestyle path/to/specific/file.py
     pycodestyle -v --config ./.pycodestyle path/to/directory/
@@ -205,7 +205,7 @@ As development in the main authoritative repository moves forward you will need 
 
 1. Clone your fork and checkout branch that needs syncing:
 
-::
+.. code-block:: bash
 
    git clone https://github.com/JoeSchmo-NOAA/global-workflow.git ./fork
    cd fork
@@ -213,25 +213,25 @@ As development in the main authoritative repository moves forward you will need 
 
 2. Add upstream info to your clone so it knows where to merge from. The term "upstream" refers to the authoritative repository from which the fork was created.
 
-::
+.. code-block:: bash
 
    git remote add upstream https://github.com/NOAA-EMC/global-workflow.git
 
 3. Fetch upstream information into clone:
 
-::
+.. code-block:: bash
 
    git fetch upstream
 
 Later on you can update your fork remote information by doing the following command:
 
-::
+.. code-block:: bash
 
    git remote update
 
 4. Merge upstream ``feature/other_new_thing`` into your branch:
 
-::
+.. code-block:: bash
 
    git merge upstream/feature/other_new_thing
 
@@ -239,7 +239,7 @@ Later on you can update your fork remote information by doing the following comm
 
 6. Push the merged copy back up to your fork (origin):
 
-::
+.. code-block:: bash
 
    git push origin feature/my_new_thing
 
@@ -247,6 +247,6 @@ Done!
 
 Moving forward you'll want to perform the "remote update" command regularly to update the metadata for the remote/upstream repository in your fork (e.g. pull in metadata for branches made in auth repo after you forked it).
 
-::
+.. code-block:: bash
 
    git remote update

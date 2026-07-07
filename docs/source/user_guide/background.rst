@@ -2,10 +2,9 @@
 Background Information
 ######################
 
-The **Unified Forecast System (UFS)** is a community-based, coupled, comprehensive Earth modeling system. NOAA's operational model suite for numerical weather prediction (NWP) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader Weather Enterprise (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufs.epic.noaa.gov/>`_. The UFS includes multiple applications that support different forecast durations and spatial domains. 
+The **Unified Forecast System (UFS)** is a community-based, coupled, comprehensive Earth modeling system. NOAA's operational model suite for numerical weather prediction (NWP) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader Weather Enterprise (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufs.epic.noaa.gov/>`_. The UFS includes multiple applications that support different forecast durations and spatial domains.
 
-The  **Global Workflow (GW)** is an end-to-end system designed to run global configurations of medium range weather forecasts for the **UFS-Weather Model (WM)**. It is a combination of several model components seamlessly integrated into an end-to-end workflow to prepare, analyze, generate, and post-process forecast data. In its current form, GW supports **Global Forecast System (GFS)**, **Global Ensemble Forecast System (GEFS)**, **Global Chemistry and Aerosol Forecast System (GCAFS)**, and **Subseasonal Forecast System (SFS)** configurations. It is built to support both development and operational implementations. GW eliminates the need for manual stitching and ensures consistency between operational forecasts and research experiments. It is easily portable for running UFS-WM across diverse computing environments. This documentation describes the GW system. 
-
+The  **Global Workflow (GW)** is an end-to-end system designed to run global configurations of medium range weather forecasts for the **UFS-Weather Model (WM)**. It is a combination of several model components seamlessly integrated into an end-to-end workflow to prepare, analyze, generate, and post-process forecast data. In its current form, GW supports **Global Forecast System (GFS)**, **Global Ensemble Forecast System (GEFS)**, **Global Chemistry and Aerosol Forecast System (GCAFS)**, and **Seasonal Forecast System (SFS)** configurations. It is built to support both development and operational implementations. GW eliminates the need for manual stitching and ensures consistency between operational forecasts and research experiments. It is easily portable for running UFS-WM across diverse computing environments. This documentation describes the GW system.
 
 ==========================
 Documentation Organization
@@ -16,9 +15,10 @@ GW Documentation is organized to support both new users and advanced users or de
 * **User's Guide**
 
   - **Background Information**: Overview of the workflow, documentation conventions, and user support resources.
-  - **GW Components**: Components of Global Workflow and their repositories. 
+  - **GW Components**: Components of Global Workflow and their repositories.
   - **System Requirements & HPC Setup**: Platforms, prerequisites, and installation steps.
   - **Setup Globus Connection for HPSS**: Setting up connection for NOAA High Performance Storage System (HPSS) for data access.
+  - **Building AWS EC2 Cluster**: Instructions for building your own AWS cluster capable of running GW
   - **GFS Configuration**: Global Forecast System Configuration and the list of jobs run in GFS
   - **GCAFS Configuration**: Global Chemistry and Aerosol Forecast System (GCAFS) overview and setting up and running GCAFS.
   - **Running GW on RDHPCS**: How to setup the experiment, configure, launch, monitor GW runs, and view the forecast output.
@@ -45,22 +45,21 @@ This guide uses Code blocks to indicate commands and code snippets, file and dir
 
 Text rendered as ``AaBbCc123`` typically refers to variables in scripts or the names of files or directories.
 
-**Bold text** highlights important terms or commands. 
+**Bold text** highlights important terms or commands.
 
 .. note::
-   
+
    This presentation style indicates important clarifications or items require special attention.
 
 .. warning::
-      
+
    This presentation style indicates critical information that must be carefully reviewed.
 
-*Italic text* is used for optional concepts or secondary explanations. 
+*Italic text* is used for optional concepts or secondary explanations.
 
 Code that includes angle brackets (e.g., ``build_<component>.sh``) indicates that users should substitute the appropriate options or components for their GW configuration (e.g., ``build_gfs_utils.sh``).
 
 File or directory paths that begin with ``/path/to/`` or with variables such as ``$file or $directory`` should be replaced with the actual path on the user's system. For example, ``/path/to/logs/build_ufs_utils.log`` or ``$log_directory`` might be replaced with ``/Users/Jane.Smith/global-workflow/sorc/logs/build_ufs_utils.log``.
-
 
 ===========================================
 GW User Support and Community Contributions

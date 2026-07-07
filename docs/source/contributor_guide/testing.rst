@@ -786,8 +786,8 @@ Related Documentation
 =====================
 
 * :doc:`development` - Contributing guidelines and development workflow
-* :doc:`../User_Guide/gfs_jobs` - Job descriptions and workflow structure
-* :doc:`../User_Guide/configure` - Configuration switches and options
+* :doc:`../user_guide/job_descriptions` - Job descriptions and workflow structure
+* :doc:`../user_guide/configure` - Configuration switches and options
 
 Directory Reference
 ===================
