@@ -80,8 +80,8 @@ fi
 COMIN_ATMOS_OBS_gfs=${COMIN_ATMOS_OBS_gfs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gfs.${PDY}/${cyc}"}
 COMIN_ATMOS_OBS_gdas=${COMIN_ATMOS_OBS_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}"}
 COMIN_ATMOS_OBS_PREV_gdas=${COMIN_ATMOS_OBS_PREV_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${previous_cycle_PDY}/${previous_cycle_cyc}"}
-COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-${ROTDIR}}/gfs.${PDY}/${cyc}/ocean
-COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-${ROTDIR}}/gdas.${PDY}/${cyc}/ocean
+COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-"${ROTDIR}/gfs.${PDY}/${cyc}/obs"}
+COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-"${ROTDIR}/gdas.${PDY}/${cyc}/obs"}
 
 proceed_trigger_scan="YES"
 while [[ "${proceed_trigger_scan}" == "YES" ]]; do
