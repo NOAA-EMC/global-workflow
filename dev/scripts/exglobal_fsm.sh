@@ -107,7 +107,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="YES"
         echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
         # TODO remove/change this and look at obsproc for the bufr files
-        for ty_md in adt icec sst insitu; do
+        for ty_md in adt icec sst; do
             # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
             tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
             count_tty=${#tty_files[@]}
@@ -280,7 +280,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="YES"
         echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
         # TODO remove/change this and look at obsproc for the bufr files
-        for ty_md in adt icec sst insitu; do
+        for ty_md in adt icec sst; do
             # TODO: try to remove the use of ls.
             # shellcheck disable=SC2012
             if [[ $(ls "${COMIN_OCEAN_OBS_gdas}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
