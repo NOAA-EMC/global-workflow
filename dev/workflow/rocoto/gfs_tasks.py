@@ -1689,7 +1689,10 @@ class GFSTasks(Tasks):
         fhrs = np.array_split(fhrs, ngrps)
         fhrs = [fhr.tolist() for fhr in fhrs]
 
-        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
+        # Groups with a single forecast hour render as `_f078` instead of
+        # `_f078-f078` so metatask names stay readable when np.array_split
+        # produces singleton buckets (e.g. 55 AWIPS fhrs across MAX_TASKS=42).
+        grp = ' '.join([f'_{fhr[0]}' if fhr[0] == fhr[-1] else f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
         dep = ' '.join([fhr[-1] for fhr in fhrs])
         lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
 
