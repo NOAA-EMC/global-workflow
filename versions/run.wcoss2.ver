@@ -78,7 +78,6 @@ export NET='gfs'
 export COMPATH="/lfs/h1/ops/prod/com/obsproc:/lfs/h2/emc/ptmp/${USER}/gfs/ops/para/com/gfs"
 
 #### GFS prep step
-export HOMEprepobs=/lfs/h2/emc/global/save/emc.global/git/prepobs/v1.1.3
 export DMPDIR=/lfs/h2/emc/dump/noscrub/dump
 export DMPDIR_ocean=/lfs/h2/emc/global/noscrub/emc.global/ocean
 export IODADIR=/lfs/h2/emc/dump/noscrub/dump_ioda
