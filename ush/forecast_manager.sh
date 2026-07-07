@@ -311,8 +311,26 @@ while [[ ${remaining} -gt 0 ]]; do
     # processed. After FCST_MGR_DONE_IDLE_MAX idle cycles (default 3) exit with a
     # warning for any entries the model never produced (e.g. optional GOCART output
     # types).
+    #
+    # Suppression: while any remaining row's sentinel is a fcst_finalized_seg* trigger,
+    # do NOT count idle cycles. That row is written by exglobal_forecast.sh AFTER every
+    # *_out completes (restart copies to COM), which happens after fcst_history_done.
+    # Counting idle cycles here would race JGLOBAL_FORECAST_MANAGER's rm -rf "${DATAjob}"
+    # against restart copies still reading files under DATAjob.
     if [[ -n "${FCST_HISTORY_DONE_SENTINEL:-}" && -f "${FCST_HISTORY_DONE_SENTINEL}" ]]; then
-        if [[ ${remaining} -lt ${remaining_before} ]]; then
+        _finalized_pending=0
+        for ((k = 0; k < count; k++)); do
+            if [[ "${done_flag[k]}" == "NO" ]]; then
+                _k_base=$(basename "${local_log[k]}")
+                if [[ "${_k_base}" == fcst_finalized_seg* ]]; then
+                    _finalized_pending=1
+                    break
+                fi
+            fi
+        done
+        if [[ ${_finalized_pending} -eq 1 ]]; then
+            fcst_history_done_idle=0
+        elif [[ ${remaining} -lt ${remaining_before} ]]; then
             fcst_history_done_idle=0
         else
             ((fcst_history_done_idle++)) || true
