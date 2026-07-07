@@ -45,6 +45,9 @@ export SHELLOPTS
 source "${USHglobal}/setup_data_dir.sh"
 setup_data_dir "${DATA}"
 
+# pgmout is a relative path read by err_exit; must exist once we're in $DATA
+[[ -e "${pgmout}" ]] || touch "${pgmout}"
+
 # Activate tracing
 set -x
 
