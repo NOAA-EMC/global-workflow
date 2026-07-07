@@ -1658,58 +1658,39 @@ class GFSTasks(Tasks):
 
         fhmin = config['FHMIN']
 
-        # Compute forecast-hour bands. HF is the high-frequency band; LF is
-        # the low-frequency band and stays empty for single-step runs (GDAS).
-        fhrs_hf = []
-        fhrs_lf = []
+        groups = []
         if run in ['gdas']:
             fhmax = config['FHMAX']
             fhout = config['FHOUT']
-            fhrs_hf = list(range(fhmin, fhmax + fhout, fhout))
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
+            nawipsgrp = config['MAX_TASKS']
+            ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+            fhrs_fmt = [f'f{fhr:03d}' for fhr in fhrs]
+            groups = [g.tolist() for g in np.array_split(fhrs_fmt, ngrps)]
         elif run in ['gfs']:
-            # AWIPS 20km parm files (parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR})
-            # are only provided every 3 hours to f084 and every 6 hours to
-            # f240, not at the model FHOUT_HF_GFS=1 / FHMAX_HF_GFS=120 /
-            # FHOUT_GFS=3 rate. Use the AWIPS-specific overrides so the
-            # metatask fans out exactly at parm-file hours. Each override
-            # falls back to its model counterpart when unset.
-            fhmax = config['FHMAX_GFS']
+            # AWIPS 20km parm files under parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
+            # only exist every 3 hours to f084 and every 6 hours to f240. The
+            # metatask groups parm-file hours 3-per-group in each band so
+            # scheduled tasks map cleanly to parm-file cadence without
+            # crossing the 3h/6h boundary. Each override falls back to its
+            # model counterpart when unset.
+            fhmax = min(config['FHMAX_GFS'], 240)
             fhout = config.get('FHOUT_GFS_AWIPS', config['FHOUT_GFS'])
-            fhmax_hf = config.get('FHMAX_HF_GFS_AWIPS', config['FHMAX_HF_GFS'])
+            fhmax_hf = min(config.get('FHMAX_HF_GFS_AWIPS', config['FHMAX_HF_GFS']), 240)
             fhout_hf = config.get('FHOUT_HF_GFS_AWIPS', config['FHOUT_HF_GFS'])
-            if fhmax > 240:
-                fhmax = 240
-            if fhmax_hf > 240:
-                fhmax_hf = 240
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
             fhrs_lf = list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            group_size = 3
 
-        # Split HF and LF bands independently so any step change (e.g., the
-        # AWIPS 3h -> 6h transition at f084/f090) always falls on a group
-        # boundary, never inside a group. Group counts are proportional to
-        # each band's fhr count so groups stay balanced across bands, capped
-        # by MAX_TASKS in total.
-        total_fhrs = len(fhrs_hf) + len(fhrs_lf)
-        nawipsgrp = config['MAX_TASKS']
-        ntotal = nawipsgrp if total_fhrs > nawipsgrp else total_fhrs
+            def _chunk(items, size):
+                return [items[i:i + size] for i in range(0, len(items), size)]
 
-        if fhrs_lf:
-            n_hf = max(1, min(len(fhrs_hf), round(ntotal * len(fhrs_hf) / total_fhrs)))
-            n_lf = max(1, min(len(fhrs_lf), ntotal - n_hf))
-        else:
-            n_hf = ntotal
-            n_lf = 0
+            groups = _chunk([f'f{h:03d}' for h in fhrs_hf], group_size) \
+                + _chunk([f'f{h:03d}' for h in fhrs_lf], group_size)
 
-        groups = []
-        if n_hf > 0:
-            groups.extend(np.array_split([f'f{fhr:03d}' for fhr in fhrs_hf], n_hf))
-        if n_lf > 0:
-            groups.extend(np.array_split([f'f{fhr:03d}' for fhr in fhrs_lf], n_lf))
-        fhrs = [g.tolist() for g in groups]
+        fhrs = groups
 
-        # Groups with a single forecast hour render as `_f084` instead of
-        # `_f084-f084` so metatask names stay readable when np.array_split
-        # produces singleton buckets.
+        # Single-fhr groups render as `_f090` instead of `_f090-f090`.
         grp = ' '.join([f'_{fhr[0]}' if fhr[0] == fhr[-1] else f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
         dep = ' '.join([fhr[-1] for fhr in fhrs])
         lst = ' '.join(['_'.join(fhr) for fhr in fhrs])

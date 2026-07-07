@@ -8,20 +8,18 @@ echo "BEGIN: config.awips"
 # Get task specific resources
 . "${EXPDIR}/config.resources" awips
 
-# No. of concurrent awips jobs
-# Sized so the HF (29 fhrs, 3-hourly to f084) and LF (26 fhrs, 6-hourly to
-# f240) bands split cleanly into ~4-per groups when _get_awipsgroups
-# processes them independently: 8 HF groups + 7 LF groups = 15 total, with
-# the 3h -> 6h transition on the group boundary at f084/f090.
-export MAX_TASKS=15
+# No. of concurrent awips jobs (concurrency cap only; _get_awipsgroups
+# groups AWIPS forecast hours 3-per-group in each band).
+export MAX_TASKS=42
 
-# AWIPS forecast-hour frequency (overrides the model FHOUT_HF_GFS / FHMAX_HF_GFS
-# / FHOUT_GFS on the awips path). The AWIPS 20km job is driven by per-fhr WMO
-# header parm files at
+# AWIPS forecast-hour frequency (overrides the model FHOUT_HF_GFS /
+# FHMAX_HF_GFS / FHOUT_GFS on the awips path). The AWIPS 20km job is
+# driven by per-fhr WMO header parm files at
 #   ${PARMglobal}/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
-# which are only provided every 3 hours out to f084 and every 6 hours to f240,
-# so the metatask must fan out at exactly those hours (not at the model
-# FHOUT_HF_GFS=1 / FHMAX_HF_GFS=120 / FHOUT_GFS=3 rates).
+# which are only provided every 3 hours out to f084 and every 6 hours to
+# f240. The metatask fans out 3-per-group in each band:
+#   HF (10 groups): _f000-f006, _f009-f015, ..., _f081-f084
+#   LF (9 groups):  _f090-f102, _f108-f120, ..., _f234-f240
 export FHOUT_HF_GFS_AWIPS=3
 export FHMAX_HF_GFS_AWIPS=84
 export FHOUT_GFS_AWIPS=6
