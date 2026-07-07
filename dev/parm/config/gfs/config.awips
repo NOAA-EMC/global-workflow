@@ -8,9 +8,12 @@ echo "BEGIN: config.awips"
 # Get task specific resources
 . "${EXPDIR}/config.resources" awips
 
-# No. of concurrent awips jobs (concurrency cap only; _get_awipsgroups
-# groups AWIPS forecast hours 3-per-group in each band).
-export MAX_TASKS=42
+# Number of AWIPS rocoto tasks. _get_awipsgroups delegates to
+# Tasks.get_job_groups with a breakpoint at f084, so this value is the
+# total number of groups spread across the HF/LF bands proportional to
+# each band's fhr count. With defaults (29 HF + 26 LF = 55 fhrs), 19
+# yields 10 HF + 9 LF groups of ~3 fhrs each.
+export MAX_TASKS=19
 
 # AWIPS forecast-hour frequency (overrides the model FHOUT_HF_GFS /
 # FHMAX_HF_GFS / FHOUT_GFS on the awips path). The AWIPS 20km job is

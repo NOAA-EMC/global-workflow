@@ -1669,24 +1669,23 @@ class GFSTasks(Tasks):
             groups = [g.tolist() for g in np.array_split(fhrs_fmt, ngrps)]
         elif run in ['gfs']:
             # AWIPS 20km parm files under parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
-            # only exist every 3 hours to f084 and every 6 hours to f240. The
-            # metatask groups parm-file hours 3-per-group in each band so
-            # scheduled tasks map cleanly to parm-file cadence without
-            # crossing the 3h/6h boundary. Each override falls back to its
-            # model counterpart when unset.
+            # only exist every 3 hours to f084 and every 6 hours to f240. Use
+            # AWIPS-specific FHR overrides to build the parm-file hour list,
+            # then delegate grouping to Tasks.get_job_groups so segments are
+            # split at the 3h/6h boundary and no group ever crosses it. Each
+            # override falls back to its model counterpart when unset.
             fhmax = min(config['FHMAX_GFS'], 240)
             fhout = config.get('FHOUT_GFS_AWIPS', config['FHOUT_GFS'])
             fhmax_hf = min(config.get('FHMAX_HF_GFS_AWIPS', config['FHMAX_HF_GFS']), 240)
             fhout_hf = config.get('FHOUT_HF_GFS_AWIPS', config['FHOUT_HF_GFS'])
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
             fhrs_lf = list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
-            group_size = 3
-
-            def _chunk(items, size):
-                return [items[i:i + size] for i in range(0, len(items), size)]
-
-            groups = _chunk([f'f{h:03d}' for h in fhrs_hf], group_size) \
-                + _chunk([f'f{h:03d}' for h in fhrs_lf], group_size)
+            fhrs = fhrs_hf + fhrs_lf
+            nawipsgrp = config['MAX_TASKS']
+            ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+            groups = [[f'f{h:03d}' for h in dct['fhrs']]
+                      for dct in Tasks.get_job_groups(fhrs=fhrs, ngroups=ngrps,
+                                                      breakpoints=[fhmax_hf])]
 
         fhrs = groups
 
