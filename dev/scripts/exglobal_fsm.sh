@@ -107,7 +107,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         # TODO remove/change this and look at obsproc for the bufr files
         for ty_md in adt icec sst insitu; do
             # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            tty_files=("${COMIN_OCEAN_OBS_gfs}/${ty_md}"/*"${ty_md}"*)
+            tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
             count_tty=${#tty_files[@]}
             if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
@@ -281,7 +281,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         for ty_md in adt icec sst insitu; do
             # TODO: try to remove the use of ls.
             # shellcheck disable=SC2012
-            if [[ $(ls "${COMIN_OCEAN_OBS_gdas}"/"${ty_md}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
+            if [[ $(ls "${COMIN_OCEAN_OBS_gdas}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
                 skip_this_scan="NO"
                 proceed_trigger_scan="YES"
             fi
