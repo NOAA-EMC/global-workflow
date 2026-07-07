@@ -79,6 +79,7 @@ fi
 
 COMIN_ATMOS_OBS_gfs=${COMIN_ATMOS_OBS_gfs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gfs.${PDY}/${cyc}"}
 COMIN_ATMOS_OBS_gdas=${COMIN_ATMOS_OBS_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}"}
+COMIN_ATMOS_OBS_PREV_gdas=${COMIN_ATMOS_OBS_PREV_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${previous_cycle_PDY}/${previous_cycle_cyc}"}
 COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-${ROTDIR}}/gfs.${PDY}/${cyc}/ocean
 COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-${ROTDIR}}/gdas.${PDY}/${cyc}/ocean
 
@@ -91,7 +92,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         echo "Proceeding with scan_release_gfs_atmos_prep"
         # TODO: try to remove the use of ls.
         # shellcheck disable=SC2012
-        if [[ -s "${COMIN_ATMOS_OBS_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMIN_ATMOS_OBS_gfs}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMIN_ATMOS_OBS_gfs}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
+        if [[ -s "${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMIN_ATMOS_OBS_gfs}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMIN_ATMOS_OBS_gfs}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
             ecflow_client --event release_gfs_atmos_prep
             scan_release_gfs_atmos_prep="NO"
         else
@@ -264,7 +265,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     #### release_gdas_atmos_prep
     if [[ "${scan_release_gdas_atmos_prep}" == "YES" ]]; then
         echo "Proceeding with scan_release_gdas_atmos_prep"
-        if [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
+        if [[ -s ${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
             ecflow_client --event release_gdas_atmos_prep
             scan_release_gdas_atmos_prep="NO"
         else
