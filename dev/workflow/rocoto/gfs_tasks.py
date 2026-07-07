@@ -1690,8 +1690,7 @@ class GFSTasks(Tasks):
 
         fhrs = groups
 
-        # Single-fhr groups render as `_f090` instead of `_f090-f090`.
-        grp = ' '.join([f'_{fhr[0]}' if fhr[0] == fhr[-1] else f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
+        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
         dep = ' '.join([fhr[-1] for fhr in fhrs])
         lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
 
