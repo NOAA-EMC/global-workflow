@@ -28,4 +28,6 @@ base:
 marineanl:
   SOCA_NINNER: 1
 
+ocn:
+  MOM6_INTERP_ICS: "NO"
 
