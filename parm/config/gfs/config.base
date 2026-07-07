@@ -106,7 +106,6 @@ export DUMP_SUFFIX=""
 
 export ARCDIR="/lfs/h2/emc/gfstemp/emc.global/archive/${PSLOT}"
 export ATARDIR="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS2/GFSv17/${PSLOT}"
-export FETCHDIR="{{ FETCHDIR }}"
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
@@ -472,9 +471,6 @@ export ARCHCOM_TO="hpss"    # Valid options are hpss, globus_hpss, and local
 
 # Execute the postamble (disable for production)
 export TRAP_POSTAMBLE=NO
-
-# Globus UUID for this machine
-export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
 
 # The monitor jobs are not yet supported for JEDIATMVAR.
 if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
