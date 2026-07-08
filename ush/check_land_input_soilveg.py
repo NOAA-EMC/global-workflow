@@ -37,8 +37,7 @@ Output:
     - Counts of invalid vegetation/soil points per tile
     - Total counts across all tiles
     - Warning logs for each invalid grid point
-    - Optional fatal failure on first detection
-
+    - Optional fatal failure if invalid points are found
 ------------------------------------------------------------
 Usage:
     python check_land_input_soilveg.py \
