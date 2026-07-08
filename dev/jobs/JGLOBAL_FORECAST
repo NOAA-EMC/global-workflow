@@ -31,10 +31,11 @@ source "${USHglobal}/set_strict.sh"
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-# EXIT trap: on any failure exit (err_exit / set_strict trip / signal) invoke
-# write_status_sentinel.sh which records "aborted rc=<rc>" to ${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}.
-# The forecast manager's propagate-failure block reads that content and exits with the
-# same rc, so a broken forecast fails the manager job too instead of masking it green.
+# EXIT trap: catches implicit failure exits (set_strict trip on an unchecked command,
+# signals such as SIGTERM from the scheduler) and records "aborted rc=<rc>" to
+# ${DATAjob}/fcst_finalized_seg${FCST_SEGMENT} via write_status_sentinel.sh. The
+# explicit err_exit path (after FORECASTSH failure) writes the sentinel itself before
+# calling err_exit, because err_exit clears this trap before killing the job.
 # On the success path this trap is a no-op: write_status_sentinel.sh is idempotent and
 # skips when the sentinel already exists (the explicit success write at the bottom of
 # this J-job runs first).
@@ -132,6 +133,13 @@ fi
 "${FORECASTSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    # Write the failure sentinel BEFORE err_exit. err_exit clears the EXIT trap
+    # (trap - EXIT) before qdel/scancel, so the trap-based sentinel write would
+    # never fire on this path. Writing here guarantees the forecast manager sees
+    # "aborted rc=<rc>" and propagates the failure via forecast_manager.sh's
+    # FCST_FINALIZED_SENTINEL propagate-failure block, rather than only via the
+    # slow FCST_MGR_TIMEOUT walltime path.
+    "${USHglobal}/write_status_sentinel.sh" "${err}" "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
     err_exit "Failed to run the ${RUN} forecast for ${PDY}${cyc}"
 fi
 
