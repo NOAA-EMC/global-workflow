@@ -109,12 +109,12 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         # TODO remove/change this and look at obsproc for the bufr files
         for ty_md in adt icec sst; do
             # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-	    if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
-		echo "adt files are only produced at 00z...skipping check for ${cyc}z"
-		continue
-	    else
+            if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
+                echo "adt files are only produced at 00z...skipping check for ${cyc}z"
+                continue
+            else
                 tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
-	    fi
+            fi
             count_tty=${#tty_files[@]}
             if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
@@ -292,8 +292,8 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             else
                 tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
             fi
-	    # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-	    count_tty=${#tty_files[@]}
+            # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
+            count_tty=${#tty_files[@]}
             if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
                 proceed_trigger_scan="YES"
