@@ -31,12 +31,13 @@ source "${USHglobal}/set_strict.sh"
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 
-# EXIT trap: invoke ush/write_status_sentinel.sh on every exit path (success,
-# err_exit, set_strict trip, signal) so ${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}
-# is always written. The forecast manager's atmf finalization row waits on that
-# sentinel, so installing this here -- after ${DATAjob} is exported but before
-# any real work -- guarantees the manager (and JGLOBAL_FORECAST_MANAGER's
-# rm -rf "${DATAjob}") is never left hanging.
+# EXIT trap: on any failure exit (err_exit / set_strict trip / signal) invoke
+# write_status_sentinel.sh which records "aborted rc=<rc>" to ${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}.
+# The forecast manager's propagate-failure block reads that content and exits with the
+# same rc, so a broken forecast fails the manager job too instead of masking it green.
+# On the success path this trap is a no-op: write_status_sentinel.sh is idempotent and
+# skips when the sentinel already exists (the explicit success write at the bottom of
+# this J-job runs first).
 # shellcheck disable=SC2064  # $? and vars must expand at trap-firing time, single-quoted intentionally
 trap '"${USHglobal}/write_status_sentinel.sh" "$?" "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"' EXIT
 
@@ -173,10 +174,14 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
     fi
 fi
 
-# NOTE: The fcst_finalized_seg${FCST_SEGMENT} sentinel is written by the EXIT
-# trap installed near the top of this J-job (via ush/write_status_sentinel.sh),
-# so it fires after everything above (including the cleanup block) has
-# completed -- exactly when DATAjob is safe for the forecast manager to tear
-# down.
+# Write the finalized sentinel as the very last action of this J-job, after every
+# cleanup step above. The forecast manager's atmf finalization row waits on this file;
+# delaying its creation until here guarantees DATAjob is fully quiescent before
+# JGLOBAL_FORECAST_MANAGER's rm -rf "${DATAjob}" can run.
+#
+# On the failure path this line is not reached, but the EXIT trap installed at the top
+# of this J-job writes "aborted rc=<rc>" via write_status_sentinel.sh. The forecast
+# manager reads that content and propagates the failure.
+echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} finalized" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
 
 exit 0

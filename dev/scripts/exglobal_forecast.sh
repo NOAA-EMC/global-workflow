@@ -211,8 +211,9 @@ if [[ ${err} -ne 0 ]]; then
 fi
 # Signal to the forecast manager that model exec has returned and all history / period
 # outputs the model itself was going to write are on disk. Restart copies to COM
-# (FV3_out / MOM6_out / ...) have NOT yet run at this point; see the fcst_finalized_seg
-# sentinel below for that.
+# (FV3_out / MOM6_out / ...) have NOT yet run at this point; DATAjob is only safe to
+# tear down once JGLOBAL_FORECAST writes fcst_finalized_seg${FCST_SEGMENT} as its
+# final action (after its own DATA / DATArestart cleanup).
 echo "${RUN}_fcst_seg${FCST_SEGMENT} history done" > "${DATAjob}/fcst_history_done_seg${FCST_SEGMENT}"
 
 FV3_out
@@ -236,10 +237,9 @@ if [[ "${esmf_profile:-}" == ".true." ]]; then
 fi
 echo "MAIN: Output copied to ROTDIR"
 
-# Signal to the forecast manager that all restart / final output copies are complete
-# for this segment and DATAjob is safe to tear down. Must be written AFTER every
-# *_out function so the manager's finalization row does not race with restart copies.
-echo "${RUN}_fcst_seg${FCST_SEGMENT} finalized" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}"
+# The fcst_finalized_seg${FCST_SEGMENT} sentinel is written by JGLOBAL_FORECAST as its
+# final action (after its own DATA / DATArestart cleanup), so the manager cannot
+# tear down DATAjob before JGLOBAL_FORECAST is completely done.
 
 #------------------------------------------------------------------
 
