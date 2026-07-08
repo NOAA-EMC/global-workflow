@@ -416,12 +416,13 @@ EOF
         if [[ "${use_mgr}" == "YES" ]]; then
             # Append the forecast-finalized sentinel as the last row of instance-0's atmf table.
             # forecast_manager.sh treats fcst_finalized_seg* as a data-file trigger: it waits
-            # for this file (written by exglobal_forecast.sh AFTER every *_out completes),
+            # for this file (written by JGLOBAL_FORECAST as its final action, after every
+            # *_out completes AND after its own DATA / DATArestart cleanup block runs),
             # copies it to COM, and writes the COM log. Waiting on the finalized sentinel --
             # rather than fcst_history_done_seg which lands right after model exec -- guarantees the
             # manager (and therefore JGLOBAL_FORECAST_MANAGER's rm -rf "${DATAjob}") does not
             # race with FV3_out / MOM6_out / CICE_out / WW3_out / GOCART_out / CMEPS_out
-            # restart copies still reading files under DATAjob.
+            # restart copies or JGLOBAL_FORECAST's tail cleanup still reading files under DATAjob.
             local fcst_final_local="${DATAjob}/fcst_finalized_seg${seg}"
             local fcst_final_com="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.fcst_finalized"
             local fcst_final_com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.fcst_finalized.txt"
