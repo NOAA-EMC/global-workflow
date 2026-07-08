@@ -73,6 +73,14 @@ export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 export DATA="${DATA:-${DATAROOT}/${jobid}}"
 
 ##############################################
+# Set the NET COM base path (ROTDIR)
+##############################################
+ver_ver="${NET}_var"
+ROTDIR=${ROTDIR:-$(compath.py "${envir}/${NET}/${!ver_var}")}
+export ROTDIR
+unset ver_var
+
+##############################################
 # Temporal variables
 ##############################################
 # cycle is set here; PDY, PDYm#, PDYp# are set in jjob_shell_setup.sh via setpdy.sh
