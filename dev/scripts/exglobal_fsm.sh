@@ -77,8 +77,11 @@ if [[ "${RJN}" == "forecast" ]]; then
     fi
 fi
 
-#### COMINobsproc=${COMINobsproc:-${DMPDIR}/gfs.${PDY}/${cyc}/atmos}
-COMINgdasobs="${COMINgdasobs:-${DMPDIR}/gdas.${previous_cycle_PDY}/${previous_cycle_cyc}/atmos}"
+COMIN_ATMOS_OBS_gfs=${COMIN_ATMOS_OBS_gfs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gfs.${PDY}/${cyc}"}
+COMIN_ATMOS_OBS_gdas=${COMIN_ATMOS_OBS_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}"}
+COMIN_ATMOS_OBS_PREV_gdas=${COMIN_ATMOS_OBS_PREV_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${previous_cycle_PDY}/${previous_cycle_cyc}"}
+COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-"${ROTDIR}/gfs.${PDY}/${cyc}/obs"}
+COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-"${ROTDIR}/gdas.${PDY}/${cyc}/obs"}
 
 proceed_trigger_scan="YES"
 while [[ "${proceed_trigger_scan}" == "YES" ]]; do
@@ -87,10 +90,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     #### release_gfs_atmos_prep
     if [[ "${scan_release_gfs_atmos_prep}" == "YES" ]]; then
         echo "Proceeding with scan_release_gfs_atmos_prep"
-        COMINobsproc=${DMPDIR}/gfs.${PDY}/${cyc}/atmos
         # TODO: try to remove the use of ls.
         # shellcheck disable=SC2012
-        if [[ -s "${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMINobsproc}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMINobsproc}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
+        if [[ -s "${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMIN_ATMOS_OBS_gfs}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMIN_ATMOS_OBS_gfs}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
             ecflow_client --event release_gfs_atmos_prep
             scan_release_gfs_atmos_prep="NO"
         else
@@ -103,10 +105,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="YES"
         echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
         # TODO remove/change this and look at obsproc for the bufr files
-        COMIN_prep_ocean_obs=${DMPDIR_ocean}/gfs.${PDY}/${cyc}/ocean
         for ty_md in adt icec sst insitu; do
             # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            tty_files=("${COMIN_prep_ocean_obs}/${ty_md}"/*"${ty_md}"*)
+            tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
             count_tty=${#tty_files[@]}
             if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
@@ -264,8 +265,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     #### release_gdas_atmos_prep
     if [[ "${scan_release_gdas_atmos_prep}" == "YES" ]]; then
         echo "Proceeding with scan_release_gdas_atmos_prep"
-        COMINobsproc=${DMPDIR}/gdas.${PDY}/${cyc}/atmos
-        if [[ -s ${COMINgdasobs}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMINobsproc}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMINobsproc}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
+        if [[ -s ${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
             ecflow_client --event release_gdas_atmos_prep
             scan_release_gdas_atmos_prep="NO"
         else
@@ -278,11 +278,10 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         skip_this_scan="YES"
         echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
         # TODO remove/change this and look at obsproc for the bufr files
-        COMIN_prep_ocean_obs=${DMPDIR_ocean}/gdas.${PDY}/${cyc}/ocean
         for ty_md in adt icec sst insitu; do
             # TODO: try to remove the use of ls.
             # shellcheck disable=SC2012
-            if [[ $(ls "${COMIN_prep_ocean_obs}"/"${ty_md}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
+            if [[ $(ls "${COMIN_OCEAN_OBS_gdas}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
                 skip_this_scan="NO"
                 proceed_trigger_scan="YES"
             fi
