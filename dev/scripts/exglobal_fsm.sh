@@ -109,7 +109,12 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         # TODO remove/change this and look at obsproc for the bufr files
         for ty_md in adt icec sst; do
             # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
+	    if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
+		echo "adt files are only produced at 00z...skipping check for ${cyc}z"
+		continue
+	    else
+                tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
+	    fi
             count_tty=${#tty_files[@]}
             if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
@@ -281,13 +286,20 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
         # TODO remove/change this and look at obsproc for the bufr files
         for ty_md in adt icec sst; do
-            # TODO: try to remove the use of ls.
-            # shellcheck disable=SC2012
-            if [[ $(ls "${COMIN_OCEAN_OBS_gdas}"/*"${ty_md}"* | wc -l) -eq 0 ]]; then
+            if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
+                echo "adt files are only produced at 00z...skipping check for ${cyc}z"
+                continue
+            else
+                tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
+            fi
+	    # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
+	    count_tty=${#tty_files[@]}
+            if [[ ${count_tty} -eq 0 ]]; then
                 skip_this_scan="NO"
                 proceed_trigger_scan="YES"
             fi
         done
+
         if [[ "${skip_this_scan}" == "YES" ]]; then
             ecflow_client --event release_gdas_marine_prepoceanobs
             scan_release_gdas_marine_prepoceanobs="NO"
