@@ -21,6 +21,9 @@ case ${step} in
     memory="96GB"
     ;;
 
+  "eobs")
+    export walltime="00:25:00"
+    ;;
 
   "atmanlvar" | "atmensanlobs" | "atmensanlsol")
     export tasks_per_node=12
@@ -30,7 +33,7 @@ case ${step} in
     export tasks_per_node=20
     export memory="96GB"
     ;;
-  
+
   "eupd")
     case "${CASE}" in
       "C1152" | "C768")
