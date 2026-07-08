@@ -72,13 +72,14 @@ export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 ##############################################
 export DATA="${DATA:-${DATAROOT}/${jobid}}"
 
-##############################################
-# Set the NET COM base path (ROTDIR)
-##############################################
+################################################
+# Set the NET COM base path (ROTDIR) and COMROOT
+################################################
 ver_ver="${NET}_var"
 ROTDIR=${ROTDIR:-$(compath.py "${envir}/${NET}/${!ver_var}")}
 export ROTDIR
 unset ver_var
+export COMROOT=${ROTDIR}
 
 ##############################################
 # Temporal variables
