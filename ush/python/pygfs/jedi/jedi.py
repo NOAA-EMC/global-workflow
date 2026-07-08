@@ -493,9 +493,9 @@ class Jedi:
         logger.info(f"Creating bias correction tarball {tarball}")
         with tarfile.open(tarball, 'w') as bcor:
             logger.info(f"Adding {bcor.getnames()}")
-            for satfile_name in satlist:
-                logger.info(f"Adding satellite bias correction file {satfile_name} to {tarball}")
-                bcor.add(satfile_name, arcname=os.path.basename(satfile_name))
+            for satfile in satlist:
+                logger.info(f"Adding satellite bias correction file {satfile} to {tarball}")
+                bcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:
                 # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
                 tlapfile_rename = tlapfile.replace(self.jcb_config[f"{self.component}_obsbiasin_prefix"],
