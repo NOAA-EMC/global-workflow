@@ -22,7 +22,7 @@ case ${step} in
     ;;
 
   "eobs")
-    walltime="00:25:00"
+    export walltime="00:25:00"
     ;;
 
   "atmanlvar" | "atmensanlobs" | "atmensanlsol")
