@@ -108,13 +108,24 @@ def compare_landfrac_soilveg(input_dir: str,
         logger.info(f"Checking tile {tile}")
 
         # Open NetCDF files
-        with Dataset(oro_file) as oro, Dataset(sfc_file) as sfc:
+        try:
+            with Dataset(oro_file) as oro, Dataset(sfc_file) as sfc:
 
-            land_frac = oro.variables["land_frac"][:]
-
-            # surface fields: time dimension assumed first index
-            veg_type = sfc.variables["vtype"][0, :, :]
-            soil_type = sfc.variables["stype"][0, :, :]
+                land_frac = oro.variables["land_frac"][:]
+                veg_var = sfc.variables["vtype"][:]
+                soil_var = sfc.variables["stype"][:]
+        except FileNotFoundError:
+            logger.warning(f"File {sfc_file} or {oro_file} not found. Skipping tile {tile}.")
+            continue
+        except KeyError as ee:
+            logger.warning(f"Key error in tile {tile} inputs: {ee}. Skipping tile {tile}.")
+            continue
+        except Exception as ee:
+            logger.warning(f"Unexpected error reading tile {tile}: {ee}. Skipping tile {tile}.")
+            continue
+        # surface fields: some datasets include a leading time dimension
+        veg_type = veg_var[0, :, :] if veg_var.ndim == 3 else veg_var[:, :]
+        soil_type = soil_var[0, :, :] if soil_var.ndim == 3 else soil_var[:, :]
 
         # Define validity masks for vtype/stype
         valid_veg = (
@@ -140,29 +151,31 @@ def compare_landfrac_soilveg(input_dir: str,
         summary.invalid_veg[f"tile{tile}"] = n_invalid_veg
         summary.invalid_soil[f"tile{tile}"] = n_invalid_soil
 
-        logger.info(
-            f"Tile {tile}: invalid vegetation points={n_invalid_veg}, invalid soil points={n_invalid_soil}"
-        )
-
-        # Log individual invalid vegetation points
+        # Log individual invalid vegetation points (cap output to avoid excessively large logs)
         if n_invalid_veg > 0:
             j_fail, i_fail = np.where(invalid_veg)
-            for j, i in zip(j_fail, i_fail):
+            max_points = 100
+            for j, i in zip(j_fail[:max_points], i_fail[:max_points]):
                 logger.warning(
                     f"Tile {tile}: invalid veg at ({j},{i}) "
-                    f"land_frac={land_frac[j,i]:.3f} "
-                    f"vtype={veg_type[j,i]}"
+                    f"land_frac={land_frac[j, i]:.3f} "
+                    f"vtype={veg_type[j, i]}"
                 )
+            if n_invalid_veg > max_points:
+                logger.warning(f"Tile {tile}: {n_invalid_veg - max_points} additional invalid veg points not shown")
 
-        # Log individual invalid soil points
+        # Log individual invalid soil points (cap output to avoid excessively large logs)
         if n_invalid_soil > 0:
             j_fail, i_fail = np.where(invalid_soil)
-            for j, i in zip(j_fail, i_fail):
+            max_points = 100
+            for j, i in zip(j_fail[:max_points], i_fail[:max_points]):
                 logger.warning(
                     f"Tile {tile}: invalid soil at ({j},{i}) "
-                    f"land_frac={land_frac[j,i]:.3f} "
-                    f"stype={soil_type[j,i]}"
+                    f"land_frac={land_frac[j, i]:.3f} "
+                    f"stype={soil_type[j, i]}"
                 )
+            if n_invalid_soil > max_points:
+                logger.warning(f"Tile {tile}: {n_invalid_soil - max_points} additional invalid soil points not shown")
 
         # Optional strict mode
         if fatal and (n_invalid_veg > 0 or n_invalid_soil > 0):
@@ -193,7 +206,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--input_dir', help='Directory containing sfc_data.tileN.nc files', required=True)
     parser.add_argument('--orog_dir', help='Directory containing oro_data.tileN.nc files', required=True)
-    parser.add_argument('--fatal', action='store_true', help='Stop execution on first invalid grid point', default=False)
+    parser.add_argument('--fatal', action='store_true', help='Exit with an error if invalid grid points are found', default=False)
 
     args = parser.parse_args()
 
