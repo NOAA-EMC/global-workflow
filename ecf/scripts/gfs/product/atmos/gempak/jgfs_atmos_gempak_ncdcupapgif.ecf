@@ -1,0 +1,51 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_gempak_ncdcupapgif_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:05:00
+#PBS -l select=1:mpiprocs=28:ompthreads=1:ncpus=28:mem=6GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/gempakncdcupapgif.sh
+${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_gempak_ncdcupapgif
+
+PURPOSE: Generates NCDC upper-air GIF images (Skew-T/Log-P diagrams) from GFS
+GEMPAK grids for archival. Single-instance task.
+
+TROUBLESHOOTING
+
+Depends on GEMPAK grid output from gempak_master. If GEMPAK grids were
+not produced, this job fails. Lightweight job -- failures are almost
+always missing input. Check that GEMPAK module loaded correctly and
+GEMDATA path resolves.
+
+%end

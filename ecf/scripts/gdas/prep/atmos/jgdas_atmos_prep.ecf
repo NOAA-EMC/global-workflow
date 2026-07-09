@@ -1,0 +1,47 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_prep_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=3:mpiprocs=5:ompthreads=1:ncpus=5:mem=480GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+${HOMEgfs}/dev/job_cards/rocoto/prep.sh
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_atmos_prep
+
+PURPOSE: GDAS atmospheric observation prep. Same structure as GFS prep -- calls
+prep.sh Rocoto card.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS atmos_prep. Critical for GDAS analysis.
+Check observation data feed timeliness.
+
+%end

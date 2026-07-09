@@ -22,6 +22,17 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   set -x
 fi
 
+module load prod_util
+export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
+
+if [ -d /apps/ops/prod ]; then # On WCOSS2
+  set +x
+  echo "Running "module reset""
+  module reset
+  set -x
+fi
+
+# Setting the model package location
 modelhome=%PACKAGEHOME:%
 eval "export HOME${model:?'model undefined'}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
@@ -39,9 +50,18 @@ if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
 if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
 if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
-export KEEPDATA=${KEEPDATA:-%KEEPDATA:NO%}
-export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
+export KEEPDATA=NO
+#### enkfgdas fcst job failure with SENDDBN="YES" as of 20260306 with expdir:
+####   -rw-r--r-- 1 emc.global global 17K Mar  4 15:57 /lfs/h2/emc/gfstemp/emc.global/expdir/retrov17_01_realtime/config.base
+####   GFS code hash with this issue caab01
+#### Therefore, set the SENDDBN to NO for now
+#### export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
+export SENDDBN="NO"
+export DBNLOG="NO"
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
+
+if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+if [ -n "%EXPDIR:%" ]; then export EXPDIR="%EXPDIR:%"; fi
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x
@@ -59,6 +79,12 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   echo "Listing modules from head.h:"
   module list
   set -x
+  if [[ ! " ops.prod ops.para " =~ " $(whoami) " ]]; then
+    echo "Allow over-riding defaults for developers"
+    if [ -n "%COMROOT:%" ]; then export COMROOT="%COMROOT:%"; fi
+    if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT="%DCOMROOT:%"; fi
+  fi
 fi
 
 timeout 300 ecflow_client --init=${ECF_RID}
@@ -81,6 +107,8 @@ ERROR() {
   else
      msg="Killed by signal $1"
   fi
+  #To send email about failure, uncomment next line and update email list:
+#echo "${ECF_NAME} log file: ${ECF_JOBOUT}" | mail -s "GFSv17 ecflow realtime job failure: ${ECF_NAME}" ${USER}@noaa.gov
   ecflow_client --abort="$msg"
   echo $msg
   if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
@@ -90,4 +118,3 @@ ERROR() {
 }
 # Trap all error and exit signals
 trap 'ERROR $?' ERR EXIT
-

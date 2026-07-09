@@ -1,0 +1,50 @@
+#PBS -S /bin/bash
+#PBS -N gfs_fcst_fsm_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l select=1:ncpus=1:ompthreads=1:mem=20GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export RJN="%RJN%"
+
+export HOMEglobal=${HOMEgfs}
+${HOMEgfs}/jobs/JGLOBAL_FSM
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_fcst_fsm
+
+PURPOSE: File Service Manger releases dependent tasks by creating ecflow events.
+
+TROUBLESHOOTING
+
+FSM itself rarely fails. If it does, check ecFlow communication
+(ecflow_client). If FSM is stuck, the forecast segments may be hung --
+check jgfs_fcst status. FSM has very long walltime (6hr) to wait for
+segments; a timeout means the forecast never completed.
+
+%end
