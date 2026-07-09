@@ -176,8 +176,6 @@ EOF
 
 for fhr in $(seq -s ' ' 6 12 138); do
     gfsfhr="F$(printf "%03g" "${fhr}")"
-    ukmetfhr="F$(printf "%03g" $((fhr + 6)))"
-    grid3="${HPCUKMET}/ukmet_${PDY}00f${ukmetfhr}"
 
     "${GEMEXE}/gdplot2_nc" << EOF25
 \$MAPFIL = mepowo.gsf
