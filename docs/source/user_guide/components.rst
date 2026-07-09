@@ -51,7 +51,7 @@ Additional documentation and resources relevant to GW is shown in the table belo
 +---------------------+-----------------------------------------------------------------------------------------+
 | UFS UTILS           | https://noaa-emcufs-utils.readthedocs.io/en/latest/                                     |
 +---------------------+-----------------------------------------------------------------------------------------+
-| GFS UTILS           | https://github.com/gfs-utils                                                            |
+| GFS UTILS           | https://github.com/NOAA_EMC/gfs-utils                                                   |
 +---------------------+-----------------------------------------------------------------------------------------+
 | WaveWatchIII        | https://github.com/NOAA-EMC/WW3/wiki/WAVEWATCH-III-User-Guide                           |
 +---------------------+-----------------------------------------------------------------------------------------+
