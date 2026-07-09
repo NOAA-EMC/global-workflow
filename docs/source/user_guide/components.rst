@@ -27,7 +27,7 @@ Components included as submodules:
 * **Gridpoint Statistical Interpolation (GSI)** (https://github.com/NOAA-EMC/GSI): The core code base for atmospheric Data Assimilation (DA)
 * **GSI UTILS** (https://github.com/NOAA-EMC/GSI-Utils): Utility codes needed by GSI to create analysis
 * **GSI Monitor** (https://github.com/NOAA-EMC/GSI-Monitor): These are tools for monitoring GSI package's DA, and for detecting and reporting missing data sources, low observation counts, high penalty values etc.
-* **GFS UTILS** (https://github.com/ufs-community/gfs_utils): Utility codes needed by GW to run the GFS configuration
+* **GFS UTILS** (https://github.com/NOAA-EMC/gfs-utils): Utility codes needed by GW to run the GFS configuration
 * **NEXUS** (https://github.com/NOAA-OAR-ARL/NEXUS): Prepares emissions inputs for GCAFS
 * **UFS UTILS** (https://github.com/ufs-community/UFS_UTILS): Utility codes needed for UFS-WM
 * **wxflow** (https://github.com/NOAA-EMC/wxflow): Collection of python utilities for weather workflows
