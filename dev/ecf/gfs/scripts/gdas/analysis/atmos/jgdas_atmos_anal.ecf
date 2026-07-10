@@ -1,0 +1,54 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_anal_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:40:00
+#PBS -l select=100:mpiprocs=16:ompthreads=8:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/anal.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_atmos_anal
+
+PURPOSE: GDAS atmospheric deterministic analysis -- GSI Hybrid-4DEnVar. 100 nodes. THE primary DA
+cycle running every 6 hours. Provides ICs for both GDAS and GFS
+forecasts.
+
+TROUBLESHOOTING
+
+Same as GFS atmos_anal but MORE CRITICAL -- GDAS analysis failure breaks
+the entire DA cycling. This job requires enormous amounts of
+observational data, the full EnKF ensemble forecast, and GDAS forecast from the previous cycle. Many
+upstream failures can cascade here. Call on-call staff unless failure is
+immediately obvious (downed node, filesystem crash). Check GSI stdout
+fort.220 for minimization convergence.
+
+%end

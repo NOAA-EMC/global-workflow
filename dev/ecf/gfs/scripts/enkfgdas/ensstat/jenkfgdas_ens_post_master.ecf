@@ -1,0 +1,57 @@
+#PBS -S /bin/bash
+#PBS -N enkfgdas_ens_post%FHRGRP%_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:35:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=500GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+export WGF="%WGF%"
+export FHRGRP="%FHRGRP%"
+export FHRLST="%FHRLST%"
+export FHMIN_EPOS="%FHR%"
+export FHMAX_EPOS="%FHR%"
+export FHOUT_EPOS="%FHR%"
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/epos.sh
+${HOMEgfs}/jobs/JGDAS_ENKF_POST
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK enkfgdas_ens_post_master
+
+PURPOSE: EnKF ensemble post -- generates ensemble mean and spread from all member
+forecasts. Per-hour-group _master template.
+
+TROUBLESHOOTING
+
+Depends on ALL ensemble member forecasts completing. If too many members
+failed, ensemble statistics are unreliable. Check which members
+completed. High memory (500 GB) -- OOM possible. If only a few members
+missing, may still produce usable output with reduced ensemble size.
+
+%end

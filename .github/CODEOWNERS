@@ -10,7 +10,7 @@
 dev/ci/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 dev/ctests/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 
-/ecf/ @lgannoaa
+dev/ecf/ @TravisElless-NOAA @DavidHuber-NOAA 
 
 # Specific file owners
 # dev side scripts

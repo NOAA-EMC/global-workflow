@@ -1,0 +1,51 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_anal_calc_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=500GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/analcalc.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_anal_calc
+
+PURPOSE: Post-analysis calculations -- applies GSI increments to background to
+produce full analysis fields and diagnostics.
+
+TROUBLESHOOTING
+
+Depends on successful completion of atmos_anal. If analysis failed,
+analcalc has no input. Relatively simple job -- failures are usually
+missing analysis increment files or module load issues. Check that
+COMOUT from analysis step has the expected files (siganl, sfcanl).
+
+%end

@@ -1,0 +1,53 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_npoess_pgrb2_0p5_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=03:30:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=3GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/npoess.sh
+${HOMEgfs}/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_npoess_pgrb2_0p5
+
+PURPOSE: Produces NPOESS 0.5-degree GRIB2 subsets and simulated GOES imagery
+regridded to 0.25-degree/CONUS grids. Single-instance task looping over
+all hours internally.
+
+TROUBLESHOOTING
+
+Long-running (3.5hr wall) single job processing all forecast hours
+sequentially. A failure at any internal hour aborts the whole job. Check
+the stdout for which hour failed. Input depends on atmos_product output.
+If NPOESS is slow, it may hit walltime -- check if the job completed
+normally vs PBS killed.
+
+%end

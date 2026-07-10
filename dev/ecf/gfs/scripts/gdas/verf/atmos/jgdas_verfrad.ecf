@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gdas_verfrad_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:40:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=10G
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/verfrad.sh
+${HOMEgfs}/jobs/JGDAS_ATMOS_VERFRAD
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_verfrad
+
+PURPOSE: Archives satellite radiance diagnostics from GDAS GSI for bias
+correction monitoring. GDAS-specific. Heavy I/O (40min wall).
+
+TROUBLESHOOTING
+
+Depends on GDAS analysis diagnostic output (radstat files). Large data
+volume from satellite instruments. If analysis produced incomplete
+radstat, verfrad may partially fail. Non-critical for downstream but
+important for monitoring instrument health and bias corrections. Check
+disk space -- radstat files can be very large.
+
+%end
