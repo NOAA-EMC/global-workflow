@@ -64,7 +64,7 @@ fi
 ##########################################
 # Remove the shared temporary diagnostic directory (gsidiags)
 ##########################################
-remove_temp_diags "${pCOMIN_ATMOS_ANALYSIS}/gsidiags"
+"${USHglobal}/remove_temp_diags.sh" "${pCOMIN_ATMOS_ANALYSIS}/gsidiags"
 
 ##########################################
 # Remove the Temporary working directory

@@ -7,7 +7,7 @@
 #
 # Handles:
 #   - Sourcing utility functions (wait_for_file, dataroot_com_path, timer,
-#       err_exit, remove_temp_diags, postamble)
+#       err_exit, postamble)
 #   - Setting shell options (nullglob)
 #   - Each utility script exports its own functions via declare -xf
 #   - Setting up the postamble EXIT trap for script timing and cleanup
@@ -34,7 +34,6 @@ source "${USHglobal}/wait_for_file.sh"
 source "${USHglobal}/dataroot_com_path.sh"
 source "${USHglobal}/timer.sh"
 source "${USHglobal}/err_exit.sh"
-source "${USHglobal}/remove_temp_diags.sh"
 shopt -s nullglob # Allow null globs instead of treating * as literal
 
 ##############################################
