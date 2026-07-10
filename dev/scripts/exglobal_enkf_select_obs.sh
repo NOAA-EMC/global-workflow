@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Directories.
 pwd=$(pwd)
 
@@ -90,6 +94,7 @@ export CHEM="${CHEM_INVOBS}"
 "${ANALYSISSH}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${ANALYSISSH}")"
     err_exit "Failed to run the GSI!"
 fi
 

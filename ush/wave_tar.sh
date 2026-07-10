@@ -152,7 +152,7 @@ fi
 
 if [[ "${SENDDBN}" == "YES" ]]; then
     echo "   Alerting TAR file as ${COMOUT_WAVE_STATION}/${file_name}"
-    "${DBNROOT}/bin/dbn_alert MODEL" "${RUN^^}_WAVE_TAR" "${job}" \
+    "${DBNROOT}/bin/dbn_alert" "MODEL" "${RUN^^}_WAVE_TAR" "${job}" \
         "${COMOUT_WAVE_STATION}/${file_name}"
 fi
 

@@ -21,6 +21,10 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 source "${USHglobal}/wave_domain_grid.sh"
 
 # 0.a Basic modes of operation
@@ -137,6 +141,8 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
         if [[ ${err} -ne 0 ]]; then
             err_exit "ERROR IN grb2index MWW3 for grid ${grdID}"
         fi
+        # Restore default pgm after override
+        pgm=$(basename "${BASH_SOURCE[0]}")
 
         # 2.a.3 Run AWIPS GRIB packing program tocgrib2
 
@@ -170,6 +176,8 @@ while [[ "${fhcnt}" -le "${FHMAX_WAV}" ]]; do
             "${DBNROOT}/bin/dbn_alert" GRIB_LOW "${RUN}" "${job}" "${COMOUT_WAVE_WMO}/grib2.${cycle}.f${fhr}.awipsww3_${grdOut}"
         fi
         rm -f "${AWIPSGRB}.${grdID}.f${fhr}" "${pgmout}"
+        # Restore default pgm after prep_step override
+        pgm=$(basename "${BASH_SOURCE[0]}")
     done # For grids
 
     if [[ ${fhcnt} -ge ${FHMAX_HF_WAV} ]]; then

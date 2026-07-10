@@ -33,6 +33,10 @@ if [[ ${num} -ne 1 ]]; then
     exit 16
 fi
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 2
 
 # "Import" functions used in this script
@@ -86,6 +90,7 @@ ${WGRIB2} "tmpfile${fcsthr}" | grep -F -f "${PARMglobal}/product/gfs_awips_parml
     ${WGRIB2} -i -grib masterfile "tmpfile${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${WGRIB2}")"
     err_exit "masterfile does not exist."
 fi
 
@@ -98,6 +103,7 @@ ${WGRIB2} masterfile | grep -v ":PWAT:entire atmosphere" | ${WGRIB2} -i -grib te
 ${WGRIB2} gfs_pwat.grb -set_byte 4 23 10 -grib gfs_pwat_levels_10.grb && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${WGRIB2}")"
     err_exit "Failed to redefine PWAT for the entire atmosphere!"
 fi
 
@@ -168,6 +174,8 @@ for GRID in conus ak prico pac 003; do
     export pgm
     prep_step
     startmsg
+    # Restore default pgm after override
+    pgm=$(basename "${BASH_SOURCE[0]}")
 
     if [[ ${GRID} = "003" && $((10#${fcsthr} % 6)) == 0 ]]; then
         export FORT11="awps_file_f${fcsthr}_${GRID}"
@@ -179,6 +187,7 @@ for GRID in conus ak prico pac 003; do
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${TOCGRIB2}")"
             err_exit "Failed to generate the awips Grib2 file!"
         fi
         echo "Complex2 compression/packing for grib2.awpgfs${fcsthr}.${GRID}"
@@ -187,6 +196,7 @@ for GRID in conus ak prico pac 003; do
             -grib_out "grib2.awpgfs${fcsthr}.${GRID}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${WGRIB2}")"
             err_exit "Failed to compress and repack the awips Grib2 file!"
         fi
 
@@ -217,6 +227,7 @@ for GRID in conus ak prico pac 003; do
         ${TOCGRIB2} < "parm_list" >> "${pgmout}" 2> errfile && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${TOCGRIB2}")"
             err_exit "Failed to write the AWIPS grib2 file"
         fi
         echo "Complex2 compression/packing for grib2.awpgfs_20km_${GRID}_f${fcsthr}"
@@ -225,6 +236,7 @@ for GRID in conus ak prico pac 003; do
             -grib_out "grib2.awpgfs_20km_${GRID}_f${fcsthr}"
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${WGRIB2}")"
             err_exit "Failed to compress and repack the AWIPS grib2 file!"
         fi
 

@@ -23,6 +23,10 @@
 #                          it requires 7 nodes & allocate 21 processes per node(num_ppn=21)
 ################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 runscript="${USHglobal}/gfs_bufr.sh"
 
 cd "${DATA}" || exit 2
@@ -117,6 +121,7 @@ done
 "${USHglobal}/run_mpmd.sh" "${DATA}/poescript_bufr" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="run_mpmd.sh"
     err_exit "One or more BUFR MPMD tasks failed!"
 fi
 
@@ -150,6 +155,7 @@ fi
 ${runscript} "${fhr}" "${fhr_p}" "${FINT}" "${F00FLAG}" "${DATA}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${runscript}")"
     err_exit "Failed to generate BUFR sounding files for forecast hour ${fhr}!"
 fi
 

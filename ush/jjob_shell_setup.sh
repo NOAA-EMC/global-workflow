@@ -52,7 +52,7 @@ set -x
 ##############################################
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
-if [[ "${TRAP_POSTAMBLE:NO}" == "YES" ]]; then
+if [[ "${TRAP_POSTAMBLE:-NO}" == "YES" ]]; then
     source "${USHglobal}/postamble.sh"
     # shellcheck disable=SC2064
     trap "postamble ${start_time} \$?" EXIT
