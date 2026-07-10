@@ -40,7 +40,7 @@ if [ $retro == "YES" ]; then
   # ecFlow variable in development).  If it is somehow unset -- e.g. on the very
   # first loop before any PDY has been published -- fall back to the locally
   # maintained ecflocal/PDY file.
-  cur_pdy=${PDY}
+  cur_pdy=${PDY:-}
   if [ -z "${cur_pdy}" ]; then
     cd "${outputdir_ecf}/ecflocal"
     setpdy.sh
