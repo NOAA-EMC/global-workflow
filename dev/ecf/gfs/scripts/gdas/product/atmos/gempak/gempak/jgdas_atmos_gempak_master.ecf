@@ -1,0 +1,55 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_gempak_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:05:00
+#PBS -l select=1:mpiprocs=2:ompthreads=1:ncpus=2:mem=4GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+export WGF="%WGF%"
+export FHR3="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export COMPONENT=${WGF}
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/gempak.sh
+${HOMEgfs}/jobs/JGDAS_ATMOS_GEMPAK
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_atmos_gempak_master
+
+PURPOSE: Converts GDAS GRIB2 output to GEMPAK grids for the 9-hour GDAS forecast.
+Per-hour master template.
+
+TROUBLESHOOTING
+
+Same as GFS gempak_master but for GDAS 9-hour output. Depends on gdas
+atmos_product_master output. Lightweight (2 cpus). If GDAS forecast
+output is missing for this hour, fails. Usually straightforward -- check
+input GRIB2 file existence.
+
+%end

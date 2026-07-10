@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N enkfgdas_atmos_ens_observer_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:25:00
+#PBS -l select=4:mpiprocs=50:ompthreads=2:ncpus=100
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/eobs.sh
+${HOMEgfs}/jobs/JGLOBAL_ENKF_SELECT_OBS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK enkfgdas_atmos_ens_observer
+
+PURPOSE: EnKF observation selection -- runs GSI in observer mode to compute
+innovations (O-F) for all ensemble members. 4 nodes.
+
+TROUBLESHOOTING
+
+Prerequisite for eupd. Depends on ensemble member forecasts and
+observation data (from prep). If prep failed or ensemble forecasts are
+missing, eobs cannot compute innovations. Check GSI observer mode stdout
+for missing data types or computation errors. If most observations are
+rejected in QC, check observation input quality.
+
+%end

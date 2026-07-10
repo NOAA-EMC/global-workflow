@@ -1,0 +1,56 @@
+#PBS -S /bin/bash
+#PBS -N gfs_wave_post_gridded_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:30:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=20GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
+
+module list
+export WGF="%WGF%"
+export FHR="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export FORECAST_HOUR="${FHR_LIST}"
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/wavepostsbs.sh
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_GRIDDED
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_wave_post_gridded_master
+
+PURPOSE: Interpolates and converts WW3 native output to standard gridded GRIB2
+products per forecast hour. Per-hour _master template. Renamed to
+post_gridded in v17.
+
+TROUBLESHOOTING
+
+Depends on forecast wave output files in COMIN_WAVE_HISTORY. If forecast
+did not write wave history for this hour, post fails. Check for mod_def
+files (from wave_init). WW3 post tools (ww3_grib) can segfault on
+corrupted wave output -- check model log for wave component errors.
+
+%end

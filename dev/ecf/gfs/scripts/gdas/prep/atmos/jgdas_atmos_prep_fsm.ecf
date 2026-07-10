@@ -1,0 +1,48 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_prep_fsm_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l select=1:ncpus=1:ompthreads=1:mem=20GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export WGF="%WGF%"
+export RJN="%RJN%"
+
+export HOMEglobal=${HOMEgfs}
+${HOMEgfs}/jobs/JGLOBAL_FSM
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_atmos_prep_fsm
+
+PURPOSE: GDAS atmospheric prep FSM. Same shared JGLOBAL_FSM.
+
+TROUBLESHOOTING
+
+FSM coordination. Same troubleshooting as GFS prep_fsm.
+
+%end

@@ -1,0 +1,56 @@
+#PBS -S /bin/bash
+#PBS -N gfs_ocean_product_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:45:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=96GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+export WGF="%WGF%"
+export FHR="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export FORECAST_HOUR="${FHR_LIST}"
+export COMPONENT=${WGF}
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/oceanice_products.sh
+${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_ocean_product_master
+
+PURPOSE: Generates MOM6 ocean GRIB2 products from forecast output time averaged output period.
+Has _master template.
+
+TROUBLESHOOTING
+
+Depends on MOM6 forecast output (ocean history files). If coupled
+forecast did not write ocean output for this period, product generation
+fails. Check COMOUT_OCEAN_HISTORY for the
+target forecast hour.
+
+%end
