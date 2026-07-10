@@ -78,7 +78,7 @@ ${mom6_res}=025
 
 ACTIONS FOR RECONFIGURING NODE/TASK ALLOCATIONS:
 
-These guidelines describe where to find relevant variables and how PET calculations are made in case node and core allocations need to be modified in any way.
+These guidelines describe where to find relevant variables and how resource/PET calculations are made in case node and core allocations need to be modified in any way.
 
 Ideally, the job scripts should be used to fill out the namelist and configuration templates.
 The following are the configurable variables in parm/config/gfs/config.ufs that can be used to change the core allocations.
