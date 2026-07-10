@@ -66,6 +66,11 @@ if [[ -e "${pgmout}" ]]; then
 fi
 
 ##########################################
+# Remove the shared temporary diagnostic directory (gsidiags)
+##########################################
+remove_temp_diags "${pCOMIN_ATMOS_ANALYSIS}/gsidiags"
+
+##########################################
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
