@@ -464,30 +464,36 @@ class Jedi:
         satlist = []
         satcovlist = []
         tlaplist = []
+        obsbiasin_path = self.jcb_config[f"{self.component}_obsbiasin_path"]
+        obsbiasout_path = self.jcb_config[f"{self.component}_obsbiasout_path"]
         for ob in self.jcb_config['observations']:
-            # Sat bias file
-            satfile = os.path.join(self.jcb_config[f"{self.component}_obsbiasout_path"],
-                                   self.jcb_config[f"{self.component}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.component}_obsbiasout_suffix"])
-            if os.path.exists(satfile):
-                satlist.append(satfile)
-
-            # Sat bias cov file
-            satcovfile = os.path.join(self.jcb_config[f"{self.component}_obsbiasout_path"],
-                                      self.jcb_config[f"{self.component}_obsbiasout_prefix"] + ob + self.jcb_config[f"{self.component}_obsbiascovout_suffix"])
-            if os.path.exists(satcovfile):
-                satcovlist.append(satcovfile)
+            # Sat bias and sat bias cov files
+            for obsbiasout_suffix in [self.jcb_config[f"{self.component}_obsbiasout_suffix"],
+                                      self.jcb_config[f"{self.component}_obsbiascovout_suffix"]]:
+                satfile_name = os.path.join(self.jcb_config[f"{self.component}_obsbiasout_prefix"] + ob + obsbiasout_suffix)
+                obsbiasin_file = os.path.join(obsbiasin_path, satfile_name)
+                obsbiasout_file = os.path.join(obsbiasout_path, satfile_name)
+                if os.path.exists(obsbiasout_file):
+                    satlist.append(obsbiasout_file)
+                elif os.path.exists(obsbiasin_file):
+                    logger.warning(f"{satfile_name} does not exist in {obsbiasout_path} and will be taken from {obsbiasin_path}")
+                    satlist.append(obsbiasin_file)
+                else:
+                    logger.warning(f"{satfile_name} does not exist in {obsbiasout_path} or {obsbiasin_path}!")
 
             # Temperature lapse rate file
-            tlapfile = os.path.join(self.jcb_config[f"{self.component}_obsbiasin_path"],
+            tlapfile = os.path.join(obsbiasin_path,
                                     self.jcb_config[f"{self.component}_obsbiasin_prefix"] + ob + self.jcb_config[f"{self.component}_obstlapsein_suffix"])
             if os.path.exists(tlapfile):
                 tlaplist.append(tlapfile)
+            else:
+                logger.warning(f"{tlapfile} does not exist in {obsbiasin_path}!")
 
         # Create tarball of bias correction files
         logger.info(f"Creating bias correction tarball {tarball}")
         with tarfile.open(tarball, 'w') as bcor:
             logger.info(f"Adding {bcor.getnames()}")
-            for satfile in satlist + satcovlist:
+            for satfile in satlist:
                 logger.info(f"Adding satellite bias correction file {satfile} to {tarball}")
                 bcor.add(satfile, arcname=os.path.basename(satfile))
             for tlapfile in tlaplist:

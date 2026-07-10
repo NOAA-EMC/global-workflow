@@ -1,0 +1,51 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_analdiag_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=48GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/analdiag.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS_DIAG
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_atmos_analdiag
+
+PURPOSE: Creates NetCDF diagnostic files (cnvstat, radstat, ozstat) from the GDAS
+GSI analysis. GDAS-specific task.
+
+TROUBLESHOOTING
+
+Depends on successful GDAS analysis. If analysis failed, no diagnostics
+to produce. Relatively simple job -- check that GSI diagnostic output directories
+containing netCDF files exist. Feeds verfozn and verfrad downstream. Non-blocking
+for forecast path.
+
+%end
