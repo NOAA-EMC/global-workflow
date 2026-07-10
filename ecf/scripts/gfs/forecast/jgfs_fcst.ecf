@@ -102,6 +102,11 @@ The WW3 wave model tasks are also allocated in parm/config/gfs/config.ufs via nt
 
 Once the parm/config/gfs/config.ufs is set and executed, the ufs.configure file is created and will ultimately store the component PET allocations.
 The total UFS weather model PET requirements are the sum of the components (ATM_PET (defined above) + MOM6_PET + CICE_PET + WW3_PET)
+where 
+MOM6_PET =  (ntasks_mom6*nthreads_mom6)
+CICE_PET = (ntasks_cice6* nthreads_cice6)
+WW3_PET = (ntasks_ww3*nthreads_ww3) 
+Note that nthreads_mom6, nthreads_cice6 and nthreads_ww3 is typically 1. 
 
 ex. ( ( layout_x* layout_y * 6) + ( WRITE_GROUP* WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6) ) * nthreads_fv3 + ntasks_mom6 + ntasks_cice6 + ntasks_ww3
     ((32 * 64 *6) + (8 * 50 * 6)) * 4 + 240 + 240 + 3000 = (12288 + 2400) * 4 + 240 + 240 + 3000 = 62232 total cores
