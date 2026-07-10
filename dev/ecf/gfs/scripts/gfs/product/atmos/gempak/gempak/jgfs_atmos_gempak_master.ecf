@@ -1,0 +1,55 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_gempak_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:20:00
+#PBS -l select=1:mpiprocs=28:ompthreads=1:ncpus=28:mem=6GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+export WGF="%WGF%"
+export FHR3="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export COMPONENT=${WGF}
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/gempak.sh
+${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_gempak_master
+
+PURPOSE: Converts GFS GRIB2 forecast output to GEMPAK/NAWIPS grid format for each
+forecast hour. Per-hour _master template.
+
+TROUBLESHOOTING
+
+Depends on upstream atmos_product output. If GRIB2 input files are
+missing for a given forecast hour, that hour will fail but others
+continue. Check COMOUT from atmos_product_master for the failing hour.
+Module load failures are rare but check gempak module availability.
+
+%end

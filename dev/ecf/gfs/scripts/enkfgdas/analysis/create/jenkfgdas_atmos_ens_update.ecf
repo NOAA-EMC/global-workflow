@@ -1,0 +1,53 @@
+#PBS -S /bin/bash
+#PBS -N enkfgdas_atmos_ens_update_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:55:00
+#PBS -l select=35:mpiprocs=9:ompthreads=14:ncpus=126
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/eupd.sh
+${HOMEgfs}/jobs/JGLOBAL_ENKF_UPDATE
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK enkfgdas_atmos_ens_update
+
+PURPOSE: EnKF update -- THE core Ensemble Kalman Filter algorithm. 35 nodes =
+4410 cores. Produces ensemble analysis increments.
+
+TROUBLESHOOTING
+
+CRITICAL and resource-intensive. Depends on eobs (observation
+innovations) completing. If eobs failed, eupd has no observation-space
+data. Failures: non-convergence, memory exhaustion (35 nodes x 126
+cpus), MPI errors. Check EnKF stdout for error messages. If the ensemble
+spread is too small, filter can diverge. Expert assistance required for
+non-obvious failures.
+
+%end

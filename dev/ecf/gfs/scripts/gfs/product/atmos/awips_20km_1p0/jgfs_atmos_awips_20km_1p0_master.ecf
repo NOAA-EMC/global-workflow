@@ -1,0 +1,56 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_awips_20km_1p0_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:30:00
+#PBS -l select=1:mpiprocs=24:ompthreads=1:ncpus=24
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+export WGF="%WGF%"
+export FHR="%FHR%"
+export fcsthr=${FHR}
+export FHR_LIST="%FHR_LIST%"
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/awips_20km_1p0deg.sh
+${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_awips_20km_1p0_master
+
+PURPOSE: Generates AWIPS-compatible atmospheric gridded products on 20-km and
+1.0-degree grids for NWS offices. Per-hour _master template.
+
+TROUBLESHOOTING
+
+Depends on atmos_product_master output (GRIB2 on standard grids). If
+upstream product generation failed for this hour, AWIPS conversion
+fails. Check for tocgrib2 errors and WMO header issues. If products
+generate but are rejected by AWIPS, check bulletin headers match
+expected formats.
+
+%end

@@ -1,0 +1,50 @@
+#PBS -S /bin/bash
+#PBS -N gfs_marine_prep_fsm_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l select=1:ncpus=1:ompthreads=1:mem=20GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export WGF="%WGF%"
+export RJN="%RJN%"
+
+export HOMEglobal=${HOMEgfs}
+${HOMEgfs}/jobs/JGLOBAL_FSM
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_marine_prep_fsm
+
+PURPOSE: File/Segment Manager for marine prep -- monitors marine prep execution
+and releases dependent marine DA tasks.
+
+TROUBLESHOOTING
+
+FSM coordination job. Rarely fails on its own. If stuck, check
+prepoceanobs task status. Long walltime (6hr) is intentional wait time.
+
+%end
