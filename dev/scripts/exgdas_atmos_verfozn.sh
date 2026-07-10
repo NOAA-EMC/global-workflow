@@ -9,6 +9,10 @@
 ################################################################################
 export err=0
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 if [[ -s "${oznstat}" ]]; then
     #------------------------------------------------------------------
     #  Copy data files file to local data directory.
@@ -32,6 +36,7 @@ if [[ -s "${oznstat}" ]]; then
     "${USHglobal}/ozn_xtrct.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="ozn_xtrct.sh"
         err_exit "ozn_xtrct.sh failed!"
     fi
 

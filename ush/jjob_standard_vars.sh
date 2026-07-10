@@ -14,7 +14,7 @@
 #   PS4                                         (debug trace format)
 #   USHglobal, FIXglobal, PARMglobal,
 #     SCRIPTSglobal                             (global directory paths)
-#   pid, pgmout, pgmerr, pgm                   (job output variables)
+#   pid, pgmout, pgmerr                        (job output variables)
 #   envir, KEEPDATA, SENDECF, SENDDBN,
 #     SENDDBN_NTC, DBNROOT                      (run environment and control)
 #   DATA                                        (working directory)
@@ -54,7 +54,6 @@ export SCRIPTSglobal="${HOMEglobal}/scripts"
 export pid="${pid:-$$}"
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
-export pgm="${pgm:-}"
 
 ##############################################
 # Run environment and control variables
@@ -63,7 +62,9 @@ export envir=${envir:-"prod"}
 export KEEPDATA=${KEEPDATA:-"NO"}
 export SENDECF=${SENDECF:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
+export DBNLOG=${DBNLOG:-"NO"}
+export NODBNFCHK=${NODBNFCHK:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-""}
 export DBNROOT=${DBNROOT:-${UTILROOT:-}/fakedbn}
 
 ##############################################

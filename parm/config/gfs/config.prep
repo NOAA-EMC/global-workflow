@@ -42,9 +42,9 @@ fi
 
 # Set flags to optionally use external bias correction files
 # TODO: remove when JEDI can cycle bias correcdtion files
-export SOURCE_BIASCOR="{{ SOURCE_BIASCOR }}"
-export COPY_BIASCOR_SOURCE="{{ COPY_BIASCOR_SOURCE }}"
-export COPY_BIASCOR_STATIC="{{ COPY_BIASCOR_STATIC }}"
-export CONVERT_BIASCOR="{{ CONVERT_BIASCOR }}"
+export SOURCE_BIASCOR="NO"
+export COPY_BIASCOR_SOURCE="NO"
+export COPY_BIASCOR_STATIC="NO"
+export CONVERT_BIASCOR="NO"
 
 echo "END: config.prep"

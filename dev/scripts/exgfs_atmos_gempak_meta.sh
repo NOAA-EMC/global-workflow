@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 GEMGRD1="${RUN}_1p00_${PDY}${cyc}f"
 
 export numproc=23
@@ -86,6 +90,7 @@ while [[ ${fhr} -le ${fhend} ]]; do
         "${HOMEglobal}/ush/run_mpmd.sh" poescript && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="run_mpmd.sh"
             err_exit "Failed to generate one or more gempak meta plots!"
         fi
 
