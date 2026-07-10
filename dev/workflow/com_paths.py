@@ -89,10 +89,9 @@ def get_com_templates() -> Dict[str, str]:
     """
     Return all COM_*_TMPL keys with their literal template strings.
 
-    The NCO/EMC-conditional templates (``COM_OBSPROC_TMPL``,
-    ``COM_OBSFORGE_TMPL``, ``COM_RTOFS_TMPL``, ``COM_TCVITAL_TMPL``) are
-    defined in ``config.base`` because they need shell-time evaluation of
-    ``compath.py`` under the NCO branch.
+    The NCO/EMC-conditional templates (``COM_OBSPROC_TMPL`` and
+    ``COM_OBSFORGE_TMPL``) are defined in ``config.base`` because they need
+    shell-time evaluation of ``compath.py`` under the NCO branch.
 
     Returns
     -------
