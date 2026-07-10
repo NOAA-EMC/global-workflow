@@ -24,7 +24,7 @@ mkdir -m 775 -p "${COMOUT}"
 
 ###############################################################
 # Run relevant script
-${WDQMSSH:-${SCRgfs}/exgdas_atmos_analysis_wdqms.sh} && true
+${WDQMSSH:-${SCRglobal}/exgdas_atmos_analysis_wdqms.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
