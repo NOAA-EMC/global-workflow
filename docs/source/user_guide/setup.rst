@@ -192,27 +192,28 @@ Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend
 
 * The main case file, which largely consists of just the settings that would be provided manually to ``setup_expt.py`` when running separately. The case file also points to a second yaml via ``experiment:yaml:``. Example from C48_ATM.yaml:
 
-.. code-block:: yaml
-   experiment:
-      net: gfs
-      mode: forecast-only
-      pslot: {{ 'pslot' | getenv }}
-      app: ATM
-      resdetatmos: 48
-      comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
-      expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-      icsdir: {{ BASE_IC }}/C48mx500/20250808
-      idate: 2021032312
-      edate: 2021032312
-      yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+   .. code-block:: yaml
 
-   workflow:
-      engine: rocoto
-      rocoto:
-        maxtries: 2
-        cyclethrottle: 3
-        taskthrottle: 25
-        verbosity: 2
+      experiment:
+         net: gfs
+         mode: forecast-only
+         pslot: {{ 'pslot' | getenv }}
+         app: ATM
+         resdetatmos: 48
+         comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+         expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+         icsdir: {{ BASE_IC }}/C48mx500/20250808
+         idate: 2021032312
+         edate: 2021032312
+         yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gfs_defaults_ci.yaml
+
+      workflow:
+         engine: rocoto
+         rocoto:
+           maxtries: 2
+           cyclethrottle: 3
+           taskthrottle: 25
+           verbosity: 2
 
 - The second yaml points to a third yaml that contains default values, along with settings that override those in the default yaml. Other than the defaults section, other blocks refer to the config file the settings belong to (i.e. settings in ``base:`` modify ``config.base``). For the included cases, these are found in ``dev/ci/cases/yaml``. Continuing with our example:
 

@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gfs_wave_postpnt_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:35:00
+#PBS -l select=1:mpiprocs=40:ompthreads=1:ncpus=40
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/wavepostpnt.sh
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_PNT
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_wave_postpnt
+
+PURPOSE: Generates wave station/point spectral data and text bulletins
+at buoy locations. Single-instance per cycle.
+
+TROUBLESHOOTING
+
+Depends on WW3 forecast point output. If wave forecast failed or was
+incomplete, point data will be missing. Check wave model logs for point
+output write errors. Feeds downstream to awips_bulls. While improved
+from v16, this job will slow down or fail when there are filesystem
+issues.
+
+%end

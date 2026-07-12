@@ -1,0 +1,47 @@
+#PBS -S /bin/bash
+#PBS -N gdas_marine_obs_dump_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:10:00
+#PBS -l select=1:mpiprocs=20:ompthreads=2:ncpus=40:mem=96GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufsda
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+${HOMEgfs}/jobs/JGLOBAL_MARINE_OBS_DUMP
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_marine_obs_dump
+
+PURPOSE: GDAS ocean observation prep -- Convert raw observations from dcom into IODA format and place in com.
+
+TROUBLESHOOTING
+
+Check raw observation
+file availability. All data should be considered data of opportunity.
+
+%end
