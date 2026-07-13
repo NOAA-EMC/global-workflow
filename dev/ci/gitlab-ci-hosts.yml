@@ -459,7 +459,7 @@ build-gaeac6:
   variables:
     machine: gaeac6
   tags:
-    - hera
+    - hera2
     - licensed
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
