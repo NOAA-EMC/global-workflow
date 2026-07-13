@@ -7,6 +7,7 @@ import datetime
 import re
 import operator
 
+
 def find_tasks_with_time_triggers(node):
     """
     Recursively scans an ecFlow node structure to find Tasks that have
@@ -41,6 +42,7 @@ def find_tasks_with_time_triggers(node):
             matched_tasks.extend(find_tasks_with_time_triggers(child))
 
     return matched_tasks
+
 
 def build_trigger_command(task, time_attributes, PDYcyc):
     """
