@@ -1,0 +1,80 @@
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+module load prod_util
+set -x
+cyc=%CYC%
+export cycle=t${cyc}z
+case ${cyc} in
+  00)
+     cyc_to_wait="06"
+     prev_cyc="18"
+     ;;
+  06)
+     cyc_to_wait="12"
+     prev_cyc="00"
+     ;;
+  12)
+     cyc_to_wait="18"
+     prev_cyc="06"
+     ;;
+  18)
+     cyc_to_wait="00"
+     prev_cyc="12"
+     ;;
+esac
+# retro=YES enables the developer near-real-time / retrospective cycling
+# driver, which manages its own PDY.  Set retro=NO for an NCO code delivery,
+# where PDY is provided by the operational date file (see ecf/include/head.h).
+retro=YES
+suite_name=$(ecflow_client --query variable ${ECF_NAME}:SUITE)
+
+if [ $retro == "YES" ]; then
+  outputdir_ecf=%OUTPUTDIR%
+
+  # Determine the PDY for the *next* run of this cycle.
+  #
+  # Each cycle family (00/06/12/18) is re-queued exactly once per cycling loop,
+  # so its date advances by one day every time this cycle_end runs.  The PDY of
+  # the current run is already exported by head.h (from the suite-managed PDY
+  # ecFlow variable in development).  If it is somehow unset -- e.g. on the very
+  # first loop before any PDY has been published -- fall back to the locally
+  # maintained ecflocal/PDY file.
+  cur_pdy=${PDY:-}
+  if [ -z "${cur_pdy}" ]; then
+    cd "${outputdir_ecf}/ecflocal"
+    setpdy.sh
+    . ./PDY
+    cur_pdy=${PDY}
+  fi
+
+  # Advance one day to obtain the PDY of the next occurrence of this cycle.
+  # This is what allows the suite to march forward through dates and catch up
+  # when running behind real time (near-real-time), independent of the
+  # operational date file.
+  next_pdy=$(date --utc --date="${cur_pdy} + 1 day" +%Y%m%d)
+
+  echo "cycle_end: cyc=${cyc}, current PDY=${cur_pdy}, next PDY=${next_pdy}"
+
+  outputdir_ecf_today=${outputdir_ecf}/${next_pdy}${cyc}
+  mkdir -p ${outputdir_ecf_today}
+
+  # Suspend ecflow for the new cycle before requeueing
+  ecflow_client --suspend /${suite_name}/primary/${cyc}
+
+  # Publish the PDY for the next run of this cycle so that head.h picks it up
+  # for every task in the cycle via ecFlow variable inheritance.
+  ecflow_client --alter add variable PDY ${next_pdy} /${suite_name}/primary/${cyc}
+
+  ecflow_client --alter add variable OUTPUTDIR $outputdir_ecf_today /${suite_name}/primary/${cyc}/gfs
+  ecflow_client --alter add variable OUTPUTDIR $outputdir_ecf_today /${suite_name}/primary/${cyc}/gdas
+  ecflow_client --alter add variable OUTPUTDIR $outputdir_ecf_today /${suite_name}/primary/${cyc}/enkfgdas
+  ecflow_client --requeue=force /${suite_name}/primary/${cyc}/gfs
+  ecflow_client --requeue=force /${suite_name}/primary/${cyc}/gdas
+  ecflow_client --requeue=force /${suite_name}/primary/${cyc}/enkfgdas
+  ecflow_client --requeue=force /${suite_name}/primary/${cyc_to_wait}/cycle_end
+  ecflow_client --resume /${suite_name}/primary/${cyc}
+fi
+
+%include <tail.h>
+exit 0

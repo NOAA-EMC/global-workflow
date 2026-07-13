@@ -5918,6 +5918,8 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
+      task cycle_end
+        trigger gdas == complete and gfs == complete and enkfgdas == complete
     endfamily			//00
 
     family 06
@@ -11825,6 +11827,8 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
+      task cycle_end
+        trigger gdas == complete and gfs == complete and enkfgdas == complete
     endfamily			//06
 
     family 12
@@ -17732,6 +17736,8 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
+      task cycle_end
+        trigger gdas == complete and gfs == complete and enkfgdas == complete
     endfamily			//12
 
     family 18
@@ -23640,6 +23646,8 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
+      task cycle_end
+        trigger gdas == complete and gfs == complete and enkfgdas == complete
     endfamily			//18
   endfamily			//primary
 endsuite			//gfs_v17_0
