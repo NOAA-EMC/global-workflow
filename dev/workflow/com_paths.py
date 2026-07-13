@@ -3,9 +3,8 @@
 """
 Single source of truth for COM_*_TMPL path templates.
 
-Replaces the previous ``parm/config/{app}/config.com`` shell file. Templates are
-literal strings using shell-style ``${VAR}`` placeholders; substitution is done
-later (by Rocoto ``<cyclestr>`` or by ``declare_from_tmpl`` at job runtime).
+Templates are literal strings using shell-style ``${VAR}`` placeholders;
+substitution is done later (by Rocoto ``<cyclestr>`` or by ``declare_from_tmpl`` at job runtime).
 """
 
 from typing import Dict
