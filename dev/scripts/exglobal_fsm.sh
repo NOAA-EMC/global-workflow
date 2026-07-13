@@ -178,9 +178,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         while [[ "${fhr}" -le "${fhr_max}" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
-            # Trigger on the per-file completion log (written after the .bin is
-            # fully copied to COM) rather than the .bin file itself, which may
-            # still be in the process of being written.
+            # Check if the copy-complete log file is present instead of the file itself.
             ocean_uglo_15km_log=${COMIN_WAVE_HISTORY}/gfs.t${cyc}z.uglo_15km.f${fhr_3d}.log
             if [[ ${array_element_ocean_uglo_15km[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
@@ -216,10 +214,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         for fhr in $(seq 6 6 384); do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
-            # Trigger on the per-file completion log (written after the .nc is
-            # fully copied to COM) rather than the .nc file itself. This replaces
-            # the previous, resolution-specific file-size heuristic used to guard
-            # against triggering on an incompletely written file.
+            # Check if the copy-complete log file is present instead of the file itself.
             ocean_6hr_avg_log=${COMIN_OCEAN_HISTORY}/gfs.t${cyc}z.6hr_avg.log.f${fhr_3d}.txt
             file_exist="NO"
             if [[ ${array_element_ocean_6hr_avg[fhr]:-NO} == "YES" ]]; then
@@ -251,9 +246,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         for fhr in $(seq 6 6 384); do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
-            # Trigger on the per-file completion log (written after the .nc is
-            # fully copied to COM) rather than the .nc file itself, which may
-            # still be in the process of being written.
+            # Check if the copy-complete log file is present instead of the file itself.
             ice_6hr_avg_log=${COMIN_ICE_HISTORY}/gfs.t${cyc}z.log.ice.f${fhr_3d}.txt
             if [[ ${array_element_ice_6hr_avg[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
@@ -349,9 +342,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         for fhr in $(seq 0 9); do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
-            # Trigger on the per-file completion log (written after the .bin is
-            # fully copied to COM) rather than the .bin file itself, which may
-            # still be in the process of being written.
+            # Check if the copy-complete log file is present instead of the file itself.
             ocean_uglo_15km_log=${COMIN_WAVE_HISTORY}/gdas.t${cyc}z.uglo_15km.f${fhr_3d}.log
             if [[ ${array_element_ocean_uglo_15km[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
@@ -390,7 +381,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ ${skip_this_scan} == "NO" ]]; then
                     if [[ -s ${atm_log} ]]; then
                         release_event="YES"
-                        array_element_atm_log[10#${fhr}]="YES"
+                        array_element_atm_log[fhr]="YES"
                         ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
                     fi
                 fi
