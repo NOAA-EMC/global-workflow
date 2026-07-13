@@ -42,17 +42,20 @@ fi
 #-----------------------------------------------------
 # Retention decision (design decision table).
 # KEEP_TEMP_DIAGS overrides KEEPDATA; when KEEP_TEMP_DIAGS is unset/empty
-# the directory follows the KEEPDATA decision.
+# the directory follows the KEEPDATA decision. Matching is case-insensitive
+# (YES/yes/Yes and NO/no all accepted).
 #   YES         -> retain (any KEEPDATA)            (Req 3.4, 4.1)
 #   NO          -> remove (any KEEPDATA)            (Req 3.5, 4.2)
 #   unset/empty -> follow KEEPDATA                  (Req 3.1, 3.2, 3.3, 4.5)
-#   other       -> remove + error indication        (Req 4.6)
+#   other       -> retain + error indication (fail safe: an ambiguous/typo'd
+#                  value must never trigger a deletion)   (Req 4.6)
 #-----------------------------------------------------
 keepdata="${KEEPDATA:-}"
 keep_temp_diags="${KEEP_TEMP_DIAGS:-}"
 action=""
 
-case "${keep_temp_diags}" in
+# Upper-case the flag so YES/yes/Yes (and NO/no/No) are all accepted.
+case "${keep_temp_diags^^}" in
     YES)
         action="retain"
         ;;
@@ -60,17 +63,18 @@ case "${keep_temp_diags}" in
         action="remove"
         ;;
     "")
-        if [[ "${keepdata}" == "YES" ]]; then
+        if [[ "${keepdata^^}" == "YES" ]]; then
             action="retain"
         else
             action="remove"
         fi
         ;;
     *)
-        # Req 4.6: unrecognized value -> remove and emit an error indication
-        # naming the offending value.
-        echo "ERROR: remove_temp_diags.sh: unrecognized KEEP_TEMP_DIAGS value '${keep_temp_diags}'; treating as 'NO' and removing '${temp_diag_dir}'" >&2
-        action="remove"
+        # Req 4.6: unrecognized value (likely a typo) -> RETAIN and emit an
+        # error indication naming the offending value. Keeping scratch is
+        # always safer than deleting on an ambiguous flag.
+        echo "ERROR: remove_temp_diags.sh: unrecognized KEEP_TEMP_DIAGS value '${keep_temp_diags}'; retaining '${temp_diag_dir}' to be safe" >&2
+        action="retain"
         ;;
 esac
 
@@ -87,7 +91,7 @@ fi
 
 # Resolve the path lexically (do not follow symlinks, allow missing parts)
 # so the containment/parent checks operate on a canonical path.
-if ! resolved=$(realpath -m -s "${temp_diag_dir}" 2>/dev/null); then
+if ! resolved=$(realpath -m -s "${temp_diag_dir}" 2> /dev/null); then
     echo "WARNING: remove_temp_diags.sh: unable to resolve '${temp_diag_dir}'; skipping cleanup" >&2
     exit 0
 fi
@@ -105,7 +109,7 @@ if [[ -z "${DATAROOT:-}" ]]; then
     exit 0
 fi
 
-if ! dataroot_resolved=$(realpath -m -s "${DATAROOT}" 2>/dev/null); then
+if ! dataroot_resolved=$(realpath -m -s "${DATAROOT}" 2> /dev/null); then
     echo "WARNING: remove_temp_diags.sh: unable to resolve DATAROOT '${DATAROOT}'; skipping cleanup" >&2
     exit 0
 fi
@@ -121,7 +125,7 @@ for protected in "${DATAROOT}" "${COMIN_ATMOS_ANALYSIS:-}" "${COMOUT_ATMOS_ANALY
     if [[ -z "${protected}" ]]; then
         continue
     fi
-    if ! prot_resolved=$(realpath -m -s "${protected}" 2>/dev/null); then
+    if ! prot_resolved=$(realpath -m -s "${protected}" 2> /dev/null); then
         continue
     fi
     if [[ "${resolved}" == "${prot_resolved}" ]]; then
@@ -137,7 +141,7 @@ done
 # Reject a gsidiags symlink whose physical target is outside DATAROOT
 # (Req 5.5): do not delete through a link that escapes the subtree.
 if [[ -L "${temp_diag_dir}" ]]; then
-    if ! physical=$(realpath "${temp_diag_dir}" 2>/dev/null); then
+    if ! physical=$(realpath "${temp_diag_dir}" 2> /dev/null); then
         echo "WARNING: remove_temp_diags.sh: unable to resolve symlink '${temp_diag_dir}'; skipping cleanup" >&2
         exit 0
     fi
