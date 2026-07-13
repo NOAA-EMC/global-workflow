@@ -460,6 +460,7 @@ build-gaeac6:
     machine: gaeac6
   tags:
     - gaeac6
+    - licenced
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
