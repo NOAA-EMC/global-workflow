@@ -26,15 +26,15 @@ module load prod_util
 # Determine the PDY for this cycle.
 #   In NCO/production the operational date file is authoritative, so PDY is
 #   always read from it.  In a development / near-real-time environment the
-#   ecFlow suite manages its own PDY (advanced and published by the cycle_end
+#   ecFlow suite manages its own PDY (advanced and published by the cycle_begin
 #   script).  This lets the suite process the actual date of interest even
 #   when it lags behind real time -- reading the operational date file in that
 #   situation would yield the wrong (current operational) PDY and stall the
 #   workflow.  See NOAA-EMC/global-workflow#5116.
 if [ "%MACHINE_SITE%" = "development" ]; then
-  # Prefer the suite-provided PDY (the ecFlow PDY variable set by cycle_end).
+  # Prefer the suite-provided PDY (the ecFlow PDY variable set by cycle_begin).
   # Fall back to the operational date file when it is not yet set, e.g. on the
-  # very first cycle before cycle_end has run.
+  # very first cycle before cycle_begin has run.
   export PDY="%PDY:%"
   if [ -z "${PDY}" ]; then
     export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
