@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gfs_vminmon_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:05:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=1G
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/vminmon.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_VMINMON
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_vminmon
+
+PURPOSE: GSI Variational Minimization Monitor -- extracts and archives
+convergence diagnostics from the atmospheric analysis.
+
+TROUBLESHOOTING
+
+Lightweight monitoring job. Depends on GSI analysis output (fort.*
+minimization files). If analysis did not run or was abnormal, vminmon
+may find no data. Non-critical -- failure does not block downstream
+tasks. Check that analysis completed and diagnostic files exist in
+COMOUT.
+
+%end
