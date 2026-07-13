@@ -424,6 +424,9 @@ fi
 # Generate post-processing ensemble spread files
 export ENKF_SPREAD="YES"
 
+# WDQMS
+export DO_WDQMS="{{ DO_WDQMS | default('NO') }}"
+
 #Soil DA and whether it is (land) IAU
 if [[ "${RUN}" == "gdas" || "${RUN}" == "enkfgdas" ]]; then
     export DO_GSISOILDA="{{ DO_GSISOILDA }}"
