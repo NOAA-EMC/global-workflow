@@ -58,7 +58,6 @@ if [ $retro == "YES" ]; then
   ecflow_client --requeue=force /${suite_name}/primary/${cyc}/gfs
   ecflow_client --requeue=force /${suite_name}/primary/${cyc}/gdas
   ecflow_client --requeue=force /${suite_name}/primary/${cyc}/enkfgdas
-  ecflow_client --requeue=force /${suite_name}/primary/${cyc}/cycle_end
 
   # Requeue the cycle_begin job for the next cycle
   ecflow_client --requeue=force /${suite_name}/primary/${next_cyc}/cycle_begin
