@@ -1,0 +1,53 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_gempak_meta_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l select=1:mpiprocs=28:ompthreads=1:ncpus=28:mem=40GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/gempakmeta.sh
+${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_META
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_gempak_meta
+
+PURPOSE: Generates GEMPAK metafiles (pre-rendered weather charts: jet stream,
+thickness, precipitation panels). Single-instance task looping
+internally over hours.
+
+TROUBLESHOOTING
+
+Very long walltime (6hr) because it loops through all forecast hours
+generating plots. If it fails, check which internal hour caused the
+problem in stdout. Depends on GEMPAK grid files from gempak_master. If
+those are missing, metafile generation fails. MPI-parallel GEMPAK
+processes can hang on bad input.
+
+%end
