@@ -18,7 +18,7 @@ if (( $# != 1 )); then
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl_regrid sfcanl_gcycle analcalc analdiag anlstat fcst echgres"
-    echo "upp atmos_products"
+    echo "upp atmos_products wdqms"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
     echo "eobs ediag eupd ecen esfc_gcycle esfc_regrid efcs epos earc_vrfy earc_tars"
@@ -785,6 +785,14 @@ case ${step} in
       is_exclusive=True
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "wdqms")
+    walltime="00:20:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="48GB"
     ;;
 
   "anlstat")

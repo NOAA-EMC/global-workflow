@@ -3,7 +3,6 @@
 # Metafile Script : gfs_meta_sa2.sh
 #
 # Creates several South American gfs charts, including 500mb and psml
-# comparisons to the ecmwf and ukmet
 #
 
 rm -rf "${DATA}/SA2"
@@ -27,15 +26,6 @@ metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 
 grid1="F-GFSHPC | ${PDY:2}/${cyc}00"
-
-# DEFINE YESTERDAY
-PDYm1="$(date --utc +%Y%m%d -d "${PDY} ${cyc} - 24 hours")"
-
-HPCECMWF="ecmwf.${PDYm1}"
-HPCUKMET="ukmet.${PDY}"
-# TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
-${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF}"
-${NLN} "${COMINukmet}/ukmet.${PDY}/gempak" "${HPCUKMET}"
 
 "${GEMEXE}/gdplot2_nc" << EOF
 \$MAPFIL= mepowo.gsf
@@ -184,84 +174,8 @@ ru
 ex
 EOF
 
-for fhr in $(seq -s ' ' 6 24 126); do
-    gfsfhr="F$(printf "%03g" "${fhr}")"
-    if [[ fhr -lt 100 ]]; then
-        offset=6
-    else
-        offset=18
-    fi
-    ecmwffhr="F$(printf "%03g" $((fhr + offset)))"
-    grid2="${HPCECMWF}/ecmwf_glob_${PDYm1}12"
-
-    "${GEMEXE}/gdplot2_nc" << EOF10
-\$MAPFIL = mepowo.gsf
-GDFILE	= ${grid1} !${grid2}
-GDATTIM	= ${gfsfhr}!${ecmwffhr}
-DEVICE	= ${device}
-PANEL	= 0
-TEXT	= 1/21//hw
-CONTUR	= 2
-MAP	= 6/1/1/yes
-CLEAR   = yes
-CLRBAR  = 1
-PROJ    = mer//3;3;0;1
-GAREA   = -71;-135;20;-20
-LATLON	= 18//1/1/10
-
-GLEVEL  = 500
-GVCORD  = PRES
-PANEL   = 0
-SKIP    = 0
-SCALE   = -1
-GDPFUN  = sm5s(hght)!sm5s(hght)
-TYPE    = c
-CONTUR  = 1
-CINT    = 6
-FINT    =
-FLINE   =
-HLSYM   =
-WIND    =
-REFVEC  =
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#//5/5;5/y!2/H#;L#//5/5;5/y
-TITLE   = 31/-1/~ ? ${MDL} @ HGHT (WHITE)|~EC VS ${MDL} 500!2/-2/~ ? ECMWF 500 HGHT (RED)
-l
-r
-
-GLEVEL  = 0
-GVCORD  = none
-PANEL   = 0
-SKIP    = 0
-SCALE   = 0
-GDPFUN  = (pmsl)!(pmsl)
-TYPE    = c
-CONTUR  = 7
-CINT    = 4
-FINT    =
-FLINE   =
-HLSYM   = 1.5;1.5//21//hw
-CLRBAR  = 1
-WIND    =
-REFVEC  =
-TEXT    = 1/21//hw
-CLEAR   = yes
-GDFILE  = ${grid1}!${grid2}
-GDATTIM = ${gfsfhr}!${ecmwffhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#/1020-1060;900-1010/5/10;10!2/H#;L#/1020-1060;900-1010/5/10;10
-TITLE   = 31/-1/~ ? ${MDL} PMSL (WHITE)|~EC VS ${MDL} PMSL!2/-2/~ ? ECMWF PMSL (RED)
-l
-r
-
-ex
-EOF10
-done
-
 for fhr in $(seq -s ' ' 6 12 138); do
     gfsfhr="F$(printf "%03g" "${fhr}")"
-    ukmetfhr="F$(printf "%03g" $((fhr + 6)))"
-    grid3="${HPCUKMET}/ukmet_${PDY}00f${ukmetfhr}"
 
     "${GEMEXE}/gdplot2_nc" << EOF25
 \$MAPFIL = mepowo.gsf
@@ -272,12 +186,15 @@ CONTUR  = 2
 MAP     = 6/1/1/yes
 CLEAR   = yes
 CLRBAR  =
+PROJ    = mer//3;3;0;1
+GAREA   = -71;-135;20;-20
+LATLON  = 18//1/1/10
 GLEVEL  = 500
 GVCORD  = PRES
 PANEL   = 0
 SKIP    = 0
 SCALE   = -1
-GDPFUN  = sm5s(hght)!sm5s(hght)
+GDPFUN  = sm5s(hght)
 TYPE    = c
 CONTUR  = 1
 CINT    = 6
@@ -288,11 +205,11 @@ GVECT   =
 WIND    =
 REFVEC  =
 clear   = yes
-GDFILE  = ${grid1}!${grid3}
-GDATTIM = ${gfsfhr}!F${ukmetfhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#//5/7;7/y!2/H#;L#//5/5;5/y
-TITLE   = 31/-1/~ ? ${MDL} @ HGHT (WHITE)|~UK VS ${MDL} 500!2/-2/~ ? UKMET 500 HGHT (RED)
+GDFILE  = ${grid1}
+GDATTIM = ${gfsfhr}
+LINE    = 31//2
+HILO    = 31/H#;L#//5/7;7/y
+TITLE   = 31/-1/~ ? ${MDL} @ HGHT (WHITE)|~ ${MDL} 500
 l
 r
 
@@ -301,7 +218,7 @@ GVCORD  = none
 PANEL   = 0
 SKIP    = 0
 SCALE   = 0
-GDPFUN  = sm5s(pmsl)!sm5s(pmsl)
+GDPFUN  = sm5s(pmsl)
 TYPE    = c
 CONTUR  = 2
 CINT    = 4
@@ -313,11 +230,11 @@ WIND    =
 REFVEC  =
 TEXT    = 1/21//hw
 CLEAR   = yes
-GDFILE  = ${grid1}!${grid3}
-GDATTIM = ${gfsfhr}!F${ukmetfhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#/1020-1060;900-1010/5/10;10!2/H#;L#/1020-1060;900-1010/5/10;10
-TITLE   = 31/-1/~ ? ${MDL} PMSL (WHITE)|~UK VS ${MDL} PMSL!2/-2/~ ? UKMET PMSL (RED)
+GDFILE  = ${grid1}
+GDATTIM = ${gfsfhr}
+LINE    = 31//2
+HILO    = 31/H#;L#/1020-1060;900-1010/5/10;1010
+TITLE   = 31/-1/~ ? ${MDL} PMSL (WHITE)|~ ${MDL} PMSL
 l
 r
 
