@@ -87,61 +87,25 @@ if [ $retro == "YES" ]; then
   now_epoch=$(date --utc +%s)
   cycle_path="/${suite_name}/primary/${cyc}"
 
-  # Extract "<node path><TAB><trigger line>" for every node with a ':TIME'
-  # trigger by parsing the server's current definition.  The family stack is
-  # tracked via the family/task/endfamily keywords so each trigger is resolved
-  # to its full ecFlow path.  Commented-out triggers (leading '#') are ignored
-  # because the first token is not exactly "trigger".
-  time_triggers=$(ecflow_client --get 2>/dev/null | awk '
-    function join(   i,p){ p=""; for (i=1;i<=fdepth;i++) p=p "/" fam[i]; return p }
-    {
-      tok=$1
-      if (tok=="suite"     || tok=="family")    { fam[++fdepth]=$2; curtask=""; next }
-      if (tok=="endsuite"  || tok=="endfamily") { if (fdepth>0) fdepth--; curtask=""; next }
-      if (tok=="task")                          { curtask=$2; next }
-      if (tok=="trigger" && index($0,":TIME")>0) {
-        node = (curtask=="") ? join() : join() "/" curtask
-        print node "\t" $0
-      }
-    }')
+  # Run the dev/ush/ecflow_time_triggers.py script to extract time triggers
+  ecflow_client --get 1> gfsprod.def 2>/dev/null
 
-  if [ -n "${time_triggers}" ]; then
-    while IFS=$(printf '\t') read -r node trig; do
-      [ -z "${node}" ] && continue
-      # Restrict to the cycle that was just requeued.
-      case "${node}" in
-        "${cycle_path}/"*) ;;
-        *) continue ;;
-      esac
-      # Lower bound (">= HHMM") of the time window is the earliest the task
-      # could run; pad to a 4-digit HHMM.
-      hhmm=$(echo "${trig}" | grep -oE ':TIME[[:space:]]*>=[[:space:]]*[0-9]+' | head -1 | grep -oE '[0-9]+$')
-      [ -z "${hhmm}" ] && continue
-      while [ ${#hhmm} -lt 4 ]; do hhmm="0${hhmm}"; done
-      hh=${hhmm%??}
-      mm=${hhmm#??}
+  # Run the dev/ush/ecflow_time_triggers.py script to extract time triggers
+  ${HOMEgfs}/dev/ush/ecflow_time_triggers.py gfsprod.def "${cycle_path}" "${PDY}${cyc}"
 
-      # Resolve the window to an absolute time.  The windows are wall-clock
-      # times relative to the cycle hour: most run a few hours after it, but
-      # some (e.g. the 18z gdas dump at 00:10) cross midnight into the next
-      # day.  Treat the window as an offset from the cycle hour and, if it is
-      # more than 12h *before* the cycle hour, roll it into the next calendar
-      # day so late/after-midnight windows are dated correctly.
-      win_min=$(( 10#${hh} * 60 + 10#${mm} ))
-      cyc_min=$(( 10#${cyc} * 60 ))
-      off_min=$(( win_min - cyc_min ))
-      if [ ${off_min} -lt -720 ]; then off_min=$(( off_min + 1440 )); fi
-      base_epoch=$(date --utc --date="${next_pdy} ${cyc}:00:00" +%s)
-      sched_epoch=$(( base_epoch + off_min * 60 ))
-      if [ "${sched_epoch}" -lt "${now_epoch}" ]; then
-        echo "cycle_end: :TIME window ${hhmm} for ${next_pdy}${cyc} has passed; force-running ${node}"
-        ecflow_client --run "${node}"
-      else
-        echo "cycle_end: :TIME window ${hhmm} for ${next_pdy}${cyc} not yet reached; leaving ${node} to its trigger"
-      fi
-    done <<EOF
-${time_triggers}
-EOF
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "Error: ecflow_time_triggers.py failed with status ${status}"
+    exit 1
+  fi
+
+  # Check if ecflow_time_triggers.py produced any commands to execute
+  if [[ -s trigger_timed_commands.sh ]]; then
+    echo "Executing time-triggered commands from trigger_timed_commands.sh"
+    chmod u+x trigger_timed_commands.sh
+    ./trigger_timed_commands.sh
+  else
+    echo "No time-triggered commands to execute."
   fi
 
 fi
