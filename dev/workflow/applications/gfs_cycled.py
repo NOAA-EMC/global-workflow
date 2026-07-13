@@ -85,6 +85,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_gsiliau'] = base.get('DO_LAND_IAU', run_options[run]['do_gsisoilda'])
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
+            run_options[run]['do_wdqms'] = base.get('DO_WDQMS', False)
 
         return run_options
 
@@ -121,6 +122,9 @@ class GFSCycledAppConfig(AppConfig):
                 configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
         else:
             configs += ['anal', 'analdiag', 'analcalc']
+
+        if options['do_wdqms']:
+            configs += ['wdqms']
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar']
@@ -283,6 +287,9 @@ class GFSCycledAppConfig(AppConfig):
                 if run == 'gdas':
                     if not options['do_jediatmvar']:
                         task_names[run] += ['analdiag']
+
+                    if options['do_wdqms']:
+                        task_names[run] += ['wdqms']
 
                     if options['do_wave']:
                         task_names[run] += wave_prep_tasks
