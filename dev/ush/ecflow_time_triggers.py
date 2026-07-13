@@ -61,10 +61,10 @@ def build_trigger_command(task, time_attributes, PDYcyc):
     current_dt = datetime.datetime.utcnow()
     current_time = current_dt.strftime("%Y%m%d%H")
     PDYcyc_dt = datetime.datetime.strptime(PDYcyc, "%Y%m%d%H")
-    PDYcyc_dt_plus_6h = PDYcyc_dt + datetime.timedelta(hours=6)
+    PDYcyc_dt_plus_12h = PDYcyc_dt + datetime.timedelta(hours=12)
 
-    # If the PDYcyc is more than 6 hous in the past, we can assume the task has missed its launch window.
-    if current_dt > PDYcyc_dt_plus_6h:
+    # If the PDYcyc is more than 12 hous in the past, we can assume the task has missed its launch window.
+    if current_dt > PDYcyc_dt_plus_12h:
         return command
 
     # Extract the time from the trigger expression
@@ -106,6 +106,14 @@ def build_trigger_command(task, time_attributes, PDYcyc):
 
             if last_time_dt < current_dt:
                 return command
+            else:
+                # It is possible for the trigger to be on the next day
+                # If last_time is less than "0600" and $cyc is "18", then the trigger is
+                # for the next day.
+                if last_time < "0600" and PDYcyc_dt.hour == 18:
+                    last_time_dt_next_day = last_time_dt + datetime.timedelta(days=1)
+                    if last_time_dt_next_day < current_dt:
+                        return command
 
             # TODO: Expand this to handle more complex expressions and make use of
             #       the logical_ops list to evaluate the entire expression correctly.
@@ -188,7 +196,7 @@ if __name__ == "__main__":
 
             if len(commands) > 0:
                 with open("trigger_timed_tasks.sh", "w") as f:
-                    f.write("#!/bin/bash\n\n")
+                    f.write("#!/bin/bash\nset -ex\n")
                     for cmd in commands:
                         f.write(f"{cmd}\n")
                 print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
