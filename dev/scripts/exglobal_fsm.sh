@@ -142,7 +142,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${atmos_master}" ]]; then
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
-                        atmos_master_product_ready[${fhr}]="YES"
+                        atmos_master_product_ready[fhr]="YES"
                         ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
                     fi
                 fi
@@ -180,7 +180,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
-                        wave_uglo_15km_product_ready[${fhr}]="YES"
+                        wave_uglo_15km_product_ready[fhr]="YES"
                         ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
                     fi
                 fi
@@ -218,7 +218,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${ocean_6hr_avg_log}" ]]; then
                         file_exist="YES"
                         release_event="YES"
-                        ocean_6hr_avg_product_ready[${fhr}]="YES"
+                        ocean_6hr_avg_product_ready[fhr]="YES"
                         ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
                     fi
                 fi
@@ -248,7 +248,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${ice_6hr_avg_log}" ]]; then
                         release_event="YES"
-                        ice_6hr_avg_product_ready[${fhr}]="YES"
+                        ice_6hr_avg_product_ready[fhr]="YES"
                         ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
                     fi
                 fi
@@ -314,7 +314,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${atmos_master}" ]]; then
                         release_event="YES"
-                        atmos_master_product_ready[${fhr}]="YES"
+                        atmos_master_product_ready[fhr]="YES"
                         ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
                     fi
                 fi
@@ -344,7 +344,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
-                        wave_uglo_15km_product_ready[${fhr}]="YES"
+                        wave_uglo_15km_product_ready[fhr]="YES"
                         ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
                     fi
                 fi
