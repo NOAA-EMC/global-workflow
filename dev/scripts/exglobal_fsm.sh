@@ -4,7 +4,7 @@ set -u -o pipefail
 shopt -s nullglob
 
 # File Service Manager (FSM) for Global Workfow
-# WGF (Workflow Group Family Assignment) - atmos, ocean
+# WGF (Workflow Group Family Assignment) - atmos, wave, ocean, ice
 # RJN (Request Job Name) - prep, forecast
 
 # Set default pgm for err_exit
@@ -58,24 +58,18 @@ if [[ "${RJN}" == "forecast" ]]; then
         scan_release_gfs_ocean_product="YES"
         scan_release_gfs_ice_product="YES"
         scan_release_gfs_atmos_goesupp="YES"
-        # Initialize search array
-        for fhr in $(seq 0 3 384); do
-            array_element_atmos_master[fhr]="NO"
-            array_element_ocean_uglo_15km[fhr]="NO"
-            array_element_atm_log[fhr]="NO"
-        done
-        for fhr in $(seq 6 6 384); do
-            array_element_ocean_6hr_avg[fhr]="NO"
-            array_element_ice_6hr_avg[fhr]="NO"
-        done
+        # Create search arrays (to be filled with "YES" when the target log file is found)
+        declare -a atmos_master_product_ready
+        declare -a wave_uglo_15km_product_ready
+        declare -a atm_history_product_ready
+        declare -a ocean_6hr_avg_product_ready
+        declare -a ice_6hr_avg_product_ready
     fi
     if [[ "${RUN}" == "gdas" ]]; then
         scan_release_gdas_atmos_product="YES"
         scan_release_gdas_wave_post_gridded="YES"
-        for fhr in $(seq 0 9); do
-            array_element_atmos_master[fhr]="NO"
-            array_element_ocean_uglo_15km[fhr]="NO"
-        done
+        declare -a atmos_master_product_ready
+        declare -a wave_uglo_15km_product_ready
     fi
 fi
 
@@ -138,7 +132,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
             atmos_master=${COMIN_ATMOS_MASTER}/gfs.t${cyc}z.master.f${fhr_3d}.grib2
-            if [[ "${array_element_atmos_master[fhr]:-NO}" == "YES" ]]; then
+            if [[ "${atmos_master_product_ready[fhr]:-NO}" == "YES" ]]; then
                 # If this FHR is already found and event released
                 echo "Skip found FHR${fhr_3d}"
             else
@@ -148,12 +142,12 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${atmos_master}" ]]; then
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
-                        array_element_atmos_master[10#${fhr}]="YES"
+                        atmos_master_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${array_element_atmos_master[fhr]:-NO}" == "NO" ]]; then
+            if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${atmos_master_product_ready[fhr]:-NO}" == "NO" ]]; then
                 echo "FSM release_gfs_atmos_product is waiting for file: ${atmos_master}"
                 skip_this_scan="YES"
                 scan_release_gfs_atmos_product="YES"
@@ -180,18 +174,18 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             fhr_3d=$(printf "%03d" "${fhr}")
             # Check if the copy-complete log file is present instead of the file itself.
             ocean_uglo_15km_log=${COMIN_WAVE_HISTORY}/gfs.t${cyc}z.uglo_15km.f${fhr_3d}.log
-            if [[ ${array_element_ocean_uglo_15km[fhr]:-NO} == "YES" ]]; then
+            if [[ ${wave_uglo_15km_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${ocean_uglo_15km_log}" ]]; then
                         release_event="YES"
-                        array_element_ocean_uglo_15km[10#${fhr}]="YES"
+                        wave_uglo_15km_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${array_element_ocean_uglo_15km[fhr]:-NO}" == "NO" ]]; then
+            if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${wave_uglo_15km_product_ready[fhr]:-NO}" == "NO" ]]; then
                 echo "FSM release_gfs_wave_post_gridded is waiting for file: ${ocean_uglo_15km_log}"
                 skip_this_scan="YES"
                 scan_release_gfs_wave_post_gridded="YES"
@@ -217,19 +211,19 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             # Check if the copy-complete log file is present instead of the file itself.
             ocean_6hr_avg_log=${COMIN_OCEAN_HISTORY}/gfs.t${cyc}z.6hr_avg.log.f${fhr_3d}.txt
             file_exist="NO"
-            if [[ ${array_element_ocean_6hr_avg[fhr]:-NO} == "YES" ]]; then
+            if [[ ${ocean_6hr_avg_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${ocean_6hr_avg_log}" ]]; then
                         file_exist="YES"
                         release_event="YES"
-                        array_element_ocean_6hr_avg[10#${fhr}]="YES"
+                        ocean_6hr_avg_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ "${file_exist}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${skip_this_scan}" == "NO" ]] && [[ "${array_element_ocean_6hr_avg[fhr]:-NO}" == "NO" ]]; then
+            if [[ "${file_exist}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${skip_this_scan}" == "NO" ]] && [[ "${ocean_6hr_avg_product_ready[fhr]:-NO}" == "NO" ]]; then
                 echo "FSM release_gfs_ocean_product is waiting for file: ${ocean_6hr_avg_log}"
                 skip_this_scan="YES"
                 scan_release_gfs_ocean_product="YES"
@@ -248,18 +242,18 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             fhr_3d=$(printf "%03d" "${fhr}")
             # Check if the copy-complete log file is present instead of the file itself.
             ice_6hr_avg_log=${COMIN_ICE_HISTORY}/gfs.t${cyc}z.log.ice.f${fhr_3d}.txt
-            if [[ ${array_element_ice_6hr_avg[fhr]:-NO} == "YES" ]]; then
+            if [[ ${ice_6hr_avg_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${ice_6hr_avg_log}" ]]; then
                         release_event="YES"
-                        array_element_ice_6hr_avg[10#${fhr}]="YES"
+                        ice_6hr_avg_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${array_element_ice_6hr_avg[fhr]:-NO} == "NO" ]]; then
+            if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${ice_6hr_avg_product_ready[fhr]:-NO} == "NO" ]]; then
                 echo "FSM release_gfs_ice_product is waiting for file: ${ice_6hr_avg_log}"
                 skip_this_scan="YES"
                 scan_release_gfs_ice_product="YES"
@@ -314,18 +308,18 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
             atmos_master=${COMIN_ATMOS_MASTER}/gdas.t${cyc}z.master.f${fhr_3d}.grib2
-            if [[ "${array_element_atmos_master[fhr]:-NO}" == "YES" ]]; then
+            if [[ "${atmos_master_product_ready[fhr]:-NO}" == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${atmos_master}" ]]; then
                         release_event="YES"
-                        array_element_atmos_master[10#${fhr}]="YES"
+                        atmos_master_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${array_element_atmos_master[fhr]:-NO}" == "NO" ]]; then
+            if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${atmos_master_product_ready[fhr]:-NO}" == "NO" ]]; then
                 echo "FSM release_gdas_atmos_product is waiting for file: ${atmos_master}"
                 skip_this_scan="YES"
                 scan_release_gdas_atmos_product="YES"
@@ -344,18 +338,18 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             fhr_3d=$(printf "%03d" "${fhr}")
             # Check if the copy-complete log file is present instead of the file itself.
             ocean_uglo_15km_log=${COMIN_WAVE_HISTORY}/gdas.t${cyc}z.uglo_15km.f${fhr_3d}.log
-            if [[ ${array_element_ocean_uglo_15km[fhr]:-NO} == "YES" ]]; then
+            if [[ ${wave_uglo_15km_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     if [[ -s "${ocean_uglo_15km_log}" ]]; then
                         release_event="YES"
-                        array_element_ocean_uglo_15km[10#${fhr}]="YES"
+                        wave_uglo_15km_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${array_element_ocean_uglo_15km[fhr]:-NO} == "NO" ]]; then
+            if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${wave_uglo_15km_product_ready[fhr]:-NO} == "NO" ]]; then
                 echo "FSM release_gdas_wave_post_gridded is waiting for file: ${ocean_uglo_15km_log}"
                 skip_this_scan="YES"
                 scan_release_gdas_wave_post_gridded="YES"
@@ -375,18 +369,18 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
             atm_log=${COMIN_ATMOS_HISTORY}/gfs.t${cyc}z.log.f${fhr_3d}.txt
-            if [[ ${array_element_atm_log[fhr]:-NO} == "YES" ]]; then
+            if [[ ${atm_history_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ ${skip_this_scan} == "NO" ]]; then
                     if [[ -s ${atm_log} ]]; then
                         release_event="YES"
-                        array_element_atm_log[fhr]="YES"
+                        atm_history_product_ready[fhr]="YES"
                         ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
                     fi
                 fi
             fi
-            if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${array_element_atm_log[fhr]:-NO} == "NO" ]]; then
+            if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${atm_history_product_ready[fhr]:-NO} == "NO" ]]; then
                 echo "FSM release_gfs_atmos_goesupp is waiting for file: ${atm_log}"
                 skip_this_scan="YES"
                 scan_release_gfs_atmos_goesupp="YES"
