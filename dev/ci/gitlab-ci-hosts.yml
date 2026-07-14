@@ -459,7 +459,7 @@ build-gaeac6:
   variables:
     machine: gaeac6
   tags:
-    - hera2
+    - gaeac6
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger") && ($RUN_ON_MACHINES =~ /\bgaeac6\b|all/)
     - when: never  # Prevent pipeline from running on any other event (e.g., merges to develop)
