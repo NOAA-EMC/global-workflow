@@ -173,12 +173,12 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
             # Check if the copy-complete log file is present instead of the file itself.
-            ocean_uglo_15km_log=${COMIN_WAVE_HISTORY}/gfs.t${cyc}z.uglo_15km.f${fhr_3d}.log
+            wave_uglo_15km_log=${COMIN_WAVE_HISTORY}/gfs.t${cyc}z.uglo_15km.f${fhr_3d}.log
             if [[ ${wave_uglo_15km_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
-                    if [[ -s "${ocean_uglo_15km_log}" ]]; then
+                    if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
                         wave_uglo_15km_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
@@ -186,7 +186,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 fi
             fi
             if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${wave_uglo_15km_product_ready[fhr]:-NO}" == "NO" ]]; then
-                echo "FSM release_gfs_wave_post_gridded is waiting for file: ${ocean_uglo_15km_log}"
+                echo "FSM release_gfs_wave_post_gridded is waiting for file: ${wave_uglo_15km_log}"
                 skip_this_scan="YES"
                 scan_release_gfs_wave_post_gridded="YES"
                 proceed_trigger_scan="YES"
@@ -337,12 +337,12 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
             # Check if the copy-complete log file is present instead of the file itself.
-            ocean_uglo_15km_log=${COMIN_WAVE_HISTORY}/gdas.t${cyc}z.uglo_15km.f${fhr_3d}.log
+            wave_uglo_15km_log=${COMIN_WAVE_HISTORY}/gdas.t${cyc}z.uglo_15km.f${fhr_3d}.log
             if [[ ${wave_uglo_15km_product_ready[fhr]:-NO} == "YES" ]]; then
                 echo "Skip found FHR${fhr_3d}"
             else
                 if [[ "${skip_this_scan}" == "NO" ]]; then
-                    if [[ -s "${ocean_uglo_15km_log}" ]]; then
+                    if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
                         wave_uglo_15km_product_ready[${fhr}]="YES"
                         ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
@@ -350,7 +350,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 fi
             fi
             if [[ ${skip_this_scan} == "NO" ]] && [[ ${release_event} == "NO" ]] && [[ ${wave_uglo_15km_product_ready[fhr]:-NO} == "NO" ]]; then
-                echo "FSM release_gdas_wave_post_gridded is waiting for file: ${ocean_uglo_15km_log}"
+                echo "FSM release_gdas_wave_post_gridded is waiting for file: ${wave_uglo_15km_log}"
                 skip_this_scan="YES"
                 scan_release_gdas_wave_post_gridded="YES"
                 proceed_trigger_scan="YES"
