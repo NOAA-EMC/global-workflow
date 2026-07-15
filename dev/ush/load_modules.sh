@@ -66,7 +66,7 @@ source "${HOMEglobal}/ush/module-setup.sh"
 case "${MODULE_TYPE}" in
     "ufswm")
         # UFS Weather Model modules - special handling
-	source "${HOMEglobal}/versions/run.ver"
+        source "${HOMEglobal}/versions/run.ver"
         module use "${HOMEglobal}/sorc/ufs_model.fd/modulefiles"
         module load "ufs_${MACHINE_ID}.intel"
         export err=$?
