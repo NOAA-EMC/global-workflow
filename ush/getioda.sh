@@ -52,7 +52,6 @@ for compdir in "${SOURCE_DIR}"/*/; do
         echo "WARNING: skip processing of ${compdir}"
         continue
     fi
-    
     # Skip if not a directory
     if [[ ! -d "${SOURCE_DIR}/${compdir}/" ]]; then
         continue
