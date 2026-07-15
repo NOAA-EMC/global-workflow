@@ -10,6 +10,7 @@ source "${EXPDIR}/config.resources" ediag
 
 # Retain the shared temporary GSI diagnostic staging directory (gsidiags)
 # for debugging. Default NO; forced NO in operations.
-export KEEP_TEMP_DIAGS="NO"
+# TEMP TEST: set to YES to verify retention path (revert to "NO" after testing).
+export KEEP_TEMP_DIAGS="YES"
 
 echo "END: config.ediag"
