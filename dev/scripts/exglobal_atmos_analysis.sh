@@ -18,6 +18,9 @@
 #################################################################################
 
 #  Set environment.
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 #  Directories.
 # shellcheck disable=SC2153
@@ -711,7 +714,8 @@ EOF
     "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to unzip rad diag file!"
+        pgm="run_mpmd.sh"
+        err_exit "Failed to unzip at least one rad diag file!"
     fi
 fi # if [[ $USE_RADSTAT == "YES" ]
 
@@ -852,11 +856,14 @@ cat gsiparm.anl
 export OMP_NUM_THREADS=${NTHREADS_GSI}
 export pgm=${GSIEXEC}
 source prep_step
+# Restore default pgm after prep_step override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpreq "${GSIEXEC}" "${DATA}"
 ${APRUN_GSI} "${DATA}/$(basename "${GSIEXEC}")" 1>&1 2>&2
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${GSIEXEC}")"
     err_exit "Failed to run the GSI analysis!"
 fi
 
@@ -867,6 +874,7 @@ if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then
     ${CALCINCPY}
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${CALCINCPY}")"
         err_exit "Failed to calculate the analysis increment!"
     fi
 fi

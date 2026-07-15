@@ -85,6 +85,10 @@ source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_confi
 
 source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
 cplflx=${cplflx:-.false.} # default off,import from outside source
@@ -179,6 +183,7 @@ cpreq "${EXECglobal}/${FCSTEXEC}" "${DATA}/"
 ${APRUN_UFS} "${DATA}/${FCSTEXEC}" 1>&1 2>&2 && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${FCSTEXEC}")"
     err_exit "The forecast failed to run to completion!"
 fi
 

@@ -19,6 +19,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Dependent Scripts and Executables
 CYCLESH=${CYCLESH:-"${USHglobal}/global_cycle.sh"}
 export CYCLEXEC=${CYCLEXEC:-"${EXECglobal}/global_cycle"}
@@ -152,6 +156,7 @@ for hr in "${!gcycle_dates[@]}"; do
     "${CYCLESH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${CYCLESH}")"
         err_exit "Unable to update surface data from guess and analysis!"
     fi
 

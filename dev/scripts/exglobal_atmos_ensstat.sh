@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 fhr3=$(printf "%03d" "${FORECAST_HOUR}")
 
 if [[ -e mpmd_script ]]; then
@@ -16,5 +20,6 @@ fi
 "${USHglobal}/run_mpmd.sh" mpmd_script
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="run_mpmd.sh"
     err_exit "One or more MPMD jobs failed to calculate ensemble statistics!"
 fi
