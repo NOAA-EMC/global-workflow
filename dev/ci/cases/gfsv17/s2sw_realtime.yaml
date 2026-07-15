@@ -25,7 +25,7 @@ base:
   DO_WDQMS: "YES"
   EUPD_CYC: "gdas"
   INTERVAL_GFS: 6
-  SDATE_GFS: 2026022406  # This should be 6 hours after "idate"
+  SDATE_GFS: 2026070206  # This should be 6 hours after "idate"
   FHMAX_GFS: 384
   FHMAX_HF_GFS: 120
   CASE_HIST: "C768"
