@@ -266,7 +266,7 @@ if diff nhc nhc.ORIG > /dev/null; then
 
 else
 
-    if [[ "${copy_back}" == 'YES' && ${envir} == 'prod' ]]; then
+    if [[ "${copy_back}" == 'YES' && ${envir} == 'prod' && "${RUN_ENVIR:-emc}" == 'nco' ]]; then
         if [[ -s "${HOMENHC}/tcvitals" ]]; then
             cpfs nhc "${HOMENHC}/tcvitals"
         fi
