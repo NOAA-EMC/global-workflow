@@ -17,15 +17,15 @@ base:
   DO_GOES: "YES"
   DO_BUFRSND: "YES"
   DO_GEMPAK: "YES"
-  DO_AWIPS: "NO"
-  DO_NPOESS: "NO"
+  DO_AWIPS: "YES"
+  DO_NPOESS: "YES"
   DO_FIT2OBS: "YES"
   DO_VERFOZN: "YES"
   DO_VERFRAD: "YES"
   DO_WDQMS: "YES"
   EUPD_CYC: "gdas"
   INTERVAL_GFS: 6
-  SDATE_GFS: 2026031912
+  SDATE_GFS: 2026022406  # This should be 6 hours after "idate"
   FHMAX_GFS: 384
   FHMAX_HF_GFS: 120
   CASE_HIST: "C768"
@@ -40,7 +40,7 @@ prepoceanobs:
 
 prep:
   # This can only be enabled in realtime
-  PROCESS_TROPCY: "NO"
+  PROCESS_TROPCY: "YES"
 
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
