@@ -50,8 +50,8 @@ fi
 
 #TODO - implement beter way to set these parameters
 if [[ "${LOCALIZATION_TYPE}" == "gsibec" ]]; then
-    sed -i "s/NMEM_ENS/${NMEM_ENS}/g"              "${DATA}"/berror/gfs_gsi_global.nml
-    sed -i "s/PREFIX_ENS/enkf${GDUMP}.t${gcyc}z/g" "${DATA}"/berror/gfs_gsi_global.nml    
+    sed -i "s/NMEM_ENS/${NMEM_ENS}/g" "${DATA}"/berror/gfs_gsi_global.nml
+    sed -i "s/PREFIX_ENS/enkf${GDUMP}.t${gcyc}z/g" "${DATA}"/berror/gfs_gsi_global.nml
 fi
 
 ##############################################
