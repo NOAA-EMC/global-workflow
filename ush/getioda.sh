@@ -45,6 +45,14 @@ prefix="${RUN}.t${HH}z."
 for compdir in "${SOURCE_DIR}"/*/; do
     compdir=${compdir%*/}
     compdir=${compdir##*/}
+
+    #PATCH
+    # skip if atmos.nr or atmos.us
+    if [[ "${compdir}" == "atmos.nr" || "${compdir}" == "atmos.us" ]]; then
+        echo "WARNING: skip processing of ${compdir}"
+        continue
+    fi
+    
     # Skip if not a directory
     if [[ ! -d "${SOURCE_DIR}/${compdir}/" ]]; then
         continue
