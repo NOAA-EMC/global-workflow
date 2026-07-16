@@ -7,7 +7,7 @@
 #   source "${HOMEglobal}/ush/setup_data_dir.sh" <dir_to_create_>
 #
 # Requires in environment:
-#   err_exit  - (from err_exit.sh)
+#   err_exit  - (from the prod_util module)
 # Optional:
 #   WIPE_DATA - whether to delete any existing directory [default: "YES"]
 #######

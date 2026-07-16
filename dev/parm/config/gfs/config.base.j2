@@ -509,6 +509,12 @@ export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, a
 # Execute the postamble (disable for production)
 export TRAP_POSTAMBLE=YES
 
+# Ensure these are always bound (even if empty) so err_exit's scheduler
+# checks don't crash with "unbound variable" under `set -u` on systems
+# where the corresponding scheduler isn't in use (e.g. Slurm-only machines)
+export PBS_JOBID=${PBS_JOBID:-}
+export SLURM_JOB_ID=${SLURM_JOB_ID:-}
+
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
 
