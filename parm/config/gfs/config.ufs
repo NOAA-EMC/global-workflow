@@ -68,21 +68,8 @@ if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${
   skip_mediator=false
 fi
 
-if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-  # Describe nest location, interaction with parent, etc.
-  export grid_type=0
-  export stretch_fac=1.0001
-  export TARGET_LAT=32.5
-  export TARGET_LON=-135.0
-  export NEST_LON1=-195.000000
-  export NEST_LAT1=-7.500000
-  export NEST_LON2=-75.000000
-  export NEST_LAT2=72.500000
-  export twowaynest=${twowaynest:-.true.}
-else
-  # No nest.
-  export grid_type=-1
-fi
+# No nest.
+export grid_type=-1
 
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
@@ -109,213 +96,123 @@ case "${fv3_res}" in
         export fv_sg_adj=3600
         ;;
     "C96")
-        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-          if [[ "${RUN}" = *gdas ]]; then
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=2
-          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
-            export layout_x=4
-            export layout_y=4
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=2
-          fi
-
-          export DELTIM=450
-          export layout_x_nest=12
-          export layout_y_nest=10
-          export nest_refine=4
-          export nest_ioffset=4
-          export nest_joffset=9
-          export npx_nest=361
-          export npy_nest=241
-          export NEST_DLON=0.25
-          export NEST_DLAT=0.25
-          export psl_gwd_dx_factor=6.0
-        else
-          export nthreads_fv3=1
-          export nthreads_ufs=1
-          export layout_x=2
-          export layout_y=2
-          export WRITE_GROUP=1
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-          export DELTIM=600
-          export xr_cnvcld=.false. # Do not pass conv. clouds to Xu-Randall cloud fraction
-          export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-          export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
-          export psl_gwd_dx_factor=6.0
-          export knob_ugwp_tauamp=3.0e-3      # setting for UGWPv1 non-stationary GWD
-          export k_split=1
-          export n_split=4
-          export tau=8.0
-          export rf_cutoff=300.0
-          export fv_sg_adj=1800
-        fi
+        export nthreads_fv3=1
+        export nthreads_ufs=1
+        export layout_x=2
+        export layout_y=2
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
+        export DELTIM=600
+        export xr_cnvcld=.false. # Do not pass conv. clouds to Xu-Randall cloud fraction
+        export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="20.0,2.5,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
+        export knob_ugwp_tauamp=3.0e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=1
+        export n_split=4
+        export tau=8.0
+        export rf_cutoff=300.0
+        export fv_sg_adj=1800
         ;;
     "C192")
-        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-          export DELTIM=225
-          if [[ "${RUN}" = *gdas ]]; then
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15
-          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
-            export layout_x=5
-            export layout_y=6
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15
-          fi
-          export layout_x_nest=15
-          export layout_y_nest=25
-          export nest_refine=4
-          export nest_ioffset=7
-          export nest_joffset=19
-          export npx_nest=721
-          export npy_nest=481
-          export NEST_DLON=0.125
-          export NEST_DLAT=0.125
-          export psl_gwd_dx_factor=6.0
-        else
-          export layout_x=4
-          export layout_y=6
-          if [[ "${RUN}" = *gdas ]]; then
-            export nthreads_fv3=1
-            export nthreads_ufs=1
-            export WRITE_GROUP=1
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
-            export nthreads_fv3=2
-            export nthreads_ufs=2
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=5
-          fi
-          export DELTIM=600
-          export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-          export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
-          export psl_gwd_dx_factor=6.0
-          export knob_ugwp_tauamp=1.5e-3      # setting for UGWPv1 non-stationary GWD
-          export k_split=2
-          export n_split=4
-          export tau=6.0
-          export rf_cutoff=300.0
-          export fv_sg_adj=1800
-        fi
-        ;;
-    "C384")
-        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-          export DELTIM=150
-          export layout_x=8
-          export layout_y=8
-          export WRITE_GROUP=2
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20
-          if [[ "${RUN}" = *gdas ]]; then
-            export nthreads_fv3=1
-            export nthreads_ufs=1
-          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
-            export nthreads_fv3=2
-            export nthreads_ufs=2
-          fi
-          export layout_x_nest=34
-          export layout_y_nest=24
-          export nest_refine=4
-          export nest_ioffset=13
-          export nest_joffset=37
-          export npx_nest=1441
-          export npy_nest=961
-          export NEST_DLON=0.0625
-          export NEST_DLAT=0.0625
-          export psl_gwd_dx_factor=2.0
-        else
-          export DELTIM=300
-          export layout_x=6
-          export layout_y=8
+        export layout_x=4
+        export layout_y=6
+        if [[ "${RUN}" = *gdas ]]; then
+          export nthreads_fv3=1
+          export nthreads_ufs=1
+          export WRITE_GROUP=1
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
+        elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
           export nthreads_fv3=2
           export nthreads_ufs=2
           export WRITE_GROUP=2
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
-          export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-          export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
-          export psl_gwd_dx_factor=6.0
-          export knob_ugwp_tauamp=0.8e-3      # setting for UGWPv1 non-stationary GWD
-          export k_split=2
-          export n_split=4
-          export tau=4.0
-          export rf_cutoff=300.0
-          export fv_sg_adj=900
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=5
         fi
+        export DELTIM=600
+        export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="10.0,3.5,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
+        export knob_ugwp_tauamp=1.5e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=6.0
+        export rf_cutoff=300.0
+        export fv_sg_adj=1800
+        ;;
+    "C384")
+	# Resolution used in ENKFGDAS in GFSv17     
+        export DELTIM=300     # model timestep in seconds
+        export layout_x=6     # number of processors in x-dir per tile
+        export layout_y=8     # number of processors in y-dir per tile
+        export nthreads_fv3=2 # number of threads for atmosphere model
+        export nthreads_ufs=2 # number of threads for ufs driver
+        export WRITE_GROUP=2  # number of asynchronous write tasks
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=10
+        export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="5.0,5.0,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
+        export knob_ugwp_tauamp=0.8e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=4.0
+        export rf_cutoff=300.0
+        export fv_sg_adj=900
         ;;
     "C768")
-        if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-          export DELTIM=75
-          export layout_x=16
-          export layout_y=10
-          export nthreads_fv3=2
-          export WRITE_GROUP=2
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=90
-          export layout_x_nest=48
-          export layout_y_nest=45
-          export nthreads_fv3_nest=2
-          export nest_refine=4
-          export nest_ioffset=24
-          export nest_joffset=72
-          export npx_nest=2881
-          export npy_nest=1921
-          export NEST_DLON=0.0325
-          export NEST_DLAT=0.0325
-          export psl_gwd_dx_factor=2.0
-        else
-          export nthreads_fv3=4
-          export nthreads_ufs=4
-          if [[ "${RUN}" = *gdas ]]; then
-            export layout_x=8
-            export layout_y=12
-            export WRITE_GROUP=2
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15 #Note this should be 10 for WCOSS2
-          elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
-            export layout_x=12
-            export layout_y=16
-            export WRITE_GROUP=4
-            export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 #Note this should be 10 for WCOSS2
-          fi
-          export DELTIM=150
-          export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-          export cdmbgwd_gsl="2.5,7.5,1.0,1.0"   # settings for GSL drag suite
-          export psl_gwd_dx_factor=6.0
-          export knob_ugwp_tauamp=0.5e-3      # setting for UGWPv1 non-stationary GWD
-          export k_split=2
-          export n_split=4
-          export tau=3.0
-          export rf_cutoff=300.0
-          export fv_sg_adj=450
-        fi
-        ;;
-    "C1152")
-        export DELTIM=150
         export nthreads_fv3=4
         export nthreads_ufs=4
-        export WRITE_GROUP=4
+        if [[ "${RUN}" = *gdas ]]; then
+          export layout_x=8
+          export layout_y=12
+          export WRITE_GROUP=2
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=15 #Note this should be 10 for WCOSS2
+        elif [[ "${RUN}" = "gfs" || "${RUN}" = "gcafs" ]]; then
+          export layout_x=12
+          export layout_y=16
+          export WRITE_GROUP=4
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 #Note this should be 10 for WCOSS2
+        fi
+        export DELTIM=150
+        export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd_gsl="2.5,7.5,1.0,1.0"   # settings for GSL drag suite
+        export psl_gwd_dx_factor=6.0
+        export knob_ugwp_tauamp=0.5e-3      # setting for UGWPv1 non-stationary GWD
+        export k_split=2
+        export n_split=4
+        export tau=3.0
+        export rf_cutoff=300.0
+        export fv_sg_adj=450
+        ;;
+    "C1152")
+	# Resolution used in GFS and GDAS in GFSv17
+        export DELTIM=150     # model timestep in seconds
+        export nthreads_fv3=4 # number of threads for atmosphere model
+        export nthreads_ufs=4 # number of threads for ufs driver
+        export WRITE_GROUP=4  # number of asynchronous write tasks
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
                                                         # For GAEAC6 use 60
         if [[ "${RUN}" = *gdas ]]; then
-          export layout_x=16
-          export layout_y=24
+          export layout_x=16  # number of processors in x-dir per tile
+          export layout_y=24  # number of processors in y-dir per tile
         elif [[ "${RUN}" = gfs ]]; then
-          export layout_x=32
-          export layout_y=32
+          export layout_x=32  # number of processors in x-dir per tile
+          export layout_y=32  # number of processors in y-dir per tile
           export blocksize=36 # Note, default is 32 and MOD((resolution/layout_x)*(resolution/layout_y),blocksize) == 0
-          export WRITE_GROUP=8
-          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=50
+          export WRITE_GROUP=8  # number of write groups
+          export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=50 # number of tasks per write group
         elif [[ "${RUN}" = *gcafs ]]; then
-          export layout_x=16
-          export layout_y=24
+          export layout_x=16  # number of processors in x-dir per tile
+          export layout_y=24  # number of processors in y-dir per tile
         fi
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export cdmbgwd_gsl="1.67,8.8,1.0,1.0"   # settings for GSL drag suite
-        export psl_gwd_dx_factor=2.0
+        export psl_gwd_dx_factor=2.0         # scaling factor for stress line in gravity wave drag
         export knob_ugwp_tauamp=0.35e-3      # setting for UGWPv1 non-stationary GWD
-        export k_split=2
-        export n_split=6
-        export tau=2.5
-        export rf_cutoff=300.0
-        export fv_sg_adj=450
+        export k_split=2      # number of vertical remappings per DELTIM
+        export n_split=6      # number of small dynamic timesteps per DELTIM
+        export tau=2.5        # Rayleigh damping timescale
+        export rf_cutoff=300.0 # pressure below where no rayleigh damping is applied
+        export fv_sg_adj=450  # timescale (sec) to remove two-delta-z instability when local Richardson number < 1 
         ;;
     "C3072")
         export DELTIM=90
@@ -341,6 +238,14 @@ case "${fv3_res}" in
         ;;
 esac
 
+# How to calculate total atmospheric tasks:
+# Total atm tasks will be set in ufs.configure file
+# Total tasks: ((layout_x * layout_y * 6) + (WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * WRITE_GROUP)) * nthreads
+#
+# GFSv17 default example:
+# ATM_petlist_bounds:             0 58751
+# Total tasks = (( 32 * 64 * 6) + (8 * 300)) * 4 = (12288 + 2400) * 4 = 58752 total tasks
+
 (( WRTTASK_PER_GROUP_PER_THREAD = WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * 6 ))
 export WRTTASK_PER_GROUP_PER_THREAD
 
@@ -355,6 +260,9 @@ export ntasks_quilt
 
 # Determine whether to use compression in the write grid component
 # and whether to use parallel NetCDF based on resolution
+#
+# ideflate and zstandard can not both be on for a given set of files (output or restart)
+# Setting both to true for the same filetype will cause a failure
 case ${fv3_res} in
   "C48" | "C96" | "C192")
     zstandard_level=0
@@ -366,11 +274,11 @@ case ${fv3_res} in
     OUTPUT_FILETYPE_SFC="netcdf"
     ;;
   "C384" | "C768" | "C1152" | "C3072")
-    zstandard_level=0
-    ideflate=1
-    zstandard_level_rst=0
-    ideflate_rst=0
-    quantize_nsd=14
+    zstandard_level=0 # zstandard compression for model output
+    ideflate=1        # ideflate compression for model output
+    zstandard_level_rst=0  # zstandard compression for model restart files
+    ideflate_rst=0         # ideflate compression for model restart files
+    quantize_nsd=14        # digits to keep in lossy compression
     OUTPUT_FILETYPE_ATM="netcdf_parallel"
     if [[ "${fv3_res}" == "C384" ]]; then
       OUTPUT_FILETYPE_SFC="netcdf"  # For C384, the write grid component is better off with serial netcdf
@@ -499,20 +407,21 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS=""
       ;;
     "025")
+      # Resolution used in GFSv17 
       if [[ "${RUN}" = enkfgdas ]]; then
-        ntasks_mom6=160
+        ntasks_mom6=160  # number of tasks for MOM6 model
       elif [[ "${RUN}" = gdas ]]; then
-        ntasks_mom6=100
+        ntasks_mom6=100  # number of tasks for MOM6 model
       elif [[ "${RUN}" = gfs ]]; then
-        ntasks_mom6=240
+        ntasks_mom6=240  # number of tasks for MOM6 model
       else
-        ntasks_mom6=220
+        ntasks_mom6=220  # number of tasks for MOM6 model
       fi
-      OCNTIM=1800
-      NX_GLB=1440
-      NY_GLB=1080
-      DT_DYNAM_MOM6='900'
-      DT_THERM_MOM6='1800'
+      OCNTIM=1800   # MOM6 coupling timestep
+      NX_GLB=1440   # grid dimensions x
+      NY_GLB=1080   # grid dimensions y
+      DT_DYNAM_MOM6='900'  # internal dynamical timestep
+      DT_THERM_MOM6='1800' # internal thermodynamic timestep
       FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
       CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
       MOM6_RIVER_RUNOFF='True'
@@ -582,12 +491,13 @@ if [[ "${skip_cice6}" == "false" ]]; then
       cice6_processor_shape="slenderX2"
       ;;
     "025")
+      # Resolution used in GFSv17 
       if [[ "${RUN}" = gfs ]]; then
-        ntasks_cice6=240
+        ntasks_cice6=240  # number of tasks for CICE model
       elif [[ "${RUN}" = enkfgdas ]]; then
-        ntasks_cice6=40
+        ntasks_cice6=40   # number of tasks for CICE model
       else
-        ntasks_cice6=40
+        ntasks_cice6=40   # number of tasks for CICE model
       fi
       cice6_processor_shape="slenderX2"
       ;;
@@ -608,7 +518,7 @@ if [[ "${skip_ww3}" == "false" ]]; then
   export cplwav=".true."
   export cplwav2atm=".true."
   model_list="${model_list}.wave"
-  nthreads_ww3=1
+  nthreads_ww3=1  # number of threads for WW3; always set to 1
   case "${ww3_res}" in
     "gwes_30m")
       ntasks_ww3=100
@@ -629,9 +539,10 @@ if [[ "${skip_ww3}" == "false" ]]; then
       ntasks_ww3=80
       ;;
     "uglo_15km")
-      ntasks_ww3=884
+      # Resolution used in GFSv17
+      ntasks_ww3=884  # number of tasks for WW3 model
       if [[ "${RUN}" = gfs ]]; then
-        ntasks_ww3=3000
+        ntasks_ww3=3000 # number of tasks for WW3 model
       fi
       ;;
     "uglo_100km")
