@@ -1657,35 +1657,36 @@ class GFSTasks(Tasks):
     def _get_awipsgroups(run, config):
 
         fhmin = config['FHMIN']
-        fhmax = config['FHMAX']
-        fhout = config['FHOUT']
-
-        # Get a list of all forecast hours
-        fhrs = []
+        breakpoints = []
         if run in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
+            fhmax = config['FHMAX']
+            fhout = config['FHOUT']
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif run in ['gfs']:
-            fhmax = config['FHMAX_GFS']
-            fhout = config['FHOUT_GFS']
-            fhmax_hf = config['FHMAX_HF_GFS']
-            fhout_hf = config['FHOUT_HF_GFS']
-            if fhmax > 240:
-                fhmax = 240
-            if fhmax_hf > 240:
-                fhmax_hf = 240
+            # AWIPS 20km parm files under parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
+            # only exist every 3 hours to f084 and every 6 hours to f240. Use
+            # AWIPS-specific FHR overrides (with fallback to the model values)
+            # to build the parm-file hour list, and pass the HF/LF boundary as
+            # a breakpoint so Tasks.get_job_groups never places a group across
+            # the 3h/6h transition.
+            fhmax = min(config['FHMAX_GFS'], 240)
+            fhout = config.get('FHOUT_GFS_AWIPS', config['FHOUT_GFS'])
+            fhmax_hf = min(config.get('FHMAX_HF_GFS_AWIPS', config['FHMAX_HF_GFS']), 240)
+            fhout_hf = config.get('FHOUT_HF_GFS_AWIPS', config['FHOUT_HF_GFS'])
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-            fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs_lf = list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs = fhrs_hf + fhrs_lf
+            breakpoints = [fhmax_hf]
 
         nawipsgrp = config['MAX_TASKS']
         ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+        groups = [[f'f{h:03d}' for h in dct['fhrs']]
+                  for dct in Tasks.get_job_groups(fhrs=fhrs, ngroups=ngrps,
+                                                  breakpoints=breakpoints)]
 
-        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-        fhrs = np.array_split(fhrs, ngrps)
-        fhrs = [fhr.tolist() for fhr in fhrs]
-
-        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-        dep = ' '.join([fhr[-1] for fhr in fhrs])
-        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in groups])
+        dep = ' '.join([fhr[-1] for fhr in groups])
+        lst = ' '.join(['_'.join(fhr) for fhr in groups])
 
         return grp, dep, lst
 
