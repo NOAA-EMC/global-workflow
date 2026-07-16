@@ -25,7 +25,7 @@
 # (e.g. run_mpmd.sh)
 export USHglobal="${USHglobal:-${HOMEglobal}/ush}"
 export start_time=${start_time:-$(date +%s)}
-_calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
+export _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
 ##############################################
 # Utility functions
@@ -42,8 +42,7 @@ export SHELLOPTS
 ##############################################
 # Create and enter the working directory
 ##############################################
-source "${USHglobal}/setup_data_dir.sh"
-setup_data_dir "${DATA}"
+source "${USHglobal}/setup_data_dir.sh" "${DATA}"
 
 # pgmout is a relative path read by err_exit; must exist once we're in $DATA
 [[ -e "${pgmout}" ]] || touch "${pgmout}"
@@ -55,9 +54,8 @@ set -x
 # Exit trap: run postamble on exit to report elapsed time and clean up
 ##############################################
 if [[ "${TRAP_POSTAMBLE:-NO}" == "YES" ]]; then
-    source "${USHglobal}/postamble.sh"
     # shellcheck disable=SC2064
-    trap "postamble ${start_time} \$?" EXIT
+    trap "${USHglobal}/postamble.sh ${start_time}" EXIT
 fi
 
 ##############################################
