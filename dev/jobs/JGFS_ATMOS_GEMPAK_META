@@ -40,10 +40,6 @@ export DBN_ALERT_TYPE=GFS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-export COMINukmet=${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}
-export COMINecmwf=${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}
-export COMINnam=${COMINnam:-$(compath.py "${envir}/nam/${nam_ver}")/nam}
-
 declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
 
 declare -rx COMOUT_ATMOS_GEMPAK_META="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/meta"

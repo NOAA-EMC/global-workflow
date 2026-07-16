@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 #  Set environment.
 cd "${DATA}" || exit 8
 
@@ -196,6 +200,7 @@ for partfile in ${cmdfile_parts}; do
     "${USHglobal}/run_mpmd.sh" "${partfile}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="run_mpmd.sh"
         err_exit "Failed to create one or more observation diagnostic files for ${partfile}!"
     fi
 done
@@ -226,6 +231,7 @@ if [[ "${DIAG_TARBALL}" == "YES" ]]; then
             tar "${TAROPTS}" "${diagfile[n]}" -T "${diaglist[n]}"
             export err=$?
             if [[ ${err} -ne 0 ]]; then
+                pgm=tar
                 err_exit "Unable to create ${diagfile[n]}!"
             fi
         fi

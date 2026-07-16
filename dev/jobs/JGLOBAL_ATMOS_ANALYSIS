@@ -45,6 +45,9 @@ declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/a
 
 declare -rx COMIN_ATMOS_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
+# Additional variables are set in scripts/exglobal_atmos_analysis.sh in order to loop over ensemble members:
+#  COMIN_ATMOS_HISTORY
+
 # shellcheck disable=SC2153
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 

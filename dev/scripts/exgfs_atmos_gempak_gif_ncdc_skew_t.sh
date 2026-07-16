@@ -7,6 +7,10 @@
 # in the future, we should move it above somewhere else.
 ##############################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 1
 
 export NTS="${HOMEglobal}/gempak/ush/restore"
@@ -53,6 +57,7 @@ cpreq "${COMIN_OBS}/${RUN}.${cycle}.adpupa.tm00.bufr_d" fort.40
 "${HOMEglobal}/exec/rdbfmsua.x" >> "${pgmout}" 2> errfile
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm=rdbfmsua.x
     err_exit "Failed to run rdbfmsua!"
 fi
 

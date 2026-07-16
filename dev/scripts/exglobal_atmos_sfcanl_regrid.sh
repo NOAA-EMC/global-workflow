@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Dependent Scripts and Executables
 REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
 
@@ -41,6 +45,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     "${REGRIDSH}"
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${REGRIDSH}")"
         err_exit "Soil increment file was not regridded correctly!"
     fi
 

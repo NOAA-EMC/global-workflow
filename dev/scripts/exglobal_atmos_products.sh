@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 1
 
 # Set paramlist files based on FORECAST_HOUR (-1, 0, 3, 6, etc.)
@@ -64,6 +68,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     ${WGRIB2} "${MASTER_FILE}" | grep -F -f "${parmfile}" | ${WGRIB2} -i -grib "${tmpfile}" "${MASTER_FILE}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${WGRIB2}")"
         err_exit "FATAL ERROR: wgrib2 failed to create intermediate grib2 file from '${MASTER_FILE}' using '${parmfile}'"
     fi
 
@@ -105,6 +110,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         ${WGRIB2} "${tmpfile}" -for "${first}":"${last}" -grib "${tmpfile}_${iproc}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
+            pgm="$(basename "${WGRIB2}")"
             err_exit "wgrib2 failed to geneate an intermediate grib2 file from ${tmpfile} records ${first} to ${last}"
         fi
         input_file="${tmpfile}_${iproc}"
@@ -125,6 +131,7 @@ for ((nset = 1; nset <= downset; nset++)); do
     "${USHglobal}/run_mpmd.sh" "${DATA}/cmdfile" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="run_mpmd.sh"
         err_exit "FATAL ERROR: Some or all interpolations of the master grib file failed during MPMD execution!"
     fi
 
@@ -176,6 +183,7 @@ if [[ "${FLXGF:-}" == "YES" ]]; then
     "${USHglobal}/interp_atmos_sflux.sh" "${input_file}" "${output_file_prefix}" "${grid_string}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="interp_atmos_sflux.sh"
         err_exit "FATAL ERROR: Unable to interpolate the surface flux grib2 files!"
     fi
 
