@@ -7,7 +7,7 @@ expdir:
     FileHandler:
         mkdir:
             - "{{ ROTDIR }}/{{ copy_expdir }}"
-        copy_safe:
+        copy:
             {% for config in glob(EXPDIR ~ "/config.*") %}
             - [ "{{ config }}", "{{ ROTDIR }}/{{ copy_expdir }}/." ]
             {% endfor %}
