@@ -56,9 +56,6 @@ if ((cyc % 12 == 0)); then
     fi
 fi
 
-export COMINecmwf="${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}"
-export COMINukmet="${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}"
-
 export pgmout=OUTPUT.$$
 
 ########################################################
@@ -75,20 +72,6 @@ if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to generate looped image meta gempak products"
 fi
 
-if [[ "${cyc}" == '06' ]]; then
-    # TODO remove ECMWF and UKMET meta generation once the products are no longer needed
-    "${HOMEglobal}/gempak/ush/gdas_ecmwf_meta_ver.sh" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to generate ECMWF meta gempak products"
-    fi
-
-    "${HOMEglobal}/gempak/ush/gdas_ukmet_meta_ver.sh" && true
-    export err=$?
-    if [[ ${err} -ne 0 ]]; then
-        err_exit "Failed to generate UKMET meta gempak products"
-    fi
-fi
 ########################################################
 
 ############################################
