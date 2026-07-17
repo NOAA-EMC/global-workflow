@@ -87,7 +87,8 @@ export DO_GENESIS_FSU="{{ DO_GENESIS_FSU }}" # Cyclone genesis verification (FSU
 export DO_VERFOZN="YES"                  # Ozone data assimilation monitoring
 export DO_VERFRAD="YES"                  # Radiance data assimilation monitoring
 export DO_VMINMON="YES"                  # GSI minimization monitoring
-export DO_ANLSTAT="YES"                  # JEDI-based analysis statistics
+export DO_ANLSTAT="NO"                   # JEDI-based analysis statistics
+export DO_GSI_ANLSTAT="NO"               # GSI-based analysis statistics
 
 # Experiment mode (cycled or forecast-only)
 export MODE="{{ MODE }}" # cycled/forecast-only
@@ -512,6 +513,12 @@ export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, a
 # Execute the postamble (disable for production)
 export TRAP_POSTAMBLE=YES
 
+# Ensure these are always bound (even if empty) so err_exit's scheduler
+# checks don't crash with "unbound variable" under `set -u` on systems
+# where the corresponding scheduler isn't in use (e.g. Slurm-only machines)
+export PBS_JOBID=${PBS_JOBID:-}
+export SLURM_JOB_ID=${SLURM_JOB_ID:-}
+
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
 
@@ -521,6 +528,11 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
+   export DO_ANLSTAT="YES"    # JEDI-based analysis statistics
+else
+   if [[ "${DO_AERO}" = "YES" || "${DO_JEDIOCNVAR}" = "YES" || "${DO_JEDISNOWDA}" = "YES" ]]; then
+     export DO_ANLSTAT="YES"  # JEDI-based analysis statistics
+   fi
 fi
 
 # TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+

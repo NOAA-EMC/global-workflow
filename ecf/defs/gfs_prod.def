@@ -30,13 +30,9 @@ suite gfs_v17_nco
           endfamily		//atmos
           family marine
             edit WGF 'marine'
-            task jgfs_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0300 and :TIME < 0630
-              event 1 release_gfs_marine_prepoceanobs
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
+              trigger :TIME >= 0307 and :TIME < 0312
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 0245 and :TIME < 0630
@@ -69,7 +65,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs and ../../../../18/enkfgdas/forecast==complete and ../../../../18/gdas/forecast==complete
+              trigger ../../prep/marine/jgfs_marine_obs_dump==complete and ../../../../18/enkfgdas/forecast==complete and ../../../../18/gdas/forecast==complete
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -5362,14 +5358,9 @@ suite gfs_v17_nco
           endfamily		//atmos
           family marine
             edit WGF 'marine'
-            task jgdas_marine_prep_fsm
-              edit RJN 'prep'
-              # TODO change these times to match the GDAS cycle
-              trigger :TIME >= 0300 and :TIME < 0630
-              event 1 release_gdas_marine_prepoceanobs
             task jgdas_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
+              trigger :TIME >= 0610 and :TIME < 0615 
             task jgdas_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 0545 and :TIME < 0630
@@ -5407,7 +5398,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs and ../../../../18/enkfgdas/forecast==complete and ../../../../18/gdas/forecast==complete
+              trigger ../../prep/marine/jgdas_marine_obs_dump==complete and ../../../../18/enkfgdas/forecast==complete and ../../../../18/gdas/forecast==complete
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -6270,13 +6261,9 @@ suite gfs_v17_nco
           endfamily		//atmos
           family marine
             edit WGF 'marine'
-            task jgfs_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0900 and :TIME < 1230
-              event 1 release_gfs_marine_prepoceanobs
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
+              trigger :TIME >= 0907 and :TIME < 0912 
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 0845 and :TIME < 1230
@@ -6309,7 +6296,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs and ../../../../00/enkfgdas/forecast==complete and ../../../../00/gdas/forecast==complete
+              trigger ../../prep/marine/jgfs_marine_obs_dump==complete and ../../../../00/enkfgdas/forecast==complete and ../../../../00/gdas/forecast==complete
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -11602,12 +11589,9 @@ suite gfs_v17_nco
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
-            task jgdas_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 0900 and :TIME < 1230
-              event 1 release_gdas_marine_prepoceanobs
             task jgdas_marine_obs_bufr_dump
-              trigger jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
+              #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
+              trigger :TIME >= 1210 and :TIME < 1215 
             task jgdas_marine_obs_dump
               trigger :TIME >= 1145 and :TIME < 1230
           endfamily  		//marine
@@ -11644,7 +11628,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs and ../../../../00/enkfgdas/forecast==complete and ../../../../00/gdas/forecast==complete
+              trigger ../../prep/marine/jgdas_marine_obs_dump==complete and ../../../../00/enkfgdas/forecast==complete and ../../../../00/gdas/forecast==complete
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -12507,13 +12491,9 @@ suite gfs_v17_nco
           endfamily		//atmos
           family marine
             edit WGF 'marine'
-            task jgfs_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 1500 and :TIME < 1830
-              event 1 release_gfs_marine_prepoceanobs
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
+              trigger :TIME >= 1507 and :TIME < 1512 
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 1445 and :TIME < 1830
@@ -12546,7 +12526,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs and ../../../../06/enkfgdas/forecast==complete and ../../../../06/gdas/forecast==complete
+              trigger ../../prep/marine/jgfs_marine_obs_dump==complete and ../../../../06/enkfgdas/forecast==complete and ../../../../06/gdas/forecast==complete
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -17839,13 +17819,9 @@ suite gfs_v17_nco
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
-            task jgdas_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 1500 and :TIME < 1830
-              event 1 release_gdas_marine_prepoceanobs
             task jgdas_marine_obs_bufr_dump
             # TODO make this trigger off of obsproc dump job completion
-              trigger jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
+              trigger :TIME >= 1810 and :TIME < 1815 
             task jgdas_marine_obs_dump
               trigger :TIME >= 1745 and :TIME < 1830
           endfamily  		//marine
@@ -17882,7 +17858,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs and ../../../../06/enkfgdas/forecast==complete and ../../../../06/gdas/forecast==complete
+              trigger ../../prep/marine/jgdas_marine_obs_dump==complete and ../../../../06/enkfgdas/forecast==complete and ../../../../06/gdas/forecast==complete
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
@@ -18745,13 +18721,9 @@ suite gfs_v17_nco
           endfamily		//atmos
           family marine
             edit WGF 'marine'
-            task jgfs_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 2100 and :TIME < 2359
-              event 1 release_gfs_marine_prepoceanobs
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs
+              trigger :TIME >= 2107 and :TIME < 2112 
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 2045 or :TIME < 0030
@@ -18784,7 +18756,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgfs_marine_prep_fsm:release_gfs_marine_prepoceanobs and ../../../../12/enkfgdas/forecast==complete and ../../../../12/gdas/forecast==complete
+              trigger ../../prep/marine/jgfs_marine_obs_dump==complete and ../../../../12/enkfgdas/forecast==complete and ../../../../12/gdas/forecast==complete
             task jgfs_marine_bmat
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
@@ -24077,12 +24049,9 @@ suite gfs_v17_nco
           endfamily  		//atmos
           family marine
             edit WGF 'marine'
-            task jgdas_marine_prep_fsm
-              edit RJN 'prep'
-              trigger :TIME >= 2100 and :TIME < 2359
-              event 1 release_gdas_marine_prepoceanobs
             task jgdas_marine_obs_bufr_dump
-              trigger jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs
+              #TODO NCO/OPS should use obsproc completion trigger
+              trigger :TIME >= 0010 and :TIME < 0015 
             task jgdas_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 2345 or :TIME < 0030
@@ -24120,7 +24089,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_bmat_init
               # TODO make this trigger off of obsproc dump job completion
-              trigger ../../prep/marine/jgdas_marine_prep_fsm:release_gdas_marine_prepoceanobs and ../../../../12/enkfgdas/forecast==complete and ../../../../12/gdas/forecast==complete
+              trigger ../../prep/marine/jgdas_marine_obs_dump==complete and ../../../../12/enkfgdas/forecast==complete and ../../../../12/gdas/forecast==complete
             task jgdas_marine_bmat
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
