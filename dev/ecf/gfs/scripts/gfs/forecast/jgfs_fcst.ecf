@@ -1,0 +1,80 @@
+#PBS -S /bin/bash
+#PBS -N gfs_fcst_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l select=295:mpiprocs=128:ompthreads=1:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+export FCST_SEGMENT='0'
+#### ${HOMEgfs}/dev/job_cards/rocoto/fcst.sh
+${HOMEgfs}/jobs/JGLOBAL_FORECAST
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_fcst
+
+PURPOSE: Runs the 16-day (384-hour) coupled UFS Weather Model
+(NaN, CFL violation, or many warnings of massive unrealistic values
+for temperature/wind) deterministic GFS forecast. THE critical job.
+
+TROUBLESHOOTING
+
+The most complex and resource-intensive job in the production suite. 
+Four of many possible causes are listed below. 
+1. Numerical/Model Instability (NaNs, CFL violations, or massive/unrealistic values for temp/wind in log files).
+2. MPI/Infrastructure Errors (downed compute nodes, interconnect failures).
+3. Missing Restart/Initial Condition files.
+4. Walltime Exceeded.
+
+DIAGNOSTIC STEPS:
+- Check the model stdout and job log for "FATAL" or "ERROR" string messages.
+- Review compute node status to rule out system hardware failures.
+- If the model blows up immediately (F000-F006), verify the quality of the incoming DA analysis.
+
+ACTIONS FOR INSTABILITY:
+
+A. ATMOSPHERIC MODEL INSTABILITY:
+If log files indicate atmospheric blowing up due to instability in the atmospheric model (see item 1 above), try reducing the atmospheric time step to 120s or 90s (down from the default 150s) and restart the forecast from fh00.
+To modify:
+  1. Open parm/config/gfs/config.ufs in the gfsv17 package.
+  2. Locate the in the ${fv3_res}=C1152 case section.
+  3. Modify the step value:
+     export DELTIM=120  (or 90)
+
+B. OCEAN MODEL INSTABILITY (MOM6):
+If the logfile shows "btstep: eta has dropped below bathyT" warnings or ocean CFL crashes, mitigate this by reducing the ocean thermal/dynamics step.
+To modify:
+  1. Open parm/config/gfs/config.ufs in the gfsv17 package
+  2. Locate the the "MOM6 specific settings" section for case 
+${mom6_res}=025  
+  3. Reduce the time step values from 1800 to 900:
+     OCNTIM=900
+     DT_THERM_MOM6='900'
+
+
+%end

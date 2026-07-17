@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gfs_marine_bmat_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=8:mpiprocs=64:ompthreads=1:ncpus=64:mem=500GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufsda
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/marinebmat.sh
+${HOMEgfs}/jobs/JGLOBAL_MARINE_BMAT
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_marine_bmat
+
+PURPOSE: Computes the marine background error covariance matrix (B-matrix) using
+ensemble statistics. 8 nodes, heavy compute.
+
+TROUBLESHOOTING
+
+Requires ensemble member ocean restart files. If EnKF forecasts did not
+complete, B-matrix computation fails. Check for sufficient ensemble
+members available. SOCA B-matrix code can fail on singular matrices if
+ensemble spread is too small. Expert assistance recommended for non-
+obvious failures.
+
+%end

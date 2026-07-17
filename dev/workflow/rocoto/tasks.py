@@ -30,7 +30,7 @@ class Tasks:
                    'atmos_post', 'ocn_post', 'ice_post',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
-                   'verfozn', 'verfrad', 'vminmon', 'anlstat',
+                   'verfozn', 'verfrad', 'vminmon', 'anlstat', 'wdqms',
                    'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind', 'npoess',

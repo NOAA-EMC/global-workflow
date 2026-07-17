@@ -7,6 +7,10 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 2
 
 ############################################################
@@ -111,6 +115,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib pgb2file tmpfile && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${WGRIB2}")"
         err_exit "FATAL ERROR: Failed to write pgb2file from the specified parm file \"${paramlist}\"!"
     fi
 
@@ -126,6 +131,9 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     rm -f tmpfile pgb2file
 
 done
+
+# Restore default pgm after override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 ################################################################
 # Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files
@@ -194,5 +202,8 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     fi
 
 done
+
+# Restore default pgm after prep_step override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 ################## END OF SCRIPT #######################

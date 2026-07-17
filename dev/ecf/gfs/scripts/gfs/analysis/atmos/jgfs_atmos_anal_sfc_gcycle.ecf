@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_anal_sfc_gcycle_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:20:00
+#PBS -l select=1:mpiprocs=32:ompthreads=4:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/sfcanl.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_SFCANL_GCYCLE
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_anal_sfc_gcycle
+
+PURPOSE: Surface analysis global cycle (GCycle) -- updates SST, sea ice, soil
+moisture/temperature, vegetation using observations.
+
+TROUBLESHOOTING
+
+Depends on observation data (SST from NSST, ice from OSTIA, soil from
+previous cycle). If upstream data feeds are missing, GCycle may proceed
+with degraded data and log warnings. Actual failures usually indicate
+missing background tiles from previous forecast or corrupted restart
+files. Check for global_cycle executable errors in stdout.
+
+%end

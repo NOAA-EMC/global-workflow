@@ -1,0 +1,57 @@
+#PBS -S /bin/bash
+#PBS -N gfs_ice_product_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:45:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=96GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+export WGF="%WGF%"
+export FHR="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export FORECAST_HOUR="${FHR_LIST}"
+export COMPONENT=ice
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/oceanice_products.sh
+${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_ice_product_master
+
+PURPOSE: Generates CICE6 sea-ice GRIB2 products from forecast
+output per time-averaged output period.
+For each time-averaged output period, a _master template.
+
+TROUBLESHOOTING
+
+Depends on CICE6 forecast output (ice history files). If coupled
+forecast did not write ice output for this time period, product generation
+fails. Check for ice history file existence in. Check for ice history file
+existence in COMOUT_ICE_HISTORY.
+
+%end

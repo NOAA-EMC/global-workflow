@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Directories.
 pwd=$(pwd)
 
@@ -55,6 +59,7 @@ if [[ "${DO_GSISOILDA}" == "YES" ]]; then
     "${REGRIDSH}" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
+        pgm="$(basename "${REGRIDSH}")"
         err_exit "Failed to regrid the surface inrement file!"
     fi
 

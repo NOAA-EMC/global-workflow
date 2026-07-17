@@ -18,6 +18,9 @@
 ################################################################################
 
 #  Set environment.
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
 
 #  Directories.
 pwd=$(pwd)
