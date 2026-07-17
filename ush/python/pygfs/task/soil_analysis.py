@@ -50,10 +50,10 @@ class SoilAnalysis(Analysis):
 
         _res = int(self.task_config['CASE'][1:])
 
-        if self.task_config.DOHYBVAR:
+        if self.task_config.DOSOILHYBVAR:
             _BERROR_YAML = f"soil_background_error_hybrid_{self.task_config.STATICB_TYPE}_{self.task_config.LOCALIZATION_TYPE}"
         else:
-            _BERROR_YAML = f"soil_background_error_static_{self.task_config.STATICB_TYPE}"
+            _BERROR_YAML = f"soil_background_error_static_{self.task_config.SOIL_STATICB_TYPE}"
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -80,7 +80,7 @@ class SoilAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['soilanlvar', 'soilanladdinc']
+        expected_keys = ['soilanlvar']  #, 'soilanladdinc']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -113,7 +113,7 @@ class SoilAnalysis(Analysis):
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['soilanlvar'].initialize(clean_empty_obsspaces=False)
-        self.jedi_dict['soilanladdinc'].initialize(self.task_config)
+        #self.jedi_dict['soilanladdinc'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

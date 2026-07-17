@@ -32,7 +32,7 @@ if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
 fi
 
 # set up soil analysis
-if [[ ${DO_GSISOILDA} == "YES" ]]; then
+if [[ ${DO_GSISOILDA} == "YES" || "${DO_JEDISOILDAENS}" == "YES" ]]; then
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
         export GCYCLE_DO_SOILINCR=".false."
     else

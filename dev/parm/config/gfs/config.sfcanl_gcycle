@@ -18,7 +18,7 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
    export DONST="NO"
 fi
 
-if [[ "${DO_GSISOILDA}" == "YES" ]]; then
+if [[ "${DO_GSISOILDA}" == "YES" || "${DO_JEDISOILDAVAR}" == "YES" ]]; then
     if [[ ${DO_LAND_IAU} = ".true." ]]; then
         export GCYCLE_DO_SOILINCR=".false."
     else
@@ -28,6 +28,8 @@ fi
 #TODO:reconcycle with gsi_soilda
 if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
     export SFCANALSH="${SCRglobal}/exglobal_soil_analysis.py"
+    export SOIL_STATICB_TYPE="soill1" #smcstctq2m"
+    export TASK_CONFIG_YAML="${PARMglobal}/gdas/soil/soil_det_config.yaml.j2"
 fi
 
 

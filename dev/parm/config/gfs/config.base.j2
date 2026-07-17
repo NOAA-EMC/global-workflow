@@ -431,6 +431,7 @@ if [[ "${RUN}" == "gdas" || "${RUN}" == "enkfgdas" ]]; then
     export DO_JEDISOILDAVAR="{{ DO_JEDISOILDAVAR }}"
     export DO_JEDISOILDAENS="{{ DO_JEDISOILDAENS }}"
     export DO_SOILENKFONLY="{{ DO_SOILENKFONLY }}"
+    export DOSOILHYBVAR="{{ DOSOILHYBVAR }}"
 else
     export DO_GSISOILDA="NO"
     export DO_LAND_IAU=".false."
@@ -438,6 +439,7 @@ else
     export DO_JEDISOILDAVAR="NO"
     export DO_JEDISOILDAENS="NO"
     export DO_SOILENKFONLY="NO"
+    export DOSOILHYBVAR="NO"
 fi
 export LSOIL_INCR=2
 
