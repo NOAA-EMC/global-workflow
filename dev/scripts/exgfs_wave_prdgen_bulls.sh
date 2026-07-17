@@ -118,12 +118,9 @@ if [[ "${SENDDBN_NTC}" == YES ]]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
         "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
 else
-    if [[ "${envir}" == "para" || "${envir}" == "test" || "${envir}" == "dev" ]]; then
-        echo "Making NTC bulletin for parallel environment, but do not alert."
-        SENDDBN=NO make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
-            "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
-            "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
-    fi
+    SENDDBN=NO make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
+        "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
+        "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
 fi
 
 # --------------------------------------------------------------------------- #
