@@ -95,9 +95,11 @@ for bull in ${bulls}; do
         err_exit "MISSING BULLETIN INFO"
     fi
 
+    export -n SHELLOPTS
     formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUN}.wave" \
         -p "${COMOUT_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
     OK=$?
+    export SHELLOPTS
 
     if [[ ${OK} -ne 0 || ! -f "${oname}" ]]; then
         cat formbul.out
