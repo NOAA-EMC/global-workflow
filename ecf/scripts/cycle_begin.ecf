@@ -1,6 +1,7 @@
 model=gfs
 %include <head.h>
 %include <envir-p1.h>
+set +x
 module load prod_util
 set -x
 cyc=%CYC%
@@ -19,13 +20,11 @@ case ${cyc} in
      next_cyc="00"
      ;;
 esac
-# retro=YES enables the developer near-real-time / retrospective cycling
-# driver, which manages its own PDY.  Set retro=NO for an NCO code delivery,
-# where PDY is provided by the operational date file (see ecf/include/head.h).
-retro=YES
+# If we are in development mode, use this near-real-time / retrospective cycling
+# driver, which manages its own PDY; controlled by the MACHINE_SITE variable.
 suite_name=$(ecflow_client --query variable ${ECF_NAME}:SUITE)
 
-if [ $retro == "YES" ]; then
+if [ "%MACHINE_SITE:%" == "development" ]; then
   outputdir_ecf=%OUTPUTDIR%
 
   # Determine the PDY for the next cycle.
