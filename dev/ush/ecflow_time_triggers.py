@@ -52,7 +52,7 @@ def build_trigger_command(task, time_attributes, PDYcyc):
     """
 
     task_path = task.get_abs_node_path()
-    command = f"ecflow_client --trigger {task_path}"
+    command = f"ecflow_client --run {task_path}"
 
     time_info = time_attributes.get("trigger")
 
