@@ -37,8 +37,8 @@ if [ "%MACHINE_SITE:%" == "development" ]; then
     cur_pdy=${PDY}
   fi
 
-  # Get the PDY of the next cycle by adding 6 hours.
-  next_pdy=$(date --utc --date="${cur_pdy:0:4}-${cur_pdy:4:2}-${cur_pdy:6:2} ${cyc} + 6 hours" +%Y%m%d)
+  # Get the PDY of the next cycle by adding 6 hours. Note that %% is required here for ecflow not to think these are ecflow variables.
+  next_pdy=$(date --utc --date="${cur_pdy:0:4}-${cur_pdy:4:2}-${cur_pdy:6:2} ${cyc} + 6 hours" +%%Y%%m%%d)
 
   echo "cycle_begin: cyc=${cyc}, current PDY=${cur_pdy}, next cycle's PDY=${next_pdy}"
 
