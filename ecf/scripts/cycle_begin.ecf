@@ -96,10 +96,10 @@ if [ "%MACHINE_SITE:%" == "development" ]; then
   fi
 
   # Check if ecflow_time_triggers.py produced any commands to execute
-  if [[ -s trigger_timed_commands.sh ]]; then
-    echo "Executing time-triggered commands from trigger_timed_commands.sh"
-    chmod u+x trigger_timed_commands.sh
-    ./trigger_timed_commands.sh
+  if [[ -s trigger_timed_tasks.sh ]]; then
+    echo "Executing time-triggered commands from trigger_timed_tasks.sh"
+    chmod u+x trigger_timed_tasks.sh
+    ./trigger_timed_tasks.sh
     status=$?
     if [[ ${status} -ne 0 ]]; then
       echo "FATAL ERROR Failed to force-launce one or more jobs!"
