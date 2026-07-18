@@ -41,6 +41,23 @@ if [[ ${DO_GSISOILDA} == "YES" || "${DO_JEDISOILDAENS}" == "YES" ]]; then
 fi
 if [[ "${DO_JEDISOILDAENS}" == "YES" ]]; then
     export ENKFSFCGCYCLESH="${SCRglobal}/exglobal_soil_letkf_analysis.py"
+    export SOIL_STATICB_TYPE="csg"  #soill1" #smcstctq2m"
+    export TASK_CONFIG_YAML="${PARMglobal}/gdas/soil/soil_letkf_config.yaml.j2"
+    export OBS_LIST_YAML="${PARMglobal}/gdas/soil/soil_obs_list.yaml.j2"
+    export SOIL_FILE_TYPE="csg"
+
+    export BCOV_DIR="/scratch4/NCEPDEV/land/data/DA/bump_soil/"  #TODO change to soil B
+    export BCOV_FNAME="c384_soillt_sl_250v700_bump_nicas.nc"
+    
+    # for non-landiau soil increments
+    export APPLY_INCR_EXE="${EXECglobal}/apply_soil_incr.x"  #gdas_apply_incr.x"
+    export APPLY_INCR_NML_TMPL="${PARMglobal}/gdas/soil/apply_incr_nml.j2"
+    export print_debug=".false."
+    export truncate_incr=".true."
+    export upd_stc=.false.   #SMAP only slc
+    export upd_slc=.true.
+    export csg_increment=.true.
+    export SOIL_INC_PREFIX="soilinc."
 fi
 
 echo "END: config.esfc_gcycle"
