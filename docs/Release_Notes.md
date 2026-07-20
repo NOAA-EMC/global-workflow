@@ -1,4 +1,4 @@
-GFS V16.3.32 RELEASE NOTES
+GFS V16.3.33 RELEASE NOTES
 
 -------
 PRELUDE
@@ -57,7 +57,8 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* Update GSI checkout tag to `gfsda.v16.3.33` (was `gfsda.v16.3.32`).
+* No source code changes from GFS v16.3.32
+* Update GSI checkout tag to `gfsda.v16.3.33` (was `gfsda.v16.3.32`) due to fix file change.
 
 JOBS CHANGES
 ------------
