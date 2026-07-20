@@ -36,10 +36,10 @@ export FIXgdas="${FIXglobal}/gdas"
 export PACKAGEROOT="${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}"    # TODO: set via prod_envir in Ops
 export COMINsyn="/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
 export USE_IODADIR="NO"
-ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
+ROTDIR=${ROTDIR:-$(compath.py "${envir}/${NET}/${gfs_ver}")}
 export ROTDIR
 export COMROOT=${ROTDIR}
-export SDATE=2026060100
+export SDATE=2026071900
 # Gempak from external models
 # Default locations are to dummy locations for testing
 export COMINnam="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam"
@@ -104,8 +104,8 @@ export assim_freq=6
 export PSLOT="retrov17_01_realtime"
 export DUMP_SUFFIX=""
 
-export ARCDIR="/lfs/h2/emc/gfstemp/emc.global/archive/${PSLOT}"
-export ATARDIR="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS2/GFSv17/${PSLOT}"
+export ARCDIR="/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/test02"
+export ATARDIR="/1year/NCEPDEV/emc-global/emc.glopara/WCOSS2/ecflowtests/v17ecflowtests/test02"
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
