@@ -57,7 +57,7 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.32
+* Update GSI checkout tag to `gfsda.v16.3.33` (was `gfsda.v16.3.32`).
 
 JOBS CHANGES
 ------------
