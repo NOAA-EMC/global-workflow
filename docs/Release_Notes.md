@@ -3,7 +3,7 @@ GFS V16.3.33 RELEASE NOTES
 -------
 PRELUDE
 -------
-Turn off Metop-C AMSU-A channel 4 which has become unusable.
+Turn off Metop-C AMSU-A channels 1-6 and 15 as channel 4 has become unusable and affects the QC of the other channels.
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -78,7 +78,7 @@ SCRIPT CHANGES
 FIX CHANGES
 -----------
 
-* Turn off Metop-C AMSU-A channel 4 in global_satinfo.txt which has become unusable.
+* Turn off Metop-C AMSU-A channels 1-6 and 15.
 
 MODULE CHANGES
 --------------
