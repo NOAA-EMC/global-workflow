@@ -26,11 +26,9 @@ if __name__ == '__main__':
     # Execute JEDI 
     soil_anl.execute('soilanlvar')
 
-    # Add increments & and smc/stc consistency adj
-    soil_anl.add_increments()
-
-    #uses JEDI's add inc--no smc/stc adj
-    #soil_anl.execute('soilanladdinc')
+    # non-liau: Add increments & and smc/stc consistency adj
+    if soil_anl.task_config.ADD_SOIL_INC:
+        soil_anl.add_increments()
 
     # Finalize analysis
     soil_anl.finalize()

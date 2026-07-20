@@ -44,7 +44,9 @@ if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
     export upd_stc=.false.   #SMAP only slc
     export upd_slc=.true.
     export csg_increment=.true.
-    export SOIL_INC_PREFIX="soilinc.""
+    export SOIL_INC_PREFIX="soilinc."
+    export SOIL_GINC_PREFIX="sfcinc"
+    export ADD_SOIL_INC=".false."
 fi
 
 

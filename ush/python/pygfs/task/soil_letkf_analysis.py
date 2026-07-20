@@ -51,9 +51,12 @@ class SoilLetkfAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config['CASE_ENS'][1:])
-        _fail_on_missing = str(self.task_config.fail_on_missing_soilobs[0]).lower() == "true" \
-            if isinstance(self.task_config.fail_on_missing_soilobs, list) \
-            else bool(self.task_config.fail_on_missing_soilobs)
+        _res_anl = int(self.task_config.CASE_ANL[1:])
+        _res_his = int(self.task_config.CASE_HIST[1:])
+
+#        _fail_on_missing = str(self.task_config.fail_on_missing_soilobs[0]).lower() == "true" \
+#            if isinstance(self.task_config.fail_on_missing_soilobs, list) \
+#            else bool(self.task_config.fail_on_missing_soilobs)
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -62,6 +65,12 @@ class SoilLetkfAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
+                'npz_anl': self.task_config.LEVS - 1,
+                'npx_his': _res_his + 1,
+                'npy_his': _res_his + 1,
+                'npz_his': self.task_config.LEVS - 1,
                 'CASE': self.task_config.CASE_ENS,
                 'soil_bkg_path': os.path.join('.', 'bkg', 'ensmean/'),
                 'soil_prepobs_path': os.path.join(self.task_config.DATA, 'prep'),

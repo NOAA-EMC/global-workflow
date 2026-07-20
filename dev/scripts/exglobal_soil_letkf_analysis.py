@@ -33,10 +33,9 @@ if __name__ == '__main__':
     # Execute JEDI soil analysis
     soil_letkf_anl.execute('soilletkfanl')
 
-    # Add increments
-#    if soil_letkf_anl.task_config.DO_INC:   #TODO: recentering and adding inc
-#        soil_letkf_anl.execute('soilletkfaddinc')
-    soil_letkf_anl.add_increments()
+    # non-liau: Add increments & and smc/stc consistency adj  #TODO: recentering and adding inc
+    if soil_letkf_anl.task_config.ADD_SOIL_INC:    
+        soil_letkf_anl.add_increments()     #soil_letkf_anl.execute('soilletkfaddinc')
 
     # Finalize JEDI soil analysis
     soil_letkf_anl.finalize()

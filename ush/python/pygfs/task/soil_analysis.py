@@ -49,6 +49,8 @@ class SoilAnalysis(Analysis):
         super().__init__(config)
 
         _res = int(self.task_config['CASE'][1:])
+        _res_anl = int(self.task_config.CASE_ANL[1:])
+        _res_his = int(self.task_config.CASE_HIST[1:])
 
         if self.task_config.DOSOILHYBVAR:
             _BERROR_YAML = f"soil_background_error_hybrid_{self.task_config.STATICB_TYPE}_{self.task_config.LOCALIZATION_TYPE}"
@@ -62,17 +64,17 @@ class SoilAnalysis(Analysis):
                 'npy_ges': _res + 1,
                 'npz_ges': self.task_config.LEVS - 1,
                 'npz': self.task_config.LEVS - 1,
-               # 'npx_anl': _res_anl + 1,
-               # 'npy_anl': _res_anl + 1,
-               # 'npz_anl': self.task_config.LEVS - 1,
-               # 'npx_his': _res_his + 1,
-               # 'npy_his': _res_his + 1,
-               # 'npz_his': self.task_config.LEVS - 1,
+                'npx_anl': _res_anl + 1,
+                'npy_anl': _res_anl + 1,
+                'npz_anl': self.task_config.LEVS - 1,
+                'npx_his': _res_his + 1,
+                'npy_his': _res_his + 1,
+                'npz_his': self.task_config.LEVS - 1,
                 'soil_bkg_path': os.path.join('./', 'bkg'),
                 'soil_prepobs_path': os.path.join(self.task_config.DATA, 'prep'),
                 'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
                 'BERROR_YAML': _BERROR_YAML,
-
+                'GAUSSIAN_LATRES': 90. / _res,
             }
         ))
 
