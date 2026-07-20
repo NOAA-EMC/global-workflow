@@ -100,11 +100,9 @@ for bull in ${bulls}; do
         err_exit "MISSING BULLETIN INFO"
     fi
 
-    export -n SHELLOPTS
     formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUN}.wave" \
         -p "${COMOUT_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
     OK=$?
-    export SHELLOPTS
 
     if [[ ${OK} -ne 0 || ! -f "${oname}" ]]; then
         cat formbul.out
@@ -123,9 +121,12 @@ if [[ "${SENDDBN_NTC}" == YES ]]; then
     make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
         "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
 else
-    SENDDBN=NO make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
-        "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
-        "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
+    if [[ "${envir}" == "para" || "${envir}" == "test" || "${envir}" == "dev" ]]; then
+        echo "Making NTC bulletin for parallel environment, but do not alert."
+        SENDDBN=NO make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
+            "${DATA}/awipsbull.${cycle}.${RUN}.wave" \
+            "${COMOUT_WAVE_WMO}/awipsbull.${cycle}.${RUN}.wave"
+    fi
 fi
 
 # --------------------------------------------------------------------------- #
