@@ -23,6 +23,11 @@
 
 # PATH for working and home directories
 export envir=${envir:-ops}
+# make_ntc_bull.pl only writes (and terminates its framing loop) when
+# SENDCOM=YES. ecflow sets this in head.h; Rocoto's jjob_standard_vars.sh
+# does not, so default it here to avoid an infinite loop in parallels.
+# See NOAA-EMC/global-workflow issue #5141.
+export SENDCOM=${SENDCOM:-YES}
 export cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
 export pgmout=OUTPUT.$$
@@ -132,3 +137,4 @@ rm -f "${RUN}".*.cbull awipsbull.data
 # 5.  Ending output
 
 # End of MWW3 product generation script -------------------------------------- #
+
