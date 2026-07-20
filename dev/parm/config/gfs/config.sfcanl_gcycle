@@ -47,6 +47,8 @@ if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
     export SOIL_INC_PREFIX="soilinc."
     export SOIL_GINC_PREFIX="sfcinc"
     export ADD_SOIL_INC=".false."
+    export layout_x_soil=1
+    export layout_y_soil=1
 fi
 
 
