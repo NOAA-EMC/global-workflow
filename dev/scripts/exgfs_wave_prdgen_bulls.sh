@@ -137,4 +137,3 @@ rm -f "${RUN}".*.cbull awipsbull.data
 # 5.  Ending output
 
 # End of MWW3 product generation script -------------------------------------- #
-
