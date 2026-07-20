@@ -23,6 +23,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: hash
         with:
+          allow-unsafe-pr-checkout: true
           cond: ${{ github.event_name == 'pull_request_target' }}
           if_true: ${{ github.event.pull_request.head.sha }}
           if_false: ''
@@ -30,6 +31,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v6
         with:
+          allow-unsafe-pr-checkout: true
           ref: ${{ steps.hash.outputs.value }}
           submodules: false
 
@@ -37,6 +39,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: reporter
         with:
+          allow-unsafe-pr-checkout: true
           cond: ${{ github.event_name == 'pull_request_target' }}
           if_true: 'github-pr-review'
           if_false: 'github-check'
