@@ -25,7 +25,7 @@ base:
   DO_WDQMS: "YES"
   EUPD_CYC: "gdas"
   INTERVAL_GFS: 6
-  SDATE_GFS: 2026031912  # This should be 6 hours after "idate"
+  SDATE_GFS: 2026031912
   FHMAX_GFS: 384
   FHMAX_HF_GFS: 120
   CASE_HIST: "C768"
@@ -40,7 +40,7 @@ prepoceanobs:
 
 prep:
   # This can only be enabled in realtime
-  PROCESS_TROPCY: "YES"
+  PROCESS_TROPCY: "NO"
 
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
