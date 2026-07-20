@@ -1,4 +1,4 @@
-GFS V16.3.33 RELEASE NOTES
+GFS V16.3.34 RELEASE NOTES
 
 -------
 PRELUDE
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.33
-cd gfs.v16.3.33
-git clone -b OMD-gfs.v16.3.33 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.34
+cd gfs.v16.3.34
+git clone -b OMD-gfs.v16.3.34 https://github.com/NOAA-EMC/global-workflow.git .
 
 cd sorc
 ./checkout.sh -o
@@ -27,11 +27,7 @@ The checkout script extracts the following GFS components:
 | ---------- | ---------------------------- | ----------------------- |
 | MODEL      | GFS.v16.3.26                 | Jun.Wang@noaa.gov       |
 | GLDAS      | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov      |
-<<<<<<< HEAD
-| GSI        | gfsda.v16.3.32               | Andrew.Collard@noaa.gov |
-=======
 | GSI        | gfsda.v16.3.33               | Andrew.Collard@noaa.gov |
->>>>>>> origin/release/gfs.v16.3.33
 | UFS_UTILS  | ops-gfsv16.3.20              | George.Gayno@noaa.gov   |
 | POST       | upp_v8.3.0                   | Wen.Meng@noaa.gov       |
 | GSI-Utils  | gsiutil.v16.3.26             | Andrew.Collard@noaa.gov |
@@ -56,13 +52,13 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.33` and `gfs_ver=v16.3.33`
+* in `versions/run.ver` change `version=v16.3.34` and `gfs_ver=v16.3.34`
 * in `versions/run.ver` remove `nam_ver=v4.2`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.32 
+* No changes from GFS v16.3.33 
 
 JOBS CHANGES
 ------------
@@ -72,7 +68,7 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 SCRIPT CHANGES
 --------------
@@ -87,7 +83,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.32.
+* No changes from GFS v16.3.33.
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
@@ -98,7 +94,7 @@ CHANGES TO FILE AND FILE SIZES
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.32.
+* No changes from GFS v16.3.33.
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -117,17 +113,17 @@ DISSEMINATION INFORMATION
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 PREPARED BY
 -----------
