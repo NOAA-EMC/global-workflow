@@ -274,37 +274,6 @@
 
 </task>
 
-<task name="gdas_anlstat" cycledefs="gdas" maxtries="&MAXTRIES;">
-
-	<command>&HOME_repo;/dev/job_cards/rocoto/anlstat.sh</command>
-
-	<jobname><cyclestr>&PSLOT;_gdas_anlstat_@H</cyclestr></jobname>
-	<account>GFS-DEV</account>
-	<queue>dev</queue>
-	<walltime>00:30:00</walltime>
-	<nodes>1:ppn=20:tpp=1</nodes>
-	<memory>150GB</memory>
-	<native>-l place=vscatter:shared</native>
-
-	<join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_anlstat.log</cyclestr></join>
-
-	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
-	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
-	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
-	<envar><name>NET</name><value>gfs</value></envar>
-	<envar><name>RUN</name><value>gdas</value></envar>
-	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
-	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
-	<envar><name>DO_GSI_ANLSTAT</name><value>NO</value></envar>
-
-	<dependency>
-		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
-	</dependency>
-
-</task>
-
 <task name="gdas_arch_vrfy" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/arch_vrfy.sh</command>
@@ -401,7 +370,6 @@
 		<dependency>
 			<and>
 				<taskdep task="gdas_fit2obs"/>
-				<taskdep task="gdas_anlstat"/>
 				<taskdep task="gdas_arch_vrfy"/>
 			</and>
 		</dependency>
