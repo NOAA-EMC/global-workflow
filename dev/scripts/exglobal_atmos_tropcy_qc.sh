@@ -25,14 +25,8 @@ cdate10=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${tmhr} hours")
 NET_uc=${RUN^^}
 tmmark_uc=${tmmark^^}
 
-if [[ "${RUN}" = ndas ]]; then
-    echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS ${cdate10}"
-    echo "Output tcvitals files will be copied forward in time to proper \
-output file directory path locations"
-else
-    echo "CENTER PROCESSING TIME FOR ${tmmark_uc} ${NET_uc} TROPICAL CYCLONE QC \
+echo "CENTER PROCESSING TIME FOR ${tmmark_uc} ${NET_uc} TROPICAL CYCLONE QC \
 IS ${cdate10}"
-fi
 
 if [[ "${PROCESS_TROPCY}" = 'YES' ]]; then
 
