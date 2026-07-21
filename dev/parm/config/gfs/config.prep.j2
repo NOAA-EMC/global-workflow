@@ -13,9 +13,6 @@ export cdate10=${PDY}${cyc}
 # Syndata (tcvitals) QC
 export PROCESS_TROPCY='{{PROCESS_TROPCY}}'
 export TROPCYQCSH="${SCRglobal}/exglobal_atmos_tropcy_qc.sh"
-# EMC parallels must not copy QC results back to the operational
-# NHC tcvitals directory or the syndat archive
-export copy_back="NO"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 # Allow users to control the generation or use of either operational or
