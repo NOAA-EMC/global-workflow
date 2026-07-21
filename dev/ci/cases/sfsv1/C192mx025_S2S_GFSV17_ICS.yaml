@@ -11,7 +11,7 @@ experiment:
   start: 'cold'
   nens: 30
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
-  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  expdir: {{ 'EXPDIR_TOP' | getenv | default('RUNTESTS' | getenv, boolean=True) }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/GFS/C192mx025
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_full_C192mx025_GFSV17_ICS.yaml
 
