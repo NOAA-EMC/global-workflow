@@ -42,6 +42,16 @@ declare -rx COMOUT_OCEAN_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/oce
 declare -rx COMIN_ICE_RESTART="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
 declare -rx COMOUT_ICE_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
 
+# Additional COM variables are set in ${HOMEglobal}/parm/gdas/marine/marine_ecen_config.yaml.j2
+# to stage per-member and ensemble-statistics analysis files:
+#  COMIN_ICE_RESTART_MEM_PREV
+#  COMOUT_OCEAN_ANALYSIS_MEM
+#  COMOUT_ICE_ANALYSIS_MEM
+#  COMOUT_OCEAN_ENSTAT_ANALYSIS
+#  COMOUT_ICE_ENSTAT_ANALYSIS
+#  COMOUT_OCEAN_ENSTAT_ANALYSIS_MEM
+#  COMOUT_ICE_ENSTAT_ANALYSIS_MEM
+
 export NMEM_ENS_MAX=${NMEM_ENS}
 if [[ "${RUN}" == "enkfgfs" ]]; then
     NMEM_ENS=${NMEM_ENS_GFS}

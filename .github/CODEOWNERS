@@ -15,7 +15,6 @@ dev/ctests/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 # Specific file owners
 # dev side scripts
 dev/ush/compare_f90nml.py @DavidHuber-NOAA
-dev/ush/de_template_com.sh @DavidHuber-NOAA
 dev/ush/gfs_parallel_output_verification.sh @LinGan-NOAA
 dev/ush/gfs_parallel_output_verification_cfp.py @LinGan-NOAA
 
