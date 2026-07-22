@@ -32,6 +32,13 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+      # Check out the base repository's default branch (trusted code) so we can
+      # use the summary script. This never checks out the pull request's head.
+      - name: Checkout base repo
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+
       - name: Download diagnostics from the analysis run
         uses: actions/download-artifact@v4
         with:
@@ -86,4 +93,36 @@ jobs:
             run_rd -f=diff -f.diff.strip=1 -name=shfmt \
               -reporter=github-pr-review -filter-mode=nofilter -fail-level=none \
               < "${d}/shfmt.diff"
+          fi
+
+      - name: Post findings summary as a PR comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          d=reviewdog-artifacts
+
+          # PR number comes from the untrusted artifact: validate strictly.
+          pr_number="$(cat "${d}/pr-number")"
+          [[ "${pr_number}" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: '${pr_number}'"; exit 1; }
+
+          # Build the Markdown comment body from the collected diagnostics.
+          python3 .github/scripts/bash_analysis_summary.py "${d}" "${RUNNER_TEMP}/comment.md"
+
+          # Post (or update) a single "sticky" comment identified by a marker,
+          # so repeated runs update in place instead of spamming the PR.
+          marker='<!-- bash-code-analysis-summary -->'
+          existing="$(gh api --paginate "repos/${OWNER}/${REPO}/issues/${pr_number}/comments" \
+            --jq "[.[] | select(.body | contains(\"${marker}\")) | .id] | first // empty")"
+          if [ -n "${existing}" ]; then
+            gh api -X PATCH "repos/${OWNER}/${REPO}/issues/comments/${existing}" \
+              -F body=@"${RUNNER_TEMP}/comment.md" >/dev/null
+            echo "Updated existing comment ${existing}."
+          else
+            gh api -X POST "repos/${OWNER}/${REPO}/issues/${pr_number}/comments" \
+              -F body=@"${RUNNER_TEMP}/comment.md" >/dev/null
+            echo "Created a new summary comment."
           fi
