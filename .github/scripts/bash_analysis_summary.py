@@ -123,13 +123,9 @@ def main():
         lines.append("")
         lines.append("[View the analysis run]({})".format(run_url))
 
-    body = "
-".join(lines) + "
-"
+    body = "\n".join(lines) + "\n"
     if len(body) > 65000:  # GitHub comment hard limit is 65536 chars
-        body = body[:64000] + "
-_...comment truncated._
-"
+        body = body[:64000] + "\n_...comment truncated._\n"
     with open(out, "w") as fh:
         fh.write(body)
     print("1" if has_findings else "0")
