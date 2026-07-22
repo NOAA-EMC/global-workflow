@@ -80,16 +80,18 @@ jobs:
           mapfile -t shebang_files < <(find . "${exclude_expr[@]}" -not \( "${name_expr[@]}" \) -type f -print0 \
             | xargs -0 awk 'FNR==1 && /^#!.*sh/ { print FILENAME }')
 
-          printf '%s' "${pattern_files[@]}" "${shebang_files[@]}" | sed '/^$/d' | sort -u > "${outdir}/files.txt"
-          echo "Discovered $(grep -c . "${outdir}/files.txt" || true) file(s) to check."
+          # Combine the two (disjoint) lists and pass the paths to shellcheck as
+          # native array arguments -- never as a single concatenated string.
+          files=("${pattern_files[@]}" "${shebang_files[@]}")
+          echo "Discovered ${#files[@]} file(s) to check."
 
           # --- shellcheck: error report (checkstyle) + autofix suggestions ----
           : > "${outdir}/shellcheck.checkstyle.xml"
           : > "${outdir}/shellcheck.suggestion.diff"
-          if [ -s "${outdir}/files.txt" ]; then
-            xargs -a "${outdir}/files.txt" shellcheck --external-sources -f checkstyle \
+          if [ "${#files[@]}" -gt 0 ]; then
+            shellcheck --external-sources -f checkstyle "${files[@]}" \
               > "${outdir}/shellcheck.checkstyle.xml" 2>/dev/null || true
-            xargs -a "${outdir}/files.txt" shellcheck --external-sources -f diff \
+            shellcheck --external-sources -f diff "${files[@]}" \
               > "${outdir}/shellcheck.suggestion.diff" 2>/dev/null || true
           fi
 
