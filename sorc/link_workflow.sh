@@ -185,8 +185,15 @@ cd "${HOMEglobal}/parm/post" || exit 1
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/parm/params_grib2_tbl_new" .
 ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/fix/nam_micro_lookup.dat" .
 
+# The GFS UPP parm dir is required; gcafs/gefs/sfs are only present when
+# those systems are built. Skip any that are intentionally absent so the
+# GFS-v17 profile (which builds only gsi/gfs/gdas) does not fail here.
 for dir in gfs gcafs gefs sfs; do
-    ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/parm/${dir}" .
+    src="${HOMEglobal}/sorc/upp.fd/parm/${dir}"
+    if [[ "${dir}" != "gfs" && ! -e "${src}" ]]; then
+        continue
+    fi
+    ${LINK_OR_COPY} "${src}" .
 done
 
 for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa.dat \
@@ -195,8 +202,14 @@ for file in optics_luts_DUST.dat optics_luts_DUST_nasa.dat optics_luts_NITR_nasa
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/upp.fd/fix/chem/${file}" .
 done
 
+# GFS ocnicepost files are required; the *_gefs.csv files are only present
+# when GEFS content is available. Skip GEFS-specific files if absent.
 for file in ice_gfs.csv ice_gefs.csv ocean_gfs.csv ocean_gefs.csv ocnicepost.nml.jinja2; do
-    ${LINK_OR_COPY} "${HOMEglobal}/sorc/gfs_utils.fd/parm/ocnicepost/${file}" .
+    src="${HOMEglobal}/sorc/gfs_utils.fd/parm/ocnicepost/${file}"
+    if [[ "${file}" == *_gefs.csv && ! -e "${src}" ]]; then
+        continue
+    fi
+    ${LINK_OR_COPY} "${src}" .
 done
 
 cd "${HOMEglobal}/scripts" || exit 8
