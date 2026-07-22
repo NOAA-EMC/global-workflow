@@ -107,8 +107,7 @@ def main():
                 lines.append("- `{}`".format(md_cell(f)))
             diff_lines = fmt_text.splitlines()
             note = "" if len(diff_lines) <= MAX_DIFF_LINES else \
-                "
-_...diff truncated ({} more lines)._".format(len(diff_lines) - MAX_DIFF_LINES)
+                "_...diff truncated ({} more lines)._".format(len(diff_lines) - MAX_DIFF_LINES)
             lines.append("")
             lines.append("<details><summary>Suggested formatting diff</summary>")
             lines.append("")
@@ -129,7 +128,6 @@ _...diff truncated ({} more lines)._".format(len(diff_lines) - MAX_DIFF_LINES)
 "
     if len(body) > 65000:  # GitHub comment hard limit is 65536 chars
         body = body[:64000] + "
-
 _...comment truncated._
 "
     with open(out, "w") as fh:
