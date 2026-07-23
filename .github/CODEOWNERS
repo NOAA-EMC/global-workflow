@@ -230,3 +230,7 @@ ush/python/pygfs/ufswm/gfs.py @DavidHuber-NOAA
 ush/python/pygfs/ufswm/ufs.py @DavidHuber-NOAA
 ush/python/pygfs/utils/__init__.py @DavidHuber-NOAA
 ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NOAA
+
+# Workflows
+.github/workflows @DavidHuber-NOAA @TravisElless-NOAA @TerrenceMcGuinness-NOAA
+.github/scripts @DavidHuber-NOAA @TravisElless-NOAA @TerrenceMcGuinness-NOAA
