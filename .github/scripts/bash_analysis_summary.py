@@ -46,8 +46,13 @@ def parse_checkstyle(path):
 
 def md_cell(text):
     # Neutralize characters that would break a Markdown table cell.
-    return text.replace("|", "\\|").replace("\r", " ").replace("", " ").strip()
-
+    text = "" if text is None else str(text)
+    return (
+        text.replace("|", "\\|")
+        .replace("\r", " ")
+        .replace("\n", " ")
+        .strip()
+    )
 
 def shfmt_files(diff_path):
     if not (os.path.exists(diff_path) and os.path.getsize(diff_path) > 0):

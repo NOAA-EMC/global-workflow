@@ -67,8 +67,12 @@ jobs:
           # The artifact comes from an untrusted run: validate strictly.
           pr_number="$(cat "${d}/pr-number")"
           pr_head_sha="$(cat "${d}/pr-head-sha")"
+          expected_pr_number='${{ github.event.workflow_run.pull_requests[0].number }}'
+          expected_head_sha='${{ github.event.workflow_run.head_sha }}'
           [[ "${pr_number}" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: '${pr_number}'"; exit 1; }
           [[ "${pr_head_sha}" =~ ^[0-9a-fA-F]{7,64}$ ]] || { echo "Invalid head SHA: '${pr_head_sha}'"; exit 1; }
+          [[ "${pr_number}" == "${expected_pr_number}" ]] || { echo "PR number mismatch: artifact=${pr_number} event=${expected_pr_number}"; exit 1; }
+          [[ "${pr_head_sha}" == "${expected_head_sha}" ]] || { echo "Head SHA mismatch: artifact=${pr_head_sha} event=${expected_head_sha}"; exit 1; }
           export CI_PULL_REQUEST="${pr_number}"
           export CI_COMMIT="${pr_head_sha}"
 
