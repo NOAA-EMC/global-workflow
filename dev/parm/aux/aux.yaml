@@ -23,5 +23,14 @@ COM_aux: "/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/aux"
 # Full path to the auxiliary DATAROOT directory
 DATAROOT_aux: "/lfs/h2/emc/stmp/emc.global/RUNDIRS/aux_gfs"
 
+# Name of the auxiliary experiment
+PSLOT: "test02"
+
+# Location of the offline archive for verification
+ARCDIR: "/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/aux/test02"
+
+# Location of the HPSS archive
+ATARDIR: "/1year/NCEPDEV/emc-global/emc.glopara/WCOSS2/ecflowtests/v17ecflowtests/test02"
+
 # Output path for the rendered XML.
 output: "/lfs/h2/emc/global/noscrub/David.Huber/GW/gw_v17/dev/workflow/aux.xml"

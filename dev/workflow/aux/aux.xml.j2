@@ -5,7 +5,7 @@
 	PROGRAM
 		Auxiliary workflow manager for Global Forecast System
 		Variables:
-		PSLOT: The name of this auxiliary system
+		PSLOT: The name of this auxiliary system (used for offline archiving and verification)
 		MAXTRIES: How many times to run a job
 		HOME_repo: Where the official repository is located
 		EXP_aux: Where the expdir for this auxiliary system lives (can be the same as GFS)
@@ -13,13 +13,16 @@
 		DATAROOT_aux: DATAROOT for this auxiliary system
 		COM_aux: The auxiliary COM directory (ONLY set this to COM_gfs when going live, not for testing)
 	-->
-	<!ENTITY PSLOT "aux_gfs">
+	<!ENTITY PSLOT "{{ PSLOT }}">
 	<!ENTITY MAXTRIES "1">
 	<!ENTITY HOME_repo "{{ HOMEglobal }}">
 	<!ENTITY EXP_aux "{{ EXP_aux }}">
 	<!ENTITY ECF_OUT_gfs "{{ ECF_OUT_gfs }}">
 	<!ENTITY COM_aux "{{ COM_aux }}">
 	<!ENTITY DATAROOT_aux "{{ DATAROOT_aux }}">
+	<!ENTITY ARCDIR "{{ ARCDIR }}">
+	<!ENTITY ATARDIR "{{ ATARDIR }}">
+
 ]>
 
 <workflow realtime="F" scheduler="pbspro" cyclethrottle="1" taskthrottle="25">
@@ -120,6 +123,8 @@
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>EDATE_GFS</name><value>2030010100</value></envar>
 		<envar><name>METPCASE</name><value>#metpcase#</value></envar>
+    <envar><name>ARCDIR</name><value>&ARCDIR;</value></envar>
+    <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 		<dependency>
 			<or>
@@ -159,7 +164,9 @@
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
-	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+  <envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+  <envar><name>ARCDIR</name><value>&ARCDIR;</value></envar>
+  <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
 		<and>
@@ -194,6 +201,7 @@
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
+  <envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
 
 	<dependency>
 		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
@@ -229,7 +237,11 @@
 		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>TARBALL_TYPE</name><value>#tartype#</value></envar>
-      <envar><name>ARCH_LOGS</name><value>NO</value></envar>
+    <envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+    <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+    <!-- Logs are archived separately for ecflow -->
+		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
+
 
 		<dependency>
 			<and>
@@ -297,6 +309,8 @@
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+  <envar><name>ARCDIR</name><value>&ARCDIR;</value></envar>
+  <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
 		<and>
@@ -330,6 +344,8 @@
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
+  <envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+  <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
 		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
@@ -365,7 +381,12 @@
 		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>TARBALL_TYPE</name><value>#tartype#</value></envar>
-      <envar><name>ARCH_LOGS</name><value>NO</value></envar>
+    <envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+    <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+    <!-- Logs are archived separately for ecflow -->
+		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
+    <!-- The anlstat job does not run in ecflow, so do not archive it -->
+    <envar><name>DO_ANLSTAT</name><value>NO</value></envar>
 
 		<dependency>
 			<and>
@@ -402,6 +423,8 @@
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ENSGRP</name><value>#grp#</value></envar>
+  <envar><name>ARCDIR</name><value>&ARCDIR;</value></envar>
+  <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
 		<and>
@@ -435,6 +458,8 @@
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
+  <envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+  <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
 		<datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
@@ -470,7 +495,10 @@
 		<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>ENSGRP</name><value>#grp#</value></envar>
-      <envar><name>ARCH_LOGS</name><value>NO</value></envar>
+    <envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+    <envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+    <!-- Logs are archived separately for ecflow -->
+		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
 
 		<dependency>
 		  <datadep><cyclestr offset="06:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>

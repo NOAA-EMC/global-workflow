@@ -65,7 +65,6 @@ export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)
 export DO_VERFOZN="YES"                  # Ozone data assimilation monitoring
 export DO_VERFRAD="YES"                  # Radiance data assimilation monitoring
 export DO_VMINMON="YES"                  # GSI minimization monitoring
-export DO_ANLSTAT="NO"                   # JEDI-based analysis statistics
 
 # Experiment mode (cycled or forecast-only)
 export MODE="cycled" # cycled/forecast-only
@@ -101,11 +100,7 @@ export BASE_ENV="${HOMEglobal}/env"
 # EXPERIMENT specific environment parameters
 export EXP_WARM_START=".true."
 export assim_freq=6
-export PSLOT="test02"
 export DUMP_SUFFIX=""
-
-export ARCDIR="/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/${PSLOT}"
-export ATARDIR="/1year/NCEPDEV/emc-global/emc.glopara/WCOSS2/ecflowtests/v17ecflowtests/${PSLOT}"
 
 # Get all the COM path templates
 source "${EXPDIR}/config.com"
