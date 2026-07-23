@@ -16,8 +16,8 @@ dev/ctests/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 # dev side scripts
 dev/ush/compare_f90nml.py @DavidHuber-NOAA
 dev/ush/de_template_com.sh @DavidHuber-NOAA
-dev/ush/gfs_parallel_output_verification.sh @LinGan-NOAA
-dev/ush/gfs_parallel_output_verification_cfp.py @LinGan-NOAA
+dev/ush/gfs_parallel_output_verification.sh @DavidHuber-NOAA
+dev/ush/gfs_parallel_output_verification_cfp.py @DavidHuber-NOAA
 
 # Specific workflow scripts
 dev/workflow/generate_workflows.sh @DavidHuber-NOAA
@@ -30,7 +30,7 @@ sorc/build_opts.yaml @DavidHuber-NOAA @TravisElless-NOAA
 # jobs
 dev/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
 dev/jobs/JGDAS_ATMOS_ANALYSIS_DIAG @RussTreadon-NOAA @CoryMartin-NOAA
-dev/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS @AndrewCollard-NOAA
+dev/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS @ADCollard
 dev/jobs/JGDAS_ATMOS_CHGRES_FORENKF @RussTreadon-NOAA @CoryMartin-NOAA
 dev/jobs/JGDAS_ATMOS_GEMPAK @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/jobs/JGDAS_ATMOS_GEMPAK_META_NCDC @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
@@ -84,7 +84,7 @@ modulefiles/gw_upp_wcoss2.lua @WenMeng-NOAA
 
 # scripts
 dev/scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA
-dev/scripts/exgdas_atmos_analysis_wdqms.sh @AndrewCollard-NOAA
+dev/scripts/exgdas_atmos_analysis_wdqms.sh @ADCollard
 dev/scripts/exgdas_atmos_chgres_forenkf.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exgdas_atmos_gempak_gif_ncdc.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgdas_atmos_nawips.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
@@ -194,7 +194,7 @@ ush/syndat_qctropcy.sh @HananehJafary-NOAA
 ush/tropcy_relocate.sh @HananehJafary-NOAA
 ush/tropcy_relocate_extrkr.sh @HananehJafary-NOAA
 ush/wave_*.sh @JessicaMeixner-NOAA @sbanihash
-ush/wdqms.py @AndrewCollard-NOAA
+ush/wdqms.py @ADCollard
 ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
 
 # ush/python
