@@ -3,8 +3,8 @@
 # setup_aux.py with --config /path/to/aux.yaml.
 
 # Start and end dates for workflow cycles in YYYYMMDDHH format
-start_date: "202607190000"
-end_date: "202707190600"
+start_date: "202607241200"
+end_date: "202707240600"
 
 # Full path to the global workflow home directory (default is this repository's root directory)
 # HOMEglobal: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/packages/gfs.v17.0"
@@ -24,13 +24,13 @@ COM_aux: "/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/aux"
 DATAROOT_aux: "/lfs/h2/emc/stmp/emc.global/RUNDIRS/aux_gfs"
 
 # Name of the auxiliary experiment
-PSLOT: "test02"
+PSLOT: "ecflow_realtime"
 
 # Location of the offline archive for verification
-ARCDIR: "/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/aux/test02"
+ARCDIR: "/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/aux/ecflow_realtime"
 
 # Location of the HPSS archive
-ATARDIR: "/1year/NCEPDEV/emc-global/emc.glopara/WCOSS2/ecflowtests/v17ecflowtests/test02"
+ATARDIR: "/1year/NCEPDEV/emc-global/emc.glopara/WCOSS2/ecflowtests/v17ecflowtests/ecflow_realtime"
 
-# Output path for the rendered XML.
-output: "/lfs/h2/emc/global/noscrub/David.Huber/GW/gw_v17/dev/workflow/aux.xml"
+# Output path for the rendered XML (default is from wherever setup_aux.py is run)
+output: "./aux.xml"
