@@ -39,7 +39,8 @@ export USE_IODADIR="NO"
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
 export ROTDIR
 export COMROOT=${ROTDIR}
-export SDATE=2026071900
+# Set SDATE if cold starting
+# export SDATE=2026071900
 # Gempak from external models
 # Default locations are to dummy locations for testing
 export COMINnam="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam"
@@ -317,11 +318,6 @@ export IAU_DELTHRS_ENKF=6
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
-# if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
-#   export DO_WAVE="NO"
-#   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
-# fi
-
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=8
 
@@ -395,7 +391,7 @@ fi
 export LSOIL_INCR=2
 
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+if [[ "${MODE}" = "cycled" && "${SDATE:-}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
   export IAUFHRS="6,"
