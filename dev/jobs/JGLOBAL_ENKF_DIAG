@@ -66,26 +66,6 @@ if [[ -e "${pgmout}" ]]; then
 fi
 
 ##########################################
-# Remove the shared temporary diagnostic directory (gsidiags)
-##########################################
-# >>> TEMP TEST INSTRUMENTATION (remove after gsidiag cleanup verification) >>>
-gsidiag_test_dir="${pCOMIN_ATMOS_ANALYSIS}/gsidiags"
-if [[ -d "${gsidiag_test_dir}" ]]; then
-    echo "TEST gsidiag: BEFORE cleanup (KEEPDATA=${KEEPDATA:-unset}, KEEP_TEMP_DIAGS=${KEEP_TEMP_DIAGS:-unset}): gsidiags EXISTS at ${gsidiag_test_dir}"
-else
-    echo "TEST gsidiag: BEFORE cleanup (KEEPDATA=${KEEPDATA:-unset}, KEEP_TEMP_DIAGS=${KEEP_TEMP_DIAGS:-unset}): gsidiags DOES NOT EXIST at ${gsidiag_test_dir}"
-fi
-# <<< TEMP TEST INSTRUMENTATION <<<
-"${USHglobal}/remove_temp_diags.sh" "${pCOMIN_ATMOS_ANALYSIS}/gsidiags"
-# >>> TEMP TEST INSTRUMENTATION (remove after gsidiag cleanup verification) >>>
-if [[ -d "${gsidiag_test_dir}" ]]; then
-    echo "TEST gsidiag: AFTER cleanup: gsidiags STILL EXISTS (retained) at ${gsidiag_test_dir}"
-else
-    echo "TEST gsidiag: AFTER cleanup: gsidiags REMOVED at ${gsidiag_test_dir}"
-fi
-# <<< TEMP TEST INSTRUMENTATION <<<
-
-##########################################
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || true
