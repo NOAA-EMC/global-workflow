@@ -22,7 +22,6 @@ load(pathJoin("grib_util","1.2.3"))
 setenv("WGRIB2","wgrib2")
 
 -- Load the GW Python environment
-prepend_path("MODULEPATH", "/apps/dev/modulefiles")
-load(pathJoin("ve","gw", "1.0"))
+load(pathJoin("ve","gfs", "ve_gfs_ver"))
 
 whatis("Description: UPP run environment")
