@@ -52,7 +52,7 @@ if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
 if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
 export KEEPDATA=NO
 export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
-export DBNLOG="NO"
+export DBNLOG=${DBNLOG:-%DBNLOG:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
 
 if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
