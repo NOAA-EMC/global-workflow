@@ -128,8 +128,8 @@
 		<envar><name>METPCASE</name><value>#metpcase#</value></envar>
 		<envar><name>ARCDIR</name><value>&ARCDIR;</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
-    <envar><name>SDATE</name><value>&SDATE;</value></envar>
-    <envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
 
 		<dependency>
 			<or>
@@ -246,8 +246,8 @@
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<!-- Logs are archived separately for ecflow -->
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
-    <envar><name>SDATE</name><value>&SDATE;</value></envar>
-    <envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
 
 
 		<dependency>
@@ -285,8 +285,8 @@
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>COMROOT</name><value>&COM_aux;</value></envar>
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
-  <envar><name>SDATE</name><value>&SDATE;</value></envar>
-  <envar><name>EDATE</name><value>&EDATE;</value></envar>
+	<envar><name>SDATE</name><value>&SDATE;</value></envar>
+	<envar><name>EDATE</name><value>&EDATE;</value></envar>
 
 	<dependency>
 		<datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
@@ -395,8 +395,8 @@
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
 		<!-- The anlstat job does not run in ecflow, so do not archive it -->
 		<envar><name>DO_ANLSTAT</name><value>NO</value></envar>
-    <envar><name>SDATE</name><value>&SDATE;</value></envar>
-    <envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
 
 		<dependency>
 			<and>
@@ -509,8 +509,8 @@
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<!-- Logs are archived separately for ecflow -->
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
-    <envar><name>SDATE</name><value>&SDATE;</value></envar>
-    <envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
 
 		<dependency>
 		  <datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
