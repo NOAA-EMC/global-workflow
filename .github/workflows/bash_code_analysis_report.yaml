@@ -1,0 +1,128 @@
+name: bash_code_analysis_report
+
+# Trusted companion to `bash_code_analysis.yaml`.
+#
+# The analysis workflow runs in the untrusted fork context (read-only token,
+# no secrets) and therefore cannot post review comments on pull requests from
+# forks. This workflow is triggered by `workflow_run`, so it runs from the base
+# repository's default branch with a read/write token, and posts the reviewdog
+# diagnostics collected by the analysis workflow as inline PR review comments.
+#
+# Security notes:
+# - This workflow never checks out or executes the pull request's code. It only
+#   downloads the diagnostics artifact and feeds it to reviewdog.
+# - The artifact is produced by an untrusted run, so the PR number and head SHA
+#   are strictly validated before use.
+on:
+  workflow_run:
+    workflows: ["bash_code_analysis"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  report:
+    # Only act on runs that were triggered by a pull request; skip push /
+    # workflow_dispatch runs, which have no PR to comment on.
+    if: ${{ github.event.workflow_run.event == 'pull_request' }}
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Check out the base repository's default branch (trusted code) so we can
+      # use the summary script. This never checks out the pull request's head.
+      - name: Checkout base repo
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+
+      - name: Download diagnostics from the analysis run
+        uses: actions/download-artifact@v4
+        with:
+          name: bash-code-analysis-reviewdog
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: reviewdog-artifacts
+
+      - name: Install reviewdog
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.local/bin"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+          curl -sSfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh \
+            | sh -s -- -b "${HOME}/.local/bin"
+
+      - name: Post reviewdog results as PR review comments
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_REPO_OWNER: ${{ github.repository_owner }}
+          CI_REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          d=reviewdog-artifacts
+
+          # The artifact comes from an untrusted run: validate strictly.
+          pr_number="$(cat "${d}/pr-number")"
+          pr_head_sha="$(cat "${d}/pr-head-sha")"
+          [[ "${pr_number}" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: '${pr_number}'"; exit 1; }
+          [[ "${pr_head_sha}" =~ ^[0-9a-fA-F]{7,64}$ ]] || { echo "Invalid head SHA: '${pr_head_sha}'"; exit 1; }
+          export CI_PULL_REQUEST="${pr_number}"
+          export CI_COMMIT="${pr_head_sha}"
+
+          # The `workflow_run` event has no pull request context for forks, so
+          # unset GITHUB_ACTIONS to make reviewdog derive the build info from the
+          # generic CI_* environment variables set above.
+          run_rd() { env -u GITHUB_ACTIONS reviewdog "$@"; }
+
+          if [ -s "${d}/shellcheck.checkstyle.xml" ]; then
+            run_rd -f=checkstyle -name=shellcheck -reporter=github-pr-review \
+              -filter-mode=nofilter -level=any -fail-level=none \
+              < "${d}/shellcheck.checkstyle.xml"
+          fi
+
+          if [ -s "${d}/shellcheck.suggestion.diff" ]; then
+            run_rd -f=diff -f.diff.strip=1 -name="shellcheck (suggestion)" \
+              -reporter=github-pr-review -filter-mode=nofilter -fail-level=none \
+              < "${d}/shellcheck.suggestion.diff"
+          fi
+
+          if [ -s "${d}/shfmt.diff" ]; then
+            run_rd -f=diff -f.diff.strip=1 -name=shfmt \
+              -reporter=github-pr-review -filter-mode=nofilter -fail-level=none \
+              < "${d}/shfmt.diff"
+          fi
+
+      - name: Post findings summary as a PR comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          d=reviewdog-artifacts
+
+          # PR number comes from the untrusted artifact: validate strictly.
+          pr_number="$(cat "${d}/pr-number")"
+          [[ "${pr_number}" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: '${pr_number}'"; exit 1; }
+
+          # Build the Markdown comment body from the collected diagnostics.
+          python3 .github/scripts/bash_analysis_summary.py "${d}" "${RUNNER_TEMP}/comment.md"
+
+          # Post (or update) a single "sticky" comment identified by a marker,
+          # so repeated runs update in place instead of spamming the PR.
+          marker='<!-- bash-code-analysis-summary -->'
+          existing="$(gh api --paginate "repos/${OWNER}/${REPO}/issues/${pr_number}/comments" \
+            --jq "[.[] | select(.body | contains(\"${marker}\")) | .id] | first // empty")"
+          if [ -n "${existing}" ]; then
+            gh api -X PATCH "repos/${OWNER}/${REPO}/issues/comments/${existing}" \
+              -F body=@"${RUNNER_TEMP}/comment.md" >/dev/null
+            echo "Updated existing comment ${existing}."
+          else
+            gh api -X POST "repos/${OWNER}/${REPO}/issues/${pr_number}/comments" \
+              -F body=@"${RUNNER_TEMP}/comment.md" >/dev/null
+            echo "Created a new summary comment."
+          fi
