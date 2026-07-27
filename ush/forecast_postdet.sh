@@ -420,9 +420,9 @@ EOF
             # *_out completes AND after its own DATA / DATArestart cleanup block runs),
             # copies it to COM, and writes the COM log. Waiting on the finalized sentinel --
             # rather than fcst_history_done_seg which lands right after model exec -- guarantees the
-            # manager (and therefore JGLOBAL_FORECAST_MANAGER's rm -rf "${DATAjob}") does not
-            # race with FV3_out / MOM6_out / CICE_out / WW3_out / GOCART_out / CMEPS_out
-            # restart copies or JGLOBAL_FORECAST's tail cleanup still reading files under DATAjob.
+            # manager does not exit (releasing downstream jobs that key off the finalized
+            # sentinel) while FV3_out / MOM6_out / CICE_out / WW3_out / GOCART_out / CMEPS_out
+            # restart copies or JGLOBAL_FORECAST's tail cleanup are still reading files under DATAjob.
             local fcst_final_local="${DATAjob}/fcst_finalized_seg${seg}"
             local fcst_final_com="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.fcst_finalized"
             local fcst_final_com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.fcst_finalized.txt"

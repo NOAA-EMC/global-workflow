@@ -315,8 +315,9 @@ while [[ ${remaining} -gt 0 ]]; do
     # Suppression: while any remaining row's sentinel is a fcst_finalized_seg* trigger,
     # do NOT count idle cycles. That row is written by exglobal_forecast.sh AFTER every
     # *_out completes (restart copies to COM), which happens after fcst_history_done.
-    # Counting idle cycles here would race JGLOBAL_FORECAST_MANAGER's rm -rf "${DATAjob}"
-    # against restart copies still reading files under DATAjob.
+    # Counting idle cycles here would let the manager exit -- releasing downstream jobs
+    # that key off the finalized sentinel -- while restart copies are still writing under
+    # DATAjob.
     if [[ -n "${FCST_HISTORY_DONE_SENTINEL:-}" && -f "${FCST_HISTORY_DONE_SENTINEL}" ]]; then
         _finalized_pending=0
         for ((k = 0; k < count; k++)); do

@@ -169,9 +169,11 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
 fi
 
 # Write the finalized sentinel as the very last action of this J-job, after every
-# cleanup step above. The forecast manager's atmf finalization row waits on this file;
-# delaying its creation until here guarantees DATAjob is fully quiescent before
-# JGLOBAL_FORECAST_MANAGER's rm -rf "${DATAjob}" can run.
+# cleanup step above. The forecast manager's atmf finalization row waits on this file
+# to know this segment's forecast is fully quiescent before it copies the final
+# products and exits. On the final segment this also lets the manager safely tear down
+# the shared DATAjob umbrella (JGLOBAL_FORECAST is fully done by the time the manager
+# sees this sentinel). This job never removes DATAjob itself.
 #
 # On explicit FORECASTSH failure the failure sentinel is written before err_exit above.
 # On implicit failure paths (set_strict trip, walltime SIGTERM, operator qdel) the

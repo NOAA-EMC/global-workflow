@@ -99,8 +99,33 @@ fi
 
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
+    # Always remove this job's private DATA.
     rm -rf "${DATA}"
-    rm -rf "${DATAjob}"
+
+    # Remove the shared DATAjob umbrella, but ONLY after the final forecast segment.
+    # DATAjob has no segment number and is reused by every segment's forecast and
+    # manager, so earlier segments must leave it in place -- removing it mid-run would
+    # destroy the next segment's forecast, which is already using it (the original bug).
+    # On the last segment the manager finishes after JGLOBAL_FORECAST (it waits on the
+    # fcst_finalized_seg sentinel), so nothing else is using DATAjob by this point.
+    #
+    # The manager owns this teardown, rather than JGLOBAL_FORECAST, because it is the
+    # last job in the family to finish and because the ecFlow/ops suite has no cleanup
+    # task: under Rocoto JGLOBAL_CLEANUP removes the whole DATAROOT, but ecFlow does not,
+    # so DATAjob would otherwise leak in ops.
+    #
+    # Last-segment detection mirrors dev/workflow/rocoto/gfs_tasks.py: only gfs is
+    # segmented (num_fcst_segments = len(FCST_SEGMENTS) - 1); gdas and enkfgdas always
+    # run a single segment (FCST_SEGMENT 0).
+    if [[ "${RUN}" == "gfs" ]]; then
+        _commas="${FCST_SEGMENTS//[^,]/}"
+        _last_segment=$((${#_commas} - 1))
+    else
+        _last_segment=0
+    fi
+    if ((${FCST_SEGMENT:-0} == _last_segment)); then
+        rm -rf "${DATAjob}"
+    fi
 fi
 
 exit 0
