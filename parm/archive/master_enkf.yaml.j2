@@ -38,26 +38,21 @@ datasets:
     # Construct member COM directories for the group
     {% for mem in range(first_group_mem, last_group_mem + 1) %}
 
-        # Declare a dict of search and replace terms to run on each template
         {% set mem_char = 'mem%03d' | format(mem) %}
-        {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                              '${RUN}':RUN,
-                              '${YMD}':cycle_YMD,
-                              '${HH}':cycle_HH,
-                              '${MEMDIR}': mem_char }) %}
+        {% set COM_BASE_MEM = ROTDIR ~ '/' ~ RUN ~ '.' ~ cycle_YMD ~ '/' ~ cycle_HH ~ '/' ~ mem_char %}
 
-        {% set COMIN_ATMOS_ANALYSIS_MEM = COM_ATMOS_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ATMOS_HISTORY_MEM = COM_ATMOS_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ATMOS_RESTART_MEM = COM_ATMOS_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_ANALYSIS_MEM = COM_OCEAN_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_LETKF_MEM = COM_OCEAN_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_HISTORY_MEM = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_OCEAN_RESTART_MEM = COM_OCEAN_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_ANALYSIS_MEM = COM_ICE_ANALYSIS_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_LETKF_MEM = COM_ICE_LETKF_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_HISTORY_MEM = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_ICE_RESTART_MEM = COM_ICE_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
-        {% set COMIN_MED_RESTART_MEM = COM_MED_RESTART_TMPL | replace_tmpl(tmpl_dict) %}
+        {% set COMIN_ATMOS_ANALYSIS_MEM = COM_BASE_MEM ~ '/analysis/atmos' %}
+        {% set COMIN_ATMOS_HISTORY_MEM = COM_BASE_MEM ~ '/model/atmos/history' %}
+        {% set COMIN_ATMOS_RESTART_MEM = COM_BASE_MEM ~ '/model/atmos/restart' %}
+        {% set COMIN_OCEAN_ANALYSIS_MEM = COM_BASE_MEM ~ '/analysis/ocean' %}
+        {% set COMIN_OCEAN_LETKF_MEM = COM_BASE_MEM ~ '/analysis/ocean/letkf' %}
+        {% set COMIN_OCEAN_HISTORY_MEM = COM_BASE_MEM ~ '/model/ocean/history' %}
+        {% set COMIN_OCEAN_RESTART_MEM = COM_BASE_MEM ~ '/model/ocean/restart' %}
+        {% set COMIN_ICE_ANALYSIS_MEM = COM_BASE_MEM ~ '/analysis/ice' %}
+        {% set COMIN_ICE_LETKF_MEM = COM_BASE_MEM ~ '/analysis/ice/letkf' %}
+        {% set COMIN_ICE_HISTORY_MEM = COM_BASE_MEM ~ '/model/ice/history' %}
+        {% set COMIN_ICE_RESTART_MEM = COM_BASE_MEM ~ '/model/ice/restart' %}
+        {% set COMIN_MED_RESTART_MEM = COM_BASE_MEM ~ '/model/med/restart' %}
 
         # Append the member COM directories
         {% do COMIN_ATMOS_ANALYSIS_MEM_list.append(COMIN_ATMOS_ANALYSIS_MEM)%}
@@ -75,12 +70,7 @@ datasets:
 
     {% endfor %}
 
-    {% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
-                          '${RUN}':RUN,
-                          '${YMD}':cycle_YMD,
-                          '${HH}':cycle_HH,
-                          '${MEMDIR}': "ensstat"}) %}
-    {% set COMIN_CONF = COM_CONF_TMPL | replace_tmpl(tmpl_dict) %}
+    {% set COMIN_CONF = ROTDIR ~ '/' ~ RUN ~ '.' ~ cycle_YMD ~ '/' ~ cycle_HH ~ '/ensstat/conf' %}
     # Archive member data
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}

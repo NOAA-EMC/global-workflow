@@ -151,18 +151,6 @@ class Stage(Task):
         }
 
     @logit(logger)
-    def _copy_com_templates(self) -> Dict[str, str]:
-        """Copy COM templates from task_config
-
-        Returns
-        -------
-        Dict[str, str]
-            Dictionary with COM template paths
-        """
-        return {key: self.task_config[key] for key in self.task_config.keys()
-                if key.startswith('COM_') and key.endswith('_TMPL')}
-
-    @logit(logger)
     def create_stage_dict(self) -> AttrDict:
         """Create staging dictionary with all necessary variables for YAML templates
 
@@ -185,8 +173,7 @@ class Stage(Task):
         # Create cycle directories for template substitution
         stage_dict.update(self._create_cycle_dicts(stage_dict.ROTDIR, stage_dict.RUN))
 
-        # Copy COM templates
-        stage_dict.update(self._copy_com_templates())
+        # COM_*_TMPL templates are injected into stage_dict by the exscript.
 
         # Add GEFSTYPE if available (for GEFS runs)
         if 'GEFSTYPE' in self.task_config:
