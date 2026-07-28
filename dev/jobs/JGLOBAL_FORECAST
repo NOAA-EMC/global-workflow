@@ -122,6 +122,10 @@ fi
 "${FORECASTSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    # Write the failure sentinel BEFORE err_exit so the forecast manager sees
+    # "aborted rc=<rc>" and propagates the failure via its FCST_FINALIZED_SENTINEL
+    # propagate-failure block, rather than only via the slow batch-walltime path.
+    echo "aborted rc=${err} at $(date --utc +%Y%m%d%H%M%S)" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
     err_exit "Failed to run the ${RUN} forecast for ${PDY}${cyc}"
 fi
 
@@ -163,5 +167,18 @@ if [[ "${KEEPDATA}" == "NO" ]]; then
         rm -rf "${DATArestart}"
     fi
 fi
+
+# Write the finalized sentinel as the very last action of this J-job, after every
+# cleanup step above. The forecast manager's atmf finalization row waits on this file
+# to know this segment's forecast is fully quiescent before it copies the final
+# products and exits. On the final segment this also lets the manager safely tear down
+# the shared DATAjob umbrella (JGLOBAL_FORECAST is fully done by the time the manager
+# sees this sentinel). This job never removes DATAjob itself.
+#
+# On explicit FORECASTSH failure the failure sentinel is written before err_exit above.
+# On implicit failure paths (set_strict trip, walltime SIGTERM, operator qdel) the
+# sentinel is not written; the forecast manager will fall back to its batch-walltime
+# timeout (or FCST_MGR_TIMEOUT if configured) rather than propagating rc directly.
+echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} finalized" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
 
 exit 0
