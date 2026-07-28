@@ -466,7 +466,14 @@ if [[ "${_build}" == "true" ]]; then
     printf "Building via build_all.sh %s\n\n" "${_build_flags}"
     # Let the output of build_all.sh go to stdout regardless of verbose options
     #shellcheck disable=SC2086,SC2248
-    ${HOMEglobal}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
+    if ! ${HOMEglobal}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}; then
+        _message="build_all.sh failed!  Check build logs for details."
+        echo "${_message}"
+        if [[ "${_set_email}" == true ]]; then
+            send_email "${_message}"
+        fi
+        exit 8
+    fi
 fi
 
 # Link the workflow silently unless there's an error
