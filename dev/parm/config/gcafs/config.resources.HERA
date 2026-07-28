@@ -5,7 +5,7 @@
 
 case ${step} in
   "prep_emissions")
-    export walltime="00:45:00"
+    export walltime="01:45:00"
     ;;
 
   "prep")
