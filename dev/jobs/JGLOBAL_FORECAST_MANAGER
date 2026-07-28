@@ -7,19 +7,33 @@ set -x
 # Script description:  Forecast manager job
 #
 # Abstract: Runs alongside the UFS model (JGLOBAL_FORECAST) to transfer
-#           output products to COM as they are written by the model. Shares
-#           the DATAjob umbrella directory with the forecast job and reads
-#           product tables from COMOUT_CONF that were written by the forecast
-#           job pre-run setup phase.
+#           history / product files to COM as they are written by the model.
+#           Shares the DATAjob umbrella directory with the forecast job and
+#           reads product tables written in DATAjob by the forecast job's
+#           pre-run setup phase (forecast_postdet.sh).
 #
-#           Currently manages real-time copy for components that emit per-file
-#           sentinel log files (FV3ATM and WW3). Ocean and ice history files
-#           are copied at the end of the forecast job by JGLOBAL_FORECAST.
+#           Manages real-time copy for every RUN in {gfs, gdas, enkfgdas} of:
+#             - FV3ATM history (atmf, sfcf; grib, flux when WRITE_DOPOST=.true.)
+#             - WW3  history   (when DO_WAVE=YES)
+#             - MOM6 ocean history (when DO_OCN=YES)
+#             - CICE ice   history (when DO_ICE=YES)
+#
+#           Restart files (FV3, MOM6, CICE, CMEPS mediator, GOCART) are NOT
+#           handled here; the forecast job's per-component *_out functions
+#           copy those to COM after model exec completes.
 #############################################################################
 
-export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+if ((10#${ENSMEM:--1} >= 0)); then
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+else
+    export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+fi
 export DATA="${DATAjob}/manager.${jobid}"
-source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst_manager"
+if ((10#${ENSMEM:--1} >= 0)); then
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_manager" -c "base efcs fcst_manager"
+else
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst_manager" -c "base fcst_manager"
+fi
 
 #{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
 #{% if false %}
@@ -60,7 +74,7 @@ if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
 fi
 
-if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
 fi
 
@@ -85,7 +99,33 @@ fi
 
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
+    # Always remove this job's private DATA.
     rm -rf "${DATA}"
+
+    # Remove the shared DATAjob umbrella, but ONLY after the final forecast segment.
+    # DATAjob has no segment number and is reused by every segment's forecast and
+    # manager, so earlier segments must leave it in place -- removing it mid-run would
+    # destroy the next segment's forecast, which is already using it (the original bug).
+    # On the last segment the manager finishes after JGLOBAL_FORECAST (it waits on the
+    # fcst_finalized_seg sentinel), so nothing else is using DATAjob by this point.
+    #
+    # The manager owns this teardown, rather than JGLOBAL_FORECAST, because it is the
+    # last job in the family to finish and because the ecFlow/ops suite has no cleanup
+    # task: under Rocoto JGLOBAL_CLEANUP removes the whole DATAROOT, but ecFlow does not,
+    # so DATAjob would otherwise leak in ops.
+    #
+    # Last-segment detection mirrors dev/workflow/rocoto/gfs_tasks.py: only gfs is
+    # segmented (num_fcst_segments = len(FCST_SEGMENTS) - 1); gdas and enkfgdas always
+    # run a single segment (FCST_SEGMENT 0).
+    if [[ "${RUN}" == "gfs" ]]; then
+        _commas="${FCST_SEGMENTS//[^,]/}"
+        _last_segment=$((${#_commas} - 1))
+    else
+        _last_segment=0
+    fi
+    if ((${FCST_SEGMENT:-0} == _last_segment)); then
+        rm -rf "${DATAjob}"
+    fi
 fi
 
 exit 0
