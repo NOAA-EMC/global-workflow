@@ -109,9 +109,7 @@ system_builds=(
     ["gcafs"]="ufs_gcafs gfs_utils ufs_utils upp nexus gsi_utils"
     ["gsi"]="gsi_enkf gsi_monitor gsi_utils"
     ["gdas"]="gdas gsi_monitor gsi_utils"
-    # GFS-v17 branch: "all" builds only GFS-relevant components (union of gfs + gsi + gdas).
-    # GEFS/SFS/GCAFS components (ufs_gefs, ufs_sfs, ufs_gcafs, ww3_gefs, nexus) are intentionally excluded.
-    ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs gdas gsi_enkf gsi_monitor gsi_utils"
+    ["all"]="ufs_gfs gfs_utils ufs_utils upp ww3_gfs ufs_gefs ufs_sfs ufs_gcafs ww3_gefs gdas gsi_enkf gsi_monitor gsi_utils nexus"
 )
 
 logs_dir="${HOMEglobal}/sorc/logs"
