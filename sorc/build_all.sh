@@ -226,26 +226,26 @@ check_builds() {
     return 0
 }
 
-# Cleanup function to kill the GDASApp build on ctrl-c or non-clean exit
+# Cleanup function to kill builds on ctrl-c or non-clean exit
 # shellcheck disable=SC2329
 function cleanup() {
     echo "Exiting build script. Terminating subprocesses..."
-    err=0
+    local _killed=0
     for pid in "${build_ids[@]}"; do
         if kill -0 "${pid}" 2> /dev/null; then # Check if process still exists
             kill "${pid}"
-            err=$((err + 1))
+            ((_killed += 1))
         fi
     done
 
-    if [[ ${err} -gt 0 ]]; then
-        echo "Terminated ${err} subprocess(es)."
+    if [[ ${_killed} -gt 0 ]]; then
+        echo "Terminated ${_killed} subprocess(es)."
     fi
 
-    exit "${err}"
+    # Always exit non-zero; cleanup is only invoked on abnormal termination
+    exit 1
 }
 
-trap cleanup ERR
 trap cleanup INT
 trap cleanup TERM
 

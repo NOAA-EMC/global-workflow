@@ -108,6 +108,10 @@ export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 # CONVENIENT utility scripts and other environment parameters
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
+export VERBOSE="YES"
+export KEEPDATA="{{ KEEPDATA | default('NO') }}"
+export CHECK_DEAD_LINKS="NO"
+export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
 export CHGRP_CMD="{{ CHGRP_CMD }}"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
@@ -142,8 +146,18 @@ export FETCHDIR="{{ FETCHDIR }}"
 export NET="gfs"  # NET is defined in the job-card (ecf)
 export RUN=${RUN:-"gfs"}  # RUN is defined in the job-card (ecf)
 
-# Get all the COM path templates
-source "${EXPDIR}/config.com"
+# Templated COM paths that need shell-time evaluation (NCO branch uses
+# compath.py). The fixed COM_*_TMPL paths are injected into AppConfig by
+# dev/workflow/com_paths.py.
+# shellcheck disable=SC2016
+if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
+    COM_OBSPROC_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
+    COM_OBSFORGE_TMPL=$(compath.py "${envir}/obsforge/${obsforge_ver}")'/${RUN}.${YMD}/${HH}/'
+else
+    COM_OBSPROC_TMPL='${DMPDIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
+    COM_OBSFORGE_TMPL='${IODADIR}/${RUN}${DUMP_SUFFIX}.${YMD}/${HH}'
+fi
+export COM_OBSPROC_TMPL COM_OBSFORGE_TMPL
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}

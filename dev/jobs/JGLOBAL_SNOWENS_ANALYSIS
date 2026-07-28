@@ -58,6 +58,11 @@ declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysi
 
 mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 
+# Additional COM variables are set in ${HOMEglobal}/parm/gdas/snow/snow_ens_config.yaml.j2
+# in order to loop over ensemble members during file staging:
+#  COMIN_ATMOS_RESTART_MEM_PREV
+#  COMOUT_SNOW_ANALYSIS_MEM
+
 ###############################################################
 # Run relevant script
 
