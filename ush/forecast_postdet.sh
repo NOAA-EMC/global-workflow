@@ -304,12 +304,11 @@ EOF
     #============================================================================
     if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
         local FH2 FH3
-        # For GFS/GEFS/SFS/GCAFS: build a product table consumed by the forecast manager.
+        # Build a product table consumed by the forecast manager.
         # The model writes real files to DATAoutput; the manager copies them to COM.
-        # For GDAS/enkfGDAS: keep NLN symlinks so analysis jobs can read outputs during the run.
         local use_mgr="NO"
         case "${RUN}" in
-            gfs) use_mgr="YES" ;;
+            gfs | gdas | enkfgdas) use_mgr="YES" ;;
                 # TODO: enable forecast manager for gefs, sfs, gcafs once tested
                 # gefs | sfs | gcafs) use_mgr="YES" ;;
             *) ;;
@@ -409,13 +408,26 @@ EOF
                 # Barrier row: final combined com_log followed by all per-product deps.
                 echo "${com_log} ${barrier_deps}" >> "${atm_barrier_tables[inst]}"
             else
-                # GDAS/enkfGDAS: NLN symlinks to COM so analysis jobs can read outputs during run
-                for ((i = 0; i < ${#local_files[@]}; i++)); do
-                    ${NLN} "${com_files[i]}" "${local_files[i]}"
-                done
-                ${NLN} "${com_log}" "${local_log}"
+                echo "FATAL ERROR: No ATM product handling defined for RUN=${RUN}. Add it to the use_mgr case statement." >&2
+                exit 1
             fi
         done
+
+        if [[ "${use_mgr}" == "YES" ]]; then
+            # Append the forecast-finalized sentinel as the last row of instance-0's atmf table.
+            # forecast_manager.sh treats fcst_finalized_seg* as a data-file trigger: it waits
+            # for this file (written by JGLOBAL_FORECAST as its final action, after every
+            # *_out completes AND after its own DATA / DATArestart cleanup block runs),
+            # copies it to COM, and writes the COM log. Waiting on the finalized sentinel --
+            # rather than fcst_history_done_seg which lands right after model exec -- guarantees the
+            # manager does not exit (releasing downstream jobs that key off the finalized
+            # sentinel) while FV3_out / MOM6_out / CICE_out / WW3_out / GOCART_out / CMEPS_out
+            # restart copies or JGLOBAL_FORECAST's tail cleanup are still reading files under DATAjob.
+            local fcst_final_local="${DATAjob}/fcst_finalized_seg${seg}"
+            local fcst_final_com="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.fcst_finalized"
+            local fcst_final_com_log="${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.fcst_finalized.txt"
+            echo "${fcst_final_local} ${fcst_final_local} ${fcst_final_com} ${fcst_final_com_log}" >> "${atm_atmf_tables[0]}"
+        fi
 
         ##############################################################
         # Release the forecast manager once the product table is ready
@@ -615,22 +627,19 @@ WW3_postdet() {
     #fi
     cd "${cwd}" || exit 1
 
-    # For GFS/GEFS/SFS/GCAFS: build product tables for the forecast manager.
-    # For GDAS: keep NLN symlinks so downstream analysis jobs can read WW3 outputs.
+    # Build product tables for the forecast manager.
     local use_mgr_ww3="NO"
     case "${RUN}" in
-        gfs) use_mgr_ww3="YES" ;;
+        gfs | gdas) use_mgr_ww3="YES" ;;
             # TODO: enable forecast manager for gefs, sfs, gcafs once tested
             # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
         *) ;;
     esac
 
-    # log.ww3 is the WW3 run log written to DATA. For GFS it becomes a real file
-    # (copied to COM in WW3_out). For GDAS it is symlinked to COM here.
-    if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        : # log.ww3 will be a real file in DATA; WW3_out copies it after the run
-    else
-        ${NLN} "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log" "log.ww3"
+    # log.ww3 is the WW3 run log written to DATA; WW3_out copies it to COM after the run.
+    if [[ "${use_mgr_ww3}" != "YES" ]]; then
+        echo "FATAL ERROR: No WW3 log handling defined for RUN=${RUN}. Add it to the use_mgr_ww3 case statement." >&2
+        exit 1
     fi
 
     # Loop for gridded output (uses FHINC)
@@ -643,9 +652,7 @@ WW3_postdet() {
         fhinc=${FHOUT_WAV}
     fi
     local ww3_table="${DATAjob}/ww3_products_seg${FCST_SEGMENT:-0}.txt"
-    if [[ "${use_mgr_ww3}" == "YES" ]]; then
-        rm -f "${ww3_table}"
-    fi
+    rm -f "${ww3_table}"
     while [[ ${fhr} -le ${FHMAX_WAV} ]]; do
         fhr3=$(printf '%03d' "${fhr}")
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d.%H0000)
@@ -653,13 +660,8 @@ WW3_postdet() {
         local ww3_grd_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_grd.ww3.txt"
         local ww3_grd_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.bin"
         local ww3_grd_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.f${fhr3}.log"
-        if [[ "${use_mgr_ww3}" == "YES" ]]; then
-            # Each WW3 gridded file has its own per-file sentinel log
-            echo "${ww3_grd_local} ${ww3_grd_local_log} ${ww3_grd_com} ${ww3_grd_com_log}" >> "${ww3_table}"
-        else
-            ${NLN} "${ww3_grd_com}" "${ww3_grd_local}"
-            ${NLN} "${ww3_grd_com_log}" "${ww3_grd_local_log}"
-        fi
+        # Each WW3 gridded file has its own per-file sentinel log
+        echo "${ww3_grd_local} ${ww3_grd_local_log} ${ww3_grd_com} ${ww3_grd_com_log}" >> "${ww3_table}"
 
         if [[ ${fhr} -ge ${FHMAX_HF_WAV} ]]; then
             fhinc=${FHOUT_WAV}
@@ -677,13 +679,8 @@ WW3_postdet() {
         local ww3_pnt_local_log="${DATAoutput}/WW3_OUTPUT/log.${vdate}.out_pnt.ww3.txt"
         local ww3_pnt_com="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.nc"
         local ww3_pnt_com_log="${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.points.f${fhr3}.log"
-        if [[ "${use_mgr_ww3}" == "YES" ]]; then
-            # Each WW3 point file has its own per-file sentinel log
-            echo "${ww3_pnt_local} ${ww3_pnt_local_log} ${ww3_pnt_com} ${ww3_pnt_com_log}" >> "${ww3_table}"
-        else
-            ${NLN} "${ww3_pnt_com}" "${ww3_pnt_local}"
-            ${NLN} "${ww3_pnt_com_log}" "${ww3_pnt_local_log}"
-        fi
+        # Each WW3 point file has its own per-file sentinel log
+        echo "${ww3_pnt_local} ${ww3_pnt_local_log} ${ww3_pnt_com} ${ww3_pnt_com_log}" >> "${ww3_table}"
 
         fhr=$((fhr + fhinc))
     done
@@ -702,10 +699,10 @@ WW3_out() {
     # Copy wave namelist from DATA to COMOUT_CONF after the forecast is run (and successfull)
     cpfs "${DATA}/ww3_shel.nml" "${COMOUT_CONF}/ufs.ww3_shel.nml"
 
-    # Copy WW3 run log for GFS/GEFS/SFS/GCAFS (no pre-run symlink; model writes a real
-    # file in DATA which is copied to COM here at end of run)
+    # Copy WW3 run log (no pre-run symlink; model writes a real file in DATA
+    # which is copied to COM here at end of run for manager-enabled runs)
     case "${RUN}" in
-        gfs | gefs | sfs | gcafs)
+        gfs | gdas | enkfgdas | gefs | sfs | gcafs)
             if [[ -f "${DATA}/log.ww3" ]]; then
                 mkdir -p "${COMOUT_WAVE_HISTORY}"
                 cpfs "${DATA}/log.ww3" "${COMOUT_WAVE_HISTORY}/${RUN}.t${cyc}z.${waveGRD}.${PDY}${cyc}.log"
@@ -824,16 +821,29 @@ MOM6_postdet() {
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs) # Set up MOM6 output files for RUN=gfs|enkfgfs|gefs|sfs|gcafs
-            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
-            local ocn_local ocn_com ocn_table use_mgr_ocn
-            # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
+        gfs | enkfgfs | gdas | enkfgdas) # Set up MOM6 output files
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid ihour source_file dest_file source_file_log dest_file_log
+            local ocn_local ocn_com ocn_table
+            # Forecast manager handles gfs|enkfgfs|gdas|enkfgdas: MOM6 cap writes per-period
+            # YYYYMMDD.HHMMSS.mom6.HHh sentinels (UFSWM update,
+            # NOAA-EMC/global-workflow#4946) once each history .nc is fully flushed.
+            local use_mgr_ocn="NO"
             case "${RUN}" in
-                gfs) use_mgr_ocn="YES" ;;
-                *) use_mgr_ocn="NO" ;;
+                gfs | enkfgfs | gdas | enkfgdas) use_mgr_ocn="YES" ;;
+                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
+                *) ;;
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
             rm -f "${ocn_table}"
+            # MOM6 sentinel suffix matches MOM6_HISTFREQ_N in parsing_ufs_configure.sh:
+            # gdas/enkfgdas use N=1 (hourly) → '.01h'; gfs/enkfgfs use FHOUT_OCN (e.g. 6) → '.06h'.
+            local mom6_hist_n
+            case "${RUN}" in
+                gdas | enkfgdas) mom6_hist_n=1 ;;
+                *) mom6_hist_n="${FHOUT_OCN:-6}" ;;
+            esac
+            local mom6_sentinel_sfx
+            mom6_sentinel_sfx="$(printf "%02i" "${mom6_hist_n}")h"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -843,51 +853,60 @@ MOM6_postdet() {
                 fi
 
                 ((interval = fhr - last_fhr))
-                ((midpoint = last_fhr + interval / 2))
-
-                vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
-                # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
-                # Native model uses midpoint in filename; we map that to the end of the period for COM.
-                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
-                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
-                    source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
-                else
-                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
-                fi
                 ihour=$(printf %02i "${interval}")
-                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+                # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
+                # NOAA-EMC/global-workflow#4946). Sentinel suffix matches MOM6_HISTFREQ_N:
+                # '.01h' for gdas/enkfgdas (hourly), '.06h' (or similar) for gfs/enkfgfs.
+                if [[ ${fhr} -eq ${FHMAX} ]]; then
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${mom6_sentinel_sfx}"
+                else
+                    source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${mom6_sentinel_sfx}"
+                fi
+
+                case "${RUN}" in
+                    gdas | enkfgdas)
+                        # Instantaneous MOM6 backgrounds; filename uses underscore-separated
+                        # date including 2-digit minutes (always _00 since FHOUT_OCN is hourly).
+                        local vdatestr_inst="${vdate:0:4}_${vdate:4:2}_${vdate:6:2}_${vdate:8:2}_00"
+                        source_file="ocn_${vdatestr_inst}.nc"
+                        dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
+                        dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.log.f${fhr3}.txt"
+                        ;;
+                    gfs | enkfgfs)
+                        # Period averages; model uses midpoint timestamp in filename.
+                        ((midpoint = last_fhr + interval / 2))
+                        # If OFFSET_START_HOUR > 0, add offset to midpoint for first lead time.
+                        # Native model uses midpoint in filename; we map that to the end of the period for COM.
+                        if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                            vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
+                            source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                        else
+                            vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+                            source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
+                        fi
+                        dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                        dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
+                        ;;
+                    *)
+                        echo "FATAL ERROR: Unsupported RUN ${RUN} in MOM6 postdet" >&2
+                        exit 25
+                        ;;
+                esac
+
                 ocn_local="${DATAoutput}/MOM6_OUTPUT/${source_file}"
                 ocn_com="${COMOUT_OCEAN_HISTORY}/${dest_file}"
-                source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
-                dest_file_log="${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
 
-                # Forecast manager copies from DATA to COM; register in product table.
-                # Others: NLN so model writes directly into COM.
+                # source_file_log is the MOM6 period log written by the model after the .nc
+                # is complete. Manager polls for it, copies the .nc to COM, then copies the
+                # log to COM as the Rocoto sentinel.
                 if [[ "${use_mgr_ocn}" == "YES" ]]; then
-                    # Model-log-triggered: local_log (source_file_log) is the MOM6 period log
-                    # written by the model after the .nc is complete. Manager polls for it,
-                    # copies the .nc to COM, then copies the log to COM as the Rocoto sentinel.
                     echo "${ocn_local} ${source_file_log} ${ocn_com} ${dest_file_log}" >> "${ocn_table}"
-                else
-                    ${NLN} "${ocn_com}" "${ocn_local}"
-                    ${NLN} "${dest_file_log}" "${source_file_log}"
                 fi
-
                 last_fhr=${fhr}
             done
             ;;
 
-        gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
-            # Save (instantaneous) MOM6 backgrounds
-            local fhr3 vdatestr
-            for fhr in ${MOM6_OUTPUT_FH}; do
-                fhr3=$(printf %03i "${fhr}")
-                vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                # NLN symlink: GDAS analysis jobs need ocean backgrounds during the run
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${vdatestr}.nc"
-            done
-            ;;
         *)
             echo "FATAL ERROR: Don't know how to copy MOM output files for RUN ${RUN}"
             exit 25
@@ -970,6 +989,7 @@ MOM6_out() {
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
         fi
     fi
+
 }
 
 ################################################################################
@@ -1008,24 +1028,30 @@ CICE_postdet() {
     # Determine whether to use the forecast manager for CICE output.
     local use_mgr_ice="NO"
     case "${RUN}" in
-        gfs) use_mgr_ice="YES" ;;
-        # TODO: enable forecast manager for gdas, enkfgdas, enkfgfs, gefs, sfs, gcafs once tested
+        gfs | gdas | enkfgdas) use_mgr_ice="YES" ;;
+        # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
     rm -f "${ice_table}"
 
-    local vdate seconds vdatestr fhr fhr3 interval
+    local vdate seconds vdatestr fhr fhr3 fhr4 interval
 
     # iceh_ic: CICE initial condition snapshot (write_ic=.true. in namelist).
-    # No per-period sentinel exists; the manager cannot track it in-flight.
+    # The IC is written during CICE initialization, before any time stepping,
+    # so the model never produces a sentinel log for it -- the new shared
+    # log_restart_fh path only fires from the periodic-output call site.
+    # Use the first periodic ice .nc as a downstream trigger.  By the time
+    # that file even begins to appear on disk, the IC has been fully on disk
+    # for the entire first integration window; we never copy the trigger
+    # itself, only iceh_ic.nc, so the trigger being mid-write is harmless.
+    # We do NOT use log.ice.f0006 as the trigger because that is also the
+    # f006 periodic row's sentinel; the manager groups rows by identical
+    # local_log and writes only one com_log per group, so sharing it would
+    # silently drop the f006 sentinel.
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
     if [[ "${use_mgr_ice}" == "YES" ]]; then
-        # iceh_ic is written during CICE initialization before any time stepping.
-        # Use the first forecast-hour ice output as the trigger (same pattern as
-        # non-last entries in the loop below). iceh_ic is fully written before
-        # f006 appears, ensuring a complete copy.
         local ic_trigger_fhr=${CICE_OUTPUT_FH[1]}
         local ic_trigger_vdate ic_trigger_sec ic_trigger_vdstr ic_trigger
         ic_trigger_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${ic_trigger_fhr} hours" +%Y%m%d%H)
@@ -1035,6 +1061,10 @@ CICE_postdet() {
             gfs | enkfgfs | sfs | gcafs)
                 ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${ic_trigger_vdstr}.nc"
                 ;;
+            gdas | enkfgdas)
+                # gdas/enkfgdas use instantaneous output; first periodic file is the IC trigger.
+                ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh_inst.${ic_trigger_vdstr}.nc"
+                ;;
             gefs)
                 ic_trigger="${DATAoutput}/CICE_OUTPUT/iceh.${ic_trigger_vdstr}.nc"
                 ;;
@@ -1043,6 +1073,8 @@ CICE_postdet() {
                 exit 10
                 ;;
         esac
+        # Trigger ends in .nc, so manager hits the data-file-trigger branch
+        # and writes a synthetic com_log instead of cpfs'ing the trigger.
         echo "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc" \
             "${ic_trigger}" \
             "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" \
@@ -1054,10 +1086,14 @@ CICE_postdet() {
     fi
 
     # Build CICE product table entries for each forecast hour.
-    # Column layout: local_data  local_trigger  com_data  com_log
-    #   local_trigger: next hour's output file for non-last entries, or
-    #                  fcst_done_seg for the last entry.  The manager writes
-    #                  com_log synthetically when the trigger appears.
+    # Column layout: local_data  local_log  com_data  com_log
+    #   local_log: log.ice.fHHHH sentinel written by the CICE component into
+    #              CICE_OUTPUT after the iceh_*.nc for this period is fully
+    #              flushed to disk.  Mirrors how FV3 uses log.atm.fHHH and
+    #              WW3 uses its per-file logs (UFSWM update tracked in
+    #              NOAA-EMC/global-workflow#4946; previously called via
+    #              ufs_logfhour which had an IAU 00Z labeling bug and wrote
+    #              to DATA root).
     local source_file dest_file
     local n_fhr=${#CICE_OUTPUT_FH[@]}
     for ((idx = 1; idx < n_fhr; idx++)); do
@@ -1065,6 +1101,7 @@ CICE_postdet() {
         local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
         ((interval = fhr - prev_fhr))
         fhr3=$(printf %03i "${fhr}")
+        fhr4=$(printf %04i "${fhr}")
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
@@ -1090,38 +1127,22 @@ CICE_postdet() {
         esac
 
         local ice_local="${DATAoutput}/CICE_OUTPUT/${source_file}"
+        local ice_log_local="${DATAoutput}/CICE_OUTPUT/log.ice.f${fhr4}"
         local ice_com="${COMOUT_ICE_HISTORY}/${dest_file}"
-        local ice_log_local ice_log_com
-        ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
+        local ice_log_com="${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.log.ice.f${fhr3}.txt"
         if [[ "${use_mgr_ice}" == "YES" ]]; then
-            if [[ $((idx + 1)) -lt n_fhr ]]; then
-                # Non-last: trigger = next forecast hour's ice output on DATA.
-                local next_fhr=${CICE_OUTPUT_FH[idx + 1]}
-                local next_vdate next_sec next_vdstr
-                next_vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${next_fhr} hours" +%Y%m%d%H)
-                next_sec=$(to_seconds "${next_vdate:8:2}0000")
-                next_vdstr="${next_vdate:0:4}-${next_vdate:4:2}-${next_vdate:6:2}-${next_sec}"
-                case "${RUN}" in
-                    gfs | enkfgfs | sfs | gcafs)
-                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${next_vdstr}.nc"
-                        ;;
-                    gefs)
-                        ice_log_local="${DATAoutput}/CICE_OUTPUT/iceh.${next_vdstr}.nc"
-                        ;;
-                    *)
-                        echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet ice trigger"
-                        exit 10
-                        ;;
-                esac
-            else
-                # Last forecast hour: trigger = forecast completion sentinel.
-                ice_log_local="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
-            fi
             echo "${ice_local} ${ice_log_local} ${ice_com} ${ice_log_com}" >> "${ice_table}"
         else
+            # Non-manager: NLN so the model writes directly into COM via symlink.
             ${NLN} "${ice_com}" "${ice_local}"
         fi
     done
+
+    # When the manager is not used for ICE, create the (empty) product table so
+    # the forecast manager does not wait for a file that is never written.
+    if [[ "${use_mgr_ice}" == "NO" ]]; then
+        touch "${ice_table}"
+    fi
 }
 
 CICE_nml() {

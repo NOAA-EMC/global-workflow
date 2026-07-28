@@ -103,9 +103,6 @@ export EXP_WARM_START=".true."
 export assim_freq=6
 export DUMP_SUFFIX=""
 
-# Get all the COM path templates
-source "${EXPDIR}/config.com"
-
 export LOGSCRIPT=${LOGSCRIPT:-""}
 
 export SENDSDM=${SENDSDM:-"NO"}

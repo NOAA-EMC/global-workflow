@@ -159,6 +159,19 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     add_to_tmpfile "scripts/enkfgdas/forecast/jenkfgdas_fcst_mem${head_3d}.ecf"
 done
 
+# enkfgdas fcst_manager files
+echo "Copy enkfgdas fcst_manager files ..."
+rm -f jenkfgdas_fcst_manager_mem0??.ecf
+fhr_end=80
+fhr_start=1
+while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
+    step=1
+    head_3d=$(printf "%03d" "${fhr_start}")
+    cp jenkfgdas_fcst_manager_master.ecf "jenkfgdas_fcst_manager_mem${head_3d}.ecf"
+    fhr_start=$((fhr_start + step))
+    add_to_tmpfile "scripts/enkfgdas/forecast/jenkfgdas_fcst_manager_mem${head_3d}.ecf"
+done
+
 # enkfgdas post files
 cd "${ECF_DIR}/scripts/enkfgdas/ensstat"
 echo "Copy enkfgdas post files ..."

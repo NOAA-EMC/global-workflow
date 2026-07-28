@@ -61,9 +61,9 @@ source PDY
 
 echo "Start cleanup at $(date)"
 
-# Clean DATA directories older than 48 hours
+# Clean DATA directories older than 24 hours
 cd "${DATAROOT}"
-for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +2880 | grep -v "DBNLOG" | grep -v "ecflow"); do
+for dir_to_remove in $(find ./* -maxdepth 0 -type d -mmin +1440 | grep -v "DBNLOG" | grep -v "ecflow"); do
     echo "Removing directory ${DATAROOT}/${dir_to_remove}"
     if [[ "${DRY_RUN}" == false ]]; then
         rm -rf "${dir_to_remove}"
