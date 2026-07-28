@@ -66,6 +66,7 @@ source "${HOMEglobal}/ush/module-setup.sh"
 case "${MODULE_TYPE}" in
     "ufswm")
         # UFS Weather Model modules - special handling
+        source "${HOMEglobal}/versions/run.ver"
         module use "${HOMEglobal}/sorc/ufs_model.fd/modulefiles"
         module load "ufs_${MACHINE_ID}.intel"
         export err=$?
@@ -77,13 +78,14 @@ case "${MODULE_TYPE}" in
             module load prod_util
         fi
         if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
-            module load cray-pals
-            module load cfp
-            module load libjpeg
+            module load "cray-pals/${cray_pals_ver}"
+            module load "cfp/${cfp_ver}"
+            module load "libjpeg/${libjpeg_ver}"
+            module load "python/${python_ver}"
+            module load "ve/gfs/${ve_gfs_ver}"
             module load craype-network-ucx
-            module load cray-mpich-ucx
-            module load python/3.8.6
-            module load wgrib2
+            module load "cray-mpich-ucx/${cray_mpich_ver}"
+            module load "wgrib2/${wgrib2_ver}"
         else
             export UTILROOT=${prod_util_ROOT}
             source "${HOMEglobal}/versions/run.ver"

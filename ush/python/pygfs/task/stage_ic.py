@@ -339,6 +339,10 @@ class Stage(Task):
             replaced_com = template
             for var, value in var_dict.items():
                 replaced_com = replaced_com.replace(var, value)
+            # Normalize repeated slashes that arise when MEMDIR is empty
+            # (e.g. '.../12//model' -> '.../12/model').
+            import re
+            replaced_com = re.sub(r'/{2,}', '/', replaced_com)
             return replaced_com
 
         path_dict = {}

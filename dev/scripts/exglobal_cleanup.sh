@@ -5,12 +5,17 @@ echo "Begin Cleanup ${DATAROOT}!"
 
 # Remove DATAoutput from the forecast model run
 # TODO: Handle this better
-DATAfcst="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
-if [[ -d "${DATAfcst}" ]]; then
-    rm -rf "${DATAfcst}"
+# Honor KEEPDATA so users can retain forecast/efcs DATA dirs for debugging.
+if [[ "${KEEPDATA:-NO}" == "YES" ]]; then
+    echo "INFO: KEEPDATA=YES; preserving forecast and efcs DATA directories under ${DATAROOT}"
+else
+    DATAfcst="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+    if [[ -d "${DATAfcst}" ]]; then
+        rm -rf "${DATAfcst}"
+    fi
+    #DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
+    rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 fi
-#DATAefcs="${DATAROOT}/${RUN}efcs???${PDY:-}${cyc}"
-rm -rf "${DATAROOT}/${RUN}efcs"*"${PDY:-}${cyc}"
 ###############################################################
 
 if [[ "${CLEANUP_COM:-YES}" == NO ]]; then

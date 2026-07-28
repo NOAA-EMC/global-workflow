@@ -157,9 +157,12 @@ echo "MAIN: Post-determination set up of run type finished"
 if [[ -n "${DATAjob:-}" ]]; then
     echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready at $(date)" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
     if [[ "${SENDECF}" == "YES" ]]; then
-        if [[ "${RUN}" == "gfs" ]]; then
-            ecflow_client --event release_gfs_fcst_manager
-        fi
+        case "${RUN}" in
+            gfs | gdas)
+                ecflow_client --event "release_${RUN}_fcst_manager"
+                ;;
+            *) ;;
+        esac
     fi
 fi
 
@@ -206,8 +209,12 @@ if [[ ${err} -ne 0 ]]; then
     pgm="$(basename "${FCSTEXEC}")"
     err_exit "The forecast failed to run to completion!"
 fi
-# Signal to the forecast manager that the model run has completed successfully for this segment.
-echo "${RUN}_fcst_seg${FCST_SEGMENT} done" > "${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
+# Signal to the forecast manager that model exec has returned and all history / period
+# outputs the model itself was going to write are on disk. Restart copies to COM
+# (FV3_out / MOM6_out / ...) have NOT yet run at this point; DATAjob is only safe to
+# tear down once JGLOBAL_FORECAST writes fcst_finalized_seg${FCST_SEGMENT} as its
+# final action (after its own DATA / DATArestart cleanup).
+echo "${RUN}_fcst_seg${FCST_SEGMENT} history done" > "${DATAjob}/fcst_history_done_seg${FCST_SEGMENT}"
 
 FV3_out
 if [[ "${cplflx}" == ".true." ]]; then
@@ -229,6 +236,10 @@ if [[ "${esmf_profile:-}" == ".true." ]]; then
     CPL_out
 fi
 echo "MAIN: Output copied to ROTDIR"
+
+# The fcst_finalized_seg${FCST_SEGMENT} sentinel is written by JGLOBAL_FORECAST as its
+# final action (after its own DATA / DATArestart cleanup), so the manager cannot
+# tear down DATAjob before JGLOBAL_FORECAST is completely done.
 
 #------------------------------------------------------------------
 
