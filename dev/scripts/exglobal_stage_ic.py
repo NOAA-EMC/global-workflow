@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 
-from pygfs.task.stage_ic import Stage
-from wxflow import Logger, cast_strdict_as_dtypedict, logit
+# Import com_paths from dev/workflow to get the canonical COM_*_TMPL definitions.
+_workflow_dir = os.path.join(os.environ.get('HOMEglobal', ''), 'dev', 'workflow')
+if _workflow_dir not in sys.path:
+    sys.path.insert(0, _workflow_dir)
+from com_paths import get_com_templates  # noqa: E402
+
+from pygfs.task.stage_ic import Stage  # noqa: E402
+from wxflow import Logger, cast_strdict_as_dtypedict, logit  # noqa: E402
 
 # Initialize root logger
 logger = Logger(level=os.environ.get("LOGGING_LEVEL", "DEBUG"), colored_log=True)
@@ -22,6 +29,14 @@ def main():
 
     # Create staging dictionary with all necessary variables
     stage_dict = stage.create_stage_dict()
+
+    # Inject COM_*_TMPL templates: canonical defaults from com_paths.py
+    # overridden by any matching values present in the environment.
+    com_templates = get_com_templates()
+    env_overrides = {k: v for k, v in os.environ.items()
+                     if k.startswith('COM_') and k.endswith('_TMPL')}
+    com_templates.update(env_overrides)
+    stage_dict.update(com_templates)
 
     # Loop through members and stage ICs for each
     for member in stage_dict.member_list:

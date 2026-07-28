@@ -36,9 +36,9 @@
 #           removes the intermediate dep logs (they are internal bookkeeping
 #           and not part of the downstream sentinel contract).
 #
-#           If the model finishes (fcst_done_seg appears) while rows are still
-#           pending, a WARN sentinel is written to unblock the job rather than
-#           hanging indefinitely.
+#           If the model finishes writing history (fcst_history_done_seg appears)
+#           while rows are still pending, a WARN sentinel is written to unblock
+#           the job rather than hanging indefinitely.
 #
 # Usage:    forecast_atm_barrier.sh <barrier_table>
 #             barrier_table - absolute path to the barrier table file
@@ -54,9 +54,9 @@ if [[ ! -f "${barrier_table}" ]]; then
 fi
 
 FCST_POLL_INTERVAL="${FCST_MGR_POLL_INTERVAL:-5}"
-FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT:-0}"
-# After fcst_done appears, keep polling for this long before forcing WARN sentinels
-# if no pending rows are being resolved. Set to 0 to disable forced WARN drain.
+FCST_HISTORY_DONE_SENTINEL="${DATAjob}/fcst_history_done_seg${FCST_SEGMENT:-0}"
+# After fcst_history_done appears, keep polling for this long before forcing WARN
+# sentinels if no pending rows are being resolved. Set to 0 to disable forced WARN drain.
 FCST_POSTDONE_TIMEOUT="${FCST_MGR_POSTDONE_TIMEOUT:-120}"
 
 # Track which rows are still pending.
@@ -103,9 +103,9 @@ while [[ "${remaining}" -gt 0 ]]; do
                 all_ready=0
                 break
             fi
-            # Dependency logs can appear gradually after fcst_done. Treat first
-            # observation of each dep file as progress so timeout logic does not
-            # fire while ranks are still actively finishing.
+            # Dependency logs can appear gradually after fcst_history_done. Treat
+            # first observation of each dep file as progress so timeout logic does
+            # not fire while ranks are still actively finishing.
             if [[ -z "${dep_seen[${dep}]+_}" ]]; then
                 dep_seen["${dep}"]=1
                 progress_made=1
@@ -128,10 +128,10 @@ while [[ "${remaining}" -gt 0 ]]; do
     pending_idx=("${new_pending[@]}")
 
     if [[ "${remaining}" -gt 0 ]]; then
-        # If the model is finished, keep polling for a grace period before forcing
-        # WARN sentinels. Product-copy ranks can still be actively writing dep
-        # sentinels after fcst_done appears.
-        if [[ -f "${FCST_DONE_SENTINEL}" ]]; then
+        # If the model has finished writing history, keep polling for a grace period
+        # before forcing WARN sentinels. Product-copy ranks can still be actively
+        # writing dep sentinels after fcst_history_done appears.
+        if [[ -f "${FCST_HISTORY_DONE_SENTINEL}" ]]; then
             # Reset idle timer whenever we see any progress: either a row completes
             # or at least one new dependency file appears for pending rows.
             if [[ "${progress_made}" -eq 1 || "${remaining}" -lt "${remaining_before}" ]]; then
@@ -141,12 +141,12 @@ while [[ "${remaining}" -gt 0 ]]; do
             fi
 
             if [[ "${postdone_announced}" -eq 0 ]]; then
-                echo "INFO [atm_barrier]: fcst_done detected with ${remaining} row(s) pending; allowing copy ranks to finish"
+                echo "INFO [atm_barrier]: fcst_history_done detected with ${remaining} row(s) pending; allowing copy ranks to finish"
                 postdone_announced=1
             fi
 
             if [[ "${FCST_POSTDONE_TIMEOUT}" -gt 0 && "${postdone_elapsed}" -ge "${FCST_POSTDONE_TIMEOUT}" ]]; then
-                echo "WARN [atm_barrier]: Model done and no barrier progress for ${postdone_elapsed}s; writing WARN sentinels for ${remaining} pending row(s)"
+                echo "WARN [atm_barrier]: Model history done and no barrier progress for ${postdone_elapsed}s; writing WARN sentinels for ${remaining} pending row(s)"
                 for idx in "${pending_idx[@]}"; do
                     final_log="${final_logs[${idx}]}"
                     final_dir=$(dirname "${final_log}")
