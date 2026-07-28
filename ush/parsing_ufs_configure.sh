@@ -71,7 +71,13 @@ UFS_configure() {
         local histaux_enabled=".false."
         local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
         local MOM6_RESTART_DIR="./MOM6_RESTART"
-        local MOM6_HISTFREQ_N=${FHOUT_OCN:-6}
+        # gdas/enkfgdas need hourly (N=1) sentinels for data assimilation backgrounds.
+        # gfs/enkfgfs keep the original 6-hourly (FHOUT_OCN) output frequency.
+        local MOM6_HISTFREQ_N
+        case "${RUN}" in
+            gdas | enkfgdas) MOM6_HISTFREQ_N=1 ;;
+            *) MOM6_HISTFREQ_N=${FHOUT_OCN:-6} ;;
+        esac
     fi
 
     if [[ "${cplice}" = ".true." ]]; then
