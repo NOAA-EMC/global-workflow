@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_analupp_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=500GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh upp
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+export FORECAST_HOUR='0'
+export FHR3='000'
+export UPP_RUN='analysis'
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/upp.sh
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_atmos_analupp
+
+PURPOSE: GDAS analysis UPP -- runs UPP on GDAS analysis fields. Same shared
+J-Job.
+
+TROUBLESHOOTING
+
+Same troubleshooting as GFS atmanlupp. Depends on GDAS analysis output.
+Check UPP module and itag configuration.
+
+%end
