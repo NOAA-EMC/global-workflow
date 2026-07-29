@@ -1352,7 +1352,7 @@ CMEPS_postdet() {
         fi
     else
         if [[ "${DOIAU:-NO}" == "YES" ]]; then
-            if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+            if [[ "${MODE}" = "cycled" && "${SDATE:-}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
                 local restart_interval_start=${cmeps_restart_interval}
                 local restart_interval_end=${FHMAX}
             else
