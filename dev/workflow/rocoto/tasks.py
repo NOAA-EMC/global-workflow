@@ -26,7 +26,7 @@ class Tasks:
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
                    'offlineanl',
-                   'fcst', 'fcst_manager',
+                   'fcst', 'fcst_manager', 'efcs_manager',
                    'upp', 'atmanlprod', 'atmupp', 'goesupp',
                    'atmos_products', 'oceanice_products',
                    'verfozn', 'verfrad', 'vminmon', 'anlstat', 'wdqms',
@@ -165,9 +165,15 @@ class Tasks:
 
         rocoto_conversion_dict.update(subs_dict)
 
-        return Template.substitute_structure(template,
-                                             TemplateConstants.DOLLAR_CURLY_BRACE,
-                                             rocoto_conversion_dict.get)
+        result = Template.substitute_structure(template,
+                                               TemplateConstants.DOLLAR_CURLY_BRACE,
+                                               rocoto_conversion_dict.get)
+        # Normalize consecutive slashes that arise when MEMDIR is empty
+        # (e.g. '@H//model' -> '@H/model'). Preserve Rocoto entities like
+        # &ROTDIR; which do not contain slashes.
+        import re
+        result = re.sub(r'/{2,}', '/', result)
+        return result
 
     @staticmethod
     def _get_forecast_hours(run, config, component='atmos') -> List[str]:
@@ -197,7 +203,7 @@ class Tasks:
 
         # Get a list of all forecast hours
         fhrs = []
-        if run in ['gdas', 'gcdas']:
+        if run in ['gdas', 'gcdas', 'enkfgdas']:
             fhmax = local_config['FHMAX']
             fhout = local_config['FHOUT']
             fhrs = list(range(fhmin, fhmax + fhout, fhout))

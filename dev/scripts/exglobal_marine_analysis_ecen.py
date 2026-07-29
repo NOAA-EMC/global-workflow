@@ -16,7 +16,6 @@ if __name__ == '__main__':
     # Take configuration from environment and cast it as python dictionary
     config = cast_strdict_as_dtypedict(os.environ)
 
-    #
     MarineRecen = MarineRecenter(config)
     MarineRecen.initialize()
     MarineRecen.execute('ens_handler')

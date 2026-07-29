@@ -14,12 +14,15 @@ experiment:
   start: cold
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/gcafs_cycled_noDA_defaults_ci.yaml
 
+# GFS-v17 branch profile: GCAFS is out of scope on this branch; skip on all hosts.
 skip_ci_on_hosts:
-  - orion
+  - hera
   - gaeac5
+  - gaeac6
+  - orion
   - hercules
-  - awsepicglobalworkflow
   - ursa
+  - awsepicglobalworkflow
 
 workflow:
   engine: rocoto

@@ -8,7 +8,23 @@ echo "BEGIN: config.awips"
 # Get task specific resources
 . "${EXPDIR}/config.resources" awips
 
-# No. of concurrent awips jobs
-export MAX_TASKS=42
+# Number of AWIPS rocoto tasks. _get_awipsgroups delegates to
+# Tasks.get_job_groups with a breakpoint at f084, so this value is the
+# total number of groups spread across the HF/LF bands proportional to
+# each band's fhr count. With defaults (29 HF + 26 LF = 55 fhrs), 19
+# yields 10 HF + 9 LF groups of ~3 fhrs each.
+export MAX_TASKS=19
+
+# AWIPS forecast-hour frequency (overrides the model FHOUT_HF_GFS /
+# FHMAX_HF_GFS / FHOUT_GFS on the awips path). The AWIPS 20km job is
+# driven by per-fhr WMO header parm files at
+#   ${PARMglobal}/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
+# which are only provided every 3 hours out to f084 and every 6 hours to
+# f240. The metatask fans out 3-per-group in each band:
+#   HF (10 groups): _f000-f006, _f009-f015, ..., _f081-f084
+#   LF (9 groups):  _f090-f102, _f108-f120, ..., _f234-f240
+export FHOUT_HF_GFS_AWIPS=3
+export FHMAX_HF_GFS_AWIPS=84
+export FHOUT_GFS_AWIPS=6
 
 echo "END: config.awips"

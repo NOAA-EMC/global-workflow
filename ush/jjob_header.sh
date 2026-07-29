@@ -40,9 +40,8 @@
 # Set calling script name so it logs the J-Job name rather than this header
 _calling_script=${_calling_script:-$(basename "${BASH_SOURCE[1]}")}
 
-# err_exit is needed for this header script's own error handling;
+# err_exit comes from the prod_util module, loaded before this job runs;
 # all other utilities are sourced by jjob_shell_setup.sh afterward
-source "${HOMEglobal}/ush/err_exit.sh"
 pgm="${_calling_script}"
 export pgm
 

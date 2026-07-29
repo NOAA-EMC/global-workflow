@@ -1160,7 +1160,7 @@ class GFSTasks(Tasks):
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': mgr_vars,
-                     'cycledef': self.run,
+                     'cycledef': 'gdas_half,gdas' if self.run in ['gdas'] else self.run,
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
@@ -1320,7 +1320,7 @@ class GFSTasks(Tasks):
                                    'history_file_tmpl': f'{self.run}.t@Hz.log.f#fhr3_last#.txt'},
                          'ocean': {'config': 'oceanice_products',
                                    'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
-                                   'history_file_tmpl': f'{self.run}.t@Hz.6hr_avg.log.f#fhr3_last#.txt'},
+                                   'history_file_tmpl': f'{self.run}.t@Hz.{"inst" if self.run in ["gdas", "enkfgdas"] else "6hr_avg"}.log.f#fhr3_last#.txt'},
                          'ice': {'config': 'oceanice_products',
                                  'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
                                  'history_file_tmpl': f'{self.run}.t@Hz.log.ice.f#fhr3_last#.txt'}}
@@ -1356,7 +1356,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gdas_half,gdas' if self.run in ['gdas'] else self.run
+        cycledef = 'gdas_half,gdas' if self.run == 'gdas' else ('gdas' if self.run == 'enkfgdas' else self.run)
 
         task_name = f'{self.run}_{component}_prod_#fhr_label#'
         task_dict = {'task_name': task_name,
@@ -1657,35 +1657,36 @@ class GFSTasks(Tasks):
     def _get_awipsgroups(run, config):
 
         fhmin = config['FHMIN']
-        fhmax = config['FHMAX']
-        fhout = config['FHOUT']
-
-        # Get a list of all forecast hours
-        fhrs = []
+        breakpoints = []
         if run in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
+            fhmax = config['FHMAX']
+            fhout = config['FHOUT']
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif run in ['gfs']:
-            fhmax = config['FHMAX_GFS']
-            fhout = config['FHOUT_GFS']
-            fhmax_hf = config['FHMAX_HF_GFS']
-            fhout_hf = config['FHOUT_HF_GFS']
-            if fhmax > 240:
-                fhmax = 240
-            if fhmax_hf > 240:
-                fhmax_hf = 240
+            # AWIPS 20km parm files under parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
+            # only exist every 3 hours to f084 and every 6 hours to f240. Use
+            # AWIPS-specific FHR overrides (with fallback to the model values)
+            # to build the parm-file hour list, and pass the HF/LF boundary as
+            # a breakpoint so Tasks.get_job_groups never places a group across
+            # the 3h/6h transition.
+            fhmax = min(config['FHMAX_GFS'], 240)
+            fhout = config.get('FHOUT_GFS_AWIPS', config['FHOUT_GFS'])
+            fhmax_hf = min(config.get('FHMAX_HF_GFS_AWIPS', config['FHMAX_HF_GFS']), 240)
+            fhout_hf = config.get('FHOUT_HF_GFS_AWIPS', config['FHOUT_HF_GFS'])
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-            fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs_lf = list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs = fhrs_hf + fhrs_lf
+            breakpoints = [fhmax_hf]
 
         nawipsgrp = config['MAX_TASKS']
         ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+        groups = [[f'f{h:03d}' for h in dct['fhrs']]
+                  for dct in Tasks.get_job_groups(fhrs=fhrs, ngroups=ngrps,
+                                                  breakpoints=breakpoints)]
 
-        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-        fhrs = np.array_split(fhrs, ngrps)
-        fhrs = [fhr.tolist() for fhr in fhrs]
-
-        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-        dep = ' '.join([fhr[-1] for fhr in fhrs])
-        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in groups])
+        dep = ' '.join([fhr[-1] for fhr in groups])
+        lst = ' '.join(['_'.join(fhr) for fhr in groups])
 
         return grp, dep, lst
 
@@ -2357,6 +2358,22 @@ class GFSTasks(Tasks):
                         deps.append(rocoto.add_dependency(dep_dict))
                         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                         deps.append(rocoto.add_dependency(dep_dict))
+                if self.options['do_wave']:
+                    dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavegempak'}
+                    deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.options['do_awips'] and self.run in ['gfs']:
+
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_awips_20km_1p0deg'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{self.run}_fbwind'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+            if self.options['do_wave']:
+                dep_dict = {'type': 'task', 'name': f'{self.run}_waveawipsbulls'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'task', 'name': f'{self.run}_waveawipsgridded'}
+                deps.append(rocoto.add_dependency(dep_dict))
 
         if self.options['do_metp'] and self.run in ['gfs']:
             deps2 = []
@@ -3165,6 +3182,49 @@ class GFSTasks(Tasks):
 
         return task
 
+    def efcs_manager(self):
+        # Member forecast manager: runs alongside each ensemble member forecast (enkfgdas).
+        # DATAjob = ${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY}${cyc}  (see JGLOBAL_FORECAST/ENSMEM path)
+        stmp = self._base.get('STMP')
+        pslot = self._base.get('PSLOT')
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}efcs#member#.@Y@m@d@H"
+
+        deps = []
+        dep_dict = {'type': 'data', 'data': f'{datajob}/atm_atmf_products_seg0_inst0.txt', 'age': 60}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'data', 'data': f'{datajob}/fcst_table_ready_seg0', 'age': 5}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
+
+        efcs_mgr_vars = self.envars.copy()
+        efcs_mgr_vars_dict = {'ENSMEM': '#member#',
+                              'MEMDIR': 'mem#member#'}
+        for key, value in efcs_mgr_vars_dict.items():
+            efcs_mgr_vars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        cycledef = 'gdas_half,gdas' if self.run in ['enkfgdas'] else self.run.replace('enkf', '')
+        resources = self.get_resource('efcs_manager')
+
+        task_name = f'{self.run}_efcs_manager_mem#member#'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': efcs_mgr_vars,
+                     'cycledef': cycledef,
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/fcst_manager.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        member_var_dict = {'member': ' '.join([str(mem).zfill(3) for mem in range(1, self.nmem + 1)])}
+        metatask_dict = {'task_name': f'{self.run}_efcs_manager',
+                         'var_dict': member_var_dict,
+                         'task_dict': task_dict
+                         }
+
+        return rocoto.create_task(metatask_dict)
+
     def echgres(self):
 
         self._is_this_a_gdas_task(self.run, 'echgres')
@@ -3172,7 +3232,10 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run.replace("enkf", "")}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}_fcst_mem001'}
+        # Depend on the efcs_manager for mem001 rather than the raw forecast task
+        # so that atmos history files for mem001 are guaranteed to be in COM
+        # before echgres tries to read them.
+        dep_dict = {'type': 'task', 'name': f'{self.run}_efcs_manager_mem001'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -3220,7 +3283,9 @@ class GFSTasks(Tasks):
             return grp, dep, lst
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        # Depend on the full efcs_manager metatask (all members) so that all
+        # per-member atm/sfc history files are in COM before epos reads them.
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_efcs_manager'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
