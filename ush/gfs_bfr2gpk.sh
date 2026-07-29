@@ -51,8 +51,8 @@ date
 
 snd_out=${outfilbase}.soundings.bufr
 sfc_out=${outfilbase}.sfc.bufr
-cpfs "${snd}" "${COMOUT_ATMOS_GEMPAK}${snd_out}"
-cpfs "${sfc}" "${COMOUT_ATMOS_GEMPAK}${sfc_out}"
+cpfs "${snd}" "${COMOUT_ATMOS_GEMPAK}/${snd_out}"
+cpfs "${sfc}" "${COMOUT_ATMOS_GEMPAK}/${sfc_out}"
 
 if [[ ${SENDDBN} == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL GFS_PTYP_SFC "${job}" "${COMOUT_ATMOS_GEMPAK}/${sfc_out}"
