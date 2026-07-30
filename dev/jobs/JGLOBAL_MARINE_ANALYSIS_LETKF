@@ -2,7 +2,7 @@
 set -x
 
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
-export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT/enkf/}/${RUN/enkf/}_marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
