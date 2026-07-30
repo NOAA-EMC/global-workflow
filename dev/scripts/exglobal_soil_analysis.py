@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# exglobal_snow_analysis.py
-# This script creates an SnowAnalysis class
+# exglobal_soil_analysis.py
+# This script creates a SoilAnalysis class instance
 # and runs the initialize, execute and finalize methods
-# for a global Snow Depth analysis
+# for a global soil analysis.
 import os
 
 from wxflow import Logger, cast_strdict_as_dtypedict
