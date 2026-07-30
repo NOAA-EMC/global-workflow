@@ -3,6 +3,7 @@
 import os
 import glob
 from logging import getLogger
+from typing import Dict
 import pygfs.utils.marine_da_utils as mdau
 from pygfs.task.analysis import Analysis
 from wxflow import (AttrDict, FileHandler, Executable,

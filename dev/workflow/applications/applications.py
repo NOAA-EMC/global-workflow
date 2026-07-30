@@ -16,6 +16,8 @@ from abc import ABC, ABCMeta, abstractmethod
 from logging import getLogger
 import os
 
+from com_paths import get_com_templates
+
 __all__ = ['AppConfig']
 
 logger = getLogger(__name__.split('.')[-1])
@@ -280,6 +282,9 @@ class AppConfig(ABC, metaclass=AppConfigInit):
             Dictionary of configurations for each component
         """
         configs = {'base': conf.parse_config('config.base', RUN=run)}
+        # Inject fixed COM path templates (formerly sourced from config.com)
+        for _k, _v in get_com_templates().items():
+            configs['base'].setdefault(_k, _v)
         configs['base'] = self._update_base(configs['base'])
 
         for config in self._get_app_configs(run):
@@ -291,6 +296,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.anal', 'config.eupd']
             elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
+            elif config in ['efcs_manager']:
+                files += ['config.efcs', 'config.fcst_manager']
             elif config in ['fcst_manager']:
                 files += ['config.fcst_manager']
             elif config in ['atmanlinit', 'atmanlvar', 'atmanlfv3inc']:
