@@ -244,7 +244,10 @@ function build() {
         echo "Creating logs folder"
         mkdir -p "${logs_dir}" || exit 1
     fi
-    "${HOMEglobal_}/sorc/build_compute.sh" -A "${HPC_ACCOUNT}" all
+    # GFS-v17 branch profile: build only GFS-relevant systems (GSI, GFS, GDAS).
+    # This branch does not carry GEFS/SFS/GCAFS, so those are intentionally
+    # excluded rather than using the broad "all" target.
+    "${HOMEglobal_}/sorc/build_all.sh" gsi gfs gdas
 
 }
 
