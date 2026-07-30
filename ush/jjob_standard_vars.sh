@@ -79,7 +79,6 @@ ver_var="${NET}_var"
 ROTDIR=${ROTDIR:-$(compath.py "${envir}/${NET}/${!ver_var}")}
 export ROTDIR
 unset ver_var
-export COMROOT=${ROTDIR}
 
 ##############################################
 # Temporal variables
