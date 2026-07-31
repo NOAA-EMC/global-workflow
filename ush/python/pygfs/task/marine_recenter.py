@@ -48,13 +48,16 @@ class MarineRecenter(Analysis):
             _cice_rst_date = to_fv3time(self.task_config.current_cycle)
 
         # Create a local dictionary that is repeatedly used across this class
-        self.task_config.update(AttrDict(
-            {
-                'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
-                'ENSPERT_RELPATH': _enspert_relpath,
-                'cice_rst_date': _cice_rst_date,
-            }
-        ))
+        update_dict = {
+            'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
+            'ENSPERT_RELPATH': _enspert_relpath,
+            'cice_rst_date': _cice_rst_date,
+        }
+        if self.task_config.get('DOLETKF_OCN_INC', False):
+            # use LEKTF increments and det. analysis for ocean recentering
+            update_dict['letkf_app'] = 'true'
+
+        self.task_config.update(AttrDict(update_dict))
 
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))

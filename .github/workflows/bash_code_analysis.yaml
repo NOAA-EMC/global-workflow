@@ -3,102 +3,132 @@ on:
   push:
     branches:
       - develop
-  pull_request_target: # safe as long as code is not being run
+  # NOTE: This workflow deliberately uses `pull_request` (not
+  # `pull_request_target`). It runs in the untrusted fork context with a
+  # read-only GITHUB_TOKEN and no access to secrets, so it cannot post review
+  # comments on pull requests opened from forks. It only *analyses* the code
+  # and gates the PR (the job fails when issues are found), then uploads the
+  # reviewdog diagnostics as an artifact. The companion, trusted workflow
+  # `bash_code_analysis_report.yaml` (triggered via `workflow_run`) downloads
+  # that artifact and posts the inline review comments.
+  #
+  # This split avoids the "pwn request" pattern that GitHub's security policy
+  # now blocks: `actions/checkout` refuses to check out a fork PR head under
+  # `pull_request_target`.
+  pull_request:
 
   workflow_dispatch:
 
+permissions:
+  contents: read  # for actions/checkout to fetch code
+
 jobs:
 
-  shfmt:
+  analyze:
     runs-on: ubuntu-22.04
 
-    permissions:
-      contents: read  # for actions/checkout to fetch code
-      pull-requests: write  # to get PR metadata
-      security-events: write
-      checks: write
+    env:
+      SHELLCHECK_VERSION: "0.10.0"
+      SHFMT_VERSION: "3.10.0"
+      # Metadata forwarded to the reporting workflow. These come from the event
+      # payload and are only ever an integer / a commit SHA, so they are safe to
+      # write to files (they are re-validated before use in the trusted job).
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
     steps:
-      - name: determine hash
-        uses: haya14busa/action-cond@v1
-        id: hash
-        with:
-          cond: ${{ github.event_name == 'pull_request_target' }}
-          if_true: ${{ github.event.pull_request.head.sha }}
-          if_false: ''
-
-      - name: checkout code
+      - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ steps.hash.outputs.value }}
           submodules: false
 
-      - name: determine reporter
-        uses: haya14busa/action-cond@v1
-        id: reporter
+      - name: Install shellcheck, shfmt and reviewdog
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.local/bin"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+          # Install shellcheck
+          curl -sSfL "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \
+            | tar -xJf - -C "${RUNNER_TEMP}"
+          install "${RUNNER_TEMP}/shellcheck-v${SHELLCHECK_VERSION}/shellcheck" "${HOME}/.local/bin/shellcheck"
+
+          # Install shfmt
+          curl -sSfL "https://github.com/mvdan/sh/releases/download/v${SHFMT_VERSION}/shfmt_v${SHFMT_VERSION}_linux_amd64" \
+            -o "${HOME}/.local/bin/shfmt"
+          chmod +x "${HOME}/.local/bin/shfmt"
+
+          # Install reviewdog
+          curl -sSfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh \
+            | sh -s -- -b "${HOME}/.local/bin"
+
+      - name: Analyze bash code and collect diagnostics
+        id: analyze
+        run: |
+          set -uo pipefail
+          outdir="${RUNNER_TEMP}/reviewdog"
+          mkdir -p "${outdir}"
+
+          # --- File discovery (mirrors reviewdog/action-shellcheck) -----------
+          # pattern / exclude / check_all_files_with_shebangs equivalents of the
+          # previous action-shellcheck configuration.
+          name_expr=(-name 'config.*' -o -name 'JG*' -o -name '*.env' -o -name '*.sh' -o -name '*.bash')
+          exclude_expr=(-not -path '*/.git/*' -not -path '*/*.yml' -not -path '*/*.yaml' -not -path '*/*.j2')
+
+          mapfile -t pattern_files < <(find . "${exclude_expr[@]}" -type f \( "${name_expr[@]}" \))
+          # Files that don't match the patterns but start with a shell shebang.
+          mapfile -t shebang_files < <(find . "${exclude_expr[@]}" -not \( "${name_expr[@]}" \) -type f -print0 \
+            | xargs -0 awk 'FNR==1 && /^#!.*sh/ { print FILENAME }')
+
+          # Combine the two (disjoint) lists and pass the paths to shellcheck as
+          # native array arguments -- never as a single concatenated string.
+          files=("${pattern_files[@]}" "${shebang_files[@]}")
+          echo "Discovered ${#files[@]} file(s) to check."
+
+          # --- shellcheck: error report (checkstyle) + autofix suggestions ----
+          : > "${outdir}/shellcheck.checkstyle.xml"
+          : > "${outdir}/shellcheck.suggestion.diff"
+          if [ "${#files[@]}" -gt 0 ]; then
+            shellcheck --external-sources -f checkstyle "${files[@]}" \
+              > "${outdir}/shellcheck.checkstyle.xml" 2>/dev/null || true
+            shellcheck --external-sources -f diff "${files[@]}" \
+              > "${outdir}/shellcheck.suggestion.diff" 2>/dev/null || true
+          fi
+
+          # --- shfmt: format in place, capture the diff, restore the tree -----
+          shfmt -w . || true
+          git diff > "${outdir}/shfmt.diff" || true
+          git checkout -- . >/dev/null 2>&1 || true
+
+          # --- PR metadata for the reporting workflow -------------------------
+          printf '%s' "${PR_NUMBER}" > "${outdir}/pr-number"
+          printf '%s' "${PR_HEAD_SHA}" > "${outdir}/pr-head-sha"
+
+          # --- Print findings and gate this (sandboxed) run -------------------
+          # reviewdog exits non-zero (via -fail-level=any) when issues exist.
+          status=0
+
+          echo '::group:: shellcheck'
+          reviewdog -f=checkstyle -name=shellcheck -reporter=local \
+            -filter-mode=nofilter -level=any -fail-level=any \
+            < "${outdir}/shellcheck.checkstyle.xml" || status=1
+          echo '::endgroup::'
+
+          echo '::group:: shfmt'
+          reviewdog -f=diff -f.diff.strip=1 -name=shfmt -reporter=local \
+            -filter-mode=nofilter -fail-level=any \
+            < "${outdir}/shfmt.diff" || status=1
+          echo '::endgroup::'
+
+          exit "${status}"
+
+      - name: Upload reviewdog diagnostics
+        # Upload even when the analysis step failed (that is exactly when there
+        # are findings to report). Only pull requests need the reporting job.
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
         with:
-          cond: ${{ github.event_name == 'pull_request_target' }}
-          if_true: 'github-pr-review'
-          if_false: 'github-check'
-
-      - name: shfmt scan
-        uses: reviewdog/action-shfmt@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          filter_mode: nofilter
-          level: any
-          reviewdog_flags: '-reporter=${{ steps.reporter.outputs.value }} -fail-level=any'
-          shfmt_flags: ''
-
-  shellcheck:
-    runs-on: ubuntu-22.04
-
-    permissions:
-      contents: read  # for actions/checkout to fetch code
-      pull-requests: write  # to get PR metadata
-      security-events: write
-      checks: write
-
-    steps:
-      - name: determine hash
-        uses: haya14busa/action-cond@v1
-        id: hash
-        with:
-          cond: ${{ github.event_name == 'pull_request_target' }}
-          if_true: ${{ github.event.pull_request.head.sha }}
-          if_false: ''
-
-      - name: checkout code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.hash.outputs.value }}
-          submodules: false
-
-      - name: determine reporter
-        uses: haya14busa/action-cond@v1
-        id: reporter
-        with:
-          cond: ${{ github.event_name == 'pull_request_target' }}
-          if_true: 'github-pr-review'
-          if_false: 'github-check'
-
-      - name: shellcheck scan
-        uses: reviewdog/action-shellcheck@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: ${{ steps.reporter.outputs.value }}
-          filter_mode: nofilter
-          fail_level: any
-          level: any
-          pattern: |
-            config.*
-            JG*
-            *.env
-            *.sh
-            *.bash
-          exclude: |
-            */.git/*
-            */*.yml
-            */*.yaml
-            */*.j2
-          check_all_files_with_shebangs: true
+          name: bash-code-analysis-reviewdog
+          path: ${{ runner.temp }}/reviewdog
+          retention-days: 1
+          if-no-files-found: warn
