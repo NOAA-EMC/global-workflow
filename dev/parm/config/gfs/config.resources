@@ -835,10 +835,11 @@ case ${step} in
     ntiles=${ntiles:-6}
     if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
         ntasks=$((ntiles * layout_x * layout_y))
+	threads_per_task=1
     else
         ntasks=${ntiles}
+	threads_per_task=4
     fi
-    threads_per_task=4
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     is_exclusive=True
     ;;
@@ -1394,12 +1395,13 @@ case ${step} in
     ntiles=${ntiles:-6}
     if [[ "${DO_JEDISOILDAENS}" == "YES" ]]; then
         ntasks=$((ntiles * layout_x * layout_y))
+	node_denominator=1
     else
         ntasks=${ens_size}
+	node_denominator=2
     fi
     threads_per_task=1
     node_numerator=1
-    node_denominator=2
     tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
 
     threads_per_task_cycle=${threads_per_task}
