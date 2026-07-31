@@ -113,6 +113,7 @@ CICE_namelists() {
     local CICE_GRIDICE="B" # B-grid for seaice (CICE6)
     # tracer_nml section
     local CICE_TR_POND_TOPO=${CICE_TR_POND_TOPO:-".false"}
+    local CICE_RESTART_POND_TOPO=${CICE_RESTART_POND_TOPO:-".false."}
     local CICE_TR_POND_LVL=${CICE_TR_POND_LVL:-".true."} # Use level melt ponds
     # (if CICE_TR_POND_LVL=true):
     #   -- if true, initialize the level ponds from restart (if runtype=continue)
