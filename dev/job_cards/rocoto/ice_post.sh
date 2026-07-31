@@ -6,11 +6,6 @@ set -x
 ## ice post (monthly mean) driver script when run with segs
 ###############################################################
 
-# Source FV3GFS workflow modules
-#source "${HOMEgfs}/dev/ush/load_modules.sh" run
-#status=$?
-#if ((status != 0)); then exit "${status}"; fi
-
 source "${HOMEglobal}/ush/detect_machine.sh"
 source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?

@@ -340,11 +340,32 @@ EOF
                 ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
             fi
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
-                if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                if [[ "${RUN}" == "sfs" ]]; then
+                    if [[ "${MEMBER}" -eq 0 ]]; then
+                        mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master"
+                        ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                        ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    else
+                        mkdir -p  "${DATAoutput}/FV3ATM_OUTPUT/model/master"
+                        ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                        ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    fi
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        if [[ "${MEMBER}" -eq 0 ]]; then
+                            ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master//${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                            ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                        else
+                            ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                            ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                        fi
+                    fi
+                else
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                    fi
                 fi
             fi
         done
@@ -682,7 +703,7 @@ MOM6_postdet() {
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
+        gfs | enkfgfs | gefs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|gcafs
             # Looping over MOM6 output hours
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
             for fhr in ${MOM6_OUTPUT_FH}; do
@@ -708,7 +729,7 @@ MOM6_postdet() {
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 fi
                 ihour=$(printf %02i "${interval}")
                 source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
@@ -722,13 +743,60 @@ MOM6_postdet() {
             done
             ;;
 
+        sfs) # Link output files for RUN=sfs
+            # Looping over MOM6 output hours
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
+            for fhr in ${MOM6_OUTPUT_FH}; do
+                fhr3=$(printf %03i "${fhr}")
+
+                if [[ -z ${last_fhr:-} ]]; then
+                    last_fhr=${fhr}
+                    continue
+                fi
+
+                ((interval = fhr - last_fhr))
+                ((midpoint = last_fhr + interval / 2))
+
+                vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+                #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
+                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
+                else
+                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+                fi
+
+                # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
+                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                    source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                else
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                fi
+                ihour=$(printf %02i "${interval}")
+                source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
+                if [[ "${MEMBER}" -eq 0 ]]; then
+                    mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/MOM6_OUTPUT/model/history"
+                    ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/MOM6_OUTPUT/model/history/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                    ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/MOM6_OUTPUT/model/history/${dest_file_log}" "${DATA}/${source_file_log}"
+                else
+                    mkdir -p "${DATAoutput}/MOM6_OUTPUT/model/history"
+                    ${NLN} "${DATAoutput}/MOM6_OUTPUT/model/history/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                    ${NLN} "${DATAoutput}/MOM6_OUTPUT/model/history/${dest_file_log}" "${DATA}/${source_file_log}"
+                fi
+
+                last_fhr=${fhr}
+
+            done
+            ;;
+
         gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
             # Save (instantaneous) MOM6 backgrounds
             local fhr3 vdatestr
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${vdatestr}.nc"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
             done
             ;;
         *)
@@ -876,22 +944,34 @@ CICE_postdet() {
             gdas | enkfgdas)
                 source_file="iceh_inst.${vdatestr}.nc"
                 dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
                 ;;
-            gfs | enkfgfs | sfs | gcafs)
+            gfs | enkfgfs | gcafs)
                 source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                ;;
+            sfs)
+                source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
+                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                if [[ "${MEMBER}" -eq 0 ]]; then
+                    mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/CICE_OUTPUT/model/history"
+                    ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/CICE_OUTPUT/model/history/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                else
+                    mkdir -p "${DATAoutput}/CICE_OUTPUT/model/history"
+                    ${NLN} "${DATAoutput}/CICE_OUTPUT/model/history/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                fi
                 ;;
             gefs)
                 source_file="iceh.${vdatestr}.nc"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
                 ;;
             *)
                 echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
                 exit 10
                 ;;
         esac
-
-        ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
 
         last_fhr=${fhr}
     done

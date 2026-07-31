@@ -3,27 +3,39 @@ source "${HOMEglobal}/ush/jjob_header.sh" -e "ice_post" -c "base ice_post"
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
-if ((10#${ENSMEM:-0} > 0)); then
-    export DATAoutput="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}/output"
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ "${ENSMEM}" =~ ^[0-9]+$ ]]; then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
 else
-    export DATAoutput="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}/output"
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 fi
+
+# Create the directory to hold output for this job
+export DATAoutput="${DATAjob}/output"
 if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
-# Construct COM variables from templates
-memdir=$(printf "mem%03i" $((10#${ENSMEM})))
-COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
-declare -rx "COMOUT_ICE_HISTORY"="${COMOUT}/model/ice/history"
+# Construct COM directory from templates to save the final ice products
 declare -rx "COMOUT_ICE_NETCDF"="${COMOUT}/products/ice/netcdf"
 if [[ ! -d "${COMOUT_ICE_NETCDF}" ]]; then mkdir -p "${COMOUT_ICE_NETCDF}"; fi
+mkdir -p "${COMOUT_ICE_NETCDF}/native"
+
+# Define directory variable to save the ice product files temporarily
+export ICE_PRODUCT_OUTPUT="${DATAoutput}/CICE_OUTPUT/PRODUCT"
+if [[ ! -d "${ICE_PRODUCT_OUTPUT}" ]]; then mkdir -p "${ICE_PRODUCT_OUTPUT}"; fi
 
 # Define current cycle
 export current_cycle="${PDY}${cyc}"
 
 # Check if ice 24hr_avg native files are complete for ice post job
 shopt -s nullglob
-ice_24hrly_files=("${COMOUT_ICE_NETCDF}/native/${RUN}.t${cyc}z.native.f"*".nc") # ice 24hr_avg history files
-ice_24hrly_num=$((FHMAX_GFS / 24))                                              #expected total number of ice 24hr_avg history files
+ice_24hrly_files=("${ICE_PRODUCT_OUTPUT}/native/${RUN}.t${cyc}z.native.f"*".nc")       # ice 24hr_avg history files
+ice_24hrly_num=$((FHMAX_GFS / 24))                                                     #expected total number of ice 24hr_avg history files
 echo "INFO: Found ${#ice_24hrly_files[@]} of ice 24hr_avg history files."
 
 if [[ "${#ice_24hrly_files[@]}" -lt "${ice_24hrly_num}" ]]; then

@@ -62,6 +62,7 @@ class RocotoXML(WorkflowSuite, ABC):
         entity = OrderedDict()
 
         entity['PSLOT'] = self.pslot
+        entity['DATAROOT_BASE'] = f"{self._base['STMP']}/RUNDIRS/{self.pslot}"
         entity['ROTDIR'] = self._base['ROTDIR']
         entity['MAXTRIES'] = self.rocoto_config['maxtries']
 

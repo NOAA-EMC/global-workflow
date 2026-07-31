@@ -7,6 +7,8 @@ prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/c6/spack-stack-2.1.0/env
 load("stack-intel-oneapi-compilers/2025.2.1")
 load("stack-cray-mpich/8.1.32")
 
+load("prod_util/2.1.2")
+
 load("wgrib2/3.8.0")
 load("grib-util/1.4.0")
 

@@ -294,14 +294,17 @@ class SFSTasks(Tasks):
 
         fhout_ocn_gfs = self._configs['base']['FHOUT_OCN_GFS']
         fhout_ice_gfs = self._configs['base']['FHOUT_ICE_GFS']
+
+        base_data_path = "&DATAROOT_BASE;/sfs.@Y@m@d@H/sfsefcs#member#.@Y@m@d@H/output"
+
         products_dict = {'atmos': {'config': 'atmos_products',
                                    'history_path_tmpl': 'COM_ATMOS_MASTER_TMPL',
                                    'history_file_tmpl': f'{self.run}.t@Hz.master.f#fhr3_last#.grib2'},
                          'ocean': {'config': 'oceanice_products',
-                                   'history_path_tmpl': 'COM_OCEAN_HISTORY_TMPL',
+                                   'history_path_tmpl': f'{base_data_path}/MOM6_OUTPUT/model/history',
                                    'history_file_tmpl': f'{self.run}.t@Hz.{fhout_ocn_gfs}hr_avg.f#fhr3_next#.nc'},
                          'ice': {'config': 'oceanice_products',
-                                 'history_path_tmpl': 'COM_ICE_HISTORY_TMPL',
+                                 'history_path_tmpl': f'${base_data_path}/CICE_OUTPUT/model/history',
                                  'history_file_tmpl': f'{self.run}.t@Hz.{fhout_ice_gfs}hr_avg.f#fhr3_last#.nc'}}
 
         component_dict = products_dict[component]
@@ -324,7 +327,13 @@ class SFSTasks(Tasks):
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
 
-        history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
+        if '&DATAROOT_BASE;' in history_path_tmpl:
+            tmpl_value = history_path_tmpl
+        else:
+            tmpl_value = self._base[history_path_tmpl]
+        history_path = self._template_to_rocoto_cycstring(tmpl_value, {'MEMDIR': 'mem#member#'})
+
+        #history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
