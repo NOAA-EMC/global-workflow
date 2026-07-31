@@ -124,6 +124,7 @@ include:
   variables:
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 0
     GIT_SSL_NO_VERIFY: "true"  # Address potential certificate verification issues
   stage: build
   script:
@@ -173,6 +174,7 @@ include:
         git config "branch.${_br}.remote"     origin
         git config "branch.${_br}.pushRemote" origin
         unset _br
+        git submodule sync --recursive
         git submodule update --init --recursive -j 8
       fi
 
