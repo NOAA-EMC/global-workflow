@@ -4,8 +4,8 @@
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Task 0. Clean all intermediate and unfinished output files from the previous failed run
-rm -f "${COMOUT_ICE_NETCDF}/native/"*".monthly_avg."*"nc"
+# Task 0. Clean unfinished output files from the previous failed post job
+rm -f "${ICE_PRODUCT_OUTPUT}/native/"*".monthly_avg."*"nc"
 
 #LINK NEW FILE NAMES TO THE OUTPUT DAILY ICE HISTORY FILES FOR MONTHLY AVERAGING
 mapfile -t CICE_OUTPUT_FH < <(seq "${FHMIN_GFS}" "${FHOUT_ICE}" "${FHMAX_GFS}") || exit 10
@@ -22,7 +22,9 @@ if [[ "${RUN}" == sfs ]]; then
         vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
         new_file="iceh_24h_${vdate_mid_str}.nc"
         ori_file="${RUN}.t${cyc}z.native.f${fhr3}.nc"
-        ${NLN} "${COMOUT_ICE_NETCDF}/native/${ori_file}" "${DATAoutput}/CICE_OUTPUT/${new_file}"
+        ${NLN} "${ICE_PRODUCT_OUTPUT}/native/${ori_file}" "${DATAoutput}/CICE_OUTPUT/${new_file}"
+        # Copy the ice daily products to COMOUT DIRECTORY
+        cpfs "${ICE_PRODUCT_OUTPUT}/native/${ori_file}" "${COMOUT_ICE_NETCDF}/native/${ori_file}"
         last_fhr=${fhr}
     done
 fi
@@ -30,7 +32,7 @@ fi
 #GENERATE MONTHLY MEAN FILES FROM SFS DAILY ICE PRODUCT FILES.
 if [[ "${RUN}" == sfs ]]; then
     # Obain the information of the last fcst file
-    last_fh_output="${COMOUT_ICE_NETCDF}/native/${RUN}.t${cyc}z.native.f${FHMAX_GFS}.nc"
+    last_fh_output="${ICE_PRODUCT_OUTPUT}/native/${RUN}.t${cyc}z.native.f${FHMAX_GFS}.nc"
     ((interval = 24))
     ((midpoint = FHMAX_GFS - interval / 2))
     last_fhr_vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
@@ -83,15 +85,13 @@ if [[ "${RUN}" == sfs ]]; then
             YR="${f_name:9:4}"
             MN="${f_name:14:2}"
             cdo mergetime "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_??_12.nc" "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"
-            ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc" "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
-            rm -f "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"
+            ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc" "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc"
             # Compress the monthly data
-            output_month_file="${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
-            nccopy -k 4 -d 5 "${output_month_file}" "${output_month_file}.tmp" && mv "${output_month_file}.tmp" "${output_month_file}"
-
-            if [[ -f "${output_month_file}.tmp" ]]; then
-                rm -f "${output_month_file}.tmp"
-            fi
+            nccopy -k 4 -d 5 "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc" "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc" 
+            cpfs "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc" "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
+            rm -f "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"
+            rm -f "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc"
+            rm -f "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
         done
     else
         echo "No monthly mean ice product files are generated because the fcst period is not within one full month"
@@ -100,7 +100,7 @@ if [[ "${RUN}" == sfs ]]; then
     export err=$?
     if [[ ${err} -ne 0 ]]; then
         echo "FATAL ERROR: Failed to generate monthly mean ice products files"
-        rm -f "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg."*"nc"
+        rm -f "${ICE_PRODUCT_OUTPUT}/native/${RUN}.ice.t${current_cycle}.monthly_avg."*"nc"
         exit "${err}"
     fi
 fi
@@ -109,7 +109,7 @@ fi
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "Ice post success! Remove the original ice history files:"
-    rm -f "${COMOUT_ICE_HISTORY}/sfs."*".nc"
+    #rm -f "${ICE_PRODUCT_OUTPUT}/native/sfs."*".nc"
 fi
 
 ##############################################

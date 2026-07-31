@@ -13,6 +13,8 @@ load("stack-cray-mpich/8.1.32")
 
 unload("cray-libsci")
 
+load("prod_util/2.1.2")
+
 load("wgrib2/3.8.0")
 load("grib-util/1.4.0")
 

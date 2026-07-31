@@ -13,6 +13,8 @@ setenv("USE_CFP","YES")
 
 prepend_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304")
 
+load(pathJoin("prod_util", "2.1.2"))
+
 load(pathJoin("wgrib2", "3.8.0"))
 
 load(pathJoin("g2c", "2.3.0"))

@@ -28,8 +28,8 @@ for ((i = 0; i < fhr_inc; i++)); do
     # Paths
     input_file="${DATAoutput}/MOM6_OUTPUT/temp_${vdate_mid_str}.nc"
     tmp_file="${DATAoutput}/MOM6_OUTPUT/tmp_${fhr3}.nc"
-    output_native_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.t${cyc}z.native.${interval}hr_avg.f${fhr3}.nc"
-    output_1p00_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${interval}hr_avg.f${fhr3}.nc"
+    output_native_file="${DATAoutput}/MOM6_OUTPUT/${RUN}.t${cyc}z.native.${interval}hr_avg.f${fhr3}.nc"
+    output_1p00_file_tmp="${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${interval}hr_avg.f${fhr3}.nc"
 
     # Processing (ncks/ncwa/cdo)
     if [[ -f "${input_file}" ]]; then
@@ -38,8 +38,8 @@ for ((i = 0; i < fhr_inc; i++)); do
         ncks -A -v geolon,geolat "${input_file}" "${output_native_file}"
 
         ncatted -a coordinates,temp,c,c,"geolon geolat" "${output_native_file}"
-        cdo remapbil,"${r360x181}" -setgridtype,curvilinear "${output_native_file}" "${output_1p00_file}"
-        ncatted -a long_name,temp,o,c,"Potential Temperature at 5m below sea level" "${output_1p00_file}"
+        cdo remapbil,"${r360x181}" -setgridtype,curvilinear "${output_native_file}" "${output_1p00_file_tmp}"
+        ncatted -a long_name,temp,o,c,"Potential Temperature at 5m below sea level" "${output_1p00_file_tmp}"
 
         rm -f "${tmp_file}" "${output_native_file}"
     else

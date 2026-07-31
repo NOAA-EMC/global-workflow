@@ -4,7 +4,7 @@
 
 set -e
 
-lastfile=$(find "${COMIN_ATMOS_MASTER}" -maxdepth 1 -name "sfs.t${cyc}z.master.f*.grib2" | sort -V | tail -1)
+lastfile=$(find "${ATMOS_MASTER_OUTPUT}" -maxdepth 1 -name "sfs.t${cyc}z.master.f*.grib2" | sort -V | tail -1)
 lastftimemsg=$(${WGRIB2} "${lastfile}" -d 1 -ftime2)
 lastftime="${lastftimemsg% hour fcst}"
 export lastfhr=${lastftime:4:4}
@@ -52,7 +52,7 @@ for ((d = 1; d <= month_days; d++)); do
     all_acc_exist=true
     list_acc=()
     for hr in $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)) ${end_of_day_fhr}; do
-        fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
+        fpath="${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
         if [[ ! -f "${fpath}" ]]; then
             all_acc_exist=false
             break
@@ -68,11 +68,11 @@ for ((d = 1; d <= month_days; d++)); do
         rm -f "${raw_tmp_acc}"
     fi
 
-    # --- PART B: INSTANTANEOUS VARIABLES (Hours: E-24, E-18, E-12, E-6, E) ---
+    # --- PART B: INSTANTANEOUS VARIABLES (Hours: E-24, E-18, E-12, E-6) ---
     all_inst_exist=true
     list_inst=()
-    for hr in $((end_of_day_fhr - 24)) $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)) $((end_of_day_fhr)); do
-        fpath="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
+    for hr in $((end_of_day_fhr - 24)) $((end_of_day_fhr - 18)) $((end_of_day_fhr - 12)) $((end_of_day_fhr - 6)); do
+        fpath="${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f$(printf "%03d" "${hr}").grib2"
         if [[ ! -f "${fpath}" ]]; then
             all_inst_exist=false
             break
@@ -92,12 +92,18 @@ done
 # CONSOLIDATE FRAGMENTS INTO MONTHLY FILES (Array Method)
 #---------------------------------------------------------
 # Paths
-OUTDIR="${COMOUT_ATMOS_GRIB}"
+OUTDIR="${DATAoutput}/FV3ATM_OUTPUT/PRODUCT"
+OUTDIR_FINAL="${COMOUT_ATMOS_GRIB}"
 mkdir -m 755 -p "${OUTDIR}"
+mkdir -m 755 -p "${OUTDIR_FINAL}"
 mkdir -p "${OUTDIR}/acc.daily.${MEMDIR}" "${OUTDIR}/inst.daily.${MEMDIR}"
 mkdir -p "${OUTDIR}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
+mkdir -p "${OUTDIR_FINAL}/acc.daily.${MEMDIR}" "${OUTDIR}/inst.daily.${MEMDIR}"
+mkdir -p "${OUTDIR_FINAL}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
 dest_acc="${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
 dest_inst="${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
+dest_final_acc="${OUTDIR_FINAL}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
+dest_final_inst="${OUTDIR_FINAL}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
 
 # 1. Consolidate Accumulated (ACC)
 if [[ -d "${tmp_acc_work_dir}" ]]; then
@@ -110,6 +116,8 @@ if [[ -d "${tmp_acc_work_dir}" ]]; then
         echo "INFO: Task ${i} merging ${#acc_files[@]} days for ACC using array expansion."
         # Use "${acc_files[@]}" to pass each file as a unique argument
         ${GMERGE} "${dest_acc}" "${acc_files[@]}"
+        # cp acc daily files to COMOUT
+        cpfs "${dest_acc}" "${dest_final_acc}"
     else
         echo "WARNING: Task ${i} found NO daily_acc files to merge."
     fi
@@ -125,6 +133,8 @@ if [[ -d "${tmp_inst_work_dir}" ]]; then
     if [[ ${#inst_files[@]} -gt 0 ]]; then
         echo "INFO: Task ${i} merging ${#inst_files[@]} days for INST using array expansion."
         ${GMERGE} "${dest_inst}" "${inst_files[@]}"
+        # cp inst daily files to COMOUT
+        cpfs "${dest_inst}" "${dest_final_inst}"
     else
         echo "WARNING: Task ${i} found NO daily_inst files to merge."
     fi
