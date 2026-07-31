@@ -5,9 +5,16 @@ source "${HOMEglobal}/ush/jjob_header.sh" -e "atmos_post" -c "base atmos_post"
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
 source "${USHglobal}/jjob_shell_setup.sh"
 
-if ((10#${ENSMEM:-0} > 0)); then
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ "${ENSMEM}" =~ ^[0-9]+$ ]]; then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
 else
+    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
     export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
 fi
 
@@ -16,17 +23,21 @@ export DATAoutput="${DATAjob}/output"
 if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # Construct COM variables from templates
-memdir=$(printf "mem%03i" $((10#${ENSMEM})))
-COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}
-declare -rx "COMIN_ATMOS_MASTER"="${COMOUT}/model/atmos/master"
+declare -rx "COMIN_ATMOS_MASTER"="${COMIN}/model/atmos/master"
 declare -rx "COMOUT_ATMOS_GRIB"="${COMOUT}/products/atmos/grib2"
+if [[ ! -d "${COMIN_ATMOS_MASTER}" ]]; then mkdir -p "${COMIN_ATMOS_MASTER}"; fi
 if [[ ! -d "${COMOUT_ATMOS_GRIB}" ]]; then mkdir -p "${COMOUT_ATMOS_GRIB}"; fi
+
+# Define directory variables to save the source atmos master files temporarily
+export ATMOS_MASTER_OUTPUT="${DATAoutput}/FV3ATM_OUTPUT/model/master"
+if [[ ! -d "${ATMOS_MASTER_OUTPUT}" ]]; then mkdir -p "${ATMOS_MASTER_OUTPUT}"; fi
+
 # Define current cycle
 export current_cycle="${PDY}${cyc}"
 
 # Check if atmos 6hrly master files are complete for atmos post job
 shopt -s nullglob
-atmos_6hrly_files=("${COMIN_ATMOS_MASTER}/sfs.t00z.master.f"*".grib2")
+atmos_6hrly_files=("${ATMOS_MASTER_OUTPUT}/sfs.t00z.master.f"*".grib2")
 atmos_6hrly_num=$((FHMAX_GFS / 6 + 1)) #expected total number of atmos master files
 echo "INFO: Found ${#atmos_6hrly_files[@]} of 6hrly atmos master files."
 

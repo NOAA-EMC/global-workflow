@@ -24,19 +24,19 @@ for ((j = 0; j < fhr_inc; j++)); do
     if [[ "${current_fhr}" -gt "${FHMAX_GFS}" ]]; then break; fi
     fhr3=$(printf %03i "${current_fhr}")
 
-    input_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.t00z.${grid}.f${fhr3}.nc"
-    in_hist_file="${COMOUT_OCEAN_HISTORY}/sfs.t00z.24hr_avg.f${fhr3}.nc"
-    in_ssh_file="${COMOUT_OCEAN_HISTORY}/sfs.SSH.t00z.24hr_avg.f${fhr3}.nc"
+    input_file="${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs.t00z.${grid}.f${fhr3}.nc"
+    in_hist_file="${OCEAN_HISTORY_OUTPUT}/sfs.t00z.24hr_avg.f${fhr3}.nc"
+    in_ssh_file="${OCEAN_HISTORY_OUTPUT}/sfs.SSH.t00z.24hr_avg.f${fhr3}.nc"
     [[ ! -f "${input_file}" ]] && continue
     [[ ! -f "${in_hist_file}" ]] && continue
 
-    # Outputs
-    output_ssh="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.f${fhr3}.nc"
-    output_dt20c="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.dt20c.t00z.${grid}.f${fhr3}.nc"
-    output_tchp="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.TCHP.t00z.${grid}.f${fhr3}.nc"
-    output_ocnheat="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.ocnheat.t00z.${grid}.f${fhr3}.nc"
-    temp3d_file="${DATA}/sfs.temp3d.f${fhr3}.nc"
-    temp3d_300m="${DATA}/sfs.temp3d.300m.f${fhr3}.nc"
+    # Outputs on DATA and DATAoutput
+    output_ssh="${DATA}/sfs.SSH.t00z.0p25.f${fhr3}.nc"
+    output_dt20c="${DATA}/sfs.dt20c.t00z.${grid}.f${fhr3}.nc"
+    output_tchp="${DATA}/sfs.TCHP.t00z.${grid}.f${fhr3}.nc"
+    output_ocnheat="${DATA}/sfs.ocnheat.t00z.${grid}.f${fhr3}.nc"
+    temp3d_file="${DATAoutput}/MOM6_OUTPUT/sfs.temp3d.f${fhr3}.nc"
+    temp3d_300m="${DATAoutput}/MOM6_OUTPUT/sfs.temp3d.300m.f${fhr3}.nc"
 
     # 1. Calc OHC/D20/TCHP
     ncks -O -v temp "${input_file}" "${temp3d_file}"
@@ -55,9 +55,10 @@ for ((j = 0; j < fhr_inc; j++)); do
 
     rm -f "${in_ssh_file}"
 
-    # 3. Extract specific variables into individual files for later merging
+    # 3. Extract specific variables into individual files on DATA directory for later merging
     for var in "${varslist[@]}"; do
-        output_var="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
+        #output_var="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
+        output_var="${DATA}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
         ncks -O -v "${var}" "${input_file}" "${output_var}"
     done
 done

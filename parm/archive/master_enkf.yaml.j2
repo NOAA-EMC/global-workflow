@@ -12,6 +12,9 @@ datasets:
 
     {% filter indent(width=4) %}
 {% include "enkf_grp.yaml.j2" %}
+{% if DOLETKF_OCN or DOLETKF_OCN_INC %}
+{% include "enkf_marine_grp.yaml.j2" %}
+{% endif %}
     {% endfilter %}
 
     # Save the increments and restarts every ARCH_WARMICFREQ days

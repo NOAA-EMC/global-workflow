@@ -115,10 +115,14 @@ monthlyaccvars="(ACPCP|APCP|NCPCP|PRATE|LHTFL|SHTFL|UFLX|VFLX|CDUVB|DLWRF|USWRF|
 export filename_end=".grib.t${cyc}z.grb2"
 
 # Paths
-OUTDIR="${COMOUT_ATMOS_GRIB}"
+OUTDIR="${DATAoutput}/FV3ATM_OUTPUT/PRODUCT"
+OUTDIR_FINAL="${COMOUT_ATMOS_GRIB}"
 mkdir -m 755 -p "${OUTDIR}"
+mkdir -m 755 -p "${OUTDIR_FINAL}"
 mkdir -p "${OUTDIR}/acc.daily.${MEMDIR}" "${OUTDIR}/inst.daily.${MEMDIR}"
 mkdir -p "${OUTDIR}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
+mkdir -p "${OUTDIR_FINAL}/acc.daily.${MEMDIR}" "${OUTDIR_FINAL}/inst.daily.${MEMDIR}"
+mkdir -p "${OUTDIR_FINAL}/acc.monthly.${MEMDIR}" "${OUTDIR_FINAL}/inst.monthly.${MEMDIR}"
 
 # Explicitly export variables:
 # 1.1. Processing Tools
@@ -132,9 +136,8 @@ export monthlyinstvars="${monthlyinstvars}"
 export monthlyaccvars="${monthlyaccvars}"
 
 # 1.3. Path & Cycle Info
-
-export COMIN_ATMOS_MASTER="${COMIN_ATMOS_MASTER}"
 export OUTDIR="${OUTDIR}"
+export OUTDIR_FINAL="${OUTDIR_FINAL}"
 export MEMDIR="${MEMDIR}"
 export current_cycle="${current_cycle}"
 export cyc="${cyc}"
@@ -148,13 +151,13 @@ echo "Start to Process Atmospheric variables"
 rm -rf "${OUTDIR:?}/"*
 
 # Determine vt_date and lastfhr (Required for all stages)
-firstfile="${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f000.grib2"
+firstfile="${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f000.grib2"
 vt_init=$(${WGRIB2} "${firstfile}" -d 1 -vt)
 vt_date=${vt_init:7:10}
 yy_init=${vt_init:7:4}
 mm_init=$((10#${vt_init:11:2})) # Force base-10 to avoid '08' octal errors
 
-lastfile=$(find "${COMIN_ATMOS_MASTER}" -maxdepth 1 -name "sfs.t${cyc}z.master.f*.grib2" | sort -V | tail -1)
+lastfile=$(find "${ATMOS_MASTER_OUTPUT}" -maxdepth 1 -name "sfs.t${cyc}z.master.f*.grib2" | sort -V | tail -1)
 echo "${lastfile}"
 
 lastftimemsg=$(${WGRIB2} "${lastfile}" -d 1 -ftime2)
@@ -182,6 +185,7 @@ true > "${cmdfile_s1}"
 for ((i = 0; i < ${#vars[@]}; i++)); do
     filename="${filevars[${i}]}.${MEMDIR}.${vt_date}.6hourly.grb2"
     output_path="${OUTDIR}/${filename}"
+    output_final_path="${OUTDIR_FINAL}/${filename}"
     # CALL THE WRAPPER SCRIPT
     echo "bash ${PROCESS_ATMOS_6HRLYSH} '${vars[${i}]}' '${output_path}'" >> "${cmdfile_s1}"
 done
@@ -190,6 +194,14 @@ if [[ -s "${cmdfile_s1}" ]]; then
     "${RUN_MPMDSH}" "${cmdfile_s1}"
     err=$?
 fi
+
+# RUN_MPMD POST JOB: COPY INTERMEDIATE DATA TO COM DIRECTORY
+for ((i = 0; i < ${#vars[@]}; i++)); do
+    filename="${filevars[${i}]}.${MEMDIR}.${vt_date}.6hourly.grb2"
+    output_path="${OUTDIR}/${filename}"
+    output_final_path="${OUTDIR_FINAL}/${filename}"
+    cpfs "${output_path}" "${output_final_path}"
+done
 
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: Failed to generate 6-hourly grib2 files"
@@ -205,7 +217,7 @@ fi
 echo "INFO: Starting Stage 2 - Daily Averaging"
 
 # Ensure all necessary environment variables are exported for the child tasks
-export dailyaccvars dailyinstvars COMIN_ATMOS_MASTER cyc OUTDIR MEMDIR lastfhr current_cycle GMERGE WGRIB2
+export dailyaccvars dailyinstvars ATMOS_MASTER_OUTPUT cyc OUTDIR MEMDIR lastfhr current_cycle GMERGE WGRIB2
 
 if [[ -f "${DATA}/mpmd_s2_daily.txt" ]]; then
     rm -f "${DATA}/mpmd_s2_daily.txt"
@@ -313,6 +325,17 @@ else
     err=0
 fi
 
+# RUN_MPMD POST JOB: COPY INTERMIEDIATE DATA TO COM DIRECTORY
+for file in "${accfilelist[@]}"; do
+    filesuffix=$(echo "${file##*/}" | cut -d '.' -f 4-10)
+    cpfs "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}" "${OUTDIR_FINAL}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
+done
+
+for file in "${insfilelist[@]}"; do
+    filesuffix=$(echo "${file##*/}" | cut -d '.' -f 4-10)
+    cpfs "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}" "${OUTDIR_FINAL}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
+done
+
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: Failed to generate monthly mean grib2 files"
     exit "${err}"
@@ -323,10 +346,10 @@ fi
 #------------------------------------------------------------------------------
 # CLEANUP
 #------------------------------------------------------------------------------
-rm -f "${COMIN_ATMOS_MASTER}/sfs.t${cyc}z.master.f"*".grib2"
+#rm -f "${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f"*".grib2"
 rm -f "${DATA}"/mpmd_s*.txt
 rm -f "${DATA}"/mpmd.*.out
-find "${OUTDIR}" -type d -name "tmp_m[0-9][0-9]_${MEMDIR}" -empty -delete
+rm -rf "${OUTDIR}"
 echo "INFO: Cleanup Complete. Workflow status: SUCCESS"
 
 exit 0

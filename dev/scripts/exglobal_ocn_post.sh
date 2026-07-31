@@ -63,7 +63,7 @@ export CALC_D20="${USHglobal}/python/ocn_diag/calc_d20.py"
 export CALC_TCHP="${USHglobal}/python/ocn_diag/calc_tchp.py"
 export CALC_OHC="${USHglobal}/python/ocn_diag/calc_ohc.py"
 
-# Path for ocean post output
+# Path for the final ocean post output
 mkdir -m 755 -p "${COMOUT_OCEAN_NETCDF}/${grid}"
 
 #Run MPMD mode
@@ -77,15 +77,12 @@ echo "Begin OCEAN POST work"
 
 if [[ "${RUN}" == sfs ]]; then
 
-    # Task 0. Clean all intermediate and unfinished output files from the previous failed run
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.6hr_avg.f"*".nc"
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.6hr_avg.nc"
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs"*"monthly_avg"*".nc"
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs."*".t00z.${grid}.f"*".nc"
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs."*".t00z.${grid}.daily.nc"
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.f"*".nc"
-    echo "Finish Cleaning All Generated Files From the Previous Failed Run!"
+    # Task 0. Clean all unfinished output files in the temporary directory from the previous failed post job 
+    rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.6hr_avg.nc"
+    rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs"*"monthly_avg"*".nc"
+    rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs."*".t00z.${grid}.daily.nc"
+    rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs.SSH.t00z.0p25.daily.nc"
+    echo "Finish Cleaning All Generated Files From the Previous Failed Post Job!"
     # -----------------------------------------------------------------------------
     # Task A: Generated 6hrly 5m potential temperature from 6hrly temperature files
     # and merge into one single file for entire forecast length
@@ -110,14 +107,16 @@ if [[ "${RUN}" == sfs ]]; then
 
     # 3. Final Consolidation (Post-MPMD)
     FHOUT_ocn6hr=6
-    merge_file="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc"
-    cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f*.nc" "${merge_file}"
+    cdo mergetime "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f*.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.merge.nc"
 
     # 4. Compress
-    nccopy -k 4 -d 5 "${merge_file}" "${merge_file}.tmp" && mv "${merge_file}.tmp" "${merge_file}"
+    nccopy -k 4 -d 5 "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.merge.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc"
+    cpfs "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc"
 
-    # 5. Cleanup fragments
-    rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f"*".nc"
+    # 5. Cleanup fragments and intermediate data
+    rm -f "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.merge.nc"
+    rm -f "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.nc"
+    rm -f "${DATAoutput}/MOM6_OUTPUT/${RUN}.temp5m.t${cyc}z.${grid}.${FHOUT_ocn6hr}hr_avg.f*.nc"
 
     # -----------------------------------------------------------------------------
     # Task B: Compute TCHP/d20c/oceanheat from daily and merge all daily files into
@@ -136,29 +135,25 @@ if [[ "${RUN}" == sfs ]]; then
     "${RUN_MPMDSH}" "${ocean_daily_cmdfile}"
     diag_status=$?
 
-    # 3. Final Consolidation (Merge each variable into one long time-series file)
+    # 3. Final Consolidation (Merge each variable into one long time-series file, Post-MPMD)
     if [[ ${diag_status} -eq 0 ]]; then
         newvarslist=("dt20c" "TCHP" "ocnheat" "SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so")
 
         for var in "${newvarslist[@]}"; do
-            merge_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.daily.nc"
             # Merge and compress 1p00 files
-            cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f*.nc" "${merge_file}"
-            nccopy -k 4 -d 5 "${merge_file}" "${merge_file}.tmp" && mv "${merge_file}.tmp" "${merge_file}"
-            if [[ -f "${merge_file}.tmp" ]]; then
-                rm -f "${merge_file}.tmp"
-            fi
+            cdo mergetime "${DATA}/sfs.${var}.t00z.${grid}.f*.nc" "${DATA}/sfs.${var}.t00z.${grid}.daily.merge.nc"
+            nccopy -k 4 -d 5 "${DATA}/sfs.${var}.t00z.${grid}.daily.merge.nc" "${DATA}/sfs.${var}.t00z.${grid}.daily.nc"
+            cpfs "${DATA}/sfs.${var}.t00z.${grid}.daily.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.daily.nc"
 
-            # Remove daily fragments
-            rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f"*".nc"
+            # Remove daily fragments and intermediate data
+            rm -f "${DATA}/sfs.${var}.t00z.${grid}.f"*".nc"
+            rm -f "${DATA}/sfs.${var}.t00z.${grid}.daily.nc" "${DATA}/sfs.${var}.t00z.${grid}.daily.merge.nc"
         done
         # Merge and Compress 0p25 SSH files
-        merge_ssh_file="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
-        cdo mergetime "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.f*.nc" "${merge_ssh_file}"
-        nccopy -k 4 -d 5 "${merge_ssh_file}" "${merge_ssh_file}.tmp" && mv "${merge_ssh_file}.tmp" "${merge_ssh_file}"
-        if [[ -f "${merge_ssh_file}.tmp" ]]; then
-            rm -f "${merge_ssh_file}.tmp"
-        fi
+        cdo mergetime "${DATA}/sfs.SSH.t00z.0p25.f*.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc"
+        nccopy -k 4 -d 5 "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.nc"
+        cpfs "${DATA}/sfs.SSH.t00z.0p25.daily.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
+        rm -f "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.nc"
     else
         echo "FATAL: MPMD diagnostics failed. Keeping input files for debugging."
         exit 1
@@ -167,7 +162,7 @@ if [[ "${RUN}" == sfs ]]; then
     # -----------------------------------------------------------------------------
     # Task C: Generate monthly products from daily files and d20/TCHP/ocnheat monthly files
     # -----------------------------------------------------------------------------
-    # 0.  Link file names TO the output daily ocean regular grid (1p00,0p25) product files for monthly averaging
+    # 0.  Link file names to the output daily ocean regular grid (1p00,0p25) product files for monthly averaging
     # Array of dalily mean ocean output fhr (24, 48, ..., etc)
     mapfile -t OCEAN_OUTPUT_FH < <(seq "${FHMIN_GFS}" "${FHOUT_OCN}" "${FHMAX_GFS}") || exit 10
     for fhr in "${OCEAN_OUTPUT_FH[@]}"; do
@@ -184,12 +179,12 @@ if [[ "${RUN}" == sfs ]]; then
         new_ssh_file="ssh_${vdate_mid_str}.nc"
         ori_file="${RUN}.t${cyc}z.${grid}.f${fhr3}.nc"
         ori_ssh_file="${RUN}.SSH.t${cyc}z.0p25.f${fhr3}.nc"
-        ${NLN} "${COMOUT_OCEAN_NETCDF}/${grid}/${ori_file}" "${DATAoutput}/MOM6_OUTPUT/${new_file}"
-        ${NLN} "${COMOUT_OCEAN_NETCDF}/${grid}/${ori_ssh_file}" "${DATAoutput}/MOM6_OUTPUT/${new_ssh_file}"
+        ${NLN} "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${ori_file}" "${DATAoutput}/MOM6_OUTPUT/${new_file}"
+        ${NLN} "${DATA}/${ori_ssh_file}" "${DATAoutput}/MOM6_OUTPUT/${new_ssh_file}"
         last_fhr=${fhr}
     done
     # 1. Check the final month is full or partial
-    last_fh_output="${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.t${cyc}z.1p00.f${FHMAX_GFS}.nc"
+    last_fh_output="${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${RUN}.t${cyc}z.1p00.f${FHMAX_GFS}.nc"
     ((interval = 24))
     ((midpoint = FHMAX_GFS - interval / 2))
     last_fhr_vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
@@ -268,13 +263,14 @@ fi
 #------------------------------------------------------------------------------
 # CLEANUP
 #------------------------------------------------------------------------------
+echo "Remove mpmd job outputs and executable script"
 rm -f "${DATA}"/*.txt
 rm -f "${DATA}"/mpmd.*.out
-# Remove daily SSH fragments
-rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.f"*".nc"
+echo "Remove daily SSH fragments"
+rm -f "${DATA}/${RUN}.SSH.t00z.0p25.f"*".nc"
 echo "Ocean post success! Removing remapped input files and history files."
-rm -f "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.t00z.${grid}.f"*".nc"
-rm -f "${COMOUT_OCEAN_HISTORY}/sfs."*".nc"
+#rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${RUN}.t${cyc}z.${grid}.f"*".nc"
+#rm -f "${OCEAN_HISTORY_OUTPUT}/${RUN}."*".nc"
 echo "INFO: Cleanup Complete. Workflow status: SUCCESS"
 echo "End OCEAN POST work"
 ###############################################################################

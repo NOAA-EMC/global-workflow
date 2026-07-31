@@ -7,6 +7,7 @@ set -x
 ###############################################################
 
 # Source FV3GFS workflow modules
+source "${HOMEglobal}/ush/detect_machine.sh"
 source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if ((status != 0)); then exit "${status}"; fi
