@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -x
 set -u -o pipefail
 shopt -s nullglob

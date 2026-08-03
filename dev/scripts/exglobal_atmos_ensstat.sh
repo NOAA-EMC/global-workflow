@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /bin/bash
 set -x
 
 # Set default pgm for err_exit
