@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 set -x
 ##############################################################
 # Add the NCDC GIF processing to the end of the gempak_gif job

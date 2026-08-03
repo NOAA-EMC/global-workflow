@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 set -x
 ################################################################################
 ####  UNIX Script Documentation Block
