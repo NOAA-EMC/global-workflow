@@ -157,6 +157,7 @@ include:
         echo "GFS_CI_ROCOTO_PATH not set or directory not found, using system Rocoto"
       fi
 
+      # No-op for testing GitLab Pipeline
       git submodule status
       # When GFS_CI_RUN_TYPE is set to "nightly", we use the develop branch
       # It should be set when configuring the scheculed nightly pipeline
