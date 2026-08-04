@@ -21,7 +21,6 @@
 # The host configuration in .gitlab-ci-hosts.yml is designed to be easily 
 # extended with new computing platforms and allows per-host specification 
 # of which test cases to run.
-# no op to test v17 pipeline for hash mismatches for PR checkouts
 
 stages:
   - build
