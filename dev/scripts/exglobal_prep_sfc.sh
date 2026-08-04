@@ -56,6 +56,10 @@
 #
 #########################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 ##############################################################
 # Input data for emcsfc_ice_blend and emcsfc_snow2mdl programs
 ##############################################################
@@ -111,6 +115,7 @@ if [[ ${err} -ne 0 ]]; then
         cpfs "${BLENDED_ICE_FILE_PREV}" "${COMOUT_OBS}/${BLENDED_ICE_FILE}"
         export err=0
     else
+        pgm="prep_sfc_ice_blend.sh"
         err_exit "FATAL ERROR: CURRENT ICE FILE AND 6-HR OLD ICE FILE MISSING"
     fi
 fi
@@ -122,17 +127,19 @@ fi
 
 export SNOW2MDLEXEC="${EXECglobal}/emcsfc_snow2mdl"
 
-LONB_CASE=$((4 * ${CASE:1}))
-LATB_CASE=$((2 * ${CASE:1}))
+res=${CASE_HIST:1}
+JCAP_CASE=$((res * 2 - 2))
+LONB_CASE=$((4 * res))
+LATB_CASE=$((2 * res))
 
-export MODEL_SLMASK_FILE=${SLMASK:-${FIXglobal}/am/global_slmask.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
-export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXglobal}/am/global_latitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
-export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXglobal}/am/global_longitudes.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.grb}
-export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXglobal}/am/global_lonsperlat.t${CASE:1}.${LONB_CASE}.${LATB_CASE}.txt}
-export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
-export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${CASE:1}.${LONB_CASE}.${LATB_CASE}
+export MODEL_SLMASK_FILE=${SLMASK:-${FIXglobal}/am/global_slmask.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
+export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXglobal}/am/global_latitudes.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
+export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXglobal}/am/global_longitudes.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
+export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXglobal}/am/global_lonsperlat.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.txt}
+export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}
+export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}
 
-echo "Create ${CASE} snow data."
+echo "Create ${JCAP_CASE} snow data."
 "${USHglobal}/prep_sfc_snow.sh"
 export err=$?
 
@@ -149,11 +156,12 @@ export err=$?
 
 if [[ ${err} -ne 0 ]]; then
     if [[ -s "${MODEL_SNOW_FILE_PREV}" ]]; then
-        echo "COPY OLD ${CASE} SNOW FILE TO CURRENT DIRECTORY"
+        echo "COPY OLD ${JCAP_CASE} SNOW FILE TO CURRENT DIRECTORY"
         cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
         export err=0
     else
-        err_exit "CURRENT AND 6-HR OLD ${CASE} SNOW MISSING, ABORT!"
+        pgm="prep_sfc_snow.sh"
+        err_exit "CURRENT AND 6-HR OLD ${JCAP_CASE} SNOW MISSING, ABORT!"
     fi # check of missing 6-hr snow file
 fi     # return code check
 
@@ -163,15 +171,16 @@ fi     # return code check
 
 if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
 
-    LONB_CASE_ENS=$((4 * ${CASE_ENS:1}))
-    LATB_CASE_ENS=$((2 * ${CASE_ENS:1}))
+    JCAP_CASE_ENS=${JCAP_CASE_ENS:-"574"}
+    LONB_CASE_ENS=${LONB_CASE_ENS:-"1152"}
+    LATB_CASE_ENS=${LATB_CASE_ENS:-"576"}
 
-    export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXglobal}/am/global_slmask.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-    export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXglobal}/am/global_latitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-    export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXglobal}/am/global_longitudes.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
-    export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXglobal}/am/global_lonsperlat.t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
-    export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
-    export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${CASE_ENS:1}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
+    export MODEL_SLMASK_FILE=${SLMASK_ENKF:-${FIXglobal}/am/global_slmask.t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export MODEL_LATITUDE_FILE=${MDL_LATS_ENKF:-${FIXglobal}/am/global_latitudes.t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXglobal}/am/global_longitudes.t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
+    export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXglobal}/am/global_lonsperlat.t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
+    export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
+    export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
 
     echo "Create enkf snow data."
     "${USHglobal}/prep_sfc_snow.sh"
@@ -188,6 +197,7 @@ if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
             cpfs "${MODEL_SNOW_FILE_PREV}" "${COMOUT_OBS}/${MODEL_SNOW_FILE}"
             export err=0
         else
+            pgm="prep_sfc_snow.sh"
             err_exit "CURRENT AND 6-HR OLD ENKF SNOW MISSING"
         fi # check of missing 6-hr snow file
     fi     # return code check

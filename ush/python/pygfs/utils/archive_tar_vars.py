@@ -168,7 +168,7 @@ class ArchiveTarVars:
         - Restart: restart_interval_enkfgdas, restart_interval_enkfgfs
         - Hybrid/DA: DOHYBVAR, DOIAU, DO_CA, DO_CALC_INCREMENT, assim_freq
         - Archive timing: ARCH_CYC, ARCH_WARMICFREQ, ARCH_FCSTICFREQ
-        - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN
+        - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN, DOLETKF_OCN_INC, DO_OCN
         - Other: DO_JEDISNOWDA, NET, DO_GSISOILDA, DO_LAND_IAU
 
         COM variable prefixes collected:
@@ -197,7 +197,7 @@ class ArchiveTarVars:
             'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
             'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
             # Ocean/Ice DA
-            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS', 'ARCH_MARINE_ENS',
+            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'DOLETKF_OCN_INC', 'NMEM_ENS', 'ARCH_MARINE_ENS', 'DO_OCN',
             # Archive timing and control
             'ARCH_CYC', 'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
         ]
@@ -593,11 +593,9 @@ class ArchiveTarVars:
             - COMIN_ATMOS_HISTORY_MEM: Absolute path to member history directory
             - COMIN_ATMOS_RESTART_MEM: Absolute path to member restart directory
             - COMIN_OCEAN_ANALYSIS_MEM: Absolute path to member ocean analysis
-            - COMIN_OCEAN_LETKF_MEM: Absolute path to member ocean LETKF
             - COMIN_OCEAN_HISTORY_MEM: Absolute path to member ocean history
             - COMIN_OCEAN_RESTART_MEM: Absolute path to member ocean restart
             - COMIN_ICE_ANALYSIS_MEM: Absolute path to member ice analysis
-            - COMIN_ICE_LETKF_MEM: Absolute path to member ice LETKF
             - COMIN_ICE_HISTORY_MEM: Absolute path to member ice history
             - COMIN_ICE_RESTART_MEM: Absolute path to member ice restart
             - COMIN_MED_RESTART_MEM: Absolute path to member mediator restart
@@ -632,11 +630,9 @@ class ArchiveTarVars:
             ('COMIN_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL'),
             ('COMIN_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL'),
             ('COMIN_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL'),
-            ('COMIN_OCEAN_LETKF_MEM', 'COM_OCEAN_LETKF_TMPL'),
             ('COMIN_OCEAN_HISTORY_MEM', 'COM_OCEAN_HISTORY_TMPL'),
             ('COMIN_OCEAN_RESTART_MEM', 'COM_OCEAN_RESTART_TMPL'),
             ('COMIN_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL'),
-            ('COMIN_ICE_LETKF_MEM', 'COM_ICE_LETKF_TMPL'),
             ('COMIN_ICE_HISTORY_MEM', 'COM_ICE_HISTORY_TMPL'),
             ('COMIN_ICE_RESTART_MEM', 'COM_ICE_RESTART_TMPL'),
             ('COMIN_MED_RESTART_MEM', 'COM_MED_RESTART_TMPL'),

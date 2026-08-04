@@ -463,6 +463,30 @@ class GFSTasks(Tasks):
 
         return task
 
+    def wdqms(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_analdiag'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('wdqms')
+        task_name = f'{self.run}_wdqms'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/wdqms.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+
+        return task
+
     def atmanlinit(self):
 
         deps = []
@@ -895,9 +919,17 @@ class GFSTasks(Tasks):
 
         # can run in parallel with marinebmat
         deps = []
-        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_marinebmatinit"}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        # LETKF recentering needs increments from LETKF and the deterministic analysis
+        if self._base.get('DOLETKF_OCN_INC', True):
+            dep_dict = {'type': 'task', 'name': f"{self.run}_marineanlletkf"}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_marineanlchkpt"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_marinebmatinit"}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('marineanlecen')
         task_name = f'{self.run}_marineanlecen'
@@ -921,13 +953,6 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlvar'}
         deps.append(rocoto.add_dependency(dep_dict))
-        # if DOHYBVAR_OCN: "YES" and EUPD_CYC: "both"
-        if self.options['do_hybvar_ocn'] and \
-                (('gfs' in self.app_config.ens_runs and
-                 'gdas' in self.app_config.ens_runs) or
-                 self.run == "gdas"):
-            dep_dict = {'type': 'task', 'name': f'enkf{self.run}_marineanlecen'}
-            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_mergensst']:
             data = f'&ROTDIR;/{self.run}.@Y@m@d/@H/atmos/{self.run}.t@Hz.analysis.sfc.a006.nc'
             dep_dict = {'type': 'data', 'data': data}
@@ -956,7 +981,12 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlchkpt'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        # let LETKF create increments and recenter before wiping DATA
+        if self._base.get('DOLETKF_OCN_INC', True):
+            dep_dict = {'type': 'task', 'name': f"enkfgdas_marineanlecen"}
+            deps.append(rocoto.add_dependency(dep_dict))
+        print(f"DEBUG: deps for marineanlfinal: {deps}")
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('marineanlfinal')
         task_name = f'{self.run}_marineanlfinal'
@@ -3100,7 +3130,8 @@ class GFSTasks(Tasks):
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
+        if self.run in ['enkfgdas'] or self.options['do_jedisnowda'] or \
+                (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
@@ -3158,8 +3189,8 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_gcycle'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_gsisoilda'] and self.run in ['gdas']:
-            dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
+        if self.options['do_gsisoilda'] and self.run in ['enkfgdas']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlecen'}
@@ -3340,7 +3371,7 @@ class GFSTasks(Tasks):
                 if not self.options['do_enkfonly_atm']:
                     dep_dict = {'type': 'task', 'name': f'{self.run}_echgres'}
                     deps.append(rocoto.add_dependency(dep_dict))
-            if self._base.get('DOLETKF_OCN', True):
+            if self._base.get('DOLETKF_OCN', True) or self._base.get('DOLETKF_OCN_INC', True):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlletkf'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -3354,7 +3385,7 @@ class GFSTasks(Tasks):
                 deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'task', 'name': f'gfs_marineanlfinal'}
                 deps.append(rocoto.add_dependency(dep_dict))
-            if self._base.get('DOLETKF_OCN', True):
+            if self._base.get('DOLETKF_OCN', True) or self._base.get('DOLETKF_OCN_INC', True):
                 dep_dict = {'type': 'task', 'name': f'enkfgfs_marineanlletkf'}
                 deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

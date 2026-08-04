@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gfs_marine_analvar_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=8:mpiprocs=64:ompthreads=1:ncpus=64:mem=500GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufsda
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/marineanlvar.sh
+${HOMEgfs}/jobs/JGLOBAL_MARINE_ANALYSIS_VARIATIONAL
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_marine_analvar
+
+PURPOSE: Marine variational analysis solver (SOCA 3DVar-FGAT) -- core ocean/ice
+DA producing analysis. 8 nodes, heavy compute.
+
+TROUBLESHOOTING
+
+Complex solver. Failures can be: non-convergence (check cost function in
+stdout), missing observations (from prepoceanobs), missing background
+(from forecast), or B-matrix issues (from marine_bmat). Expert
+assistance recommended for solver failures. Check for SOCA FATAL
+messages in stdout. MPI errors indicate node/interconnect problems.
+
+%end

@@ -12,6 +12,24 @@ p.admonition-title {
     display: offline;
 }
 
+.red-text {
+    color: red;
+}
+
+.blue-text {
+    color: blue;
+}
+
+.add-space {
+    margin-bottom: 30px;
+}
+
+.border-figure {
+    border: 2px solid grey;
+    padding: 4px;
+    border-radius: 4px;
+}
+
 /*p.first.admonition-title {
 background-color: #aa6347;
 width: 100%;

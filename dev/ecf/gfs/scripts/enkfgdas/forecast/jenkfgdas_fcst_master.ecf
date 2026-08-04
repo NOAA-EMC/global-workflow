@@ -1,0 +1,68 @@
+#PBS -S /bin/bash
+#PBS -N enkfgdas_fcst_%CYC%_mem%ENSMEM%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=8:mpiprocs=128:ompthreads=1:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+export WGF="%WGF%"
+export ENSMEM="%ENSMEM%"
+export MEMDIR="%MEMDIR%"
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/fcst.sh
+${HOMEgfs}/jobs/JGLOBAL_FORECAST
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK enkfgdas_fcst_master
+
+PURPOSE: EnKF ensemble member forecast -- runs 9-hour coupled UFS for a single
+ensemble member. 8 nodes per member. Per-member _master template (80
+members).
+
+TROUBLESHOOTING
+
+Same UFS model as deterministic but lower resolution and without wave coupling. 
+If a single member or a few members fail, the recovery strategy 
+is to copy the entire contents of a successful member from COM 
+(ie. enkfgdas.${PDY}/${CYC}/mem${MEM}/*) to the failed member. 
+If all enkf forecast members fail,  it is possible that upstream analysis 
+might be the cause, but we can also look to decrease the model 
+forecast time steps. 
+To  reduce the atm time step, in the GFSv17 package, in 
+parm/gfs/config.ufs change DELTIM=300 in the ${fv3_res}=C384 
+section without a nest, to DELTIM=150. 
+To reduce the ocn time step, in the GFSv17 package, in 
+parm/gfs/config.ufs in the "MOM6 specific settings" section for case 
+${mom6_res}=025 change, OCNTIM='900' and
+ DT_THERM_MOM6='1800' -> '900'. 
+Note this section is used for gfs and gdas forecasts as well and will 
+need to be changed back for those forecasts to run with the original 
+time steps.
+
+%end

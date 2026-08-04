@@ -18,7 +18,7 @@ if (( $# != 1 )); then
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "anal sfcanl_regrid sfcanl_gcycle analcalc analdiag anlstat fcst echgres"
-    echo "upp atmos_products"
+    echo "upp atmos_products wdqms"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
     echo "eobs ediag eupd ecen esfc_gcycle esfc_regrid efcs epos earc_vrfy earc_tars"
@@ -616,20 +616,24 @@ case ${step} in
     ntasks=16
     case ${OCNRES} in
       "025")
-        ntasks=480
+        ntasks=240
+	tasks_per_node=10
         memory="256GB"
         ;;
       "050")
         ntasks=16
         memory="96GB"
+	tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       "100")
         ntasks=16
         memory="96GB"
+	tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       "500")
         ntasks=16
         memory="24GB"
+	tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
@@ -639,7 +643,6 @@ case ${step} in
     walltime="00:30:00"
     is_exclusive=True
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
 
@@ -785,6 +788,14 @@ case ${step} in
       is_exclusive=True
     fi
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    ;;
+
+  "wdqms")
+    walltime="00:20:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="48GB"
     ;;
 
   "anlstat")
@@ -945,7 +956,7 @@ case ${step} in
     if [[ "${RUN}" == gdas ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
-          declare -x "walltime"="00:20:00"
+          declare -x "walltime"="00:25:00"
           ;;
         "C384")
           declare -x "walltime"="00:30:00"
@@ -962,7 +973,7 @@ case ${step} in
     elif [[ "${RUN}" == enkfgfs || "${RUN}" == enkfgdas ]]; then
       case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
-          declare -x "walltime"="00:20:00"
+          declare -x "walltime"="00:25:00"
           ;;
         "C384")
           declare -x "walltime"="00:30:00"

@@ -717,7 +717,7 @@ MOM6_postdet() {
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${vdatestr}.nc"
             done
             ;;
         *)

@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_prep_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=3:mpiprocs=5:ompthreads=1:ncpus=5:mem=480GB
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh run
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+${HOMEgfs}/dev/job_cards/rocoto/prep.sh
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gfs_atmos_prep
+
+PURPOSE: Atmospheric observation preparation (PREP) -- decodes, QCs, and formats
+raw obs into prepBUFR/BUFR for GSI. Calls prep.sh Rocoto card directly.
+
+TROUBLESHOOTING
+
+Critical upstream dependency for analysis. Failures here mean no
+observations for GSI. Common issues: observation data feed delays, BUFR
+decoding errors, corrupted input files. Check dumpjb output and prepbufr
+processing logs. If specific data types are missing (e.g., satellite,
+radiosonde), the prep step may still succeed but analysis quality
+degrades.
+
+%end

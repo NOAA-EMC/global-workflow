@@ -23,9 +23,6 @@ device="nc | ${metaname}"
 export COMIN="${RUN}.${PDY}${cyc}"
 ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${COMIN}"
 
-# DEFINE YESTERDAY
-PDYm1=$(date --utc +%Y%m%d -d "${PDY} 00 - 24 hours")
-
 fend=F126
 
 export pgm=gdplot2_nc
@@ -248,89 +245,11 @@ export err=$?
 err_chk
 
 if [[ ${cyc} == 00 ]]; then
-    export HPCECMWF=ecmwf.${PDY}
-    HPCECMWF_m1=ecmwf.${PDY}
-    export HPCUKMET=ukmet.${PDYm1}
-    rm -f "${HPCECMWF}"
-    # TODO: remove live links and refer https://github.com/NOAA-EMC/global-workflow/issues/4406
-    ${NLN} "${COMINecmwf}/ecmwf.${PDY}/gempak" "${HPCECMWF}"
-    rm -f "${HPCECMWF_m1}"
-    ${NLN} "${COMINecmwf}/ecmwf.${PDYm1}/gempak" "${HPCECMWF_m1}"
-    rm -f "${HPCUKMET}"
-    ${NLN} "${COMINukmet}/ukmet.${PDYm1}/gempak" "${HPCUKMET}"
 
     grid1="F-${MDL} | ${PDY:2}/${cyc}00"
-    grid2="${HPCECMWF_m1}/ecmwf_glob_${PDYm1}12"
-    grid3="F-UKMETHPC | ${PDYm1:2}/1200"
-    for fhr in $(seq -s ' ' 12 24 108); do
-        gfsfhr=F$(printf "%02g" "${fhr}")
-        ecmwffhr=F$(printf "%02g" $((fhr + 12)))
 
-        export pgm=gdplot2_nc
-        source prep_step
-        "${GEMEXE}/gdplot2_nc" << EOF10
-GDFILE  = ${grid1} !${grid2}
-GDATTIM = ${gfsfhr}!${ecmwffhr}
-DEVICE  = ${device}
-PANEL   = 0
-TEXT    = 1/21//hw
-MAP     = 6/1/1/yes
-CLEAR   = yes
-CLRBAR  = 1
-PROJ    = mer//3;3;0;1
-GAREA   = -25;-130;40;-15
-LATLON  = 18//1/1/10
-
-GLEVEL  = 500
-GVCORD  = PRES
-PANEL   = 0
-SKIP    = 0
-SCALE   = -1
-GDPFUN  = sm5s(hght)!sm5s(hght)
-TYPE    = c
-CINT    = 6
-FINT    =
-FLINE   =
-HLSYM   =
-WIND    =
-REFVEC  =
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#//5/5;5/y!2/H#;L#//5/5;5/y
-TITLE   = 31/-1/~ ? GFS @ HGHT (WHITE)|~EC VS GFS 500!2/-2/~ ? ECMWF 500 HGHT (RED)
-r
-
-GLEVEL  = 0
-GVCORD  = none
-PANEL   = 0
-SKIP    = 0
-SCALE   = 0
-GDPFUN  = sm5s(pmsl)!sm5s(pmsl)
-TYPE    = c
-CINT    = 4
-FINT    =
-FLINE   =
-HLSYM   = 1.5;1.5//21//hw
-CLRBAR  = 1
-WIND    =
-REFVEC  =
-TEXT    = 1/21//hw
-CLEAR   = yes
-GDFILE  = ${grid1}!${grid2}
-GDATTIM = ${gfsfhr}!${ecmwffhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#/1020-1060;900-1010/5/10;10!2/H#;L#/1020-1060;900-1010/5/10;10
-TITLE   = 31/-1/~ ? GFS PMSL (WHITE)|~EC VS GFS PMSL!2/-2/~ ? ECMWF PMSL (RED)
-r
-
-ex
-EOF10
-        export err=$?
-        err_chk
-
-    done
     for fhr in 0 12 24 36 48 60 84 108 132; do
         gfsfhr=F$(printf "%02g" "${fhr}")
-        ukmetfhr=F$(printf "%02g" $((fhr + 12)))
 
         export pgm=gdplot2_nc
         source prep_step
@@ -341,12 +260,15 @@ TEXT    = 1/21//hw
 MAP     = 6/1/1/yes
 CLEAR   = yes
 CLRBAR  =
+PROJ    = mer//3;3;0;1
+GAREA   = -25;-130;40;-15
+LATLON  = 18//1/1/10
 GLEVEL  = 500
 GVCORD  = PRES
 PANEL   = 0
 SKIP    = 0
 SCALE   = -1
-GDPFUN  = sm5s(hght)!sm5s(hght)
+GDPFUN  = sm5s(hght)
 TYPE    = c
 CINT    = 6
 FINT    =
@@ -356,11 +278,11 @@ GVECT   =
 WIND    =
 REFVEC  =
 clear   = yes
-GDFILE  = ${grid1}!${grid3}
-GDATTIM = ${gfsfhr}!${ukmetfhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#//5/7;7/y!2/H#;L#//5/5;5/y
-TITLE   = 31/-1/~ ? GFS @ HGHT (WHITE)|~UK VS GFS 500!2/-2/~ ? UKMET 500 HGHT (RED)
+GDFILE  = ${grid1}
+GDATTIM = ${gfsfhr}
+LINE    = 31//2
+HILO    = 31/H#;L#//5/7;7/y
+TITLE   = 31/-1/~ ? GFS @ HGHT (WHITE)|~GFS 500
 r
 
 GLEVEL  = 0
@@ -368,7 +290,7 @@ GVCORD  = none
 PANEL   = 0
 SKIP    = 0
 SCALE   = 0
-GDPFUN  = sm5s(pmsl)!sm5s(pmsl)
+GDPFUN  = sm5s(pmsl)
 TYPE    = c
 CINT    = 4
 FINT    =
@@ -379,11 +301,11 @@ WIND    =
 REFVEC  =
 TEXT    = 1/21//hw
 CLEAR   = yes
-GDFILE  = ${grid1}!${grid3}
-GDATTIM = ${gfsfhr}!${ukmetfhr}
-LINE    = 31//2!2//2
-HILO    = 31/H#;L#/1020-1060;900-1010/5/10;10!2/H#;L#/1020-1060;900-1010/5/10;10
-TITLE   = 31/-1/~ ? GFS PMSL (WHITE)|~UK VS GFS PMSL!2/-2/~ ? UKMET PMSL (RED)
+GDFILE  = ${grid1}
+GDATTIM = ${gfsfhr}
+LINE    = 31//2
+HILO    = 31/H#;L#/1020-1060;900-1010/5/10;1010
+TITLE   = 31/-1/~ ? GFS PMSL (WHITE)|~GFS PMSL
 r
 
 ex
