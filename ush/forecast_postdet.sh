@@ -1094,19 +1094,14 @@ CICE_postdet() {
     local source_file dest_file
     local n_fhr=${#CICE_OUTPUT_FH[@]}
     # CICE labels its per-file completion sentinel log.ice.fHHHH on the model
-    # history clock, which counts from the CICE restart origin (the previous
-    # analysis cycle) rather than from this cycle. For the cycled instantaneous
-    # runs the sentinel forecast hour is the workflow forecast hour plus the
-    # assimilation window (previous_cycle = current_cycle - assim_freq), e.g.
-    # workflow f003 is written by the model as log.ice.f0009 for 6-hourly gdas.
-    # The offset is the same for every cycle. The .nc data filenames are stamped
-    # by valid date and need no offset; only the sentinel name does. gfs/enkfgfs
-    # use averaged output with different log semantics, so leave them unshifted.
-    local ice_log_offset=0
-    case "${RUN}" in
-        gdas | enkfgdas) ice_log_offset=${assim_freq:-6} ;;
-        *) ;;
-    esac
+    # history clock. With IAU the model starts IAU_OFFSET hours before the cycle,
+    # so the model forecast hour is the workflow (cycle-relative) forecast hour plus
+    # IAU_OFFSET; add that offset so the manager waits on the sentinel the model
+    # actually writes (e.g. with IAU_OFFSET=6 the f009 product's sentinel is
+    # log.ice.f0015 and f003's is log.ice.f0009). config.base sets IAU_OFFSET=0 when
+    # IAU is off (cold start / DOIAU=NO / free-forecast), so no offset is applied
+    # then. The .nc data filenames are stamped by valid date and need no offset.
+    local ice_log_offset=${IAU_OFFSET:-0}
     for ((idx = 1; idx < n_fhr; idx++)); do
         fhr=${CICE_OUTPUT_FH[idx]}
         local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
