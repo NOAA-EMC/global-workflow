@@ -25,6 +25,7 @@ skip_ci_on_hosts:
   - hercules
   - ursa
   - awsepicglobalworkflow
+  - derecho
 
 workflow:
   engine: rocoto
