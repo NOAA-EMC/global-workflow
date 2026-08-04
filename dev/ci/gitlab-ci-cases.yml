@@ -29,7 +29,19 @@
   stage: run_tests
   script:
     - |
-      echo "Using build directory ${GW_HOMEgfs} (dated ${DATE})"
+      echo "Using build directory ${GW_HOMEgfs}"
+
+      # TEMPORARY: Use custom Rocoto build with dryrun feature for testing
+      # TODO: Remove this when upstream Rocoto PR is merged
+      # Load platform-specific configuration first
+      source "${GW_HOMEgfs}/dev/ci/platforms/config.${machine}"
+      if [[ -n "${GFS_CI_ROCOTO_PATH:-}" && -d "${GFS_CI_ROCOTO_PATH}" ]]; then
+        export PATH="${GFS_CI_ROCOTO_PATH}:${PATH}"
+        echo "Using custom Rocoto build at: $(which rocotorun 2>/dev/null || echo 'NOT FOUND')"
+      else
+        echo "GFS_CI_ROCOTO_PATH not set or directory not found, using system Rocoto"
+      fi
+
       pslot=$("${GW_HOMEgfs}/dev/ci/scripts/utils/ci_utils.sh" get_pslot "${RUNTESTS_DIR}" "${caseName}")
       "${GW_HOMEgfs}/dev/ci/scripts/run_check_gitlab_ci.sh" "${GW_RUN_PATH}" "${pslot}" global-workflow
       exit $? 
@@ -43,16 +55,10 @@
     - |
       Machine="${machine^}"
       if [[ "${GFS_CI_RUN_TYPE}" == "nightly" && "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
-        echo "This is a scheduled nightly pipeline, creating date-based directories and symlinks"
+        echo "Nightly pipeline succeeded, updating stable symlink"
         cd "${CI_BUILDS_DIR}"
         rm -f stable
-        if [[ "${WORKSPACE_ID}" != "${WORKSPACE_DATE}" && -d "${CI_BUILDS_DIR}/${WORKSPACE_ID}" ]]; then
-          echo "Moving ${WORKSPACE_ID} to ${WORKSPACE_DATE}"
-          mv "${WORKSPACE_ID}" "${WORKSPACE_DATE}"
-          ln -sf "${WORKSPACE_DATE}" stable
-        elif [[ "${WORKSPACE_ID}" == "${WORKSPACE_DATE}" ]]; then
-          ln -sf "${WORKSPACE_DATE}" stable
-        fi
+        ln -sf "${WORKSPACE_ID}" stable
 
         # Clean up old directories from this pipeline type except stable
         echo "Cleaning up old ${GFS_CI_RUN_TYPE} directories except stable"
