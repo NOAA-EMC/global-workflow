@@ -23,7 +23,7 @@
 # shellcheck source=ush/wait_for_file.sh
 source "${USHglobal}/wait_for_file.sh"
 
-cd "${DATA}" || exit 8
+cd "${DATA}" || err_exit "Cannot cd to DATA=${DATA}"
 
 # Default segment index to 0 if not set by the caller (multi-segment forecasts set this).
 FCST_SEGMENT=${FCST_SEGMENT:-0}
@@ -84,8 +84,7 @@ for ((inst = 0; inst < natm_inst; inst++)); do
     atm_barrier_tbl="${DATAjob}/atm_barrier_seg${FCST_SEGMENT}_inst${inst}.txt"
     for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" "${atm_barrier_tbl}"; do
         if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-            echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
-            exit 1
+            err_exit "Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}"
         fi
     done
     # GRIB2/flux tables only exist when inline post-processing is enabled.
@@ -94,8 +93,7 @@ for ((inst = 0; inst < natm_inst; inst++)); do
         atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
         for _atm_tbl in "${atm_grib_tbl}" "${atm_flux_tbl}"; do
             if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-                echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
-                exit 1
+                err_exit "Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}"
             fi
         done
     fi
@@ -119,8 +117,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for WW3 product table at ${WW3_TABLE}"
     if ! wait_for_file "${WW3_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-        echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${WW3_TABLE}" >&2
-        exit 1
+        err_exit "Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${WW3_TABLE}"
     fi
     echo "INFO: WW3 product table found (${MGR_NTASKS_WW3} rank(s))"
     split_table_by_sentinel "${WW3_TABLE}" "${MGR_NTASKS_WW3}" "${DATA}/ww3_mgr_rank"
@@ -133,8 +130,7 @@ if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for OCN product table at ${OCN_TABLE}"
     if ! wait_for_file "${OCN_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-        echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${OCN_TABLE}" >&2
-        exit 1
+        err_exit "Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${OCN_TABLE}"
     fi
     echo "INFO: OCN product table found (${MGR_NTASKS_OCN} rank(s))"
     split_table_by_sentinel "${OCN_TABLE}" "${MGR_NTASKS_OCN}" "${DATA}/ocn_mgr_rank"
@@ -147,8 +143,7 @@ if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     ICE_TABLE="${DATAjob}/ice_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for ICE product table at ${ICE_TABLE}"
     if ! wait_for_file "${ICE_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
-        echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ICE_TABLE}" >&2
-        exit 1
+        err_exit "Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${ICE_TABLE}"
     fi
     echo "INFO: ICE product table found (${MGR_NTASKS_ICE} rank(s))"
     split_table_by_sentinel "${ICE_TABLE}" "${MGR_NTASKS_ICE}" "${DATA}/ice_mgr_rank"

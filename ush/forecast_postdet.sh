@@ -1090,18 +1090,31 @@ CICE_postdet() {
     #   local_log: log.ice.fHHHH sentinel written by the CICE component into
     #              CICE_OUTPUT after the iceh_*.nc for this period is fully
     #              flushed to disk.  Mirrors how FV3 uses log.atm.fHHH and
-    #              WW3 uses its per-file logs (UFSWM update tracked in
-    #              NOAA-EMC/global-workflow#4946; previously called via
-    #              ufs_logfhour which had an IAU 00Z labeling bug and wrote
-    #              to DATA root).
+    #              WW3 uses its per-file logs.
     local source_file dest_file
     local n_fhr=${#CICE_OUTPUT_FH[@]}
+    # CICE labels its per-file completion sentinel log.ice.fHHHH on the model
+    # history clock, which counts from the CICE restart origin (the previous
+    # analysis cycle) rather than from this cycle. For the cycled instantaneous
+    # runs the sentinel forecast hour is the workflow forecast hour plus the
+    # assimilation window (previous_cycle = current_cycle - assim_freq), e.g.
+    # workflow f003 is written by the model as log.ice.f0009 for 6-hourly gdas.
+    # The offset is the same for every cycle. The .nc data filenames are stamped
+    # by valid date and need no offset; only the sentinel name does. gfs/enkfgfs
+    # use averaged output with different log semantics, so leave them unshifted.
+    local ice_log_offset=0
+    case "${RUN}" in
+        gdas | enkfgdas) ice_log_offset=${assim_freq:-6} ;;
+        *) ;;
+    esac
     for ((idx = 1; idx < n_fhr; idx++)); do
         fhr=${CICE_OUTPUT_FH[idx]}
         local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
         ((interval = fhr - prev_fhr))
         fhr3=$(printf %03i "${fhr}")
-        fhr4=$(printf %04i "${fhr}")
+        # fhr4 is the model's sentinel forecast hour = workflow fhr + ice_log_offset
+        # (see above); matches the log.ice.fHHHH the CICE component actually writes.
+        fhr4=$(printf %04i "$((fhr + ice_log_offset))")
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
