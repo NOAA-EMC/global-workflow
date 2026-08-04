@@ -109,12 +109,7 @@ export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-# DEBUG (bug/gfsv17-ocean_logs): force retention of all run directories so the
-# forecast rundirs (DATA, DATArestart, DATAjob/output incl. CICE_OUTPUT/MOM6_OUTPUT)
-# survive for inspection. KEEPDATA=YES skips the KEEPDATA-guarded rm -rf in every
-# job, including JGLOBAL_FORECAST and JGLOBAL_FORECAST_MANAGER. Revert to
-# "{{ KEEPDATA | default('NO') }}" before merging.
-export KEEPDATA="YES"
+export KEEPDATA="{{ KEEPDATA | default('NO') }}"
 export CHECK_DEAD_LINKS="NO"
 export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
