@@ -5621,7 +5621,7 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
-              trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
+              trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
@@ -11851,7 +11851,7 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
-              trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
+              trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
@@ -18081,7 +18081,7 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
-              trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
+              trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
@@ -24312,7 +24312,7 @@ suite gfs_v17_nco
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
             task jenkfgdas_change_res_ens
-              trigger ../../../gdas/forecast/jgdas_fcst==complete and ../../forecast/jenkfgdas_fcst_mem001==complete
+              trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle

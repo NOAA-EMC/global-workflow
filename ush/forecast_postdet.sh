@@ -451,7 +451,7 @@ EOF
         fi
     else
         if [[ "${DOIAU:-NO}" == "YES" ]]; then
-            if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+            if [[ "${MODE}" = "cycled" && "${SDATE:-}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
                 local restart_interval_start=${restart_interval}
                 local restart_interval_end=${FHMAX}
             else
@@ -1090,18 +1090,26 @@ CICE_postdet() {
     #   local_log: log.ice.fHHHH sentinel written by the CICE component into
     #              CICE_OUTPUT after the iceh_*.nc for this period is fully
     #              flushed to disk.  Mirrors how FV3 uses log.atm.fHHH and
-    #              WW3 uses its per-file logs (UFSWM update tracked in
-    #              NOAA-EMC/global-workflow#4946; previously called via
-    #              ufs_logfhour which had an IAU 00Z labeling bug and wrote
-    #              to DATA root).
+    #              WW3 uses its per-file logs.
     local source_file dest_file
     local n_fhr=${#CICE_OUTPUT_FH[@]}
+    # CICE labels its per-file completion sentinel log.ice.fHHHH on the model
+    # history clock. With IAU the model starts IAU_OFFSET hours before the cycle,
+    # so the model forecast hour is the workflow (cycle-relative) forecast hour plus
+    # IAU_OFFSET; add that offset so the manager waits on the sentinel the model
+    # actually writes (e.g. with IAU_OFFSET=6 the f009 product's sentinel is
+    # log.ice.f0015 and f003's is log.ice.f0009). config.base sets IAU_OFFSET=0 when
+    # IAU is off (cold start / DOIAU=NO / free-forecast), so no offset is applied
+    # then. The .nc data filenames are stamped by valid date and need no offset.
+    local ice_log_offset=${IAU_OFFSET:-0}
     for ((idx = 1; idx < n_fhr; idx++)); do
         fhr=${CICE_OUTPUT_FH[idx]}
         local prev_fhr=${CICE_OUTPUT_FH[idx - 1]}
         ((interval = fhr - prev_fhr))
         fhr3=$(printf %03i "${fhr}")
-        fhr4=$(printf %04i "${fhr}")
+        # fhr4 is the model's sentinel forecast hour = workflow fhr + ice_log_offset
+        # (see above); matches the log.ice.fHHHH the CICE component actually writes.
+        fhr4=$(printf %04i "$((fhr + ice_log_offset))")
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
@@ -1352,7 +1360,7 @@ CMEPS_postdet() {
         fi
     else
         if [[ "${DOIAU:-NO}" == "YES" ]]; then
-            if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
+            if [[ "${MODE}" = "cycled" && "${SDATE:-}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]]; then
                 local restart_interval_start=${cmeps_restart_interval}
                 local restart_interval_end=${FHMAX}
             else
