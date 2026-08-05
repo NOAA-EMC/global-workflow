@@ -60,7 +60,7 @@ def build_trigger_command(task, time_attributes, PDYcyc):
     task_path = task.get_abs_node_path()
     command = f"ecflow_client --run {task_path}"
 
-    time_info = time_attributes.get("trigger")
+    trigger_time_info = time_attributes.get("trigger")
 
     # Use ecflow's built-in time variables to determine if the task has missed its
     # launch window.
@@ -76,28 +76,29 @@ def build_trigger_command(task, time_attributes, PDYcyc):
         return command
 
     # Extract the time from the trigger expression
-    if time_info:
+    if trigger_time_info:
+        trigger_time_info = trigger_time_info.upper()
         # Count the number of :TIME operators (==, <, >, <=, >=)
-        time_matches = re.findall(r":TIME\s*(==|<|>|<=|>=)\s*(\d{4})", time_info)
+        time_matches = re.findall(r":TIME\s*(==|<|>|<=|>=)\s*(\d{4})", trigger_time_info)
         if time_matches:
             count_times = len(time_matches)
             # If count is greather than 1, determine how they are combined
             if count_times > 1:
-                # Connectors can be 'AND', 'OR', 'and', 'or', '&&', or '||'
-                connectors = re.findall(r"\s*(AND|OR|and|or|&&|\|\|)\s*", time_info)
+                # Connectors can be 'AND', 'OR', '&&', or '||'
+                connectors = re.findall(r"\s*(AND|OR|&&|\|\|)\s*", trigger_time_info)
                 len_connectors = len(connectors)
                 # Connectors should be one less than the number of time matches
                 # If not, something is wrong with the expression.
                 if len_connectors != count_times - 1:
-                    raise ValueError(f"Invalid trigger expression: {time_info}. Mismatched connectors and time matches.")
+                    raise ValueError(f"Invalid trigger expression: {trigger_time_info}. Mismatched connectors and time matches.")
 
                 if len_connectors > 0:
                     # Map the connectors to logical operators for evaluation
                     logical_ops = []
                     for connector in connectors:
-                        if connector.upper() in ["AND", "&&"]:
+                        if connector in ["AND", "&&"]:
                             logical_ops.append(operator.and_)
-                        elif connector.upper() in ["OR", "||"]:
+                        elif connector in ["OR", "||"]:
                             logical_ops.append(operator.or_)
                         elif connector != "==":
                             raise ValueError(f"Invalid connector in trigger expression: {connector}")
@@ -137,7 +138,7 @@ def build_trigger_command(task, time_attributes, PDYcyc):
                 if operator == "==":
                     # Two or more time matches with '==' does not make sense
                     if len_connectors > 0:
-                        raise ValueError(f"Invalid trigger expression: {time_info}. Multiple '==' operators with connectors.")
+                        raise ValueError(f"Invalid trigger expression: {trigger_time_info}. Multiple '==' operators with connectors.")
                     if current_dt >= trigger_dt:
                         send_command = True
                 elif operator == "<":
@@ -188,7 +189,7 @@ def build_syndata_copy_commands(skip_commands, PDYcyc):
     return copy_commands
 
 
-def get_comroot:
+def get_comroot():
     # Get COMROOT from the version file
     # This is not straightforward as this is usually determined by compath.py in real
     # time, but we can simulate it by splicing the versions/run.wcoss2.ver file's
@@ -200,6 +201,8 @@ def get_comroot:
     # versions/run.wcoss2.ver
     script_dir = os.path.dirname(os.path.realpath(__file__))
     run_ver_path = os.path.join(script_dir, "..", "..", "versions", "run.wcoss2.ver")
+    comroot_line = None
+    gfs_ver_line = None
     with open(run_ver_path, "r") as f:
         lines = f.readlines()
         for line in lines:
@@ -235,6 +238,11 @@ if __name__ == "__main__":
     #   # 2. Absolute path to the target family within the suite
     #   # 3. Runtime date/time in the format ${PDY}${cyc} (e.g., 2023091500)
 
+    # This script assumes we are running on WCOSS2. Check if that is true by checking if
+    # /lfs/h2 exists.
+    if not os.path.exists("/lfs/h2"):
+        raise ImplementationError("This script is designed to run on WCOSS2 for now.")
+
     if len(sys.argv) != 4:
         print("Usage: python ecflow_time_triggers.py <definition_file.def> <target_family_path> ${PDY}${cyc}")
         sys.exit(1)
@@ -247,10 +255,22 @@ if __name__ == "__main__":
     if not re.match(r"^\d{10}$", PDYcyc):
         raise ValueError(f"Invalid PDYcyc format: '{PDYcyc}'. Expected format is YYYYMMDDHH.")
 
+    # Check the date format actually represents a valid year, month, day, and hour
+    yyyy = int(PDYcyc[0:4])
+    mm = int(PDYcyc[4:6])
+    dd = int(PDYcyc[6:8])
+    hh = int(PDYcyc[8:10])
+    if not (1 <= mm <= 12 and 1 <= dd <= 31 and 0 <= hh <= 23 and yyyy >= 2000 and yyyy <= 2100):
+        raise ValueError(f"Invalid PDYcyc value: '{PDYcyc}'. Date and time values are out of range.")
+
     try:
         # Load the file directly into memory
         print(f"Loading definition file: {def_file_path}...")
         defs = ecflow.Defs(def_file_path)
+
+        # Check that defs is not empty
+        if defs is None or len(defs) == 0:
+            raise ValueError(f"Definition file '{def_file_path}' is empty or could not be loaded.")
 
         # Define the absolute path to your target family
         target_node = defs.find_abs_node(target_family_path)
@@ -276,18 +296,16 @@ if __name__ == "__main__":
 
             if len(commands) > 0:
                 skip_commands = []
-                with open("trigger_timed_tasks.sh", "w") as f:
-                    f.write("#!/bin/bash\nset -ex\n")
-                    for cmd in commands:
-                        # Skip the tropcy_qc jobs. These jobs are not meant to be
-                        # triggered outside of the normal workflow. Instead, we will
-                        # copy the syndata they produce from an archive.
-                        if "tropcy_qc" in cmd:
-                            skip_commands.append(cmd)
-                            continue
+                run_commands = []
+                for cmd in commands:
+                    # Skip the tropcy_qc jobs. These jobs are not meant to be
+                    # triggered outside of the normal workflow. Instead, we will
+                    # copy the syndata they produce from an archive.
+                    if "tropcy_qc" in cmd:
+                        skip_commands.append(cmd)
+                        continue
 
-                        f.write(f"{cmd}\n")
-                print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
+                    run_commands.append(cmd)
 
                 if len(skip_commands) > 0:
                     print("\nThe following commands were skipped (not written to the script):")
@@ -296,6 +314,26 @@ if __name__ == "__main__":
 
                     # Build the copy commands
                     copy_commands = build_syndata_copy_commands(skip_commands, PDYcyc)
+
+                    if len(copy_commands) > 0:
+                        with open("copy_syndata.sh", "w") as f:
+                            f.write("#!/bin/bash\nset -ex\n")
+                            for cmd in copy_commands:
+                                f.write(f"{cmd}\n")
+
+                        print("\nCommands to copy syndata for skipped tasks have been written to 'copy_syndata.sh'.")
+
+                if len(run_commands) > 0 or len(copy_commands) > 0:
+                    with open("trigger_timed_tasks.sh", "w") as f:
+                        f.write("#!/bin/bash\nset -ex\n")
+                        for cmd in run_commands:
+                            f.write(f"{cmd}\n")
+                        for cmd in copy_commands:
+                            f.write(f"{cmd}\n")
+
+                    print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
+
+
         else:
             raise ValueError(f"Target family '{target_family_path}' not found in the definition file.")
 
