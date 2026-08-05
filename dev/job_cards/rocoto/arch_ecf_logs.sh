@@ -17,7 +17,7 @@ fi
 # Create the tarball of ecflow logs
 cd "${ECF_LOG_DIR}" || exit 1
 
-htar -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}_logs.tar" "${PDY}${cyc}/${RUN}_"*
+htar -Pcvf "${ATARDIR}/${PDY}${cyc}/${RUN}_logs.tar" "${PDY}${cyc}/${RUN}_"*
 
 status=$?
 

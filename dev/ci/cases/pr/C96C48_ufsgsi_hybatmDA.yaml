@@ -20,7 +20,10 @@ skip_ci_on_hosts:
   - gaeac6
   - orion
   - hercules
+  - derecho
   - awsepicglobalworkflow
+  - hera
+  - ursa
   - wcoss2
 
 workflow:

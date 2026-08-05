@@ -125,7 +125,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 -f "${local_data[i]}" ]]; then
                 _fcst_history_done_fallback=1
                 _missing_sentinel=1
-                echo "WARNING: [${component}] sentinel '$(basename "${local_log[i]}")' not found; model history complete and data present -- copying without sentinel"
+                echo "ERROR: [${component}] sentinel '$(basename "${local_log[i]}")' not found; model history complete and data present -- copying without sentinel"
             else
                 continue
             fi
@@ -229,7 +229,7 @@ while [[ ${remaining} -gt 0 ]]; do
                         _sz_diff=$((-_sz_diff))
                     fi
                     if [[ ${_sz_diff} -gt 1048576 ]]; then
-                        echo "WARNING: [${component}] size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs reference '${_ref_name}': ${_ref_size}B (diff=${_sz_diff}B > 1 MB) -- possible partial/corrupt output"
+                        echo "ERROR: [${component}] size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs reference '${_ref_name}': ${_ref_size}B (diff=${_sz_diff}B > 1 MB) -- possible partial/corrupt output"
                         _size_check_msgs+="WARNING: size mismatch for '$(basename "${com_data[j]}")': ${_sz_new}B vs ref '${_ref_name}': ${_ref_size}B diff=${_sz_diff}B (>1 MB)"$'\n'
                     else
                         _size_check_msgs+="INFO: size OK for '$(basename "${com_data[j]}")': ${_sz_new}B (ref '${_ref_name}': ${_ref_size}B)"$'\n'

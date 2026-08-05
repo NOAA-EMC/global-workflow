@@ -8,4 +8,8 @@ echo "BEGIN: config.ediag"
 # Get task specific resources
 source "${EXPDIR}/config.resources" ediag
 
+# Set to YES to retain the shared temporary GSI diagnostic staging directory
+# (gsidiags) for debugging. Default NO; forced NO in operations.
+export KEEP_TEMP_DIAGS="NO"
+
 echo "END: config.ediag"

@@ -11,8 +11,7 @@ load(pathJoin("cfp", (os.getenv("cfp_ver") or "None")))
 setenv("USE_CFP","YES")
 
 load(pathJoin("python", (os.getenv("python_ver") or "None")))
-prepend_path("MODULEPATH", "/apps/dev/modulefiles")
-load(pathJoin("ve","gw", (os.getenv("gw_ve_ver") or "None")))
+load(pathJoin("ve","gfs", (os.getenv("ve_gfs_ver") or "None")))
 
 load(pathJoin("hdf5-D", (os.getenv("hdf5_ver") or "None")))
 load(pathJoin("pnetcdf-D", (os.getenv("pnetcdf_ver") or "None")))
