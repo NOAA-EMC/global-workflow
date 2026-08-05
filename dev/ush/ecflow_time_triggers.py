@@ -13,6 +13,7 @@ import operator
 # Assume WCOSS2
 ROOT_DUMP_DIR = "/lfs/h2/emc/global/noscrub/emc.global/dump"
 
+
 def find_tasks_with_time_triggers(node):
     """
     Recursively scans an ecFlow node structure to find Tasks that have
@@ -176,7 +177,7 @@ def build_syndata_copy_commands(skip_commands, PDYcyc):
                 run = "gdas"
             elif "gfs" in task_path:
                 run = "gfs"
-            else
+            else:
                 raise ValueError(f"Unknown RUN type in task path: {task_path}")
 
             # Assuming the syndata is located in a specific directory structure
