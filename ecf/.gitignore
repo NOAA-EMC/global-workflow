@@ -487,6 +487,7 @@ scripts/enkfgdas/forecast/jenkfgdas_fcst_mem077.ecf
 scripts/enkfgdas/forecast/jenkfgdas_fcst_mem078.ecf
 scripts/enkfgdas/forecast/jenkfgdas_fcst_mem079.ecf
 scripts/enkfgdas/forecast/jenkfgdas_fcst_mem080.ecf
+scripts/enkfgdas/forecast/jenkfgdas_fcst_manager_mem*.ecf
 scripts/enkfgdas/post/jenkfgdas_epos000.ecf
 scripts/enkfgdas/post/jenkfgdas_epos001.ecf
 scripts/enkfgdas/post/jenkfgdas_epos002.ecf

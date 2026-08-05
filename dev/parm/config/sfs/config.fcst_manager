@@ -7,7 +7,7 @@ echo "BEGIN: config.fcst_manager"
 
 # Maximum time (seconds) to wait for product tables to appear in COMOUT_CONF.
 # Must be less than the batch walltime of the fcst_manager job.
-export FCST_MGR_INIT_TIMEOUT=7200
+export FCST_MANAGER_INIT_TIMEOUT=7200
 
 # Maximum time (seconds) to wait for the model to finish before the manager
 # declares a timeout and exits with an error (0 = no timeout).

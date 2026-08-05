@@ -3,25 +3,34 @@
 # setup_aux.py with --config /path/to/aux.yaml.
 
 # Start and end dates for workflow cycles in YYYYMMDDHH format
-start_date: "202605270600"
-end_date: "202605270600"
+start_date: "202607241200"
+end_date: "202707240600"
 
 # Full path to the global workflow home directory (default is this repository's root directory)
 # HOMEglobal: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/packages/gfs.v17.0"
 
 # Full path to the auxiliary experiment directory
 # (can be the same as the main GFS experiment directory)
-EXP_aux: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/retrov17_01_realtime"
+EXP_aux: "/lfs/h2/emc/gfstemp/emc.global/ecflow/packages/gfs.v17.0.0/parm/config/gfs"
 
 # Full path to the GFS ecFlow output directory; used as cycle trigger datadep
-ECF_OUT_gfs: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/para/output/prod/today"
+ECF_OUT_gfs: "/lfs/h2/emc/gfstemp/emc.global/ecflow/output/today"
 
 # Full path to the auxiliary COM directory
 # (ONLY set this to COM_gfs when going live, not for testing)
-COM_aux: "/lfs/f2/t2o/ptmp/emc/emc.global/ecflow_gfsv17_rt/ptmp/emc.global/ecflow_gfs/para/com"
+COM_aux: "/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/aux"
 
 # Full path to the auxiliary DATAROOT directory
 DATAROOT_aux: "/lfs/h2/emc/stmp/emc.global/RUNDIRS/aux_gfs"
 
-# Output path for the rendered XML.
-output: "/lfs/h2/emc/global/noscrub/emc.global/ecflow_gfsv17/retrov17_01_realtime/aux.xml"
+# Name of the auxiliary experiment
+PSLOT: "ecflow_realtime"
+
+# Location of the offline archive for verification
+ARCDIR: "/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/aux/ecflow_realtime"
+
+# Location of the HPSS archive
+ATARDIR: "/1year/NCEPDEV/emc-global/emc.glopara/WCOSS2/ecflowtests/v17ecflowtests/ecflow_realtime"
+
+# Output path for the rendered XML (default is from wherever setup_aux.py is run)
+output: "./aux.xml"
