@@ -52,7 +52,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gdas_verfozn
 
 PURPOSE: Archives ozone-related analysis diagnostics from GDAS GSI for time-

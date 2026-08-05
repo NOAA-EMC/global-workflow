@@ -49,7 +49,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gfs_atmos_anal
 
 PURPOSE: Runs GSI atmospheric analysis (Hybrid-4DEnVar). 100 nodes. THE core DA

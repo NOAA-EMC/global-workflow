@@ -52,7 +52,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gdas_vminmon
 
 PURPOSE: GDAS VMinMon -- monitors GSI minimization convergence for GDAS analysis.

@@ -65,7 +65,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gfs_atmos_analupp
 
 PURPOSE: Runs UPP on the atmospheric analysis to produce GRIB2 master files from

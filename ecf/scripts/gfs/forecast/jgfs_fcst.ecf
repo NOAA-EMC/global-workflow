@@ -68,7 +68,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gfs_fcst
 
 PURPOSE: Runs the 16-day (384-hour) coupled UFS Weather Model

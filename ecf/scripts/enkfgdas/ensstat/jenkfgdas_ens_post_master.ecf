@@ -69,7 +69,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK enkfgdas_ens_post_master
 
 PURPOSE: EnKF ensemble post -- generates ensemble mean and spread from all member

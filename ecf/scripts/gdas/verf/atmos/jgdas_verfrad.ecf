@@ -52,7 +52,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gdas_verfrad
 
 PURPOSE: Archives satellite radiance diagnostics from GDAS GSI for bias

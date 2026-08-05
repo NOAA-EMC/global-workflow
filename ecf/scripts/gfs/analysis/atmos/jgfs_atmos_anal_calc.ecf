@@ -49,7 +49,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gfs_atmos_anal_calc
 
 PURPOSE: Post-analysis calculations -- applies GSI increments to background to

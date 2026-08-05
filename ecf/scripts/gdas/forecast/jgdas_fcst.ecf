@@ -68,7 +68,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gdas_fcst
 
 PURPOSE: Runs the 9-hour coupled UFS Weather Model GDAS deterministic forecast.

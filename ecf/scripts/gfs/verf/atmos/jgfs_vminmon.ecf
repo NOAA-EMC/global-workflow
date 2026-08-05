@@ -52,7 +52,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK gfs_vminmon
 
 PURPOSE: GSI Variational Minimization Monitor -- extracts and archives

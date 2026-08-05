@@ -71,7 +71,6 @@ fi
 %include <tail.h>
 %manual
 
-=======
 TASK enkfgdas_fcst_master
 
 PURPOSE: EnKF ensemble member forecast -- runs 9-hour coupled UFS for a single
