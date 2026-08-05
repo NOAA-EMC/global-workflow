@@ -7,6 +7,11 @@ import datetime
 import re
 import operator
 
+# TODO: Make this path a configurable parameter based on platform
+#       This will require this script to be able to determine the platform
+#       Then, use $HOMEglobal/workflow/hosts/$PLATFORM.yaml
+# Assume WCOSS2
+ROOT_DUMP_DIR = "/lfs/h2/emc/global/noscrub/emc.global/dump"
 
 def find_tasks_with_time_triggers(node):
     """
@@ -149,6 +154,36 @@ def build_trigger_command(task, time_attributes, PDYcyc):
     return None
 
 
+def build_syndata_copy_commands(skip_commands, PDYcyc):
+    """
+    Builds a list of commands to copy syndata for skipped tasks instead of triggering them.
+    """
+    # Split PDYcyc into PDY (YYYYMMDD) and cyc (HH)
+    PDY = PDYcyc[:8]
+    cyc = PDYcyc[8:]
+
+    copy_commands = []
+    for cmd in skip_commands:
+        # Extract the task path from the command
+        match = re.search(r"ecflow_client --run (.+)", cmd)
+        if match:
+            task_path = match.group(1)
+            # Get the RUN from the match (gdas or gfs)
+            if "gdas" in task_path:
+                run = "gdas"
+            elif "gfs" in task_path:
+                run = "gfs"
+            else
+                raise ValueError(f"Unknown RUN type in task path: {task_path}")
+
+            # Assuming the syndata is located in a specific directory structure
+            source_path = f"{ROOT_DUMP_DIR}/{run}.{PDY}/{cyc}/atmos/{run}.t{cyc}z.syndata.tcvitals.tm00"
+            dest_path = f"/path/to/destination/{task_path.split('/')[-1]}"
+            copy_command = f"cp {source_path} {dest_path}"
+            copy_commands.append(copy_command)
+    return copy_commands
+
+
 # This version of __main__ assumes a definition file.
 # TODO: Add support for connecting to a running ecFlow server.
 if __name__ == "__main__":
@@ -164,6 +199,7 @@ if __name__ == "__main__":
     def_file_path = sys.argv[1]
     target_family_path = sys.argv[2]
     PDYcyc = sys.argv[3]
+    comroot =
 
     # Check that PDYcyc is a valid YYYYMMDDHH format
     if not re.match(r"^\d{10}$", PDYcyc):
@@ -197,11 +233,27 @@ if __name__ == "__main__":
                     commands.append(command)
 
             if len(commands) > 0:
+                skip_commands = []
                 with open("trigger_timed_tasks.sh", "w") as f:
                     f.write("#!/bin/bash\nset -ex\n")
                     for cmd in commands:
+                        # Skip the tropcy_qc jobs. These jobs are not meant to be
+                        # triggered outside of the normal workflow. Instead, we will
+                        # copy the syndata they produce from an archive.
+                        if "tropcy_qc" in cmd:
+                            skip_commands.append(cmd)
+                            continue
+
                         f.write(f"{cmd}\n")
                 print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
+
+                if len(skip_commands) > 0:
+                    print("\nThe following commands were skipped (not written to the script):")
+                    for cmd in skip_commands:
+                        print(f"  {cmd}")
+
+                    # Build the copy commands
+                    copy_commands = build_syndata_copy_commands(skip_commands, PDYcyc)
         else:
             raise ValueError(f"Target family '{target_family_path}' not found in the definition file.")
 
