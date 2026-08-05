@@ -38,7 +38,7 @@ echo "Begin ${_calling_script} at ${_start_time_human}"
 ##############################################
 # Debug trace format
 ##############################################
-declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'
+declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}] ${SECONDS}s: '
 
 ##############################################
 # Standard global directory paths
