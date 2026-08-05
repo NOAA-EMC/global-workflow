@@ -44,12 +44,11 @@ module load scotch/${scotch_ver}
 module load zstd/${zstd_ver}
 module load cfp/${cfp_ver}
 module load libjpeg/${libjpeg_ver}
-module load craype-network-ucx
-module load cray-mpich-ucx
 module load python/${python_ver}
 module load wgrib2/${wgrib2_ver}
-module use /apps/dev/modulefiles
-module load ve/gw/${gw_ve_ver}
+module load ve/gfs/${ve_gfs_ver}
+module load craype-network-ucx
+module load cray-mpich-ucx
 
 module list
 ############################################################
