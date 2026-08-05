@@ -32,8 +32,7 @@ module load ncdiag-A/${ncdiag_ver}
 module load crtm/${crtm_ver}
 module load perl/${perl_ver}
 module load util_shared/${util_shared_ver}
-module use /apps/dev/modulefiles
-module load ve/gw/${gw_ve_ver}
+module load ve/gfs/${ve_gfs_ver}
 
 module list
 ############################################################
