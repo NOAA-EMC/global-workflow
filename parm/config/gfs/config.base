@@ -39,7 +39,6 @@ export USE_IODADIR="NO"
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
 export ROTDIR
 export COMROOT=${ROTDIR}
-export SDATE=2026060100
 # Gempak from external models
 # Default locations are to dummy locations for testing
 export COMINnam="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam"
@@ -65,7 +64,6 @@ export DO_GENESIS_FSU="NO" # Cyclone genesis verification (FSU)
 export DO_VERFOZN="YES"                  # Ozone data assimilation monitoring
 export DO_VERFRAD="YES"                  # Radiance data assimilation monitoring
 export DO_VMINMON="YES"                  # GSI minimization monitoring
-export DO_ANLSTAT="YES"                  # JEDI-based analysis statistics
 
 # Experiment mode (cycled or forecast-only)
 export MODE="cycled" # cycled/forecast-only
@@ -101,15 +99,7 @@ export BASE_ENV="${HOMEglobal}/env"
 # EXPERIMENT specific environment parameters
 export EXP_WARM_START=".true."
 export assim_freq=6
-export PSLOT="retrov17_01_realtime"
 export DUMP_SUFFIX=""
-
-export ARCDIR="/lfs/h2/emc/gfstemp/emc.global/archive/${PSLOT}"
-export ATARDIR="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS2/GFSv17/${PSLOT}"
-
-# COM path templates are now managed by dev/workflow/com_paths.py
-# and injected at experiment setup time, or defined at job runtime
-# via declare_from_tmpl in ush/preamble.sh
 
 export LOGSCRIPT=${LOGSCRIPT:-""}
 
@@ -323,11 +313,6 @@ export IAU_DELTHRS_ENKF=6
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
-# if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
-#   export DO_WAVE="NO"
-#   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
-# fi
-
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=8
 
@@ -399,14 +384,6 @@ else
     export DO_LAND_IAU=".false."
 fi
 export LSOIL_INCR=2
-
-# Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
-  export IAU_OFFSET=0
-  export IAU_FHROT=0
-  export IAUFHRS="6,"
-  export DO_LAND_IAU=".false."
-fi
 
 if [[ "${DOIAU_ENKF}" = "NO" ]]; then
     export IAUFHRS_ENKF="6,"
