@@ -24,8 +24,8 @@
   branch = release/gfsda.v17 
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
-  url = https://github.com/TravisElless-NOAA/GDASApp.git
-  branch = feature/v17_ops_modules
+  url = https://github.com/NOAA-EMC/GDASApp.git
+  branch = release/gfs.v17
   ignore = dirty
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
