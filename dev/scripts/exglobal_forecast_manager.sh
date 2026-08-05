@@ -81,25 +81,39 @@ echo "INFO: Waiting for ATM per-product tables (${natm_inst} instance(s))"
 for ((inst = 0; inst < natm_inst; inst++)); do
     atm_atmf_tbl="${DATAjob}/atm_atmf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
     atm_sfcf_tbl="${DATAjob}/atm_sfcf_products_seg${FCST_SEGMENT}_inst${inst}.txt"
-    atm_grib_tbl="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}_inst${inst}.txt"
-    atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
     atm_barrier_tbl="${DATAjob}/atm_barrier_seg${FCST_SEGMENT}_inst${inst}.txt"
-    for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" \
-        "${atm_grib_tbl}" "${atm_flux_tbl}" "${atm_barrier_tbl}"; do
+    for _atm_tbl in "${atm_atmf_tbl}" "${atm_sfcf_tbl}" "${atm_barrier_tbl}"; do
         if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
             echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
             exit 1
         fi
     done
+    # GRIB2/flux tables only exist when inline post-processing is enabled.
+    if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+        atm_grib_tbl="${DATAjob}/atm_grib_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+        atm_flux_tbl="${DATAjob}/atm_flux_products_seg${FCST_SEGMENT}_inst${inst}.txt"
+        for _atm_tbl in "${atm_grib_tbl}" "${atm_flux_tbl}"; do
+            if ! wait_for_file "${_atm_tbl}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
+                echo "FATAL ERROR: Timed out after ${MGR_INIT_TIMEOUT}s waiting for ${_atm_tbl}" >&2
+                exit 1
+            fi
+        done
+    fi
     {
         echo "${USHglobal}/forecast_manager.sh atm_atmf ${atm_atmf_tbl}"
         echo "${USHglobal}/forecast_manager.sh atm_sfcf ${atm_sfcf_tbl}"
-        echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
-        echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+            echo "${USHglobal}/forecast_manager.sh atm_grib ${atm_grib_tbl}"
+            echo "${USHglobal}/forecast_manager.sh atm_flux ${atm_flux_tbl}"
+        fi
         echo "${USHglobal}/forecast_atm_barrier.sh ${atm_barrier_tbl}"
     } >> "${FCST_MANAGER_CMDFILE}"
 done
-echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
+if [[ "${WRITE_DOPOST:-}" == ".true." ]]; then
+    echo "INFO: ATM tables found; added $((natm_inst * 5)) ATM rank(s) (${natm_inst} x 4 product + 1 barrier)"
+else
+    echo "INFO: ATM tables found; added $((natm_inst * 3)) ATM rank(s) (${natm_inst} x 2 history + 1 barrier; no inline post)"
+fi
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     WW3_TABLE="${DATAjob}/ww3_products_seg${FCST_SEGMENT}.txt"
@@ -115,7 +129,7 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     done
 fi
 
-if [[ "${DO_OCN:-NO}" == "YES" ]]; then
+if [[ "${DO_OCN:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     OCN_TABLE="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for OCN product table at ${OCN_TABLE}"
     if ! wait_for_file "${OCN_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
@@ -129,7 +143,7 @@ if [[ "${DO_OCN:-NO}" == "YES" ]]; then
     done
 fi
 
-if [[ "${DO_ICE:-NO}" == "YES" ]]; then
+if [[ "${DO_ICE:-NO}" == "YES" && "${RUN}" =~ ^(gfs|gdas|enkfgdas)$ ]]; then
     ICE_TABLE="${DATAjob}/ice_products_seg${FCST_SEGMENT}.txt"
     echo "INFO: Waiting for ICE product table at ${ICE_TABLE}"
     if ! wait_for_file "${ICE_TABLE}" "${mgr_sleep_interval}" "${mgr_max_tries}"; then
@@ -146,10 +160,14 @@ fi
 num_ranks=$(wc -l < "${FCST_MANAGER_CMDFILE}")
 echo "INFO: Launching ${num_ranks} MPMD component manager rank(s)"
 
-# Tell forecast_manager.sh where to find the model-completion sentinel so it can
-# exit gracefully when the model is done but some product files were not produced.
+# Tell forecast_manager.sh where to find the history-complete sentinel so it can
+# exit gracefully when the model has finished writing history but some optional
+# product files were not produced.
 export FCST_TABLE_READY_SENTINEL="${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
-export FCST_DONE_SENTINEL="${DATAjob}/fcst_done_seg${FCST_SEGMENT}"
+export FCST_HISTORY_DONE_SENTINEL="${DATAjob}/fcst_history_done_seg${FCST_SEGMENT}"
+# ...and the forecast-finalized sentinel so each rank can propagate JGLOBAL_FORECAST
+# failure. If its content matches "aborted rc=<rc>" the manager exits <rc>.
+export FCST_FINALIZED_SENTINEL="${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}"
 
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
