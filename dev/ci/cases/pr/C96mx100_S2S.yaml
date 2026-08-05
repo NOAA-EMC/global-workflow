@@ -16,7 +16,13 @@ experiment:
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_defaults.yaml
 
 skip_ci_on_hosts:
+  - hera
+  - ursa
   - gaeac5
+  - gaeac6
+  - orion
+  - hercules
+  - derecho
   - awsepicglobalworkflow
 
 workflow:
