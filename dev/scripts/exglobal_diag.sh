@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -259,5 +260,15 @@ fi
 
 ################################################################################
 # Postprocessing
+
+# Remove the shared temporary gsidiags staging directory now that the
+# diagnostic tarballs have been written, unless retention is requested.
+keepdata="${KEEPDATA:-NO}"
+keep_temp_diags="${KEEP_TEMP_DIAGS:-NO}"
+if [[ "${keepdata^^}" == "YES" || "${keep_temp_diags^^}" == "YES" ]]; then
+    echo "INFO: retaining gsidiags directory ${GSIDIAGDIR}"
+else
+    rm -rf "${GSIDIAGDIR}"
+fi
 
 exit 0
