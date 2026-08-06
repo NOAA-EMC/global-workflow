@@ -93,7 +93,7 @@ class BufrFile:
 
             try:
                 os.rename(f, ob_filename)
-                logger.info(f"Renamed {base} → {ob_filename}")
+                logger.info(f"Renamed {base} to {ob_filename}")
                 self.renamed_files[base] = ob_filename
             except OSError as e:
                 logger.error(f"Failed to rename {base} to {ob_filename}: {e}")

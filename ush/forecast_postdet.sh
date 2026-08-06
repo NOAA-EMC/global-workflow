@@ -836,7 +836,7 @@ MOM6_postdet() {
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
             rm -f "${ocn_table}"
             # MOM6 sentinel suffix matches MOM6_HISTFREQ_N in parsing_ufs_configure.sh:
-            # gdas/enkfgdas use N=1 (hourly) → '.01h'; gfs/enkfgfs use FHOUT_OCN (e.g. 6) → '.06h'.
+            # gdas/enkfgdas use N=1 (hourly) '.01h'; gfs/enkfgfs use FHOUT_OCN (e.g. 6) '.06h'.
             local mom6_hist_n
             case "${RUN}" in
                 gdas | enkfgdas) mom6_hist_n=1 ;;

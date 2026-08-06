@@ -21,7 +21,7 @@ export denkf=".true."            # EnKF approximation (beneficial since less spr
 export nobsl_max=10000           # max number of obs in each LETKF volume (uses closest nobsl_max). can
                                  #  be reduced to speed up execution time.
 export analpertwt=0.85           # relaxation to prior spread inflation factor
-export readin_localization_enkf=".false." # Don’t read in localization scales from file (doesn’t make
+export readin_localization_enkf=".false." # Don't read in localization scales from file (doesn’t make
                                           # sense for LETKF if model space localization on and nobsl_max>0)
 export corrlength=1250           # Horizontal localization scale (max horizontal distance to search for nobsl_max local obs)
 export lnsigcutoff=2.75          # ignored if modelspace_vloc=.true.
