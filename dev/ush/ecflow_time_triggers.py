@@ -174,7 +174,7 @@ def build_complete_command(task, time_attributes, PDYcyc):
     """
 
     task_path = task.get_abs_node_path()
-    command = f"ecflow_client --complete {task_path}"
+    command = f"ecflow_client --force=complete {task_path}"
 
     if task_missed_launch_window(time_attributes, PDYcyc):
         return command
