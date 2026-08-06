@@ -207,7 +207,7 @@ def get_comroot():
     # This is not straightforward as this is usually determined by compath.py in real
     # time, but we can simulate it by splicing the versions/run.wcoss2.ver file's
     # declaration of COMPATH. COMROOT will be the last entry, split by colons, then
-    # appended by the run.wcoss2.ver file's `gfs_ver` variable's 'v.<major>.<minor>'
+    # appended by the run.wcoss2.ver file's `gfs_ver` variable's 'v<major>.<minor>'
     # value (ignore the patch version). This is a bit of a hack, but it should work for
     # now.
     # Get the path to this script's directory to build the path to
@@ -241,7 +241,7 @@ def get_comroot():
         # Extract the major and minor version from gfs_ver_value
         gfs_ver_parts = gfs_ver_value.split(".")
         if len(gfs_ver_parts) >= 2:
-            major_minor_version = f"v.{gfs_ver_parts[0]}.{gfs_ver_parts[1]}"
+            major_minor_version = f"{gfs_ver_parts[0]}.{gfs_ver_parts[1]}"
             COMROOT = os.path.join(compath_value.split(":")[-1], major_minor_version)
             print(f"Determined COMROOT: {COMROOT}")
             return COMROOT
