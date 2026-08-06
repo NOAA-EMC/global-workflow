@@ -50,15 +50,10 @@ def find_tasks_with_time_triggers(node):
     return matched_tasks
 
 
-def build_trigger_command(task, time_attributes, PDYcyc):
+def task_missed_launch_window(time_attributes, PDYcyc):
     """
-    Determines if a task has missed its launch window based on the current date/time and the provided runtime date/time (PDYcyc).
-    Constructs an ecflow_client command to trigger a task immediately if the time window has passed.
-    Otherwise returns None, indicating no action is needed.
+    Determines if a task has missed its launch window based on its time attributes and the current date/time.
     """
-
-    task_path = task.get_abs_node_path()
-    command = f"ecflow_client --run {task_path}"
 
     trigger_time_info = time_attributes.get("trigger")
 
@@ -153,10 +148,38 @@ def build_trigger_command(task, time_attributes, PDYcyc):
                             return None
             """
 
-    return None
+
+def build_trigger_command(task, time_attributes, PDYcyc):
+    """
+    Determines if a task has missed its launch window based on the current date/time and the provided runtime date/time (PDYcyc).
+    Constructs an ecflow_client command to trigger a task immediately if the time window has passed.
+    Otherwise returns None, indicating no action is needed.
+    """
+
+    task_path = task.get_abs_node_path()
+    command = f"ecflow_client --run {task_path}"
+
+    if task_missed_launch_window(time_attributes, PDYcyc):
+        return command
+    else:
+        return None
 
 
-def build_syndata_copy_commands(skip_commands, PDYcyc):
+def build_complete_command(task, time_attributes, PDYcyc):
+    """
+    Constructs an ecflow_client command to complete a task immediately.
+    """
+
+    task_path = task.get_abs_node_path()
+    command = f"ecflow_client --complete {task_path}"
+
+    if task_missed_launch_window(time_attributes, PDYcyc):
+        return command
+    else:
+        return None
+
+
+def build_syndata_copy_commands(complete_command, PDYcyc):
     """
     Builds a list of commands to copy syndata for skipped tasks instead of triggering them.
     """
@@ -196,6 +219,10 @@ def build_syndata_copy_commands(skip_commands, PDYcyc):
                     print(f"Waiting for source file to exist: {source_path} (waited {wait_count} minutes)")
                     time.sleep(60)
                     wait_count += 1
+
+            # Make directories verbosely
+            print(f"Creating destination directory: {os.path.dirname(dest_path)}")
+            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
             copy_command = f"cp {source_path} {dest_path}"
             copy_commands.append(copy_command)
@@ -313,19 +340,29 @@ if __name__ == "__main__":
                 # ecflow_client (shell) command to trigger it immediately.
                 # Write all commands trigger_timed_tasks.sh.
 
-                command = build_trigger_command(task[0], task[1], PDYcyc)
+                # If we missed a tropcy_qc window, skip it. These jobs are not meant to be
+                # triggered outside of real-time. Instead, we will 'complete' them
+                # and copy the syndata they produce from an archive.
+                if "tropcy_qc" in task[0].get_abs_node_path():
+                    complete_command = build_complete_command(task[0], task[1], PDYcyc)
 
-                # If command is not None, print it.
-                if command:
-                    commands.append(command)
+                    if complete_command:
+                        print("Task has missed its launch window. Will complete the task and copy syndata instead of triggering it.")
+                        # Build the copy commands
+                        # these should execute before the complete command so we have a valid state.
+                        # If the copy fails, don't complete the task.
+                        copy_commands = build_syndata_copy_commands(complete_command, PDYcyc)
+                        commands.extend(copy_commands)
+                else:
+                    command = build_trigger_command(task[0], task[1], PDYcyc)
+                    # If command is not None, we'll run it.
+                    if command:
+                        commands.append(command)
 
             if len(commands) > 0:
                 skip_commands = []
                 run_commands = []
                 for cmd in commands:
-                    # Skip the tropcy_qc jobs. These jobs are not meant to be
-                    # triggered outside of the normal workflow. Instead, we will
-                    # copy the syndata they produce from an archive.
                     if "tropcy_qc" in cmd:
                         skip_commands.append(cmd)
                         continue
@@ -336,9 +373,6 @@ if __name__ == "__main__":
                     print("\nThe following commands were skipped (not written to the script):")
                     for cmd in skip_commands:
                         print(f"  {cmd}")
-
-                    # Build the copy commands
-                    copy_commands = build_syndata_copy_commands(skip_commands, PDYcyc)
 
                     if len(copy_commands) > 0:
                         with open("copy_syndata.sh", "w") as f:
