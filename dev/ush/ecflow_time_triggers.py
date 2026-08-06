@@ -356,6 +356,7 @@ if __name__ == "__main__":
                         copy_commands = build_syndata_copy_commands(complete_command, PDYcyc)
                         commands.extend(copy_commands)
                         commands.append(complete_command)
+                        print(commands)
                 else:
                     command = build_trigger_command(task[0], task[1], PDYcyc)
                     # If command is not None, we'll run it.
@@ -363,37 +364,12 @@ if __name__ == "__main__":
                         commands.append(command)
 
             if len(commands) > 0:
-                skip_commands = []
-                run_commands = []
-                for cmd in commands:
-                    if "tropcy_qc" in cmd:
-                        skip_commands.append(cmd)
-                        continue
+                with open("trigger_timed_tasks.sh", "w") as f:
+                    f.write("#!/bin/bash\nset -ex\n")
+                    for cmd in commands:
+                        f.write(f"{cmd}\n")
 
-                    run_commands.append(cmd)
-
-                if len(skip_commands) > 0:
-                    print("\nThe following commands were skipped (not written to the script):")
-                    for cmd in skip_commands:
-                        print(f"  {cmd}")
-
-                    if len(copy_commands) > 0:
-                        with open("copy_syndata.sh", "w") as f:
-                            f.write("#!/bin/bash\nset -ex\n")
-                            for cmd in copy_commands:
-                                f.write(f"{cmd}\n")
-
-                        print("\nCommands to copy syndata for skipped tasks have been written to 'copy_syndata.sh'.")
-
-                if len(run_commands) > 0 or len(copy_commands) > 0:
-                    with open("trigger_timed_tasks.sh", "w") as f:
-                        f.write("#!/bin/bash\nset -ex\n")
-                        for cmd in run_commands:
-                            f.write(f"{cmd}\n")
-                        for cmd in copy_commands:
-                            f.write(f"{cmd}\n")
-
-                    print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
+                print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
 
         else:
             raise ValueError(f"Target family '{target_family_path}' not found in the definition file.")
