@@ -201,33 +201,45 @@ def get_comroot():
     # versions/run.wcoss2.ver
     script_dir = os.path.dirname(os.path.realpath(__file__))
     run_ver_path = os.path.join(script_dir, "..", "..", "versions", "run.wcoss2.ver")
-    comroot_line = None
+    compath_line = None
     gfs_ver_line = None
     with open(run_ver_path, "r") as f:
         lines = f.readlines()
-        for line in lines:
-            if line.startswith("COMPATH"):
-                comroot_line = line
-            elif line.startswith("gfs_ver"):
-                gfs_ver_line = line
 
-            if comroot_line and gfs_ver_line:
-                break
+    for line in lines:
+        # Strip any leading/trailing whitespace
+        line = line.strip()
 
-    if comroot_line and gfs_ver_line:
-        comroot_value = comroot_line.split("=")[1].strip().strip('"')
+        # The lines may or may not start with export. Strip 'export ' if it is found
+        # and then check for the variable name.
+        line = line.replace("export ", "")
+
+        if line.startswith("COMPATH"):
+            compath_line = line
+        elif line.startswith("gfs_ver"):
+            gfs_ver_line = line
+
+        if compath_line and gfs_ver_line:
+            break
+
+    if compath_line and gfs_ver_line:
+        compath_value = compath_line.split("=")[1].strip().strip('"')
         gfs_ver_value = gfs_ver_line.split("=")[1].strip().strip('"')
         # Extract the major and minor version from gfs_ver_value
         gfs_ver_parts = gfs_ver_value.split(".")
         if len(gfs_ver_parts) >= 2:
             major_minor_version = f"v.{gfs_ver_parts[0]}.{gfs_ver_parts[1]}"
-            COMROOT = os.path.join(comroot_value.split(":")[-1], major_minor_version)
+            COMROOT = os.path.join(compath_value.split(":")[-1], major_minor_version)
             print(f"Determined COMROOT: {COMROOT}")
             return COMROOT
         else:
             raise ValueError(f"Invalid gfs_ver format in {run_ver_path}: '{gfs_ver_value}'")
     else:
-        raise ValueError(f"Could not find COMROOT or gfs_ver in {run_ver_path}")
+        if not compath_line:
+            print(f"COMPATH not found in {run_ver_path}.")
+        if not gfs_ver_line:
+            print(f"gfs_ver not found in {run_ver_path}.")
+        raise ValueError(f"Could not find COMPATH and/or gfs_ver in {run_ver_path}: {compath_line}, {gfs_ver_line}")
 
 
 # This version of __main__ assumes a definition file.
