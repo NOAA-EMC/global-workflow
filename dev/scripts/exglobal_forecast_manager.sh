@@ -184,7 +184,7 @@ if [[ "${VERBOSE:-YES}" == "YES" ]]; then
         # grep -c would report a per-file count across the multiple rank logs;
         # -h + wc -l gives a single combined total instead.
         # shellcheck disable=SC2126
-        count_warns=$(grep -ih "warning" "${mpmd_logs[@]}" | wc -l)
+        count_warns=$(grep -ih "warning" "${mpmd_logs[@]}" | wc -l || true)
         if [[ ${count_warns} -ne 0 ]]; then
             echo "WARNING: the forecast manager MPMD jobs reported ${count_warns} warning(s):"
             grep -in "warning" "${mpmd_logs[@]}"
