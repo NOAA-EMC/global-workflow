@@ -17,8 +17,10 @@ source "${USHglobal}/set_strict.sh"
 ##############################################
 # Set variables used in the script
 ##############################################
-# Setup Python path for pygfs
-PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+# Setup Python path for pyioda and pygfs
+pyiodaPATH="${HOMEglobal}/lib/python3.12/"
+pybufrPATH="${HOMEglobal}/lib/python3.12/site-packages/"
+PYTHONPATH="${pyiodaPATH}:${pybufrPATH}:${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
 export LD_LIBRARY_PATH
