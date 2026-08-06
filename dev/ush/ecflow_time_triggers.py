@@ -184,6 +184,19 @@ def build_syndata_copy_commands(skip_commands, PDYcyc):
             # Assuming the syndata is located in a specific directory structure
             source_path = f"{ROOT_DUMP_DIR}/{run}.{PDY}/{cyc}/atmos/{run}.t{cyc}z.syndata.tcvitals.tm00"
             dest_path = f"{comroot}/{run}.{PDY}/{cyc}/obs/{run}.t{cyc}z.syndata.tcvitals.tm00"
+
+            # It is possible that the source file does not exist yet (i.e. operations
+            # hasn't produced it yet or it hasn't been copied to the development machine
+            # yet). The archive commands run every 15 minutes, wait up to 30.
+            wait_count = 0
+            while wait_count < 30:
+                if os.path.exists(source_path):
+                    break
+                else:
+                    print(f"Waiting for source file to exist: {source_path} (waited {wait_count} minutes)")
+                    time.sleep(60)
+                    wait_count += 1
+
             copy_command = f"cp {source_path} {dest_path}"
             copy_commands.append(copy_command)
     return copy_commands
@@ -344,7 +357,6 @@ if __name__ == "__main__":
                             f.write(f"{cmd}\n")
 
                     print("\nCommands to trigger tasks have been written to 'trigger_timed_tasks.sh'.")
-
 
         else:
             raise ValueError(f"Target family '{target_family_path}' not found in the definition file.")
