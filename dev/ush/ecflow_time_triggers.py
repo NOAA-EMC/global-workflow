@@ -5,6 +5,7 @@ import sys
 import os
 import datetime
 import re
+import time
 import operator
 
 # TODO: Make this path a configurable parameter based on platform
@@ -68,7 +69,7 @@ def task_missed_launch_window(time_attributes, PDYcyc):
 
     # If the PDYcyc is more than 12 hous in the past, we can assume the task has missed its launch window.
     if current_dt > PDYcyc_dt_plus_12h:
-        return command
+        return True
 
     # Extract the time from the trigger expression
     if trigger_time_info:
@@ -109,7 +110,7 @@ def task_missed_launch_window(time_attributes, PDYcyc):
             )
 
             if last_time_dt < current_dt:
-                return command
+                return True
             else:
                 # It is possible for the trigger to be on the next day
                 # If last_time is less than "0600" and $cyc is "18", then the trigger is
@@ -117,7 +118,7 @@ def task_missed_launch_window(time_attributes, PDYcyc):
                 if last_time < "0600" and PDYcyc_dt.hour == 18:
                     last_time_dt_next_day = last_time_dt + datetime.timedelta(days=1)
                     if last_time_dt_next_day < current_dt:
-                        return command
+                        return True
 
             # TODO: Expand this to handle more complex expressions and make use of
             #       the logical_ops list to evaluate the entire expression correctly.
@@ -147,6 +148,8 @@ def task_missed_launch_window(time_attributes, PDYcyc):
                         else:
                             return None
             """
+
+    return False
 
 
 def build_trigger_command(task, time_attributes, PDYcyc):
@@ -191,41 +194,40 @@ def build_syndata_copy_commands(complete_command, PDYcyc):
     comroot = get_comroot()
 
     copy_commands = []
-    for cmd in skip_commands:
-        # Extract the task path from the command
-        match = re.search(r"ecflow_client --run (.+)", cmd)
-        if match:
-            task_path = match.group(1)
-            # Get the RUN from the match (gdas or gfs)
-            if "gdas" in task_path:
-                run = "gdas"
-            elif "gfs" in task_path:
-                run = "gfs"
+    # Extract the task path from the command
+    match = re.search(r"ecflow_client --complete (.+)", complete_command)
+    if match:
+        task_path = match.group(1)
+        # Get the RUN from the match (gdas or gfs)
+        if "gdas" in task_path:
+            run = "gdas"
+        elif "gfs" in task_path:
+            run = "gfs"
+        else:
+            raise ValueError(f"Unknown RUN type in task path: {task_path}")
+
+        # Assuming the syndata is located in a specific directory structure
+        source_path = f"{ROOT_DUMP_DIR}/{run}.{PDY}/{cyc}/atmos/{run}.t{cyc}z.syndata.tcvitals.tm00"
+        dest_path = f"{comroot}/{run}.{PDY}/{cyc}/obs/{run}.t{cyc}z.syndata.tcvitals.tm00"
+
+        # It is possible that the source file does not exist yet (i.e. operations
+        # hasn't produced it yet or it hasn't been copied to the development machine
+        # yet). The archive commands run every 15 minutes, wait up to 30.
+        wait_count = 0
+        while wait_count < 30:
+            if os.path.exists(source_path):
+                break
             else:
-                raise ValueError(f"Unknown RUN type in task path: {task_path}")
+                print(f"Waiting for source file to exist: {source_path} (waited {wait_count} minutes)")
+                time.sleep(60)
+                wait_count += 1
 
-            # Assuming the syndata is located in a specific directory structure
-            source_path = f"{ROOT_DUMP_DIR}/{run}.{PDY}/{cyc}/atmos/{run}.t{cyc}z.syndata.tcvitals.tm00"
-            dest_path = f"{comroot}/{run}.{PDY}/{cyc}/obs/{run}.t{cyc}z.syndata.tcvitals.tm00"
+        # Make directories verbosely
+        print(f"Creating destination directory: {os.path.dirname(dest_path)}")
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
-            # It is possible that the source file does not exist yet (i.e. operations
-            # hasn't produced it yet or it hasn't been copied to the development machine
-            # yet). The archive commands run every 15 minutes, wait up to 30.
-            wait_count = 0
-            while wait_count < 30:
-                if os.path.exists(source_path):
-                    break
-                else:
-                    print(f"Waiting for source file to exist: {source_path} (waited {wait_count} minutes)")
-                    time.sleep(60)
-                    wait_count += 1
-
-            # Make directories verbosely
-            print(f"Creating destination directory: {os.path.dirname(dest_path)}")
-            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-
-            copy_command = f"cp {source_path} {dest_path}"
-            copy_commands.append(copy_command)
+        copy_command = f"cp {source_path} {dest_path}"
+        copy_commands.append(copy_command)
     return copy_commands
 
 
