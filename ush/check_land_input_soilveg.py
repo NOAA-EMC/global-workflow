@@ -136,14 +136,14 @@ def check_land_surface_types(
 
     # Valid vegetation types: 1-16 and 18-20.
     valid_veg = (
-        ((veg_type >= 1) & (veg_type <= 16))
-        | ((veg_type >= 18) & (veg_type <= 20))
+        ((veg_type >= 1) & (veg_type <= 16)) |
+        ((veg_type >= 18) & (veg_type <= 20))
     )
 
     # Valid soil types: 1-13 and 15-16.
     valid_soil = (
-        ((soil_type >= 1) & (soil_type <= 13))
-        | ((soil_type >= 15) & (soil_type <= 16))
+        ((soil_type >= 1) & (soil_type <= 13)) |
+        ((soil_type >= 15) & (soil_type <= 16))
     )
 
     # Only land points are checked.
@@ -280,8 +280,8 @@ def check_soil_moisture(
     # ---------------------------------------------------------
 
     expected_smc = (
-        (land_frac > 0)
-        & ~np.isin(veg_type, [15, 17])
+        (land_frac > 0) &
+        ~np.isin(veg_type, [15, 17])
     )
 
     n_expected = np.count_nonzero(expected_smc)
@@ -296,8 +296,8 @@ def check_soil_moisture(
     # ---------------------------------------------------------
 
     invalid_soil_type = (
-        (soil_type < 0)
-        | (soil_type > len(porosity_table))
+        (soil_type < 0) |
+        (soil_type > len(porosity_table))
     )
 
     if np.any(invalid_soil_type):
@@ -322,8 +322,8 @@ def check_soil_moisture(
     )
 
     valid_lookup = (
-        (soil_type > 0)
-        & (soil_type <= len(porosity_table))
+        (soil_type > 0) &
+        (soil_type <= len(porosity_table))
     )
 
     maxsmc[valid_lookup] = porosity_table[
@@ -349,12 +349,12 @@ def check_soil_moisture(
     # ---------------------------------------------------------
 
     invalid_smc = (
-        expected_smc
-        & (
-            smc_mask
-            | ~np.isfinite(smc_values)
-            | (smc_values <= 0.0)
-            | (smc_values > maxsmc)
+        expected_smc &
+        (
+            smc_mask |
+            ~np.isfinite(smc_values) |
+            (smc_values <= 0.0) |
+            (smc_values > maxsmc)
         )
     )
 
