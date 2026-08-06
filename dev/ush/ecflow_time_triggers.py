@@ -355,6 +355,7 @@ if __name__ == "__main__":
                         # If the copy fails, don't complete the task.
                         copy_commands = build_syndata_copy_commands(complete_command, PDYcyc)
                         commands.extend(copy_commands)
+                        commands.append(complete_command)
                 else:
                     command = build_trigger_command(task[0], task[1], PDYcyc)
                     # If command is not None, we'll run it.
