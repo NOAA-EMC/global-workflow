@@ -43,12 +43,12 @@ if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
 
 # SFS only: Define directory variables to save the source ocean history files temporarily
 if [[ "${RUN}" == "sfs" ]]; then
-export OCEAN_HISTORY_OUTPUT="${DATAoutput}/MOM6_OUTPUT/model/history"
-export OCEAN_PRODUCT_OUTPUT="${DATAoutput}/MOM6_OUTPUT/PRODUCT"
-export ICE_HISTORY_OUTPUT="${DATAoutput}/CICE_OUTPUT/model/history"
-export ICE_PRODUCT_OUTPUT="${DATAoutput}/CICE_OUTPUT/PRODUCT"
-if [[ ! -d "${OCEAN_PRODUCT_OUTPUT}" ]]; then mkdir -p "${OCEAN_PRODUCT_OUTPUT}"; fi
-if [[ ! -d "${ICE_PRODUCT_OUTPUT}" ]]; then mkdir -p "${ICE_PRODUCT_OUTPUT}"; fi
+    export OCEAN_HISTORY_OUTPUT="${DATAoutput}/MOM6_OUTPUT/model/history"
+    export OCEAN_PRODUCT_OUTPUT="${DATAoutput}/MOM6_OUTPUT/PRODUCT"
+    export ICE_HISTORY_OUTPUT="${DATAoutput}/CICE_OUTPUT/model/history"
+    export ICE_PRODUCT_OUTPUT="${DATAoutput}/CICE_OUTPUT/PRODUCT"
+    if [[ ! -d "${OCEAN_PRODUCT_OUTPUT}" ]]; then mkdir -p "${OCEAN_PRODUCT_OUTPUT}"; fi
+    if [[ ! -d "${ICE_PRODUCT_OUTPUT}" ]]; then mkdir -p "${ICE_PRODUCT_OUTPUT}"; fi
 fi
 
 if [[ -z "${COMPONENT:-}" ]]; then

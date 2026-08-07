@@ -87,7 +87,7 @@ if [[ "${RUN}" == sfs ]]; then
             cdo mergetime "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_??_12.nc" "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"
             ncra "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc" "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc"
             # Compress the monthly data
-            nccopy -k 4 -d 5 "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc" "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc" 
+            nccopy -k 4 -d 5 "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc" "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
             cpfs "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc" "${COMOUT_ICE_NETCDF}/native/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.nc"
             rm -f "${DATAoutput}/CICE_OUTPUT/iceh_24h_${YR}_${MN}_merge.nc"
             rm -f "${DATA}/${RUN}.ice.t${current_cycle}.monthly_avg.${YR}-${MN}.tmp.nc"
