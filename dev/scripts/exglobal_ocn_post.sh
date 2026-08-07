@@ -77,7 +77,7 @@ echo "Begin OCEAN POST work"
 
 if [[ "${RUN}" == sfs ]]; then
 
-    # Task 0. Clean all unfinished output files in the temporary directory from the previous failed post job 
+    # Task 0. Clean all unfinished output files in the temporary directory from the previous failed post job
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.6hr_avg.nc"
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs"*"monthly_avg"*".nc"
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs."*".t00z.${grid}.daily.nc"

@@ -1,8 +1,8 @@
 experiment:
   net: sfs
   mode: forecast-only
-  idate: 2026030100
-  edate: 2026030100
+  idate: 2025120100
+  edate: 2025120100
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 192
@@ -11,7 +11,7 @@ experiment:
   start: 'cold'
   nens: 30
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
-  expdir: {{ 'EXPDIR_TOP' | getenv | default('RUNTESTS' | getenv, boolean=True) }}/EXPDIR
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   icsdir: {{ 'TOPICDIR' | getenv }}/GFS/C192mx025
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_full_C192mx025_GFSV17_ICS.yaml
 
@@ -20,5 +20,5 @@ workflow:
   rocoto:
     maxtries: 2
     cyclethrottle: 3
-    taskthrottle: 50
+    taskthrottle: 250
     verbosity: 2

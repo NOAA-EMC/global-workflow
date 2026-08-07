@@ -19,6 +19,7 @@ export CICE_R_PND=2.8                       # default 0
 export CICE_R_SNW=2.8
 export CICE_EMISSIVITY=0.98
 export CICE_TR_POND_TOPO='.true.'
+export CICE_RESTART_POND_TOPO='.true.'
 export CICE_TR_POND_LVL='.false.'
 export CICE_HS0=0.001
 export CICE_HS1=0.005
