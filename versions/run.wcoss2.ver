@@ -6,7 +6,6 @@ export imagemagick_ver=7.0.8-7
 export cdo_ver=1.9.8
 export perl_ver=5.32.0
 export python_ver=3.12.0
-export python_2d_ver=3.12
 export gw_ve_ver=1.0
 export ve_gfs_ver=17.0
 export gempak_ver=7.15.1
@@ -77,5 +76,5 @@ export fit2obs_ver=1.1.10
 export RUN_ENVIR='emc'
 export NET='gfs'
 
-export COMPATH="/lfs/h1/ops/prod/com/obsproc:/lfs/h2/emc/ptmp/${USER}/gfs/test_max_ecf_mod/ops/para/com/gfs"
+export COMPATH="/lfs/h1/ops/prod/com/obsproc:/lfs/h2/emc/ptmp/${USER}/gfs/ops/para/com/gfs"
 
