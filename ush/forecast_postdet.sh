@@ -844,16 +844,12 @@ MOM6_postdet() {
             esac
             local mom6_sentinel_sfx
             mom6_sentinel_sfx="$(printf "%02i" "${mom6_hist_n}")h"
-            # Determine whether this is the final forecast segment (only the
-            # final segment uses the lstop sentinel for MOM6 history output).
-            local _is_last_segment="YES"
-            if [[ "${RUN}" == "gfs" || "${RUN}" == "enkfgfs" ]]; then
-                local _commas="${FCST_SEGMENTS//[^,]/}"
-                local _last_seg_idx=$((${#_commas} - 1))
-                if ((${FCST_SEGMENT:-0} != _last_seg_idx)); then
-                    _is_last_segment="NO"
-                fi
-            fi
+            # The model's true final hour for this segment (unaffected by IAU offset).
+            # FHMAX may have been bumped by +6 in FV3_postdet for IAU, but MOM6 stops
+            # at the original segment endpoint from FCST_SEGMENTS.
+            local _mom6_fhmax
+            IFS=', ' read -ra _seg_arr <<< "${FCST_SEGMENTS}"
+            _mom6_fhmax=${_seg_arr[${FCST_SEGMENT:-0}+1]}
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -868,8 +864,9 @@ MOM6_postdet() {
                 # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
                 # NOAA-EMC/global-workflow#4946). Sentinel suffix matches MOM6_HISTFREQ_N:
                 # '.01h' for gdas/enkfgdas (hourly), '.06h' (or similar) for gfs/enkfgfs.
-                # 'lstop' variant only appears at the true end of the model run (last segment).
-                if [[ ${fhr} -eq ${FHMAX} && "${_is_last_segment}" == "YES" ]]; then
+                # 'lstop' appears at the model's true final hour (_mom6_fhmax, computed
+                # above from FCST_SEGMENTS — immune to the IAU +6 offset on FHMAX).
+                if [[ ${fhr} -eq ${_mom6_fhmax} ]]; then
                     source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${mom6_sentinel_sfx}"
                 else
                     source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${mom6_sentinel_sfx}"
