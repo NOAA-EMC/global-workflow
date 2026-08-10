@@ -24,7 +24,6 @@ module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
 export USE_CFP=YES
 module load python/${python_ver}
-module use /apps/dev/modulefiles
 module load ve/gfs/${ve_gfs_ver}
 module load gempak/${gempak_ver}
 module load perl/${perl_ver}
