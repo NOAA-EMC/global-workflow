@@ -31,14 +31,7 @@ fi
 # cleanup is only executed after the entire cycle is successfully completed.
 # Removing DATAROOT should be possible if that is the case.
 
-# Honor KEEPDATA like every other job so run directories can be retained for
-# debugging. (DEBUG bug/gfsv17-ocean_logs: with KEEPDATA=YES the forecast rundirs
-# under DATAROOT are preserved instead of being removed at end of cycle.)
-if [[ "${KEEPDATA}" == "NO" ]]; then
-    rm -rf "${DATAROOT}"
-    echo "Cleanup ${DATAROOT} completed!"
-else
-    echo "KEEPDATA=${KEEPDATA}: retaining ${DATAROOT} for debugging"
-fi
+rm -rf "${DATAROOT}"
+echo "Cleanup ${DATAROOT} completed!"
 
 exit 0
