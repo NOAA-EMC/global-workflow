@@ -32,8 +32,7 @@ export FHOUT_ECEN="${FHRLST}"
 export HOMEglobal=${HOMEgfs}
 export COMPONENT=${WGF}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/ecen.sh
-${HOMEgfs}/jobs/JGLOBAL_ENKF_ECEN
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ENS_RECENTER
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

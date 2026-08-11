@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_ecen.sh
+# Script name:         exglobal_atmos_ens_recenter.sh
 # Script description:  recenter ensemble around hi-res deterministic analysis
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
