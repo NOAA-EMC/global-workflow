@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_post.sh
+# Script name:         exenkfgdas_ens_post.sh
 # Script description:  Global ensemble forecast post processing
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
