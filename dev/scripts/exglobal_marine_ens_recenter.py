@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_marine_analysis_ecen.py
+# exglobal_marine_ens_recenter.py
 # This script creates an MarineRecenter class
 # and runs the initialize, run, and finalize  methods
 import os

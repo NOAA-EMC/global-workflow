@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_select_obs.sh
+# Script name:         exglobal_atmos_ens_observer.sh
 # Script description:  Compute global_gsi innovations
 #
 # Author: Rahul Mahajan     Org: NCEP/EMC     Date: 2017-03-02

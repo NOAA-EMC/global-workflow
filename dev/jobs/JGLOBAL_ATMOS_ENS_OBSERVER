@@ -131,7 +131,7 @@ done
 ###############################################################
 # Run relevant script
 
-${INVOBSSH:-${SCRglobal}/exglobal_enkf_select_obs.sh} && true
+${INVOBSSH:-${SCRglobal}/exglobal_atmos_ens_observer.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to assimilate observations for the GSI ensemble mean analysis"

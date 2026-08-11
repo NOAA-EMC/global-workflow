@@ -64,7 +64,7 @@ fi
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASOCNCENPY:-${HOMEglobal}/scripts/exglobal_marine_analysis_ecen.py}
+EXSCRIPT=${GDASOCNCENPY:-${HOMEglobal}/scripts/exglobal_marine_ens_recenter.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
