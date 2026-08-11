@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_snowens_analysis.py
+# exglobal_snow_anal_ens.py
 # This script creates an SnowEnsAnalysis class,
 # which will compute the ensemble mean of the snow forecast,
 # run a 2DVar analysis, and provide increments

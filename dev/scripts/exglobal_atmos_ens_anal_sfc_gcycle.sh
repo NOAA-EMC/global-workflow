@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_sfc_gcycle.sh
+# Script name:         exglobal_atmos_ens_anal_sfc_gcycle.sh
 # Script description:  run global_cycle for ensemble surface analyses on tiles
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02

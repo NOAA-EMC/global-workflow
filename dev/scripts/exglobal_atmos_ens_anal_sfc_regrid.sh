@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_sfc_regrid.sh
+# Script name:         exglobal_atmos_ens_anal_sfc_regrid.sh
 # Script description:  regrid soil increments for ensemble surface analyses
 #
 # Author:        Clara Draper       Org: NCEP/EMC     Date: 2024-12-01

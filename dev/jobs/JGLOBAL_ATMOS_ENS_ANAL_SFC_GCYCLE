@@ -1,12 +1,7 @@
 #! /usr/bin/env bash
-
 set -x
 export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
-source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc_regrid" -c "base esfc_regrid"
-
-##############################################
-# Set variables used in the script
-##############################################
+source "${HOMEglobal}/ush/jjob_header.sh" -e "esfc_gcycle" -c "base esfc_gcycle"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -20,6 +15,10 @@ source "${USHglobal}/jjob_shell_setup.sh"
 source "${USHglobal}/set_strict.sh"
 
 ##############################################
+# Set variables used in the script
+##############################################
+
+##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 # shellcheck disable=SC2153
@@ -29,10 +28,29 @@ export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${RUN/enkf/}.t${cyc}z."
+
 export CASE=${CASE_ENS}
 
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX="${RUN/enkf/}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
+
+declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
+
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+
+# Additional variables are set in scripts/exglobal_enkf_sfc_gcycle.sh in order to loop over ensemble members:
+#  COMOUT_ATMOS_RESTART_MEM
+#  COMIN_ATMOS_RESTART_MEM_PREV
+#  COMIN_ATMOS_ANALYSIS_MEM
+#  COMIN_SNOW_ANALYSIS_MEM
 
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
@@ -40,10 +58,10 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-${ENKFSFCREGRIDSH:-${SCRglobal}/exglobal_enkf_sfc_regrid.sh} && true
+${ENKFSFCGCYCLESH:-${SCRglobal}/exglobal_atmos_ens_anal_sfc_gcycle.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to calculate the ensemble surface analysis regridding"
+    err_exit "Failed to calculate the ensemble surface analysis"
 fi
 
 ##############################################
