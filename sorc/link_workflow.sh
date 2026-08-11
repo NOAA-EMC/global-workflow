@@ -276,7 +276,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd" ]]; then
     cd "${HOMEglobal}/fix" || exit 1
     mkdir -p gdas
     cd gdas || exit 1
-    for gdas_sub in fv3jedi gsibec obs soca aero snow; do
+    for gdas_sub in fv3jedi gsibec obs soca aero snow soil; do
         fix_ver="gdas_${gdas_sub}_ver"
         safe_link_or_copy "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
