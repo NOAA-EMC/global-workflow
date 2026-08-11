@@ -54,10 +54,6 @@ class SoilLetkfAnalysis(Analysis):
         _res_anl = int(self.task_config.CASE_ANL[1:])
         _res_his = int(self.task_config.CASE_HIST[1:])
 
-#        _fail_on_missing = str(self.task_config.fail_on_missing_soilobs[0]).lower() == "true" \
-#            if isinstance(self.task_config.fail_on_missing_soilobs, list) \
-#            else bool(self.task_config.fail_on_missing_soilobs)
-
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
             {
@@ -247,5 +243,5 @@ class SoilLetkfAnalysis(Analysis):
                 logger.exception(f"Failed to execute {exe}")
                 raise
             except Exception as err:
-                logger.exception(f"An error occured during execution of {exe}")
-                raise WorkflowException(f"An error occured during execution of {exe}") from err
+                logger.exception(f"An error occurred during execution of {exe}")
+                raise WorkflowException(f"An error occurred during execution of {exe}") from err

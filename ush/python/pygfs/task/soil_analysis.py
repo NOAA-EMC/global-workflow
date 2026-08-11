@@ -247,4 +247,4 @@ class SoilAnalysis(Analysis):
                 raise
             except Exception as err:
                 logger.exception(f"An error occured during execution of {exe}")
-                raise WorkflowException(f"An error occured during execution of {exe}") from err
+                raise WorkflowException(f"An error occurred during execution of {exe}") from err

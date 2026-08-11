@@ -250,8 +250,8 @@ class SnowLetkfAnalysis(Analysis):
             logger.exception(f"Failed to execute {exe}")
             raise
         except Exception as err:
-            logger.exception(f"An error occured during execution of {exe}")
-            raise WorkflowException(f"An error occured during execution of {exe}") from err
+            logger.exception(f"An error occurred during execution of {exe}")
+            raise WorkflowException(f"An error occurred during execution of {exe}") from err
 
         # Ensure the IODA snow depth SNOCVR+SNOMAD file is produced by the obsBuilder
         # If so, copy to DATA/prep/
@@ -315,8 +315,8 @@ class SnowLetkfAnalysis(Analysis):
             logger.exception(f"Failed to execute {exe}")
             raise
         except Exception as err:
-            logger.exception(f"An error occured during execution of {exe}")
-            raise WorkflowException(f"An error occured during execution of {exe}") from err
+            logger.exception(f"An error occurred during execution of {exe}")
+            raise WorkflowException(f"An error occurred during execution of {exe}") from err
 
         # Ensure the IODA snow depth GHCN file is produced by the IODA converter
         # If so, copy to DATA/prep/
@@ -403,5 +403,5 @@ class SnowLetkfAnalysis(Analysis):
                 logger.exception(f"Failed to execute {exe}")
                 raise
             except Exception as err:
-                logger.exception(f"An error occured during execution of {exe}")
-                raise WorkflowException(f"An error occured during execution of {exe}") from err
+                logger.exception(f"An error occurred during execution of {exe}")
+                raise WorkflowException(f"An error occurred during execution of {exe}") from err
