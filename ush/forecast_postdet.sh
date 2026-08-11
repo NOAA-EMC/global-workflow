@@ -849,7 +849,7 @@ MOM6_postdet() {
             # at the original segment endpoint from FCST_SEGMENTS.
             local _mom6_fhmax
             IFS=', ' read -ra _seg_arr <<< "${FCST_SEGMENTS}"
-            _mom6_fhmax=${_seg_arr[${FCST_SEGMENT:-0}+1]}
+            _mom6_fhmax=${_seg_arr[${FCST_SEGMENT:-0} + 1]}
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
