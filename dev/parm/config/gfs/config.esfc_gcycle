@@ -46,9 +46,9 @@ if [[ "${DO_JEDISOILDAENS}" == "YES" ]]; then
     export OBS_LIST_YAML="${PARMglobal}/gdas/soil/soil_obs_list.yaml.j2"
     export SOIL_FILE_TYPE="csg"
 
-    export BCOV_DIR="/scratch4/NCEPDEV/land/data/DA/bump_soil/"  #TODO change to soil B
-    export BCOV_FNAME="c384_soillt_sl_250v700_bump_nicas.nc"
-    
+    export BCOV_DIR="${HOMEglobal}/fix/gdas/soil/"
+    export BCOV_FNAME="soill1_bump_nicas_1000km.nc"    
+
     # for non-landiau soil increments
     export APPLY_INCR_EXE="${EXECglobal}/apply_soil_incr.x"  #gdas_apply_incr.x"
     export APPLY_INCR_NML_TMPL="${PARMglobal}/gdas/soil/apply_incr_nml.j2"
