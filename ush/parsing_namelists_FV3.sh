@@ -295,6 +295,7 @@ FV3_namelists() {
     local CPLFLX=${cplflx:-".false."}
     local CPLICE=${cplice:-".false."}
     local CPLWAV=${cplwav:-".false."}
+    local CPLCAT=${cplcat:-".false."}
     local CPLWAV2ATM=${cplwav2atm:-".false."}
     local USE_MED_FLUX=${use_med_flux:-".false."}
     local CPLLND=${cpllnd:-".false."}

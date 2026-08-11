@@ -1,17 +1,17 @@
 experiment:
   net: sfs
   mode: forecast-only
-  idate: 2025120100
-  edate: 2025120100
+  idate: {{ 'DTG_GW' | getenv if ('DTG_GW' | getenv) != 'UNDEFINED' else 2025120100 }}
+  edate: {{ 'DTG_GW' | getenv if ('DTG_GW' | getenv) != 'UNDEFINED' else 2025120100 }}
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 192
   resensatmos: 192
   resdetocean: 0.25
   start: 'cold'
-  nens: 30
+  nens: {{ 'NENS_GW' | getenv if ('NENS_GW' | getenv) != 'UNDEFINED' else 30 }}
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
-  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  expdir: "{{ 'EXPDIR_TOP' | getenv if ('EXPDIR_TOP' | getenv) != 'UNDEFINED' else ('RUNTESTS' | getenv) }}/EXPDIR"
   icsdir: {{ 'TOPICDIR' | getenv }}/GFS/C192mx025
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/sfs_full_C192mx025_GFSV17_ICS.yaml
 

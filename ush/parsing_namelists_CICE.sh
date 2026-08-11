@@ -122,6 +122,7 @@ CICE_namelists() {
     # thermo_nml section
     local CICE_KTHERM=2 # 0=zero-layer thermodynamics, 1=fixed-salinity profile, 2=mushy thermodynamics
     local CICE_CONDUCT=${CICE_CONDUCT:-'bubbly'}
+    local CICE_TSCALE_PND_DRAIN=${CICE_TSCALE_PND_DRAIN:-10}
     # dynamics_nml section
     # NONE
     # shortwave_nml section
