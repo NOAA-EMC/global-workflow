@@ -145,7 +145,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
+                        ecflow_client --event release_gfs_atmos_products_f"${fhr_3d}"
                     fi
                 fi
             fi
@@ -318,7 +318,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${atmos_master}" && -s "${atmos_sflux}" ]]; then
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-                        ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
+                        ecflow_client --event release_gdas_atmos_products_f"${fhr_3d}"
                     fi
                 fi
             fi

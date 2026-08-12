@@ -138,7 +138,7 @@ base_script_list = [
     "exglobal_marine_anal_final.py",
     "exglobal_marine_anal_init.py",
     "exglobal_marine_anal_var.py",
-    "exglobal_marinebmat.py",
+    "exglobal_marine_bmat.py",
     "exglobal_marine_bmat_init.py",
     "exglobal_oceanice_products.py",
     "exglobal_marine_obs_dump.py",

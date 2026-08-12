@@ -63,18 +63,18 @@ done
 # gfs atmos product files
 cd "${ECF_DIR}/scripts/gfs/product/atmos/product"
 echo "Copy gfs atmos product files ..."
-rm -f jgfs_atmos_product_f*.ecf
+rm -f jgfs_atmos_products_f*.ecf
 fhr_end=384
 fhr_start=0
 while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     head_3d=$(printf "%03d" "${fhr_start}")
-    cp jgfs_atmos_product_master.ecf "jgfs_atmos_product_f${head_3d}.ecf"
+    cp jgfs_atmos_products_master.ecf "jgfs_atmos_products_f${head_3d}.ecf"
     if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
     fi
-    add_to_tmpfile "scripts/gfs/product/atmos/jgfs_atmos_product_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/atmos/jgfs_atmos_products_f${head_3d}.ecf"
 done
 
 # gfs ocean product files

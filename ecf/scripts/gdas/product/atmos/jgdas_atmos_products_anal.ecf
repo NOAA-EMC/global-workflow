@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_product_%CYC%_f%FHR%
+#PBS -N gdas_atmos_products_anal_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -23,13 +23,10 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-export WGF="%WGF%"
-export FHR_LIST="%FHR_LIST%"
-export FORECAST_HOUR="${FHR_LIST}"
 export HOMEglobal=${HOMEgfs}
-export COMPONENT=${WGF}
+export FORECAST_HOUR='-1'
+export FHR_LIST='-1'
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/atmos_products.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_PRODUCTS
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -40,15 +37,13 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_atmos_product_master
+TASK gdas_atmos_products_anal
 
-PURPOSE: GDAS atmospheric product generation -- per-hour _master producing GRIB2
-from GDAS 9-hour forecast. Same shared J-Job.
+PURPOSE: GDAS analysis product generation. On disk as jgdas_atmos_analprod.ecf --
+name differs from manifest.
 
 TROUBLESHOOTING
 
-Same troubleshooting as GFS atmos_product_master. GDAS produces products
-for f000-f009 only (vs GFS f000-f384). Check forecast output (atmos master files)
-availability.
+Depends on GDAS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gdas.${PDY}/${cyc}/analysis/atmos/gdas.t${cyc}z.master.analysis.grib2).
 
 %end

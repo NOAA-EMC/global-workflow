@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_analprod_%CYC%
+#PBS -N gfs_atmos_products_anal_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -26,8 +26,6 @@ module list
 export HOMEglobal=${HOMEgfs}
 export FORECAST_HOUR='-1'
 export FHR_LIST='-1'
-
-#### ${HOMEgfs}/dev/job_cards/rocoto/atmos_products.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_PRODUCTS
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -38,13 +36,13 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_atmos_analprod
+TASK gfs_atmos_products_anal
 
-PURPOSE: GDAS analysis product generation. On disk as jgdas_atmos_analprod.ecf --
-name differs from manifest.
+PURPOSE: Analysis product generation from atmospheric analysis fields.
 
 TROUBLESHOOTING
 
-Depends on GDAS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gdas.${PDY}/${cyc}/analysis/atmos/gdas.t${cyc}z.master.analysis.grib2).
+
+Depends on GFS analysis output (atmos master files). Verify that these files are present and valid (${COMgfs}/gfs.${PDY}/${cyc}/analysis/atmos/gfs.t${cyc}z.master.analysis.grib2)
 
 %end
