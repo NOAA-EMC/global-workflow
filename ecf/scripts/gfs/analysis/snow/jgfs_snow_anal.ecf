@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_analsnow_%CYC%
+#PBS -N gfs_snow_anal_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -35,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_atmos_analsnow
+TASK gfs_snow_anal
 
 PURPOSE: JEDI snow analysis -- assimilates satellite snow cover/depth
 observations (IMS, GHCN, SNODEP) to update land surface snow state. 4

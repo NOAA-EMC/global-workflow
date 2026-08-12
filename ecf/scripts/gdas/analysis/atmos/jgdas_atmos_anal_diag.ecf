@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_analdiag_%CYC%
+#PBS -N gdas_atmos_anal_diag_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -35,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_atmos_analdiag
+TASK gdas_atmos_anal_diag
 
 PURPOSE: Creates NetCDF diagnostic files (cnvstat, radstat, ozstat) from the GDAS
 GSI analysis. GDAS-specific task.

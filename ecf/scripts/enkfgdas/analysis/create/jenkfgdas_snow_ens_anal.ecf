@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_snow_anal_ens_%CYC%
+#PBS -N enkfgdas_snow_ens_anal_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -35,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK enkfgdas_snow_anal_ens
+TASK enkfgdas_snow_ens_anal
 
 PURPOSE: Applies snow analysis to ensemble members -- ensures consistent snow
 state across all members.

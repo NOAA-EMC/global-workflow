@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_verfozn_%CYC%
+#PBS -N gdas_atmos_verfozn_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -25,7 +25,6 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/verfozn.sh
 ${HOMEgfs}/jobs/JGDAS_ATMOS_VERFOZN
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -36,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_verfozn
+TASK gdas_atmos_verfozn
 
 PURPOSE: Archives ozone-related analysis diagnostics from GDAS GSI for time-
 series monitoring. GDAS-specific (no GFS counterpart).

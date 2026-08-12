@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_change_res_ens_%CYC%
+#PBS -N enkfgdas_atmos_ens_change_res_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -35,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK enkfgdas_change_res_ens
+TASK enkfgdas_atmos_ens_change_res
 
 PURPOSE: Runs chgres_cube to regrid deterministic forecast to ensemble resolution
 for EnKF recentering.

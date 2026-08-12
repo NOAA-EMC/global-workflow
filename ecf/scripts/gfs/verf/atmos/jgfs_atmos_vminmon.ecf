@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_vminmon_%CYC%
+#PBS -N gfs_atmos_vminmon_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -25,7 +25,6 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/vminmon.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_VMINMON
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -36,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_vminmon
+TASK gfs_atmos_vminmon
 
 PURPOSE: GSI Variational Minimization Monitor -- extracts and archives
 convergence diagnostics from the atmospheric analysis.

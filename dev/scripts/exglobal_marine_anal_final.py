@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_marine_analysis_finalize.py
+# exglobal_marine_anal_final.py
 # This script creates an MarineAnalysis object
 # and makes copies of the variational analysis output
 # to the COMROOT

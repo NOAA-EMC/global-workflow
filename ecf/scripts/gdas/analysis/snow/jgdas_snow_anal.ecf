@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_analsnow_%CYC%
+#PBS -N gdas_snow_anal_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -35,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_atmos_analsnow
+TASK gdas_snow_anal
 
 PURPOSE: GDAS JEDI snow analysis -- same as GFS version. Assimilates snow obs to
 update land surface snow state.

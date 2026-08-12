@@ -70,11 +70,11 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
-            task jgfs_marine_analvar
+            task jgfs_marine_anal_var
               trigger jgfs_marine_anal_init==complete
             task jgfs_marine_anal_chkpt
-              trigger jgfs_marine_analvar==complete
-            task jgfs_marine_analfinal
+              trigger jgfs_marine_anal_var==complete
+            task jgfs_marine_anal_final
               trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
@@ -5403,11 +5403,11 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
-            task jgdas_marine_analvar
+            task jgdas_marine_anal_var
               trigger jgdas_marine_anal_init==complete
             task jgdas_marine_anal_chkpt
-              trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
-            task jgdas_marine_analfinal
+              trigger jgdas_marine_anal_var==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
+            task jgdas_marine_anal_final
               trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
@@ -6301,11 +6301,11 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
-            task jgfs_marine_analvar
+            task jgfs_marine_anal_var
               trigger jgfs_marine_anal_init==complete
             task jgfs_marine_anal_chkpt
-              trigger jgfs_marine_analvar==complete
-            task jgfs_marine_analfinal
+              trigger jgfs_marine_anal_var==complete
+            task jgfs_marine_anal_final
               trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
@@ -11633,11 +11633,11 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
-            task jgdas_marine_analvar
+            task jgdas_marine_anal_var
               trigger jgdas_marine_anal_init==complete
             task jgdas_marine_anal_chkpt
-              trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
-            task jgdas_marine_analfinal
+              trigger jgdas_marine_anal_var==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
+            task jgdas_marine_anal_final
               trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
@@ -12531,11 +12531,11 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
-            task jgfs_marine_analvar
+            task jgfs_marine_anal_var
               trigger jgfs_marine_anal_init==complete
             task jgfs_marine_anal_chkpt
-              trigger jgfs_marine_analvar==complete
-            task jgfs_marine_analfinal
+              trigger jgfs_marine_anal_var==complete
+            task jgfs_marine_anal_final
               trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
@@ -17863,11 +17863,11 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete  and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
-            task jgdas_marine_analvar
+            task jgdas_marine_anal_var
               trigger jgdas_marine_anal_init==complete
             task jgdas_marine_anal_chkpt
-              trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
-            task jgdas_marine_analfinal
+              trigger jgdas_marine_anal_var==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
+            task jgdas_marine_anal_final
               trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
@@ -18761,11 +18761,11 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat_init==complete
             task jgfs_marine_anal_init
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
-            task jgfs_marine_analvar
+            task jgfs_marine_anal_var
               trigger jgfs_marine_anal_init==complete
             task jgfs_marine_anal_chkpt
-              trigger jgfs_marine_analvar==complete
-            task jgfs_marine_analfinal
+              trigger jgfs_marine_anal_var==complete
+            task jgfs_marine_anal_final
               trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
@@ -24094,11 +24094,11 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat_init==complete
             task jgdas_marine_anal_init
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
-            task jgdas_marine_analvar
+            task jgdas_marine_anal_var
               trigger jgdas_marine_anal_init==complete
             task jgdas_marine_anal_chkpt
-              trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
-            task jgdas_marine_analfinal
+              trigger jgdas_marine_anal_var==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
+            task jgdas_marine_anal_final
               trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow

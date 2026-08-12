@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_analupp_%CYC%
+#PBS -N gdas_atmos_upp_anal_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -28,7 +28,6 @@ export FORECAST_HOUR='0'
 export FHR3='000'
 export UPP_RUN='analysis'
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/upp.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -39,7 +38,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_atmos_analupp
+TASK gdas_atmos_upp_anal
 
 PURPOSE: GDAS analysis UPP -- runs UPP on GDAS analysis fields. Same shared
 J-Job.

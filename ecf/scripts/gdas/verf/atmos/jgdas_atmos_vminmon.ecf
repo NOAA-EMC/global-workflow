@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_vminmon_%CYC%
+#PBS -N gdas_atmos_vminmon_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -25,7 +25,6 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/vminmon.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_VMINMON
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -36,7 +35,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_vminmon
+TASK gdas_atmos_vminmon
 
 PURPOSE: GDAS VMinMon -- monitors GSI minimization convergence for GDAS analysis.
 Same shared J-Job.
