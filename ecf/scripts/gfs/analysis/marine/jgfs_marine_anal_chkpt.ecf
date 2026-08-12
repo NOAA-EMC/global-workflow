@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_marine_analchkpt_%CYC%
+#PBS -N gfs_marine_anal_chkpt_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -25,8 +25,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/marineanlchkpt.sh
-${HOMEgfs}/jobs/JGLOBAL_MARINE_ANALYSIS_CHECKPOINT
+${HOMEgfs}/jobs/JGLOBAL_MARINE_ANAL_CHKPT
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -36,13 +35,16 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_marine_analchkpt
+TASK gfs_marine_anal_chkpt
 
-PURPOSE: GDAS marine analysis checkpoint. Same shared J-Job.
+PURPOSE: Marine analysis checkpoint -- saves ocean/ice analysis state to restart
+files for forecast initialization.
 
 TROUBLESHOOTING
 
-Same troubleshooting as GFS marine_anlchkpt. Simple I/O job -- check
-filesystem and input from solver.
+Depends on marine_anlvar completion. If variational solver did not
+converge or produce output, checkpoint has nothing to save. Check that
+SOCA output files exist. Simple I/O job -- failures are filesystem
+issues or missing input.
 
 %end

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_marine_analysis_initialize.py
+# exglobal_marine_anal_init.py
 # This script creates an MarineAnalysis object
 # and runs the initialize method
 # which create and stage the runtime directory

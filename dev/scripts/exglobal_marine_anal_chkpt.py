@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_marine_analysis_checkpoint.py
+# exglobal_marine_anal_chkpt.py
 # This script creates a MarineAnalysis object
 # and runs the checkpoint methods which inserts
 # the seaice analysis into the CICE6 restart or

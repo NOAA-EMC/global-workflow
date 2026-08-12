@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_atmos_analysis_calc.sh
+# Script name:         exglobal_atmos_anal_calc.sh
 # Script description:  Runs non-diagnostic file tasks after GSI analysis is performed
 #
 # Author: Cory Martin      Org: NCEP/EMC     Date: 2020-03-03

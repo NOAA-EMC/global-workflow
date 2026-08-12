@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_atmos_sfcanl_gcycle.sh
+# Script name:         exglobal_atmos_anal_sfc_gcycle.sh
 # Script description:  Updates global surface analysis files
 #                      with global_cycle program
 #

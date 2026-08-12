@@ -106,7 +106,7 @@ fi
 ###############################################################
 # Run relevant script
 
-${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh} && true
+${ANALYSISSH:-${SCRglobal}/exglobal_atmos_anal.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the GSI atmospheric analysis"

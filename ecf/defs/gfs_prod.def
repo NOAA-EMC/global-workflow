@@ -72,10 +72,10 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
             task jgfs_marine_analvar
               trigger jgfs_marine_anal_init==complete
-            task jgfs_marine_analchkpt
+            task jgfs_marine_anal_chkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
-              trigger jgfs_marine_analchkpt==complete
+              trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
             edit WGF 'snow'
@@ -5381,10 +5381,10 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_prep_sfc == complete and ../../../../18/enkfgdas/ensstat==complete
               trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../18/enkfgdas/ensstat==complete and ../../../../18/gdas/forecast==complete
-            task jgdas_atmos_analdiag
+            task jgdas_atmos_anal_diag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
-              trigger jgdas_atmos_analdiag==complete
+              trigger jgdas_atmos_anal_diag==complete
             task jgdas_atmos_anal_sfc_regrid
               trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
@@ -5405,10 +5405,10 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
             task jgdas_marine_analvar
               trigger jgdas_marine_anal_init==complete
-            task jgdas_marine_analchkpt
+            task jgdas_marine_anal_chkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
-              trigger jgdas_marine_analchkpt==complete
+              trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
             edit WGF 'snow'
@@ -5594,9 +5594,9 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_verfozn
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_verfrad
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -6303,10 +6303,10 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
             task jgfs_marine_analvar
               trigger jgfs_marine_anal_init==complete
-            task jgfs_marine_analchkpt
+            task jgfs_marine_anal_chkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
-              trigger jgfs_marine_analchkpt==complete
+              trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
             edit WGF 'snow'
@@ -11611,10 +11611,10 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_prep_sfc == complete and ../../../../00/enkfgdas/ensstat==complete
               trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../00/enkfgdas/ensstat==complete and ../../../../00/gdas/forecast==complete
-            task jgdas_atmos_analdiag
+            task jgdas_atmos_anal_diag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
-              trigger jgdas_atmos_analdiag==complete
+              trigger jgdas_atmos_anal_diag==complete
             task jgdas_atmos_anal_sfc_regrid
               trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
@@ -11635,10 +11635,10 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
             task jgdas_marine_analvar
               trigger jgdas_marine_anal_init==complete
-            task jgdas_marine_analchkpt
+            task jgdas_marine_anal_chkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
-              trigger jgdas_marine_analchkpt==complete
+              trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
             edit WGF 'snow'
@@ -11824,9 +11824,9 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_verfozn
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_verfrad
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -12533,10 +12533,10 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
             task jgfs_marine_analvar
               trigger jgfs_marine_anal_init==complete
-            task jgfs_marine_analchkpt
+            task jgfs_marine_anal_chkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
-              trigger jgfs_marine_analchkpt==complete
+              trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
             edit WGF 'snow'
@@ -17841,10 +17841,10 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_prep_sfc == complete and ../../../../06/enkfgdas/ensstat==complete
               trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../06/enkfgdas/ensstat==complete and ../../../../06/gdas/forecast==complete
-            task jgdas_atmos_analdiag
+            task jgdas_atmos_anal_diag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
-              trigger jgdas_atmos_analdiag==complete
+              trigger jgdas_atmos_anal_diag==complete
             task jgdas_atmos_anal_sfc_regrid
               trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
@@ -17865,10 +17865,10 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete  and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
             task jgdas_marine_analvar
               trigger jgdas_marine_anal_init==complete
-            task jgdas_marine_analchkpt
+            task jgdas_marine_anal_chkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
-              trigger jgdas_marine_analchkpt==complete
+              trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
             edit WGF 'snow'
@@ -18054,9 +18054,9 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_verfozn
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_verfrad
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos
@@ -18763,10 +18763,10 @@ suite gfs_v17_nco
               trigger jgfs_marine_bmat==complete and ../../prep/marine/jgfs_marine_obs_dump==complete and ../../prep/marine/jgfs_marine_obs_bufr_dump==complete
             task jgfs_marine_analvar
               trigger jgfs_marine_anal_init==complete
-            task jgfs_marine_analchkpt
+            task jgfs_marine_anal_chkpt
               trigger jgfs_marine_analvar==complete
             task jgfs_marine_analfinal
-              trigger jgfs_marine_analchkpt==complete
+              trigger jgfs_marine_anal_chkpt==complete
           endfamily		//marine
           family snow
             edit WGF 'snow'
@@ -24072,10 +24072,10 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../prep/atmos/jgdas_atmos_prep_sfc == complete and ../../../../12/enkfgdas/ensstat==complete
               trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../12/enkfgdas/ensstat==complete and ../../../../12/gdas/forecast==complete
-            task jgdas_atmos_analdiag
+            task jgdas_atmos_anal_diag
               trigger jgdas_atmos_anal==complete
             task jgdas_atmos_anal_wdqms
-              trigger jgdas_atmos_analdiag==complete
+              trigger jgdas_atmos_anal_diag==complete
             task jgdas_atmos_anal_sfc_regrid
               trigger ../../../enkfgdas/analysis/create/jenkfgdas_atmos_ens_update==complete
             task jgdas_atmos_anal_sfc_gcycle
@@ -24096,10 +24096,10 @@ suite gfs_v17_nco
               trigger jgdas_marine_bmat==complete and ../../prep/marine/jgdas_marine_obs_dump==complete and ../../prep/marine/jgdas_marine_obs_bufr_dump==complete
             task jgdas_marine_analvar
               trigger jgdas_marine_anal_init==complete
-            task jgdas_marine_analchkpt
+            task jgdas_marine_anal_chkpt
               trigger jgdas_marine_analvar==complete and ../../../enkfgdas/analysis/recenter/jenkfgdas_marine_ens_recenter==complete
             task jgdas_marine_analfinal
-              trigger jgdas_marine_analchkpt==complete
+              trigger jgdas_marine_anal_chkpt==complete
           endfamily  		//marine
           family snow
             edit WGF 'snow'
@@ -24285,9 +24285,9 @@ suite gfs_v17_nco
           family atmos
             edit WGF 'atmos'
             task jgdas_atmos_verfozn
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_verfrad
-              trigger ../../analysis/atmos/jgdas_atmos_analdiag==complete
+              trigger ../../analysis/atmos/jgdas_atmos_anal_diag==complete
             task jgdas_atmos_vminmon
               trigger ../../analysis/atmos==complete
           endfamily  		//atmos

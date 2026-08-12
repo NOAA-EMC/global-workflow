@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_atmos_analysis.sh
+# Script name:         exglobal_atmos_anal.sh
 # Script description:  Makes a global model upper air analysis with GSI
 #
 # Author: Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
