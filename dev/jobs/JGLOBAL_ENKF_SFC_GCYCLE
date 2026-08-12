@@ -62,7 +62,6 @@ declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
 
-
 ###from gcycle script
 # Variables
 export NMEM_ENS_MAX=${NMEM_ENS:-80}
