@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_forecast_manager.sh
+# Script name:         exglobal_fcst_manager.sh
 # Script description:  Launches MPMD component managers for JGLOBAL_FORECAST_MANAGER
 #
 # Abstract: Waits for product tables written by JGLOBAL_FORECAST during its

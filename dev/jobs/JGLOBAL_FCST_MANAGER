@@ -82,7 +82,7 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-FORECASTMGRSH="${FORECASTMGRSH:-${SCRglobal}/exglobal_forecast_manager.sh}"
+FORECASTMGRSH="${FORECASTMGRSH:-${SCRglobal}/exglobal_fcst_manager.sh}"
 "${FORECASTMGRSH}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then

@@ -118,8 +118,7 @@ fi
 ###############################################################
 # Run relevant exglobal script
 ###############################################################
-: "${FORECASTSH:=${SCRglobal}/exglobal_forecast.sh}"
-"${FORECASTSH}" && true # The && true prevents the shell from exiting when set -e
+"${FORECASTSH:-${SCRglobal}/exglobal_fcst.sh}" && true # The && true prevents the shell from exiting when set -e
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     # Write the failure sentinel BEFORE err_exit so the forecast manager sees

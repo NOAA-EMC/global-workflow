@@ -3,7 +3,7 @@ set -x
 
 ################################################################################
 ## UNIX Script Documentation Block
-## Script name:         exglobal_forecast.sh
+## Script name:         exglobal_fcst.sh
 ## Script description:  Runs a global FV3GFS model forecast
 ##
 ## Author:   Fanglin Yang       Organization: NCEP/EMC       Date: 2016-11-15
