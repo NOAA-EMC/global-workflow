@@ -3,7 +3,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_atmos_chgres_forenkf.sh
+# Script name:         exenkfgdas_atmos_change_res_ens.sh
 # Script description:  Runs chgres on full-resolution forecast for EnKF recentering
 #
 # Author: Cory Martin      Org: NCEP/EMC     Date: 2020-06-08

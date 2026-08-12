@@ -33,7 +33,7 @@ declare -rx COMIN_ATMOS_HISTORY_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem001/model
 
 ###############################################################
 # Run relevant script
-${CHGRESFCSTSH:-${SCRglobal}/exgdas_atmos_chgres_forenkf.sh} && true
+${CHGRESFCSTSH:-${SCRglobal}/exenkfgdas_atmos_change_res_ens.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run chgres for the ensemble"

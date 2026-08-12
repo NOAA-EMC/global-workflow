@@ -5390,7 +5390,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../18/enkfgdas/analysis/create/jenkfgdas_change_res_ens==complete
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../18/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
@@ -5620,7 +5620,7 @@ suite gfs_v17_nco
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_change_res_ens
+            task jenkfgdas_atmos_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
@@ -11620,7 +11620,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../00/enkfgdas/analysis/create/jenkfgdas_change_res_ens==complete
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../00/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
@@ -11850,7 +11850,7 @@ suite gfs_v17_nco
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_change_res_ens
+            task jenkfgdas_atmos_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
@@ -17850,7 +17850,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../06/enkfgdas/analysis/create/jenkfgdas_change_res_ens==complete
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../06/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
@@ -18080,7 +18080,7 @@ suite gfs_v17_nco
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_change_res_ens
+            task jenkfgdas_atmos_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
@@ -24081,7 +24081,7 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_atmos_analsnow==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../12/enkfgdas/analysis/create/jenkfgdas_change_res_ens==complete
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../12/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
             task jgdas_atmos_analupp
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
@@ -24311,7 +24311,7 @@ suite gfs_v17_nco
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
               trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_change_res_ens
+            task jenkfgdas_atmos_change_res_ens
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete

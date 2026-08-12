@@ -65,7 +65,7 @@ base_job_list = [
     "JGLOBAL_WAVE_PRDGEN_BULLS",
     "JGLOBAL_WAVE_PRDGEN_GRIDDED",
     "JGDAS_ATMOS_ANALYSIS_WDQMS",
-    "JGDAS_ATMOS_CHGRES_FORENKF",
+    "JENKFGDAS_ATMOS_CHANGE_RES_ENS",
     "JGDAS_ATMOS_GEMPAK",
     "JGDAS_ATMOS_GEMPAK_META_NCDC",
     "JGDAS_ATMOS_VERFOZN",
@@ -96,7 +96,7 @@ base_job_list = [
 
 base_script_list = [
     "exgdas_atmos_analysis_wdqms.sh",
-    "exgdas_atmos_chgres_forenkf.sh",
+    "exenkfgdas_atmos_change_res_ens.sh",
     "exgdas_atmos_gempak_gif_ncdc.sh",
     "exgdas_atmos_nawips.sh",
     "exgdas_atmos_verfozn.sh",
