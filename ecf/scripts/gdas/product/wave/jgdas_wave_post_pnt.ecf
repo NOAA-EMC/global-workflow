@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_gempak_ncdcupapgif_%CYC%
+#PBS -N gdas_wave_post_pnt_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:05:00
-#PBS -l select=1:mpiprocs=28:ompthreads=1:ncpus=28:mem=6GB
+#PBS -l walltime=00:35:00
+#PBS -l select=1:mpiprocs=40:ompthreads=1:ncpus=40
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -17,7 +17,7 @@ export cyc="%CYC%"
 # Load modules
 ############################################################
 #TODO: load only the modules needed for each job
-source ${HOMEgfs}/dev/ush/load_modules.sh run
+source ${HOMEgfs}/dev/ush/load_modules.sh ufswm
 
 module list
 ############################################################
@@ -25,8 +25,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/gempakncdcupapgif.sh
-${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_PNT
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -36,16 +35,15 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_atmos_gempak_ncdcupapgif
+TASK gdas_wave_post_pnt
 
-PURPOSE: Generates NCDC upper-air GIF images (Skew-T/Log-P diagrams) from GFS
-GEMPAK grids for archival. Single-instance task.
+PURPOSE: Generates wave station/point spectral and bulletin output from GDAS
+9-hour WW3 forecast.
 
 TROUBLESHOOTING
 
-Depends on GEMPAK grid output from gempak_master. If GEMPAK grids were
-not produced, this job fails. Lightweight job -- failures are almost
-always missing input. Check that GEMPAK module loaded correctly and
-GEMDATA path resolves.
+Same as GFS wave_postpnt but for GDAS cycle. Depends on GDAS wave
+forecast point output. If wave component of GDAS forecast failed, no
+point data exists.
 
 %end

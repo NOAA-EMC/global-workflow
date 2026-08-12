@@ -39,7 +39,7 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-"${SCRglobal}/exgfs_atmos_awips_20km_1p0deg.sh" "${fcsthr}" && true
+"${SCRglobal}/exgfs_atmos_awips_20km_1p0.sh" "${fcsthr}" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to generate AWIPS products at 20km resolution for forecast hour ${fcsthr}"

@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_wave_postpnt_%CYC%
+#PBS -N gfs_wave_post_pnt_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -25,7 +25,6 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/wavepostpnt.sh
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_PNT
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -36,15 +35,17 @@ fi
 %include <tail.h>
 %manual
 
-TASK gdas_wave_postpnt
+TASK gfs_wave_post_pnt
 
-PURPOSE: Generates wave station/point spectral and bulletin output from GDAS
-9-hour WW3 forecast.
+PURPOSE: Generates wave station/point spectral data and text bulletins
+at buoy locations. Single-instance per cycle.
 
 TROUBLESHOOTING
 
-Same as GFS wave_postpnt but for GDAS cycle. Depends on GDAS wave
-forecast point output. If wave component of GDAS forecast failed, no
-point data exists.
+Depends on WW3 forecast point output. If wave forecast failed or was
+incomplete, point data will be missing. Check wave model logs for point
+output write errors. Feeds downstream to awips_bulls. While improved
+from v16, this job will slow down or fail when there are filesystem
+issues.
 
 %end

@@ -2760,7 +2760,7 @@ suite gfs_v17_nco
               endfamily		//gempak
               task jgfs_atmos_gempak_meta
                 trigger gempak==complete
-              task jgfs_atmos_gempak_ncdcupapgif
+              task jgfs_atmos_gempak_ncdc_upapgif
                 trigger gempak==complete
               family goesupp
                 task jgfs_atmos_goesupp_f000
@@ -5153,13 +5153,13 @@ suite gfs_v17_nco
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_postbndpntbll
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postpnt
+              task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
             endfamily		//station
             task jgfs_wave_awips_gridded
               trigger ./gridded/jgfs_wave_post_gridded_f384==complete
             task jgfs_wave_awips_bulls
-              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_postpnt==complete
+              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_post_pnt==complete
             family gempak
               task jgfs_wave_gempak_f000
                 edit FHR '000'
@@ -5586,7 +5586,7 @@ suite gfs_v17_nco
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_wave_post_gridded_f009
             endfamily		//gridded
-            task jgdas_wave_postpnt
+            task jgdas_wave_post_pnt
               trigger ../../forecast/jgdas_fcst==complete
           endfamily  		//wave
         endfamily    		//product
@@ -8991,7 +8991,7 @@ suite gfs_v17_nco
               endfamily		//gempak
               task jgfs_atmos_gempak_meta
                 trigger gempak==complete
-              task jgfs_atmos_gempak_ncdcupapgif
+              task jgfs_atmos_gempak_ncdc_upapgif
                 trigger gempak==complete
               family goesupp
                 task jgfs_atmos_goesupp_f000
@@ -11384,13 +11384,13 @@ suite gfs_v17_nco
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_postbndpntbll
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postpnt
+              task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
             endfamily           //station
             task jgfs_wave_awips_gridded
               trigger ./gridded/jgfs_wave_post_gridded_f384==complete
             task jgfs_wave_awips_bulls
-              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_postpnt==complete
+              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_post_pnt==complete
             family gempak
               task jgfs_wave_gempak_f000
                 edit FHR '000'
@@ -11816,7 +11816,7 @@ suite gfs_v17_nco
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_wave_post_gridded_f009
             endfamily		//gridded
-            task jgdas_wave_postpnt
+            task jgdas_wave_post_pnt
               trigger ../../forecast/jgdas_fcst==complete
           endfamily  		//wave
         endfamily    		//product
@@ -15221,7 +15221,7 @@ suite gfs_v17_nco
               endfamily		//gempak
               task jgfs_atmos_gempak_meta
                 trigger gempak==complete
-              task jgfs_atmos_gempak_ncdcupapgif
+              task jgfs_atmos_gempak_ncdc_upapgif
                 trigger gempak==complete
               family goesupp
                 task jgfs_atmos_goesupp_f000
@@ -17614,13 +17614,13 @@ suite gfs_v17_nco
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_postbndpntbll
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postpnt
+              task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
             endfamily           //station
             task jgfs_wave_awips_gridded
               trigger ./gridded/jgfs_wave_post_gridded_f384==complete
             task jgfs_wave_awips_bulls
-              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_postpnt==complete
+              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_post_pnt==complete
             family gempak
               task jgfs_wave_gempak_f000
                 edit FHR '000'
@@ -18046,7 +18046,7 @@ suite gfs_v17_nco
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_wave_post_gridded_f009
             endfamily		//gridded
-            task jgdas_wave_postpnt
+            task jgdas_wave_post_pnt
               trigger ../../forecast/jgdas_fcst==complete
           endfamily  		//wave
         endfamily    		//product
@@ -21451,7 +21451,7 @@ suite gfs_v17_nco
               endfamily		//gempak
               task jgfs_atmos_gempak_meta
                 trigger gempak==complete
-              task jgfs_atmos_gempak_ncdcupapgif
+              task jgfs_atmos_gempak_ncdc_upapgif
                 trigger gempak==complete
               family goesupp
                 task jgfs_atmos_goesupp_f000
@@ -23844,13 +23844,13 @@ suite gfs_v17_nco
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_postbndpntbll
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postpnt
+              task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
             endfamily           //station
             task jgfs_wave_awips_gridded
               trigger ./gridded/jgfs_wave_post_gridded_f384==complete
             task jgfs_wave_awips_bulls
-              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_postpnt==complete
+              trigger ./gridded/jgfs_wave_post_gridded_f384==complete and ./station/jgfs_wave_post_pnt==complete
             family gempak
               task jgfs_wave_gempak_f000
                 edit FHR '000'
@@ -24277,7 +24277,7 @@ suite gfs_v17_nco
                 edit FHR_LIST '9'
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_wave_post_gridded_f009
             endfamily		//gridded
-            task jgdas_wave_postpnt
+            task jgdas_wave_post_pnt
               trigger ../../forecast/jgdas_fcst==complete
           endfamily  		//wave
         endfamily    		//product
