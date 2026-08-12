@@ -77,7 +77,7 @@ class SoilLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['soilletkfanl']  #, 'soilletkfaddinc'] #, 'soilensanlobs', 'soilensanlsol']
+        expected_keys = ['soilletkfanl'] # , 'soilletkfaddinc'] #, 'soilensanlobs', 'soilensanlsol']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -110,9 +110,9 @@ class SoilLetkfAnalysis(Analysis):
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['soilletkfanl'].initialize(clean_empty_obsspaces=False)
-        #self.jedi_dict['soilletkfaddinc'].initialize(self.task_config)
-        #self.jedi_dict['soilensanlobs'].initialize() #clean_empty_obsspaces=False)
-        #self.jedi_dict['soilensanlsol'].initialize() #clean_empty_obsspaces=False)
+       # self.jedi_dict['soilletkfaddinc'].initialize(self.task_config)
+       # self.jedi_dict['soilensanlobs'].initialize() #clean_empty_obsspaces=False)
+       # self.jedi_dict['soilensanlsol'].initialize() #clean_empty_obsspaces=False)
         
 #TODO:prepbufr proc 
 
@@ -167,14 +167,14 @@ class SoilLetkfAnalysis(Analysis):
             Instance of the SoilLetkfAnalysis object
         """
 
-        #backgrounds needed to create analysis (b+inc) already copied to DATA/anl/mem by soil_letkf_config.yaml.j2
+       # backgrounds needed to create analysis (b+inc) already copied to DATA/anl/mem by soil_letkf_config.yaml.j2
 #TODO: update this for csg files
         if self.task_config.DOIAU and not self.task_config.csg_increment:
             logger.info("Copying increments to beginning of window")
             template_in = f'soilinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             template_out = f'soilinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             for mem in range(1, self.task_config.NMEM_ENS + 1):
-                inclist = []  #TODO: would taking this out of loop speed things up?
+                inclist = [] # TODO: would taking this out of loop speed things up?
                 for itile in range(1, self.task_config.ntiles + 1):
                     filename_in = template_in.format(tilenum=itile)
                     filename_out = template_out.format(tilenum=itile)
@@ -189,7 +189,7 @@ class SoilLetkfAnalysis(Analysis):
             bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
 
-        #Add ens increments in parallel
+       # Add ens increments in parallel
         logger.info(f"Adding increments to {self.task_config.NMEM_ENS} members") 
         # loop over times to apply increments
         for bkgtime in bkgtimes:

@@ -82,7 +82,7 @@ class SoilAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['soilanlvar']  #, 'soilanladdinc']
+        expected_keys = ['soilanlvar'] # , 'soilanladdinc']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -110,12 +110,12 @@ class SoilAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['soilanlvar'].stage_obsdatain(self.task_config.COMIN_OBS)     #f"{self.task_config.COMIN_OBS}/soil"
+        self.jedi_dict['soilanlvar'].stage_obsdatain(self.task_config.COMIN_OBS)    # f"{self.task_config.COMIN_OBS}/soil"
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['soilanlvar'].initialize(clean_empty_obsspaces=True)
-        #self.jedi_dict['soilanladdinc'].initialize(self.task_config)
+       # self.jedi_dict['soilanladdinc'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:

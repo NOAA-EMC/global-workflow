@@ -112,14 +112,14 @@ class SnowLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['snowletkfanl', 'scf_to_ioda'] #, 'snowensanlobs', 'snowensanlsol']
+        expected_keys = ['snowletkfanl', 'scf_to_ioda'] 
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
         # Boolean to decide if SNOCVR_SNOMAD processing is done
         _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
         _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
         self.task_config.DO_SNOCVR_SNOMAD = (
-            "snocvr_snomad" in self.jedi_dict.snowletkfanl.jcb_config.observations and  
+            "snocvr_snomad" in self.jedi_dict.snowletkfanl.jcb_config.observations and
             (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
         )
 
@@ -153,8 +153,7 @@ class SnowLetkfAnalysis(Analysis):
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['snowletkfanl'].initialize(clean_empty_obsspaces=False)
-        #self.jedi_dict['snowensanlobs'].initialize() #clean_empty_obsspaces=False)
-        #self.jedi_dict['snowensanlsol'].initialize() #clean_empty_obsspaces=False)
+
         if self.task_config.DO_IMS_SCF:
             self.jedi_dict['scf_to_ioda'].initialize()
 
@@ -191,8 +190,8 @@ class SnowLetkfAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['snowletkfanl'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS,
-                                                     f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
+        self.jedi_dict['snowletkfanl'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS, 
+                f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
@@ -335,20 +334,20 @@ class SnowLetkfAnalysis(Analysis):
         self : Analysis
             Instance of the SnowLetkfAnalysis object
         """
-        
+
         if self.task_config.DOIAU:
             logger.info("Copying increments to beginning of window")
             template_in = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             template_out = f'snowinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             for mem in range(1, self.task_config.NMEM_ENS + 1):
-                inclist = []  #TODO: would taking this out of loop speed things up?
+                inclist = []  # TODO: would taking this out of loop speed things up?
                 for itile in range(1, self.task_config.ntiles + 1):
                     filename_in = template_in.format(tilenum=itile)
                     filename_out = template_out.format(tilenum=itile)
                     src = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_in)
                     dest = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_out)
                     inclist.append([src, dest])
-                FileHandler({'copy': inclist}).sync() #would taking this out of loop speed things up?
+                FileHandler({'copy': inclist}).sync()
 
         bkgtimes = []
         if self.task_config.DOIAU:
@@ -356,8 +355,8 @@ class SnowLetkfAnalysis(Analysis):
             bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
 
-        #Add ens increments in parallel
-        logger.info(f"Adding increments to {self.task_config.NMEM_ENS} members") 
+        # Add ens increments in parallel
+        logger.info(f"Adding increments to {self.task_config.NMEM_ENS} members")
         # loop over times to apply increments
         for bkgtime in bkgtimes:
             logger.info(f"Processing analysis valid: {bkgtime}")
