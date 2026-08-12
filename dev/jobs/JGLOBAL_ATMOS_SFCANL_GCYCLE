@@ -43,7 +43,6 @@ declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:
 declare -rx COMOUT_SOIL_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_SOIL_DIAG="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
-#letkf declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
