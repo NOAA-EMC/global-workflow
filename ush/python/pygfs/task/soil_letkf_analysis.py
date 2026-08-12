@@ -77,7 +77,7 @@ class SoilLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['soilletkfanl'] # , 'soilletkfaddinc'] #, 'soilensanlobs', 'soilensanlsol']
+        expected_keys = ['soilletkfanl']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -110,11 +110,8 @@ class SoilLetkfAnalysis(Analysis):
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['soilletkfanl'].initialize(clean_empty_obsspaces=False)
-       # self.jedi_dict['soilletkfaddinc'].initialize(self.task_config)
-       # self.jedi_dict['soilensanlobs'].initialize() #clean_empty_obsspaces=False)
-       # self.jedi_dict['soilensanlsol'].initialize() #clean_empty_obsspaces=False)
-        
-#TODO:prepbufr proc 
+
+    # TODO: prepbufr proc
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -150,15 +147,16 @@ class SoilLetkfAnalysis(Analysis):
         # Compress and save diag files to COM directory
         logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['soilletkfanl'].save_obsdataout(self.task_config.COMOUT_SOIL_DIAG_ENS,
-                                                    f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.soil_analysis.ioda_hofx")
+                                                       f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.soil_analysis.ioda_hofx")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
 
-#note this doesn't apply for adding soil incs (yet)
+    # note this doesn't apply for adding soil incs (yet)
     @logit(logger)
     def add_increments(self) -> None:
+
         """Executes the program "apply_soil_incr.x" to create analysis "sfc_data" files by adding increments to backgrounds
 
         Parameters
@@ -167,21 +165,21 @@ class SoilLetkfAnalysis(Analysis):
             Instance of the SoilLetkfAnalysis object
         """
 
-       # backgrounds needed to create analysis (b+inc) already copied to DATA/anl/mem by soil_letkf_config.yaml.j2
-#TODO: update this for csg files
+        # backgrounds needed to create analysis (b+inc) already copied to DATA/anl/mem by soil_letkf_config.yaml.j2
+        # TODO: update this for csg files
         if self.task_config.DOIAU and not self.task_config.csg_increment:
             logger.info("Copying increments to beginning of window")
             template_in = f'soilinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             template_out = f'soilinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             for mem in range(1, self.task_config.NMEM_ENS + 1):
-                inclist = [] # TODO: would taking this out of loop speed things up?
+                inclist = []  # TODO: would taking this out of loop speed things up?
                 for itile in range(1, self.task_config.ntiles + 1):
                     filename_in = template_in.format(tilenum=itile)
                     filename_out = template_out.format(tilenum=itile)
                     src = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_in)
                     dest = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_out)
                     inclist.append([src, dest])
-                FileHandler({'copy': inclist}).sync() #would taking this out of loop speed things up?
+                FileHandler({'copy': inclist}).sync()
 
         bkgtimes = []
         if self.task_config.DOIAU:
@@ -189,17 +187,17 @@ class SoilLetkfAnalysis(Analysis):
             bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
 
-       # Add ens increments in parallel
-        logger.info(f"Adding increments to {self.task_config.NMEM_ENS} members") 
+        # Add ens increments in parallel
+        logger.info(f"Adding increments to {self.task_config.NMEM_ENS} members")
         # loop over times to apply increments
         for bkgtime in bkgtimes:
             logger.info(f"Processing analysis valid: {bkgtime}")
             logger.info(f"Create namelist for APPLY_INCR_EXE")
             nml_template = self.task_config.APPLY_INCR_NML_TMPL
             if self.task_config.csg_increment:
-                inc_prefix=f'soilinc_{self.task_config.GPREFIX_ENS}csg_sfc.f006'
+                inc_prefix = f'soilinc_{self.task_config.GPREFIX_ENS}csg_sfc.f006'
             else:
-                inc_prefix=self.task_config.INC_PREFIX
+                inc_prefix = self.task_config.INC_PREFIX
             nml_config = {
                 'current_cycle': bkgtime,
                 'CASE': self.task_config.CASE,

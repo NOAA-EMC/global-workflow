@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # Initialize JEDI (2DVar) analysis
     soil_anl.initialize()
 
-    # Execute JEDI 
+    # Execute JEDI
     soil_anl.execute('soilanlvar')
 
     # non-liau: Add increments & and smc/stc consistency adj

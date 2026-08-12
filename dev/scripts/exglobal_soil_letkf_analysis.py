@@ -27,10 +27,10 @@ if __name__ == '__main__':
     # Execute JEDI soil analysis
     soil_letkf_anl.execute('soilletkfanl')
 
-    # non-liau: Add increments & and smc/stc consistency adj  
-   # TODO: recentering if needed
-    if soil_letkf_anl.task_config.ADD_SOIL_INC:    
-        soil_letkf_anl.add_increments()     
+    # non-liau: Add increments & and smc/stc consistency adj
+    # TODO: recentering if needed
+    if soil_letkf_anl.task_config.ADD_SOIL_INC:
+        soil_letkf_anl.add_increments()
 
     # Finalize JEDI soil analysis
     soil_letkf_anl.finalize()

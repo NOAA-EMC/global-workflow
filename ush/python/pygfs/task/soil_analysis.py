@@ -24,7 +24,7 @@ logger = getLogger(__name__.split('.')[-1])
 
 class SoilAnalysis(Analysis):
     """
-    Class for JEDI-based global Soil analysis tasks 
+    Class for JEDI-based global Soil analysis tasks
     (adapted from global-workflow/ush/python/pygfs/task/snow_analysis.py)
     """
 
@@ -82,7 +82,7 @@ class SoilAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['soilanlvar'] # , 'soilanladdinc']
+        expected_keys = ['soilanlvar']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -115,7 +115,6 @@ class SoilAnalysis(Analysis):
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['soilanlvar'].initialize(clean_empty_obsspaces=True)
-       # self.jedi_dict['soilanladdinc'].initialize(self.task_config)
 
     @logit(logger)
     def execute(self, jedi_dict_key: str) -> None:
@@ -147,11 +146,11 @@ class SoilAnalysis(Analysis):
         self : Analysis
             Instance of the SoilAnalysis object
         """
-        
+
         # Compress and save diag files to COM directory
         logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['soilanlvar'].save_obsdataout(self.task_config.COMOUT_SOIL_DIAG,
-                                                    f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.soil_analysis.ioda_hofx")
+                                                     f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.soil_analysis.ioda_hofx")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
@@ -183,7 +182,8 @@ class SoilAnalysis(Analysis):
                 dest = os.path.join(self.task_config.DATA, "anl", filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
-#TODO: update this for csg files
+
+        # TODO: update this for csg files
         if self.task_config.DOIAU and not self.task_config.csg_increment:
             logger.info("Copying increments to beginning of window")
             template_in = f'soilinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
@@ -203,9 +203,9 @@ class SoilAnalysis(Analysis):
             logger.info("Create namelist for APPLY_INCR_EXE")
             nml_template = self.task_config.APPLY_INCR_NML_TMPL
             if self.task_config.csg_increment:
-                inc_prefix=f'soilinc_{self.task_config.GPREFIX}csg_sfc.f006'
+                inc_prefix = f'soilinc_{self.task_config.GPREFIX}csg_sfc.f006'
             else:
-                inc_prefix=self.task_config.INC_PREFIX
+                inc_prefix = self.task_config.INC_PREFIX
             nml_config = {
                 'current_cycle': bkgtime,
                 'CASE': self.task_config.CASE,
