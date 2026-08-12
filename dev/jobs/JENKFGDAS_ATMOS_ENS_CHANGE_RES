@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -x
 export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
-source "${HOMEglobal}/ush/jjob_header.sh" -e "anal" -c "base wdqms"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -15,19 +15,28 @@ source "${USHglobal}/jjob_shell_setup.sh"
 source "${USHglobal}/set_strict.sh"
 
 ##############################################
+# Set variables used in the script
+##############################################
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
+
+##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
-declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos/wdqms"
-mkdir -m 775 -p "${COMOUT}"
+export APREFIX="${RUN/enkf/}.t${cyc}z."
+export APREFIX_ENS="${RUN}.t${cyc}z."
+
+declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMOUT_ATMOS_HISTORY="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/model/atmos/history"
+
+declare -rx COMIN_ATMOS_HISTORY_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem001/model/atmos/history"
 
 ###############################################################
 # Run relevant script
-${WDQMSSH:-${SCRglobal}/exgdas_atmos_analysis_wdqms.sh} && true
+${CHGRESFCSTSH:-${SCRglobal}/exenkfgdas_atmos_ens_change_res.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run chgres for the ensemble"
 fi
 
 ##############################################

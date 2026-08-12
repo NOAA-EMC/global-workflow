@@ -3,7 +3,7 @@ set -x
 
 ################################################################################
 # UNIX Script Documentation Block
-# Name:     exgdas_atmos_analysis_wdqms.sh
+# Name:     exgdas_atmos_anal_wdqms.sh
 # Author:   Rahul Mahajan
 # Org:      NCEP/EMC
 # Abstract: This script unpacks GSI diagnostic files, runs them through a python

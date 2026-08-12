@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_SNOW_ANAL_ENS"
+"${HOMEglobal}/dev/jobs/JGLOBAL_SNOW_ENS_ANAL"
 status=$?
 exit "${status}"

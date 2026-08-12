@@ -58,7 +58,7 @@ suite gfs_v17_nco
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_snow_anal==complete
             task jgfs_atmos_anal_calc
               trigger jgfs_atmos_anal_sfc_gcycle==complete
-            task jgfs_atmos_analupp
+            task jgfs_atmos_upp_anal
               trigger jgfs_atmos_anal_calc==complete
           endfamily		//atmos
           family marine
@@ -845,7 +845,7 @@ suite gfs_v17_nco
             event 1679 release_gfs_atmos_goesupp_f381
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
-            trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgfs_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 1683 release_gfs_fcst_manager
           task jgfs_fcst_manager
             trigger jgfs_fcst:release_gfs_fcst_manager
@@ -1692,7 +1692,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -5390,8 +5390,8 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_snow_anal==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../18/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
-            task jgdas_atmos_analupp
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../18/enkfgdas/analysis/create/jenkfgdas_atmos_ens_change_res==complete
+            task jgdas_atmos_upp_anal
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
           family marine
@@ -5443,7 +5443,7 @@ suite gfs_v17_nco
             event 208 release_gdas_wave_post_gridded_f008
             event 209 release_gdas_wave_post_gridded_f009
           task jgdas_fcst
-            trigger ../analysis/atmos/jgdas_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgdas_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 210 release_gdas_fcst_manager
           task jgdas_fcst_manager
             trigger jgdas_fcst:release_gdas_fcst_manager
@@ -5494,7 +5494,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgdas_atmos_upp_anal==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -5612,20 +5612,20 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../18/enkfgdas/ensstat==complete
-            task jenkfgdas_snow_anal_ens
+            task jenkfgdas_snow_ens_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../18/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../18/enkfgdas/ensstat==complete
-            task jenkfgdas_atmos_diag_ens
+            task jenkfgdas_atmos_ens_diag
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_atmos_change_res_ens
+              trigger jenkfgdas_atmos_ens_diag==complete
+            task jenkfgdas_atmos_ens_change_res
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
-              trigger jenkfgdas_snow_anal_ens==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
+              trigger jenkfgdas_snow_ens_anal==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
@@ -6289,7 +6289,7 @@ suite gfs_v17_nco
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_snow_anal==complete
             task jgfs_atmos_anal_calc
               trigger jgfs_atmos_anal_sfc_gcycle==complete
-            task jgfs_atmos_analupp
+            task jgfs_atmos_upp_anal
               trigger jgfs_atmos_anal_calc==complete
           endfamily		//atmos
           family marine
@@ -7076,7 +7076,7 @@ suite gfs_v17_nco
             event 1679 release_gfs_atmos_goesupp_f381
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
-            trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgfs_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 1683 release_gfs_fcst_manager
           task jgfs_fcst_manager
             trigger jgfs_fcst:release_gfs_fcst_manager
@@ -7923,7 +7923,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -11620,8 +11620,8 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_snow_anal==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../00/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
-            task jgdas_atmos_analupp
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../00/enkfgdas/analysis/create/jenkfgdas_atmos_ens_change_res==complete
+            task jgdas_atmos_upp_anal
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
           family marine
@@ -11673,7 +11673,7 @@ suite gfs_v17_nco
             event 208 release_gdas_wave_post_gridded_f008
             event 209 release_gdas_wave_post_gridded_f009
           task jgdas_fcst
-            trigger ../analysis/atmos/jgdas_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgdas_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 210 release_gdas_fcst_manager
           task jgdas_fcst_manager
             trigger jgdas_fcst:release_gdas_fcst_manager
@@ -11724,7 +11724,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgdas_atmos_upp_anal==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -11842,20 +11842,20 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../00/enkfgdas/ensstat==complete
-            task jenkfgdas_snow_anal_ens
+            task jenkfgdas_snow_ens_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../00/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../00/enkfgdas/ensstat==complete
-            task jenkfgdas_atmos_diag_ens
+            task jenkfgdas_atmos_ens_diag
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_atmos_change_res_ens
+              trigger jenkfgdas_atmos_ens_diag==complete
+            task jenkfgdas_atmos_ens_change_res
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
-              trigger jenkfgdas_snow_anal_ens==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
+              trigger jenkfgdas_snow_ens_anal==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
@@ -12519,7 +12519,7 @@ suite gfs_v17_nco
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_snow_anal==complete
             task jgfs_atmos_anal_calc
               trigger jgfs_atmos_anal_sfc_gcycle==complete
-            task jgfs_atmos_analupp
+            task jgfs_atmos_upp_anal
               trigger jgfs_atmos_anal_calc==complete
           endfamily		//atmos
           family marine
@@ -13306,7 +13306,7 @@ suite gfs_v17_nco
             event 1679 release_gfs_atmos_goesupp_f381
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
-            trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgfs_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 1683 release_gfs_fcst_manager
           task jgfs_fcst_manager
             trigger jgfs_fcst:release_gfs_fcst_manager
@@ -14153,7 +14153,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -17850,8 +17850,8 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_snow_anal==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../06/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
-            task jgdas_atmos_analupp
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../06/enkfgdas/analysis/create/jenkfgdas_atmos_ens_change_res==complete
+            task jgdas_atmos_upp_anal
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
           family marine
@@ -17903,7 +17903,7 @@ suite gfs_v17_nco
             event 208 release_gdas_wave_post_gridded_f008
             event 209 release_gdas_wave_post_gridded_f009
           task jgdas_fcst
-            trigger ../analysis/atmos/jgdas_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgdas_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 210 release_gdas_fcst_manager
           task jgdas_fcst_manager
             trigger jgdas_fcst:release_gdas_fcst_manager
@@ -17954,7 +17954,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgdas_atmos_upp_anal==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -18072,20 +18072,20 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../06/enkfgdas/ensstat==complete
-            task jenkfgdas_snow_anal_ens
+            task jenkfgdas_snow_ens_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../06/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../06/enkfgdas/ensstat==complete
-            task jenkfgdas_atmos_diag_ens
+            task jenkfgdas_atmos_ens_diag
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_atmos_change_res_ens
+              trigger jenkfgdas_atmos_ens_diag==complete
+            task jenkfgdas_atmos_ens_change_res
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
-              trigger jenkfgdas_snow_anal_ens==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
+              trigger jenkfgdas_snow_ens_anal==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter
@@ -18749,7 +18749,7 @@ suite gfs_v17_nco
               trigger jgfs_atmos_anal==complete and ../snow/jgfs_snow_anal==complete
             task jgfs_atmos_anal_calc
               trigger jgfs_atmos_anal_sfc_gcycle==complete
-            task jgfs_atmos_analupp
+            task jgfs_atmos_upp_anal
               trigger jgfs_atmos_anal_calc==complete
           endfamily		//atmos
           family marine
@@ -19536,7 +19536,7 @@ suite gfs_v17_nco
             event 1679 release_gfs_atmos_goesupp_f381
             event 1682 release_gfs_atmos_goesupp_f384
           task jgfs_fcst
-            trigger ../analysis/atmos/jgfs_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgfs_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 1683 release_gfs_fcst_manager
           task jgfs_fcst_manager
             trigger jgfs_fcst:release_gfs_fcst_manager
@@ -20383,7 +20383,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_product_f384
             endfamily		//product
             task jgfs_atmos_analprod
-              trigger ../../analysis/atmos/jgfs_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
             task jgfs_atmos_postsnd
               trigger ./product/jgfs_atmos_product_f180==complete
             task jgfs_atmos_fbwind
@@ -24081,8 +24081,8 @@ suite gfs_v17_nco
             task jgdas_atmos_anal_sfc_gcycle
               trigger jgdas_atmos_anal==complete and ../snow/jgdas_snow_anal==complete
             task jgdas_atmos_anal_calc
-              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../12/enkfgdas/analysis/create/jenkfgdas_atmos_change_res_ens==complete
-            task jgdas_atmos_analupp
+              trigger jgdas_atmos_anal_sfc_regrid==complete and jgdas_atmos_anal_sfc_gcycle==complete and ../../../../12/enkfgdas/analysis/create/jenkfgdas_atmos_ens_change_res==complete
+            task jgdas_atmos_upp_anal
               trigger jgdas_atmos_anal_calc==complete
           endfamily  		//atmos
           family marine
@@ -24134,7 +24134,7 @@ suite gfs_v17_nco
             event 208 release_gdas_wave_post_gridded_f008
             event 209 release_gdas_wave_post_gridded_f009
           task jgdas_fcst
-            trigger ../analysis/atmos/jgdas_atmos_analupp==complete and ../init==complete and ../analysis/marine==complete
+            trigger ../analysis/atmos/jgdas_atmos_upp_anal==complete and ../init==complete and ../analysis/marine==complete
             event 210 release_gdas_fcst_manager
           task jgdas_fcst_manager
             trigger jgdas_fcst:release_gdas_fcst_manager
@@ -24185,7 +24185,7 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgdas_fcst_fsm:release_gdas_atmos_product_f009
             endfamily		//product
             task jgdas_atmos_analprod
-              trigger ../../analysis/atmos/jgdas_atmos_analupp==complete
+              trigger ../../analysis/atmos/jgdas_atmos_upp_anal==complete
             family gempak
               family gempak
                 task jgdas_atmos_gempak_f000
@@ -24303,20 +24303,20 @@ suite gfs_v17_nco
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../12/enkfgdas/ensstat==complete
-            task jenkfgdas_snow_anal_ens
+            task jenkfgdas_snow_ens_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
               #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep==complete and ../../../../12/enkfgdas/ensstat==complete
               trigger ../../../gdas/prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../12/enkfgdas/ensstat==complete
-            task jenkfgdas_atmos_diag_ens
+            task jenkfgdas_atmos_ens_diag
               trigger jenkfgdas_atmos_ens_observer==complete
             task jenkfgdas_atmos_ens_update
-              trigger jenkfgdas_atmos_diag_ens==complete
-            task jenkfgdas_atmos_change_res_ens
+              trigger jenkfgdas_atmos_ens_diag==complete
+            task jenkfgdas_atmos_ens_change_res
               trigger ../../../gdas/forecast/jgdas_fcst_manager==complete and ../../forecast/jenkfgdas_fcst_manager_mem001==complete
             task jenkfgdas_atmos_ens_anal_sfc_regrid
               trigger jenkfgdas_atmos_ens_update==complete
             task jenkfgdas_atmos_ens_anal_sfc_gcycle
-              trigger jenkfgdas_snow_anal_ens==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
+              trigger jenkfgdas_snow_ens_anal==complete and ../../../gdas/analysis/atmos/jgdas_atmos_anal_calc==complete
           endfamily		//create
           family recenter
             task jenkfgdas_marine_ens_recenter

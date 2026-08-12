@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_DIAG_ENS"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_ENS_DIAG"
 status=$?
 
 exit "${status}"

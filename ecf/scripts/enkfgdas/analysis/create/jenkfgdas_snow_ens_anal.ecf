@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_atmos_diag_ens_%CYC%
+#PBS -N enkfgdas_snow_anal_ens_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:15:00
-#PBS -l select=1:mpiprocs=128:ompthreads=1:ncpus=128:mem=48GB
+#PBS -l walltime=00:50:00
+#PBS -l select=4:mpiprocs=64:ompthreads=2:ncpus=128
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -17,7 +17,7 @@ export cyc="%CYC%"
 # Load modules
 ############################################################
 #TODO: load only the modules needed for each job
-source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+source ${HOMEgfs}/dev/ush/load_modules.sh ufsda
 
 module list
 ############################################################
@@ -25,7 +25,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-${HOMEgfs}/jobs/JGLOBAL_ATMOS_DIAG_ENS
+${HOMEgfs}/jobs/JGLOBAL_SNOW_ENS_ANAL
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -35,14 +35,16 @@ fi
 %include <tail.h>
 %manual
 
-TASK enkfgdas_atmos_diag_ens
+TASK enkfgdas_snow_anal_ens
 
-PURPOSE: EnKF ensemble diagnostics -- creates diagnostic files for ensemble
-analysis members.
+PURPOSE: Applies snow analysis to ensemble members -- ensures consistent snow
+state across all members.
 
 TROUBLESHOOTING
 
-Depends on EnKF update (eupd) completion. If update failed, no
-diagnostics to produce. Lightweight job. Non-blocking for forecast path.
+Depends on deterministic snow analysis (snowanl) completing. If snow
+analysis failed, ensemble snow update cannot proceed. Check that snow
+analysis output exists. Per-member update -- individual failures
+possible but non-critical.
 
 %end
