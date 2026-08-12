@@ -25,8 +25,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/snowanl.sh
-${HOMEgfs}/jobs/JGLOBAL_SNOW_ANALYSIS
+${HOMEgfs}/jobs/JGLOBAL_SNOW_ANAL
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

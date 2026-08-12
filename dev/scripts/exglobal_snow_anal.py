@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exglobal_snow_analysis.py
+# exglobal_snow_anal.py
 # This script creates an SnowAnalysis class
 # and runs the initialize, execute and finalize methods
 # for a global Snow Depth analysis
