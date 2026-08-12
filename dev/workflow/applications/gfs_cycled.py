@@ -75,6 +75,7 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_hybvar_ocn'] = base.get('DOHYBVAR_OCN', False)
             run_options[run]['do_enkfonly_atm'] = base.get('DOENKFONLY_ATM', False)
             run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
+            run_options[run]['do_letkf_ocn_inc'] = base.get('DOLETKF_OCN_INC', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
             run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
@@ -128,7 +129,7 @@ class GFSCycledAppConfig(AppConfig):
 
         if options['do_jediocnvar']:
             configs += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar']
-            if options['do_letkf_ocn']:
+            if options['do_letkf_ocn'] or options['do_letkf_ocn_inc']:
                 configs += ['marineanlletkf']
             if options['do_hybvar']:
                 configs += ['marineanlecen']
@@ -194,7 +195,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['awips', 'fbwind']
 
         if options['do_wave']:
-            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            configs += ['waveinit', 'wavepostgridded', 'wavepostpnt']
             if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
             if options['do_gempak']:
@@ -361,7 +362,7 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['metp']
 
                 if options['do_wave']:
-                    task_names[run] += ['wavepostsbs']
+                    task_names[run] += ['wavepostgridded']
                     if options['do_wave_bnd']:
                         task_names[run] += wave_bndpnt_tasks
                     task_names[run] += ['wavepostpnt']
@@ -422,7 +423,7 @@ class GFSCycledAppConfig(AppConfig):
                     task_names[run] += ['ediag']
 
                 if options['do_jediocnvar']:
-                    if options['do_letkf_ocn']:
+                    if options['do_letkf_ocn'] or options['do_letkf_ocn_inc']:
                         task_names[run] += ['marineanlletkf']
                     if options['do_hybvar']:
                         task_names[run] += ['marineanlecen']

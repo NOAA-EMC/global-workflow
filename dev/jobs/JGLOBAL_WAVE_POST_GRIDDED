@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -x
 
-source "${HOMEglobal}/ush/jjob_header.sh" -e "wavepostsbs" -c "base wave wavepostsbs"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "wavepostgridded" -c "base wave wavepostgridded"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -26,7 +26,7 @@ else
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
 fi
 
-declare -rx COMIN_WAVE_PREP="${COMIN}/model/wave/prep"
+declare -rx COMIN_WAVE_INIT="${COMIN}/model/wave/init"
 declare -rx COMIN_WAVE_HISTORY="${COMIN}/model/wave/history"
 declare -rx COMOUT_WAVE_GRID="${COMOUT}/products/wave/gridded"
 
@@ -43,7 +43,7 @@ else
 fi
 
 # Execute the Script
-"${SCRglobal}/exgfs_wave_post_gridded_sbs.sh" && true
+"${SCRglobal}/exglobal_wave_post_gridded.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "ex-script of gridded wave post failed!"

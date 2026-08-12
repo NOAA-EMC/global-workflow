@@ -304,7 +304,7 @@ class SFSTasks(Tasks):
 
         return task
 
-    def wavepostsbs(self):
+    def wavepostgridded(self):
 
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'], {'MEMDIR': 'mem#member#'})
@@ -315,9 +315,9 @@ class SFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostgridded'], 'wave')
 
-        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        max_tasks = self._configs['wavepostgridded']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
         wave_post_envars = self.envars.copy()
@@ -328,7 +328,7 @@ class SFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('wavepostsbs')
+        resources = self.get_resource('wavepostgridded')
 
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
@@ -340,7 +340,7 @@ class SFSTasks(Tasks):
                      'dependency': dependencies,
                      'envars': wave_post_envars,
                      'cycledef': self.run,
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/wavepostsbs.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/wavepostgridded.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'

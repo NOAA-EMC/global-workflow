@@ -10,7 +10,7 @@
 dev/ci/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 dev/ctests/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 
-dev/ecf/ @TravisElless-NOAA @DavidHuber-NOAA 
+dev/ecf/ @TravisElless-NOAA @DavidHuber-NOAA
 
 # Specific file owners
 # dev side scripts
@@ -230,3 +230,7 @@ modulefiles/gw_setup.aws-ec2.lua @WalterKolczynski-NOAA @weihuang-jedi
 parm/fetch/gcafs_ATMA_gdas-anl_aws-ec2.yaml.j2 @WalterKolczynski-NOAA @weihuang-jedi
 versions/build.aws-ec2.ver @WalterKolczynski-NOAA @weihuang-jedi
 versions/run.aws-ec2.ver @WalterKolczynski-NOAA @weihuang-jedi
+
+# Workflows
+.github/workflows @DavidHuber-NOAA @TravisElless-NOAA @TerrenceMcGuinness-NOAA
+.github/scripts @DavidHuber-NOAA @TravisElless-NOAA @TerrenceMcGuinness-NOAA

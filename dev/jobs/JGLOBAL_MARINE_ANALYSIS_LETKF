@@ -2,7 +2,7 @@
 set -x
 
 # Use ${DATAROOT/enkf} because DATAjob is created by a gdas_marineanlinit job
-export DATAjob="${DATAROOT/enkf/}/marineanalysis.${PDY:-}${cyc}"
+export DATAjob="${DATAROOT/enkf/}/${RUN/enkf/}_marineanalysis.${PDY:-}${cyc}"
 export DATA="${DATAjob}/marineanlletkf"
 export DATAens="${DATAjob}/ensdata"
 if [[ ! -d "${DATAens}" ]]; then mkdir -p "${DATAens}"; fi
@@ -50,12 +50,17 @@ declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice
 
 declare -rx COMIN_OBS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/obs"
 
-declare -rx COMOUT_OCEAN_LETKF="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean/letkf"
-declare -rx COMOUT_ICE_LETKF="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/letkf"
+declare -rx COMOUT_OCEAN_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean"
+declare -rx COMOUT_ICE_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice"
+declare -rx COMOUT_OCEAN_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/ocean"
+declare -rx COMOUT_ICE_ANALYSIS_ENSSTAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/ice"
 
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/conf"
 
-if [[ ! -d "${COMOUT_ICE_LETKF}" ]]; then mkdir -p "${COMOUT_ICE_LETKF}"; fi
+if [[ ! -d "${COMOUT_OCEAN_ANALYSIS}" ]]; then mkdir -p "${COMOUT_OCEAN_ANALYSIS}"; fi
+if [[ ! -d "${COMOUT_ICE_ANALYSIS}" ]]; then mkdir -p "${COMOUT_ICE_ANALYSIS}"; fi
+if [[ ! -d "${COMOUT_OCEAN_ANALYSIS_ENSSTAT}" ]]; then mkdir -p "${COMOUT_OCEAN_ANALYSIS_ENSSTAT}"; fi
+if [[ ! -d "${COMOUT_ICE_ANALYSIS_ENSSTAT}" ]]; then mkdir -p "${COMOUT_ICE_ANALYSIS_ENSSTAT}"; fi
 if [[ ! -d ${COMOUT_CONF} ]]; then mkdir -p "${COMOUT_CONF}"; fi
 ##############################################
 # Begin JOB SPECIFIC work
