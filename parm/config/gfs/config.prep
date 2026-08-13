@@ -10,11 +10,10 @@ source "${EXPDIR}/config.resources" prep
 
 export cdate10=${PDY}${cyc}
 
-# Relocation and syndata QC
+# Syndata (tcvitals) QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 [[ ${RUN_ENVIR} == "nco" && ${envir} == "prod" ]] && export PROCESS_TROPCY="YES"
-export DO_RELOCATE="NO"
-export TROPCYQCRELOSH="${SCRglobal}/exglobal_atmos_tropcy_qc_reloc.sh"
+export TROPCYQCSH="${SCRglobal}/exglobal_atmos_tropcy_qc.sh"
 export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 # Allow users to control the generation or use of either operational or
