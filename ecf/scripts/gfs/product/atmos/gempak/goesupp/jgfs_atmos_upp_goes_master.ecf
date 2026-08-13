@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_goesupp_%CYC%_f%FHR%
+#PBS -N gfs_atmos_upp_goes_%CYC%_f%FHR%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -57,7 +57,6 @@ export UPP_RUN="goes"
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/upp.sh
 ${HOMEgfs}/jobs/JGLOBAL_ATMOS_UPP
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -68,7 +67,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_atmos_goesupp_master
+TASK gfs_atmos_upp_goes_master
 
 PURPOSE: Runs UPP in GOES supplemental mode to generate simulated geostationary
 satellite imagery from GFS forecast output. Per-hour _master template.

@@ -379,7 +379,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s ${atm_log} ]]; then
                         release_event="YES"
                         atm_history_product_ready[fhr]="YES"
-                        ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
+                        ecflow_client --event "release_gfs_atmos_upp_goes_f${fhr_3d}"
                     fi
                 fi
             fi

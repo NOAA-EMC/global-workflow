@@ -234,18 +234,18 @@ done
 # gfs atmos goesupp files
 cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/goesupp"
 echo "Copy gfs atmos goesupp files ..."
-rm -f jgfs_atmos_goesupp_f*.ecf
+rm -f jgfs_atmos_upp_goes_f*.ecf
 fhr_end=384
 fhr_start=0
 while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     head_3d=$(printf "%03d" "${fhr_start}")
-    cp jgfs_atmos_goesupp_master.ecf "jgfs_atmos_goesupp_f${head_3d}.ecf"
+    cp jgfs_atmos_upp_goes_master.ecf "jgfs_atmos_upp_goes_f${head_3d}.ecf"
     if [[ "${fhr_start}" -lt 120 ]]; then
         fhr_start=$((fhr_start + 1))
     else
         fhr_start=$((fhr_start + 3))
     fi
-    add_to_tmpfile "scripts/gfs/product/atmos/gempak/goesupp/jgfs_atmos_goesupp_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/atmos/gempak/goesupp/jgfs_atmos_upp_goes_f${head_3d}.ecf"
 done
 
 # gfs atmos 20km 1p0 files
