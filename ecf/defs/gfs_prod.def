@@ -1693,7 +1693,7 @@ suite gfs_v17_nco
             endfamily		//product
             task jgfs_atmos_products_anal
               trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
-            task jgfs_atmos_postsnd
+            task jgfs_atmos_post_snd
               trigger ./product/jgfs_atmos_products_f180==complete
             task jgfs_atmos_fbwind
               trigger ./product/jgfs_atmos_products_f006 == complete and ./product/jgfs_atmos_products_f012 == complete and ./product/jgfs_atmos_products_f024 == complete
@@ -7924,7 +7924,7 @@ suite gfs_v17_nco
             endfamily		//product
             task jgfs_atmos_products_anal
               trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
-            task jgfs_atmos_postsnd
+            task jgfs_atmos_post_snd
               trigger ./product/jgfs_atmos_products_f180==complete
             task jgfs_atmos_fbwind
               trigger ./product/jgfs_atmos_products_f006 == complete and ./product/jgfs_atmos_products_f012 == complete and ./product/jgfs_atmos_products_f024 == complete
@@ -14154,7 +14154,7 @@ suite gfs_v17_nco
             endfamily		//product
             task jgfs_atmos_products_anal
               trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
-            task jgfs_atmos_postsnd
+            task jgfs_atmos_post_snd
               trigger ./product/jgfs_atmos_products_f180==complete
             task jgfs_atmos_fbwind
               trigger ./product/jgfs_atmos_products_f006 == complete and ./product/jgfs_atmos_products_f012 == complete and ./product/jgfs_atmos_products_f024 == complete
@@ -20384,7 +20384,7 @@ suite gfs_v17_nco
             endfamily		//product
             task jgfs_atmos_products_anal
               trigger ../../analysis/atmos/jgfs_atmos_upp_anal==complete
-            task jgfs_atmos_postsnd
+            task jgfs_atmos_post_snd
               trigger ./product/jgfs_atmos_products_f180==complete
             task jgfs_atmos_fbwind
               trigger ./product/jgfs_atmos_products_f006 == complete and ./product/jgfs_atmos_products_f012 == complete and ./product/jgfs_atmos_products_f024 == complete

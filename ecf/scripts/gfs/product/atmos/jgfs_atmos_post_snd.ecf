@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_postsnd_%CYC%
+#PBS -N gfs_atmos_post_snd_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -51,8 +51,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/postsnd.sh
-${HOMEgfs}/jobs/JGFS_ATMOS_POSTSND
+${HOMEgfs}/jobs/JGFS_ATMOS_POST_SND
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -62,7 +61,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_atmos_postsnd
+TASK gfs_atmos_post_snd
 
 PURPOSE: Generates BUFR sounding profiles at 2246 station locations worldwide.
 It has heavy I/O and single-instance looping internally.
