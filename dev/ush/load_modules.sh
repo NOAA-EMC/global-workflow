@@ -137,23 +137,6 @@ case "${MODULE_TYPE}" in
 
         pip list
 
-        # Detect the Python major.minor version
-        _regex="[0-9]+\.[0-9]+"
-        if [[ $(python --version) =~ ${_regex} ]]; then
-            export PYTHON_VERSION="${BASH_REMATCH[0]}"
-        else
-            echo "FATAL ERROR: Could not detect the python version"
-            exit 1
-        fi
-
-        ###############################################################
-        # setup python path for ioda utilities
-        # TODO: a better solution should be created for setting paths to package python scripts
-        # shellcheck disable=SC2311
-        pyiodaPATH="${HOMEglobal}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/"
-        pybufrPATH="${HOMEglobal}/sorc/gdas.cd/build/lib/python${PYTHON_VERSION}/site-packages/"
-        PYTHONPATH="${pyiodaPATH}:${pybufrPATH}${PYTHONPATH:+:${PYTHONPATH}}"
-        export PYTHONPATH
         ;;
 
     "run" | "gsi" | "verif" | "setup" | "upp")

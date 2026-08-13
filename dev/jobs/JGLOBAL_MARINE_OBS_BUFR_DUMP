@@ -21,6 +21,8 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
+export LD_LIBRARY_PATH
 
 _obsproc_base=$(compath.py "${envir}/obsproc/${obsproc_ver}" 2> /dev/null) || _obsproc_base="${DMPDIR}"
 export COMIN_OBSPROC="${_obsproc_base}/${RUN}.${PDY}/${cyc}"

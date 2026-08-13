@@ -24,6 +24,8 @@ source "${USHglobal}/set_strict.sh"
 # Setup Python path for pygfs
 PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONPATH
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
+export LD_LIBRARY_PATH
 
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153

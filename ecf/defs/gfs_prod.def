@@ -20,7 +20,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_tropcy_qc_reloc
+            task jgfs_atmos_tropcy_qc
               #event 1 jtwc_bull_email
               trigger :TIME >= 0241 and :TIME < 0245
             task jgfs_atmos_prep_sfc
@@ -5349,7 +5349,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_tropcy_qc_reloc
+            task jgdas_atmos_tropcy_qc
               trigger :TIME >= 0545 and :TIME < 0550
             task jgdas_atmos_prep_sfc
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
@@ -6251,7 +6251,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_tropcy_qc_reloc
+            task jgfs_atmos_tropcy_qc
               #event 1 jtwc_bull_email
               trigger :TIME >= 0841 and :TIME < 0845
             task jgfs_atmos_prep_sfc
@@ -11580,7 +11580,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_tropcy_qc_reloc
+            task jgdas_atmos_tropcy_qc
               trigger :TIME >= 1145 and :TIME < 1150
             task jgdas_atmos_prep_sfc
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
@@ -12481,7 +12481,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_tropcy_qc_reloc
+            task jgfs_atmos_tropcy_qc
               #event 1 jtwc_bull_email
               trigger :TIME >= 1441 and :TIME < 1445
             task jgfs_atmos_prep_sfc
@@ -17810,7 +17810,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_tropcy_qc_reloc
+            task jgdas_atmos_tropcy_qc
               trigger :TIME >= 1745 and :TIME < 1750
             task jgdas_atmos_prep_sfc
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
@@ -18711,7 +18711,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgfs_atmos_tropcy_qc_reloc
+            task jgfs_atmos_tropcy_qc
               #event 1 jtwc_bull_email
               trigger :TIME >= 2041 and :TIME < 2045
             task jgfs_atmos_prep_sfc
@@ -24040,7 +24040,7 @@ suite gfs_v17_nco
         family prep
           family atmos
             edit WGF 'atmos'
-            task jgdas_atmos_tropcy_qc_reloc
+            task jgdas_atmos_tropcy_qc
               trigger :TIME >= 2345 and :TIME < 2350
             task jgdas_atmos_prep_sfc
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
