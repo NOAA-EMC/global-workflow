@@ -35,7 +35,9 @@ ecf/scripts/gfs/product/atmos/awips_20km_1p0/jgfs_atmos_awips_20km_1p0_f*.ecf
 ecf/scripts/gfs/product/atmos/gempak/gempak/jgfs_atmos_gempak_f*.ecf
 ecf/scripts/gfs/product/atmos/gempak/goesupp/jgfs_atmos_upp_goes_f*.ecf
 ecf/scripts/gfs/product/atmos/gempak/grb2spec/jgfs_atmos_gempak_pgrb2_spec_f*.ecf
-ecf/scripts/gfs/product/atmos/product/jgfs_atmos_product_f*.ecf
+ecf/scripts/gfs/product/atmos/product/jgfs_atmos_products_f*.ecf
+ecf/scripts/gfs/product/ocean/product/jgfs_ocean_products_f*.ecf
+ecf/scripts/gfs/product/ice/product/jgfs_ice_products_f*.ecf
 ecf/scripts/gfs/product/wave/gempak/jgfs_wave_gempak_f*.ecf
 ecf/scripts/gfs/product/wave/gridded/jgfs_wave_post_gridded_f*.ecf
 
