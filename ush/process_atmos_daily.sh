@@ -101,6 +101,7 @@ mkdir -p "${OUTDIR}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
 mkdir -p "${OUTDIR_FINAL}/acc.daily.${MEMDIR}" "${OUTDIR}/inst.daily.${MEMDIR}"
 mkdir -p "${OUTDIR_FINAL}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
 dest_acc="${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
+dest_acc_tmp="${OUTDIR}/acc.daily.${MEMDIR}/tmp.acc.daily.${filename_start}${filemm}${filename_end}"  #lcdc/mcdc/hcdc removed
 dest_inst="${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
 dest_final_acc="${OUTDIR_FINAL}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
 dest_final_inst="${OUTDIR_FINAL}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
@@ -116,8 +117,13 @@ if [[ -d "${tmp_acc_work_dir}" ]]; then
         echo "INFO: Task ${i} merging ${#acc_files[@]} days for ACC using array expansion."
         # Use "${acc_files[@]}" to pass each file as a unique argument
         ${GMERGE} "${dest_acc}" "${acc_files[@]}"
-        # cp acc daily files to COMOUT
-        cpfs "${dest_acc}" "${dest_final_acc}"
+        # Remove "(:LCDC:|:MCDC:|:HCDC:)" in acc daily files since we don't need in the final daily product
+        ${WGRIB2} "${dest_acc}" -s | grep -v -E "(:LCDC:|:MCDC:|:HCDC:)" > clean_map.txt 
+        ${WGRIB2} "${dest_acc}" -i -grib_out "${dest_acc_tmp}" < clean_map.txt
+        rm -f clean_map.txt
+        # cp acc daily files (without LCDC, MCDC and HCDC) to COMOUT
+        cpfs "${dest_acc_tmp}" "${dest_final_acc}"
+        rm -f "${dest_acc_tmp}"
     else
         echo "WARNING: Task ${i} found NO daily_acc files to merge."
     fi
