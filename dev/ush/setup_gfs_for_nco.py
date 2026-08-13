@@ -59,7 +59,7 @@ base_job_list = [
     "JGLOBAL_WAVE_GEMPAK",
     "JGLOBAL_WAVE_INIT",
     "JGLOBAL_WAVE_POST_BNDPNT",
-    "JGLOBAL_WAVE_POST_BNDPNTBLL",
+    "JGLOBAL_WAVE_POST_BNDPNT_BULLS",
     "JGLOBAL_WAVE_POST_PNT",
     "JGLOBAL_WAVE_POST_GRIDDED",
     "JGFS_WAVE_AWIPS_BULLS",
@@ -91,7 +91,7 @@ base_job_list = [
     "JGLOBAL_ATMOS_ENS_OBSERVER",
     "JGLOBAL_ATMOS_ENS_ANAL_SFC_GCYCLE",
     "JGLOBAL_ATMOS_ENS_ANAL_SFC_REGRID",
-    "JGLOBAL_ENKF_UPDATE",
+    "JGLOBAL_ATMOS_ENS_UPDATE",
 ]
 
 base_script_list = [
@@ -152,7 +152,7 @@ base_script_list = [
     "exglobal_atmos_ens_observer.sh",
     "exglobal_atmos_ens_anal_sfc_gcycle.sh",
     "exglobal_atmos_ens_anal_sfc_regrid.sh",
-    "exglobal_enkf_update.sh",
+    "exglobal_atmos_ens_update.sh",
 ]
 
 # If needed, add scripts and jobs that need to be renamed when copied.

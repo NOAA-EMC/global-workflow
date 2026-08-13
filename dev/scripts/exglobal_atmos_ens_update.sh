@@ -4,7 +4,7 @@ set -x
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_update.sh
+# Script name:         exglobal_atmos_ens_update.sh
 # Script description:  Make global_enkf update
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
