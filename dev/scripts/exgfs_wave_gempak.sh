@@ -3,7 +3,7 @@ set -x
 
 ###################################################################
 # echo "----------------------------------------------------"
-# echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
+# echo "exgfs_wave_gempak.sh - convert NCEP GRIB files into GEMPAK Grids"
 # echo "----------------------------------------------------"
 # echo "History: Mar 2000 - First implementation of this new script."
 # echo "Sept 2011 - First implementation of this new script"

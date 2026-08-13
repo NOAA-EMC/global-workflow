@@ -2,7 +2,7 @@
 set -x
 
 ###################################################################
-# echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
+# echo "exgdas_atmos_gempak.sh - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
 # Set default pgm for err_exit
@@ -10,7 +10,14 @@ pgm=$(basename "${BASH_SOURCE[0]}")
 export pgm
 
 cd "${DATA}" || exit 1
-fhr3=$1
+grid=$1
+fhr3=$2
+DBN_ALERT_TYPE=$3
+destination=$4
+
+DATA_RUN="${DATA}/${grid}"
+mkdir -p "${DATA_RUN}"
+cd "${DATA_RUN}" || exit 1
 
 # "Import" functions used in this script
 source "${USHglobal}/product_functions.sh"
@@ -18,43 +25,29 @@ source "${USHglobal}/product_functions.sh"
 for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
     source_table="${HOMEglobal}/gempak/fix/${table}"
     if [[ ! -f "${source_table}" ]]; then
-        err_exit "FATAL ERROR: ${table} is missing"
+        err_exit "${table} is missing"
     fi
     cpreq "${source_table}" "${table}"
 done
 
-NAGRIB_TABLE="${HOMEglobal}/gempak/fix/nagrib.tbl"
 NAGRIB="${GEMEXE}/nagrib2_nc"
 
-entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}' || echo "")
-
-if [[ "${entry}" != "" ]]; then
-    cpyfil=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $2}')
-    garea=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $3}')
-    gbtbls=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $4}')
-    maxgrd=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $5}')
-    kxky=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $6}')
-    grdarea=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $7}')
-    proj=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $8}')
-    output=$(echo "${entry}" | awk 'BEGIN {FS="|"} {print $9}')
-else
-    cpyfil=gds
-    garea=dset
-    gbtbls=
-    maxgrd=4999
-    kxky=
-    grdarea=
-    proj=
-    output=T
-fi
+cpyfil=gds
+garea=dset
+gbtbls=
+maxgrd=4999
+kxky=
+grdarea=
+proj=
+output=T
 pdsext=no
 
-GEMGRD="${RUN2}_${PDY}${cyc}f${fhr3}"
-GRIBIN="${COMIN_ATMOS_GOES}/${RUN}.${cycle}.${GRIB}${fhr3}${EXT}"
-GRIBIN_chk="${GRIBIN}"
+GEMGRD="${RUN}_${grid}_${PDY}${cyc}f${fhr3}"
+source_dirvar="COMIN_ATMOS_GRIB_${grid}"
+export GRIBIN="${!source_dirvar}/${RUN}.${cycle}.pres_a.${grid}.f${fhr3}.grib2"
+GRIBIN_chk="${GRIBIN}.idx"
 
 if [[ ! -r "${GRIBIN_chk}" ]]; then
-    export err=7
     err_exit "GRIB index file ${GRIBIN_chk} not found!"
 fi
 
@@ -83,15 +76,15 @@ EOF
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to run ${NAGRIB}!"
+    err_exit "${NAGRIB} failed to create ${GEMGRD}!"
 fi
 # Restore default pgm after override
 pgm=$(basename "${BASH_SOURCE[0]}")
 
-cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
-if [[ ${SENDDBN} == "YES" ]]; then
+cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
+if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
-        "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
+        "${destination}/${GEMGRD}"
 fi
 
 ############################### END OF SCRIPT #######################

@@ -2,7 +2,7 @@
 set -x
 
 ###################################################################
-# echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
+# echo "exgfs_atmos_gempak.sh - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
 # Set default pgm for err_exit

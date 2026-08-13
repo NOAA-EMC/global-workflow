@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_npoess_pgrb2_0p5_%CYC%
+#PBS -N gfs_atmos_gempak_pgrb2_spec_%CYC%_f%FHR%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=03:30:00
-#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=3GB
+#PBS -l walltime=00:05:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=28:mem=6GB
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
 
@@ -46,13 +46,16 @@ module load crtm/${crtm_ver}
 module load wgrib2/${wgrib2_ver}
 
 module list
+export WGF="%WGF%"
+export FHR3="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export COMPONENT=${WGF}
 ############################################################
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/npoess.sh
-${HOMEgfs}/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS
+${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -63,4 +66,3 @@ fi
 %manual
 
 %end
-
