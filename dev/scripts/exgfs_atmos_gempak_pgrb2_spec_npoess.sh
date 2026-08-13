@@ -3,7 +3,7 @@ set -x
 
 #####################################################################
 # echo "-----------------------------------------------------"
-# echo " exglobal_grib2_special_npoess.sh"
+# echo " exgfs_atmos_gempak_pgrb2_spec_npoess.sh"
 # echo " Jan 2008 - Chuang - Produces 1x1 degree special Grib from master."
 # echo "-----------------------------------------------------"
 #####################################################################

@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_ocean_product_%CYC%_f%FHR%
+#PBS -N gfs_ice_products_%CYC%_f%FHR%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -50,13 +50,12 @@ export WGF="%WGF%"
 export FHR="%FHR%"
 export FHR_LIST="%FHR_LIST%"
 export FORECAST_HOUR="${FHR_LIST}"
-export COMPONENT=${WGF}
+export COMPONENT=ice
 ############################################################
 # CALL executable job script here
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/oceanice_products.sh
 ${HOMEgfs}/jobs/JGLOBAL_OCEANICE_PRODUCTS
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
@@ -67,16 +66,17 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_ocean_product_master
+TASK gfs_ice_products_master
 
-PURPOSE: Generates MOM6 ocean GRIB2 products from forecast output time averaged output period.
-Has _master template.
+PURPOSE: Generates CICE6 sea-ice GRIB2 products from forecast
+output per time-averaged output period.
+For each time-averaged output period, a _master template.
 
 TROUBLESHOOTING
 
-Depends on MOM6 forecast output (ocean history files). If coupled
-forecast did not write ocean output for this period, product generation
-fails. Check COMOUT_OCEAN_HISTORY for the
-target forecast hour.
+Depends on CICE6 forecast output (ice history files). If coupled
+forecast did not write ice output for this time period, product generation
+fails. Check for ice history file existence in. Check for ice history file
+existence in COMOUT_ICE_HISTORY.
 
 %end

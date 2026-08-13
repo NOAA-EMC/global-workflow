@@ -221,7 +221,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         file_exist="YES"
                         release_event="YES"
                         ocean_6hr_avg_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
+                        ecflow_client --event release_gfs_ocean_products_f"${fhr_3d}"
                     fi
                 fi
             fi
@@ -251,7 +251,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${ice_6hr_avg_log}" ]]; then
                         release_event="YES"
                         ice_6hr_avg_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
+                        ecflow_client --event release_gfs_ice_products_f"${fhr_3d}"
                     fi
                 fi
             fi
