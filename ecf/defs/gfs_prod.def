@@ -5149,9 +5149,9 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_wave_post_gridded_f384
             endfamily		//gridded
             family station
-              task jgfs_wave_postbndpnt
+              task jgfs_wave_post_bndpnt
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postbndpntbll
+              task jgfs_wave_post_bndpnt_bulls
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
@@ -11380,9 +11380,9 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_wave_post_gridded_f384
             endfamily		//gridded
             family station
-              task jgfs_wave_postbndpnt
+              task jgfs_wave_post_bndpnt
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postbndpntbll
+              task jgfs_wave_post_bndpnt_bulls
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
@@ -17610,9 +17610,9 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_wave_post_gridded_f384
             endfamily		//gridded
             family station
-              task jgfs_wave_postbndpnt
+              task jgfs_wave_post_bndpnt
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postbndpntbll
+              task jgfs_wave_post_bndpnt_bulls
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete
@@ -23840,9 +23840,9 @@ suite gfs_v17_nco
                 trigger ../../../forecast/jgfs_fcst_fsm:release_gfs_wave_post_gridded_f384
             endfamily		//gridded
             family station
-              task jgfs_wave_postbndpnt
+              task jgfs_wave_post_bndpnt
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
-              task jgfs_wave_postbndpntbll
+              task jgfs_wave_post_bndpnt_bulls
                 trigger ../gridded/jgfs_wave_post_gridded_f180==complete
               task jgfs_wave_post_pnt
                 trigger ../../../forecast/jgfs_fcst_manager==complete

@@ -1,9 +1,9 @@
 #PBS -S /bin/bash
-#PBS -N gfs_wave_postbndpntbll_%CYC%
+#PBS -N gfs_wave_post_bndpnt_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:15:00
+#PBS -l walltime=00:30:00
 #PBS -l select=1:mpiprocs=40:ompthreads=1:ncpus=40
 #PBS -l place=vscatter:shared
 #PBS -l debug=true
@@ -50,8 +50,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/wavepostbndpntbll.sh
-${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_BNDPNTBLL
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_BNDPNT
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -61,15 +60,18 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_wave_postbndpntbll
+TASK gfs_wave_post_bndpnt
 
-PURPOSE: Generates wave boundary-point bulletin products for nested regional wave
-model forcing. Single-instance per cycle.
+PURPOSE: Generates wave boundary-point spectral data for nested regional wave
+models. Single-instance per cycle.
 
 TROUBLESHOOTING
 
-Depends on WW3 forecast point output at boundary locations. If forecast
-did not write boundary point data, this fails. Check COMIN_WAVE_HISTORY
-for boundary point output files. Not critical for downstream.
+Similar to postbndpntbll but produces spectral (not bulletin) output.
+Depends on WW3 boundary point output from forecast. If boundary location
+configuration changed, mod_def mismatch can cause segfaults. Check wave
+grid definitions match between init and post. Downstream models use this
+job, but can use previous cycle as back-up. While improved from v16,
+this job will slow down or fail when there are filesystem issues.
 
 %end
