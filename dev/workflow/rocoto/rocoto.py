@@ -146,7 +146,7 @@ def _create_innermost_task(task_dict: Dict[str, Any]) -> List[str]:
         strings.append(f'\t<partition>{partition}</partition>\n')
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
     # Construct resources string based on ppn, nodes, and threads
-    if nodes > 1 or threads > 1 or scheduler == "pbspro":
+    if nodes > 1 or threads > 1 or scheduler == "pbspro" or scheduler == "slurm":
         strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
     else:
         strings.append(f'\t<cores>{ppn}</cores>\n')

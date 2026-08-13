@@ -4,6 +4,7 @@
 Entry point for setting up a builds of global-workflow programs
 """
 
+import math
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from typing import Dict
@@ -77,9 +78,16 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.resources.walltime = task_spec.walltime
     task_dict.resources.native = host_spec.native
     task_dict.resources.memory = task_spec.get("memory", None)
-    task_dict.resources.nodes = 1
-    task_dict.resources.ntasks = task_spec.cores
-    task_dict.resources.ppn = task_spec.cores
+
+    # Slurm 26.05+ requires explicit --nodes. Compute from ntasks and
+    # cpus_per_node (carried in host_spec, defaults to ntasks fitting one node).
+    ntasks = task_spec.cores
+    cpus_per_node = host_spec.get("cpus_per_node", ntasks)
+    nodes = math.ceil(ntasks / cpus_per_node)
+
+    task_dict.resources.nodes = nodes
+    task_dict.resources.ntasks = ntasks
+    task_dict.resources.ppn = min(ntasks, cpus_per_node)
     task_dict.resources.scheduler = host_spec.scheduler
     task_dict.resources.threads = 1
 
@@ -184,6 +192,7 @@ def get_host_specs(host: Dict) -> Dict:
     specs.partition = partition
     specs.native = native
     specs.machine = host.machine
+    specs.cpus_per_node = host.info.get("CPUS_PER_NODE", 1)
 
     return specs
 
