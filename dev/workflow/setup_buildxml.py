@@ -82,7 +82,9 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     # Slurm 26.05+ requires explicit --nodes. Compute from ntasks and
     # cpus_per_node (carried in host_spec, defaults to ntasks fitting one node).
     ntasks = task_spec.cores
-    cpus_per_node = host_spec.get("cpus_per_node", ntasks)
+    cpus_per_node = host_spec.get("cpus_per_node") or ntasks
+    if cpus_per_node < 1:
+        cpus_per_node = ntasks
     nodes = math.ceil(ntasks / cpus_per_node)
 
     task_dict.resources.nodes = nodes
