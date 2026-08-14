@@ -34,8 +34,8 @@ fi
 # Determine grids once and save them as a string and an array for processing
 grid_string="0p25"
 # Turn off 0p50 and 1p00 products for GFSv17
-if [ ${RUN} = "gfs" ]; then
-  PGBS="NO"
+if [[ "${RUN}" == "gfs" ]]; then
+    PGBS="NO"
 fi
 if [[ "${PGBS:-}" == "YES" ]]; then
     grid_string="${grid_string}:0p50:1p00"
