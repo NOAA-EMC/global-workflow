@@ -1,33 +1,47 @@
 #PBS -S /bin/bash
-#PBS -N gdas_marine_prep_fsm_%CYC%
+#PBS -N %RUN%_atmos_tropcy_qc_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=06:00:00
-#PBS -l select=1:ncpus=1:ompthreads=1:mem=20GB
-#PBS -l place=vscatter:shared
+#PBS -l walltime=00:05:00
+#PBS -l select=1:ncpus=1:mem=1GB
+#PBS -l place=vscatter
 #PBS -l debug=true
 
 model=gfs
-export cyc="%CYC%"
 %include <head.h>
 %include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
 
 ############################################################
 # Load modules
 ############################################################
-module load intel/${intel_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load wgrib2/${wgrib2_ver}
 
 module list
+
+export PROCESS_TROPCY=YES
+export cyc=%CYC%
+export cycle=t%CYC%z
+
 ############################################################
 # CALL executable job script here
 ############################################################
-export WGF="%WGF%"
-export RJN="%RJN%"
-
+export CDATE=${PDY}${cyc}
 export HOMEglobal=${HOMEgfs}
-${HOMEgfs}/jobs/JGLOBAL_FSM
+
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC
+
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -36,13 +50,5 @@ fi
 
 %include <tail.h>
 %manual
-
-TASK gdas_marine_prep_fsm
-
-PURPOSE: GDAS marine prep FSM. Same shared JGLOBAL_FSM.
-
-TROUBLESHOOTING
-
-FSM coordination. Same troubleshooting as GFS marine_prep_fsm.
 
 %end

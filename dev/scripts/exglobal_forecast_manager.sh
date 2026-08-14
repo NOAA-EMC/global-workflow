@@ -167,4 +167,27 @@ export FCST_FINALIZED_SENTINEL="${DATAjob}/fcst_finalized_seg${FCST_SEGMENT}"
 
 # Launch all component managers concurrently via run_mpmd.sh
 export USE_CFP=YES
-"${USHglobal}/run_mpmd.sh" "${FCST_MANAGER_CMDFILE}"
+"${USHglobal}/run_mpmd.sh" "${FCST_MANAGER_CMDFILE}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "FATAL ERROR: one or more forecast manager components failed"
+fi
+
+# Search the MPMD logs for any warnings and report them.
+# run_mpmd.sh moves each rank's stdout to mpmd_<timestamp>_chunk<N>/mpmd.*.out,
+# so collect those files into an array and reuse it for both the count and the
+# report to avoid globbing the chunk directory itself.
+if [[ "${VERBOSE:-YES}" == "YES" ]]; then
+    mpmd_logs=(mpmd_*_chunk*/mpmd*.out)
+    # If the glob matched nothing it stays literal; guard on the first element.
+    if [[ -e "${mpmd_logs[0]}" ]]; then
+        # grep -c would report a per-file count across the multiple rank logs;
+        # -h + wc -l gives a single combined total instead.
+        # shellcheck disable=SC2126
+        count_warns=$(grep -ih "warning" "${mpmd_logs[@]}" | wc -l || true)
+        if [[ ${count_warns} -ne 0 ]]; then
+            echo "WARNING: the forecast manager MPMD jobs reported ${count_warns} warning(s):"
+            grep -in "warning" "${mpmd_logs[@]}"
+        fi
+    fi
+fi
