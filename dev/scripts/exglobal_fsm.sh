@@ -73,53 +73,9 @@ if [[ "${RJN}" == "forecast" ]]; then
     fi
 fi
 
-COMIN_ATMOS_OBS_gfs=${COMIN_ATMOS_OBS_gfs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gfs.${PDY}/${cyc}/atmos"}
-COMIN_ATMOS_OBS_gdas=${COMIN_ATMOS_OBS_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"}
-COMIN_ATMOS_OBS_PREV_gdas=${COMIN_ATMOS_OBS_PREV_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${previous_cycle_PDY}/${previous_cycle_cyc}/atmos"}
-COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-"${ROTDIR}/gfs.${PDY}/${cyc}/obs"}
-COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-"${ROTDIR}/gdas.${PDY}/${cyc}/obs"}
-
 proceed_trigger_scan="YES"
 while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     proceed_trigger_scan="NO"
-
-    #### release_gfs_atmos_prep
-    if [[ "${scan_release_gfs_atmos_prep}" == "YES" ]]; then
-        echo "Proceeding with scan_release_gfs_atmos_prep"
-        # TODO: try to remove the use of ls.
-        # shellcheck disable=SC2012
-        if [[ -s "${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMIN_ATMOS_OBS_gfs}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMIN_ATMOS_OBS_gfs}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
-            ecflow_client --event release_gfs_atmos_prep
-            scan_release_gfs_atmos_prep="NO"
-        else
-            proceed_trigger_scan="YES"
-        fi
-    fi
-
-    #### release_gfs_marine_prepoceanobs
-    if [[ "${scan_release_gfs_marine_prepoceanobs}" == "YES" ]]; then
-        skip_this_scan="YES"
-        echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
-        # TODO remove/change this and look at obsproc for the bufr files
-        for ty_md in adt icec sst; do
-            # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
-                echo "adt files are only produced at 00z...skipping check for ${cyc}z"
-                continue
-            else
-                tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
-            fi
-            count_tty=${#tty_files[@]}
-            if [[ ${count_tty} -eq 0 ]]; then
-                skip_this_scan="NO"
-                proceed_trigger_scan="YES"
-            fi
-        done
-        if [[ "${skip_this_scan}" == "YES" ]]; then
-            ecflow_client --event release_gfs_marine_prepoceanobs
-            scan_release_gfs_marine_prepoceanobs="NO"
-        fi
-    fi
 
     #### release_gfs_atmos_product
     if [[ "${scan_release_gfs_atmos_product}" == "YES" ]]; then
@@ -262,43 +218,6 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 proceed_trigger_scan="YES"
             fi
         done
-    fi
-
-    #### release_gdas_atmos_prep
-    if [[ "${scan_release_gdas_atmos_prep}" == "YES" ]]; then
-        echo "Proceeding with scan_release_gdas_atmos_prep"
-        if [[ -s ${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
-            ecflow_client --event release_gdas_atmos_prep
-            scan_release_gdas_atmos_prep="NO"
-        else
-            proceed_trigger_scan="YES"
-        fi
-    fi
-
-    #### release_gdas_marine_prepoceanobs
-    if [[ "${scan_release_gdas_marine_prepoceanobs}" == "YES" ]]; then
-        skip_this_scan="YES"
-        echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
-        # TODO remove/change this and look at obsproc for the bufr files
-        for ty_md in adt icec sst; do
-            if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
-                echo "adt files are only produced at 00z...skipping check for ${cyc}z"
-                continue
-            else
-                tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
-            fi
-            # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            count_tty=${#tty_files[@]}
-            if [[ ${count_tty} -eq 0 ]]; then
-                skip_this_scan="NO"
-                proceed_trigger_scan="YES"
-            fi
-        done
-
-        if [[ "${skip_this_scan}" == "YES" ]]; then
-            ecflow_client --event release_gdas_marine_prepoceanobs
-            scan_release_gdas_marine_prepoceanobs="NO"
-        fi
     fi
 
     #### release_gdas_atmos_product
