@@ -736,14 +736,16 @@ echo ""
 echo "----------------------------------------------"
 echo " MINIMUM MODULES (ecFlow on WCOSS2)"
 echo "----------------------------------------------"
-echo " head.h already provides (via module reset + head.h loads):"
+echo " Base modules (may be needed - test and verify):"
 # Show base modules with versions
 for def in ${DEFAULT_MODULES}; do
     matched=$(grep -i "^${def}/" "${LOADED_MODS}" | head -1 || true)
     if [[ -n "${matched}" ]]; then
-        echo "   ${matched}"
+        echo "   module load ${matched}"
     fi
 done
+echo ""
+echo " head.h already provides (via module reset + head.h loads):"
 # Module reset artifacts (always present on WCOSS2)
 for artifact in craype-x86-rome craype-network-ofi libfabric; do
     matched=$(grep -i "^${artifact}" "${LOADED_MODS}" | head -1 || true)
