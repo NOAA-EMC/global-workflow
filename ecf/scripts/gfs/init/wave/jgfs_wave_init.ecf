@@ -22,7 +22,6 @@ module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
-export USE_CFP=YES
 module load libjpeg/${libjpeg_ver}
 module load hdf5-D/${hdf5_ver}
 module load pnetcdf-D/${pnetcdf_ver}
