@@ -29,8 +29,6 @@ fi
 
 declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${BKG_RUN}.${GDATE:0:8}/${GDATE:8:2}/model/atmos/restart"
 
-declare -rx COMIN_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
-
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 
 declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
