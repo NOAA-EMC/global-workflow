@@ -751,12 +751,15 @@ echo ""
 echo "----------------------------------------------"
 echo " MINIMUM MODULES (ecFlow on WCOSS2)"
 echo "----------------------------------------------"
-echo " Base modules (may be needed - test and verify):"
-# Show base modules with versions
-for def in ${DEFAULT_MODULES}; do
+echo " Base module (required - enables compiler module hierarchy):"
+PrgEnv_matched=$(grep -i "^PrgEnv-intel/" "${LOADED_MODS}" | head -1 || true)
+echo "   module load ${PrgEnv_matched:-PrgEnv-intel}"
+echo ""
+echo " If job fails, also try adding these (may be needed on some nodes):"
+for def in intel craype; do
     matched=$(grep -i "^${def}/" "${LOADED_MODS}" | head -1 || true)
     if [[ -n "${matched}" ]]; then
-        echo "   module load ${matched}"
+        echo "   #module load ${matched}"
     fi
 done
 echo ""
