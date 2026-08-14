@@ -11,10 +11,6 @@ shopt -s nullglob
 pgm=$(basename "${BASH_SOURCE[0]}")
 export pgm
 
-previous_cycle=$("${NDATE}" -6 "${PDY}${cyc}")
-previous_cycle_PDY="${previous_cycle:0:8}"
-previous_cycle_cyc="${previous_cycle:8:2}"
-
 # Initialize switch
 scan_release_gfs_atmos_product="NO"
 scan_release_gfs_ocean_product="NO"
@@ -77,9 +73,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-			if [[ "${SENDECF}" == "YES" ]]; then
+                        if [[ "${SENDECF}" == "YES" ]]; then
                             ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
-			fi
+                        fi
                     fi
                 fi
             fi
