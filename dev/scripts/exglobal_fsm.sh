@@ -101,7 +101,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
+			fi
                     fi
                 fi
             fi
@@ -139,7 +141,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
                         wave_uglo_15km_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
+			fi
                     fi
                 fi
             fi
@@ -177,7 +181,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         file_exist="YES"
                         release_event="YES"
                         ocean_6hr_avg_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
+			fi
                     fi
                 fi
             fi
@@ -207,7 +213,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${ice_6hr_avg_log}" ]]; then
                         release_event="YES"
                         ice_6hr_avg_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
+			fi
                     fi
                 fi
             fi
@@ -237,7 +245,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${atmos_master}" && -s "${atmos_sflux}" ]]; then
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-                        ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
+			fi
                     fi
                 fi
             fi
@@ -267,7 +277,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
                         wave_uglo_15km_product_ready[fhr]="YES"
-                        ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
+			fi
                     fi
                 fi
             fi
@@ -298,7 +310,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s ${atm_log} ]]; then
                         release_event="YES"
                         atm_history_product_ready[fhr]="YES"
-                        ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
+			if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
+			fi
                     fi
                 fi
             fi
