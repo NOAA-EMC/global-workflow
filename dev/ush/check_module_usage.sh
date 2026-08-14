@@ -329,8 +329,13 @@ while IFS= read -r mod; do
     mod_info=$(module show "${mod}" 2>&1 || true)
 
     # Extract setenv variables (Lmod format: setenv("VAR","value"))
+    # Also handle TCL format: setenv  VAR  value
     while IFS= read -r line; do
         var=$(echo "${line}" | grep -oP 'setenv\(\s*"([^"]+)"' | sed 's/setenv(\s*"//; s/"$//' || true)
+        if [[ -z "${var}" ]]; then
+            # Try TCL format: setenv  VARNAME  value
+            var=$(echo "${line}" | grep -oP '^\s*setenv\s+(\S+)' | awk '{print $2}' || true)
+        fi
         if [[ -n "${var}" ]]; then
             echo "${mod}|ENV|${var}" >> "${MOD_PROVIDES}"
             echo "${var}|${mod}" >> "${MOD_ENVVARS}"
@@ -389,7 +394,9 @@ echo "--- Module variables referenced in scripts ---" >> "${STATIC_REPORT}"
 # Method 1: Match ${VARIABLE} references against module-set environment variables
 # Skip infrastructure path variables (HOMEgfs, USHgfs, etc.) which every job uses
 # and are set by the job framework itself, not by a tool module at runtime.
-_infra_vars_pattern="^(HOMEgfs|HOMEglobal|HOMEobsproc|USHgfs|USHglobal|SCRgfs|SCRglobal|EXECgfs|FIXgfs|PARMgfs|PARMglobal|FIXglobal|PACKAGEROOT|NWROOT|UTILROOT|ve_gfs_ver|model_ver)"
+# NOTE: Do NOT filter tool-command variables (WGRIB2, TOCGRIB2, GRB2INDEX, etc.)
+#       — those indicate real runtime dependencies on the providing module.
+_infra_vars_pattern="^(HOME[a-z]|USH[a-z]|SCR[a-z]|EXEC[a-z]|FIX[a-z]|PARM[a-z]|PACKAGEROOT|NWROOT|UTILROOT|COMDATEROOT|COMLISTROOT|COMLOGSROOT|FSYNC|MDATE|NDATE|NHOUR|ve_gfs_ver|model_ver|_ver$)"
 while IFS='|' read -r var mod; do
     # Skip path/version infrastructure vars that don't indicate a runtime dep
     if [[ "${var}" =~ ${_infra_vars_pattern} ]]; then continue; fi
@@ -554,6 +561,7 @@ done
 # jjob_shell_setup.sh) are excluded because they define APRUN variables
 # generically for all jobs, not as evidence this job uses MPI.
 _uses_mpi="NO"
+_uses_cfp="NO"
 _mpi_scan_files=""
 for _sf in ${ALL_SCRIPTS}; do
     # Skip infrastructure scripts that define APRUN generically
@@ -574,6 +582,13 @@ if echo "${_mpi_scan_content}" | grep -qP '^\s*(mpiexec|mpirun|srun|aprun)\b' 2>
 elif echo "${_mpi_scan_content}" | grep -qP '\$\{?APRUN[A-Z_]*\}?\s+[^=]' 2> /dev/null; then
     # ${APRUN_SOMETHING} followed by non-= means it's being invoked, not assigned
     _uses_mpi="YES"
+elif echo "${_mpi_scan_content}" | grep -qP 'run_mpmd|mpmd' 2> /dev/null; then
+    # run_mpmd.sh or any mpmd reference means parallel execution
+    _uses_mpi="YES"
+fi
+# Detect cfp usage: direct call, via APRUN*CFP variable, or run_mpmd (which uses cfp)
+if echo "${_mpi_scan_content}" | grep -qP '^\s*(cfp|poe|cfp_mp)\b|\$\{?APRUN[A-Z_]*CFP|run_mpmd|mpmd' 2> /dev/null; then
+    _uses_cfp="YES"
 fi
 if [[ "${_uses_mpi}" == "YES" ]]; then
     # cray-pals (job launcher) needed for MPI execution
@@ -587,8 +602,8 @@ if [[ "${_uses_mpi}" == "YES" ]]; then
         NEEDED_MODS["${cray_mpich_mod}"]="${NEEDED_MODS[${cray_mpich_mod}]:-}MPI-runtime(auto); "
         printf "  %-20s --> auto-included (MPI runtime)\n" "${cray_mpich_mod}" >> "${STATIC_REPORT}"
     fi
-    # Only include cfp if the job's scripts reference cfp/poe/cfp_mp as a command
-    if echo "${_mpi_scan_content}" | grep -qP '^\s*(cfp|poe|cfp_mp)\b|\$\{?APRUN[A-Z_]*CFP' 2> /dev/null; then
+    # Include cfp if the job uses MPMD execution
+    if [[ "${_uses_cfp}" == "YES" ]]; then
         cfp_mod=$(grep -i "^cfp" "${LOADED_MODS}" | head -1 || true)
         if [[ -n "${cfp_mod}" ]]; then
             NEEDED_MODS["${cfp_mod}"]="${NEEDED_MODS[${cfp_mod}]:-}cfp(auto); "
