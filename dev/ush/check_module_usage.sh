@@ -1,0 +1,850 @@
+#!/bin/bash
+#
+# check_module_usage.sh - Determine minimum modules needed for a global-workflow job
+#
+# Method: Static code analysis + ldd (no runtime execution needed)
+#
+# Usage:
+#   ./check_module_usage.sh -j JGFS_ATMOS_AWIPS_20KM_1P0DEG
+#   ./check_module_usage.sh -j JGLOBAL_FORECAST -e /path/to/EXPDIR/experiment
+#
+# Options:
+#   -j JJOB     J-Job name (e.g., JGFS_ATMOS_AWIPS_20KM_1P0DEG)
+#   -e EXPDIR   Path to experiment EXPDIR (sources config files for conditional flags)
+#
+set -u
+
+# ============================================================
+# Parse arguments
+# ============================================================
+JJOB_MODE="NO"
+JJOB_NAME=""
+EXTRA_ARGS=""
+EXPDIR_INPUT=""
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+        -j)
+            JJOB_MODE="YES"
+            JJOB_NAME="${2:-}"
+            shift 2
+            ;;
+        -e)
+            EXPDIR_INPUT="${2:-}"
+            shift 2
+            ;;
+        *)
+            if [[ "${JJOB_MODE}" == "YES" ]]; then
+                EXTRA_ARGS="${EXTRA_ARGS} ${1}"
+                shift
+            else
+                break
+            fi
+            ;;
+    esac
+done
+
+if [[ "${JJOB_MODE}" != "YES" && $# -lt 1 ]]; then
+    echo "Usage:"
+    echo "  $0 -j <JJOB_NAME> [-e <EXPDIR>]"
+    echo "  $0 <script>"
+    echo ""
+    echo "Options:"
+    echo "  -j JJOB     J-Job name (e.g., JGFS_ATMOS_AWIPS_20KM_1P0DEG)"
+    echo "  -e EXPDIR   Experiment dir (sources config.base + job configs for flags)"
+    echo ""
+    echo "Examples:"
+    echo "  $0 -j JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+    echo "  $0 -j JGLOBAL_FORECAST -e /lfs/h2/emc/stmp/user/EXPDIR/experiment"
+    exit 1
+fi
+
+if [[ "${JJOB_MODE}" == "YES" && -z "${JJOB_NAME}" ]]; then
+    echo "ERROR: -j requires a J-Job name"
+    exit 1
+fi
+EXTRA_ARGS=$(echo "${EXTRA_ARGS}" | xargs)
+
+# ============================================================
+# Resolve HOMEgfs
+# ============================================================
+HOMEGFS="${HOMEgfs:-${HOMEglobal:-}}"
+if [[ -z "${HOMEGFS}" || ! -d "${HOMEGFS}" ]]; then
+    echo ""
+    echo "  HOMEgfs is not set. Please provide the path to global-workflow:"
+    read -rp "  HOMEgfs: " HOMEGFS
+    if [[ -z "${HOMEGFS}" || ! -d "${HOMEGFS}" ]]; then
+        echo "ERROR: '${HOMEGFS}' is not a valid directory."
+        exit 1
+    fi
+fi
+export HOMEgfs="${HOMEGFS}"
+export HOMEglobal="${HOMEGFS}"
+
+# ============================================================
+# If J-Job mode, find the J-Job and extract info
+# ============================================================
+if [[ "${JJOB_MODE}" == "YES" ]]; then
+    JJOB_FILE=""
+    for dir in "${HOMEGFS}/jobs" "${HOMEGFS}/dev/jobs"; do
+        if [[ -f "${dir}/${JJOB_NAME}" ]]; then
+            JJOB_FILE="${dir}/${JJOB_NAME}"
+            break
+        fi
+    done
+
+    if [[ -z "${JJOB_FILE}" ]]; then
+        echo "ERROR: Cannot find J-Job '${JJOB_NAME}' in jobs/ or dev/jobs/"
+        exit 1
+    fi
+
+    echo "Found J-Job: ${JJOB_FILE}"
+
+    # Determine module type from jjob_header.sh -e flag
+    MODULE_ENV=$(grep -oP 'jjob_header\.sh.*-e\s+"?\K[^" ]+' "${JJOB_FILE}" | head -1 || true)
+    echo "Job environment: ${MODULE_ENV:-unknown}"
+
+    # Map job environment to module type
+    case "${MODULE_ENV}" in
+        anal*|eobs|ediag|eupd|esfc*)  MOD_TYPE="gsi" ;;
+        atmanl*|aero*|snow*|ocn*|ice*anl*) MOD_TYPE="ufsda" ;;
+        fcst*) MOD_TYPE="ufswm" ;;
+        *) MOD_TYPE="run" ;;
+    esac
+    echo "Module type: ${MOD_TYPE}"
+
+    # Extract ex-script
+    EXSCRIPT_BASENAME=$(grep -oP 'ex[a-z0-9_]+\.(sh|py)' "${JJOB_FILE}" | head -1 || true)
+    CMD_SCRIPT=""
+    if [[ -n "${EXSCRIPT_BASENAME}" ]]; then
+        for dir in "${HOMEGFS}/scripts" "${HOMEGFS}/dev/scripts"; do
+            if [[ -f "${dir}/${EXSCRIPT_BASENAME}" ]]; then
+                CMD_SCRIPT="${dir}/${EXSCRIPT_BASENAME}"
+                break
+            fi
+        done
+    fi
+    if [[ -z "${CMD_SCRIPT}" ]]; then
+        CMD_SCRIPT="${JJOB_FILE}"
+    fi
+
+    echo "Ex-script: ${CMD_SCRIPT}"
+    SCAN_FILES="${JJOB_FILE} ${CMD_SCRIPT}"
+    JOB_NAME="${JJOB_NAME}"
+else
+    CMD_SCRIPT="${1}"
+    shift
+    EXTRA_ARGS="$*"
+    SCAN_FILES="${CMD_SCRIPT}"
+    JOB_NAME=$(basename "${CMD_SCRIPT}" .sh)
+    MOD_TYPE="run"
+    JJOB_FILE=""
+fi
+
+# ============================================================
+# Load modules (save current state, purge, load fresh)
+# ============================================================
+echo ""
+echo "----------------------------------------------"
+echo " Loading modules (type: ${MOD_TYPE})..."
+echo "----------------------------------------------"
+
+SAVED_MODULES=$(module -t list 2>&1 | grep -v "^$\|Currently\|No modules" || true)
+module purge 2>/dev/null || true
+
+# shellcheck disable=SC1091
+source "${HOMEGFS}/dev/ush/load_modules.sh" "${MOD_TYPE}"
+echo ""
+
+# ============================================================
+# Source experiment config files (for conditional flags only)
+# ============================================================
+echo "----------------------------------------------"
+echo " Config Setup"
+echo "----------------------------------------------"
+
+# Extract config list from J-Job's -c flag
+JJOB_CONFIGS=""
+if [[ -n "${JJOB_FILE}" ]]; then
+    JJOB_CONFIGS=$(grep -oP 'jjob_header\.sh.*-c\s+"?\K[^"]+' "${JJOB_FILE}" | head -1 || true)
+fi
+
+if [[ -n "${EXPDIR_INPUT}" && -d "${EXPDIR_INPUT}" ]]; then
+    echo "  Using EXPDIR: ${EXPDIR_INPUT}"
+    # Source config.base for flags like DO_WAVE, DO_OCN, etc.
+    if [[ -f "${EXPDIR_INPUT}/config.base" ]]; then
+        echo "  Sourcing: config.base"
+        set +u
+        # shellcheck disable=SC1090
+        source "${EXPDIR_INPUT}/config.base" 2>/dev/null || true
+        set -u
+    fi
+    # Source job-specific configs (e.g., config.fcst sets CCPP_SUITE)
+    for cfg in ${JJOB_CONFIGS}; do
+        [[ "${cfg}" == "base" ]] && continue  # already sourced
+        cfg_file="${EXPDIR_INPUT}/config.${cfg}"
+        if [[ -f "${cfg_file}" ]]; then
+            echo "  Sourcing: config.${cfg}"
+            set +u
+            # shellcheck disable=SC1090
+            source "${cfg_file}" 2>/dev/null || true
+            set -u
+        fi
+    done
+else
+    echo "  No -e EXPDIR given. All code branches will be included (superset)."
+fi
+echo ""
+
+# Derived paths
+export PARMgfs="${HOMEGFS}/parm"
+export PARMglobal="${PARMgfs}"
+export USHgfs="${HOMEGFS}/ush"
+export USHglobal="${USHgfs}"
+export SCRgfs="${HOMEGFS}/scripts"
+export SCRglobal="${SCRgfs}"
+export EXECgfs="${HOMEGFS}/exec"
+export FIXgfs="${HOMEGFS}/fix"
+
+# Base modules always present on WCOSS2 (module reset provides these)
+DEFAULT_MODULES="PrgEnv-intel intel craype"
+
+# ============================================================
+# Setup workspace
+# ============================================================
+WORKDIR=$(mktemp -d "${TMPDIR:-/tmp}/modcheck.XXXXXX")
+trap 'rm -rf "${WORKDIR}"' EXIT
+
+LOADED_MODS="${WORKDIR}/loaded_modules.txt"
+MOD_ROOTS="${WORKDIR}/module_roots.txt"
+REPORT="${WORKDIR}/report.txt"
+STATIC_REPORT="${WORKDIR}/static_report.txt"
+> "${STATIC_REPORT}"
+
+echo "=============================================="
+echo " Module Usage Checker"
+echo "=============================================="
+echo " Job:      ${JOB_NAME}"
+echo " Modules:  ${MOD_TYPE}"
+echo " Method:   Static analysis + ldd"
+echo ""
+
+# ============================================================
+# Step 1: Capture loaded modules and their install roots
+# ============================================================
+echo "[1/4] Capturing loaded modules..."
+
+module -t list 2>&1 | grep -v "^$\|Currently\|No modules" > "${LOADED_MODS}" || true
+
+if [[ ! -s "${LOADED_MODS}" ]]; then
+    echo "ERROR: No modules loaded."
+    exit 1
+fi
+
+echo "  Found $(wc -l < "${LOADED_MODS}") loaded modules"
+
+> "${MOD_ROOTS}"
+while IFS= read -r mod; do
+    root=$(module show "${mod}" 2>&1 | grep -oP '(?<=")(/apps|/opt|/contrib|/usr/local|/lfs)[^"]*' | \
+        head -1 | sed 's|/bin.*||; s|/lib.*||; s|/share.*||; s|/include.*||' || true)
+    if [[ -n "${root}" ]]; then
+        echo "${mod}|${root}" >> "${MOD_ROOTS}"
+    else
+        echo "${mod}|UNKNOWN" >> "${MOD_ROOTS}"
+    fi
+done < "${LOADED_MODS}"
+
+# ============================================================
+# Step 2: Discover all scripts in the job's call chain (recursive)
+# ============================================================
+echo "[2/4] Discovering script call chain..."
+
+ALL_SCRIPTS="${SCAN_FILES}"
+
+# Recurse up to 3 levels deep to catch A->B->C->D chains
+for _depth in 1 2 3; do
+    _new_scripts=""
+    for scan_file in ${ALL_SCRIPTS}; do
+        if [[ ! -f "${scan_file}" ]]; then continue; fi
+
+        # Find sourced scripts
+        sourced=$(grep -oP '(source|\.)\s+.*?([a-zA-Z0-9_]+\.sh)' "${scan_file}" | \
+            grep -oP '[a-zA-Z0-9_]+\.sh' || true)
+
+        # Scripts referenced via variable defaults: ${VARSH:-"${USH}/script.sh"}
+        var_scripts=$(grep -oP '[A-Z_]+SH:-.*?([a-zA-Z0-9_]+\.sh)' "${scan_file}" | \
+            grep -oP '[a-zA-Z0-9_]+\.sh' || true)
+
+        # Scripts called via path variables: "${SCRglobal}/exscript.sh"
+        called_scripts=$(grep -oP '(SCRglobal|SCRgfs|USHglobal|USHgfs|HOMEgfs|HOMEglobal)[^}]*\}/([a-zA-Z0-9_]+\.(sh|py))' "${scan_file}" | \
+            grep -oP '[a-zA-Z0-9_]+\.(sh|py)' || true)
+
+        # Python files called directly
+        py_scripts=$(grep -oP '"?\$\{[A-Z_]+\}/[a-zA-Z0-9_]+\.py"?' "${scan_file}" | \
+            grep -oP '[a-zA-Z0-9_]+\.py' || true)
+
+        for s in ${sourced} ${var_scripts} ${called_scripts} ${py_scripts}; do
+            for dir in "${HOMEGFS}/ush" "${HOMEGFS}/dev/ush" "${HOMEGFS}/scripts" "${HOMEGFS}/dev/scripts" "${HOMEGFS}/ush/python" "${HOMEGFS}/gempak/ush"; do
+                if [[ -f "${dir}/${s}" && ! "${ALL_SCRIPTS}" == *"${dir}/${s}"* ]]; then
+                    ALL_SCRIPTS="${ALL_SCRIPTS} ${dir}/${s}"
+                    _new_scripts="${_new_scripts} ${dir}/${s}"
+                    break
+                fi
+            done
+        done
+    done
+    # Stop recursing if no new scripts found
+    if [[ -z "${_new_scripts}" ]]; then break; fi
+done
+
+echo "  Scripts found: $(echo ${ALL_SCRIPTS} | wc -w)"
+for sf in ${ALL_SCRIPTS}; do
+    echo "    - $(basename "${sf}")"
+done
+
+
+# ============================================================
+# Step 3: Dynamic module analysis (no hardcoding)
+#   - Queries each loaded module to learn what it provides
+#   - Matches script content against module-provided resources
+#   - Uses ldd to trace library deps back to module directories
+# ============================================================
+echo "[3/4] Analyzing modules and matching against scripts..."
+
+# Build a map of what each module provides by querying the module system
+MOD_PROVIDES="${WORKDIR}/mod_provides.txt"
+MOD_ENVVARS="${WORKDIR}/mod_envvars.txt"
+> "${MOD_PROVIDES}"
+> "${MOD_ENVVARS}"
+
+# Skip meta-modulefiles (gw_run, gw_awips, etc.) — these are the aggregate
+# modulefiles we're trying to decompose; they shouldn't appear as "needed"
+SKIP_META_PATTERN="^gw_"
+
+while IFS= read -r mod; do
+    # Skip our own meta-modulefiles
+    if [[ "${mod}" =~ ${SKIP_META_PATTERN} ]]; then
+        continue
+    fi
+    mod_info=$(module show "${mod}" 2>&1 || true)
+
+    # Extract setenv variables (Lmod format: setenv("VAR","value"))
+    while IFS= read -r line; do
+        var=$(echo "${line}" | grep -oP 'setenv\(\s*"([^"]+)"' | sed 's/setenv(\s*"//; s/"$//' || true)
+        if [[ -n "${var}" ]]; then
+            echo "${mod}|ENV|${var}" >> "${MOD_PROVIDES}"
+            echo "${var}|${mod}" >> "${MOD_ENVVARS}"
+        fi
+    done <<< "$(echo "${mod_info}" | grep 'setenv')"
+
+    # Extract PATH additions
+    while IFS= read -r line; do
+        dir=$(echo "${line}" | grep -oP 'prepend_path\(\s*"PATH"\s*,\s*"([^"]+)"' | sed 's/prepend_path(\s*"PATH"\s*,\s*"//; s/"$//' || true)
+        if [[ -n "${dir}" ]]; then
+            echo "${mod}|PATH|${dir}" >> "${MOD_PROVIDES}"
+        fi
+    done <<< "$(echo "${mod_info}" | grep 'prepend_path.*"PATH"')"
+
+    # Extract LD_LIBRARY_PATH additions
+    while IFS= read -r line; do
+        dir=$(echo "${line}" | grep -oP 'prepend_path\(\s*"LD_LIBRARY_PATH"\s*,\s*"([^"]+)"' | sed 's/prepend_path(\s*"LD_LIBRARY_PATH"\s*,\s*"//; s/"$//' || true)
+        if [[ -n "${dir}" ]]; then
+            echo "${mod}|LIB|${dir}" >> "${MOD_PROVIDES}"
+        fi
+    done <<< "$(echo "${mod_info}" | grep 'prepend_path.*"LD_LIBRARY_PATH"')"
+done < "${LOADED_MODS}"
+
+echo "  Module provides: $(wc -l < "${MOD_PROVIDES}") entries from $(wc -l < "${LOADED_MODS}") modules"
+
+# Concatenate all script content for matching
+# Use TWO pools: full (for reporting) and job-only (for module detection)
+# The job-only pool excludes framework infrastructure scripts that reference
+# vars/commands generically (not specific to this job's actual runtime needs).
+_infra_scripts="jjob_header.sh jjob_shell_setup.sh jjob_standard_vars.sh set_strict.sh"
+all_script_content=""
+job_script_content=""
+for scan_file in ${ALL_SCRIPTS}; do
+    if [[ -f "${scan_file}" ]]; then
+        _content=$(cat "${scan_file}")
+        all_script_content="${all_script_content}
+${_content}"
+        _sfbase=$(basename "${scan_file}")
+        _is_infra="NO"
+        for _inf in ${_infra_scripts}; do
+            if [[ "${_sfbase}" == "${_inf}" ]]; then _is_infra="YES"; break; fi
+        done
+        if [[ "${_is_infra}" == "NO" ]]; then
+            job_script_content="${job_script_content}
+${_content}"
+        fi
+    fi
+done
+
+# Track needed modules
+declare -A NEEDED_MODS
+
+echo "" >> "${STATIC_REPORT}"
+echo "--- Module variables referenced in scripts ---" >> "${STATIC_REPORT}"
+
+# Method 1: Match ${VARIABLE} references against module-set environment variables
+# Skip infrastructure path variables (HOMEgfs, USHgfs, etc.) which every job uses
+# and are set by the job framework itself, not by a tool module at runtime.
+_infra_vars_pattern="^(HOMEgfs|HOMEglobal|HOMEobsproc|USHgfs|USHglobal|SCRgfs|SCRglobal|EXECgfs|FIXgfs|PARMgfs|PARMglobal|FIXglobal|PACKAGEROOT|NWROOT|UTILROOT|ve_gfs_ver|model_ver)"
+while IFS='|' read -r var mod; do
+    # Skip path/version infrastructure vars that don't indicate a runtime dep
+    if [[ "${var}" =~ ${_infra_vars_pattern} ]]; then continue; fi
+    if echo "${job_script_content}" | grep -q "\${${var}}" 2>/dev/null; then
+        printf "  \${%-20s --> %s\n" "${var}}" "${mod}" >> "${STATIC_REPORT}"
+        NEEDED_MODS["${mod}"]="${NEEDED_MODS[${mod}]:-}\${${var}}; "
+    fi
+done < "${MOD_ENVVARS}"
+
+echo "" >> "${STATIC_REPORT}"
+echo "--- Executables traced to modules (via PATH) ---" >> "${STATIC_REPORT}"
+
+# Method 2: Find executables in COMMAND POSITION only (not random words)
+# Command position = start of line, after |, after $(), after &&/||, after ;
+script_commands=$(echo "${job_script_content}" | \
+    grep -oP '(?:^\s*|(?<=\| )|(?<=\|\s)|(?<=\$\()|(?<=&&\s)|(?<=\|\|\s)|(?<=;\s))[a-z][a-z0-9_.-]+' | \
+    sort -u || true)
+# Also capture commands after ${VAR} on same line (e.g., ${WGRIB2} is handled by Method 1,
+# but bare commands like "wgrib2 file" at line start are caught here)
+
+for cmd in ${script_commands}; do
+    # Skip shell builtins, keywords, and very common OS commands
+    case "${cmd}" in
+        echo|cat|cd|rm|mv|cp|ls|mkdir|chmod|chown|grep|sed|awk|cut|tr|sort|uniq|wc|head|tail) continue ;;
+        test|true|false|exit|return|export|local|declare|read|printf|set|unset|shift) continue ;;
+        if|then|else|elif|fi|for|do|done|while|until|case|esac|in|source|eval) continue ;;
+        sleep|wait|date|touch|find|xargs|basename|dirname|tee|tar|gzip|gunzip|zcat) continue ;;
+        file|id|env|module|bash|sh|ksh|pwd|kill|trap|ulimit|umask|type|which|man) continue ;;
+        # Skip common non-command words that appear at line starts in scripts
+        err|msg|pgm|pgmout|export|the|and|not|from|this|that|with|are|was|has|had) continue ;;
+        # Skip words shorter than 3 chars (rarely real external commands)
+        [a-z]|[a-z][a-z]) continue ;;
+    esac
+
+    cmd_path=$(which "${cmd}" 2>/dev/null || true)
+    if [[ -z "${cmd_path}" ]]; then continue; fi
+
+    cmd_dir=$(dirname "${cmd_path}")
+    providing_mod=$(grep "|PATH|${cmd_dir}$" "${MOD_PROVIDES}" | head -1 | cut -d'|' -f1 || true)
+    if [[ -n "${providing_mod}" ]]; then
+        printf "  %-20s --> %s\n" "${cmd}" "${providing_mod}" >> "${STATIC_REPORT}"
+        NEEDED_MODS["${providing_mod}"]="${NEEDED_MODS[${providing_mod}]:-}${cmd}(PATH); "
+    fi
+done
+
+echo "" >> "${STATIC_REPORT}"
+echo "--- Library dependencies (ldd -> module) ---" >> "${STATIC_REPORT}"
+
+# Simulate runtime LD_LIBRARY_PATH: if the job scripts add extra paths
+# (e.g., LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"), add them
+# now so ldd sees the same environment the job will. Libraries resolved by
+# these paths don't need a module loaded.
+_extra_ldpaths=""
+for _dir in "${HOMEGFS}/lib" "${HOMEGFS}/sorc/gdas.cd/build/lib"; do
+    if [[ -d "${_dir}" ]]; then
+        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${_dir}"
+        _extra_ldpaths="${_extra_ldpaths} ${_dir}"
+    fi
+done
+if [[ -n "${_extra_ldpaths}" ]]; then
+    echo "  (added to LD_LIBRARY_PATH for ldd:${_extra_ldpaths})" >> "${STATIC_REPORT}"
+fi
+
+# Method 3: ldd on binaries in exec/ that are referenced in scripts
+# Only add modules for libraries that the binary CANNOT resolve via RPATH alone.
+# If a binary resolves all its libs when only its own module is loaded, the
+# transitive deps are satisfied via RPATH and don't need explicit module loads.
+if [[ -d "${HOMEGFS}/exec" ]]; then
+    for bin_path in "${HOMEGFS}/exec"/*; do
+        [[ -f "${bin_path}" && -x "${bin_path}" ]] || continue
+        bin_name=$(basename "${bin_path}")
+        if ! echo "${all_script_content}" | grep -q "${bin_name}"; then continue; fi
+
+        missing_libs=$(ldd "${bin_path}" 2>/dev/null | grep "not found" | awk '{print $1}' || true)
+
+        if [[ -n "${missing_libs}" ]]; then
+            # Only trace the RESOLVED libs to find modules that would satisfy the missing ones
+            resolved_libs=$(ldd "${bin_path}" 2>/dev/null | grep "=>" | grep -v "not found" | awk '{print $3}' || true)
+            for lib in ${resolved_libs}; do
+                lib_dir=$(dirname "${lib}")
+                providing_mod=$(grep "|LIB|${lib_dir}$" "${MOD_PROVIDES}" | head -1 | cut -d'|' -f1 || true)
+                if [[ -n "${providing_mod}" ]]; then
+                    NEEDED_MODS["${providing_mod}"]="${NEEDED_MODS[${providing_mod}]:-}${bin_name}(ldd); "
+                fi
+            done
+            printf "  %-20s MISSING: %s\n" "${bin_name}" "${missing_libs}" >> "${STATIC_REPORT}"
+        else
+            # Binary resolves everything — it needs whatever module provides it in PATH,
+            # which is already handled by Method 2. Don't add transitive lib deps.
+            n_mods=$(ldd "${bin_path}" 2>/dev/null | grep "=>" | grep -v "not found" | wc -l)
+            printf "  %-20s %s libs OK (RPATH resolves all)\n" "${bin_name}" "${n_mods}" >> "${STATIC_REPORT}"
+        fi
+    done
+fi
+
+# Also ldd any ELF tools found via PATH matching — ONLY if they have missing libs
+# (If a tool resolves all its libs, its module is sufficient — don't add transitive deps)
+for cmd in ${script_commands}; do
+    cmd_path=$(which "${cmd}" 2>/dev/null || true)
+    if [[ -z "${cmd_path}" || ! -f "${cmd_path}" ]]; then continue; fi
+    file_type=$(file -b "${cmd_path}" 2>/dev/null || true)
+    if [[ ! "${file_type}" == *"ELF"* ]]; then continue; fi
+    if [[ "${cmd_path}" == "${HOMEGFS}/exec/"* ]]; then continue; fi
+
+    # Only report if there are MISSING libraries (tool can't self-resolve)
+    missing_libs=$(ldd "${cmd_path}" 2>/dev/null | grep "not found" | awk '{print $1}' || true)
+    if [[ -n "${missing_libs}" ]]; then
+        # Find which module provides the missing libraries
+        resolved_libs=$(ldd "${cmd_path}" 2>/dev/null | grep "=>" | grep -v "not found" | awk '{print $3}' || true)
+        for lib in ${resolved_libs}; do
+            lib_dir=$(dirname "${lib}")
+            providing_mod=$(grep "|LIB|${lib_dir}$" "${MOD_PROVIDES}" | head -1 | cut -d'|' -f1 || true)
+            if [[ -n "${providing_mod}" ]]; then
+                NEEDED_MODS["${providing_mod}"]="${NEEDED_MODS[${providing_mod}]:-}${cmd}(ldd-missing); "
+            fi
+        done
+        printf "  %-20s has missing libs: %s\n" "${cmd}" "${missing_libs}" >> "${STATIC_REPORT}"
+    fi
+done
+
+# Method 4: Scan Python files for subprocess/exec patterns that launch binaries
+echo "" >> "${STATIC_REPORT}"
+echo "--- Python-launched executables ---" >> "${STATIC_REPORT}"
+
+for scan_file in ${ALL_SCRIPTS}; do
+    if [[ ! -f "${scan_file}" ]]; then continue; fi
+    # Only process .py files
+    [[ "${scan_file}" == *.py ]] || continue
+    fname=$(basename "${scan_file}")
+
+    # Look for subprocess, os.exec, Popen, mpiexec patterns
+    py_execs=$(grep -oP '(subprocess\.(run|Popen|call)|os\.exec\w*|mpiexec|srun|aprun)\s*\(\s*\[?\s*["\x27]([^"\x27]+)["\x27]' "${scan_file}" | \
+        grep -oP '["\x27][a-zA-Z0-9_./-]+["\x27]' | tr -d "\"'" || true)
+    # Also look for references to exec/ binaries
+    py_exec_refs=$(grep -oP '\bexec/[a-zA-Z0-9_.-]+' "${scan_file}" | sed 's|exec/||' || true)
+    # Also look for executable variable references
+    py_var_execs=$(grep -oP 'self\.\w*exec\w*|EXEC[A-Z_]*' "${scan_file}" || true)
+
+    all_py_execs="${py_execs} ${py_exec_refs}"
+    if [[ -n "$(echo "${all_py_execs}" | xargs)" ]]; then
+        printf "  %-30s %s\n" "${fname}:" "${all_py_execs}" >> "${STATIC_REPORT}"
+        # Check if any found binaries exist in exec/
+        for pbin in ${all_py_execs}; do
+            pbin_base=$(basename "${pbin}")
+            bin_path="${HOMEGFS}/exec/${pbin_base}"
+            if [[ -f "${bin_path}" && -x "${bin_path}" ]]; then
+                resolved_libs=$(ldd "${bin_path}" 2>/dev/null | grep "=>" | grep -v "not found" | awk '{print $3}' || true)
+                for lib in ${resolved_libs}; do
+                    lib_dir=$(dirname "${lib}")
+                    providing_mod=$(grep "|LIB|${lib_dir}$" "${MOD_PROVIDES}" | head -1 | cut -d'|' -f1 || true)
+                    if [[ -n "${providing_mod}" ]]; then
+                        NEEDED_MODS["${providing_mod}"]="${NEEDED_MODS[${providing_mod}]:-}${pbin_base}(py+ldd); "
+                    fi
+                done
+            fi
+        done
+    fi
+done
+
+# Method 5: MPI auto-include — scans only the job's own ex-script and sourced
+# scripts for MPI launcher invocations. Infrastructure scripts (jjob_header.sh,
+# jjob_shell_setup.sh) are excluded because they define APRUN variables
+# generically for all jobs, not as evidence this job uses MPI.
+_uses_mpi="NO"
+_mpi_scan_files=""
+for _sf in ${ALL_SCRIPTS}; do
+    # Skip infrastructure scripts that define APRUN generically
+    _sfbase=$(basename "${_sf}")
+    case "${_sfbase}" in
+        jjob_header.sh|jjob_shell_setup.sh|jjob_standard_vars.sh|set_strict.sh) continue ;;
+    esac
+    _mpi_scan_files="${_mpi_scan_files} ${_sf}"
+done
+_mpi_scan_content=""
+for _sf in ${_mpi_scan_files}; do
+    [[ -f "${_sf}" ]] && _mpi_scan_content="${_mpi_scan_content}
+$(cat "${_sf}")"
+done
+# Only match actual MPI launcher INVOCATIONS (command position), not variable assignments/exports
+if echo "${_mpi_scan_content}" | grep -qP '^\s*(mpiexec|mpirun|srun|aprun)\b' 2> /dev/null; then
+    _uses_mpi="YES"
+elif echo "${_mpi_scan_content}" | grep -qP '\$\{?APRUN[A-Z_]*\}?\s+[^=]' 2> /dev/null; then
+    # ${APRUN_SOMETHING} followed by non-= means it's being invoked, not assigned
+    _uses_mpi="YES"
+fi
+if [[ "${_uses_mpi}" == "YES" ]]; then
+    # cray-pals (job launcher) needed for MPI execution
+    cray_pals_mod=$(grep -i "^cray-pals" "${LOADED_MODS}" | head -1 || true)
+    cray_mpich_mod=$(grep -i "^cray-mpich" "${LOADED_MODS}" | head -1 || true)
+    if [[ -n "${cray_pals_mod}" ]]; then
+        NEEDED_MODS["${cray_pals_mod}"]="${NEEDED_MODS[${cray_pals_mod}]:-}MPI-launcher(auto); "
+        printf "  %-20s --> auto-included (MPI job launcher)\n" "${cray_pals_mod}" >> "${STATIC_REPORT}"
+    fi
+    if [[ -n "${cray_mpich_mod}" ]]; then
+        NEEDED_MODS["${cray_mpich_mod}"]="${NEEDED_MODS[${cray_mpich_mod}]:-}MPI-runtime(auto); "
+        printf "  %-20s --> auto-included (MPI runtime)\n" "${cray_mpich_mod}" >> "${STATIC_REPORT}"
+    fi
+    # Only include cfp if the job's scripts reference cfp/poe/cfp_mp as a command
+    if echo "${_mpi_scan_content}" | grep -qP '^\s*(cfp|poe|cfp_mp)\b|\$\{?APRUN[A-Z_]*CFP' 2> /dev/null; then
+        cfp_mod=$(grep -i "^cfp" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${cfp_mod}" ]]; then
+            NEEDED_MODS["${cfp_mod}"]="${NEEDED_MODS[${cfp_mod}]:-}cfp(auto); "
+            printf "  %-20s --> auto-included (parallel forking)\n" "${cfp_mod}" >> "${STATIC_REPORT}"
+        fi
+    fi
+fi
+
+# Note for ufswm module type jobs
+if [[ "${MOD_TYPE}" == "ufswm" ]]; then
+    echo "" >> "${STATIC_REPORT}"
+    echo "--- NOTE: ufswm job (forecast) ---" >> "${STATIC_REPORT}"
+    echo "  This job uses the UFS Weather Model. Module deps come from the" >> "${STATIC_REPORT}"
+    echo "  build system: sorc/ufs_model.fd/modulefiles/ufs_\${MACHINE_ID}.intel" >> "${STATIC_REPORT}"
+    echo "  Refer to that modulefile for the definitive compiled-against deps." >> "${STATIC_REPORT}"
+fi
+
+# ============================================================
+# Step 4: Shell/script module detection
+# ============================================================
+echo "[4/4] Scanning for shell utility functions and script commands..."
+
+# Map shell functions/commands to their providing module
+declare -A SHELL_FUNC_TO_MODULE=(
+    ["err_exit"]="prod_util"
+    ["err_chk"]="prod_util"
+    ["prep_step"]="prod_util"
+    ["startmsg"]="prod_util"
+    ["postmsg"]="prod_util"
+    ["cpreq"]="prod_util"
+    ["cpfs"]="prod_util"
+    ["setpdy.sh"]="prod_util"
+    ["make_ntc_bull.pl"]="util_shared"
+    ["formbul.pl"]="util_shared"
+    ["make_NTC_file.pl"]="util_shared"
+    ["make_tif.sh"]="util_shared"
+    ["tranjb"]="util_shared"
+    ["dbn_alert"]="prod_util"
+    ["ndate"]="prod_util"
+    ["nhour"]="prod_util"
+    ["mdate"]="prod_util"
+    ["finddate"]="prod_util"
+)
+
+declare -A SHELL_MODS_NEEDED
+
+echo "" >> "${STATIC_REPORT}"
+echo "--- Shell functions/scripts detected ---" >> "${STATIC_REPORT}"
+
+for scan_file in ${ALL_SCRIPTS}; do
+    if [[ ! -f "${scan_file}" ]]; then continue; fi
+    fname=$(basename "${scan_file}")
+    for func in "${!SHELL_FUNC_TO_MODULE[@]}"; do
+        if grep -q "\b${func}\b" "${scan_file}" 2>/dev/null; then
+            mod="${SHELL_FUNC_TO_MODULE[${func}]}"
+            printf "  %-20s in %-30s (from: %s)\n" "${func}" "${fname}" "${mod}" >> "${STATIC_REPORT}"
+            SHELL_MODS_NEEDED["${mod}"]="${SHELL_MODS_NEEDED[${mod}]:-}${func} "
+        fi
+    done
+done
+
+# ============================================================
+# RESULTS
+# ============================================================
+echo ""
+echo "=============================================="
+echo " RESULTS: ${JOB_NAME}"
+echo "=============================================="
+echo ""
+
+# Print static analysis findings
+cat "${STATIC_REPORT}"
+
+# ============================================================
+# RECOMMENDATION
+# ============================================================
+echo ""
+echo "=============================================="
+echo " RECOMMENDATION for: ${JOB_NAME}"
+echo "=============================================="
+
+# Collect all needed modules with versions
+echo ""
+echo "----------------------------------------------"
+echo " MINIMUM MODULES (rocoto / dev testing)"
+echo "----------------------------------------------"
+echo ""
+
+# Always needed on WCOSS2
+echo " Base (from module reset):"
+while IFS='|' read -r mod root; do
+    mod_base="${mod%%/*}"
+    for def in ${DEFAULT_MODULES}; do
+        if [[ "${mod_base}" == *"${def}"* ]]; then
+            echo "   ${mod}"
+            break
+        fi
+    done
+done < "${MOD_ROOTS}"
+
+# Binary/library modules
+echo ""
+echo " Job-specific (binary/library):"
+if [[ ${#NEEDED_MODS[@]} -gt 0 ]]; then
+    for nmod in $(echo "${!NEEDED_MODS[@]}" | tr ' ' '\n' | sort -u); do
+        _nmod_base="${nmod%%/*}"
+        is_default="NO"
+        for def in ${DEFAULT_MODULES}; do
+            if [[ "${_nmod_base}" == "${def}" ]]; then is_default="YES"; break; fi
+        done
+        if [[ "${is_default}" == "YES" ]]; then continue; fi
+        # Skip meta-modulefiles and module-reset artifacts
+        if [[ "${_nmod_base}" =~ ^gw_ ]]; then continue; fi
+        if [[ "${_nmod_base}" =~ ^craype-(x86|network) ]]; then continue; fi
+        if [[ "${_nmod_base}" == "libfabric" ]]; then continue; fi
+
+        matched=$(grep -i "^${nmod}" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            echo "   ${matched}"
+        else
+            echo "   ${nmod}  (version not found in loaded modules)"
+        fi
+    done
+else
+    echo "   (none detected)"
+fi
+
+# Shell/script modules
+if [[ ${#SHELL_MODS_NEEDED[@]} -gt 0 ]]; then
+    echo ""
+    echo " Job-specific (shell/script utilities):"
+    for smod in $(echo "${!SHELL_MODS_NEEDED[@]}" | tr ' ' '\n' | sort -u); do
+        matched=$(grep -i "^${smod}/" "${LOADED_MODS}" | head -1 || true)
+        funcs=$(echo "${SHELL_MODS_NEEDED[${smod}]}" | tr ' ' '\n' | sort -u | grep -v "^$" | tr '\n' ',' | sed 's/,$//')
+        if [[ -n "${matched}" ]]; then
+            echo "   ${matched}  (${funcs})"
+        else
+            echo "   ${smod}  (${funcs})"
+        fi
+    done
+fi
+
+# ecFlow section
+echo ""
+echo "----------------------------------------------"
+echo " MINIMUM MODULES (ecFlow on WCOSS2)"
+echo "----------------------------------------------"
+echo " head.h already provides (via module reset + head.h loads):"
+# Show base modules with versions
+for def in ${DEFAULT_MODULES}; do
+    matched=$(grep -i "^${def}/" "${LOADED_MODS}" | head -1 || true)
+    if [[ -n "${matched}" ]]; then
+        echo "   ${matched}"
+    fi
+done
+# Module reset artifacts (always present on WCOSS2)
+for artifact in craype-x86-rome craype-network-ofi libfabric; do
+    matched=$(grep -i "^${artifact}" "${LOADED_MODS}" | head -1 || true)
+    if [[ -n "${matched}" ]]; then
+        echo "   ${matched}"
+    fi
+done
+# cray-mpich (from module reset)
+matched=$(grep -i "^cray-mpich" "${LOADED_MODS}" | head -1 || true)
+if [[ -n "${matched}" ]]; then
+    echo "   ${matched}"
+fi
+# ecflow, prod_util, prod_envir (loaded by head.h)
+for ecf_mod in ecflow prod_util prod_envir; do
+    matched=$(grep -i "^${ecf_mod}" "${LOADED_MODS}" | head -1 || true)
+    if [[ -n "${matched}" ]]; then
+        echo "   ${matched}"
+    else
+        echo "   ${ecf_mod}"
+    fi
+done
+echo ""
+echo " Job body must add:"
+# Modules that head.h already provides (match by base name, not version)
+_ecf_provided="PrgEnv-intel intel craype cray-mpich ecflow prod_util prod_envir craype-x86-rome craype-network-ofi libfabric"
+if [[ ${#NEEDED_MODS[@]} -gt 0 ]]; then
+    for nmod in $(echo "${!NEEDED_MODS[@]}" | tr ' ' '\n' | sort -u); do
+        _nmod_base="${nmod%%/*}"
+        is_provided="NO"
+        for prov in ${_ecf_provided}; do
+            if [[ "${_nmod_base}" == "${prov}" ]]; then is_provided="YES"; break; fi
+        done
+        if [[ "${is_provided}" == "YES" ]]; then continue; fi
+        # Also skip meta-modulefiles
+        if [[ "${_nmod_base}" =~ ^gw_ ]]; then continue; fi
+
+        matched=$(grep -i "^${nmod}" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            echo "   ${matched}"
+        else
+            echo "   ${nmod}"
+        fi
+    done
+fi
+# Shell modules (skip prod_util since head.h loads it)
+if [[ ${#SHELL_MODS_NEEDED[@]} -gt 0 ]]; then
+    for smod in $(echo "${!SHELL_MODS_NEEDED[@]}" | tr ' ' '\n' | sort -u); do
+        if [[ "${smod}" == "prod_util" ]]; then continue; fi  # already in head.h
+        matched=$(grep -i "^${smod}/" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            echo "   ${matched}"
+        else
+            echo "   ${smod}"
+        fi
+    done
+fi
+
+# NOT NEEDED
+echo ""
+echo "----------------------------------------------"
+echo " NOT NEEDED (safe to remove from ${MOD_TYPE} modulefile)"
+echo "----------------------------------------------"
+while IFS='|' read -r mod root; do
+    mod_base="${mod%%/*}"
+    is_default="NO"
+    for def in ${DEFAULT_MODULES}; do
+        if [[ "${mod_base}" == *"${def}"* ]]; then is_default="YES"; break; fi
+    done
+    if [[ "${is_default}" == "YES" ]]; then continue; fi
+    # Skip meta-modulefiles and module-reset artifacts
+    if [[ "${mod_base}" =~ ^gw_ ]]; then continue; fi
+    if [[ "${mod_base}" =~ ^craype-(x86|network) ]]; then continue; fi
+    if [[ "${mod_base}" == "libfabric" ]]; then continue; fi
+
+    is_needed="NO"
+    for nmod in "${!NEEDED_MODS[@]}"; do
+        if [[ "${mod}" == *"${nmod}"* || "${nmod}" == *"${mod_base}"* ]]; then is_needed="YES"; break; fi
+    done
+    for smod in "${!SHELL_MODS_NEEDED[@]}"; do
+        if [[ "${mod}" == *"${smod}"* ]]; then is_needed="YES"; break; fi
+    done
+
+    if [[ "${is_needed}" == "NO" ]]; then
+        echo "   ${mod}"
+    fi
+done < "${MOD_ROOTS}"
+
+echo ""
+echo "=============================================="
+
+# ============================================================
+# Restore user's original module environment
+# ============================================================
+echo ""
+echo "Restoring your original module environment..."
+module purge 2>/dev/null || true
+if [[ -n "${SAVED_MODULES}" ]]; then
+    while IFS= read -r mod; do
+        module load "${mod}" 2>/dev/null || true
+    done <<< "${SAVED_MODULES}"
+    echo "  Restored $(echo "${SAVED_MODULES}" | wc -l) modules."
+else
+    echo "  (no modules were loaded before)"
+fi
