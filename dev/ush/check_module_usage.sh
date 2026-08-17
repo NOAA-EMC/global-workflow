@@ -694,15 +694,10 @@ echo ""
 
 # Always needed on WCOSS2
 echo " Base (from module reset):"
-while IFS='|' read -r mod root; do
-    mod_base="${mod%%/*}"
-    for def in ${DEFAULT_MODULES}; do
-        if [[ "${mod_base}" == *"${def}"* ]]; then
-            echo "   ${mod}"
-            break
-        fi
-    done
-done < "${MOD_ROOTS}"
+for def in ${DEFAULT_MODULES}; do
+    _def_ver_var="${def//-/_}_ver"
+    echo "   module load ${def}/\${${_def_ver_var}}"
+done
 
 # Binary/library modules
 echo ""
@@ -722,9 +717,20 @@ if [[ ${#NEEDED_MODS[@]} -gt 0 ]]; then
 
         matched=$(grep -i "^${nmod}" "${LOADED_MODS}" | head -1 || true)
         if [[ -n "${matched}" ]]; then
-            echo "   ${matched}"
+            _mod_base="${matched%%/*}"
+            _slashes="${matched//[^\/]/}"
+            if [[ ${#_slashes} -ge 2 ]]; then
+                _mod_base="${matched%/*}"
+            fi
+            _mod_ver_var="${_mod_base//\//_}"
+            _mod_ver_var="${_mod_ver_var//-/_}"
+            _mod_ver_var="${_mod_ver_var%_D}"
+            _mod_ver_var="${_mod_ver_var%_A}"
+            _mod_ver_var="${_mod_ver_var}_ver"
+            echo "   module load ${_mod_base}/\${${_mod_ver_var}}"
         else
-            echo "   ${nmod}  (version not found in loaded modules)"
+            _mod_ver_var="${_nmod_base//-/_}_ver"
+            echo "   module load ${_nmod_base}/\${${_mod_ver_var}}"
         fi
     done
 else
@@ -736,13 +742,9 @@ if [[ ${#SHELL_MODS_NEEDED[@]} -gt 0 ]]; then
     echo ""
     echo " Job-specific (shell/script utilities):"
     for smod in $(echo "${!SHELL_MODS_NEEDED[@]}" | tr ' ' '\n' | sort -u); do
-        matched=$(grep -i "^${smod}/" "${LOADED_MODS}" | head -1 || true)
         funcs=$(echo "${SHELL_MODS_NEEDED[${smod}]}" | tr ' ' '\n' | sort -u | grep -v "^$" | tr '\n' ',' | sed 's/,$//')
-        if [[ -n "${matched}" ]]; then
-            echo "   ${matched}  (${funcs})"
-        else
-            echo "   ${smod}  (${funcs})"
-        fi
+        _smod_ver_var="${smod//-/_}_ver"
+        echo "   module load ${smod}/\${${_smod_ver_var}}  (${funcs})"
     done
 fi
 
@@ -752,38 +754,18 @@ echo "----------------------------------------------"
 echo " MINIMUM MODULES (ecFlow on WCOSS2)"
 echo "----------------------------------------------"
 echo " Base module (required - enables compiler module hierarchy):"
-PrgEnv_matched=$(grep -i "^PrgEnv-intel/" "${LOADED_MODS}" | head -1 || true)
-echo "   module load ${PrgEnv_matched:-PrgEnv-intel}"
+echo "   module load PrgEnv-intel/\${PrgEnv_intel_ver}"
 echo ""
 echo " If job fails, also try adding these (may be needed on some nodes):"
 for def in intel craype; do
-    matched=$(grep -i "^${def}/" "${LOADED_MODS}" | head -1 || true)
-    if [[ -n "${matched}" ]]; then
-        echo "   #module load ${matched}"
-    fi
+    _def_ver_var="${def//-/_}_ver"
+    echo "   #module load ${def}/\${${_def_ver_var}}"
 done
 echo ""
 echo " head.h already provides (via module reset + head.h loads):"
-# Module reset artifacts (always present on WCOSS2)
-for artifact in craype-x86-rome craype-network-ofi libfabric; do
-    matched=$(grep -i "^${artifact}" "${LOADED_MODS}" | head -1 || true)
-    if [[ -n "${matched}" ]]; then
-        echo "   ${matched}"
-    fi
-done
-# cray-mpich (from module reset)
-matched=$(grep -i "^cray-mpich" "${LOADED_MODS}" | head -1 || true)
-if [[ -n "${matched}" ]]; then
-    echo "   ${matched}"
-fi
-# ecflow, prod_util, prod_envir (loaded by head.h)
-for ecf_mod in ecflow prod_util prod_envir; do
-    matched=$(grep -i "^${ecf_mod}" "${LOADED_MODS}" | head -1 || true)
-    if [[ -n "${matched}" ]]; then
-        echo "   ${matched}"
-    else
-        echo "   ${ecf_mod}"
-    fi
+for artifact in craype-x86-rome craype-network-ofi libfabric cray-mpich ecflow prod_util prod_envir; do
+    _art_ver_var="${artifact//-/_}_ver"
+    echo "   module load ${artifact}/\${${_art_ver_var}}"
 done
 echo ""
 echo " Job body must add:"
@@ -802,9 +784,20 @@ if [[ ${#NEEDED_MODS[@]} -gt 0 ]]; then
 
         matched=$(grep -i "^${nmod}" "${LOADED_MODS}" | head -1 || true)
         if [[ -n "${matched}" ]]; then
-            echo "   ${matched}"
+            _mod_base="${matched%%/*}"
+            _slashes="${matched//[^\/]/}"
+            if [[ ${#_slashes} -ge 2 ]]; then
+                _mod_base="${matched%/*}"
+            fi
+            _mod_ver_var="${_mod_base//\//_}"
+            _mod_ver_var="${_mod_ver_var//-/_}"
+            _mod_ver_var="${_mod_ver_var%_D}"
+            _mod_ver_var="${_mod_ver_var%_A}"
+            _mod_ver_var="${_mod_ver_var}_ver"
+            echo "   module load ${_mod_base}/\${${_mod_ver_var}}"
         else
-            echo "   ${nmod}"
+            _mod_ver_var="${_nmod_base//-/_}_ver"
+            echo "   module load ${_nmod_base}/\${${_mod_ver_var}}"
         fi
     done
 fi
@@ -812,12 +805,8 @@ fi
 if [[ ${#SHELL_MODS_NEEDED[@]} -gt 0 ]]; then
     for smod in $(echo "${!SHELL_MODS_NEEDED[@]}" | tr ' ' '\n' | sort -u); do
         if [[ "${smod}" == "prod_util" ]]; then continue; fi  # already in head.h
-        matched=$(grep -i "^${smod}/" "${LOADED_MODS}" | head -1 || true)
-        if [[ -n "${matched}" ]]; then
-            echo "   ${matched}"
-        else
-            echo "   ${smod}"
-        fi
+        _smod_ver_var="${smod//-/_}_ver"
+        echo "   module load ${smod}/\${${_smod_ver_var}}"
     done
 fi
 
@@ -851,6 +840,150 @@ while IFS='|' read -r mod root; do
     fi
 done < "${MOD_ROOTS}"
 
+echo ""
+echo "=============================================="
+
+# ============================================================
+# COPY-PASTE SECTIONS
+# Ready-to-use module load statements with version variables
+# ============================================================
+echo ""
+echo ""
+echo "############################################################"
+echo "# COPY-PASTE: Minimum modules for ${JOB_NAME}"
+echo "############################################################"
+
+# --- Helper: convert module name to version variable ---
+# e.g., "cray-mpich/8.1.19" -> "cray_mpich_ver"
+#       "hdf5-D/1.14.0"     -> "hdf5_ver"
+#       "ve/gfs/17.0"       -> "ve_gfs_ver"
+_mod_to_ver_var() {
+    local _mod="${1}"
+    local _base="${_mod%%/*}"
+    # If base contains a second / (like ve/gfs), include it
+    local _slashes="${_mod//[^\/]/}"
+    if [[ ${#_slashes} -ge 2 ]]; then
+        # Module like ve/gfs/17.0 — base is ve/gfs
+        _base="${_mod%/*}"
+    fi
+    # Replace / and - with _
+    local _var="${_base//\//_}"
+    _var="${_var//-/_}"
+    # Strip trailing _D or _A suffixes (hdf5-D -> hdf5, ncdiag-A -> ncdiag)
+    _var="${_var%_D}"
+    _var="${_var%_A}"
+    echo "${_var}_ver"
+}
+
+# Collect job-specific modules (not provided by base/head.h)
+_ecf_provided="PrgEnv-intel intel craype cray-mpich cray-pals cfp ecflow prod_util prod_envir craype-x86-rome craype-network-ofi libfabric"
+declare -a _job_mods=()
+
+if [[ ${#NEEDED_MODS[@]} -gt 0 ]]; then
+    for nmod in $(echo "${!NEEDED_MODS[@]}" | tr ' ' '\n' | sort -u); do
+        _nmod_base="${nmod%%/*}"
+        is_skip="NO"
+        for prov in ${_ecf_provided}; do
+            if [[ "${_nmod_base}" == "${prov}" ]]; then is_skip="YES"; break; fi
+        done
+        if [[ "${_nmod_base}" =~ ^gw_ ]]; then is_skip="YES"; fi
+        if [[ "${is_skip}" == "YES" ]]; then continue; fi
+
+        matched=$(grep -i "^${nmod}" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            _job_mods+=("${matched}")
+        else
+            _job_mods+=("${nmod}")
+        fi
+    done
+fi
+# Add shell/script modules (skip prod_util — head.h provides it)
+if [[ ${#SHELL_MODS_NEEDED[@]} -gt 0 ]]; then
+    for smod in $(echo "${!SHELL_MODS_NEEDED[@]}" | tr ' ' '\n' | sort -u); do
+        if [[ "${smod}" == "prod_util" ]]; then continue; fi
+        matched=$(grep -i "^${smod}/" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            _job_mods+=("${matched}")
+        else
+            _job_mods+=("${smod}")
+        fi
+    done
+fi
+
+# --- ecFlow copy-paste block ---
+echo ""
+echo "# ---- ecFlow (.ecf) ----"
+echo "# head.h already provides: PrgEnv-intel, intel, craype, cray-mpich,"
+echo "#   craype-x86-rome, craype-network-ofi, libfabric, ecflow, prod_util, prod_envir"
+echo "# Paste into the .ecf body after %include <head.h>:"
+echo ""
+if [[ "${_uses_mpi}" == "YES" ]]; then
+    # cray-pals needed for MPI job launching (head.h does NOT provide it)
+    matched=$(grep -i "^cray-pals" "${LOADED_MODS}" | head -1 || true)
+    if [[ -n "${matched}" ]]; then
+        _ver_var=$(_mod_to_ver_var "${matched}")
+        echo "module load cray-pals/\${${_ver_var}}"
+    fi
+    if [[ "${_uses_cfp}" == "YES" ]]; then
+        matched=$(grep -i "^cfp" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            _ver_var=$(_mod_to_ver_var "${matched}")
+            echo "module load cfp/\${${_ver_var}}"
+        fi
+    fi
+fi
+for _m in "${_job_mods[@]}"; do
+    _base="${_m%%/*}"
+    _slashes="${_m//[^\/]/}"
+    if [[ ${#_slashes} -ge 2 ]]; then
+        _base="${_m%/*}"
+    fi
+    _ver_var=$(_mod_to_ver_var "${_m}")
+    echo "module load ${_base}/\${${_ver_var}}"
+done
+if [[ "${_uses_cfp}" == "YES" ]]; then
+    echo "export USE_CFP=YES"
+fi
+
+# --- Rocoto copy-paste block ---
+echo ""
+echo ""
+echo "# ---- Rocoto (load_modules.sh / modulefile) ----"
+echo "# module-setup.sh does module purge + module reset which provides:"
+echo "#   PrgEnv-intel, intel, craype, craype-x86-rome, craype-network-ofi"
+echo "# Paste into gw_<jobtype>.wcoss2.lua or equivalent:"
+echo ""
+# MPI modules if needed
+if [[ "${_uses_mpi}" == "YES" ]]; then
+    for _mpi_mod in cray-mpich cray-pals; do
+        matched=$(grep -i "^${_mpi_mod}" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            _ver_var=$(_mod_to_ver_var "${matched}")
+            echo "module load ${_mpi_mod}/\${${_ver_var}}"
+        fi
+    done
+    if [[ "${_uses_cfp}" == "YES" ]]; then
+        matched=$(grep -i "^cfp" "${LOADED_MODS}" | head -1 || true)
+        if [[ -n "${matched}" ]]; then
+            _ver_var=$(_mod_to_ver_var "${matched}")
+            echo "module load cfp/\${${_ver_var}}"
+            echo "export USE_CFP=YES"
+        fi
+    fi
+fi
+# Job-specific modules
+for _m in "${_job_mods[@]}"; do
+    _base="${_m%%/*}"
+    _slashes="${_m//[^\/]/}"
+    if [[ ${#_slashes} -ge 2 ]]; then
+        _base="${_m%/*}"
+    fi
+    _ver_var=$(_mod_to_ver_var "${_m}")
+    echo "module load ${_base}/\${${_ver_var}}"
+done
+
+echo ""
+echo "############################################################"
 echo ""
 echo "=============================================="
 
