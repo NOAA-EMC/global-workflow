@@ -118,9 +118,9 @@ if [[ -d "${tmp_acc_work_dir}" ]]; then
         # Use "${acc_files[@]}" to pass each file as a unique argument
         ${GMERGE} "${dest_acc}" "${acc_files[@]}"
         # Remove "(:LCDC:|:MCDC:|:HCDC:)" in acc daily files since we don't need in the final daily product
-        ${WGRIB2} "${dest_acc}" -s | grep -v -E "(:LCDC:|:MCDC:|:HCDC:)" > clean_map.txt 
-        ${WGRIB2} "${dest_acc}" -i -grib_out "${dest_acc_tmp}" < clean_map.txt
-        rm -f clean_map.txt
+        ${WGRIB2} "${dest_acc}" -s | grep -v -E "(:LCDC:|:MCDC:|:HCDC:)" > clean_map_${filename_start}${filemm}.txt 
+        ${WGRIB2} "${dest_acc}" -i -grib_out "${dest_acc_tmp}" < clean_map_${filename_start}${filemm}.txt
+        rm -f clean_map_${filename_start}${filemm}.txt
         # cp acc daily files (without LCDC, MCDC and HCDC) to COMOUT
         cpfs "${dest_acc_tmp}" "${dest_final_acc}"
         rm -f "${dest_acc_tmp}"

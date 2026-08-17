@@ -21,7 +21,7 @@ echo "INFO: Validating script line endings..."
 PROCESS_OCEAN_6HRLYSH=${PROCESS_OCEAN_6HRLYSH:-"${USHglobal}/process_ocean_6hrly.sh"}
 PROCESS_OCEAN_DAILYSH=${PROCESS_OCEAN_DAILYSH:-"${USHglobal}/process_ocean_daily.sh"}
 PROCESS_OCEAN_MONTHLYSH=${PROCESS_OCEAN_MONTHLYSH:-"${USHglobal}/process_ocean_monthly.sh"}
-RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
+RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd_sfs.sh"}
 chmod +x "${PROCESS_OCEAN_6HRLYSH}" "${PROCESS_OCEAN_DAILYSH}" "${PROCESS_OCEAN_MONTHLYSH}" "${RUN_MPMDSH}"
 
 # List all scripts involved in the workflow
@@ -77,7 +77,7 @@ echo "Begin OCEAN POST work"
 
 if [[ "${RUN}" == sfs ]]; then
 
-    # Task 0. Clean all unfinished output files in the temporary directory from the previous failed post job
+    # Task 0. Clean all unfinished output files in the temporary directory from the previous failed post job 
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${RUN}.temp5m.t${cyc}z.${grid}.6hr_avg.nc"
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs"*"monthly_avg"*".nc"
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs."*".t00z.${grid}.daily.nc"

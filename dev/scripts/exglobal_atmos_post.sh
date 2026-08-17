@@ -13,7 +13,7 @@ echo "INFO: Validating script line endings..."
 # Scripts used
 PROCESS_ATMOS_6HRLYSH=${PROCESS_ATMOS_6HRLYSH:-"${USHglobal}/process_atmos_6hrly.sh"}
 PROCESS_ATMOS_DAILYSH=${PROCESS_ATMOS_DAILYSH:-"${USHglobal}/process_atmos_daily.sh"}
-RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
+RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd_sfs.sh"}
 chmod +x "${PROCESS_ATMOS_6HRLYSH}" "${PROCESS_ATMOS_DAILYSH}" "${RUN_MPMDSH}"
 
 # List all scripts involved in the workflow
@@ -293,8 +293,8 @@ cmdfile_s3="${DATA}/mpmd_s3_monthly.txt"
 true > "${cmdfile_s3}"
 
 # Read the files created in Stage 2
-accfilelist=("${OUTDIR}/acc.daily.${MEMDIR}"/*)
-insfilelist=("${OUTDIR}/inst.daily.${MEMDIR}"/*)
+accfilelist=("${OUTDIR}/acc.daily.${MEMDIR}"/acc.daily.*)
+insfilelist=("${OUTDIR}/inst.daily.${MEMDIR}"/inst.daily.*)
 
 # PARTIAL MONTH LOGIC: If dd_final != 01, the very last file in the list is
 # the partial month. We remove it from the processing array.

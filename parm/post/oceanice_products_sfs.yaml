@@ -42,7 +42,7 @@ ocean:
     compress_level: 9
   data_in:
     copy:
-      - ["{{ DATAoutput }}//MOM6_OUTPUT/model/history/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
+      - ["{{ DATAoutput }}/MOM6_OUTPUT/model/history/{{ RUN }}.t{{ current_cycle | strftime('%H') }}z.{{ interval }}hr_avg.f{{ '%03d' % forecast_hour }}.nc", "{{ DATA }}/ocean.nc"]
   data_out:
     mkdir:
       {% if write_ocean_subset %}
