@@ -186,7 +186,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 sleep "${FCST_MGR_STABILITY_WAIT}"
                 _sz_post=$(stat -c %s "${local_data[j]}" 2> /dev/null || echo -1)
                 if [[ "${_sz_pre}" -ne "${_sz_post}" || "${_sz_post}" -le 0 ]]; then
-                    echo "INFO [${component}]: '$(basename "${local_data[j]}")' still flushing (${_sz_pre} to ${_sz_post} B); deferring"
+                    echo "INFO [${component}]: '$(basename "${local_data[j]}")' still flushing (${_sz_pre} -> ${_sz_post} B); deferring"
                     _deferred=1
                     break
                 fi

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # calcanl_gfs.py
 # cory.r.martin@noaa.gov
 # 2019-10-11

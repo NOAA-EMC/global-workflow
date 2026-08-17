@@ -60,7 +60,7 @@ dev/jobs/JGLOBAL_ATMOS_ENSSTAT @RussTreadon-NOAA
 dev/jobs/JGLOBAL_ATMOS_POST_MANAGER @DavidHuber-NOAA
 dev/jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
 dev/jobs/JGLOBAL_ATMOS_SFCANL @BrianCurtis-NOAA
-dev/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC @DavidHuber-NOAA
+dev/jobs/JGLOBAL_ATMOS_TROPCY_QC @DavidHuber-NOAA
 dev/jobs/JGLOBAL_ATMOS_UPP @WenMeng-NOAA
 dev/jobs/JGLOBAL_ATMOS_VMINMON @EdwardSafford-NOAA
 dev/jobs/JGLOBAL_ATM_* @RussTreadon-NOAA @DavidNew-NOAA @CoryMartin-NOAA
@@ -120,7 +120,7 @@ dev/scripts/exglobal_atmos_ensstat.sh @RussTreadon-NOAA
 dev/scripts/exglobal_atmos_pmgr.sh @lgannoaa
 dev/scripts/exglobal_atmos_products.sh @WenMeng-NOAA
 dev/scripts/exglobal_atmos_sfcanl.sh @BrianCurtis-NOAA
-dev/scripts/exglobal_atmos_tropcy_qc_reloc.sh @DavidHuber-NOAA
+dev/scripts/exglobal_atmos_tropcy_qc.sh @DavidHuber-NOAA
 dev/scripts/exglobal_atmos_upp.py @WenMeng-NOAA
 dev/scripts/exglobal_atmos_vminmon.sh @EdwardSafford-NOAA
 dev/scripts/exglobal_cleanup.sh @DavidHuber-NOAA
@@ -190,8 +190,6 @@ ush/rstprod.sh @DavidHuber-NOAA
 ush/run_mpmd.sh @TravisElless-NOAA @DavidHuber-NOAA
 ush/syndat_getjtbul.sh @HananehJafary-NOAA
 ush/syndat_qctropcy.sh @HananehJafary-NOAA
-ush/tropcy_relocate.sh @HananehJafary-NOAA
-ush/tropcy_relocate_extrkr.sh @HananehJafary-NOAA
 ush/wave_*.sh @JessicaMeixner-NOAA @sbanihash
 ush/wdqms.py @ADCollard
 ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
