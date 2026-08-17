@@ -846,9 +846,7 @@ MOM6_postdet() {
             mom6_sentinel_sfx="$(printf "%02i" "${mom6_hist_n}")h"
             # MOM6's true final forecast hour: last element of MOM6_OUTPUT_FH
             # (valid for all RUNs, unaffected by IAU offset).
-            # shellcheck disable=SC2206
-            local -a _mom6_fh_arr=(${MOM6_OUTPUT_FH})
-            local _mom6_fhmax="${_mom6_fh_arr[-1]}"
+            local _mom6_fhmax="${MOM6_OUTPUT_FH##* }"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
