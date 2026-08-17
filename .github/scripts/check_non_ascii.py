@@ -40,7 +40,7 @@ PROD_DIRS = [
     "ush",
     "parm",
     "gempak",
-    "dev/ecf",
+    "ecf",
     "env",
     "modulefiles",
     "versions",
