@@ -19,8 +19,8 @@ export cyc="%CYC%"
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 export USE_CFP=YES
 module load wgrib2/${wgrib2_ver}
-module load cfp/2.0.4
-module load cray-pals/1.3.2
+module load cfp/${cfp_ver}
+module load cray-pals/${cray_pals_ver}
 
 module list
 export WGF="%WGF%"
