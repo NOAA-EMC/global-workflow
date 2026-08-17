@@ -50,10 +50,14 @@ fi
 
 # TODO - implement better way to set these parameters
 if [[ "${LOCALIZATION_TYPE}" == "gsibec" ]]; then
-    sed -i "s/TLNMC_OPTION/${tlnmc_option}/g" "${DATA}"/berror/gfs_gsi_global.nml
-    sed -i "s/BETAS0/${beta_s0}/g" "${DATA}"/berror/gfs_gsi_global.nml
-    sed -i "s/NMEM_ENS/${NMEM_ENS}/g" "${DATA}"/berror/gfs_gsi_global.nml
-    sed -i "s/PREFIX_ENS/enkf${GDUMP}.t${gcyc}z/g" "${DATA}"/berror/gfs_gsi_global.nml
+    target_file="${DATA}/berror/gfs_gsi_global.nml"
+
+    sed -i \
+        -e "s|TLNMC_OPTION|${tlnmc_option}|g" \
+        -e "s|BETAS0|${beta_s0}|g" \
+        -e "s|NMEM_ENS|${NMEM_ENS}|g" \
+        -e "s|PREFIX_ENS|enkf${GDUMP}.t${gcyc}z|g" \
+        "${target_file}"
 fi
 
 ##############################################
