@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# getncdimlen
+# getncdimlen.py
 # cory.r.martin@noaa.gov
 # 2019-10-17
 # script to return length of requested dimension
