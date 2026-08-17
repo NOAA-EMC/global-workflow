@@ -20,7 +20,7 @@ export USE_CFP=YES
 module load cfp/${cfp_ver}
 module load cray-pals/${cray_pals_ver}
 module load imagemagick/${imagemagick_ver}
-module load ve/${ve_ver}
+module load ve/gfs/${ve_gfs_ver}
 
 module list
 ############################################################
