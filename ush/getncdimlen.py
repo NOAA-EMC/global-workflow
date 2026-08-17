@@ -10,7 +10,7 @@ import gsi_utils
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-             description='Get length of dimension specified from a FV3GFS netCDF file')
+        description='Get length of dimension specified from a FV3GFS netCDF file')
     parser.add_argument('ncfile', help='path to input netCDF file', type=str)
     parser.add_argument('dimname', help='name of dimension (ex: grid_xt)', type=str)
     args = parser.parse_args()
