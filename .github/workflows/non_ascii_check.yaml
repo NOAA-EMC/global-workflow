@@ -1,4 +1,4 @@
-name: non_ascii_check
+name: Check for Non-ASCII Characters
 # Gate pull requests that introduce non-ASCII characters into production code.
 #
 # Scope:
