@@ -10,7 +10,7 @@ import datetime
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-             description='Get initial/valid time information from a FV3GFS netCDF file')
+        description='Get initial/valid time information from a FV3GFS netCDF file')
     parser.add_argument('ncfile', help='path to input netCDF file', type=str)
     parser.add_argument('-i', '--init', action='store_true', default=False,
                         help='option to print out initialized time YYYYMMDDHHMM')
@@ -28,6 +28,6 @@ if __name__ == '__main__':
         print(nfhour)
     else:
         print(args.ncfile)
-        print('Initial time: '+inittime.strftime("%Y-%m-%d %H:%M"))
-        print('Valid time: '+validtime.strftime("%Y-%m-%d %H:%M"))
-        print('Forecast hour: '+str(nfhour))
+        print('Initial time: ' + inittime.strftime("%Y-%m-%d %H:%M"))
+        print('Valid time: ' + validtime.strftime("%Y-%m-%d %H:%M"))
+        print('Forecast hour: ' + str(nfhour))
