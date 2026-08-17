@@ -46,10 +46,10 @@ for compdir in "${SOURCE_DIR}"/*/; do
     compdir=${compdir%*/}
     compdir=${compdir##*/}
 
-    #PATCH
-    # skip if atmos.nr or atmos.us
-    if [[ "${compdir}" == "atmos.nr" || "${compdir}" == "atmos.us" ]]; then
-        echo "WARNING: skip processing of ${compdir}"
+    # Components to skip (space-delimited). Override with IODA_SKIP_COMPONENTS.
+    IODA_SKIP_COMPONENTS=${IODA_SKIP_COMPONENTS:-"atmos.nr atmos.us"}
+    if [[ " ${IODA_SKIP_COMPONENTS} " == *" ${compdir} "* ]]; then
+        echo "INFO: skipping component directory '${compdir}'" >&2
         continue
     fi
     # Skip if not a directory
