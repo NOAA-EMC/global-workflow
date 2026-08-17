@@ -284,7 +284,7 @@ fi
 
 ###################################
 
-#  This is the file that connects to the later RELOCATE and/or PREP scripts
+#  This is the file that connects to the later PREP scripts
 cpfs current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 
 #  Create the DBNet alert

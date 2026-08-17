@@ -67,6 +67,7 @@ class Tasks:
         # DATAROOT is set by prod_envir in ops.  Here, we use `STMP` to construct DATAROOT
         dataroot_str = f"{self._base.get('STMP')}/RUNDIRS/{self._base.get('PSLOT')}/{self.run}.<cyclestr>@Y@m@d@H</cyclestr>"
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
+                      'envir': self._base.get('envir', 'para'),
                       'HOMEglobal': self.HOMEglobal,
                       'EXPDIR': self._base.get('EXPDIR'),
                       'NET': self._base.get('NET'),

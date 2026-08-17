@@ -13,7 +13,7 @@ suites:
             tasks:
               jgfs_atmos_post_manager:
                 triggers:
-                - task: jgfs_atmos_tropcy_qc_reloc
+                - task: jgfs_atmos_tropcy_qc
                   suite: prod00
   prod[00,06]:
     edits:
@@ -39,7 +39,7 @@ suites:
           obsproc:
             dump:
               tasks:
-                jgfs_atmos_tropcy_qc_reloc:
+                jgfs_atmos_tropcy_qc:
                   events:
                   - 'jtwc_bull_email'
             prep:
@@ -196,7 +196,7 @@ suites:
           obsproc:
             dump:
               tasks:
-                jgdas_atmos_tropcy_qc_reloc:
+                jgdas_atmos_tropcy_qc:
             prep:
               tasks:
                 jgdas_atmos_prep_sfc:
