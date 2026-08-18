@@ -35,6 +35,8 @@ if [ "%MACHINE_SITE:%" == "development" ]; then
     setpdy.sh
     . ./PDY
     cur_pdy=${PDY}
+    # Publish the PDY for the current cycle so that head.h can pick it up for the remainder of the jobs in the first cycle
+    ecflow_client --alter add variable PDY ${cur_pdy} /${suite_name}/primary/${cyc}
   fi
 
   # Get the PDY of the next cycle by adding 6 hours. Note that %% is required here for ecflow not to think these are ecflow variables.
