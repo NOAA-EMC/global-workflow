@@ -2,7 +2,7 @@
 #
 #------------------------------------------------------
 #
-# This is make_NTC_file.pl 
+# This is make_ntc_file.pl
 # It attaches the appropriate headers to the input file
 # and copies it to a unique name for input to NTC.
 #
@@ -35,11 +35,11 @@ if ($NArgs < 6)   {
 #  Get input
 #
 
-$WMOHeader=shift; 
-$Origin=shift; 
-$YYYYMMDDHH=shift; 
+$WMOHeader=shift;
+$Origin=shift;
+$YYYYMMDDHH=shift;
 $SubHeader=shift;
-$Filename=shift; 
+$Filename=shift;
 $OutputFilename=shift;
 
 print "Filename is $Filename\n";
@@ -65,7 +65,7 @@ if ( ($WMOHeader eq "") || ($Origin eq "") || ($YYYYMMDDHH eq "") || ($Filename 
 #
 #
 
-   
+
 sub usage () {
    print "Usage: $0  <wmoheader> <Originator> <YYYYMMDDHH> <subheader|NONE> <inpath> <outpath>\n";
 }
@@ -92,7 +92,7 @@ sub make_toc  {
       }
    }
    $BulletinFlagFieldSep = sprintf( "****%10.10d****", $ByteCount);
-   
+
    open(OUTFILE, ">$OutputFilename") or die "Cannot open $OutputFilename for output.";
    print OUTFILE "$BulletinFlagFieldSep\n";
    print OUTFILE "$Header\r\r\n";
