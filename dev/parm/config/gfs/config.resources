@@ -806,7 +806,15 @@ case ${step} in
     memory="150GB"
     ;;
 
-  "sfcanl_gcycle")
+  "sfcanl_regrid" | "sfcanl_gcycle")
+    walltime="00:20:00"
+    ntasks=${ntiles:-6}
+    threads_per_task=4
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    is_exclusive=True
+    ;;
+
+  "soilanlvar")
     # below lines are for creating JEDI YAML
     case "${CASE}" in
       "C1152" | "C768")
@@ -836,21 +844,8 @@ case ${step} in
 
     walltime="00:20:00"
     ntiles=${ntiles:-6}
-    if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
-        ntasks=$((ntiles * layout_x * layout_y))
-	threads_per_task=1
-    else
-        ntasks=${ntiles}
-	threads_per_task=4
-    fi
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    is_exclusive=True
-    ;;
-
-  "sfcanl_regrid")    
-    walltime="00:20:00"
-    ntasks=${ntiles:-6}
-    threads_per_task=4
+    ntasks=$((ntiles * layout_x * layout_y))
+    threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     is_exclusive=True
     ;;
@@ -1366,6 +1361,31 @@ case ${step} in
     ;;
 
   "esfc_gcycle")
+    walltime="01:00:00"
+    ntasks=${NMEM_ENS:-80}
+    threads_per_task=1
+    node_numerator=1
+    node_denominator=2
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+
+    threads_per_task_cycle=${threads_per_task}
+    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    ;;
+
+  "esfc_regrid")
+    walltime="00:30:00"
+    ntasks=$(( NMEM_ENS * 6)) # The regrid program requires tasks to be tiles times members
+    threads_per_task=1
+
+    # Use node_numerator/node_denominator of the tasks in a node
+    # to leave enough memory for regridding
+    node_numerator=1
+    node_denominator=2
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+    ;;
+
+  "soilanlens")
     # below lines are for creating JEDI YAML
     case "${CASE}" in
       "C1152" | "C768")
@@ -1396,13 +1416,8 @@ case ${step} in
     walltime="01:00:00"
     ens_size=${NMEM_ENS:-80}
     ntiles=${ntiles:-6}
-    if [[ "${DO_JEDISOILDAENS}" == "YES" ]]; then
-        ntasks=$((ntiles * layout_x * layout_y))
-	node_denominator=1
-    else
-        ntasks=${ens_size}
-	node_denominator=2
-    fi
+    ntasks=$((ntiles * layout_x * layout_y))
+    node_denominator=1
     threads_per_task=1
     node_numerator=1
     tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
@@ -1410,18 +1425,6 @@ case ${step} in
     threads_per_task_cycle=${threads_per_task}
     tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task ))
     export is_exclusive=True
-    ;;
-
-  "esfc_regrid")
-    walltime="00:30:00"
-    ntasks=$(( NMEM_ENS * 6)) # The regrid program requires tasks to be tiles times members
-    threads_per_task=1
-
-    # Use node_numerator/node_denominator of the tasks in a node
-    # to leave enough memory for regridding
-    node_numerator=1
-    node_denominator=2
-    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
     ;;
 
   "epos")
