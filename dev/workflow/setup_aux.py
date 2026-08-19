@@ -206,6 +206,7 @@ def main():
             else:
                 logger.warning(f"Link {dst} already exists. Skipping.")
 
+
 if __name__ == '__main__':
 
     # Setup the logger
