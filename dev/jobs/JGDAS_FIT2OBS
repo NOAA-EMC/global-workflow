@@ -27,7 +27,7 @@ vcyc=${CDATE:8:2}
 # shellcheck disable=SC2153
 declare -rx COMIN_ANALYSIS="${ROTDIR}/${RUN}.${vday}/${vcyc}/analysis/atmos"
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
-    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"
+    COMIN_OBS=$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${vday}/${vcyc}/atmos"
     declare -rx COMIN_OBS
 else
     declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${vday}/${vcyc}/obs"
