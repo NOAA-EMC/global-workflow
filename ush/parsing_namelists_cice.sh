@@ -2,7 +2,7 @@
 
 #===============================================================================
 #
-#   FILE: parsing_namelists_CICE.sh
+#   FILE: parsing_namelists_cice.sh
 #
 #   DESCRIPTION: Prepares the environment and dynamically renders the namelist
 #                (ice_in) for the CICE (Sea Ice) model component. The function

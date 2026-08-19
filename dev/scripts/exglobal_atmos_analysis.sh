@@ -40,7 +40,7 @@ export bcyc=${BDATE:8:2}
 
 # Utilities
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
+export NCLEN=${NCLEN:-${USHglobal}/getncdimlen.py}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}

@@ -2,7 +2,7 @@
 
 #===============================================================================
 #
-#   FILE: parsing_model_configure_FV3.sh
+#   FILE: parsing_model_configure_fv3.sh
 #
 #   DESCRIPTION: This function prepares and renders the model_configure file
 #                required by the Unified Forecast System Weather Model (UFSWM)

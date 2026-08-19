@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 #===============================================================================
 #
-#          FILE: parsing_namelists_GOCART.sh
+#          FILE: parsing_namelists_gocart.sh
 #
 #   DESCRIPTION: Prepares and renders the configuration files
 #                required by the GOCART aerosol model component. The function

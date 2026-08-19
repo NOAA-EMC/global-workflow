@@ -49,7 +49,7 @@ export NINT1=${FHOUT_HF_GFS:-1}
 export NEND1=${FHMAX_HF_GFS:-120}
 export NINT3=${FHOUT_GFS:-3}
 
-GETDIM="${USHglobal}/getncdimlen"
+GETDIM="${USHglobal}/getncdimlen.py"
 LEVS=$(${GETDIM} "${COMIN_ATMOS_HISTORY}/${RUN}.${cycle}.atm.f000.${atmfm}" pfull)
 declare -x LEVS
 

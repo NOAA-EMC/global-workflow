@@ -22,7 +22,7 @@ pgm=$(basename "${BASH_SOURCE[0]}")
 export pgm
 
 # Dependent Scripts and Executables
-REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsiSfcIncr_to_tile.sh"}
+REGRIDSH=${REGRIDSH:-"${USHglobal}/regrid_gsi_sfc_incr_to_tile.sh"}
 
 if [[ "${DO_GSISOILDA}" == "YES" ]]; then
 
