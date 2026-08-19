@@ -190,13 +190,18 @@ def main():
     Jinja(template_path, context).save(output_path)
     logger.info(f'Rendered aux.xml written to: {output_path}')
 
-    logger.info(f"Linking GFS config files from {gfs_config_dir} to {context['EXP_aux']}")
-    # Build a dictionary of config.* files in gfs_config_dir to pass to
-    # FileHandler.link_files
-    config_files = {
-        'link_req': [[os.path.join(gfs_config_dir, 'config.*'), context['EXP_aux']]]
-    }
-    FileHandler.(config_files).sync()
+    # Issue a warning if EXP_aux and gfs_config_dir are the same and skip linking
+    if os.path.abspath(context['EXP_aux']) == os.path.abspath(gfs_config_dir):
+        logger.warning(f"EXP_aux ({context['EXP_aux']}) and gfs_config_dir ({gfs_config_dir}) are the same. "
+                       "Skipping linking of GFS config files to avoid overwriting.")
+    else:
+        logger.info(f"Linking GFS config files from {gfs_config_dir} to {context['EXP_aux']}")
+        # Build a dictionary of config.* files in gfs_config_dir to pass to
+        # FileHandler.link_files
+        config_files = {
+            'link_req': [[os.path.join(gfs_config_dir, 'config.*'), context['EXP_aux']]]
+        }
+        FileHandler.(config_files).sync()
 
 
 if __name__ == '__main__':
