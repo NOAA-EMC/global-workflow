@@ -183,7 +183,7 @@ def main():
     output_path = os.path.join(context['EXP_aux'], 'aux.xml')
 
     # Create the output directory if it doesn't exist
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    os.makedirs(context['EXP_aux'], exist_ok=True)
 
     # Render the Jinja2 template with the provided context and save to output_path
     logger.info(f'Rendering aux.xml template: {template_path}')
