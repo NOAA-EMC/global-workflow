@@ -5,51 +5,23 @@ shopt -s nullglob
 
 # File Service Manager (FSM) for Global Workfow
 # WGF (Workflow Group Family Assignment) - atmos, wave, ocean, ice
-# RJN (Request Job Name) - prep, forecast
+# RJN (Request Job Name) - forecast
 
 # Set default pgm for err_exit
 pgm=$(basename "${BASH_SOURCE[0]}")
 export pgm
 
-previous_cycle=$("${NDATE}" -6 "${PDY}${cyc}")
-previous_cycle_PDY="${previous_cycle:0:8}"
-previous_cycle_cyc="${previous_cycle:8:2}"
-
 # Initialize switch
-scan_release_gfs_atmos_prep="NO"
-scan_release_gdas_atmos_prep="NO"
-scan_release_gfs_marine_prepoceanobs="NO"
 scan_release_gfs_atmos_product="NO"
 scan_release_gfs_ocean_product="NO"
 scan_release_gfs_ice_product="NO"
 scan_release_gdas_atmos_product="NO"
 scan_release_gfs_wave_post_gridded="NO"
-scan_release_gdas_marine_prepoceanobs="NO"
 scan_release_gdas_wave_post_gridded="NO"
 scan_release_gfs_atmos_goesupp="NO"
 
 # Initialize sleep time for as long as 5 hours
 sleep_time_interval=1
-
-if [[ "${RUN}" == "gfs" ]]; then
-    if [[ "${RJN}" == "prep" ]]; then
-        if [[ "${WGF}" == "atmos" ]]; then
-            scan_release_gfs_atmos_prep="YES"
-        elif [[ "${WGF}" == "marine" ]]; then
-            scan_release_gfs_marine_prepoceanobs="YES"
-        fi
-    fi
-fi
-
-if [[ "${RUN}" == "gdas" ]]; then
-    if [[ "${RJN}" == "prep" ]]; then
-        if [[ "${WGF}" == "atmos" ]]; then
-            scan_release_gdas_atmos_prep="YES"
-        elif [[ "${WGF}" == "marine" ]]; then
-            scan_release_gdas_marine_prepoceanobs="YES"
-        fi
-    fi
-fi
 
 if [[ "${RJN}" == "forecast" ]]; then
     if [[ "${RUN}" == "gfs" ]]; then
@@ -73,53 +45,9 @@ if [[ "${RJN}" == "forecast" ]]; then
     fi
 fi
 
-COMIN_ATMOS_OBS_gfs=${COMIN_ATMOS_OBS_gfs:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gfs.${PDY}/${cyc}/atmos"}
-COMIN_ATMOS_OBS_gdas=${COMIN_ATMOS_OBS_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"}
-COMIN_ATMOS_OBS_PREV_gdas=${COMIN_ATMOS_OBS_PREV_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${previous_cycle_PDY}/${previous_cycle_cyc}/atmos"}
-COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-"${ROTDIR}/gfs.${PDY}/${cyc}/obs"}
-COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-"${ROTDIR}/gdas.${PDY}/${cyc}/obs"}
-
 proceed_trigger_scan="YES"
 while [[ "${proceed_trigger_scan}" == "YES" ]]; do
     proceed_trigger_scan="NO"
-
-    #### release_gfs_atmos_prep
-    if [[ "${scan_release_gfs_atmos_prep}" == "YES" ]]; then
-        echo "Proceeding with scan_release_gfs_atmos_prep"
-        # TODO: try to remove the use of ls.
-        # shellcheck disable=SC2012
-        if [[ -s "${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d" ]] && [[ -s "${COMIN_ATMOS_OBS_gfs}/gfs.t${cyc}z.prepbufr" ]] && [[ $(ls "${COMIN_ATMOS_OBS_gfs}"/gfs.t*z.*.bufr_d | wc -l) -ge 60 ]]; then
-            ecflow_client --event release_gfs_atmos_prep
-            scan_release_gfs_atmos_prep="NO"
-        else
-            proceed_trigger_scan="YES"
-        fi
-    fi
-
-    #### release_gfs_marine_prepoceanobs
-    if [[ "${scan_release_gfs_marine_prepoceanobs}" == "YES" ]]; then
-        skip_this_scan="YES"
-        echo "Proceeding with scan_release_gfs_marine_prepoceanobs"
-        # TODO remove/change this and look at obsproc for the bufr files
-        for ty_md in adt icec sst; do
-            # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
-                echo "adt files are only produced at 00z...skipping check for ${cyc}z"
-                continue
-            else
-                tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
-            fi
-            count_tty=${#tty_files[@]}
-            if [[ ${count_tty} -eq 0 ]]; then
-                skip_this_scan="NO"
-                proceed_trigger_scan="YES"
-            fi
-        done
-        if [[ "${skip_this_scan}" == "YES" ]]; then
-            ecflow_client --event release_gfs_marine_prepoceanobs
-            scan_release_gfs_marine_prepoceanobs="NO"
-        fi
-    fi
 
     #### release_gfs_atmos_product
     if [[ "${scan_release_gfs_atmos_product}" == "YES" ]]; then
@@ -145,7 +73,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_atmos_products_f"${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
+                        fi
                     fi
                 fi
             fi
@@ -183,7 +113,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
                         wave_uglo_15km_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_wave_post_gridded_f"${fhr_3d}"
+                        fi
                     fi
                 fi
             fi
@@ -221,7 +153,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         file_exist="YES"
                         release_event="YES"
                         ocean_6hr_avg_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_ocean_products_f"${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
+                        fi
                     fi
                 fi
             fi
@@ -251,7 +185,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${ice_6hr_avg_log}" ]]; then
                         release_event="YES"
                         ice_6hr_avg_product_ready[fhr]="YES"
-                        ecflow_client --event release_gfs_ice_products_f"${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
+                        fi
                     fi
                 fi
             fi
@@ -262,43 +198,6 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 proceed_trigger_scan="YES"
             fi
         done
-    fi
-
-    #### release_gdas_atmos_prep
-    if [[ "${scan_release_gdas_atmos_prep}" == "YES" ]]; then
-        echo "Proceeding with scan_release_gdas_atmos_prep"
-        if [[ -s ${COMIN_ATMOS_OBS_PREV_gdas}/gdas.t${previous_cycle_cyc}z.updated.status.tm00.bufr_d ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.prepbufr ]] && [[ -s ${COMIN_ATMOS_OBS_gdas}/gdas.t${cyc}z.updated.status.tm00.bufr_d ]]; then
-            ecflow_client --event release_gdas_atmos_prep
-            scan_release_gdas_atmos_prep="NO"
-        else
-            proceed_trigger_scan="YES"
-        fi
-    fi
-
-    #### release_gdas_marine_prepoceanobs
-    if [[ "${scan_release_gdas_marine_prepoceanobs}" == "YES" ]]; then
-        skip_this_scan="YES"
-        echo "Proceeding with scan_release_gdas_marine_prepoceanobs"
-        # TODO remove/change this and look at obsproc for the bufr files
-        for ty_md in adt icec sst; do
-            if [[ ${ty_md} == "adt" && ${cyc} != "00" ]]; then
-                echo "adt files are only produced at 00z...skipping check for ${cyc}z"
-                continue
-            else
-                tty_files=("${COMIN_OCEAN_OBS_gfs}/"*"${ty_md}"*)
-            fi
-            # Check for the existence of files for each type of marine observation; if any type is missing, skip the rest and wait for the next scan
-            count_tty=${#tty_files[@]}
-            if [[ ${count_tty} -eq 0 ]]; then
-                skip_this_scan="NO"
-                proceed_trigger_scan="YES"
-            fi
-        done
-
-        if [[ "${skip_this_scan}" == "YES" ]]; then
-            ecflow_client --event release_gdas_marine_prepoceanobs
-            scan_release_gdas_marine_prepoceanobs="NO"
-        fi
     fi
 
     #### release_gdas_atmos_product
@@ -318,7 +217,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${atmos_master}" && -s "${atmos_sflux}" ]]; then
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
-                        ecflow_client --event release_gdas_atmos_products_f"${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
+                        fi
                     fi
                 fi
             fi
@@ -348,7 +249,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s "${wave_uglo_15km_log}" ]]; then
                         release_event="YES"
                         wave_uglo_15km_product_ready[fhr]="YES"
-                        ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event release_gdas_wave_post_gridded_f"${fhr_3d}"
+                        fi
                     fi
                 fi
             fi
@@ -379,7 +282,9 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                     if [[ -s ${atm_log} ]]; then
                         release_event="YES"
                         atm_history_product_ready[fhr]="YES"
-                        ecflow_client --event "release_gfs_atmos_upp_goes_f${fhr_3d}"
+                        if [[ "${SENDECF}" == "YES" ]]; then
+                            ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
+                        fi
                     fi
                 fi
             fi

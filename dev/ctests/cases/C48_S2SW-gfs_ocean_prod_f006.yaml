@@ -30,7 +30,7 @@
 # Configuration: parm/post/oceanice_products_gfs.yaml
 # - Ocean section (lines 23-50): GRIB2 + native netCDF
 # - Uses 6-hour averaged ocean history files as input
-# - Product grid determined by model_grid (mx500 → 5p00)
+# - Product grid determined by model_grid (mx500: 5p00)
 # =============================================================================
 
 input_files:

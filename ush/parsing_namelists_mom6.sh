@@ -2,7 +2,7 @@
 
 #===============================================================================
 #
-#   FILE: parsing_namelists_MOM6.sh
+#   FILE: parsing_namelists_mom6.sh
 #
 #   DESCRIPTION: Prepares the environment and dynamically renders the configuration
 #                files required by the MOM6 ocean model component.

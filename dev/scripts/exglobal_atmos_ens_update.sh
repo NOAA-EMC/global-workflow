@@ -26,7 +26,7 @@ export pgm
 cd "${DATA}" || exit 1
 
 # Utilities
-NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen.py}
 APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 

@@ -125,6 +125,9 @@ parm/ufs/suite_FV3_GFS_v17_coupled_p8_ugwpv1.xml
 parm/ufs/fd_ufs.yaml
 parm/regrid_sfc
 parm/chem/nexus
+parm/config/gfs/aux*
+parm/config/gfs/logs
+parm/config/gfs/git_info.log
 
 # Ignore sorc and logs folders from externals
 #--------------------------------------------

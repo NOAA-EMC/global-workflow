@@ -11,7 +11,7 @@ templates themselves.
 
 Architecture
 ------------
-Python provides VARIABLES → YAML templates build FILE SETS
+Python provides VARIABLES -> YAML templates build FILE SETS
 
 Python Code Responsibilities:
   - Compute cycle-specific variables (cycle_HH, cycle_YMDH, cycle_YMD, head)
@@ -19,7 +19,7 @@ Python Code Responsibilities:
   - Extract configuration keys (RUN, DO_* flags, FHMAX*, etc.)
 
 YAML Template Responsibilities (parm/archive/*_arcdir.yaml.j2):
-  - Build file sets with source → destination mappings
+  - Build file sets with source to destination mappings
   - Handle loops (forecast hours, grids, basins)
   - Apply conditionals (DO_* flags, MODE, RUN type)
   - Create mkdir lists for directory creation
