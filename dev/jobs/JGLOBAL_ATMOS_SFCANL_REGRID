@@ -37,7 +37,7 @@ declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos
 declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
 
 # Additional variables are set in scripts/exglobal_atmos_sfcanl_regrid.sh, aliasing
-# variables above to the names expected by regrid_gsiSfcIncr_to_tile.sh:
+# variables above to the names expected by regrid_gsi_sfc_incr_to_tile.sh:
 #  COMIN_SOIL_ANALYSIS_MEM (alias of COMIN_ATMOS_ENKF_ANALYSIS_STAT)
 #  COMOUT_ATMOS_ANALYSIS_MEM (alias of COMOUT_ATMOS_ANALYSIS)
 
