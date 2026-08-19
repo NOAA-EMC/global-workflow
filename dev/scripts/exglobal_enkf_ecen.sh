@@ -29,7 +29,7 @@ pwd=$(pwd)
 ntiles=${ntiles:-6}
 
 # Utilities
-NCLEN=${NCLEN:-${USHglobal}/getncdimlen}
+NCLEN=${NCLEN:-${USHglobal}/getncdimlen.py}
 
 # Scripts
 
