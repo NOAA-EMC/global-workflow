@@ -22,11 +22,6 @@ source "${USHglobal}/set_strict.sh"
 GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
 export GDATE
 
-BKG_RUN="gdas"
-if [[ "${RUN}" == "gcafs" || "${RUN}" == "gcdas" ]]; then
-    BKG_RUN="gcdas"
-fi
-
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 
 declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ensstat/analysis/atmos"
