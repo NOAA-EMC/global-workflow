@@ -88,6 +88,7 @@ prepoceanobs:
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
 
 fcst:
+  CHECK_LAND_RESTART_OROG: "YES"
   CHECK_LAND_RESTART_SOILVEG: "YES"
 
 # config.aero has just a system-specific path to add.
