@@ -22,7 +22,10 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   set -x
 fi
 
+set +x
+echo "Load prod_util"
 module load prod_util
+set -x
 # Determine the PDY for this cycle.
 #   In NCO/production the operational date file is authoritative, so PDY is
 #   always read from it.  In a development / near-real-time environment the
@@ -35,9 +38,12 @@ if [ "%MACHINE_SITE%" = "development" ]; then
   # Prefer the suite-provided PDY (the ecFlow PDY variable set by cycle_begin).
   # Fall back to the operational date file when it is not yet set, e.g. on the
   # very first cycle before cycle_begin has run.
+  export ecf_pdy_set="YES"
   export PDY="%PDY:%"
   if [ -z "${PDY}" ]; then
     export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
+    # Let cycle_begin know that ecflow's PDY variable is unset
+    ecf_pdy_set="NO"
   fi
 else
   export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)

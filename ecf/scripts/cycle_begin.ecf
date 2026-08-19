@@ -27,22 +27,16 @@ suite_name=$(ecflow_client --query variable ${ECF_NAME}:SUITE)
 if [ "%MACHINE_SITE:%" == "development" ]; then
   outputdir_ecf=%OUTPUTDIR%
 
-  # Determine the PDY for the next cycle.
-  cur_pdy=${PDY:-}
-  mkdir -p "${outputdir_ecf}/ecflocal"
-  cd "${outputdir_ecf}/ecflocal"
-  if [ -z "${cur_pdy}" ]; then
-    setpdy.sh
-    . ./PDY
-    cur_pdy=${PDY}
-    # Publish the PDY for the current cycle so that head.h can pick it up for the remainder of the jobs in the first cycle
-    ecflow_client --alter add variable PDY ${cur_pdy} /${suite_name}/primary/${cyc}
+  # Set the ECF PDY variable if it isn't already.
+  # This should only happen on the first cycle.
+  if [ "${ecf_pdy_set}" == "NO" ]; then
+    ecflow_client --alter add variable PDY ${PDY} /${suite_name}/primary/${cyc}
   fi
 
   # Get the PDY of the next cycle by adding 6 hours. Note that %% is required here for ecflow not to think these are ecflow variables.
-  next_pdy=$(date --utc --date="${cur_pdy:0:4}-${cur_pdy:4:2}-${cur_pdy:6:2} ${cyc} + 6 hours" +%%Y%%m%%d)
+  next_pdy=$(date --utc --date="${PDY:0:4}-${PDY:4:2}-${PDY:6:2} ${cyc} + 6 hours" +%%Y%%m%%d)
 
-  echo "cycle_begin: cyc=${cyc}, current PDY=${cur_pdy}, next cycle's PDY=${next_pdy}"
+  echo "cycle_begin: cyc=${cyc}, current PDY=${PDY}, next cycle's PDY=${next_pdy}"
 
   # Suspend ecflow for the new cycle before editing variables and requeueing the next cycle
   ecflow_client --suspend /${suite_name}/primary/${cyc}
