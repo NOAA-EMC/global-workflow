@@ -64,7 +64,7 @@ export USE_CFP=YES
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${SOILENKFSH:-${SCRglobal}/exglobal_soil_letkf_analysis.py} 
+EXSCRIPT=${SOILENKFSH:-${SCRglobal}/exglobal_soil_letkf_analysis.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
