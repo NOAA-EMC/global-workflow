@@ -92,8 +92,8 @@ FCST_POSTDONE_TIMEOUT="${FCST_MGR_POSTDONE_TIMEOUT:-120}"
 #                     dep file before?" cache.  The first time a dep file
 #                     appears on disk it is inserted here and progress_made is
 #                     set.  This lets the timeout logic distinguish "no new
-#                     files at all" (idle → count toward timeout) from "some
-#                     deps are trickling in" (active → reset timeout counter).
+#                     files at all" (idle -> count toward timeout) from "some
+#                     deps are trickling in" (active -> reset timeout counter).
 #
 #   count           - Total number of rows parsed from the barrier table.
 # ---------------------------------------------------------------------------
@@ -159,7 +159,7 @@ while [[ "${remaining}" -gt 0 ]]; do
         # Fast-path: if the final sentinel already exists (written in a previous
         # run, a previous cycle of this loop, or by the WARN drain below),
         # skip re-processing this row entirely.  This is the restart/RERUN
-        # safety valve — the barrier never re-writes a sentinel that is already
+        # safety valve - the barrier never re-writes a sentinel that is already
         # in COM.
         if [[ -f "${final_log}" ]]; then
             ((remaining--)) || true

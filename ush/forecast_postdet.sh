@@ -475,12 +475,12 @@ FV3_nml() {
     # namelist output for a certain component
     echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
 
-    source "${USHglobal}/parsing_namelists_FV3.sh"
-    source "${USHglobal}/parsing_model_configure_FV3.sh"
+    source "${USHglobal}/parsing_namelists_fv3.sh"
+    source "${USHglobal}/parsing_model_configure_fv3.sh"
 
     # Call the appropriate namelist functions
     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-        source "${USHglobal}/parsing_namelists_FV3_nest.sh"
+        source "${USHglobal}/parsing_namelists_fv3_nest.sh"
         FV3_namelists_nest global
         FV3_namelists_nest nest
     else
@@ -689,7 +689,7 @@ WW3_postdet() {
 
 WW3_nml() {
     echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-    source "${USHglobal}/parsing_namelists_WW3.sh"
+    source "${USHglobal}/parsing_namelists_ww3.sh"
     WW3_namelists
 }
 
@@ -836,7 +836,7 @@ MOM6_postdet() {
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
             rm -f "${ocn_table}"
             # MOM6 sentinel suffix matches MOM6_HISTFREQ_N in parsing_ufs_configure.sh:
-            # gdas/enkfgdas use N=1 (hourly) → '.01h'; gfs/enkfgfs use FHOUT_OCN (e.g. 6) → '.06h'.
+            # gdas/enkfgdas use N=1 (hourly) '.01h'; gfs/enkfgfs use FHOUT_OCN (e.g. 6) '.06h'.
             local mom6_hist_n
             case "${RUN}" in
                 gdas | enkfgdas) mom6_hist_n=1 ;;
@@ -844,6 +844,9 @@ MOM6_postdet() {
             esac
             local mom6_sentinel_sfx
             mom6_sentinel_sfx="$(printf "%02i" "${mom6_hist_n}")h"
+            # MOM6's true final forecast hour: last element of MOM6_OUTPUT_FH
+            # (valid for all RUNs, unaffected by IAU offset).
+            local _mom6_fhmax="${MOM6_OUTPUT_FH##* }"
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -858,7 +861,9 @@ MOM6_postdet() {
                 # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
                 # NOAA-EMC/global-workflow#4946). Sentinel suffix matches MOM6_HISTFREQ_N:
                 # '.01h' for gdas/enkfgdas (hourly), '.06h' (or similar) for gfs/enkfgfs.
-                if [[ ${fhr} -eq ${FHMAX} ]]; then
+                # 'lstop' appears at the model's true final hour (_mom6_fhmax — the
+                # last element of MOM6_OUTPUT_FH, immune to the IAU +6 offset on FHMAX).
+                if [[ ${fhr} -eq ${_mom6_fhmax} ]]; then
                     source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${mom6_sentinel_sfx}"
                 else
                     source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.${mom6_sentinel_sfx}"
@@ -919,7 +924,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-    source "${USHglobal}/parsing_namelists_MOM6.sh"
+    source "${USHglobal}/parsing_namelists_mom6.sh"
     MOM6_namelists
 }
 
@@ -1155,7 +1160,7 @@ CICE_postdet() {
 
 CICE_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-    source "${USHglobal}/parsing_namelists_CICE.sh"
+    source "${USHglobal}/parsing_namelists_cice.sh"
     CICE_namelists
 }
 
@@ -1230,7 +1235,7 @@ GOCART_rc() {
         fi
     fi
 
-    source "${USHglobal}/parsing_namelists_GOCART.sh"
+    source "${USHglobal}/parsing_namelists_gocart.sh"
     GOCART_namelists
 }
 

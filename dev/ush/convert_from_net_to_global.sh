@@ -115,7 +115,7 @@ echo -e "${CYAN}=========================================${NC}"
 # Process each NET value
 for current_net in "${NET_LIST[@]}"; do
     echo ""
-    echo -e "${YELLOW}Converting for: ${RED}${current_net}${NC} ${YELLOW}→${NC} ${GREEN}global${NC}"
+    echo -e "${YELLOW}Converting for: ${RED}${current_net}${NC} ${YELLOW} to ${NC} ${GREEN}global${NC}"
 
     # List of patterns to convert (reverse of convert_from_global_to_net.sh)
     declare -A patterns=(
