@@ -39,15 +39,6 @@ export USE_IODADIR="NO"
 ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
 export ROTDIR
 export COMROOT=${ROTDIR}
-# Gempak from external models
-# Default locations are to dummy locations for testing
-export COMINnam="/lfs/h2/emc/global/noscrub/emc.global/data/external_gempak/nam"
-
-# Base directories for various builds
-export BASE_GIT="/lfs/h2/emc/global/save/emc.global/git"
-
-# Base directory for staged data
-export BASE_DATA="/lfs/h2/emc/global/noscrub/emc.global/data"
 
 # Toggle to turn on/off EMCSFC_SFC_PREP job
 export DO_PREP_SFC="NO"    # SNOGRB dump file production
@@ -81,8 +72,8 @@ export HOMEpost="${HOMEglobal}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
-export NMV="/bin/mv"
-export NLN="/bin/ln -sf"
+export NMV="mv"
+export NLN="ln -sf"
 export CHGRP_RSTPROD="YES"
 export CHGRP_CMD="chgrp rstprod"
 export NCDUMP="${NETCDF:-${netcdf_c_ROOT:-}}/bin/ncdump"
