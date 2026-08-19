@@ -158,7 +158,7 @@ ush/getdump.sh @DavidHuber-NOAA @TravisElless-NOAA
 ush/getges.sh @DavidHuber-NOAA @TravisElless-NOAA
 ush/getgfsnctime @CoryMartin-NOAA
 ush/getioda.sh @nicholasesposito @CoryMartin-NOAA @RussTreadon-NOAA
-ush/getncdimlen @CoryMartin-NOAA
+ush/getncdimlen.nc @CoryMartin-NOAA
 ush/gfs_bfr2gpk.sh @BoCui-NOAA
 ush/gfs_bufr.sh @BoCui-NOAA
 ush/gfs_bufr_netcdf.sh @BoCui-NOAA
@@ -175,12 +175,12 @@ ush/module-setup.sh @DavidHuber-NOAA
 ush/ocnice_extractvars.sh @EricSinsky-NOAA
 ush/ozn_xtrct.sh @EdwardSafford-NOAA
 ush/parse-storm-type.pl @HananehJafary-NOAA
-ush/parsing_model_configure_FV3.sh @dpsarmie
-ush/parsing_namelists_CICE.sh @dpsarmie @DeniseWorthen
-ush/parsing_namelists_FV3.sh @dpsarmie
-ush/parsing_namelists_FV3_nest.sh @guoqing-noaa
-ush/parsing_namelists_MOM6.sh @dpsarmie @jiandewang
-ush/parsing_namelists_WW3.sh @JessicaMeixner-NOAA @sbanihash
+ush/parsing_model_configure_fv3.sh @dpsarmie
+ush/parsing_namelists_cice.sh @dpsarmie @DeniseWorthen
+ush/parsing_namelists_fv3.sh @dpsarmie
+ush/parsing_namelists_fv3_nest.sh @guoqing-noaa
+ush/parsing_namelists_mom6.sh @dpsarmie @jiandewang
+ush/parsing_namelists_ww3.sh @JessicaMeixner-NOAA @sbanihash
 ush/parsing_ufs_configure.sh @dpsarmie
 ush/prep_sfc_ice_blend.sh @BrianCurtis-NOAA
 ush/prep_sfc_snow.sh @BrianCurtis-NOAA
@@ -192,7 +192,7 @@ ush/syndat_getjtbul.sh @HananehJafary-NOAA
 ush/syndat_qctropcy.sh @HananehJafary-NOAA
 ush/wave_*.sh @JessicaMeixner-NOAA @sbanihash
 ush/wdqms.py @ADCollard
-ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
+ush/regrid_gsi_sfc_incr_to_tile.sh @ClaraDraper-NOAA
 
 # ush/python
 ush/python/pygfs/jedi/__init__.py @TravisElless-NOAA @DavidNew-NOAA
