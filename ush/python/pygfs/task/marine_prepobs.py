@@ -124,7 +124,7 @@ class MarineObsPrep(Task):
         if provider == "rads":
             if not hasattr(self, 'rads'):
                 logger.warning(
-                    f"Skipping RADS processing — rads not initialized "
+                    f"Skipping RADS processing: rads not initialized "
                     f"(cyc={self.task_config.cyc}, only runs at cyc=0)"
                 )
                 return None

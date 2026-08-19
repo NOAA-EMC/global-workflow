@@ -205,7 +205,7 @@ while [[ ${remaining} -gt 0 ]]; do
                 _sz_new=$(stat -c %s "${com_data[j]}")
                 # Find an already-copied COM file of the same file type (same
                 # name pattern, different forecast hour) as a size reference.
-                # Strip the forecast-hour token (f006, F06, …) to derive a
+                # Strip the forecast-hour token (f006, F06, etc.) to derive a
                 # normalised pattern, then only accept a match with the same
                 # normalised name so we compare apples to apples.
                 _ref_size=""
@@ -299,7 +299,7 @@ while [[ ${remaining} -gt 0 ]]; do
         break
     fi
 
-    # Timeout check (fatal — hard wall enforced by batch scheduler walltime).
+    # Timeout check (fatal: hard wall enforced by batch scheduler walltime).
     elapsed=$(($(date +%s) - start_time))
     if [[ ${FCST_MGR_TIMEOUT:-0} -gt 0 && ${elapsed} -gt ${FCST_MGR_TIMEOUT} ]]; then
         echo "FATAL ERROR [${component}]: Timed out after ${elapsed}s with ${remaining} sentinels still pending" >&2
@@ -337,7 +337,7 @@ while [[ ${remaining} -gt 0 ]]; do
             ((fcst_history_done_idle++)) || true
             idle_max=${FCST_MGR_DONE_IDLE_MAX:-3}
             if [[ ${fcst_history_done_idle} -ge ${idle_max} ]]; then
-                echo "WARNING: [${component}] Model history complete; no new files for ${fcst_history_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model — skipping."
+                echo "WARNING: [${component}] Model history complete; no new files for ${fcst_history_done_idle} consecutive poll cycle(s). ${remaining} of ${count} table entry(s) were not produced by the model; skipping."
                 break
             fi
         fi

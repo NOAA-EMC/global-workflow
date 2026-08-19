@@ -47,6 +47,6 @@ Example::
 Issue: Directory name change for EnKF folder in ROTDIR
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Issue:** The EnKF ROTDIR folders were renamed during the GFS v15 development process to remove the period between "enkf" and "gdas": enkf.gdas.$PDY → enkfgdas.$PDY
+**Issue:** The EnKF ROTDIR folders were renamed during the GFS v15 development process to remove the period between "enkf" and "gdas": enkf.gdas.$PDY to enkfgdas.$PDY
 
 **Fix:** Older tarballs on HPSS will have the older directory name with the period between 'enkf' and 'gdas'. Make sure to rename folder to 'enkfgdas.$PDY' after obtaining. Only an issue for the initial cycle.

@@ -31,7 +31,7 @@ declare -rx COMIN_WAVE_HISTORY="${COMIN}/model/wave/history"
 declare -rx COMIN_OCEAN_HISTORY="${COMIN}/model/ocean/history"
 declare -rx COMIN_ICE_HISTORY="${COMIN}/model/ice/history"
 
-"${HOMEglobal}"/scripts/exglobal_fsm.sh
+"${HOMEglobal}"/scripts/exglobal_fcst_fsm.sh
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run the files system manager for!"

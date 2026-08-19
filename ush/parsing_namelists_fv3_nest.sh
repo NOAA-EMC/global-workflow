@@ -2,7 +2,7 @@
 
 #===============================================================================
 #
-#   FILE: parsing_namelists_FV3_nest.sh
+#   FILE: parsing_namelists_fv3_nest.sh
 #
 #   DESCRIPTION: Prepares the environment and generates the configuration
 #                files (namelists and tables) required by the FV3 atmospheric
