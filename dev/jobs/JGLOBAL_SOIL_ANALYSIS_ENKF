@@ -1,0 +1,93 @@
+#! /usr/bin/env bash
+set -x
+
+export WIPE_DATA="NO"
+export DATA=${DATA:-${DATAROOT}/${RUN}soilens_${cyc}}
+
+source "${HOMEglobal}/ush/jjob_header.sh" -e "soilanlens" -c "base soilanlens"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
+
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${RUN/enkf/}.t${cyc}z."
+
+export CASE=${CASE_ENS}
+
+export OPREFIX="${RUN/enkf/}.t${cyc}z."
+export APREFIX="${RUN/enkf/}.t${cyc}z."
+export APREFIX_ENS="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
+
+declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
+
+declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+
+declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/restart"
+# declare -rx COMOUT_SOIL_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_SOIL_DIAG_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+
+# Use CFP to stage and save files in parallel
+export USE_CFP=YES
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${SOILENKFSH:-${SCRglobal}/exglobal_soil_letkf_analysis.py} 
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to run soil ensemble analysis"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${WIPE_DATA}" == "YES" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
