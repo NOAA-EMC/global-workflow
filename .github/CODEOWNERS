@@ -57,7 +57,6 @@ dev/jobs/JGLOBAL_ATMOS_ANALYSIS @RussTreadon-NOAA @CatherineThomas-NOAA
 dev/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC @RussTreadon-NOAA @CatherineThomas-NOAA @CoryMartin-NOAA
 dev/jobs/JGLOBAL_ATMOS_PREP_SFC @BrianCurtis-NOAA
 dev/jobs/JGLOBAL_ATMOS_ENSSTAT @RussTreadon-NOAA
-dev/jobs/JGLOBAL_ATMOS_POST_MANAGER @DavidHuber-NOAA
 dev/jobs/JGLOBAL_ATMOS_PRODUCTS @WenMeng-NOAA
 dev/jobs/JGLOBAL_ATMOS_SFCANL @BrianCurtis-NOAA
 dev/jobs/JGLOBAL_ATMOS_TROPCY_QC @DavidHuber-NOAA
@@ -106,8 +105,6 @@ dev/scripts/exgfs_atmos_goes_nawips.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseM
 dev/scripts/exgfs_atmos_grib2_special_npoess.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgfs_atmos_nawips.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgfs_atmos_postsnd.sh @BoCui-NOAA
-dev/scripts/exgfs_pmgr.sh @lgannoaa
-dev/scripts/exgfs_prdgen_manager.sh @lgannoaa
 dev/scripts/exgfs_wave_* @JessicaMeixner-NOAA @sbanihash
 dev/scripts/exglobal_aero_analysis_* @CoryMartin-NOAA
 dev/scripts/exglobal_analysis_stats.py @CoryMartin-NOAA
@@ -117,7 +114,6 @@ dev/scripts/exglobal_atm_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
 dev/scripts/exglobal_atmens_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
 dev/scripts/exglobal_atmos_analysis*.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_atmos_ensstat.sh @RussTreadon-NOAA
-dev/scripts/exglobal_atmos_pmgr.sh @lgannoaa
 dev/scripts/exglobal_atmos_products.sh @WenMeng-NOAA
 dev/scripts/exglobal_atmos_sfcanl.sh @BrianCurtis-NOAA
 dev/scripts/exglobal_atmos_tropcy_qc.sh @DavidHuber-NOAA
