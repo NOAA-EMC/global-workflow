@@ -861,7 +861,7 @@ MOM6_postdet() {
                 # MOM6 cap writes per-period sentinels into MOM6_OUTPUT (UFSWM update,
                 # NOAA-EMC/global-workflow#4946). Sentinel suffix matches MOM6_HISTFREQ_N:
                 # '.01h' for gdas/enkfgdas (hourly), '.06h' (or similar) for gfs/enkfgfs.
-                # 'lstop' appears at the model's true final hour (_mom6_fhmax — the
+                # 'lstop' appears at the model's true final hour (_mom6_fhmax - the
                 # last element of MOM6_OUTPUT_FH, immune to the IAU +6 offset on FHMAX).
                 if [[ ${fhr} -eq ${_mom6_fhmax} ]]; then
                     source_file_log="${DATAoutput}/MOM6_OUTPUT/${vdate:0:8}.${vdate:8:2}0000.mom6.lstop.${mom6_sentinel_sfx}"
