@@ -88,7 +88,7 @@ def calc_start_end_metp_dates(start_date, end_date):
     end_dt = datetime.strptime(end_date, '%Y%m%d%H%M')
 
     # Calculate the METP start date (the 18z cycle on the workflow start date)
-    metp_start_dt = (start_dt - timedelta(days=1)).replace(hour=18, minute=0, second=0)
+    metp_start_dt = start_dt.replace(hour=18, minute=0, second=0)
 
     # Calculate the METP end date (the 18z cycle on the workflow end date)
     metp_end_dt = end_dt.replace(hour=18, minute=0, second=0)
