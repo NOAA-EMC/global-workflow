@@ -196,12 +196,11 @@ def main():
                        "Skipping linking of GFS config files to avoid overwriting.")
     else:
         logger.info(f"Linking GFS config files from {gfs_config_dir} to {context['EXP_aux']}")
-        # Build a dictionary of config.* files in gfs_config_dir to pass to
-        # FileHandler.link_files
-        config_files = {
+        # Build a dictionary of config.* files in gfs_config_dir to pass to FileHandler.
+        config_dict = {
             'link_req': [[os.path.join(gfs_config_dir, 'config.*'), context['EXP_aux']]]
         }
-        FileHandler.(config_files).sync()
+        FileHandler(config_dict).sync()
 
 
 if __name__ == '__main__':
