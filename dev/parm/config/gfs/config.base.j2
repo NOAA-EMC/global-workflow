@@ -443,6 +443,10 @@ else
     export DO_SOILENKFONLY="NO"
     export DOSOILHYBVAR="NO"
 fi
+# Turn off GSI soil DA if JEDI soil DA is on
+if [[ "${DO_JEDISOILDAVAR}" = "YES" ]] || [[ "${DO_JEDISOILDAENS}" = "YES" ]]; then
+    export DO_GSISOILDA="NO"
+fi
 export LSOIL_INCR=2
 
 if [[ "${DOENKFONLY_ATM}" = "YES" && "${DO_JEDIATMENS}" = "YES" ]] || [[ "${DO_JEDISOILDAVAR}" = "YES" ]] || [[ "${DO_JEDISOILDAENS}" = "YES" ]]; then
