@@ -121,7 +121,7 @@ for ((nset = 1; nset <= downset; nset++)); do
         # cmdfile for remaining processors
         if [[ "${last}" -eq "${ncount}" ]]; then
             for ((pproc = iproc + 1; pproc <= nproc; pproc++)); do
-                echo "/bin/echo ${pproc}" >> "${DATA}/cmdfile"
+                echo "echo ${pproc}" >> "${DATA}/cmdfile"
             done
             break
         fi
