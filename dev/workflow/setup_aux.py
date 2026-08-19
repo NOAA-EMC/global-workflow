@@ -22,7 +22,7 @@ import yaml
 from logging import getLogger
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from wxflow import Executable, Jinja, Logger, logit, FileHandler
+from wxflow import Executable, Jinja, Logger, logit
 from wxflow.executable import ProcessError
 
 _here = os.path.dirname(os.path.abspath(__file__))
@@ -196,12 +196,15 @@ def main():
                        "Skipping linking of GFS config files to avoid overwriting.")
     else:
         logger.info(f"Linking GFS config files from {gfs_config_dir} to {context['EXP_aux']}")
-        # Build a dictionary of config.* files in gfs_config_dir to pass to FileHandler.
-        config_dict = {
-            'link_req': [[os.path.join(gfs_config_dir, 'config.*'), context['EXP_aux']]]
-        }
-        FileHandler(config_dict).sync()
 
+        config_files = [f for f in os.listdir(gfs_config_dir) if os.path.isfile(os.path.join(gfs_config_dir, f))]
+        for config in config_files:
+            src = os.path.join(gfs_config_dir, config)
+            dst = os.path.join(context['EXP_aux'], config)
+            if not os.path.exists(dst):
+                os.symlink(src, dst)
+            else:
+                logger.warning(f"Link {dst} already exists. Skipping.")
 
 if __name__ == '__main__':
 
