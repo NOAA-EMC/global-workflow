@@ -87,7 +87,6 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jedisoildavar'] = base.get('DO_JEDISOILDAVAR', False)
             run_options[run]['do_jedisoildaens'] = base.get('DO_JEDISOILDAENS', False)
             run_options[run]['do_soilenkfonly'] = base.get('DO_SOILENKFONLY', False)
-            # TODO: is this only for gsi?
             run_options[run]['do_gsiliau'] = base.get('DO_LAND_IAU', run_options[run]['do_gsisoilda'])
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
             run_options[run]['do_wdqms'] = base.get('DO_WDQMS', False)
