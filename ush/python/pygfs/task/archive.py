@@ -203,8 +203,9 @@ class Archive(Task):
             atardir_sets.append(dataset)
 
         # Save the tarball list as a YAML in case we are using globus
-        group = arch_dict.get("ENSGRP", -1)
-        self._create_datasets_yaml(atardir_sets, group)
+        # Disabling this for pre-production. We do not need globus.
+        # group = arch_dict.get("ENSGRP", -1)
+        # self._create_datasets_yaml(atardir_sets, group)
 
         return atardir_sets
 
@@ -787,7 +788,7 @@ class Archive(Task):
 
         logger.debug(f"Writing the dataset YAML to {yaml_filename}")
         logger.debug("YAML contents: \n" + f"{output_yaml}")
-        save_as_yaml(output_yaml, yaml_filename)
+        # save_as_yaml(output_yaml, yaml_filename)
 
     @logit(logger)
     def clean(self):
