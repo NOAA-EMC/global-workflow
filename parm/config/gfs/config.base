@@ -8,9 +8,6 @@ echo "BEGIN: config.base"
 # Machine environment
 export machine="WCOSS2"
 
-# EMC parallel or NCO production
-export RUN_ENVIR="nco"
-
 # Do not run strict mode (set -e) for production
 export STRICT="NO"
 
@@ -36,7 +33,7 @@ export FIXgdas="${FIXglobal}/gdas"
 export PACKAGEROOT="${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}"    # TODO: set via prod_envir in Ops
 export COMINsyn="/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
 export USE_IODADIR="NO"
-ROTDIR=$(compath.py "${envir}/${NET}/${gfs_ver}")
+ROTDIR=/lfs/h2/emc/ptmp/david.huber/ecflow_com_copy
 export ROTDIR
 export COMROOT=${ROTDIR}
 
