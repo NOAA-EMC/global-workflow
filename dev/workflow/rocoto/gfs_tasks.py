@@ -1129,7 +1129,7 @@ class GFSTasks(Tasks):
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
-        
+
         if self.options['do_jedisoildavar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_soilanlvar'}
             deps.append(rocoto.add_dependency(dep_dict))
