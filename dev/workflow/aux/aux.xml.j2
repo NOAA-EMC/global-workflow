@@ -20,6 +20,7 @@
 	<!ENTITY ECF_OUT_gfs "{{ ECF_OUT_gfs }}">
 	<!ENTITY COM_aux "{{ COM_aux }}">
 	<!ENTITY DATAROOT_aux "{{ DATAROOT_aux }}">
+	<!ENTITY BASE_GIT "{{ BASE_GIT }}">
 	<!ENTITY ARCDIR "{{ ARCDIR }}">
 	<!ENTITY ATARDIR "{{ ATARDIR }}">
 	<!--SDATE and EDATE will be formatted from start_date and end_date, with last two 0s removed-->
@@ -53,6 +54,7 @@
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
 	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
+	<envar><name>BASE_GIT</name><value>&BASE_GIT;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
@@ -83,6 +85,7 @@
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
 	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
+	<envar><name>BASE_GIT</name><value>&BASE_GIT;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gfs</value></envar>
@@ -207,6 +210,7 @@
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
 	<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+	<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 
 	<dependency>
 		<datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
@@ -243,6 +247,7 @@
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>TARBALL_TYPE</name><value>#tartype#</value></envar>
 		<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+		<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<!-- Logs are archived separately for ecflow -->
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
@@ -278,6 +283,7 @@
 
 	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
 	<envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
+	<envar><name>BASE_GIT</name><value>&BASE_GIT;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
 	<envar><name>NET</name><value>gfs</value></envar>
 	<envar><name>RUN</name><value>gdas</value></envar>
@@ -353,6 +359,7 @@
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
 	<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+	<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
@@ -390,6 +397,7 @@
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>TARBALL_TYPE</name><value>#tartype#</value></envar>
 		<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+		<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<!-- Logs are archived separately for ecflow -->
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
@@ -469,6 +477,7 @@
 	<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>ECF_LOG_DIR</name><value>&ECF_OUT_gfs;</value></envar>
 	<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+	<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 
 	<dependency>
@@ -506,6 +515,7 @@
 		<envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>ENSGRP</name><value>#grp#</value></envar>
 		<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
+		<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<!-- Logs are archived separately for ecflow -->
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>

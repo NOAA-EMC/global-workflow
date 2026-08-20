@@ -31,7 +31,7 @@ _here = os.path.dirname(os.path.abspath(__file__))
 logger = getLogger(__name__)
 
 # Required keys in the configuration YAML
-_REQUIRED_CONFIG_KEYS = ['start_date', 'end_date', 'EXP_aux',
+_REQUIRED_CONFIG_KEYS = ['start_date', 'end_date', 'EXP_aux', 'BASE_GIT',
                          'ECF_OUT_gfs', 'COM_aux', 'DATAROOT_aux']
 
 

@@ -3,7 +3,7 @@
 # setup_aux.py with --config /path/to/aux.yaml.
 
 # Start and end dates for workflow cycles in YYYYMMDDHH format
-start_date: "202607241200"
+start_date: "202608180000"
 end_date: "202707240600"
 
 # Full path to the global workflow home directory (default is this repository's root directory)
@@ -18,11 +18,14 @@ ECF_OUT_gfs: "/lfs/h2/emc/gfstemp/emc.global/ecflow/output/today"
 # Full path to the auxiliary COM directory
 COM_aux: "/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/aux"
 
+# Full path to the staged git repositories
+BASE_GIT: "/lfs/h2/emc/global/noscrub/emc.global/git"
+
 # Full path to the auxiliary DATAROOT directory
 DATAROOT_aux: "/lfs/h2/emc/stmp/emc.global/RUNDIRS/aux_gfs"
 
 # Name of the auxiliary experiment
-PSLOT: "ecflow_realtime"
+PSLOT: "ecflow_realtime_test"
 
 # Location of the offline archive for verification
 ARCDIR: "/lfs/h2/emc/gfstemp/emc.global/ecflow/archive/aux/ecflow_realtime"
