@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_SFCANL_GCYCLE"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_ANAL_SFC_GCYCLE"
 status=$?
 
 exit "${status}"

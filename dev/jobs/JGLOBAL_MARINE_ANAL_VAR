@@ -1,0 +1,54 @@
+#! /usr/bin/env bash
+set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+export WIPE_DATA="NO"
+export DATAjob="${DATAROOT}/${RUN}_marineanalysis.${PDY:-}${cyc}"
+export DATAens="${DATAjob}/ensdata"
+export DATA="${DATAjob}/marineanlvar"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl marineanlvar"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEglobal}/lib"
+export LD_LIBRARY_PATH
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASMARINERUNSH:-${SCRglobal}/exglobal_marine_anal_var.py}
+${EXSCRIPT} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to calculate the deterministic marine analysis increment"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+exit 0
