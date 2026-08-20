@@ -431,10 +431,6 @@ fi
 export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
 export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 
-# Archiving options
-export DO_ARCHCOM="YES"    # Tar and archive the COM directories
-export ARCHCOM_TO="hpss"    # Valid options are hpss, globus_hpss, and local
-
 # Execute the postamble (disable for production)
 export TRAP_POSTAMBLE=NO
 
