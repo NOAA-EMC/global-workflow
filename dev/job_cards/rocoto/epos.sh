@@ -23,7 +23,7 @@ for fhr in ${fhrlst}; do
     export FHMIN_EPOS=${fhr}
     export FHMAX_EPOS=${fhr}
     export FHOUT_EPOS=${fhr}
-    "${HOMEglobal}/dev/jobs/JGDAS_ENKF_POST"
+    "${HOMEglobal}/dev/jobs/JENKFGDAS_ENS_POST"
     status=$?
     if [[ ${status} -ne 0 ]]; then
         exit "${status}"

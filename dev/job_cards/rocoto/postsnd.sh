@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ################################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGFS_ATMOS_POSTSND"
+"${HOMEglobal}/dev/jobs/JGFS_ATMOS_POST_SND"
 err=$?
 exit "${err}"

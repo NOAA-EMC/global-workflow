@@ -1,0 +1,46 @@
+#PBS -S /bin/bash
+#PBS -N gfs_atmos_gempak_pgrb2_spec_%CYC%_f%FHR%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:05:00
+#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=28:mem=6GB
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load gempak/${gempak_ver}
+
+module list
+export WGF="%WGF%"
+export FHR3="%FHR%"
+export FHR_LIST="%FHR_LIST%"
+export COMPONENT=${WGF}
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end
