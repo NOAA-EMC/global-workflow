@@ -40,9 +40,17 @@ if [ "%MACHINE_SITE%" = "development" ]; then
   # very first cycle before cycle_begin has run.
   export ecf_pdy_set="YES"
   export PDY="%PDY:%"
+  export PDYstart="%PDYstart:%"
   if [ -z "${PDY}" ]; then
-    export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
-    # Let cycle_begin know that ecflow's PDY variable is unset
+    if [ -z "${PDYstart}" ]; then
+      echo "WARNING -- ecFlow PDY and PDYstart variables are unset, falling back to operational date file"
+      echo " If you wish to run a different PDY, set the ecflow PDYstart variable prior to running the suite via"
+      echo "   ecflow_client --setvar PDYstart=YYYYMMDD"
+      export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
+      # Let cycle_begin know that ecflow's PDY variable is unset
+    else
+      export PDY="${PDYstart}"
+    fi
     ecf_pdy_set="NO"
   fi
 else
