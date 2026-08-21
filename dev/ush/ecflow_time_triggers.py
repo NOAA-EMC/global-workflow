@@ -195,7 +195,7 @@ def build_syndata_copy_commands(complete_command, PDYcyc):
 
     copy_commands = []
     # Extract the task path from the command
-    match = re.search(r"ecflow_client --complete (.+)", complete_command)
+    match = re.search(r"ecflow_client --force=complete .*/([^/]+)/prep/", complete_command)
     if match:
         task_path = match.group(1)
         # Get the RUN from the match (gdas or gfs)
