@@ -74,7 +74,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
                         if [[ "${SENDECF}" == "YES" ]]; then
-                            ecflow_client --event release_gfs_atmos_product_f"${fhr_3d}"
+                            ecflow_client --event release_gfs_atmos_products_f"${fhr_3d}"
                         fi
                     fi
                 fi
@@ -154,7 +154,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         release_event="YES"
                         ocean_6hr_avg_product_ready[fhr]="YES"
                         if [[ "${SENDECF}" == "YES" ]]; then
-                            ecflow_client --event release_gfs_ocean_product_f"${fhr_3d}"
+                            ecflow_client --event release_gfs_ocean_products_f"${fhr_3d}"
                         fi
                     fi
                 fi
@@ -186,7 +186,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         release_event="YES"
                         ice_6hr_avg_product_ready[fhr]="YES"
                         if [[ "${SENDECF}" == "YES" ]]; then
-                            ecflow_client --event release_gfs_ice_product_f"${fhr_3d}"
+                            ecflow_client --event release_gfs_ice_products_f"${fhr_3d}"
                         fi
                     fi
                 fi
@@ -218,7 +218,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"
                         if [[ "${SENDECF}" == "YES" ]]; then
-                            ecflow_client --event release_gdas_atmos_product_f"${fhr_3d}"
+                            ecflow_client --event release_gdas_atmos_products_f"${fhr_3d}"
                         fi
                     fi
                 fi
@@ -283,7 +283,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                         release_event="YES"
                         atm_history_product_ready[fhr]="YES"
                         if [[ "${SENDECF}" == "YES" ]]; then
-                            ecflow_client --event "release_gfs_atmos_goesupp_f${fhr_3d}"
+                            ecflow_client --event "release_gfs_atmos_upp_goes_f${fhr_3d}"
                         fi
                     fi
                 fi

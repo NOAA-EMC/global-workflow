@@ -71,7 +71,7 @@ mkdir -m 775 -p "${COMOUT_CONF}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRglobal}/exglobal_marinebmat.py}
+EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRglobal}/exglobal_marine_bmat.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
