@@ -1,0 +1,134 @@
+#! /usr/bin/env bash
+set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "anal" -c "base anal"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+##############################################
+# Set variables used in the script
+##############################################
+export rCDUMP=${RUN/enkf/}
+export COMPONENT="atmos"
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+# shellcheck disable=SC2153
+GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
+
+export OPREFIX="${rCDUMP}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${rCDUMP}.t${cyc}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
+
+# Generate COM variables from templates
+COMIN_OBS=${COMIN_OBS:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"}
+declare -rx COMIN_OBS
+declare -rx COMIN_OBS_TC="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+
+declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+
+declare -rx COMIN_ATMOS_ANALYSIS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/history"
+
+declare -rx COMIN_ATMOS_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
+
+# Additional variables are set in scripts/exglobal_atmos_analysis.sh in order to loop over ensemble members:
+#  COMIN_ATMOS_HISTORY
+
+# shellcheck disable=SC2153
+mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
+
+export ATMGES="${COMIN_ATMOS_HISTORY_PREV}/${GPREFIX}atm.f006.nc"
+if [[ ! -f "${ATMGES}" ]]; then
+
+    export err=1
+    err_exit "FILE MISSING: ATMGES == ${ATMGES}"
+fi
+
+export GENDIAG="${GENDIAG:-YES}"
+
+# Create a DATAROOT directory variable for the gsidiags if GENDIAG is YES
+if [[ "${GENDIAG}" == "YES" ]]; then
+    # shellcheck disable=SC2311
+    pCOMOUT_ATMOS_ANALYSIS="$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")"
+    export pCOMOUT_ATMOS_ANALYSIS
+fi
+
+# Get LEVS
+export LEVS
+LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to get LEVS from ${ATMGES}"
+fi
+
+if [[ "${DOHYBVAR}" == "YES" ]]; then
+    export ATMGES_ENSMEAN="${COMIN_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}ensmean.atm.f006.nc"
+    if [[ ! -f "${ATMGES_ENSMEAN}" ]]; then
+        export err=2
+        err_exit "FILE MISSING: ATMGES_ENSMEAN == ${ATMGES_ENSMEAN}"
+    fi
+fi
+
+# Link observational data
+export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
+if [[ ! -f ${PREPQC} ]]; then
+    echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
+fi
+export TCVITL="${COMIN_OBS_TC}/${OPREFIX}syndata.tcvitals.tm00"
+if [[ ${DONST} == "YES" ]]; then
+    export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+fi
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
+
+# Copy fix file for obsproc  # TODO: Why is this necessary?
+if [[ ${RUN} == "gfs" ]]; then
+    mkdir -p "${ROTDIR}/fix"
+    cpreq "${FIXglobal}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"
+fi
+
+###############################################################
+# Run relevant script
+
+${ANALYSISSH:-${SCRglobal}/exglobal_atmos_anal.sh} && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to run the GSI atmospheric analysis"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+fi
+
+exit 0
