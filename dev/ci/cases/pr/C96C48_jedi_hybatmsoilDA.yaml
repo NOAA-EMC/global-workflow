@@ -13,7 +13,7 @@ experiment:
   nens: 2
   interval: 6
   start: warm
-  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/jedi_atmsoilDA_defaults_ci.yaml
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/jedi_soilDA_defaults_ci.yaml
 
 skip_ci_on_hosts:
   - orion
