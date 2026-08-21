@@ -110,7 +110,7 @@ class SoilAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['soilanlvar'].stage_obsdatain(self.task_config.COMIN_OBS)    # f"{self.task_config.COMIN_OBS}/soil"
+        self.jedi_dict['soilanlvar'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/land")
 
         # initialize JEDI variational application
         logger.info(f"Initializing JEDI applications")

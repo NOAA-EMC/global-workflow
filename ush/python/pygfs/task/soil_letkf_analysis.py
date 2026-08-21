@@ -101,7 +101,7 @@ class SoilLetkfAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['soilletkfanl'].stage_obsdatain(self.task_config.COMIN_OBS)
+        self.jedi_dict['soilletkfanl'].stage_obsdatain(f"{self.task_config.COMIN_OBS}/land") 
 
         # Stage files from COM
         logger.info(f"Staging files from COM and creating output directories")
