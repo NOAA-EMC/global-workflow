@@ -266,6 +266,10 @@ def get_comroot():
 
     if compath_line and gfs_ver_line:
         compath_value = compath_line.split("=")[1].strip().strip('"')
+        # Check if compath has $USER (with or without {}) and resolve it
+        if "$USER" in compath_value or "${USER}" in compath_value:
+            user_value = os.environ.get("USER", "")
+            compath_value = compath_value.replace("$USER", user_value).replace("${USER}", user_value)
         gfs_ver_value = gfs_ver_line.split("=")[1].strip().strip('"')
         # Extract the major and minor version from gfs_ver_value
         gfs_ver_parts = gfs_ver_value.split(".")
