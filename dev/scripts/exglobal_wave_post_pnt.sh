@@ -230,6 +230,7 @@ if [[ "${DOSPC_WAV}" == "YES" ]]; then
 
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
+    err_exit "Failed to create spectral point output" 
 fi
 
 if [[ "${DOBLL_WAV}" == "YES" ]]; then
@@ -243,6 +244,7 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
 
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
+    err_exit "Failed to create boundary spectral point output" 
 fi
 # Restore default pgm after override
 pgm=$(basename "${BASH_SOURCE[0]}")
