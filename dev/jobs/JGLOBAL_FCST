@@ -1,0 +1,172 @@
+#! /usr/bin/env bash
+set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+    export DATA="${DATAjob}/${jobid}"
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
+else
+    export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+    export DATA="${DATAjob}/${jobid}"
+    source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+fi
+
+#{# ***NOTE: lines starting with #{ are Jinja templating and will be ignored by Bash.***
+#{% if false %}
+# When running the workflow in development, source jjob_standard_vars.sh #}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{# When rendered for operations, place the contents of jjob_var_setup.j2 here #}
+#{# Note that the first line of jjob_var_setup.j2 will be commented #}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+# Setup Python path for pygfs
+PYTHONPATH="${HOMEglobal}/ush/python${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH
+
+# Create the directory to hold restarts and output from the model in stmp
+export DATArestart="${DATAjob}/restart"
+if [[ ! -d "${DATArestart}" ]]; then mkdir -p "${DATArestart}"; fi
+export DATAoutput="${DATAjob}/output"
+if [[ ! -d "${DATAoutput}" ]]; then mkdir -p "${DATAoutput}"; fi
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Restart conditions for GFS cycle come from GDAS (except warm start surface analysis)
+# Similarly, restart conditions for GCAFS cycle come from GCDAS
+rCDUMP="${RUN/gfs/gdas}"
+export rCDUMP="${rCDUMP/gcafs/gcdas}"
+
+# Ignore possible spelling error (nothing is misspelled)
+# shellcheck disable=SC2153
+GDATE=$(date --utc -d "${PDY} ${cyc} - ${assim_freq} hours" +%Y%m%d%H)
+declare -rx GDATE
+# shellcheck disable=
+declare -rx gPDY="${GDATE:0:8}"
+declare -rx gcyc="${GDATE:8:2}"
+
+# Construct COM variables
+# shellcheck disable=SC2309
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+    # Turn ensmem into 3-digit format with leading zeros
+    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
+else
+    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}"
+fi
+
+declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
+declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart" # Used for most restarts
+declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"                   # Used for warm start surface analysis
+declare -rx COMOUT_CONF="${COMOUT}/conf"
+declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
+declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
+declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
+
+# GCAFS/GCDAS uses an offline atmospheric analysis
+if [[ "${RUN}" =~ "gcafs" ]] || [[ "${RUN}" =~ "gcdas" ]]; then
+    declare -rx COMIN_ATMOS_ANALYSIS="${COMIN_RESTART}/analysis/atmos"
+else
+    # other runs use their own atmospheric analysis
+    declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
+fi
+
+if [[ "${DO_WAVE}" == "YES" ]]; then
+    declare -rx COMIN_WAVE_INIT="${COMIN}/model/wave/init"
+    declare -rx COMOUT_WAVE_RESTART="${COMOUT}/model/wave/restart"
+    declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
+    declare -rx COMIN_WAVE_RESTART_PREV="${COMIN_RESTART_PREV}/model/wave/restart"
+fi
+
+if [[ "${DO_OCN}" == "YES" ]]; then
+    declare -rx COMIN_OCEAN_ANALYSIS="${COMIN}/analysis/ocean"
+    declare -rx COMOUT_MED_RESTART="${COMOUT}/model/med/restart"
+    declare -rx COMOUT_OCEAN_RESTART="${COMOUT}/model/ocean/restart"
+    declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+    declare -rx COMIN_OCEAN_RESTART_PREV="${COMIN_RESTART_PREV}/model/ocean/restart"
+    declare -rx COMIN_MED_RESTART_PREV="${COMIN_RESTART_PREV}/model/med/restart"
+fi
+
+if [[ "${DO_ICE}" == "YES" ]]; then
+    declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
+    declare -rx COMOUT_ICE_RESTART="${COMOUT}/model/ice/restart"
+    declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+    declare -rx COMIN_ICE_RESTART_PREV="${COMIN_RESTART_PREV}/model/ice/restart"
+fi
+
+if [[ "${DO_AERO_FCST}" == "YES" ]]; then
+    declare -rx COMOUT_CHEM_HISTORY="${COMOUT}/model/chem/history"
+    declare -rx COMIN_TRACER_RESTART="${COMIN_RESTART}/model/atmos/restart"
+    declare -rx COMIN_CHEM_INPUT="${COMIN}/model/chem/input"
+fi
+
+###############################################################
+# Run relevant exglobal script
+###############################################################
+"${FORECASTSH:-${SCRglobal}/exglobal_fcst.sh}" && true # The && true prevents the shell from exiting when set -e
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    # Write the failure sentinel BEFORE err_exit so the forecast manager sees
+    # "aborted rc=<rc>" and propagates the failure via its FCST_FINALIZED_SENTINEL
+    # propagate-failure block, rather than only via the slow batch-walltime path.
+    echo "aborted rc=${err} at $(date --utc +%Y%m%d%H%M%S)" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
+    err_exit "Failed to run the ${RUN} forecast for ${PDY}${cyc}"
+fi
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || true
+# do not remove DATAjob. It contains DATAoutput
+if [[ "${KEEPDATA}" == "NO" ]]; then
+    rm -rf "${DATA}"
+
+    # Determine if this is the last segment
+    commas="${FCST_SEGMENTS//[^,]/}"
+    n_segs=${#commas}
+    if ((n_segs - 1 == ${FCST_SEGMENT:-0})); then
+        # Only delete temporary restarts if it is the last segment
+        rm -rf "${DATArestart}"
+    fi
+fi
+
+# Write the finalized sentinel as the very last action of this J-job, after every
+# cleanup step above. The forecast manager's atmf finalization row waits on this file
+# to know this segment's forecast is fully quiescent before it copies the final
+# products and exits. On the final segment this also lets the manager safely tear down
+# the shared DATAjob umbrella (JGLOBAL_FORECAST is fully done by the time the manager
+# sees this sentinel). This job never removes DATAjob itself.
+#
+# On explicit FORECASTSH failure the failure sentinel is written before err_exit above.
+# On implicit failure paths (set_strict trip, walltime SIGTERM, operator qdel) the
+# sentinel is not written; the forecast manager will fall back to its batch-walltime
+# timeout (or FCST_MGR_TIMEOUT if configured) rather than propagating rc directly.
+echo "${RUN}_fcst_seg${FCST_SEGMENT:-0} finalized" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
+
+exit 0

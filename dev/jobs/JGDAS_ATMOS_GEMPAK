@@ -38,7 +38,7 @@ done
 # Execute the script for one degree grib
 ########################################################
 
-"${SCRglobal}/exgdas_atmos_nawips.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
+"${SCRglobal}/exgdas_atmos_gempak.sh" "1p00" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_1p00}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
@@ -49,7 +49,7 @@ fi
 # Execute the script for quater-degree grib
 ########################################################
 
-"${SCRglobal}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
+"${SCRglobal}/exgdas_atmos_gempak.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then

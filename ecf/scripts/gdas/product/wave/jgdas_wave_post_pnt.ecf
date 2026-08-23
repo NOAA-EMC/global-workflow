@@ -1,0 +1,57 @@
+#PBS -S /bin/bash
+#PBS -N gdas_wave_post_pnt_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:35:00
+#PBS -l select=1:mpiprocs=40:ompthreads=1:ncpus=40
+#PBS -l place=vscatter:shared
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
+module load libjpeg/${libjpeg_ver}
+module load hdf5-D/${hdf5_ver}
+module load pnetcdf-D/${pnetcdf_ver}
+module load netcdf-D/${netcdf_ver}
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export HOMEglobal=${HOMEgfs}
+
+${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_PNT
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK gdas_wave_post_pnt
+
+PURPOSE: Generates wave station/point spectral and bulletin output from GDAS
+9-hour WW3 forecast.
+
+TROUBLESHOOTING
+
+Same as GFS wave_postpnt but for GDAS cycle. Depends on GDAS wave
+forecast point output. If wave component of GDAS forecast failed, no
+point data exists.
+
+%end

@@ -30,7 +30,7 @@
 # Configuration: parm/post/oceanice_products_gfs.yaml
 # - Ice section (lines 52-79): GRIB2 + native netCDF
 # - Uses 6-hour averaged ice history files as input
-# - Product grid determined by model_grid (mx500 → 5p00)
+# - Product grid determined by model_grid (mx500: 5p00)
 # =============================================================================
 
 input_files:
