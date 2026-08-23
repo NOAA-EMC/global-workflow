@@ -230,7 +230,9 @@ if [[ "${DOSPC_WAV}" == "YES" ]]; then
 
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
-    err_exit "Failed to create spectral point output" 
+    if [[ ${err} -ne 0 ]]; then
+      err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : did not create spectral point output."
+    fi
 fi
 
 if [[ "${DOBLL_WAV}" == "YES" ]]; then
@@ -244,7 +246,9 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
 
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
-    err_exit "Failed to create boundary spectral point output" 
+    if [[ ${err} -ne 0 ]]; then
+      err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : did not create bll point output."
+    fi
 fi
 # Restore default pgm after override
 pgm=$(basename "${BASH_SOURCE[0]}")
