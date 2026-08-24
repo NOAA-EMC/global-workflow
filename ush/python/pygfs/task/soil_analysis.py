@@ -52,7 +52,7 @@ class SoilAnalysis(Analysis):
         _res_anl = int(self.task_config.CASE_ANL[1:])
         _res_his = int(self.task_config.CASE_HIST[1:])
 
-        if self.task_config.DOSOILHYBVAR:
+        if self.task_config.DO_SOILHYBVAR:
             _BERROR_YAML = f"soil_background_error_hybrid_{self.task_config.STATICB_TYPE}_{self.task_config.LOCALIZATION_TYPE}"
         else:
             _BERROR_YAML = f"soil_background_error_static_{self.task_config.SOIL_STATICB_TYPE}"

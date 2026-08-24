@@ -53,13 +53,29 @@ declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
 declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/restart"
-# declare -rx COMOUT_SOIL_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"
 declare -rx COMOUT_SOIL_DIAG_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
+
+mkdir -p "${COMOUT_ATMOS_ANALYSIS_ENS}"
+mkdir -p "${COMOUT_SOIL_DIAG_ENS}"
+mkdir -p "${COMOUT_CONF}"
+
+NMEM_ENS=${NMEM_ENS:-80}
+
+for imem in $(seq 1 "${NMEM_ENS}"); do
+    cmem=$(printf %03i "${imem}")
+    memchar="mem${cmem}"
+
+    declare -x COMOUT_SOIL_ANALYSIS_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos"
+
+    if [[ ! -d "${COMOUT_SOIL_ANALYSIS_MEM}" ]]; then
+        mkdir -p "${COMOUT_SOIL_ANALYSIS_MEM}"
+    fi
+done
 
 ###############################################################
 # Run relevant script

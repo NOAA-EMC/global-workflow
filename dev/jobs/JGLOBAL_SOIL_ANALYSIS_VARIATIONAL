@@ -57,6 +57,10 @@ declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
 
+mkdir -p "${COMOUT_SOIL_ANALYSIS}"
+mkdir -p "${COMOUT_SOIL_DIAG}"
+mkdir -p "${COMOUT_CONF}"
+
 ###############################################################
 # Run relevant script
 
