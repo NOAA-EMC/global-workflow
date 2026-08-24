@@ -247,7 +247,7 @@ if [[ "${DOBLL_WAV}" == "YES" ]]; then
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
     if [[ ${err} -ne 0 ]]; then
-      err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : did not create bll point output."
+        err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : did not create bll point output."
     fi
 fi
 # Restore default pgm after override
