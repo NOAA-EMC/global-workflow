@@ -235,6 +235,7 @@ def build_syndata_copy_commands(complete_command, PDYcyc):
         # We also need to update the syndat files used by future cycles. Copy these from operations.
         syndat_source_path = f"{SYNDAT_LOCATION}/*"
         syndat_dest_path = f"{comroot}/syndat/"
+        copy_command = f"cp {syndat_source_path} {syndat_dest_path}"
         copy_commands.append(copy_command)
 
     return copy_commands
