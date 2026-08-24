@@ -3,7 +3,7 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         exgfs_wave_post_gridded_sbs.sh
+# Script name:         exglobal_wave_post_gridded.sh
 # Script description:  Creates output products from gridded binary WW3 data
 #
 # Abstract: This script is the postprocessor for the wave component in GFS.
@@ -11,8 +11,8 @@
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
-#  wave_grib2_sbs.sh         : generates GRIB2 files.
-#  wave_grid_interp_ush.sh   : interpolates data from new grids to old grids
+#  wave_grib2.sh         : generates GRIB2 files.
+#  wave_grid_interp.sh   : interpolates data from new grids to old grids
 #
 # COM inputs:
 #
@@ -46,7 +46,7 @@ valid_time=$(date -u -d "${PDY} ${cyc} + ${FORECAST_HOUR} hours" "+%Y%m%d%H")
 
 # Copy model definition files
 for grdID in ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
-    cpreq "${COMIN_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
+    cpreq "${COMIN_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "mod_def.${grdID}"
 done
 
 # Copy model forecast data to DATA
@@ -88,11 +88,11 @@ if [[ "${DOGRI_WAV}" == "YES" ]]; then
     for grdID in ${waveinterpGRD}; do
         count=$((count + 1))
         echo "#!/bin/bash" > "cmdfile.${count}"
-        echo "${USHglobal}/wave_grid_interp_sbs.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+        echo "${USHglobal}/wave_grid_interp.sh ${grdID} ${ymdh_int} ${dt_int} ${n_int} > ${DATA}/grid_interp_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
         echo "cat ${DATA}/grid_interp_${grdID}.out" >> "cmdfile.${count}"
         if [[ "${DOGRB_WAV}" == "YES" ]]; then
             process_grdID "${grdID}"
-            echo "${USHglobal}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+            echo "${USHglobal}/wave_grib2.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > ${DATA}/grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
             echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
         fi
         chmod 755 "cmdfile.${count}"
@@ -102,11 +102,11 @@ fi
 
 # Products on the post-processing grid "wavepostGRD"
 if [[ "${DOGRB_WAV}" == "YES" ]]; then
-    for grdID in ${wavepostGRD}; do # First concatenate grib files for sbs grids
+    for grdID in ${wavepostGRD}; do # First concatenate grib files for grids
         count=$((count + 1))
         process_grdID "${grdID}"
         echo "#!/bin/bash" > "cmdfile.${count}"
-        echo "${USHglobal}/wave_grib2_sbs.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
+        echo "${USHglobal}/wave_grib2.sh ${grdID} ${GRIDNR} ${MODNR} ${valid_time} ${FORECAST_HOUR} ${GRDREGION} ${GRDRES} '${OUTPARS_WAV}' > grib2_${grdID}.out 2>&1" >> "${DATA}/cmdfile.${count}"
         echo "cat ${DATA}/grib2_${grdID}.out" >> "${DATA}/cmdfile.${count}"
         chmod 755 "cmdfile.${count}"
         echo "${DATA}/cmdfile.${count}" >> "${DATA}/cmdfile"

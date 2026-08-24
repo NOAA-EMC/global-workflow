@@ -270,7 +270,7 @@ case ${step} in
     export memory="96GB"
     ;;
 
-  "wavepostsbs")
+  "wavepostgridded")
     # Walltime is per forecast hour; will be multipled by group size
     export walltime="00:15:00"
     export ntasks=1
