@@ -213,7 +213,7 @@ class SFSTasks(Tasks):
 
     def ocn_post(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ocean_prod_#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -248,7 +248,7 @@ class SFSTasks(Tasks):
 
     def ice_post(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod_#member#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
