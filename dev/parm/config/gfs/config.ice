@@ -13,8 +13,6 @@ export CICE_MASK="kmtu_cice_NEMS_mx${ICERES}.nc"
 
 export CICE_FBOT_XFER_TYPE='mushy'          # default constant
 export CICE_TFREEZE_OPTION='linear_salt'    # default mushy
-export CICE_DT_MLT=0.5
-export CICE_RSNW_MLT=750.
 export CICE_R_ICE=2.8                       # default 0
 export CICE_R_PND=2.8                       # default 0
 export CICE_R_SNW=2.8

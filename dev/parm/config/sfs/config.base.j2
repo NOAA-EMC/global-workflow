@@ -283,11 +283,7 @@ export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
 
 # cellular automata
-if (( ENSMEM == 0 )); then
-    export DO_CA="YES"
-else
-    export DO_CA="YES"
-fi
+export DO_CA="YES"
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 export DOIAU_COLDSTART="{{ DOIAU_COLDSTART }}" #SFS from GFS ICs cold starts with IAU
