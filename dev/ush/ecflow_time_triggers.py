@@ -15,7 +15,7 @@ import operator
 ROOT_DUMP_DIR = "/lfs/h2/emc/global/noscrub/emc.global/dump"
 OPERATIONAL_COM = "/lfs/h1/ops/prod/com/gfs"
 OPERATIONAL_GFS_VER = "v16.3"  # This is the operational GFS (needed for syndat copying)
-SYNDAT_LOCATION = "/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
+SYNDAT_LOCATION = f"/lfs/h1/ops/prod/com/gfs/{OPERATIONAL_GFS_VER}/syndat"
 
 
 def find_tasks_with_time_triggers(node):
