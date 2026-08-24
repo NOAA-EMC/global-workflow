@@ -35,17 +35,22 @@ set -x
 #   situation would yield the wrong (current operational) PDY and stall the
 #   workflow.  See NOAA-EMC/global-workflow#5116.
 if [ "%MACHINE_SITE%" = "development" ]; then
+  # Set PDYstart if starting on a date before current PDY
+  ecf_PDYstart="%PDYstart:%"
+  if [ -z "${ecf_PDYstart}" ]; then
+    export PDYstart=
+  fi
   # Prefer the suite-provided PDY (the ecFlow PDY variable set by cycle_begin).
   # Fall back to the operational date file when it is not yet set, e.g. on the
   # very first cycle before cycle_begin has run.
   export ecf_pdy_set="YES"
   export PDY="%PDY:%"
-  export PDYstart="%PDYstart:%"
   if [ -z "${PDY}" ]; then
     if [ -z "${PDYstart}" ]; then
+      suite=%SUITE%
       echo "WARNING -- ecFlow PDY and PDYstart variables are unset, falling back to operational date file"
       echo " If you wish to run a different PDY, set the ecflow PDYstart variable prior to running the suite via"
-      echo "   ecflow_client --setvar PDYstart=YYYYMMDD"
+      echo "   ecflow_client --alter add variable PDYstart YYYYMMDD /${suite}"
       export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
       # Let cycle_begin know that ecflow's PDY variable is unset
     else
