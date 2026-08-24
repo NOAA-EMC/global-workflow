@@ -231,7 +231,7 @@ if [[ "${DOSPC_WAV}" == "YES" ]]; then
     export pgm="ww3_outp_${NET,,}.x"
     "${EXECglobal}/${pgm}"
     if [[ ${err} -ne 0 ]]; then
-      err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : did not create spectral point output."
+        err_exit "${WAV_MOD_TAG} post ${PDY} t${cyc}z : did not create spectral point output."
     fi
 fi
 
