@@ -36,8 +36,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/eupd.sh
-${HOMEgfs}/jobs/JGLOBAL_ENKF_UPDATE
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ENS_UPDATE
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

@@ -20,7 +20,7 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-export job="awips_20km_1p0deg"
+export job="awips_20km_1p0"
 export jobid="${job}.$$"
 
 ###############################################################
@@ -38,14 +38,14 @@ for fhr3 in ${fhrlst}; do
         if ((fhr % 3 == 0)); then
             export fcsthr="${fhr3}"
             export DATA="${DATAROOT}/${jobid}.${fcsthr}"
-            "${HOMEglobal}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+            "${HOMEglobal}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0"
         fi
     # Process every 6 hrs from hour 90 up to hour 240
     elif [[ ${fhr} -ge 90 ]] && [[ ${fhr} -le 240 ]]; then
         if ((fhr % 6 == 0)); then
             export fcsthr="${fhr3}"
             export DATA="${DATAROOT}/${jobid}.${fcsthr}"
-            "${HOMEglobal}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG"
+            "${HOMEglobal}/dev/jobs/JGFS_ATMOS_AWIPS_20KM_1P0"
         fi
     fi
 done
