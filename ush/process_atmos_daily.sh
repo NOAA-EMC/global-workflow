@@ -101,7 +101,7 @@ mkdir -p "${OUTDIR}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
 mkdir -p "${OUTDIR_FINAL}/acc.daily.${MEMDIR}" "${OUTDIR}/inst.daily.${MEMDIR}"
 mkdir -p "${OUTDIR_FINAL}/acc.monthly.${MEMDIR}" "${OUTDIR}/inst.monthly.${MEMDIR}"
 dest_acc="${OUTDIR}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
-dest_acc_tmp="${OUTDIR}/acc.daily.${MEMDIR}/tmp.acc.daily.${filename_start}${filemm}${filename_end}"  #lcdc/mcdc/hcdc removed
+dest_acc_tmp="${OUTDIR}/acc.daily.${MEMDIR}/tmp.acc.daily.${filename_start}${filemm}${filename_end}"
 dest_inst="${OUTDIR}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
 dest_final_acc="${OUTDIR_FINAL}/acc.daily.${MEMDIR}/acc.daily.${filename_start}${filemm}${filename_end}"
 dest_final_inst="${OUTDIR_FINAL}/inst.daily.${MEMDIR}/inst.daily.${filename_start}${filemm}${filename_end}"
@@ -118,7 +118,7 @@ if [[ -d "${tmp_acc_work_dir}" ]]; then
         # Use "${acc_files[@]}" to pass each file as a unique argument
         ${GMERGE} "${dest_acc}" "${acc_files[@]}"
         # Remove "(:LCDC:|:MCDC:|:HCDC:)" in acc daily files since we don't need in the final daily product
-        ${WGRIB2} "${dest_acc}" -s | grep -v -E "(:LCDC:|:MCDC:|:HCDC:)" > "clean_map_${filename_start}${filemm}.txt" 
+        ${WGRIB2} "${dest_acc}" -s | grep -v -E "(:LCDC:|:MCDC:|:HCDC:)" > "clean_map_${filename_start}${filemm}.txt"
         ${WGRIB2} "${dest_acc}" -i -grib_out "${dest_acc_tmp}" < "clean_map_${filename_start}${filemm}.txt"
         rm -f "clean_map_${filename_start}${filemm}.txt"
         # cp acc daily files (without LCDC, MCDC and HCDC) to COMOUT

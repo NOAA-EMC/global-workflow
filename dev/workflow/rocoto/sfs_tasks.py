@@ -333,7 +333,6 @@ class SFSTasks(Tasks):
             tmpl_value = self._base[history_path_tmpl]
         history_path = self._template_to_rocoto_cycstring(tmpl_value, {'MEMDIR': 'mem#member#'})
 
-        #history_path = self._template_to_rocoto_cycstring(self._base[history_path_tmpl], {'MEMDIR': 'mem#member#'})
         deps = []
         data = f'{history_path}/{history_file_tmpl}'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
