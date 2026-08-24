@@ -13,6 +13,9 @@ import operator
 #       Then, use $HOMEglobal/workflow/hosts/$PLATFORM.yaml
 # Assume WCOSS2
 ROOT_DUMP_DIR = "/lfs/h2/emc/global/noscrub/emc.global/dump"
+OPERATIONAL_COM = "/lfs/h1/ops/prod/com/gfs"
+OPERATIONAL_GFS_VER = "v16.3"  # This is the operational GFS (needed for syndat copying)
+SYNDAT_LOCATION = "/lfs/h1/ops/prod/com/gfs/v16.3/syndat"
 
 
 def find_tasks_with_time_triggers(node):
@@ -228,6 +231,12 @@ def build_syndata_copy_commands(complete_command, PDYcyc):
 
         copy_command = f"cp {source_path} {dest_path}"
         copy_commands.append(copy_command)
+
+        # We also need to update the syndat files used by future cycles. Copy these from operations.
+        syndat_source_path = f"{SYNDAT_LOCATION}/*"
+        syndat_dest_path = f"{comroot}/syndat/"
+        copy_commands.append(copy_command)
+
     return copy_commands
 
 
