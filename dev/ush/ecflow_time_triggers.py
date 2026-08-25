@@ -112,7 +112,7 @@ def task_missed_launch_window(time_attributes, PDYcyc):
                 year=PDYcyc_dt.year, month=PDYcyc_dt.month, day=PDYcyc_dt.day
             )
 
-            if last_time_dt < current_dt and not ( last_time < "0600" and PDYcyc_dt.hour == 18 ):
+            if last_time_dt < current_dt and not (last_time < "0600" and PDYcyc_dt.hour == 18):
                 return True
             else:
                 # It is possible for the trigger to be on the next day
