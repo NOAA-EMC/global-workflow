@@ -60,10 +60,6 @@ gfsa:
         - "{{ COMIN_CONF | relpath(ROTDIR) }}/{{ head }}snowanlvar.yaml"
         {% endif %}
 
-        # BUFR inputs
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
-        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
         {% endif %}  # Full cycle
 
         # Forecast GRIB2 products
@@ -81,3 +77,8 @@ gfsa:
         - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/trak.gfso.atcfunix.altg.{{ cycle_YMDH }}"
         - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.{{ cycle_YMDH }}"
         - "{{ COMIN_ATMOS_GENESIS | relpath(ROTDIR) }}/storms.gfso.atcf_gen.altg.{{ cycle_YMDH }}"
+
+        # BUFR inputs
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"

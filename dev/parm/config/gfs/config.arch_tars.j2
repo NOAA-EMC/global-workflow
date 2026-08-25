@@ -29,6 +29,9 @@ export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS:-}
 
 # If we are running globus archiving, create tarballs in a temporary location
 if [[ "${ARCHCOM_TO}" == "globus_hpss" ]]; then
+    # Globus archiving is disabled for this pre-production branch
+    echo "FATAL ERROR: globus archiving is disabled."
+    exit 1
     export ATARDIR="${DATAROOT}/archive_rotdir/${RUN}"
     export ARCHCOM_TO="local"
 fi

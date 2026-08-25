@@ -8,9 +8,6 @@ echo "BEGIN: config.base"
 # Machine environment
 export machine="WCOSS2"
 
-# EMC parallel or NCO production
-export RUN_ENVIR="nco"
-
 # Do not run strict mode (set -e) for production
 export STRICT="NO"
 
@@ -433,10 +430,6 @@ fi
 # TODO: replace these options with DO_FETCH and FETCH_FROM
 export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
 export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
-
-# Archiving options
-export DO_ARCHCOM="YES"    # Tar and archive the COM directories
-export ARCHCOM_TO="hpss"    # Valid options are hpss, globus_hpss, and local
 
 # Execute the postamble (disable for production)
 export TRAP_POSTAMBLE=NO
