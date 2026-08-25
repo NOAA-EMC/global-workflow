@@ -84,7 +84,10 @@ scan_and_release() {
     for fhr in "$@"; do
         fhr_3d=$(printf "%03d" "${fhr}")
         # Already released on an earlier pass.
-        [[ "${state[fhr]:-NO}" == "YES" ]] && { echo "Skip found FHR${fhr_3d}"; continue; }
+        [[ "${state[fhr]:-NO}" == "YES" ]] && {
+            echo "Skip found FHR${fhr_3d}"
+            continue
+        }
         # An earlier hour this pass is still waiting; do not release out of order.
         [[ "${skip}" == "YES" ]] && continue
 
@@ -94,7 +97,10 @@ scan_and_release() {
         for t in "${tmpls[@]}"; do
             printf -v file "${t}" "${fhr_3d}"
             [[ -z "${first_file}" ]] && first_file="${file}"
-            [[ -s "${file}" ]] || { present="NO"; break; }
+            [[ -s "${file}" ]] || {
+                present="NO"
+                break
+            }
         done
 
         if [[ "${present}" == "YES" ]]; then
@@ -115,7 +121,10 @@ scan_and_release() {
 #   fhr_list_gfs  - gfs long-range: hourly to f120, 3-hourly to f384
 #   fhr_list_6hr  - gfs ocean/ice 6-hour-average: f006..f384 by 6
 #   fhr_list_gdas - gdas short-range: f000..f009 hourly
-readarray -t fhr_list_gfs < <(seq 0 1 119; seq 120 3 384)
+readarray -t fhr_list_gfs < <(
+    seq 0 1 119
+    seq 120 3 384
+)
 readarray -t fhr_list_6hr < <(seq 6 6 384)
 readarray -t fhr_list_gdas < <(seq 0 9)
 
