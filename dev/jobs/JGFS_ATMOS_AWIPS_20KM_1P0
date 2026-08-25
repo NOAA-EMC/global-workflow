@@ -1,0 +1,62 @@
+#! /usr/bin/env bash
+set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "awips" -c "base awips"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
+
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+
+declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
+
+if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then
+    mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"
+fi
+
+export pgmout=OUTPUT.$$
+
+########################################################
+# Execute the script.
+#   Forecast hours from F00 - F84  at 3-hour interval
+#   Forecast hours from F90 - F240 at 6-hour interval
+#########################################################
+
+########################################################
+# Execute the script.
+"${SCRglobal}/exgfs_atmos_awips_20km_1p0.sh" "${fcsthr}" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to generate AWIPS products at 20km resolution for forecast hour ${fcsthr}"
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+cd "${DATAROOT}" || pass
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi

@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_ENKF_SFC_REGRID"
+"${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_ENS_ANAL_SFC_REGRID"
 status=$?
 
 exit "${status}"

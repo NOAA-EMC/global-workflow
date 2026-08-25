@@ -15,6 +15,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}"/dev/jobs/JGLOBAL_MARINE_ANALYSIS_CHECKPOINT
+"${HOMEglobal}"/dev/jobs/JGLOBAL_MARINE_ANAL_CHKPT
 status=$?
 exit "${status}"
