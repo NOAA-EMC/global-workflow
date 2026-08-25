@@ -22,8 +22,45 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   set -x
 fi
 
+set +x
+echo "Load prod_util"
 module load prod_util
-export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
+set -x
+# Determine the PDY for this cycle.
+#   In NCO/production the operational date file is authoritative, so PDY is
+#   always read from it.  In a development / near-real-time environment the
+#   ecFlow suite manages its own PDY (advanced and published by the cycle_begin
+#   script).  This lets the suite process the actual date of interest even
+#   when it lags behind real time -- reading the operational date file in that
+#   situation would yield the wrong (current operational) PDY and stall the
+#   workflow.  See NOAA-EMC/global-workflow#5116.
+if [ "%MACHINE_SITE%" = "development" ]; then
+  # Set PDYstart if starting on a date before current PDY
+  ecf_PDYstart="%PDYstart:%"
+  if [ -z "${ecf_PDYstart}" ]; then
+    export PDYstart=
+  fi
+  # Prefer the suite-provided PDY (the ecFlow PDY variable set by cycle_begin).
+  # Fall back to the operational date file when it is not yet set, e.g. on the
+  # very first cycle before cycle_begin has run.
+  export ecf_pdy_set="YES"
+  export PDY="%PDY:%"
+  if [ -z "${PDY}" ]; then
+    if [ -z "${PDYstart}" ]; then
+      suite=%SUITE%
+      echo "WARNING -- ecFlow PDY and PDYstart variables are unset, falling back to operational date file"
+      echo " If you wish to run a different PDY, set the ecflow PDYstart variable prior to running the suite via"
+      echo "   ecflow_client --alter add variable PDYstart YYYYMMDD /${suite}"
+      export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
+      # Let cycle_begin know that ecflow's PDY variable is unset
+    else
+      export PDY="${PDYstart}"
+    fi
+    ecf_pdy_set="NO"
+  fi
+else
+  export PDY=$(cut -c7-14 /lfs/h1/ops/prod/com/date/t%CYC%z)
+fi
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
   set +x
