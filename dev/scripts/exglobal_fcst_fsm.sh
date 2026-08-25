@@ -77,19 +77,19 @@ COMIN_ATMOS_OBS_gfs=${COMIN_ATMOS_OBS_gfs:-$(compath.py "${envir}/obsproc/${obsp
 COMIN_ATMOS_OBS_gdas=${COMIN_ATMOS_OBS_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${PDY}/${cyc}/atmos"}
 COMIN_ATMOS_OBS_PREV_gdas=${COMIN_ATMOS_OBS_PREV_gdas:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"gdas.${previous_cycle_PDY}/${previous_cycle_cyc}/atmos"}
 COMIN_OCEAN_OBS_gfs=${COMIN_OCEAN_OBS_gfs:-"${ROTDIR}/gfs.${PDY}/${cyc}/obs"}
+# shellcheck disable=SC2034  # consumed by release_gdas_marine_prepoceanobs
 COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-"${ROTDIR}/gdas.${PDY}/${cyc}/obs"}
 
 # ---------------------------------------------------------------------------
 # scan_and_release: shared per-forecast-hour scan/release loop (GH#5129).
 #
-# Collapses the seven previously duplicated per-product blocks into one place.
-# Release behavior is unchanged: for each forecast hour in the supplied list it
-# verifies every required output file exists and is non-empty; when they do it
-# marks the hour done in the product's state array and fires the matching
-# "ecflow_client --event <prefix>_fHHH" release. On the first hour whose file(s)
-# are still missing it stops releasing (downstream hours must not be released
-# out of order), re-arms the product's scan flag, and requests another scan
-# pass via the shared proceed_trigger_scan global.
+# For each forecast hour in the supplied list, verifies every required output
+# file exists and is non-empty; when they do it marks the hour done in the
+# product's state array and fires the matching "ecflow_client --event
+# <prefix>_fHHH" release. On the first hour whose file(s) are still missing it
+# stops releasing (downstream hours must not be released out of order), re-arms
+# the product's scan flag, and requests another scan pass via the shared
+# proceed_trigger_scan global.
 #
 # Usage:
 #   scan_and_release <scan_flag_var> <state_array_name> <event_prefix> \
@@ -106,12 +106,12 @@ COMIN_OCEAN_OBS_gdas=${COMIN_OCEAN_OBS_gdas:-"${ROTDIR}/gdas.${PDY}/${cyc}/obs"}
 #                        message.
 #   <fhr>...           - forecast hours to scan, in ascending order
 #
-# shellcheck disable=SC2059  # templates intentionally carry a %s for the fhr
+# shellcheck disable=SC2059 # templates intentionally carry a %s for the fhr
 scan_and_release() {
     local flag_var="${1}" arr_name="${2}" event="${3}" tmpl="${4}"
     shift 4
-    local -n scan_flag="${flag_var}"   # nameref to the scan_release_* flag
-    local -n state="${arr_name}"       # nameref to the *_product_ready array
+    local -n scan_flag="${flag_var}" # nameref to the scan_release_* flag
+    local -n state="${arr_name}" # nameref to the *_product_ready array
 
     # tmpl may hold one or more space-separated templates; split into an array.
     local -a tmpls
