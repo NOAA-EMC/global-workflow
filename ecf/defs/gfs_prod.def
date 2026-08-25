@@ -15,6 +15,10 @@ suite gfs_v17_nco
     family 00
       edit CYC '00'
       edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+      task cycle_begin
+        # To prevent clobbering a still-running gfs, check that the GFS from 2 cycles ago is complete.
+        # This effectively limits the number of cycles to 2.
+        trigger (../18/gdas/forecast == active or ../18/gdas/forecast == complete) and (../12/gfs/forecast != active)
       family gfs
         edit RUN 'gfs'
         family prep
@@ -81,8 +85,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgfs_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../18/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../18/gdas/forecast/jgdas_fcst==complete
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -5360,7 +5364,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger :TIME >= 0610 and :TIME < 0615 
+              trigger :TIME >= 0610 and :TIME < 0615
             task jgdas_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 0545 and :TIME < 0630
@@ -5414,8 +5418,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgdas_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../18/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/00/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../18/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../18/gdas/forecast/jgdas_fcst==complete
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -6239,13 +6243,13 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
-      task cycle_end
-        trigger ../18/gdas/forecast == active or ../18/gdas/forecast == complete
     endfamily			//00
 
     family 06
       edit CYC '06'
       edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+      task cycle_begin
+        trigger (../00/gdas/forecast == active or ../00/gdas/forecast == complete) and (../18/gfs/forecast != active)
       family gfs
         edit RUN 'gfs'
         family prep
@@ -6263,7 +6267,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger :TIME >= 0907 and :TIME < 0912 
+              trigger :TIME >= 0907 and :TIME < 0912
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 0845 and :TIME < 1230
@@ -6312,8 +6316,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgfs_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../00/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../00/gdas/forecast/jgdas_fcst==complete
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -11591,7 +11595,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_obs_bufr_dump
               #NCO/Ops should use obsproc trigger.  Time trigger is a workaround for development
-              trigger :TIME >= 1210 and :TIME < 1215 
+              trigger :TIME >= 1210 and :TIME < 1215
             task jgdas_marine_obs_dump
               trigger :TIME >= 1145 and :TIME < 1230
           endfamily  		//marine
@@ -11644,8 +11648,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgdas_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../00/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/06/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../00/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../00/gdas/forecast/jgdas_fcst==complete
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -12469,13 +12473,13 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
-      task cycle_end
-        trigger ../00/gdas/forecast == active or ../00/gdas/forecast == complete
     endfamily			//06
 
     family 12
       edit CYC '12'
       edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+      task cycle_begin
+        trigger (../06/gdas/forecast == active or ../06/gdas/forecast == complete) and (../00/gfs/forecast != active)
       family gfs
         edit RUN 'gfs'
         family prep
@@ -12493,7 +12497,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger :TIME >= 1507 and :TIME < 1512 
+              trigger :TIME >= 1507 and :TIME < 1512
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 1445 and :TIME < 1830
@@ -12542,8 +12546,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgfs_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../06/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../06/gdas/forecast/jgdas_fcst==complete
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -17821,7 +17825,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_obs_bufr_dump
             # TODO make this trigger off of obsproc dump job completion
-              trigger :TIME >= 1810 and :TIME < 1815 
+              trigger :TIME >= 1810 and :TIME < 1815
             task jgdas_marine_obs_dump
               trigger :TIME >= 1745 and :TIME < 1830
           endfamily  		//marine
@@ -17874,8 +17878,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgdas_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../06/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/12/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../06/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../06/gdas/forecast/jgdas_fcst==complete
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -18699,13 +18703,13 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
-      task cycle_end
-        trigger ../06/gdas/forecast == active or ../06/gdas/forecast == complete
     endfamily			//12
 
     family 18
       edit CYC '18'
       edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+      task cycle_begin
+        trigger (../12/gdas/forecast == active or ../12/gdas/forecast == complete) and (../06/gfs/forecast != active)
       family gfs
         edit RUN 'gfs'
         family prep
@@ -18723,7 +18727,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgfs_marine_obs_bufr_dump
               # TODO make this trigger off of obsproc dump job completion
-              trigger :TIME >= 2107 and :TIME < 2112 
+              trigger :TIME >= 2107 and :TIME < 2112
             task jgfs_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 2045 or :TIME < 0030
@@ -18772,8 +18776,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgfs_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gfs/atmos/prep/jobsproc_gfs_atmos_prep == complete and ../../../../12/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgfs_atmos_prep_sfc==complete and ../../../../12/gdas/forecast/jgdas_fcst==complete
           endfamily		//snow
         endfamily		//analysis
         family forecast
@@ -24051,7 +24055,7 @@ suite gfs_v17_nco
             edit WGF 'marine'
             task jgdas_marine_obs_bufr_dump
               #TODO NCO/OPS should use obsproc completion trigger
-              trigger :TIME >= 0010 and :TIME < 0015 
+              trigger :TIME >= 0010 and :TIME < 0015
             task jgdas_marine_obs_dump
               # this should start when the obsproc job starts
               trigger :TIME >= 2345 or :TIME < 0030
@@ -24105,8 +24109,8 @@ suite gfs_v17_nco
             edit WGF 'snow'
             task jgdas_snow_anal
               #NCO/Ops should use obsproc trigger.  Sfc prep trigger is a workaround for development
-              #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
-              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../12/gdas/forecast/jgdas_fcst==complete 
+              #trigger /gfs_v17_0/primary/18/obsproc/v1.3/gdas/atmos/prep/jobsproc_gdas_atmos_prep == complete and ../../../../12/gdas/forecast/jgdas_fcst==complete
+              trigger ../../prep/atmos/jgdas_atmos_prep_sfc==complete and ../../../../12/gdas/forecast/jgdas_fcst==complete
           endfamily  		//snow
         endfamily    		//analysis
         family forecast
@@ -24930,8 +24934,6 @@ suite gfs_v17_nco
             edit FHRLST 'f009'
         endfamily		//post
       endfamily      		//enkfgdas
-      task cycle_end
-        trigger ../12/gdas/forecast == active or ../12/gdas/forecast == complete
     endfamily			//18
   endfamily			//primary
 endsuite			//gfs_v17_0

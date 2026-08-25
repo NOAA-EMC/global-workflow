@@ -50,10 +50,10 @@ gdas_restarta:
         {% else %}
         - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}rad_varbc_params.tar"
         {% endif %}
+    optional:
+        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
 
-        # Input BUFR files
+        # Input BUFR files; only created when prep is run. Otherwise, these are read directly from obsproc.
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}nsstbufr"
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr"
         - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}prepbufr.acft_profiles"
-    optional:
-        - "{{ COMIN_ATMOS_ANALYSIS | relpath(ROTDIR) }}/{{ head }}radstat.tar"
