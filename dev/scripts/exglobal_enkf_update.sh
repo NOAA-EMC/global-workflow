@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 # Directories.
 cd "${DATA}" || exit 1
 
@@ -119,7 +123,9 @@ cpreq "${COMIN_ATMOS_ANALYSIS_STAT}/${ABIASe}" "satbias_in"
 flist="${CNVSTAT} ${OZNSTAT} ${RADSTAT}"
 for ftype in ${flist}; do
     fname="${COMIN_ATMOS_ANALYSIS_STAT}/${ftype}"
-    tar -xvf "${fname}"
+    if [[ -s "${fname}" ]]; then
+        tar -xvf "${fname}"
+    fi
 done
 
 nfhrs="${IAUFHRS_ENKF//,/ }"
@@ -321,16 +327,17 @@ EOFnml
 export OMP_NUM_THREADS=${NTHREADS_ENKF}
 export pgm=${ENKFEXEC}
 source prep_step
+# Restore default pgm after prep_step override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpreq "${ENKFEXEC}" "${DATA}"
-${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 1> stdout 2> stderr && true
+${APRUN_ENKF} "${DATA}/$(basename "${ENKFEXEC}")" 2>&1 | tee enkfstat.txt && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
+    pgm="$(basename "${ENKFEXEC}")"
     err_exit "Failed to run the EnKF!"
 fi
 
-# Cat runtime output files.
-cat stdout stderr > enkfstat.txt
 cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
 
 ################################################################################

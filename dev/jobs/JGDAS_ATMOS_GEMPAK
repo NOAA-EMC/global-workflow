@@ -42,18 +42,18 @@ done
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate AWIPS products at 1 degree resolution for forecast hour ${FHR3}"
 fi
 
 ########################################################
-# Execute the script for quater-degree grib
+# Execute the script for quarter-degree grib
 ########################################################
 
 "${SCRglobal}/exgdas_atmos_nawips.sh" "0p25" "${FHR3}" "GDAS_GEMPAK" "${COMOUT_ATMOS_GEMPAK_0p25}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate AWIPS products at 0.25 degree resolution for forecast hour ${FHR3}"
 fi
 
 ############################################

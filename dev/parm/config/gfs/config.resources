@@ -17,13 +17,13 @@ if (( $# != 1 )); then
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
-    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
-    echo "upp atmos_products"
+    echo "anal sfcanl_regrid sfcanl_gcycle analcalc analdiag anlstat fcst echgres"
+    echo "upp atmos_products wdqms"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
-    echo "eobs ediag eupd ecen esfc efcs epos earc_vrfy earc_tars"
+    echo "eobs ediag eupd ecen esfc_gcycle esfc_regrid efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
-    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
+    echo "waveinit waveprep wavepostgridded wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
     echo "marineanlinit prepoceanobs marinebmatinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
@@ -61,11 +61,16 @@ case ${machine} in
               max_tasks_per_node=80
               mem_node_max="500GB"
     ;;
+  "AWS-EC2")
+              export PARTITION_BATCH="compute"
+              npe_node_max=48
+              max_tasks_per_node=48
+              mem_node_max="192GB"
+    ;;
   "DERECHO")
               max_tasks_per_node=128
               mem_node_max="230GB"
     ;;
-
   "AWSPW")
     export PARTITION_BATCH="compute"
     npe_node_max=48
@@ -155,7 +160,7 @@ case ${step} in
     NTASKS=${ntasks}
     ;;
 
-  "wavepostsbs")
+  "wavepostgridded")
     # Walltime is per forecast hour; will be multipled by group size
     ntasks=8
     threads_per_task=1
@@ -611,20 +616,24 @@ case ${step} in
     ntasks=16
     case ${OCNRES} in
       "025")
-        ntasks=480
+        ntasks=240
+	tasks_per_node=10
         memory="256GB"
         ;;
       "050")
         ntasks=16
         memory="96GB"
+	tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       "100")
         ntasks=16
         memory="96GB"
+	tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       "500")
         ntasks=16
         memory="24GB"
+	tasks_per_node=$(( max_tasks_per_node / 2 ))
         ;;
       *)
         echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
@@ -634,7 +643,6 @@ case ${step} in
     walltime="00:30:00"
     is_exclusive=True
     threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / 2 ))
     ;;
 
 
@@ -782,6 +790,14 @@ case ${step} in
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
+  "wdqms")
+    walltime="00:20:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=1
+    memory="48GB"
+    ;;
+
   "anlstat")
     walltime="00:30:00"
     ntasks=20
@@ -790,7 +806,7 @@ case ${step} in
     memory="150GB"
     ;;
 
-  "sfcanl")
+  "sfcanl_regrid" | "sfcanl_gcycle")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
     threads_per_task=4
@@ -940,7 +956,7 @@ case ${step} in
     if [[ "${RUN}" == gdas ]]; then
       case "${CASE}" in
         "C48" | "C96" | "C192")
-          declare -x "walltime"="00:20:00"
+          declare -x "walltime"="00:25:00"
           ;;
         "C384")
           declare -x "walltime"="00:30:00"
@@ -957,7 +973,7 @@ case ${step} in
     elif [[ "${RUN}" == enkfgfs || "${RUN}" == enkfgdas ]]; then
       case "${CASE_ENS}" in
         "C48" | "C96" | "C192")
-          declare -x "walltime"="00:20:00"
+          declare -x "walltime"="00:25:00"
           ;;
         "C384")
           declare -x "walltime"="00:30:00"
@@ -1309,8 +1325,21 @@ case ${step} in
     is_exclusive=True
     ;;
 
-  "esfc")
-    walltime="01:15:00"
+  "esfc_gcycle")
+    walltime="01:00:00"
+    ntasks=${NMEM_ENS:-80}
+    threads_per_task=1
+    node_numerator=1
+    node_denominator=2
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+
+    threads_per_task_cycle=${threads_per_task}
+    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
+    ;;
+
+  "esfc_regrid")
+    walltime="00:30:00"
     ntasks=$(( NMEM_ENS * 6)) # The regrid program requires tasks to be tiles times members
     threads_per_task=1
 
@@ -1319,9 +1348,6 @@ case ${step} in
     node_numerator=1
     node_denominator=2
     tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
-
-    threads_per_task_cycle=${threads_per_task}
-    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     ;;
 
   "epos")
@@ -1382,7 +1408,7 @@ case ${step} in
 
   "gempak")
     # Walltime is per forecast hour; will be multipled by group size
-    walltime="00:05:00"
+    walltime="00:10:00"
     threads_per_task=1
     if [[ "${RUN}" = *gdas ]]; then
       ntasks=2
@@ -1393,6 +1419,15 @@ case ${step} in
       tasks_per_node=28
       memory="8GB"
     fi
+    prepost=True
+    ;;
+
+  "gempakmeta")
+    walltime="00:15:00"
+    threads_per_task=1
+    ntasks=28
+    tasks_per_node=28
+    memory="40GB"
     prepost=True
     ;;
 

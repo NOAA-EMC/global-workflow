@@ -17,6 +17,10 @@
 #
 ################################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 #  Directories.
 pwd=$(pwd)
 
@@ -142,7 +146,8 @@ EOF
     "${USHglobal}/run_mpmd.sh" "${DATA}/mp_chgres.sh" && true
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        err_exit
+        pgm="run_mpmd.sh"
+        err_exit "Failed to run chgres on one or more forecast hours!"
     fi
 else
     echo "DO_CALC_ANALYSIS != YES, doing nothing"

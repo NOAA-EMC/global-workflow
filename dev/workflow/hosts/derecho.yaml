@@ -11,9 +11,7 @@ STMP: '/lustre/desc1/scratch/${USER}/stmp'
 PTMP: '/lustre/desc1/scratch/${USER}/ptmp'
 NOSCRUB: '${HOMEDIR}'
 COMINsyn: '/lustre/desc1/p/nral0032/global/data/syndat'
-COMINecmwf: '/lustre/desc1/p/nral0032/global/data/external_gempak/ecmwf'
 COMINnam: '/lustre/desc1/p/nral0032/global/data/external_gempak/nam'
-COMINukmet: '/lustre/desc1/p/nral0032/global/data/external_gempak/ukmet'
 # BQS properties
 SCHEDULER: pbspro
 QUEUE: develop

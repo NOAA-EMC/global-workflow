@@ -673,7 +673,7 @@ MOM6_postdet() {
     case ${RUN} in
         gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
             # Looping over MOM6 output hours
-            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
 
@@ -697,10 +697,14 @@ MOM6_postdet() {
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
+                ihour=$(printf %02i "${interval}")
+                source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
                 ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${dest_file_log}" "${DATA}/${source_file_log}"
 
                 last_fhr=${fhr}
 
@@ -713,7 +717,7 @@ MOM6_postdet() {
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${vdatestr}.nc"
             done
             ;;
         *)

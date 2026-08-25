@@ -4,6 +4,10 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 1
 grid=$1
 fhr3=$2
@@ -25,7 +29,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
     cpreq "${source_table}" "${table}"
 done
 
-NAGRIB="${GEMEXE}/nagrib2"
+NAGRIB="${GEMEXE}/nagrib2_nc"
 
 cpyfil=gds
 garea=dset
@@ -48,7 +52,7 @@ fi
 
 cpreq "${GRIBIN}" "grib${fhr3}"
 
-export pgm="nagrib2 F${fhr3}"
+export pgm="nagrib2_nc F${fhr3}"
 startmsg
 
 ${NAGRIB} << EOF
@@ -73,13 +77,13 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "${NAGRIB} failed to create ${GEMGRD}!"
 fi
+# Restore default pgm after override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpfs "${GEMGRD}" "${destination}/${GEMGRD}"
 if [[ "${SENDDBN}" == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${destination}/${GEMGRD}"
 fi
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

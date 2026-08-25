@@ -19,13 +19,13 @@ if (( $# != 1 )); then
     echo "prep_emissions"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
     echo "offlineanl"
-    echo "anal sfcanl analcalc analdiag anlstat fcst echgres"
+    echo "anal sfcanl_gcycle analcalc analdiag anlstat fcst echgres"
     echo "upp atmos_products"
     echo "tracker genesis genesis_fsu"
     echo "verfozn verfrad vminmon fit2obs metp arc_vrfy arc_tars cleanup"
-    echo "eobs ediag eupd ecen esfc efcs epos earc_vrfy earc_tars"
+    echo "eobs ediag eupd ecen efcs epos earc_vrfy earc_tars"
     echo "init_chem mom6ic oceanice_products"
-    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
+    echo "waveinit waveprep wavepostgridded wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
     echo "marineanlinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
@@ -62,6 +62,13 @@ case ${machine} in
   "HERCULES")
               max_tasks_per_node=80
               mem_node_max="500GB"
+    ;;
+  "AWS-EC2")
+              export PARTITION_BATCH="compute"
+              npe_node_max=48
+              max_tasks_per_node=48
+              # TODO Supply a max mem/node value for AWS
+              mem_node_max=""
     ;;
   "DERECHO")
               max_tasks_per_node=128
@@ -142,7 +149,7 @@ case ${step} in
     NTASKS=${ntasks}
     ;;
 
-  "wavepostsbs")
+  "wavepostgridded")
     # Walltime is per forecast hour; will be multipled by group size
     ntasks=8
     threads_per_task=1
@@ -747,7 +754,7 @@ case ${step} in
     memory="90GB"
     ;;
 
-  "sfcanl")
+  "sfcanl_gcycle")
     walltime="00:20:00"
     ntasks=${ntiles:-6}
     threads_per_task=1
@@ -1266,15 +1273,6 @@ case ${step} in
     export threads_per_task_cycle=${threads_per_task}
     export tasks_per_node_cycle=${tasks_per_node}
     export is_exclusive=True
-    ;;
-
-  "esfc")
-    walltime="01:00:00"
-    ntasks=80
-    threads_per_task=1
-    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
-    threads_per_task_cycle=${threads_per_task}
-    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task_cycle ))
     ;;
 
   "epos")

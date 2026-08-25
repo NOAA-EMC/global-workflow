@@ -18,7 +18,6 @@ class MarineLETKF(Analysis):
     Class for global ocean and sea ice analysis LETKF task
     """
 
-    @logit(logger, name="MarineLETKF")
     def __init__(self, config: Dict) -> None:
         """Constructor for ocean and sea ice LETKF task
 
@@ -137,5 +136,5 @@ class MarineLETKF(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['letkf'].save_obsdataout(self.task_config.COMOUT_OCEAN_LETKF,
+        self.jedi_dict['letkf'].save_obsdataout(self.task_config.COMOUT_OCEAN_ANALYSIS_ENSSTAT,
                                                 f"{self.task_config.APREFIX}marine_analysis.ioda_hofx.ens_mean")

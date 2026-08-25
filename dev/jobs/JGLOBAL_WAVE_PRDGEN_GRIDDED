@@ -39,7 +39,7 @@ fi
 "${SCRglobal}/exgfs_wave_prdgen_gridded.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate wave gridded WMO bulletins."
 fi
 
 ###################################

@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+set -x
+
+###############################################################
+# Source FV3GFS workflow modules
+#source "${HOMEglobal}/dev/ush/load_modules.sh" run
+source "${HOMEglobal}/dev/ush/load_modules.sh" ufswm
+err=$?
+if [[ "${err}" -ne 0 ]]; then
+    exit "${err}"
+fi
+
+export job="wavepostgridded"
+
+###############################################################
+# shellcheck disable=SC2153
+IFS=', ' read -r -a fhr_list <<< "${FHR_LIST}"
+
+export FORECAST_HOUR jobid
+for FORECAST_HOUR in "${fhr_list[@]}"; do
+    fhr3=$(printf '%03d' "${FORECAST_HOUR}")
+    jobid="${job}_f${fhr3}.$$"
+    # Execute the JJOB
+    "${HOMEglobal}/dev/jobs/JGLOBAL_WAVE_POST_GRIDDED"
+    err=$?
+    if [[ "${err}" -ne 0 ]]; then
+        exit "${err}"
+    fi
+done
+
+exit 0

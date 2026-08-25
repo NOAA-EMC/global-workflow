@@ -58,7 +58,7 @@ export EXT=".grd221"
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to simulate GOES data from GFS GEMPAK products for forecast hour ${FHR3}"
 fi
 
 cd "${DATA}" || exit 1

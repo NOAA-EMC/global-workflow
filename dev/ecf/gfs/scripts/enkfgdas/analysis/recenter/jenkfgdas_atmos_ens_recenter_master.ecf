@@ -1,0 +1,59 @@
+#PBS -S /bin/bash
+#PBS -N enkfgdas_atmos_ens_recenter_%CYC%_%FHRGRP%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:20:00
+#PBS -l select=3:mpiprocs=32:ompthreads=4:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=gfs
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+#TODO: load only the modules needed for each job
+source ${HOMEgfs}/dev/ush/load_modules.sh gsi
+
+module list
+############################################################
+# CALL executable job script here
+############################################################
+export WGF="%WGF%"
+export FHRGRP="%FHRGRP%"
+export FHRLST="%FHRLST%"
+export FHMIN_ECEN="${FHRLST}"
+export FHMAX_ECEN="${FHRLST}"
+export FHOUT_ECEN="${FHRLST}"
+export HOMEglobal=${HOMEgfs}
+export COMPONENT=${WGF}
+
+#### ${HOMEgfs}/dev/job_cards/rocoto/ecen.sh
+${HOMEgfs}/jobs/JGLOBAL_ENKF_ECEN
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+TASK enkfgdas_atmos_ens_recenter_master
+
+PURPOSE: EnKF recentering -- recenters ensemble member analyses around the high-
+resolution deterministic analysis. Per-group _master template.
+
+TROUBLESHOOTING
+
+Depends on both the deterministic GDAS analysis (atmos_anal) and the
+EnKF update (eupd). If either upstream failed, recentering cannot
+proceed. Check that both deterministic and ensemble analyses exist. If
+recentering produces large increments, check analysis consistency
+between deterministic and ensemble.
+
+%end

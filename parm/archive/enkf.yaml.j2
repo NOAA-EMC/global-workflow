@@ -16,7 +16,10 @@ enkf:
            {% endif %}
         {% endif %}
         {% endif %}
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc.log"
+            {% if DO_GSISOILDA %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc_regrid.log"
+            {% endif %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_esfc_gcycle.log"
         {% if not DO_JEDIATMENS %}
             {% for grp in range(iaufhrs_str | length) %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_ecen{{ '%03d' % grp }}.log"
@@ -76,7 +79,6 @@ enkf:
             {% set da_stat_files = ["enkfstat.txt",
                                     "gsistat_ensmean.txt",
                                     "cnvstat_ensmean.tar",
-                                    "oznstat_ensmean.tar",
                                     "radstat_ensmean.tar"] %}
             {% set da_conf_files = [] %}
         {% else %}
@@ -151,4 +153,21 @@ enkf:
         {% if DOHYBVAR_OCN %}
         - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
         - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}bg_ensvar.nc"
+        {% if DOLETKF_OCN or DOLETKF_OCN_INC %}
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head |replace('enkf','')}}marine_analysis.ioda_hofx.ens_mean.tar.gz"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_prior.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_prior.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_post.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_post.nc"
+        - "{{ COMIN_OCEAN_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_incr.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_prior.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_prior.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_post.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensvar_post.nc"
+        - "{{ COMIN_ICE_ANALYSIS_ENSSTAT }}/{{ head }}ensmean_incr.nc"
+        {% endif %}
+        {% endif %}
+    optional:
+        {% if not DO_JEDIATMENS %}
+        - "{{ COMIN_ATMOS_ANALYSIS_ENSSTAT | relpath(ROTDIR) }}/{{ head }}oznstat_ensmean.tar"
         {% endif %}

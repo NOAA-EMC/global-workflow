@@ -45,7 +45,19 @@ EXSCRIPT=${GDASATMINITPY:-${SCRglobal}/exglobal_atm_analysis_initialize.py}
 ${EXSCRIPT} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to initialize the atmospheric analysis"
+fi
+
+# TODO - implement better way to set these parameters
+if [[ "${LOCALIZATION_TYPE}" == "gsibec" ]]; then
+    target_file="${DATA}/berror/gfs_gsi_global.nml"
+
+    sed -i \
+        -e "s|TLNMC_OPTION|${tlnmc_option}|g" \
+        -e "s|BETAS0|${beta_s0}|g" \
+        -e "s|NMEM_ENS|${NMEM_ENS}|g" \
+        -e "s|PREFIX_ENS|enkf${GDUMP}.t${gcyc}z|g" \
+        "${target_file}"
 fi
 
 ##############################################

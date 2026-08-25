@@ -28,7 +28,7 @@ TARGET_DIR=${5:-${ROTDIR}/${RUN}.${YMD}/${HH}}
 DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
 # Exit if SOURCE_DIR does not exist
-if [[ ! -s "${SOURCE_DIR}" ]]; then
+if [[ ! -d "${SOURCE_DIR}" ]]; then
     echo "FATAL ERROR: DUMP SOURCE_DIR=${SOURCE_DIR} does not exist"
     exit 99
 fi
@@ -42,9 +42,16 @@ fi
 prefix="${RUN}.t${HH}z."
 
 # loop through top level component directories (e.g. atmos, ocean, land, ice)
+IODA_SKIP_COMPONENTS=${IODA_SKIP_COMPONENTS:-"atmos.nr atmos.us"}
 for compdir in "${SOURCE_DIR}"/*/; do
     compdir=${compdir%*/}
     compdir=${compdir##*/}
+
+    # Components to skip (space-delimited). Override with IODA_SKIP_COMPONENTS.
+    if [[ " ${IODA_SKIP_COMPONENTS} " == *" ${compdir} "* ]]; then
+        echo "INFO: skipping component directory '${compdir}'" >&2
+        continue
+    fi
     # Skip if not a directory
     if [[ ! -d "${SOURCE_DIR}/${compdir}/" ]]; then
         continue

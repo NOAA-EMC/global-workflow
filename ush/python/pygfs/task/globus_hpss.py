@@ -20,7 +20,6 @@ class GlobusHpss(Task):
     """Task to send tarballs (created by the archive task) to HPSS via Globus
     """
 
-    @logit(logger, name="GlobusHpss")
     def __init__(self, config: Dict[str, Any]) -> None:
         """Constructor for the GlobusHpss task
 

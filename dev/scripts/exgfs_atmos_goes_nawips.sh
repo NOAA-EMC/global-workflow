@@ -4,6 +4,10 @@
 # echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
 ###################################################################
 
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
 cd "${DATA}" || exit 1
 fhr3=$1
 
@@ -19,7 +23,7 @@ for table in g2varswmo2.tbl g2vcrdwmo2.tbl g2varsncep1.tbl g2vcrdncep1.tbl; do
 done
 
 NAGRIB_TABLE="${HOMEglobal}/gempak/fix/nagrib.tbl"
-NAGRIB="${GEMEXE}/nagrib2"
+NAGRIB="${GEMEXE}/nagrib2_nc"
 
 entry=$(grep "^${RUN2} " "${NAGRIB_TABLE}" | awk 'index($1,"#") != 1 {print $0}' || echo "")
 
@@ -80,13 +84,13 @@ export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to run ${NAGRIB}!"
 fi
+# Restore default pgm after override
+pgm=$(basename "${BASH_SOURCE[0]}")
 
 cpfs "${GEMGRD}" "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 if [[ ${SENDDBN} == "YES" ]]; then
     "${DBNROOT}/bin/dbn_alert" MODEL "${DBN_ALERT_TYPE}" "${job}" \
         "${COMOUT_ATMOS_GEMPAK_0p25}/${GEMGRD}"
 fi
-
-"${GEMEXE}/gpend"
 
 ############################### END OF SCRIPT #######################

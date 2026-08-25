@@ -37,6 +37,10 @@ case $(hostname -f) in
     derecho[1-8].hsn.de.hpc.ucar.edu) MACHINE_ID=derecho ;; ### derecho1-8
     dec*) MACHINE_ID=derecho ;;                             ### derech compute node
 
+    ip-*) MACHINE_ID=aws-ec2 ;;            ### aws-ec2
+    compute-dy-*) MACHINE_ID=aws-ec2 ;;    ### aws-ec2
+    processing-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
+
     Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
     [Hh]ercules-login-[1-4].[Hh][Pp][Cc].[Mm]s[Ss]tate.[Ee]du) MACHINE_ID=hercules ;; ### hercules1-4
@@ -96,6 +100,9 @@ elif [[ -d /gpfs/f6 ]]; then
 elif [[ -d /data/prod ]]; then
     # We are on SSEC's S4
     MACHINE_ID=s4
+elif [[ -d /opt/spack-stack && -d /lustre ]]; then
+    # We are on AWS EC2.
+    MACHINE_ID=aws-ec2
 elif [[ -d /glade/u ]]; then
     # We are on DERECHO.
     MACHINE_ID=derecho

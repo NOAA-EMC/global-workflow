@@ -29,7 +29,7 @@ mkdir -p "${COMOUT_WAVE_WMO}"
 "${SCRglobal}/exgfs_wave_prdgen_bulls.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate wave WMO bulletins."
 fi
 
 ###################################

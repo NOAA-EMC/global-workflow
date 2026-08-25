@@ -45,6 +45,9 @@ declare -rx COMIN_ATMOS_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/a
 
 declare -rx COMIN_ATMOS_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
+# Additional variables are set in scripts/exglobal_atmos_analysis.sh in order to loop over ensemble members:
+#  COMIN_ATMOS_HISTORY
+
 # shellcheck disable=SC2153
 mkdir -p "${COMOUT_ATMOS_ANALYSIS}"
 
@@ -68,7 +71,7 @@ export LEVS
 LEVS=$(${NCLEN} "${ATMGES}" pfull) && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to get LEVS from ${ATMGES}"
 fi
 
 if [[ "${DOHYBVAR}" == "YES" ]]; then
@@ -102,7 +105,7 @@ fi
 ${ANALYSISSH:-${SCRglobal}/exglobal_atmos_analysis.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run the GSI atmospheric analysis"
 fi
 
 ##############################################

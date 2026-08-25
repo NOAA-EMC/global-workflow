@@ -1,0 +1,43 @@
+#! /usr/bin/env bash
+
+########## config.esfc_gcycle ##########
+# Ensemble surface gcycle specific
+
+echo "BEGIN: config.esfc_gcycle"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" esfc_gcycle
+
+# Run global_cycle in coupled mode
+if [[ "${DO_OCN}" == "YES" && "${DO_ICE}" == "YES" ]]; then
+  export COUPLED=".true."
+fi
+
+# With IAU only need surface analysis at start of IAU window.
+# Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at
+# center of analysis window.
+
+if [[ ${DOIAU_ENKF} = "YES" ]]; then
+   export DOSFCANL_ENKF="NO"
+fi
+
+# Turn off NST in JEDIATMENS or JEDIATMVAR
+if [[ "${DO_JEDIATMENS}" == "YES" || "${DO_JEDIATMVAR}" == "YES" ]]; then
+   export DONST="NO"
+fi
+
+# Turn off NST if DOENKFONLY_ATM is YES
+if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]] ; then
+   export DONST="NO"
+fi
+
+# set up soil analysis
+if [[ ${DO_GSISOILDA} == "YES" ]]; then
+    if [[ "${DO_LAND_IAU}" = ".true." ]]; then
+        export GCYCLE_DO_SOILINCR=".false."
+    else
+        export GCYCLE_DO_SOILINCR=".true."
+    fi
+fi
+
+echo "END: config.esfc_gcycle"

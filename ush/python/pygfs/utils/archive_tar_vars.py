@@ -39,11 +39,12 @@ config_dict dictionaries.
 
 Logging
 -------
-All public operational functions are decorated with @logit(logger).
+All public operational functions are decorated with @logit (TODO) to log entry, exit, and return values.
 """
 import os
 from logging import getLogger
-from wxflow import AttrDict, logit, to_YMD, to_YMDH, add_to_datetime, to_timedelta, to_fv3time
+from wxflow import AttrDict, to_YMD, to_YMDH, add_to_datetime, to_timedelta, to_fv3time
+# from wxflow import logit  # Uncomment when logit decorator is implemented
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -64,8 +65,11 @@ class ArchiveTarVars:
     generation logic. This class only provides the variables they need.
     """
 
+    # TODO: Convert these to instance methods so we aren't passing config_dict around.
+    #       Add an __init__ method to accept and store config_dict.
+    #       Then add logit decorators to the instance methods and remove debug prints of
+    #       return dicts (since the logit decorator will log the return values).
     @staticmethod
-    @logit(logger)
     def get_all_yaml_vars(config_dict: AttrDict) -> AttrDict:
         """
         Collect all variables needed for YAML templates.
@@ -141,7 +145,6 @@ class ArchiveTarVars:
         return arch_dict
 
     @staticmethod
-    @logit(logger)
     def add_config_vars(config_dict: AttrDict) -> AttrDict:
 
         """
@@ -165,7 +168,7 @@ class ArchiveTarVars:
         - Restart: restart_interval_enkfgdas, restart_interval_enkfgfs
         - Hybrid/DA: DOHYBVAR, DOIAU, DO_CA, DO_CALC_INCREMENT, assim_freq
         - Archive timing: ARCH_CYC, ARCH_WARMICFREQ, ARCH_FCSTICFREQ
-        - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN
+        - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN, DOLETKF_OCN_INC, DO_OCN
         - Other: DO_JEDISNOWDA, NET, DO_GSISOILDA, DO_LAND_IAU
 
         COM variable prefixes collected:
@@ -194,7 +197,7 @@ class ArchiveTarVars:
             'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
             'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
             # Ocean/Ice DA
-            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'NMEM_ENS', 'ARCH_MARINE_ENS',
+            'DOHYBVAR_OCN', 'DOLETKF_OCN', 'DOLETKF_OCN_INC', 'NMEM_ENS', 'ARCH_MARINE_ENS', 'DO_OCN',
             # Archive timing and control
             'ARCH_CYC', 'ARCH_WARMICFREQ', 'ARCH_FCSTICFREQ',
         ]
@@ -260,7 +263,6 @@ class ArchiveTarVars:
         return config_vars
 
     @staticmethod
-    @logit(logger)
     def _get_all_cyc_vars(config_dict: AttrDict) -> AttrDict:
         """Compute common cycle variables for all archive YAML templates.
 
@@ -307,10 +309,11 @@ class ArchiveTarVars:
         if config_dict.get('RUN', '') == 'gcdas':
             vars_out.update(ArchiveTarVars._get_gcdas_specific_cyc_vars(config_dict, current_cycle))
 
+        logger.debug(f"Cycle variables: {list(vars_out.keys())}")
+
         return vars_out
 
     @staticmethod
-    @logit(logger)
     def _get_enkf_specific_cyc_vars(config_dict: AttrDict, current_cycle) -> AttrDict:
         """Compute EnKF-specific cycle variables.
 
@@ -473,10 +476,11 @@ class ArchiveTarVars:
         enkf_vars['save_warm_start_forecast'] = False
         enkf_vars['save_warm_start_cycled'] = False
 
+        logger.debug(f"EnKF variables: {list(enkf_vars.keys())}")
+
         return enkf_vars
 
     @staticmethod
-    @logit(logger)
     def _get_gcdas_specific_cyc_vars(config_dict: AttrDict, current_cycle) -> AttrDict:
         """Compute GCDAS-specific cycle variables.
 
@@ -512,7 +516,6 @@ class ArchiveTarVars:
         return gcdas_vars
 
     @staticmethod
-    @logit(logger)
     def get_enkf_com_paths(config_dict: AttrDict) -> AttrDict:
         """Extract absolute COMIN paths for EnKF ensemble mean/spread (ENSGRP=0).
 
@@ -564,10 +567,10 @@ class ArchiveTarVars:
                 com_paths[var_name] = abs_path
                 logger.debug(f"Extracted {var_name}: {abs_path}")
         logger.info(f"Extracted {len(com_paths)} absolute ensemble statistics COM paths (will convert to relative after YAML rendering)")
+        logger.debug(f"Ensemble COM paths: {com_paths}")
         return com_paths
 
     @staticmethod
-    @logit(logger)
     def get_enkf_member_com_paths(config_dict: AttrDict, member: int) -> AttrDict:
         """Generate absolute COM paths for a single ensemble member.
 
@@ -590,11 +593,9 @@ class ArchiveTarVars:
             - COMIN_ATMOS_HISTORY_MEM: Absolute path to member history directory
             - COMIN_ATMOS_RESTART_MEM: Absolute path to member restart directory
             - COMIN_OCEAN_ANALYSIS_MEM: Absolute path to member ocean analysis
-            - COMIN_OCEAN_LETKF_MEM: Absolute path to member ocean LETKF
             - COMIN_OCEAN_HISTORY_MEM: Absolute path to member ocean history
             - COMIN_OCEAN_RESTART_MEM: Absolute path to member ocean restart
             - COMIN_ICE_ANALYSIS_MEM: Absolute path to member ice analysis
-            - COMIN_ICE_LETKF_MEM: Absolute path to member ice LETKF
             - COMIN_ICE_HISTORY_MEM: Absolute path to member ice history
             - COMIN_ICE_RESTART_MEM: Absolute path to member ice restart
             - COMIN_MED_RESTART_MEM: Absolute path to member mediator restart
@@ -629,11 +630,9 @@ class ArchiveTarVars:
             ('COMIN_ATMOS_HISTORY_MEM', 'COM_ATMOS_HISTORY_TMPL'),
             ('COMIN_ATMOS_RESTART_MEM', 'COM_ATMOS_RESTART_TMPL'),
             ('COMIN_OCEAN_ANALYSIS_MEM', 'COM_OCEAN_ANALYSIS_TMPL'),
-            ('COMIN_OCEAN_LETKF_MEM', 'COM_OCEAN_LETKF_TMPL'),
             ('COMIN_OCEAN_HISTORY_MEM', 'COM_OCEAN_HISTORY_TMPL'),
             ('COMIN_OCEAN_RESTART_MEM', 'COM_OCEAN_RESTART_TMPL'),
             ('COMIN_ICE_ANALYSIS_MEM', 'COM_ICE_ANALYSIS_TMPL'),
-            ('COMIN_ICE_LETKF_MEM', 'COM_ICE_LETKF_TMPL'),
             ('COMIN_ICE_HISTORY_MEM', 'COM_ICE_HISTORY_TMPL'),
             ('COMIN_ICE_RESTART_MEM', 'COM_ICE_RESTART_TMPL'),
             ('COMIN_MED_RESTART_MEM', 'COM_MED_RESTART_TMPL'),
@@ -650,10 +649,10 @@ class ArchiveTarVars:
                 member_vars[var_key] = abs_path
 
         logger.debug(f"Generated {len(member_vars)} absolute COM paths for member {member} (will convert to relative after YAML rendering)")
+        logger.debug(f"Ensemble member {member} COM paths: {member_vars}")
         return member_vars
 
     @staticmethod
-    @logit(logger)
     def _create_enkf_mem_com_sets(config_dict: AttrDict, first_group_mem: int, last_group_mem: int) -> AttrDict:
         """Generate COM path sets for a group of ensemble members.
 
@@ -674,10 +673,10 @@ class ArchiveTarVars:
         mem_var_set = {}
         for member in range(first_group_mem, last_group_mem + 1):
             mem_var_set[f"com_set_{member:02d}"] = ArchiveTarVars.get_enkf_member_com_paths(config_dict, member)
+        logger.debug(f"Ensemble member COM sets for members {first_group_mem}-{last_group_mem}: {list(mem_var_set.keys())}")
         return mem_var_set
 
     @staticmethod
-    @logit(logger)
     def _create_cycle_dicts(config_dict: AttrDict) -> AttrDict:
         """Create cycle directories for template substitution
 
@@ -693,15 +692,17 @@ class ArchiveTarVars:
         AttrDict
             Dictionary containing current_cycle_dict and previous_cycle_dict
         """
-        return {
+        cycle_dict = {
             '${ROTDIR}': config_dict['ROTDIR'],
             '${RUN}': config_dict['RUN'],
             '${YMD}': to_YMD(config_dict['current_cycle']),
             '${HH}': config_dict['current_cycle'].strftime("%H"),
         }
 
+        logger.debug(f"Created cycle dictionary for template substitution: {cycle_dict}")
+        return cycle_dict
+
     @staticmethod
-    @logit(logger)
     def get_tarball_specific_vars(config_dict: AttrDict, tarball_type: str) -> AttrDict:
         """
         Calculate tarball-specific template variables.
@@ -852,10 +853,11 @@ class ArchiveTarVars:
         else:
             logger.warning(f"Tarball type '{tarball_type}' does not have specific variable calculations")
 
+        logger.debug(f"Tarball-specific variables for {tarball_type}: {tarball_vars}")
+
         return tarball_vars
 
     @staticmethod
-    @logit(logger)
     def _calculate_restart_prefixes(current_cycle: 'datetime', restart_interval: int, fhmax: int) -> list:
         """Calculate restart time prefixes for a given interval and forecast max.
 
@@ -891,4 +893,5 @@ class ArchiveTarVars:
 
         logger.debug(f"Calculated {len(restart_prefixes)} restart prefixes "
                      f"(interval={restart_interval}H, FHMAX={fhmax}H)")
+        logger.debug(f"Restart prefixes: {restart_prefixes}")
         return restart_prefixes

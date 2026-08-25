@@ -1,0 +1,91 @@
+#! /usr/bin/env bash
+
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         exglobal_wave_init.sh
+# Script description:  Creates model definition files for WW3
+#
+# Abstract: This script is the init config for the global multi_grid wave model.
+#           It creates model definition files with all configurations of spatial
+#           and spectral grids, as well as physics parameters and time steps.
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#
+###############################################################################
+#
+# --------------------------------------------------------------------------- #
+# 1.  Get files that are used by most child scripts
+
+# Set default pgm for err_exit
+pgm=$(basename "${BASH_SOURCE[0]}")
+export pgm
+
+cat << EOF
+
+Preparing input files :
+-----------------------
+EOF
+
+# 1.a Model definition files
+
+# Eliminate duplicate grids
+# Use an associative array, since they don't allow duplicate keys
+declare -A grdALL
+for grd in ${WAVECUR_FID} ${WAVEICE_FID} ${WAVEWND_FID} ${waveuoutpGRD} ${waveGRD} ${wavepostGRD} ${waveinterpGRD}; do
+    # For ease of access, make the value the same as the key
+    grdALL["${grd}"]="${grd}"
+done
+
+for grdID in "${grdALL[@]}"; do
+    echo "INFO: Setting up to generate mod_def file for ${grdID}"
+    if [[ -f "${FIXglobal}/wave/ww3_grid.inp.${grdID}" ]]; then
+        cpreq "${FIXglobal}/wave/ww3_grid.inp.${grdID}" "ww3_grid.inp.${grdID}"
+        echo "INFO: ww3_grid.inp.${grdID} copied (${FIXglobal}/wave/ww3_grid.inp.${grdID})."
+    else
+        export err=2
+        err_exit "No inp file for model definition file for grid ${grdID}"
+    fi
+
+    if [[ -f "${FIXglobal}/wave/${grdID}.msh" ]]; then
+        cpreq "${FIXglobal}/wave/${grdID}.msh" "${grdID}.msh"
+    fi
+    #TODO: how do we say "it's unstructured, and therefore need to have error check here"
+
+    echo "${USHglobal}/wave_grid_moddef.sh ${grdID}" >> mpmd_script
+done
+
+# 1.a.1 Execute MPMD or process serially
+"${USHglobal}/run_mpmd.sh" "${DATA}/mpmd_script" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    pgm="run_mpmd.sh"
+    err_exit "run_mpmd.sh failed!"
+fi
+
+# 1.a.3 File check
+for grdID in "${grdALL[@]}"; do
+    if [[ -f "${COMOUT_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" ]]; then
+        echo "INFO: mod_def.${grdID} succesfully created/copied"
+    else
+        export err=3
+        pgm="run_mpmd.sh"
+        err_exit "No model definition file for grid ${grdID}"
+    fi
+done
+
+# Copy to other members if needed
+if [[ "${NET}" == "gefs" && ${NMEM_ENS} -gt 0 ]]; then
+    for mem in $(seq -f "%03g" 1 "${NMEM_ENS}"); do
+        declare -x COMOUT_WAVE_INIT_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/mem${mem}/model/wave/init"
+        mkdir -p "${COMOUT_WAVE_INIT_MEM}"
+        for grdID in "${grdALL[@]}"; do
+            cpfs "${COMOUT_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${grdID}.bin" "${COMOUT_WAVE_INIT_MEM}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
+        done
+    done
+fi
+
+# End of MWW3 init config script ------------------------------------------- #

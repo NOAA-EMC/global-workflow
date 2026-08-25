@@ -39,9 +39,9 @@ if [[ -f "../${grdID}.msh" ]]; then
     ${NLN} "../${grdID}.msh" "${grdID}.msh"
 fi
 
-export pgm="${NET,,}_ww3_grid.x"
+export pgm="ww3_grid_${NET,,}.x"
 
-echo "INFO: Executing ${EXECglobal}/${NET,,}_ww3_grid.x"
+echo "INFO: Executing ${EXECglobal}/ww3_grid_${NET,,}.x"
 
 "${EXECglobal}/${pgm}"
 export err=$?
@@ -52,7 +52,7 @@ if [[ "${err}" != '0' ]]; then
 fi
 
 if [[ -f mod_def.ww3 ]]; then
-    cpfs "mod_def.ww3" "${COMOUT_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
+    cpfs "mod_def.ww3" "${COMOUT_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${grdID}.bin"
     mv "mod_def.ww3" "../mod_def.${grdID}"
 else
     echo "FATAL ERROR: Mod def file not created for ${grdID}"

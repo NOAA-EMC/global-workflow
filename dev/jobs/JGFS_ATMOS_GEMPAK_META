@@ -6,7 +6,7 @@ set -x
 ############################################
 # GFS GEMPAK META PRODUCT GENERATION
 ############################################
-source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempakmeta"
 
 #{% if false %}
 source "${HOMEglobal}/ush/jjob_standard_vars.sh"
@@ -30,17 +30,6 @@ export MP_DEBUG_NOTIMEOUT=yes
 
 cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
-#############################################
-#set the fcst hrs for all the cycles
-#############################################
-export fhbeg=0
-export fhend=384
-export fhinc=12
-
-if [[ "${fhend}" -gt "${FHMAX_GFS}" ]]; then
-    export fhend="${FHMAX_GFS}"
-fi
-
 export COMPONENT="atmos"
 
 ##############################################
@@ -51,10 +40,6 @@ export DBN_ALERT_TYPE=GFS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-export COMINukmet=${COMINukmet:-$(compath.py "${envir}/ukmet/${ukmet_ver}")/ukmet}
-export COMINecmwf=${COMINecmwf:-$(compath.py "${envir}/ecmwf/${ecmwf_ver}")/ecmwf}
-export COMINnam=${COMINnam:-$(compath.py "${envir}/nam/${nam_ver}")/nam}
-
 declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
 
 declare -rx COMOUT_ATMOS_GEMPAK_META="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/meta"
@@ -65,7 +50,7 @@ mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
 "${SCRglobal}/exgfs_atmos_gempak_meta.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to generate at least one GFS GEMPAK meta product"
 fi
 ########################################################
 

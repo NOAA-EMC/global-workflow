@@ -27,13 +27,17 @@ export PREFIX="${RUN}.t${cyc}z."
 
 export LEVS=$((LEVS - 1))
 
+# Additional variables are set in scripts/exgdas_enkf_post.sh:
+#  COMIN_ATMOS_HISTORY, set in a loop over ensemble members
+#  COMOUT_ATMOS_HISTORY_STAT
+
 ###############################################################
 # Run relevant script
 
 ${ENKFPOSTSH:-${SCRglobal}/exgdas_enkf_post.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit
+    err_exit "Failed to run ensemble post processing"
 fi
 
 ##############################################
