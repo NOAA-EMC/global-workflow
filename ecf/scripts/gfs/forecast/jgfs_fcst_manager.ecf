@@ -30,7 +30,7 @@ module list
 export HOMEglobal=${HOMEgfs}
 export FCST_SEGMENT='0'
 
-${HOMEglobal}/jobs/JGLOBAL_FORECAST_MANAGER
+${HOMEglobal}/jobs/JGLOBAL_FCST_MANAGER
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

@@ -106,7 +106,7 @@ if [[ ${#display_exclude[@]} -gt 0 ]]; then
 fi
 echo -e "${CYAN}=========================================${NC}"
 echo ""
-echo -e "${YELLOW}Converting: ${GREEN}global${NC} ${YELLOW}→${NC} ${RED}${NET}${NC}"
+echo -e "${YELLOW}Converting: ${GREEN}global${NC} ${YELLOW} -> ${NC} ${RED}${NET}${NC}"
 
 # List of patterns to convert
 declare -A patterns=(

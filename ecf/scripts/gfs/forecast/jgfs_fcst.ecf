@@ -56,8 +56,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 export FCST_SEGMENT='0'
-#### ${HOMEgfs}/dev/job_cards/rocoto/fcst.sh
-${HOMEgfs}/jobs/JGLOBAL_FORECAST
+${HOMEgfs}/jobs/JGLOBAL_FCST
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
