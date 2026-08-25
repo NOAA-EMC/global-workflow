@@ -70,11 +70,10 @@ fi
 #
 # shellcheck disable=SC2059 # templates intentionally carry %s for the fhr
 scan_and_release() {
+    # shellcheck disable=SC2034  # scan_flag & state are namerefs; assignments propagate to caller
     local flag_var="${1}" arr_name="${2}" event="${3}" tmpl="${4}"
     shift 4
-    # shellcheck disable=SC2034 # nameref; assignments propagate to caller
     local -n scan_flag="${flag_var}"
-    # shellcheck disable=SC2034 # nameref; assignments propagate to caller
     local -n state="${arr_name}"
 
     # tmpl may hold one or more space-separated templates; split into an array.
