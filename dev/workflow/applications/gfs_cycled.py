@@ -385,7 +385,7 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['postsnd']
 
                     if options['do_gempak']:
-                        task_names[run] += ['gempak', 'gempakncdcupapgif']
+                        task_names[run] += ['gempak']
                         if options['do_goes']:
                             task_names[run] += ['npoess_pgrb2_0p5deg', 'gempakpgrb2spec']
 
