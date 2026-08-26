@@ -42,8 +42,6 @@ declare -rx COMIN_ATMOS_ENKF_ANALYSIS_STAT="${ROTDIR}/enkfgdas.${PDY}/${cyc}/ens
 #  COMIN_SOIL_ANALYSIS_MEM (alias of COMIN_ATMOS_ENKF_ANALYSIS_STAT)
 #  COMOUT_ATMOS_ANALYSIS_MEM (alias of COMOUT_ATMOS_ANALYSIS)
 
-mkdir -p "${COMOUT_ATMOS_RESTART}"
-
 # Use CFP to stage and save files in parallel
 export USE_CFP=YES
 

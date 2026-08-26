@@ -42,9 +42,16 @@ fi
 prefix="${RUN}.t${HH}z."
 
 # loop through top level component directories (e.g. atmos, ocean, land, ice)
+IODA_SKIP_COMPONENTS=${IODA_SKIP_COMPONENTS:-"atmos.nr atmos.us"}
 for compdir in "${SOURCE_DIR}"/*/; do
     compdir=${compdir%*/}
     compdir=${compdir##*/}
+
+    # Components to skip (space-delimited). Override with IODA_SKIP_COMPONENTS.
+    if [[ " ${IODA_SKIP_COMPONENTS} " == *" ${compdir} "* ]]; then
+        echo "INFO: skipping component directory '${compdir}'" >&2
+        continue
+    fi
     # Skip if not a directory
     if [[ ! -d "${SOURCE_DIR}/${compdir}/" ]]; then
         continue
