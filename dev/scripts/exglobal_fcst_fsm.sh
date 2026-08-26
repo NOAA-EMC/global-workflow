@@ -30,17 +30,24 @@ if [[ "${RJN}" == "forecast" ]]; then
         scan_release_gfs_ocean_product="YES"
         scan_release_gfs_ice_product="YES"
         scan_release_gfs_atmos_goesupp="YES"
-        # Create search arrays (to be filled with "YES" when the target log file is found)
+        # State arrays passed by name to scan_and_release (nameref indirect access).
+        # shellcheck disable=SC2034
         declare -a atmos_master_product_ready
+        # shellcheck disable=SC2034
         declare -a wave_uglo_15km_product_ready
+        # shellcheck disable=SC2034
         declare -a atm_history_product_ready
+        # shellcheck disable=SC2034
         declare -a ocean_6hr_avg_product_ready
+        # shellcheck disable=SC2034
         declare -a ice_6hr_avg_product_ready
     fi
     if [[ "${RUN}" == "gdas" ]]; then
         scan_release_gdas_atmos_product="YES"
         scan_release_gdas_wave_post_gridded="YES"
+        # shellcheck disable=SC2034
         declare -a atmos_master_product_ready
+        # shellcheck disable=SC2034
         declare -a wave_uglo_15km_product_ready
     fi
 fi
