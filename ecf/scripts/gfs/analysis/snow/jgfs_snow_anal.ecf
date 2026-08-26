@@ -25,6 +25,7 @@ module load hdf5-D/${hdf5_ver}
 module load pnetcdf-D/${pnetcdf_ver}
 module load netcdf-D/${netcdf_ver}
 module load udunits/${udunits_ver}
+module load bufr/${bufr_ver}
 module load python/${python_ver}
 module load ve/gfs/${ve_gfs_ver}
 
