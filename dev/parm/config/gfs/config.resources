@@ -1162,6 +1162,7 @@ case ${step} in
     ntasks=1
     tasks_per_node=1
     export memory="80G"
+    export prepost=True
     ;;
 
   "echgres")
