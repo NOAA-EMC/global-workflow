@@ -75,9 +75,8 @@ fi
 #                        the hour to release.
 #   <fhr>...           - forecast hours to scan, in ascending order
 #
-# shellcheck disable=SC2059 # templates intentionally carry %s for the fhr
+# shellcheck disable=SC2034,SC2059
 scan_and_release() {
-    # shellcheck disable=SC2034  # scan_flag & state are namerefs; assignments propagate to caller
     local flag_var="${1}" arr_name="${2}" event="${3}" tmpl="${4}"
     shift 4
     local -n scan_flag="${flag_var}"
