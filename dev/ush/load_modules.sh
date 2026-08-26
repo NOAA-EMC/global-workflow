@@ -138,7 +138,6 @@ case "${MODULE_TYPE}" in
         pip list
         ;;
 
-
     "verif")
         # EMC_verif-global modules -- use that submodule's module files
         if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
