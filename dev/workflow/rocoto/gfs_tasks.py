@@ -3176,6 +3176,8 @@ class GFSTasks(Tasks):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_efcs_manager'}
         deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst_manager'}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.run in ['enkfgdas'] else self.run
