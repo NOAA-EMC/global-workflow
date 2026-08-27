@@ -140,9 +140,6 @@ else
   export FIXorog="${FIXglobal}/orog"
 fi
 
-# Set operational resolution
-export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it used?
-
 # Resolution specific parameters
 export LEVS=128
 export CASE="C1152"
@@ -264,7 +261,6 @@ export FHMAX_HF_WAV=$(( FHMAX_HF_WAV > FHMAX_WAV_GFS ? FHMAX_WAV_GFS : FHMAX_HF_
 export FHOUT_OCN_GFS=6
 export FHOUT_ICE_GFS=6
 
-# TODO: Change gempak to use standard out variables (#2348)
 export ILPOST=${FHOUT_HF_GFS}           # gempak output frequency up to F120
 if (( FHMAX_HF_GFS < 120 )); then
     export ILPOST=${FHOUT_GFS}
@@ -280,8 +276,6 @@ fi
 # GFS restart interval in hours
 export restart_interval_gfs=48
 # NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
-# TODO: Remove this variable from config.base and reference from config.fcst
-# TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
 
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
@@ -426,11 +420,6 @@ if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
     export FHMAX_FITS=${FHMAX_GFS}
 fi
 
-# IC fetching options
-# TODO: replace these options with DO_FETCH and FETCH_FROM
-export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto COM
-export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
-
 # Execute the postamble (disable for production)
 export TRAP_POSTAMBLE=NO
 
@@ -440,12 +429,6 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
    export DO_VMINMON="NO"     # GSI minimization monitoring
-fi
-
-# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
-# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
-if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
-    export DO_METP=NO
 fi
 
 # If starting ICs that are not at cycle hour

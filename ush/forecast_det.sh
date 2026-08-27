@@ -25,7 +25,6 @@ UFS_det() {
 
         # Since restarts are not available from the previous cycle, this is likely a cold start
         # Ensure cold start ICs are present when warm start is not set
-        # TODO: add checks for other cold start ICs as well
         if [[ ! -f "${COMIN_ATMOS_INPUT}/gfs_ctrl.nc" ]]; then
             echo "FATAL ERROR: Cold start ICs are missing from '${COMIN_ATMOS_INPUT}'"
             exit 1
@@ -83,7 +82,6 @@ UFS_det() {
 
         # Check for FV3 restart availability
         if [[ ! -f "${DATArestart}/FV3_RESTART/${rdate:0:8}.${rdate:8:2}0000.coupler.res" ]]; then
-            # TODO: add checks for other FV3 restarts as well
             fv3_rst_ok="NO"
         fi
 
@@ -93,16 +91,11 @@ UFS_det() {
             if [[ ! -f "${DATArestart}/CMEPS_RESTART/ufs.cpld.cpl.r.${rdate:0:4}-${rdate:4:2}-${rdate:6:2}-${seconds}.nc" ]]; then
                 cmeps_rst_ok="NO"
             fi
-            # TODO: add checks for other MOM6 restarts as well
             if [[ ! -f "${DATArestart}/MOM6_RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" ]]; then
                 mom6_rst_ok="NO"
             else
                 # Also check for MOM6 history file availability
                 # This is done because MOM6 output and restart files are asynchronous
-                # TODO: We now have MOM6 log files, and so this logic can be updated to only check that 1 time level is written
-                # and confirm that the file is fully written via the log file.
-                # TODO: SFS runs with 24-hr averaging of ocean output, which causes issues with restart checks,
-                # TODO: so we will skip them for now, and revisit this logic later
                 if [[ "${FHOUT_OCN}" -le 6 ]]; then
                     fhout_ocn_by_2=$((FHOUT_OCN / 2))
                     hdate=$(date -u -d "${rdate:0:8} ${rdate:8:2} + ${fhout_ocn_by_2} hours" +"%Y%m%d%H")

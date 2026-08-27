@@ -59,9 +59,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
         while [[ "${fhr}" -le "${fhr_max}" ]]; do
             release_event="NO"
             fhr_3d=$(printf "%03d" "${fhr}")
-            # TODO: Use the atmos product logs. See issue 5130 (https://github.com/NOAA-EMC/global-workflow/issues/5130).
-            atmos_master=${COMIN_ATMOS_MASTER}/gfs.t${cyc}z.master.f${fhr_3d}.grib2
-            atmos_sflux=${COMIN_ATMOS_MASTER}/gfs.t${cyc}z.sflux.f${fhr_3d}.grib2
+            atmos_log=${COMIN_ATMOS_MASTER}/gfs.t${cyc}z.log.atm.grib.f${fhr_3d}.txt
             if [[ "${atmos_master_product_ready[fhr]:-NO}" == "YES" ]]; then
                 # If this FHR is already found and event released
                 echo "Skip found FHR${fhr_3d}"
@@ -69,7 +67,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 if [[ "${skip_this_scan}" == "NO" ]]; then
                     # All previous FHR were found; no need to skip
                     # Increase I/O performance by avoiding redundant file searches
-                    if [[ -s "${atmos_master}" && -s "${atmos_sflux}" ]]; then
+                    if [[ -s "${atmos_log}" ]]; then
                         # Check for the file and set ecflow event as needed
                         release_event="YES"
                         atmos_master_product_ready[fhr]="YES"

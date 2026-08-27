@@ -85,7 +85,7 @@ UFS_configure() {
         local ice_model="cice6"
         local ice_petlist_bounds="$((ATMPETS + OCNPETS)) $((ATMPETS + OCNPETS + ICEPETS - 1))"
         local ice_omp_num_threads="${ICETHREADS}"
-        local FHMAX="${FHMAX_GFS}" # TODO:  How did this get in here hard-wired to FHMAX_GFS?
+        local FHMAX="${FHMAX_GFS}"
     fi
 
     if [[ "${cplwav}" = ".true." ]]; then

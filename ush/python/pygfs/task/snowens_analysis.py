@@ -251,7 +251,6 @@ class SnowEnsAnalysis(Analysis):
         bkgtimes.append(self.task_config.current_cycle)
 
         # loop over members
-        # TODO, make this better, or rewrite code to run in parallel
         for mem in range(1, self.task_config.NMEM_ENS + 1):
             logger.info(f"Processing member mem{mem:03d}")
             # loop over times to apply increments

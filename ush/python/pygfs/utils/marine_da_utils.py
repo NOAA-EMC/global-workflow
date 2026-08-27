@@ -85,7 +85,6 @@ def stage_ens_mem(task_config: AttrDict) -> None:
 def test_hist_date(histfile: str, ref_date: datetime) -> None:
     """
     Check that the date in the MOM6 history file is the expected one for the cycle.
-    TODO: Implement the same for seaice
     """
 
     ncf = Dataset(histfile, 'r')
@@ -104,7 +103,6 @@ def gen_bkg_list(bkg_path: str, window_begin=' ', ice_rst=False) -> None:
     """
 
     # Pseudo model parameters (time step, start date)
-    # TODO: make this a parameter
     dt_pseudo = 3
     bkg_date = window_begin
 

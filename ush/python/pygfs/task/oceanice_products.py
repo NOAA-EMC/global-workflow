@@ -63,8 +63,8 @@ class OceanIceProducts(Task):
         if self.task_config.COMPONENT == 'ocean':
             interval = self.task_config.FHOUT_OCN_GFS
 
-        # TODO: This is a bit of a hack, but it works for now
-        # FIXME: find a better way to provide the averaging period
+        # The averaging period is the interval of the forecast hour, e.g. 000 - 006, 006
+        # - 012, etc.
         avg_period = f"{forecast_hour - interval:03d} - {forecast_hour:03d}"
 
         # Extend task_config with localdict

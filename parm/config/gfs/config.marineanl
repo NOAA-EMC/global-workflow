@@ -5,9 +5,6 @@
 
 echo "BEGIN: config.marineanl"
 
-# TODO: This should be sourced in a config file specific to marine deterministic analysis
-#       and renamed to remove _DET
-
 export INPUT_FIX_DIR="${HOMEglobal}/fix/gdas/soca/1440x1080x75/soca"
 export ANL_GEOM="${HOMEglobal}/fix/gdas/soca/720x540x75/soca"
 export NINNER="100"

@@ -56,11 +56,9 @@ export SLEEP_INT=${SLEEP_TIME:-5}
 
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
-# TODO: Does this section do anything? I retained if for clarity of
-# changes/updates, but it does not appear to do anything.
-
 ####################################
-# Check if this is a restart
+# Check if this is a restart run and if so, set the SHOUR to the last forecast hour completed
+# This will allow the script to continue from the last forecast hour completed
 ####################################
 if [[ -f "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb2" ]]; then
     modelrecvy=$(cat < "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.goessimpgrb")
