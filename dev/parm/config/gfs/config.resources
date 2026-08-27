@@ -1117,7 +1117,7 @@ case ${step} in
     ;;
 
   "genesis")
-    walltime="00:40:00"
+    walltime="01:10:00"
     ntasks=1
     threads_per_task=1
     tasks_per_node=1
