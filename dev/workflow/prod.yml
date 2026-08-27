@@ -118,9 +118,6 @@ suites:
                 jgfs_atmos_gempak:
                   triggers:
                   - task: jgfs_atmos_analysis
-                jgfs_atmos_gempak_meta:
-                  triggers:
-                  - task: jgfs_atmos_analysis
                 jgfs_atmos_gempak_ncdc_upapgif:
                   triggers:
                   - task: jgfs_atmos_gempak

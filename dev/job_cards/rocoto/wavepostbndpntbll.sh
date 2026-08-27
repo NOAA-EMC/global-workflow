@@ -19,7 +19,7 @@ export jobid="${job}.$$"
 echo
 echo "=============== START TO RUN WAVE_POST_BNDPNT ==============="
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_WAVE_POST_BNDPNTBLL"
+"${HOMEglobal}/dev/jobs/JGLOBAL_WAVE_POST_BNDPNT_BULLS"
 err=$?
 if [[ "${err}" -ne 0 ]]; then
     exit "${err}"

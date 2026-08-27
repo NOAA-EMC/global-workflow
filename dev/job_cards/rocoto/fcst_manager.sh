@@ -16,7 +16,7 @@ export job="fcst_manager"
 export jobid="${job}.$$"
 
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_FORECAST_MANAGER"
+"${HOMEglobal}/dev/jobs/JGLOBAL_FCST_MANAGER"
 status=$?
 
 exit "${status}"
