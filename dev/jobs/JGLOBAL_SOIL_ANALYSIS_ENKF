@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 set -x
 
+# JEDI based soil analysis in land only (weakly coupled). This script is independent from 
+# JGLOBAL_ATMOS_SFCANL_GCYCLE which calls the GSI based coupled ATM-SOIL DA
+
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}soilens_${cyc}}
 
