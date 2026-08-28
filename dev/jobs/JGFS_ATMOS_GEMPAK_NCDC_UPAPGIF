@@ -48,6 +48,9 @@ for grid in gif upper_air; do
     if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
 done
 
+declare -rx COMIN_ATMOS_GEMPAK_GIF="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/gif"
+if [[ ! -d "${COMIN_ATMOS_GEMPAK_GIF}" ]]; then mkdir -m 775 -p "${COMIN_ATMOS_GEMPAK_GIF}"; fi
+
 declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
 if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"; fi
 
