@@ -2115,8 +2115,13 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps)
 
         # Set COMIN_OBS
+        # Fit2Obs needs the observations from the previous VBACKUP_FITS hours (declared
+        # in config.fit2obs)
+        vbackup_fits = self._configs['fit2obs']['VBACKUP_FITS']
+        offset_str = f"-{vbackup_fits}:00:00"
+        fit2obs_envars_dict = {'COMIN_OBS': f'<cyclestr offset="{offset_str}">&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
+
         fit2obs_vars = self.envars.copy()
-        fit2obs_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
         for key, value in fit2obs_envars_dict.items():
             fit2obs_vars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -3228,6 +3233,8 @@ class GFSTasks(Tasks):
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_efcs_manager'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst_manager'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
