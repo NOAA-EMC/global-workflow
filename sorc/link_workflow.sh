@@ -467,6 +467,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin"/gdas* ./
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/satbias2ioda.x" ./gdas_satbias2ioda.x
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
+    cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/apply_soil_incr.x" ./apply_soil_incr.x
 fi
 
 # GDASApp libraries
