@@ -2,7 +2,7 @@
 set -x
 
 # JEDI based LETKF soil analysis in land only (weakly coupled) mode. This script is independent from 
-# JGLOBAL_ATMOS_SFCANL_GCYCLE which calls the GSI based coupled ATM-SOIL DA
+# JGLOBAL_ENKF_SFC_GCYCLE which calls the GSI based coupled ATM-SOIL DA
 
 export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}soilens_${cyc}}
