@@ -18,7 +18,12 @@ export cyc="%CYC%"
 ############################################################
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load intel/${intel_ver}
+module load craype/${craype_ver}
 module load cray-pals/${cray_pals_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load hdf5-D/${hdf5_ver}
+module load pnetcdf-D/${pnetcdf_ver}
+module load netcdf-D/${netcdf_ver}
 module load python/${python_ver}
 module load ve/gfs/${ve_gfs_ver}
 module load libjpeg/${libjpeg_ver}
