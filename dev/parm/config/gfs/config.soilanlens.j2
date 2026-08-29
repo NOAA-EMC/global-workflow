@@ -11,9 +11,9 @@ source "${EXPDIR}/config.resources" soilanlens
 # set up soil ensemble analysis
 if [[ "${DO_JEDISOILDAENS}" == "YES" ]]; then
     if [[ "${DO_LAND_IAU}" = ".true." ]]; then
-        export GCYCLE_DO_SOILINCR=".false."
+        export ADD_SOIL_INC=".false."
     else
-        export GCYCLE_DO_SOILINCR=".true."
+        export ADD_SOIL_INC=".true."
     fi
 fi
 export SOILENKFSH="${SCRglobal}/exglobal_soil_letkf_analysis.py"
@@ -36,7 +36,6 @@ export LSOIL_INCR=1
 export csg_increment=.true.
 export SOIL_INC_PREFIX="soilinc."
 export SOIL_GINC_PREFIX="sfcinc"
-export ADD_SOIL_INC=".false."
 export ens_size={{ NMEM_ENS }}
 export layout_x_soil=1
 export layout_y_soil=1

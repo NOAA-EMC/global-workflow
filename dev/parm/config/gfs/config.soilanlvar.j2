@@ -10,9 +10,9 @@ source "${EXPDIR}/config.resources" soilanlvar
 
 if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
     if [[ ${DO_LAND_IAU} = ".true." ]]; then
-        export GCYCLE_DO_SOILINCR=".false."
+        export ADD_SOIL_INC=".false."
     else
-        export GCYCLE_DO_SOILINCR=".true."
+        export ADD_SOIL_INC=".true."
     fi
 fi
 export SOILANALSH="${SCRglobal}/exglobal_soil_analysis.py"
@@ -35,7 +35,6 @@ export LSOIL_INCR=1
 export csg_increment=.true.
 export SOIL_INC_PREFIX="soilinc."
 export SOIL_GINC_PREFIX="sfcinc"
-export ADD_SOIL_INC=".false."
 export ens_size=1
 export layout_x_soil=1
 export layout_y_soil=1
