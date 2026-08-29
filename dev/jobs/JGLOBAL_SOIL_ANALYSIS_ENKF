@@ -55,7 +55,6 @@ declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analy
 declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
-declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/atmos/restart"
 declare -rx COMOUT_ATMOS_ANALYSIS_ENS="${ROTDIR}/${GDUMP_ENS}.${PDY}/${cyc}/ensstat/analysis/atmos"
 declare -rx COMOUT_SOIL_DIAG_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"

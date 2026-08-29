@@ -165,8 +165,24 @@ class SoilLetkfAnalysis(Analysis):
             Instance of the SoilLetkfAnalysis object
         """
 
-        # backgrounds needed to create analysis (b+inc) already copied to DATA/anl/mem by soil_letkf_config.yaml.j2
-        # TODO: update this for csg files
+        # need backgrounds to create analysis (bkg+inc) from increments after DA
+        # TODO: these will be done in gdas/parm once the file types are sorted
+        # TODO: update these to csg only
+        pYMD = to_YMD(self.task_config.previous_cycle)
+        pHH = self.task_config.previous_cycle.strftime("%H")
+        comin_atmos_restart_prev_ens = os.path.join(self.task_config.ROTDIR,f'{self.task_config.RUN}.{pYMD}/{pHH}/mem')
+        logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")        
+        if not self.task_config.DO_LAND_IAU:
+            template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            for mem in range(1, self.task_config.NMEM_ENS + 1):
+                anllist = []  # TODO: would taking this out of loop speed things up?
+                for itile in range(1, self.task_config.ntiles + 1):
+                    filename = template.format(tilenum=itile)
+                    src = os.path.join(f'{comin_atmos_restart_prev_ens}{mem:03d}/model/atmos/restart', filename)
+                    dest = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename)
+                    anllist.append([src, dest])
+                FileHandler({'copy': anllist}).sync()
+
         if self.task_config.DOIAU and not self.task_config.csg_increment:
             logger.info("Copying increments to beginning of window")
             template_in = f'soilinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
@@ -182,7 +198,7 @@ class SoilLetkfAnalysis(Analysis):
                 FileHandler({'copy': inclist}).sync()
 
         bkgtimes = []
-        if self.task_config.DOIAU:
+        if self.task_config.DOIAU and not self.task_config.csg_increment:
             # need both beginning and middle of window
             bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)
@@ -195,7 +211,7 @@ class SoilLetkfAnalysis(Analysis):
             logger.info(f"Create namelist for APPLY_INCR_EXE")
             nml_template = self.task_config.APPLY_INCR_NML_TMPL
             if self.task_config.csg_increment:
-                inc_prefix = f'soilinc_{self.task_config.GPREFIX_ENS}csg_sfc.f006'
+                inc_prefix = f'soilinc_{self.task_config.GPREFIX_ENS[:-1]}'
             else:
                 inc_prefix = self.task_config.INC_PREFIX
             nml_config = {

@@ -203,7 +203,7 @@ class SoilAnalysis(Analysis):
             logger.info("Create namelist for APPLY_INCR_EXE")
             nml_template = self.task_config.APPLY_INCR_NML_TMPL
             if self.task_config.csg_increment:
-                inc_prefix = f'soilinc_{self.task_config.GPREFIX[:-1]}'  #csg_sfc.f006'
+                inc_prefix = f'soilinc_{self.task_config.GPREFIX[:-1]}'
             else:
                 inc_prefix = self.task_config.INC_PREFIX
             nml_config = {
