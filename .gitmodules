@@ -19,8 +19,7 @@
   url = https://github.com/NOAA-EMC/GSI.git
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
-  url = https://github.com/tsga/GDASApp  #https://github.com/NOAA-EMC/GDASApp.git
-  branch = land_update
+  url = https://github.com/NOAA-EMC/GDASApp.git
   ignore = dirty
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
