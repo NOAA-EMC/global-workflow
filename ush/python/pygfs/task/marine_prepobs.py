@@ -194,7 +194,7 @@ class MarineObsPrep(Task):
                 'window_end': window_end,
                 'task_config': self.task_config
             }
-            result = self.nesdis_amsr2.process_obs_space(**kwargs)
+            result = self.nesdis_amsr3.process_obs_space(**kwargs)
             return result
 
         # Process NESDIS_MIRS
