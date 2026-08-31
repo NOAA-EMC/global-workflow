@@ -144,7 +144,7 @@ class SnowLetkfAnalysis(Analysis):
 
         # Stage observation files
         logger.info(f"Staging observation files")
-        self.jedi_dict['snowletkfanl'].stage_obsdatain(self.task_config.COMIN_OBS)
+        self.jedi_dict['snowanlletkf'].stage_obsdatain(self.task_config.COMIN_OBS)
 
         # Stage files from COM
         logger.info(f"Staging files from COM and creating output directories")
