@@ -429,15 +429,15 @@ export DO_WDQMS="{{ DO_WDQMS | default('NO') }}"
 if [[ "${RUN}" == "gdas" || "${RUN}" == "enkfgdas" ]]; then
     export DO_GSISOILDA="{{ DO_GSISOILDA }}"
     export DO_LAND_IAU="{{ DO_LAND_IAU }}"
-
     export DO_JEDISOILDAVAR="{{ DO_JEDISOILDAVAR }}"
     export DO_JEDISOILDAENS="{{ DO_JEDISOILDAENS }}"
+    export DO_SOILHYBVAR="{{ DO_SOILHYBVAR }}"
 else
     export DO_GSISOILDA="NO"
     export DO_LAND_IAU=".false."
-
     export DO_JEDISOILDAVAR="NO"
     export DO_JEDISOILDAENS="NO"
+    export DO_SOILHYBVAR="NO"
 fi
 # Turn off GSI soil DA if JEDI soil DA is on
 if [[ "${DO_JEDISOILDAVAR}" = "YES" ]] || [[ "${DO_JEDISOILDAENS}" = "YES" ]]; then
