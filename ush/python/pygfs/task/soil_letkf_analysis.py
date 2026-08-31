@@ -107,8 +107,8 @@ class SoilLetkfAnalysis(Analysis):
         logger.info(f"Staging files from COM and creating output directories")
         FileHandler(self.task_config.data_in).sync()
 
-        # Initialize JEDI applications
-        logger.info(f"Initializing JEDI applications")
+        # Initialize JEDI LETKF application
+        logger.info(f"Initializing JEDI LETKF application")
         self.jedi_dict['soilletkfanl'].initialize(clean_empty_obsspaces=False)
 
     # TODO: prepbufr proc
