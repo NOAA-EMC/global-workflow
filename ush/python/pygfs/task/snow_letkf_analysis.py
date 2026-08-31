@@ -112,7 +112,7 @@ class SnowLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['snowletkfanl', 'scf_to_ioda']
+        expected_keys = ['snowanlletkf', 'scf_to_ioda']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
         # Boolean to decide if SNOCVR_SNOMAD processing is done
