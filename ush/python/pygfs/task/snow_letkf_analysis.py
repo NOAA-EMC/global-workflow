@@ -152,7 +152,7 @@ class SnowLetkfAnalysis(Analysis):
 
         # Initialize JEDI applications
         logger.info(f"Initializing JEDI applications")
-        self.jedi_dict['snowletkfanl'].initialize(clean_empty_obsspaces=False)
+        self.jedi_dict['snowanlletkf'].initialize(clean_empty_obsspaces=False)
 
         if self.task_config.DO_IMS_SCF:
             self.jedi_dict['scf_to_ioda'].initialize()
