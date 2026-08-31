@@ -490,13 +490,10 @@ export binary_diag=".false."
 export DO_CA="YES"
 
 # Verification options
-# TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
-# TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
-# export DO_METP="{{ DO_METP }}"   # Run METPLUS jobs - set METPLUS settings in config.metp
-case "${machine}" in
-    URSA | GAEAC6 | ORION | HERCULES | DERECHO | AWS-EC2) export DO_METP=NO;;
-    *) export DO_METP="{{ DO_METP }}";;
-esac
+# Temporarily disable METplus verification. This will be reenabled on all platforms when
+# migration to MET 12/METplus 6 is complete.
+# export DO_METP={{ DO_METP }}
+export DO_METP=NO
 export DO_FIT2OBS="YES"      # Run fit to observations package
 
 # METplus verification is not enabled on Hera or Orion
