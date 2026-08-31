@@ -39,7 +39,7 @@ if __name__ == '__main__':
         snow_letkf_anl.prepare_GHCN()
 
     # Execute JEDI snow analysis
-    snow_letkf_anl.execute('snowletkfanl')
+    snow_letkf_anl.execute('snowanlletkf')
 
     # Add increments
     snow_letkf_anl.add_increments()
