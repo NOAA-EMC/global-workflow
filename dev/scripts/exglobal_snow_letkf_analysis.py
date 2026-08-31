@@ -24,8 +24,6 @@ if __name__ == '__main__':
     # Initialize JEDI 2DVar snow analysis
     snow_letkf_anl.initialize()
 
-    # stage ensemble mean backgrounds ??why?
-
     # Process SNOCVR and SNOMAD (if applicable)
     if snow_letkf_anl.task_config.DO_SNOCVR_SNOMAD:
         snow_letkf_anl.prepare_SNOCVR_SNOMAD()
