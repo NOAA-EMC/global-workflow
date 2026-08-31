@@ -491,8 +491,8 @@ export DO_CA="YES"
 
 # Verification options
 export DO_METP={{ DO_METP }} # METplus verification via EMC_verif-global
-# METplus verification is not enabled on Hera or Orion
-if [[ "${machine}" == "hera" || "${machine}" == "orion" ]] && [[ ${DO_METP} == "YES" ]]; then
+# METplus verification is not enabled on Hera, Derecho or Orion
+if [[ "${machine}" == "hera" || "${machine}" == "orion" || "${machine}" == "derecho" ]] && [[ ${DO_METP} == "YES" ]]; then
    echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
    export DO_METP="NO"
 fi
