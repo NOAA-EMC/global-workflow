@@ -190,7 +190,7 @@ class SnowLetkfAnalysis(Analysis):
 
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
-        self.jedi_dict['snowletkfanl'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS,
+        self.jedi_dict['snowanlletkf'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS,
                                                        f"{self.task_config.APREFIX_ENS}snow_analysis.ioda_hofx.ensmean")
 
         # Save files to COM
