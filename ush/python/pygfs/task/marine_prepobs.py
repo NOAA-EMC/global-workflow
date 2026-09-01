@@ -40,6 +40,7 @@ class MarineObsPrep(Task):
         if self.task_config.cyc == 0:
             self.rads = ProviderConfig.from_task_config("rads", self.task_config)
         self.nesdis_amsr2 = ProviderConfig.from_task_config("nesdis_amsr2", self.task_config)
+        self.nesdis_amsr3 = ProviderConfig.from_task_config("nesdis_amsr3", self.task_config)
         self.nesdis_mirs = ProviderConfig.from_task_config("nesdis_mirs", self.task_config)
         self.nesdis_jpssrr = ProviderConfig.from_task_config("nesdis_jpssrr", self.task_config)
         self.smap = ProviderConfig.from_task_config("smap", self.task_config)
@@ -59,6 +60,7 @@ class MarineObsPrep(Task):
         if self.task_config.cyc == 0:
             self.rads.db.ingest_files()
         self.nesdis_amsr2.db.ingest_files()
+        self.nesdis_amsr3.db.ingest_files()
         self.nesdis_mirs.db.ingest_files()
         self.nesdis_jpssrr.db.ingest_files()
         self.smap.db.ingest_files()
@@ -169,6 +171,30 @@ class MarineObsPrep(Task):
                 'task_config': self.task_config
             }
             result = self.nesdis_amsr2.process_obs_space(**kwargs)
+            return result
+
+        # Process NESDIS_AMSR3
+        if provider == "nesdis_amsr3":
+            # Only handling "icec_amsr3_" cases
+            platform = "ggw"
+            instrument = "AMSR3"
+            satellite = "ggw"
+            # TODO(G,M): Get the window size from the config
+            window_begin = self.task_config.window_begin - timedelta(hours=30)
+            window_end = self.task_config.window_begin + timedelta(hours=6)
+            kwargs = {
+                'provider': "amsr3",
+                'obs_space': obs_space,
+                'platform': platform,
+                'instrument': instrument,
+                'satellite': satellite,
+                'obs_type': obs_space,
+                'output_file': output_file,
+                'window_begin': window_begin,
+                'window_end': window_end,
+                'task_config': self.task_config
+            }
+            result = self.nesdis_amsr3.process_obs_space(**kwargs)
             return result
 
         # Process NESDIS_MIRS
