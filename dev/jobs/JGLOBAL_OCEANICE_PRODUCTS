@@ -24,7 +24,7 @@ export PYTHONPATH
 
 # Construct COM variables
 # shellcheck disable=SC2309
-if [[ "${ENSMEM}" =~ ^[0-9]+$ ]]; then
+if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
     export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"

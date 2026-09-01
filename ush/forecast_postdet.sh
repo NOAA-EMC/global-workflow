@@ -729,7 +729,7 @@ MOM6_postdet() {
                 if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
                     source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
                 else
-                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}_00.nc"
                 fi
                 ihour=$(printf %02i "${interval}")
                 source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"

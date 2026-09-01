@@ -131,8 +131,7 @@ chunk_mpmd() {
             local i=$((_counter - _start_line))
             # Slurm requires a counter in front of each line in the script
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
-                # printf ensures we don't lose trailing spaces or mess up quotes
-                printf "%d %s\n" "${i}" "${line}" >> "${chunk_file}"
+                echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
                 # The MPMD implemtation is different between WCOSS and Derecho, but both
                 # use mpiexec
