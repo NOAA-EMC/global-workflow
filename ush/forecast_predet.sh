@@ -639,15 +639,6 @@ WW3_predet() {
         cpreq "${FIXglobal}/wave/pnt_wght.${waveGRD}.nc" "${DATA}/pnt_wght.ww3.nc"
     fi
 
-    if [[ "${WW3CURINP}" == "YES" ]]; then
-        local wavcurfile="${COMIN_WAVE_INIT}/${RUN}.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
-        if [[ ! -f "${wavcurfile}" ]]; then
-            echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
-            exit 1
-        fi
-        cpreq "${wavcurfile}" "${DATA}/current.${WAVECUR_FID}"
-    fi
-
     # Fix files
     #if wave mesh is not the same as the ocean mesh, copy it in the file
     if [[ "${MESH_WAV}" == "${MESH_OCN:-mesh.mx${OCNRES}.nc}" ]]; then
