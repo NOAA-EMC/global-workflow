@@ -571,7 +571,7 @@ fi
 # Convert the 500mb NH Hgts/Temps chart to tif, attach a heading and
 #   send to TOC via the NTC
 
-export input=${COMOUT_ATMOS_GEMPAK_GIF}/${hgttmp500dev}
+export input=${COMIN_ATMOS_GEMPAK_GIF}/${hgttmp500dev}
 export HEADER=YES
 export OUTPATH=${DATA}/gfs_500_hgt_tmp_nh_anl_${cyc}.tif
 "${USHglobal}/make_tif.sh"
