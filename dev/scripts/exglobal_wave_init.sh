@@ -54,7 +54,6 @@ for grdID in "${grdALL[@]}"; do
     if [[ -f "${FIXglobal}/wave/${grdID}.msh" ]]; then
         cpreq "${FIXglobal}/wave/${grdID}.msh" "${grdID}.msh"
     fi
-    # NOTE: Input grids are now structured.
 
     echo "${USHglobal}/wave_grid_moddef.sh ${grdID}" >> mpmd_script
 done
