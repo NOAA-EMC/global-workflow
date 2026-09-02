@@ -12,14 +12,14 @@ FILE_PATH="${4:-UNKNOWN}"
 # Walk up from the file until we find a directory matching *.YYYYMMDD
 DBNLOG_DIR="/tmp/dbn_alerts"
 if [[ -n "${FILE_PATH}" && "${FILE_PATH}" != "UNKNOWN" ]]; then
-    dir="${FILE_PATH}"
-    while dir="$(dirname "${dir}")" && [[ "${dir}" != "/" ]]; do
-        base="$(basename "${dir}")"
-        if [[ "${base}" =~ \.[0-9]{8}$ ]]; then
-            DBNLOG_DIR="${dir}/dbn_alerts"
-            break
-        fi
-    done
+  dir="${FILE_PATH}"
+  while dir="$(dirname "${dir}")" && [[ "${dir}" != "/" ]]; do
+    base="$(basename "${dir}")"
+    if [[ "${base}" =~ \.[0-9]{8}$ ]]; then
+      DBNLOG_DIR="${dir}/dbn_alerts"
+      break
+    fi
+  done
 fi
 
 mkdir -p "${DBNLOG_DIR}"
