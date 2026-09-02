@@ -30,9 +30,6 @@ from typing import Iterator
 
 # ---------------------------------------------------------------------------
 # Production-code directories. Only additions under these paths are checked.
-#
-# NOTE: on the `develop` branch the ECF resources live under `dev/ecf`
-# (there is no top-level `ecf/` directory), so that is the path used here.
 # ---------------------------------------------------------------------------
 PROD_DIRS = [
     "dev/scripts",
@@ -41,6 +38,7 @@ PROD_DIRS = [
     "parm",
     "gempak",
     "ecf",
+    "dev/ecf",
     "env",
     "modulefiles",
     "versions",
