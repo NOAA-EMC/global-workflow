@@ -34,6 +34,6 @@ else
   FILE_SIZE="0"
 fi
 
-echo "${TIMESTAMP} | ${TYPE} | ${SUBTYPE} | ${JOB_NAME} | ${FILE_STATUS} | ${FILE_SIZE} bytes | ${FILE_PATH}" >> "${LOGFILE}"
+echo "${TIMESTAMP} | ${TYPE} | ${SUBTYPE} | ${JOB_NAME} | ${FILE_STATUS} | ${FILE_SIZE} bytes | ${FILE_PATH}" >>"${LOGFILE}"
 
 exit 0
