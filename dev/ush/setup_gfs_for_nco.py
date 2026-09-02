@@ -102,7 +102,6 @@ base_script_list = [
     "exenkfgdas_ens_post.sh",
     "exgfs_atmos_awips_20km_1p0.sh",
     "exgfs_atmos_fbwind.sh",
-    "exgfs_atmos_gempak_gif_ncdc_skew_t.sh",
     "exgfs_atmos_gempak_pgrb2_spec.sh",
     "exgfs_atmos_gempak_pgrb2_spec_npoess.sh",
     "exgfs_atmos_gempak.sh",
