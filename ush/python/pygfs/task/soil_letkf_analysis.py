@@ -170,8 +170,8 @@ class SoilLetkfAnalysis(Analysis):
         # TODO: update these to csg only
         pYMD = to_YMD(self.task_config.previous_cycle)
         pHH = self.task_config.previous_cycle.strftime("%H")
-        comin_atmos_restart_prev_ens = os.path.join(self.task_config.ROTDIR,f'{self.task_config.RUN}.{pYMD}/{pHH}/mem')
-        logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")        
+        comin_atmos_restart_prev_ens = os.path.join(self.task_config.ROTDIR, f'{self.task_config.RUN}.{pYMD}/{pHH}/mem')
+        logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
         if not self.task_config.DO_LAND_IAU:
             template = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             for mem in range(1, self.task_config.NMEM_ENS + 1):
