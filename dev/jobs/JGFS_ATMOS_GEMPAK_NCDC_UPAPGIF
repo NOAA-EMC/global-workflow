@@ -1,0 +1,77 @@
+#! /usr/bin/env bash
+set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+############################################
+# GFS GEMPAK NCDC PRODUCT GENERATION
+############################################
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_gif" -c "base gempak"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+export MP_PULSE=0
+export MP_TIMEOUT=2000
+
+# Set up model and cycle specific variables
+export MODEL=GFS
+export fend=384
+if [[ "${fend}" -gt "${FHMAX_GFS}" ]]; then
+    export fend="${FHMAX_GFS}"
+fi
+
+# set increment to 6 hours  --  3 hours is available.
+export finc=6
+export fstart=00
+
+export COMPONENT="atmos"
+
+##############################################
+# Define COM directories
+##############################################
+COMIN_OBS=${COMIN_OBS:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"}
+declare -rx COMIN_OBS
+declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
+
+# Declare COMOUT_ATMOS_GEMPAK_GIF and COMOUT_ATMOS_GEMPAK_UPPER_AIR
+for grid in gif upper_air; do
+    _GRID="${grid^^}"
+    gempak_dir="COMOUT_ATMOS_GEMPAK_${_GRID}"
+    declare -rx "${gempak_dir}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/${grid}"
+    if [[ ! -d "${!gempak_dir}" ]]; then mkdir -m 775 -p "${!gempak_dir}"; fi
+done
+
+declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+if [[ ! -d "${COMOUT_ATMOS_WMO}" ]]; then mkdir -m 775 -p "${COMOUT_ATMOS_WMO}"; fi
+
+export pgmout=OUTPUT.$$
+
+########################################################
+# Execute the script.
+"${SCRglobal}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh"
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to generate NCDC skew-T GIFs from GFS GEMPAK products"
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi
