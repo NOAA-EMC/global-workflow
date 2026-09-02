@@ -2,6 +2,7 @@ from logging import getLogger
 from pygfs.obsprep.obsdb.ghrsst_db import GhrSstDatabase
 from pygfs.obsprep.obsdb.rads_db import RADSDatabase
 from pygfs.obsprep.obsdb.nesdis_amsr2_db import NesdisAmsr2Database
+from pygfs.obsprep.obsdb.nesdis_amsr3_db import NesdisAmsr3Database
 from pygfs.obsprep.obsdb.nesdis_mirs_db import NesdisMirsDatabase
 from pygfs.obsprep.obsdb.nesdis_jpssrr_db import NesdisJpssrrDatabase
 from pygfs.obsprep.obsdb.smap_db import SmapDatabase
@@ -67,6 +68,8 @@ class ProviderConfig:
             db = RADSDatabase(db_name=f"{provider_name}.db", dcom_dir=task_config.DCOMROOT, obs_dir="wgrdbul/adt")
         elif provider_name == "nesdis_amsr2":
             db = NesdisAmsr2Database(db_name=f"{provider_name}.db", dcom_dir=task_config.DCOMROOT, obs_dir="seaice/pda")
+        elif provider_name == "nesdis_amsr3":
+            db = NesdisAmsr3Database(db_name=f"{provider_name}.db", dcom_dir=task_config.DCOMROOT, obs_dir="seaice/pda")
         elif provider_name == "nesdis_mirs":
             obs_dirs = [
                 "seaice_amsu",
