@@ -30,8 +30,8 @@ if [[ -n "${FILE_PATH}" && -f "${FILE_PATH}" ]]; then
   FILE_STATUS="EXISTS"
   FILE_SIZE=$(stat -c %s "${FILE_PATH}" 2>/dev/null || echo "?")
 else
-    FILE_STATUS="MISSING"
-    FILE_SIZE="0"
+  FILE_STATUS="MISSING"
+  FILE_SIZE="0"
 fi
 
 echo "${TIMESTAMP} | ${TYPE} | ${SUBTYPE} | ${JOB_NAME} | ${FILE_STATUS} | ${FILE_SIZE} bytes | ${FILE_PATH}" >> "${LOGFILE}"
