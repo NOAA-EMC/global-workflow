@@ -18,10 +18,9 @@ source "${USHglobal}/set_strict.sh"
 # Set variables used in the script
 ##############################################
 
-CDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VBACKUP_FITS} hours")
-export CDATE
-vday=${CDATE:0:8}
-vcyc=${CDATE:8:2}
+VDATE_FIT=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${VBACKUP_FITS} hours")
+vday=${VDATE_FIT:0:8}
+vcyc=${VDATE_FIT:8:2}
 
 # These are used by fit2obs, so we can't change them to the standard COM variable names
 # shellcheck disable=SC2153
@@ -62,7 +61,7 @@ chmod 755 "${DATA}/postmsg"
 
 # Ignore spelling warning; nothing is misspelled
 # shellcheck disable=SC2153
-if [[ ${CDATE} -gt ${SDATE} ]]; then
+if [[ ${VDATE_FIT} -gt ${SDATE} ]]; then
     for file in ${PRPI} ${sig1} ${sfc1} ${CNVS}; do
         if [[ ! -f "${file}" ]]; then
             echo "FATAL ERROR: FILE MISSING: ${file}"
