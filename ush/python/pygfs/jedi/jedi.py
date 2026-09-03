@@ -373,7 +373,7 @@ def find_value_in_nested_dict(nested_dict: Dict, target_key: str) -> Any:
     WorkflowTypeError
         If input is not a dictionary
 
-    TODO: if this gives issues due to landing on an incorrect key in the nested
+    NOTE: if this gives issues due to landing on an incorrect key in the nested
     dictionary, we will have to implement a more concrete method to search for a key
     given a more complete address.  See resolved conversations in PR 2387
 

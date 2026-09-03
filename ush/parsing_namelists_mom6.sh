@@ -60,7 +60,7 @@ MOM6_namelists() {
     # MOM6_RIVER_RUNOFF
     # == ocean_stochastics section ==
     if [[ "${DO_OCN_SPPT}" == "YES" ]]; then
-        local DO_OCN_SPPT="True" # TODO: This is problematic if DO_OCN_SPPT is going to be used elsewhere
+        local DO_OCN_SPPT="True"
     else
         local DO_OCN_SPPT="False"
     fi

@@ -80,9 +80,6 @@ case "${fv3_res}" in
         export nthreads_ufs=1
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=1
-        # TODO: change this back to 1200 when "SKEBINT" can be set
-        #       currently, the value is fixed to 1800 by the WM and must be a multiple of DELTIM
-        #       when running stochastic physics
         export DELTIM=900
         export xr_cnvcld=".false."  # Do not pass conv. clouds to Xu-Randall cloud fraction
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -140,7 +137,7 @@ case "${fv3_res}" in
         export fv_sg_adj=1800
         ;;
     "C384")
-	# Resolution used in ENKFGDAS in GFSv17     
+	# Resolution used in ENKFGDAS in GFSv17
         export DELTIM=300     # model timestep in seconds
         export layout_x=6     # number of processors in x-dir per tile
         export layout_y=8     # number of processors in y-dir per tile
@@ -188,9 +185,9 @@ case "${fv3_res}" in
         export DELTIM=150     # model timestep in seconds
         export nthreads_fv3=4 # number of threads for atmosphere model
         export nthreads_ufs=4 # number of threads for ufs driver
-        export WRITE_GROUP=4  # number of asynchronous write tasks
-        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # TODO: refine these numbers when a case is available
-                                                        # For GAEAC6 use 60
+        # Number of warite tasks = WRITE_GROUP * WRTTASK_PER_GROUP_PER_THREAD_PER_TILE * nthreads_fv3 * number of tiles (6)
+        export WRITE_GROUP=4  # number of asynchronous write groups
+        export WRTTASK_PER_GROUP_PER_THREAD_PER_TILE=20 # Number of write tasks per group per thread per tile
         if [[ "${RUN}" = *gdas ]]; then
           export layout_x=16  # number of processors in x-dir per tile
           export layout_y=24  # number of processors in y-dir per tile
@@ -212,7 +209,7 @@ case "${fv3_res}" in
         export n_split=6      # number of small dynamic timesteps per DELTIM
         export tau=2.5        # Rayleigh damping timescale
         export rf_cutoff=300.0 # pressure below where no rayleigh damping is applied
-        export fv_sg_adj=450  # timescale (sec) to remove two-delta-z instability when local Richardson number < 1 
+        export fv_sg_adj=450  # timescale (sec) to remove two-delta-z instability when local Richardson number < 1
         ;;
     "C3072")
         export DELTIM=90
@@ -407,7 +404,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS=""
       ;;
     "025")
-      # Resolution used in GFSv17 
+      # Resolution used in GFSv17
       if [[ "${RUN}" = enkfgdas ]]; then
         ntasks_mom6=160  # number of tasks for MOM6 model
       elif [[ "${RUN}" = gdas ]]; then
@@ -491,7 +488,7 @@ if [[ "${skip_cice6}" == "false" ]]; then
       cice6_processor_shape="slenderX2"
       ;;
     "025")
-      # Resolution used in GFSv17 
+      # Resolution used in GFSv17
       if [[ "${RUN}" = gfs ]]; then
         ntasks_cice6=240  # number of tasks for CICE model
       elif [[ "${RUN}" = enkfgdas ]]; then

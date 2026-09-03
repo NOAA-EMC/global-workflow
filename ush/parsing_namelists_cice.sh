@@ -24,8 +24,6 @@ CICE_namelists() {
     # However, in the SOCA cycled system, if starting from a previously cycled SOCA run,
     # the CICE ICs are obtained from the previous cycle of the UFS S2S,
     # so the CICE namelist should be set to "continue"
-    # TODO: Is there a way to interrogate the restart file to know if this is a
-    # SIS2 restart or a CICE restart, instead of relying on "${warm_start}"
     if [[ "${warm_start}" = ".true." ]]; then
         local runtype="continue"
         local use_restart_time=".true."

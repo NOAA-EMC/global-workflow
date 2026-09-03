@@ -13,7 +13,6 @@ cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
 #
 export HPCGFS="${RUN}.${PDY}${cyc}"
 ${NLN} "${COMIN_ATMOS_GEMPAK_1p00}" "${HPCGFS}"

@@ -135,7 +135,6 @@ class MarineBufrObsPrep(Task):
             for variable in provider['variables']:
                 provider_var = variable['provider_var']
                 # set up config for concatenation
-                # TODO(AFE) should probably be a jinja yaml
                 concat_config = {
                     'provider': 'INSITUOBS',
                     'window begin': self.task_config['window_begin'],
