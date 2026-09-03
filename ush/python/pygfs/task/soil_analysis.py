@@ -260,4 +260,3 @@ class SoilAnalysis(Analysis):
                 dest = os.path.join(self.task_config.COMOUT_SOIL_ANALYSIS, filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
-
