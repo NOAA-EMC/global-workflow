@@ -1162,6 +1162,7 @@ case ${step} in
     ntasks=1
     tasks_per_node=1
     export memory="80G"
+    export prepost=True
     ;;
 
   "echgres")
@@ -1396,7 +1397,7 @@ case ${step} in
     walltime="02:00:00"
     export ntasks=141
     export ntasks_postsndcfp=9
-    case "${CASE}" in
+    case "${CASE_HIST}" in
       "C768")
         tasks_per_node=21
         threads_per_task=6

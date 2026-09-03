@@ -191,7 +191,6 @@ nm=$(wc -l < "${cmdfile}")
 if [[ ${nm} -gt ${max_tasks_per_node:-1} ]]; then
     # If needed, split the cmdfile and run it in chunks.
     # For now, keep all MPMD tasks on one node.
-    # TODO: consider running the MPMD job across multiple nodes.
     echo "INFO: Number of MPMD tasks (${nm}) is greater than the maximum tasks per node (${max_tasks_per_node:-1})."
     echo "      Running MPMD job in chunks of ${max_tasks_per_node:-1} tasks per node."
     chunk_size=${max_tasks_per_node:-1}

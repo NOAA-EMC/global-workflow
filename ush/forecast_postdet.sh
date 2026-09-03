@@ -116,7 +116,6 @@ FV3_postdet() {
 
     # Regardless of warm_start or not, the sfc_data and orography files should be consistent
     # Check for consistency
-    # TODO: the checker has a --fatal option, which is not used here.  This needs to be decided how to handle.
     if [[ "${CHECK_LAND_RESTART_OROG:-NO}" == "YES" ]]; then
         "${USHglobal}/check_land_input_orography.py" \
             --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT"
@@ -309,8 +308,6 @@ EOF
         local use_mgr="NO"
         case "${RUN}" in
             gfs | gdas | enkfgdas) use_mgr="YES" ;;
-                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
-                # gefs | sfs | gcafs) use_mgr="YES" ;;
             *) ;;
         esac
 
@@ -605,7 +602,6 @@ WW3_postdet() {
     fi
 
     # Link restart files to their expected names in DATArestart/WW3_RESTART
-    # TODO: Have the UFSWM write out the WW3 restart files in the expected format of 'YYYYMMDD.HHmmSS.restart.ww3.nc'
     local cwd vdate ww3_ufs_restart_file ww3_netcdf_restart_file
     cwd="${PWD}"
     cd "${DATArestart}/WW3_RESTART" || exit 1
@@ -617,22 +613,12 @@ WW3_postdet() {
         ${NLN} "${ww3_netcdf_restart_file}" "${ww3_ufs_restart_file}"
     done
 
-    # TODO: link GEFS restart for next cycle IC
-    #if [[ "${RUN}" == "gefs" ]]; then
-    #  vdate=${model_start_date_next_cycle}
-    #  seconds=$(to_seconds "${vdate:8:2}0000")  # convert HHMMSS to seconds
-    #  ww3_ufs_restart_file="ufs.cpld.ww3.r.${vdate:0:4}-${vdate:4:2}-${vdate:6:2}-${seconds}.nc"
-    #  ww3_netcdf_restart_file="${vdate:0:8}.${vdate:8:2}0000.restart.ww3.nc"
-    #  ${NLN} "${ww3_netcdf_restart_file}" "${ww3_ufs_restart_file}"
-    #fi
     cd "${cwd}" || exit 1
 
     # Build product tables for the forecast manager.
     local use_mgr_ww3="NO"
     case "${RUN}" in
         gfs | gdas) use_mgr_ww3="YES" ;;
-            # TODO: enable forecast manager for gefs, sfs, gcafs once tested
-            # gefs | sfs | gcafs) use_mgr_ww3="YES" ;;
         *) ;;
     esac
 
@@ -726,7 +712,6 @@ WW3_out() {
     fi
 
     # Copy restarts for next cycle for RUN=gdas|gefs
-    # TODO: GEFS needs to be added here
     if [[ "${RUN}" == "gdas" ]]; then
         local restart_date restart_file
         restart_date="${model_start_date_next_cycle}"
@@ -830,7 +815,6 @@ MOM6_postdet() {
             local use_mgr_ocn="NO"
             case "${RUN}" in
                 gfs | enkfgfs | gdas | enkfgdas) use_mgr_ocn="YES" ;;
-                # TODO: enable forecast manager for gefs, sfs, gcafs once tested
                 *) ;;
             esac
             ocn_table="${DATAjob}/ocn_products_seg${FCST_SEGMENT}.txt"
@@ -1034,7 +1018,6 @@ CICE_postdet() {
     local use_mgr_ice="NO"
     case "${RUN}" in
         gfs | gdas | enkfgdas) use_mgr_ice="YES" ;;
-        # TODO: enable forecast manager for enkfgfs, gefs, sfs, gcafs once tested
         *) ;;
     esac
     local ice_table="${DATAjob}/ice_products_seg${FCST_SEGMENT:-0}.txt"
@@ -1227,7 +1210,6 @@ GOCART_rc() {
 
     # link directory containing GOCART input dataset, if provided
     if [[ -n "${AERO_INPUTS_DIR}" ]]; then
-        #TODO: add only necessary files and remove unneeded ones to minimize data volume
         ${NLN} "${AERO_INPUTS_DIR}" "${DATA}/ExtData"
         status=$?
         if [[ ${status} -ne 0 ]]; then
@@ -1256,9 +1238,6 @@ GOCART_postdet() {
             fi
         done
 
-        #TODO: Temporarily removing this as this will crash gocart, adding copy statement at the end
-        #${NLN} "${COMOUT_CHEM_HISTORY}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4" \
-        #       "${DATA}/gocart.inst_aod.${vdate:0:8}_${vdate:8:2}00z.nc4"
     done
 }
 
@@ -1278,7 +1257,6 @@ GOCART_out() {
     echo "SUB ${FUNCNAME[0]}: Copying output data for GOCART"
 
     # Copy gocart.inst_aod after the forecast is run (and successfull)
-    # TODO: this should be linked but there are issues where gocart crashing if it is linked
     local fhr
     local vdate
 
@@ -1379,7 +1357,6 @@ CMEPS_postdet() {
         CMEPS_RESTART_FH="$(seq -s ' ' "${restart_interval_start}" "${cmeps_restart_interval}" "${restart_interval_end}")"
     fi
     export CMEPS_RESTART_FH
-    # TODO: For GEFS, once cycling waves "self-cycles" and therefore needs to have a restart at 6 hour
 
 }
 

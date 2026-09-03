@@ -54,7 +54,7 @@ class MarineRecenter(Analysis):
                 'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'cice_rst_date': _cice_rst_date,
-                'DOMAIN_STACK_SIZE': 116640000,  # TODO: Make the stack size resolution dependent
+                'DOMAIN_STACK_SIZE': 116640000,
             }
         ))
 

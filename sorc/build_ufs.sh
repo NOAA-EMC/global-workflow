@@ -6,12 +6,11 @@ readonly HOMEglobal_=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")" &
 
 # Default settings
 APP="S2SWA"
-CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1,FV3_global_nest_v1" # TODO: does the g-w need to build with all these CCPP_SUITES?
+CCPP_SUITES="FV3_GFS_v17_p8_ugwpv1,FV3_GFS_v17_coupled_p8_ugwpv1,FV3_global_nest_v1"
 PDLIB="ON"
 HYDRO="OFF"
 EXEC_NAME="gfs_model.x"
 # Valid only for WCOSS2; enable parallel restart I/O
-# TODO: Remove this option when ufs-weather-model#2716 is fixed
 PARALLEL_RESTART="NO"
 
 while getopts ":da:fj:e:pvwy" option; do
@@ -66,8 +65,6 @@ esac
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-# The test/compile.sh script adds " -DENABLE_PARALLELRESTART=ON" when compiling on WCOSS2, which is causing issues
-# TODO: when ufs-weather-model#2716 is fixed, return to using tests/compile.sh
 if [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
     set +x
     module use "${HOMEglobal_}/sorc/ufs_model.fd/modulefiles"

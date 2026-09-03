@@ -136,10 +136,25 @@ case "${MODULE_TYPE}" in
         fi
 
         pip list
+        ;;
+
+    "verif")
+        # EMC_verif-global modules -- use that submodule's module files
+        if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+            source "${HOMEglobal}/sorc/verif-global.fd/versions/run.ver"
+        fi
+        module use "${HOMEglobal}/sorc/verif-global.fd/modulefiles"
+        module load "emc_verif_global_${MACHINE_ID}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            echo "FATAL ERROR: Failed to load emc_verif_global_${MACHINE_ID}"
+            exit 1
+        fi
+        module list
 
         ;;
 
-    "run" | "gsi" | "verif" | "setup" | "upp")
+    "run" | "gsi" | "setup" | "upp")
 
         # Test that the version file exists
         if [[ ! -f "${HOMEglobal}/versions/run.ver" ]]; then
@@ -166,7 +181,9 @@ case "${MODULE_TYPE}" in
         fi
 
         # Source versions file
-        source "${HOMEglobal}/versions/run.ver"
+        if [[ "${mod_type}" != "verif" ]]; then
+            source "${HOMEglobal}/versions/run.ver"
+        fi
 
         #### Work around for upp module loading issues that is inconsistance with non-wcoss2 run.ver
         if [[ "${mod_type}" == "upp" && "${MACHINE_ID}" != "wcoss2" ]]; then

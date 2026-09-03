@@ -77,7 +77,6 @@ while getopts ":a:dfhkpv" option; do
         d) _build_debug="-d" ;;
         h) _usage ;;
         k) _quick_kill="YES" ;;
-        # TODO: Remove this option when UFS#2716 is fixed
         p) _build_ufs_opt+="-p " ;;
         v) _verbose_opt="-v" ;;
         :)

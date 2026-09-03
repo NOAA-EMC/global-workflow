@@ -97,7 +97,7 @@ if [[ ${DONST} == "YES" ]]; then
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
-# Copy fix file for obsproc  # TODO: Why is this necessary?
+# Copy fix file for obsproc to get the error approximations for each observation type
 if [[ ${RUN} == "gfs" ]]; then
     mkdir -p "${ROTDIR}/fix"
     cpreq "${FIXglobal}/gsi/prepobs_errtable.global" "${ROTDIR}/fix/"

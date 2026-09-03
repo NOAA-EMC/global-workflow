@@ -7,7 +7,6 @@ device="nc | gdas.meta"
 
 #
 # Link data into DATA to sidestep gempak path limits
-# TODO: Replace this
 #
 export COMIN="${RUN}.${PDY}${cyc}"
 rm -f "${COMIN}"

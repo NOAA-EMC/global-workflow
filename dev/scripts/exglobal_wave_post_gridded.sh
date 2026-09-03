@@ -131,15 +131,19 @@ if [[ ${err} -ne 0 ]]; then
     err_exit "run_mpmd.sh failed!"
 fi
 
-# Check if grib2 file created
-# TODO: Should this check be over all waveInterpGRD and wavePostGRD?
-com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
-com_dir=${!com_varname}
-gribchk="${RUN}.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
-if [[ ! -s "${com_dir}/${gribchk}" ]]; then
-    export err=2
-    pgm="run_mpmd.sh"
-    err_exit "'${gribchk}' not generated in this job"
+# Check if grib2 files were created
+if [[ "${DOGRB_WAV}" == "YES" ]]; then
+    for grdID in ${wavepostGRD}; do # First concatenate grib files for grids
+        process_grdID "${grdID}"
+        com_varname="COMOUT_WAVE_GRID_${GRDREGION}_${GRDRES}"
+        com_dir=${!com_varname}
+        gribchk="${RUN}.t${cyc}z.${GRDREGION}.${GRDRES}.f${fhr3}.grib2"
+        if [[ ! -s "${com_dir}/${gribchk}" ]]; then
+            export err=2
+            pgm="run_mpmd.sh"
+            err_exit "'${gribchk}' not generated in this job"
+        fi
+    done
 fi
 
 exit 0
