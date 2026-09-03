@@ -248,3 +248,16 @@ class SoilAnalysis(Analysis):
             except Exception as err:
                 logger.exception(f"An error occured during execution of {exe}")
                 raise WorkflowException(f"An error occurred during execution of {exe}") from err
+        # copy analyis back
+        # TODO: this is only temporary. Will be done from parm/soil once the file types are sorted
+        logger.info("Copy analyses to com out for non-IAU")
+        anllist = []
+        for bkgtime in bkgtimes:
+            template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+            for itile in range(1, self.task_config.ntiles + 1):
+                filename = template.format(tilenum=itile)
+                src = os.path.join(self.task_config.DATA, "anl", filename)
+                dest = os.path.join(self.task_config.COMOUT_SOIL_ANALYSIS, filename)
+                anllist.append([src, dest])
+        FileHandler({'copy': anllist}).sync()
+
