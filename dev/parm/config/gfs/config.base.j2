@@ -152,6 +152,10 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDAWIP=${SENDAWIP:-"NO"}
+# To create fake dbnet alerts, uncomment the next three lines
+#export SENDDBN=${SENDDBN:-"YES"}
+#export DBNROOT="${DATA}/fakedbn"
+#mkdir -p "${DBNROOT}/bin" && ln -sf "${HOMEglobal}/dev/ush/dbn_alert" "${DBNROOT}/bin/dbn_alert"
 
 # APP settings
 export APP="{{ APP }}"
