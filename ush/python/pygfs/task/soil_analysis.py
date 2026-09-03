@@ -253,10 +253,10 @@ class SoilAnalysis(Analysis):
         logger.info("Copy analyses to com out for non-IAU")
         anllist = []
         for bkgtime in bkgtimes:
-            template = f'{to_fv3time(bkgtime)}.sfc_data.tile{{tilenum}}.nc'
+            template = f'{to_fv3time(bkgtime)}.sfcanl_data.tile{{tilenum}}.nc'
             for itile in range(1, self.task_config.ntiles + 1):
                 filename = template.format(tilenum=itile)
                 src = os.path.join(self.task_config.DATA, "anl", filename)
-                dest = os.path.join(self.task_config.COMOUT_SOIL_ANALYSIS, filename)
+                dest = os.path.join(self.task_config.COMOUT_ATMOS_RESTART, filename)
                 anllist.append([src, dest])
         FileHandler({'copy': anllist}).sync()
