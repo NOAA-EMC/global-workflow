@@ -78,7 +78,7 @@ while [[ "${proceed_trigger_scan}" == "YES" ]]; do
                 fi
             fi
             if [[ "${skip_this_scan}" == "NO" ]] && [[ "${release_event}" == "NO" ]] && [[ "${atmos_master_product_ready[fhr]:-NO}" == "NO" ]]; then
-                echo "FSM release_gfs_atmos_product is waiting for file: ${atmos_master}"
+                echo "FSM release_gfs_atmos_product is waiting for file: ${atmos_log}"
                 skip_this_scan="YES"
                 scan_release_gfs_atmos_product="YES"
                 proceed_trigger_scan="YES"
