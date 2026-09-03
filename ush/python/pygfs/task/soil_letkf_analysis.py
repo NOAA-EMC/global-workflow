@@ -275,4 +275,3 @@ class SoilLetkfAnalysis(Analysis):
                     dest = os.path.join(f'{comout_atmos_restart_ens}{mem:03d}/model/atmos/restart', filename)
                     anllist.append([src, dest])
                 FileHandler({'copy': anllist}).sync()
-
