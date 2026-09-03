@@ -266,12 +266,14 @@ class SoilLetkfAnalysis(Analysis):
         comout_atmos_restart_ens = os.path.join(self.task_config.ROTDIR, f'{self.task_config.RUN}.{cYMD}/{cHH}/mem')
         if not self.task_config.DO_LAND_IAU:
             logger.info("Copy analyses to com out for non-IAU")
-            template = f'{to_fv3time(self.task_config.current_cycle)}.sfcanl_data.tile{{tilenum}}.nc'
+            template_src = f'{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
+            template_dest = f'{to_fv3time(self.task_config.current_cycle)}.sfcanl_data.tile{{tilenum}}.nc'
             for mem in range(1, self.task_config.NMEM_ENS + 1):
                 anllist = []  # TODO: would taking this out of loop speed things up?
                 for itile in range(1, self.task_config.ntiles + 1):
-                    filename = template.format(tilenum=itile)
-                    src = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename)
-                    dest = os.path.join(f'{comout_atmos_restart_ens}{mem:03d}/model/atmos/restart', filename)
+                    filename_src = template_src.format(tilenum=itile)
+                    filename_dest = template_dest.format(tilenum=itile)
+                    src = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_src)
+                    dest = os.path.join(f'{comout_atmos_restart_ens}{mem:03d}/model/atmos/restart', filename_dest)
                     anllist.append([src, dest])
                 FileHandler({'copy': anllist}).sync()
