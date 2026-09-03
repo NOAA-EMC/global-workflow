@@ -50,8 +50,9 @@ EOF
     rm -f "${DATA}/${m}/bufrin" "${DATA}/${m}/bufrout"
 done < "${file_list}"
 
+cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
+
 if [[ "${SENDDBN}" == 'YES' ]]; then
-    cpfs "${DATA}/${m}/gfs_collective${m}.fil" "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
     "${DBNROOT}/bin/dbn_alert" NTC_LOW BUFR "${job}" \
         "${COMOUT_ATMOS_WMO}/gfs_collective${m}.postsnd_${cyc}"
 fi
