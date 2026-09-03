@@ -162,7 +162,11 @@ fi
 
 # output gaussian global surface analysis files
 if [[ -f "sfc.gaussian.analysis.file" ]]; then
-    cpfs "./sfc.gaussian.analysis.file" "${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"
+    SFCANL_FILE="${COMOUT_ATMOS_ANALYSIS}/${APREFIX}analysis.sfc.a006.nc"
+    cpfs "./sfc.gaussian.analysis.file" "${SFCANL_FILE}"
+    if [[ "${SENDDBN:-NO}" == "YES" ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_MSC_sfcanl" "${job}" "${SFCANL_FILE}"
+    fi
 fi
 
 ################################################################################
