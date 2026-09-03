@@ -1782,29 +1782,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def gempakmeta(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('gempakmeta')
-        task_name = f'{self.run}_gempakmeta'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakmeta.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def gempakmetancdc(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
@@ -1819,35 +1796,6 @@ class GFSTasks(Tasks):
                      'envars': self.envars,
                      'cycledef': self.run.replace('enkf', ''),
                      'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakmetancdc.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
-    def gempakncdcupapgif(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        # Set COMIN_OBS
-        gempakncdcupapgif_vars = self.envars.copy()
-        gempakncdcupapgif_envars_dict = {'COMIN_OBS': f'<cyclestr>&ROTDIR;/{self.run}.@Y@m@d/@H/obs</cyclestr>'}
-        for key, value in gempakncdcupapgif_envars_dict.items():
-            gempakncdcupapgif_vars.append(rocoto.create_envar(name=key, value=str(value)))
-
-        resources = self.get_resource('gempak')
-        task_name = f'{self.run}_gempakncdcupapgif'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': gempakncdcupapgif_vars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakncdcupapgif.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
@@ -2353,8 +2301,6 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
                 deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.mode in ['cycled']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
-                    deps.append(rocoto.add_dependency(dep_dict))
                     if self.options['do_goes']:
                         dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
                         deps.append(rocoto.add_dependency(dep_dict))
@@ -2649,11 +2595,7 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
                     deps.append(rocoto.add_dependency(dep_dict))
                 elif self.run in ['gfs']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
-                    deps.append(rocoto.add_dependency(dep_dict))
                     if self.app_config.mode in ['cycled']:
-                        dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
-                        deps.append(rocoto.add_dependency(dep_dict))
                         if self.options['do_goes']:
                             dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
                             deps.append(rocoto.add_dependency(dep_dict))

@@ -33,6 +33,10 @@ fi
 
 # Determine grids once and save them as a string and an array for processing
 grid_string="0p25"
+# Turn off 0p50 and 1p00 products for GFSv17
+if [[ "${RUN}" == "gfs" ]]; then
+    PGBS="NO"
+fi
 if [[ "${PGBS:-}" == "YES" ]]; then
     grid_string="${grid_string}:0p50:1p00"
 else
@@ -188,7 +192,8 @@ fi
 # Section creating sflux grib2 interpolated products
 # Create 1-degree sflux grib2 output
 # move to COM and index it
-if [[ "${FLXGF:-}" == "YES" ]]; then
+# Do not create 1-degree products for GFS
+if [[ "${RUN}" != "gfs" && "${FLXGF:-}" == "YES" ]]; then
     # Files needed by ${INTERP_ATMOS_SFLUXSH}
     input_file="${FLUX_FILE}"
     output_file_prefix="sflux_${fhr3}"

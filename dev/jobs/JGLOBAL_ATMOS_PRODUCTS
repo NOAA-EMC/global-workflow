@@ -34,7 +34,12 @@ declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
 declare -rx COMIN_ATMOS_HISTORY="${COMIN}/model/atmos/history"
 declare -rx COMIN_ATMOS_MASTER="${COMIN}/model/atmos/master"
 
-for grid in '0p25' '0p50' '1p00'; do
+if [[ "${RUN}" == "gfs" ]]; then
+    grids='0p25'
+else
+    grids='0p25 0p50 1p00'
+fi
+for grid in ${grids}; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
     declare -rx "COMOUT_ATMOS_GRIB_${grid}"="${COMOUT}/products/atmos/grib2/${grid}"
     mkdir -m 775 -p "${!prod_dir}"
