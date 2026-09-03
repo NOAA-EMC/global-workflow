@@ -28,7 +28,7 @@ TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
 
 if [[ -n "${FILE_PATH}" && -f "${FILE_PATH}" ]]; then
   FILE_STATUS="EXISTS"
-  FILE_SIZE=$(stat -c %s "${FILE_PATH}" 2> /dev/null || echo "?")
+  FILE_SIZE=$(stat -c %s "${FILE_PATH}" 2>/dev/null || echo "?")
 else
   FILE_STATUS="MISSING"
   FILE_SIZE="0"
