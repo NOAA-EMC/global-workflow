@@ -293,6 +293,7 @@ meta_tasks_state = {}  # State tracking per metatask
 - Never add extra whitespace at the end or beginning of lines
 - Use pycodestyle for Python code
 - Use shfmt where appropriate and shellcheck for linting
+- Only use ASCII characters in code and comments. Never use non-ASCII characters in code or comments.
 
 ### Code Quality
 - Ensure code is clean, well-commented, and follows best practices

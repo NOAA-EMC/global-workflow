@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 #
 # Script name:         exgfs_pmgr.sh.sms
