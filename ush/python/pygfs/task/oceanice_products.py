@@ -181,9 +181,9 @@ class OceanIceProducts(Task):
         # Run the ocnicepost.x executable if interpolated variables are wanted
         # localconf.write_grib2 = ".true." if config.oceanice_yaml[config.component].namelist.write_grib2 else ".false."
         # localconf.write_netcdf = ".true." if config.oceanice_yaml[config.component].namelist.write_netcdf else ".false."
-        print("write_netcdf: ", config.oceanice_yaml[config.component].namelist.write_netcdf)
-        print("write_grib2: ", config.oceanice_yaml[config.component].namelist.write_grib2)
-        print("write_subset: ", config.oceanice_yaml[config.component].namelist.write_subset)
+        logger.info(f"write_netcdf: {config.oceanice_yaml[config.component].namelist.write_netcdf}")
+        logger.info(f"write_grib2: {config.oceanice_yaml[config.component].namelist.write_grib2}")
+        logger.info(f"write_subset: {config.oceanice_yaml[config.component].namelist.write_subset}")
         if config.oceanice_yaml[config.component].namelist.write_netcdf or config.oceanice_yaml[config.component].namelist.write_grib2:
             OceanIceProducts.interp(config.DATA, config.APRUN_OCNICEPOST, exec_name="ocnicepost.x")
 
