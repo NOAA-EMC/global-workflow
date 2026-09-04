@@ -24,6 +24,10 @@ set -x
 
 # PATH for working and home directories
 export envir=${envir:-ops}
+# make_ntc_bull.pl only writes (and terminates its framing loop) when
+# SENDCOM=YES. ecflow sets this in head.h; Rocoto's jjob_standard_vars.sh
+# does not, so default it here to avoid an infinite loop in parallels.
+export SENDCOM=${SENDCOM:-YES}
 export cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
 export pgmout=OUTPUT.$$
