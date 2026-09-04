@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -339,6 +340,13 @@ if [[ ${err} -ne 0 ]]; then
 fi
 
 cpfs enkfstat.txt "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
+
+##############################################
+# Send Alerts
+##############################################
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COMOUT_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat.txt"
+fi
 
 ################################################################################
 #  Postprocessing
