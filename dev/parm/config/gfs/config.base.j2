@@ -497,12 +497,14 @@ export binary_diag=".false."
 export DO_CA="YES"
 
 # Verification options
-# Temporarily disable METplus verification. This will be reenabled on all platforms when
-# migration to MET 12/METplus 6 is complete.
-# export DO_METP={{ DO_METP }}
-export DO_METP=NO
-export DO_FIT2OBS="YES"      # Run fit to observations package
+export DO_METP={{ DO_METP }} # METplus verification via EMC_verif-global
+# METplus verification is not enabled on Hera, Derecho or Orion
+if [[ "${machine}" == "hera" || "${machine}" == "orion" || "${machine}" == "derecho" ]] && [[ ${DO_METP} == "YES" ]]; then
+   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
+   export DO_METP="NO"
+fi
 
+export DO_FIT2OBS="YES"      # Run fit to observations package
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then
