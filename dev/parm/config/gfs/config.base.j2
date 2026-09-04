@@ -11,6 +11,9 @@ export machine="{{ MACHINE }}"
 # EMC parallel or NCO production
 export RUN_ENVIR="emc"
 
+# Do not run strict mode (set -e) for production
+export STRICT="NO"
+
 # Account, queue, etc.
 export ACCOUNT="{{ ACCOUNT }}"
 export QUEUE="{{ QUEUE }}"
@@ -109,8 +112,8 @@ export HOMEpost="${HOMEglobal}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 
 # CONVENIENT utility scripts and other environment parameters
-export NMV="/bin/mv"
-export NLN="/bin/ln -sf"
+export NMV="mv"
+export NLN="ln -sf"
 export VERBOSE="YES"
 export DEBUG_POSTSCRIPT="NO" # PBS only; sets debug=true
 export CHGRP_RSTPROD="{{ CHGRP_RSTPROD }}"
@@ -149,6 +152,10 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 
 export SENDSDM=${SENDSDM:-"NO"}
 export SENDAWIP=${SENDAWIP:-"NO"}
+# To create fake dbnet alerts, uncomment the next three lines
+#export SENDDBN=${SENDDBN:-"YES"}
+#export DBNROOT="${DATA}/fakedbn"
+#mkdir -p "${DBNROOT}/bin" && ln -sf "${HOMEglobal}/dev/ush/dbn_alert" "${DBNROOT}/bin/dbn_alert"
 
 # APP settings
 export APP="{{ APP }}"
@@ -490,12 +497,14 @@ export binary_diag=".false."
 export DO_CA="YES"
 
 # Verification options
-# Temporarily disable METplus verification. This will be reenabled on all platforms when
-# migration to MET 12/METplus 6 is complete.
-# export DO_METP={{ DO_METP }}
-export DO_METP=NO
-export DO_FIT2OBS="YES"      # Run fit to observations package
+export DO_METP={{ DO_METP }} # METplus verification via EMC_verif-global
+# METplus verification is not enabled on Hera, Derecho or Orion
+if [[ "${machine}" == "hera" || "${machine}" == "orion" || "${machine}" == "derecho" ]] && [[ ${DO_METP} == "YES" ]]; then
+   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
+   export DO_METP="NO"
+fi
 
+export DO_FIT2OBS="YES"      # Run fit to observations package
 #--online archive of netcdf files for fit2obs verification
 export FHMAX_FITS=132
 if [[ "${FHMAX_FITS}" -gt "${FHMAX_GFS}" ]]; then

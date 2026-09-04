@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 ##############################################################
 # Add the NCDC GIF processing to the end of the gempak_gif job
 # There is no timing issue with the NCDC GIF, so it is
