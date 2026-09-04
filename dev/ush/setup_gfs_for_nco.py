@@ -307,7 +307,7 @@ def setup_gfs_for_nco(link_or_copy='copy'):
         file_type='script')
 
     # Remove unused executables from the exec directory
-    # TODO Call this when the full list of exectutubles to keep is known.
+    # TODO Call this when the full list of executubles to keep is known.
     # removed_files = remove_unused_executables(global_workflow_dir)
 
     # Go through the copied job files and replace the scripts they call as appropriate
