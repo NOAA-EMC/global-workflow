@@ -133,6 +133,16 @@ else
     exit 4
 fi
 
+# Send DBN alerts for grib files
+if [[ "${SENDDBN}" == 'YES' && "${outfile}" != *global.0p50* ]]; then
+    echo "INFO: Alerting GRIB file as ${outfile}"
+    echo "INFO: Alerting GRIB index file as ${outfile}.idx"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WAVE_GB2" "${job}" "${com_dir}/${outfile}"
+    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WAVE_GB2_WIDX" "${job}" "${com_dir}/${outfile}.idx"
+else
+    echo "INFO: ${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
+fi
+
 # Create grib2 subgrid if this is the source grid
 if [[ "${grdID}" == "${WAV_SUBGRBSRC}" ]]; then
     for subgrb in ${WAV_SUBGRB}; do
@@ -153,13 +163,4 @@ if [[ "${grdID}" == "${WAV_SUBGRBSRC}" ]]; then
             exit 5
         fi
     done
-fi
-
-if [[ "${SENDDBN}" == 'YES' && "${outfile}" != *global.0p50* ]]; then
-    echo "INFO: Alerting GRIB file as ${outfile}"
-    echo "INFO: Alerting GRIB index file as ${outfile}.idx"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WAVE_GB2" "${job}" "${com_dir}/${outfile}"
-    "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WAVE_GB2_WIDX" "${job}" "${com_dir}/${outfile}.idx"
-else
-    echo "INFO: ${outfile} is global.0p50 or SENDDBN is NO, no alert sent"
 fi
