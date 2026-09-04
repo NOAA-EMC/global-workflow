@@ -42,8 +42,8 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_sfcanl_gcycle.log"
 
         # Analysis Master GRIB2 data
-        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}master.analysis.grib2"
-        - "{{ COMIN_ATMOS_MASTER }}/{{ head }}master.analysis.grib2.idx"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}master.analysis.grib2"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}master.analysis.grib2.idx"
 
         # Analysis GRIB2 (sub-sampled) data
         - "{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2"
