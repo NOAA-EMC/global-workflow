@@ -341,6 +341,9 @@ EOF
             fi
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
                 if [[ "${RUN}" == "sfs" ]]; then
+                    # SFS hourly forecast data is not needed in COM as it is not used by downstream
+                    # applications or distributed. Instead, save it to an umbrella directory under DATAROOT
+                    # so it can be used to calculate averages by the <job name> job.
                     if [[ "${MEMBER}" -eq 0 ]]; then
                         mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master"
                         ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
