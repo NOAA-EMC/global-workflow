@@ -169,7 +169,7 @@ class SoilAnalysis(Analysis):
         # need backgrounds to create analysis from increments after DA
         logger.info("Copy backgrounds into anl/ directory for creating analysis from increments")
         bkgtimes = []
-        if self.task_config.DOIAU:
+        if self.task_config.DOIAU and not self.task_config.csg_increment:
             # want analysis at beginning and middle of window
             bkgtimes.append(self.task_config.WINDOW_BEGIN)
         bkgtimes.append(self.task_config.current_cycle)

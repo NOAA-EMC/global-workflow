@@ -73,6 +73,13 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
     if [[ ! -d "${COMOUT_SOIL_ANALYSIS_MEM}" ]]; then
         mkdir -p "${COMOUT_SOIL_ANALYSIS_MEM}"
     fi
+
+    declare -x COMOUT_SOIL_ANALYSIS_MEM="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/restart"
+
+    if [[ ! -d "${COMOUT_SOIL_ANALYSIS_MEM}" ]]; then
+        mkdir -p "${COMOUT_SOIL_ANALYSIS_MEM}"
+    fi
+
 done
 
 ###############################################################

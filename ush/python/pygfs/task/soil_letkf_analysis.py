@@ -274,6 +274,6 @@ class SoilLetkfAnalysis(Analysis):
                     filename_src = template_src.format(tilenum=itile)
                     filename_dest = template_dest.format(tilenum=itile)
                     src = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_src)
-                    dest = os.path.join(f'{comout_atmos_restart_ens}{mem:03d}/model/atmos/restart', filename_dest)
+                    dest = os.path.join(f'{comout_atmos_restart_ens}{mem:03d}/model/atmos/restart/', filename_dest)
                     anllist.append([src, dest])
                 FileHandler({'copy': anllist}).sync()
