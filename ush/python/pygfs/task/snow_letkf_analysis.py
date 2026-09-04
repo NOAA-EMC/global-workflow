@@ -73,7 +73,7 @@ class SnowLetkfAnalysis(Analysis):
                 else:
                     logger.warning(f"IMS obs file missing: {_ims_file}")
         else:
-            logger.info("Not 00z cycle — Skipping IMS preprocessing.")
+            logger.info("Not 00z cycle - Skipping IMS preprocessing.")
 
         # if 00z, do GHCN preprocessing
         _ghcn_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}ghcn_snow.csv')
@@ -90,7 +90,7 @@ class SnowLetkfAnalysis(Analysis):
                 else:
                     logger.warning(f"GHCN obs file missing: {_ghcn_file}")
         else:
-            logger.info("Not 00z cycle — Skipping GHCN preprocessing.")
+            logger.info("Not 00z cycle - Skipping GHCN preprocessing.")
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
