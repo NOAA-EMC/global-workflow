@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 ##############################################################################
 #  UTILITY SCRIPT NAME :  exgfs_awips_20km_1p0deg.sh
