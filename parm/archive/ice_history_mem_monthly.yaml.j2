@@ -1,0 +1,17 @@
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set head = RUN ~ ".ice.t??????????.monthly_avg." %}
+{% for mem in range(0, NMEM_ENS + 1) %}
+{% set mem_char = 'mem%03d' | format(mem) %}
+{% set tmpl_dict = ({ '${ROTDIR}':ROTDIR,
+                              '${RUN}':RUN,
+                              '${YMD}':cycle_YMD,
+                              '${HH}':cycle_HH,
+                              '${MEMDIR}': mem_char }) %}
+ice_history_monthly_{{ mem_char }}:
+    name: "ICE_HISTORY_MONTHLY{{ mem_char }}"
+    target: "{{ ATARDIR }}/{{ cycle_YMDH }}/ice_history_monthly_{{ mem_char }}.tar"
+    required:
+        {% set COMIN_ICE_HISTORY = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
+        - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}*.nc"
+{% endfor %}
+       

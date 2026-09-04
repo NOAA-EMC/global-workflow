@@ -153,10 +153,10 @@ case "${CASE}" in
     "C48")
         export waveGRD='glo_500'
         ;;
-    "C96" | "C192")
+    "C96")
         export waveGRD='glo_100'
         ;;
-    "C384")
+    "C192" | "C384")
         export waveGRD='glo_025'
         ;;
     "C768" | "C1152")
@@ -249,16 +249,18 @@ export FHOUT_OCN=${FHOUT_OCN_GFS}
 export FHOUT_ICE=${FHOUT_ICE_GFS}
 
 # GFS restart interval in hours
-export restart_interval_gfs=12
+export restart_interval_gfs=240
 export restart_interval_enkfgfs=12
 # NOTE: Do not set this to zero.  Instead set it to $FHMAX_GFS
 # TODO: Remove this variable from config.base and reference from config.fcst
 # TODO: rework logic in config.wave and push it to parsing_nameslist_WW3.sh where it is actually used
 
 export QUILTING=".true."
-export OUTPUT_GRID="gaussian_grid"
+export OUTPUT_GRID="global_latlon" # gaussian_grid,global_latlon
+export LONB_IMO=720 # one degree output
+export LATB_JMO=361 #  1/2 degree output is 720 by 361
 export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
-export WRITE_NSFLIP=".true."
+export WRITE_NSFLIP=".false." #True, False
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=8
@@ -281,13 +283,10 @@ export ENSMEM=${ENSMEM:-"000"}
 export MEMDIR="mem${ENSMEM}"
 
 # cellular automata
-if (( ENSMEM == 0 )); then
-    export DO_CA="YES"
-else
-    export DO_CA="YES"
-fi
+export DO_CA="YES"
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
+export DOIAU_COLDSTART="{{ DOIAU_COLDSTART }}" #SFS from GFS ICs cold starts with IAU
 
 # Check if cycle is warm starting with IAU
 if [[ "${EXP_WARM_START}" = ".true." ]]; then
@@ -314,7 +313,7 @@ export DO_METP="NO"         # Run METPLUS jobs - set METPLUS settings in config.
 export DO_FIT2OBS="NO"      # Run fit to observations package
 
 # Archiving options
-export DO_ARCHCOM="NO"    # Tar and archive the COM directories
+export DO_ARCHCOM="{{ DO_ARCHCOM}}"    # Tar and archive the COM directories
 export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, and local
 
 # Number of regional collectives to create soundings for

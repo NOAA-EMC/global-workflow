@@ -7,6 +7,7 @@ echo "BEGIN: config.cleanup"
 source "${EXPDIR}/config.resources" cleanup
 
 export CLEANUP_COM="YES"   # NO=retain ROTDIR.  YES default in cleanup.sh
+export CLEANUP_FCST="YES"
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
 # RUN-based cleanup variables

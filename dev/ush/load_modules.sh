@@ -171,7 +171,7 @@ case "${MODULE_TYPE}" in
 
         ;;
 
-    "run" | "gsi" | "setup" | "upp")
+    "run" | "gsi" | "setup" | "upp" | "atmos_post")
 
         # Test that the version file exists
         if [[ ! -f "${HOMEglobal}/versions/run.ver" ]]; then
@@ -203,7 +203,7 @@ case "${MODULE_TYPE}" in
         fi
 
         # Source versions file (except for upp and verification)
-        if [[ "${mod_type}" != "upp" && "${mod_type}" != "verif" ]]; then
+        if [[ "${mod_type}" != "upp" && "${mod_type}" != "verif" && "${mod_type}" != "atmos_post" ]]; then
             source "${HOMEglobal}/versions/run.ver"
         fi
 
@@ -228,7 +228,7 @@ case "${MODULE_TYPE}" in
 
     *)
         echo "FATAL ERROR: Unknown module type '${MODULE_TYPE}'"
-        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup"
+        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup, upp, atmos_post"
         ;;
 
 esac
