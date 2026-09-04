@@ -97,8 +97,6 @@ dev/scripts/exgfs_atmos_goes_nawips.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseM
 dev/scripts/exgfs_atmos_grib2_special_npoess.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgfs_atmos_nawips.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgfs_atmos_postsnd.sh @BoCui-NOAA
-dev/scripts/exgfs_pmgr.sh @lgannoaa
-dev/scripts/exgfs_prdgen_manager.sh @lgannoaa
 dev/scripts/exgfs_wave_* @JessicaMeixner-NOAA @sbanihash
 dev/scripts/exglobal_aero_analysis_* @CoryMartin-NOAA
 dev/scripts/exglobal_analysis_stats.py @CoryMartin-NOAA
@@ -108,7 +106,6 @@ dev/scripts/exglobal_atm_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
 dev/scripts/exglobal_atmens_analysis_* @RussTreadon-NOAA @DavidNew-NOAA
 dev/scripts/exglobal_atmos_analysis*.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_atmos_ensstat.sh @RussTreadon-NOAA
-dev/scripts/exglobal_atmos_pmgr.sh @lgannoaa
 dev/scripts/exglobal_atmos_products.sh @WenMeng-NOAA
 dev/scripts/exglobal_atmos_sfcanl.sh @BrianCurtis-NOAA
 dev/scripts/exglobal_atmos_tropcy_qc_reloc.sh @DavidHuber-NOAA

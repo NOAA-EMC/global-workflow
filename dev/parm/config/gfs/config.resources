@@ -1366,7 +1366,7 @@ case ${step} in
     walltime="02:00:00"
     ntasks=141
     export ntasks_postsndcfp=9
-    case "${CASE}" in
+    case "${CASE_HIST}" in
       "C768")
         tasks_per_node=21
         threads_per_task=6

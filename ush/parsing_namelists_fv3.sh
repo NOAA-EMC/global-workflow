@@ -2,7 +2,7 @@
 
 #===============================================================================
 #
-#   FILE: parsing_namelists_CICE.sh
+#   FILE: parsing_namelists_fv3.sh
 #   DESCRIPTION: Prepares the environment and generates the configuration
 #                files (namelists and tables) required by the FV3 atmospheric
 #                model component. This function consolidates templates for

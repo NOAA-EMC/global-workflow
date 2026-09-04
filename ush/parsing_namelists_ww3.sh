@@ -2,7 +2,7 @@
 
 #===============================================================================
 #
-#   FILE: parsing_namelists_WW3.sh
+#   FILE: parsing_namelists_ww3.sh
 #
 #   DESCRIPTION: Prepares the environment and dynamically renders the configuration
 #                file required by the WAVEWATCH III (WW3) model.

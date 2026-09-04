@@ -56,7 +56,7 @@
 #                (Default: /dcom/us007003)
 #   slmask    - path to t126 32-bit gaussian land/sea mask file
 #                (Default: ${FIXglobal}/am/syndat_slmask.t126.gaussian)
-#   copy_back - switch to copy updated files back to archive directory and
+#   SENDCOM   - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
 #   files_override - switch to override default "files" setting for given run
@@ -68,7 +68,7 @@ HOMENHC=${HOMENHC:-${DCOMROOT}/nhc/atcf/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
 slmask=${slmask:-${FIXglobal}/am/syndat_slmask.t126.gaussian}
-copy_back=${copy_back:-YES}
+copy_back=${SENDCOM:-YES}
 files_override=${files_override:-""}
 
 cd "${DATA}" || exit 2
