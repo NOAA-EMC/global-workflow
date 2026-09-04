@@ -8,9 +8,9 @@
 #                model component. This function consolidates templates for
 #                diagnostics (diag_table), data fields (data_table), and tracer
 #                fields (field_table). It then evaluates a set of
-#                environment variables—controlling physics options, grid
+#                environment variables (controlling physics options, grid
 #                resolutions, stochastic perturbations, tuning parameters,
-#                and incremental analysis updates (IAU)—and injects them
+#                and incremental analysis updates) and injects them
 #                into the base `global_control.nml.IN` template using the
 #                `atparse` utility to yield a fully rendered `input.nml`.
 
