@@ -1,0 +1,68 @@
+#! /usr/bin/env bash
+set -x
+export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
+
+############################################
+# GFS GEMPAK META PRODUCT GENERATION
+############################################
+source "${HOMEglobal}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempakmeta"
+
+#{% if false %}
+source "${HOMEglobal}/ush/jjob_standard_vars.sh"
+#{% else %}
+#{% include jjob_var_setup.j2 %}
+#{% endif %}
+
+source "${USHglobal}/jjob_shell_setup.sh"
+# Set strict mode which will exit on error or undefined variable
+# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
+source "${USHglobal}/set_strict.sh"
+
+###############################################
+# Set MP variables
+###############################################
+export LAUNCH_MODE=MPI
+export OMP_NUM_THREADS=1
+export MP_LABELIO=yes
+export MP_PULSE=0
+export MP_DEBUG_NOTIMEOUT=yes
+
+cpreq "${HOMEglobal}/gempak/fix/datatype.tbl" datatype.tbl
+
+export COMPONENT="atmos"
+
+##############################################
+# Set up model and cycle specific variables
+##############################################
+export DBN_ALERT_TYPE=GFS_METAFILE
+
+##############################################
+# Define COM directories
+##############################################
+declare -rx COMIN_ATMOS_GEMPAK_1p00="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/1p00"
+
+declare -rx COMOUT_ATMOS_GEMPAK_META="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/meta"
+mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_META}"
+
+########################################################
+# Execute the script.
+"${SCRglobal}/exgfs_atmos_gempak_meta.sh" && true
+export err=$?
+if [[ ${err} -ne 0 ]]; then
+    err_exit "Failed to generate at least one GFS GEMPAK meta product"
+fi
+########################################################
+
+############################################
+# print exec I/O output
+############################################
+if [[ -e "${pgmout}" ]]; then
+    cat "${pgmout}"
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [[ "${KEEPDATA}" != "YES" ]]; then
+    rm -rf "${DATA}"
+fi

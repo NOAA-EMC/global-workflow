@@ -33,7 +33,7 @@ class Tasks:
                    'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind', 'npoess',
-                   'gempak', 'gempakmetancdc', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg',
+                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostgridded', 'waveprep', 'wave_stat', 'wave_stat_pnt']
 

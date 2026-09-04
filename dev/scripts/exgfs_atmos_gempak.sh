@@ -67,7 +67,11 @@ export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
 
-grid_in="0p25"
+case ${grid} in
+    # TODO: Why aren't we interpolating from the 0p25 grids for 35-km and 40-km?
+    '0p50' | '0p25') grid_in=${grid} ;;
+    *) grid_in="1p00" ;;
+esac
 
 source_var="COMIN_ATMOS_GRIB_${grid_in}"
 export GRIBIN="${!source_var}/${RUN}.${cycle}.pres_a.${grid_in}.f${fhr3}.grib2"
