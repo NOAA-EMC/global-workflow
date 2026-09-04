@@ -64,7 +64,7 @@
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
 ARCHSYND=${ARCHSYND:-${COMROOTp3}/gfs/prod/syndat}
-HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+HOMENHC=${HOMENHC:-${DCOMROOT}/nhc/atcf/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
 slmask=${slmask:-${FIXglobal}/am/syndat_slmask.t126.gaussian}
@@ -178,6 +178,10 @@ if [[ "${copy_back}" == 'YES' ]]; then
     cat nhc >> "${ARCHSYND}/syndat_tcvitals.${year}"
 fi
 
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL SYNDAT_TCVITALS "${job}" "${ARCHSYND}/syndat_tcvitals.${year}"
+fi
+
 mv -f nhc nhc1
 "${USHglobal}/parse-storm-type.pl" nhc1 > nhc
 
@@ -192,10 +196,6 @@ fi
 
 mv -f fnoc fnoc1
 "${USHglobal}/parse-storm-type.pl" fnoc1 > fnoc
-
-if [[ "${SENDDBN}" == "YES" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL SYNDAT_TCVITALS "${job}" "${ARCHSYND}/syndat_tcvitals.${year}"
-fi
 
 #########################################################################
 

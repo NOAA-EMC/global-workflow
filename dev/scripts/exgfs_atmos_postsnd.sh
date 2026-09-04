@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 ################################################################
 # Script Name:		exgfs_atmos_postsnd.sh.sms

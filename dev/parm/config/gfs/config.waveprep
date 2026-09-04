@@ -18,7 +18,7 @@ export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-0}
 export WAV_CUR_CDO_SMOOTH="NO"
 
 # Location of CDO module
-export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
+export CDO_ROOT=${CDO_ROOT}
 
 if [[ "${WW3ICEINP}" == "YES" ]]; then
   export WAVICEFILE=${RUN}.t${cyc}z.seaice.5min.grib2
