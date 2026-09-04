@@ -64,7 +64,7 @@
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
 ARCHSYND=${ARCHSYND:-${COMROOTp3}/gfs/prod/syndat}
-HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+HOMENHC=${HOMENHC:-${DCOMROOT}/nhc/atcf/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
 slmask=${slmask:-${FIXglobal}/am/syndat_slmask.t126.gaussian}
