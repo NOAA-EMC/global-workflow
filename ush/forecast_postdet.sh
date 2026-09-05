@@ -126,6 +126,15 @@ FV3_postdet() {
             exit "${err}"
         fi
     fi
+    if [[ "${CHECK_LAND_RESTART_SOILVEG:-NO}" == "YES" ]]; then
+        "${USHglobal}/check_land_input_soilveg.py" \
+            --input_dir "${DATA}/INPUT" --orog_dir "${DATA}/INPUT" --soilparm_dir "${PARMglobal}"
+        err=$?
+        if [[ ${err} -ne 0 ]]; then
+            echo "FATAL ERROR: check_land_input_soilveg.py returned error code ${err}, ABORT!"
+            exit "${err}"
+        fi
+    fi
 
     #============================================================================
     # Determine increment files when doing cold start

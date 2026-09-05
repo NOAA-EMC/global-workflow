@@ -320,6 +320,10 @@ fi
 # This is used to ensure that the orography in the land restart file matches the orography
 export CHECK_LAND_RESTART_OROG="{{ CHECK_LAND_RESTART_OROG }}"
 
+# This is used to ensure that land grids have valid stype/vtype values
+# And check that the soil moisture over all land grid cells less than or equal to porosity
+export CHECK_LAND_RESTART_SOILVEG="{{ CHECK_LAND_RESTART_SOILVEG }}"
+
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
