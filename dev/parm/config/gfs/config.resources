@@ -814,6 +814,42 @@ case ${step} in
     is_exclusive=True
     ;;
 
+  "soilanlvar")
+    # below lines are for creating JEDI YAML
+    case "${CASE}" in
+      "C1152" | "C768")
+        layout_x=8
+        layout_y=8
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="00:20:00"
+    ntiles=${ntiles:-6}
+    ntasks=$((ntiles * layout_x * layout_y))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    is_exclusive=True
+    ;;
+
   "fcst" | "efcs")
     is_exclusive=True
 
@@ -1348,6 +1384,48 @@ case ${step} in
     node_numerator=1
     node_denominator=2
     tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+    ;;
+
+  "soilanlens")
+    # below lines are for creating JEDI YAML
+    case "${CASE}" in
+      "C1152" | "C768")
+        layout_x=8
+        layout_y=8
+        ;;
+      "C384")
+        layout_x=6
+        layout_y=6
+        ;;
+      "C192" | "C96")
+        layout_x=4
+        layout_y=4
+        ;;
+      "C48" )
+        # this case is for testing only
+        layout_x=1
+        layout_y=1
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${CASE}"
+        exit 4
+    esac
+
+    export layout_x
+    export layout_y
+
+    walltime="01:00:00"
+    ens_size=${NMEM_ENS:-80}
+    ntiles=${ntiles:-6}
+    ntasks=$((ntiles * layout_x * layout_y))
+    node_denominator=1
+    threads_per_task=1
+    node_numerator=1
+    tasks_per_node=$(( node_numerator*max_tasks_per_node/node_denominator ))
+
+    threads_per_task_cycle=${threads_per_task}
+    tasks_per_node_cycle=$(( max_tasks_per_node / threads_per_task ))
+    export is_exclusive=True
     ;;
 
   "epos")

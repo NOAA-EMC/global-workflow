@@ -276,7 +276,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd" ]]; then
     cd "${HOMEglobal}/fix" || exit 1
     mkdir -p gdas
     cd gdas || exit 1
-    for gdas_sub in fv3jedi gsibec obs soca aero snow; do
+    for gdas_sub in fv3jedi gsibec obs soca aero snow soil; do
         fix_ver="gdas_${gdas_sub}_ver"
         safe_link_or_copy "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
@@ -289,7 +289,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd" ]]; then
     cd "${HOMEglobal}/parm" || exit 1
     mkdir -p gdas
     cd gdas || exit 1
-    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
+    declare -a gdasapp_comps=("aero" "atm" "io" "ioda" "snow" "soil" "marine" "jcb-gdas" "jcb-algorithms" "anlstat" "analcalc")
     for comp in "${gdasapp_comps[@]}"; do
         safe_link_or_copy "${HOMEglobal}/sorc/gdas.cd/parm/${comp}" .
     done
@@ -467,6 +467,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd/install" ]]; then
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin"/gdas* ./
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/satbias2ioda.x" ./gdas_satbias2ioda.x
     cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/apply_incr.exe" ./gdas_apply_incr.x
+    cp -f "${HOMEglobal}/sorc/gdas.cd/install/bin/apply_soil_incr.x" ./apply_soil_incr.x
 fi
 
 # GDASApp libraries

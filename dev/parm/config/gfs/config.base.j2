@@ -403,9 +403,6 @@ export NMEM_ENS_GFS="{{ NMEM_ENS_GFS }}"
 export NMEM_ENS_GFS_OFFSET="{{ NMEM_ENS_GFS_OFFSET }}"
 export DO_CALC_INCREMENT_ENKF_GFS="NO"
 export DOENKFONLY_ATM="{{ DOENKFONLY_ATM }}"
-if [[ "${DOENKFONLY_ATM}" = "YES" && "${DO_JEDIATMENS}" = "YES" ]]; then
-    export DO_HISTORY_FILE_ON_NATIVE_GRID="YES"
-fi
 
 # EnKF output frequency
 if [[ "${DOHYBVAR}" = "YES" ]]; then
@@ -439,11 +436,25 @@ export DO_WDQMS="{{ DO_WDQMS | default('NO') }}"
 if [[ "${RUN}" == "gdas" || "${RUN}" == "enkfgdas" ]]; then
     export DO_GSISOILDA="{{ DO_GSISOILDA }}"
     export DO_LAND_IAU="{{ DO_LAND_IAU }}"
+    export DO_JEDISOILDAVAR="{{ DO_JEDISOILDAVAR }}"
+    export DO_JEDISOILDAENS="{{ DO_JEDISOILDAENS }}"
+    export DO_SOILHYBVAR="{{ DO_SOILHYBVAR }}"
 else
     export DO_GSISOILDA="NO"
     export DO_LAND_IAU=".false."
+    export DO_JEDISOILDAVAR="NO"
+    export DO_JEDISOILDAENS="NO"
+    export DO_SOILHYBVAR="NO"
+fi
+# Turn off GSI soil DA if JEDI soil DA is on
+if [[ "${DO_JEDISOILDAVAR}" = "YES" ]] || [[ "${DO_JEDISOILDAENS}" = "YES" ]]; then
+    export DO_GSISOILDA="NO"
 fi
 export LSOIL_INCR=2
+
+if [[ "${DOENKFONLY_ATM}" = "YES" && "${DO_JEDIATMENS}" = "YES" ]] || [[ "${DO_JEDISOILDAVAR}" = "YES" ]] || [[ "${DO_JEDISOILDAENS}" = "YES" ]]; then
+    export DO_HISTORY_FILE_ON_NATIVE_GRID="YES"
+fi
 
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
 if [[ "${MODE}" = "cycled" && "${SDATE}" = "${PDY}${cyc}" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
