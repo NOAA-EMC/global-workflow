@@ -253,6 +253,9 @@
 		<envar><name>ARCH_LOGS</name><value>NO</value></envar>
 		<envar><name>SDATE</name><value>&SDATE;</value></envar>
 		<envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>DO_VMINMON</name><value>YES</value></envar>
+		<envar><name>DO_VERFRAD</name><value>YES</value></envar>
+		<envar><name>DO_VERFOZN</name><value>YES</value></envar>
 
 
 		<dependency>
@@ -406,6 +409,9 @@
 		<envar><name>DO_ANLSTAT</name><value>NO</value></envar>
 		<envar><name>SDATE</name><value>&SDATE;</value></envar>
 		<envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>DO_VMINMON</name><value>YES</value></envar>
+		<envar><name>DO_VERFRAD</name><value>YES</value></envar>
+		<envar><name>DO_VERFOZN</name><value>YES</value></envar>
 
 		<dependency>
 			<and>
@@ -447,7 +453,7 @@
 
 	<dependency>
 		<and>
-		  <datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
+			<datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
 		</and>
 	</dependency>
 
@@ -480,6 +486,9 @@
 	<envar><name>ATARDIR</name><value>&ATARDIR;</value></envar>
 	<envar><name>ARCHCOM_TO</name><value>hpss</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>DO_VMINMON</name><value>YES</value></envar>
+	<envar><name>DO_VERFRAD</name><value>YES</value></envar>
+	<envar><name>DO_VERFOZN</name><value>YES</value></envar>
 
 	<dependency>
 		<datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
@@ -524,7 +533,7 @@
 		<envar><name>EDATE</name><value>&EDATE;</value></envar>
 
 		<dependency>
-		  <datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
+			<datadep><cyclestr offset="12:00:00">&ECF_OUT_gfs;/@Y@m@d@H</cyclestr></datadep>
 		</dependency>
 
 	</task>

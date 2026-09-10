@@ -8,42 +8,5 @@ echo "BEGIN: config.prep"
 # Get task specific resources
 source "${EXPDIR}/config.resources" prep
 
-export cdate10=${PDY}${cyc}
-
-# Syndata (tcvitals) QC
-export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
-[[ ${RUN_ENVIR} == "nco" && ${envir} == "prod" ]] && export PROCESS_TROPCY="YES"
-export TROPCYQCSH="${SCRglobal}/exglobal_atmos_tropcy_qc.sh"
-export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
-
-# Allow users to control the generation or use of either operational or
-# their processed prepbufr, prepbufr.acft_profiles, nsstbufr files
-export MAKE_PREPBUFR="YES"  # Generate prepbufr, etc. files by executing obsproc
-if [[ "${MAKE_PREPBUFR^^}" != "YES" ]]; then
-  export USE_PREPBUFR_FROM_OPS="YES"  # Copy operational prepbufr, etc files
-  if [[ "${USE_PREPBUFR_FROM_OPS^^}" != "YES" ]]; then
-    # Location of user processed prepbufr, etc files
-    export PREPBUFR_DIR="${DMPDIR:-}"  # Replace DMPDIR with the location of processed files
-  fi
-fi
-
-# Set default prepobs_errtable.global
-export PRVT="${FIXglobal}/gsi/prepobs_errtable.global"
-
-# NSST bufr was created with a different set of files prior to 2020102200
-# See comments at the end of
-# https://github.com/NOAA-EMC/global-workflow/issues/313
-if [[ "${PDY}${cyc}" -ge "2020102200" ]]; then
-  export DTYPS_nsst='sfcshp tesac bathy trkob'
-else
-  export DTYPS_nsst='sfcshp dbuoyb mbuoyb tesac bathy trkob'
-fi
-
-# Set flags to optionally use external bias correction files
-# TODO: remove when JEDI can cycle bias correcdtion files
-export SOURCE_BIASCOR="NO"
-export COPY_BIASCOR_SOURCE="NO"
-export COPY_BIASCOR_STATIC="NO"
-export CONVERT_BIASCOR="NO"
 
 echo "END: config.prep"

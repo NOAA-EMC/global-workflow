@@ -78,13 +78,7 @@ declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
 declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
 declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
 
-# GCAFS/GCDAS uses an offline atmospheric analysis
-if [[ "${RUN}" =~ "gcafs" ]] || [[ "${RUN}" =~ "gcdas" ]]; then
-    declare -rx COMIN_ATMOS_ANALYSIS="${COMIN_RESTART}/analysis/atmos"
-else
-    # other runs use their own atmospheric analysis
-    declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
-fi
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
     declare -rx COMIN_WAVE_INIT="${COMIN}/model/wave/init"
@@ -107,12 +101,6 @@ if [[ "${DO_ICE}" == "YES" ]]; then
     declare -rx COMOUT_ICE_RESTART="${COMOUT}/model/ice/restart"
     declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
     declare -rx COMIN_ICE_RESTART_PREV="${COMIN_RESTART_PREV}/model/ice/restart"
-fi
-
-if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-    declare -rx COMOUT_CHEM_HISTORY="${COMOUT}/model/chem/history"
-    declare -rx COMIN_TRACER_RESTART="${COMIN_RESTART}/model/atmos/restart"
-    declare -rx COMIN_CHEM_INPUT="${COMIN}/model/chem/input"
 fi
 
 ###############################################################

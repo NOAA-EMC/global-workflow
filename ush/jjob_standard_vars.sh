@@ -12,8 +12,6 @@
 #
 # Variables set here:
 #   PS4                                         (debug trace format)
-#   USHglobal, FIXglobal, PARMglobal,
-#     SCRIPTSglobal                             (global directory paths)
 #   pid, pgmout, pgmerr                        (job output variables)
 #   envir, KEEPDATA, SENDECF, SENDDBN,
 #     SENDDBN_NTC, DBNROOT                      (run environment and control)
@@ -39,14 +37,6 @@ echo "Begin ${_calling_script} at ${_start_time_human}"
 # Debug trace format
 ##############################################
 declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}] ${SECONDS}s: '
-
-##############################################
-# Standard global directory paths
-##############################################
-export USHglobal="${HOMEglobal}/ush"
-export FIXglobal="${HOMEglobal}/fix"
-export PARMglobal="${HOMEglobal}/parm"
-export SCRIPTSglobal="${HOMEglobal}/scripts"
 
 ##############################################
 # Job output variables
@@ -75,7 +65,7 @@ export DATA="${DATA:-${DATAROOT}/${jobid}}"
 ################################################
 # Set the NET COM base path (ROTDIR) and COMROOT
 ################################################
-ver_var="${NET}_var"
+ver_var="${NET}_ver"
 ROTDIR=${ROTDIR:-$(compath.py "${envir}/${NET}/${!ver_var}")}
 export ROTDIR
 unset ver_var
