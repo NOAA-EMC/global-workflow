@@ -88,9 +88,9 @@ elif [[ ${MACHINE_ID} = gaeac6 ]]; then
     # sourced explicitly; interactive and login shells already have it.
     set +u
     if [[ -z "${LMOD_SYSTEM_DEFAULT_MODULES:-}" ]]; then
-        source /opt/cray/pe/lmod/lmod/init/crayPE_lmod.sh 2> /dev/null \
-            || source /etc/cray-pe.d/cray-pe-configuration.sh 2> /dev/null \
-            || true
+        source /opt/cray/pe/lmod/lmod/init/crayPE_lmod.sh 2> /dev/null ||
+            source /etc/cray-pe.d/cray-pe-configuration.sh 2> /dev/null ||
+            true
     fi
     module reset
     set -u
