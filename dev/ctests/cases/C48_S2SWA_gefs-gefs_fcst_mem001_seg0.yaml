@@ -14,7 +14,7 @@ input_files:
     mkdir:
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/atmos/input
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input
-        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/prep
+        - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/init
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ice/restart
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/ocean/restart
         - {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart
@@ -60,9 +60,9 @@ input_files:
         - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart/{{ PDY }}.{{ cyc }}0000.restart.ww3,
            {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc_offset }}/mem001/model/wave/restart/{{ PDY }}.{{ cyc }}0000.restart.ww3]
 
-        # Wave prep file (1 file) - from 12Z cycle
-        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/prep/gefs.t{{ cyc }}z.mod_def.glo_500.bin,
-           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/prep/gefs.t{{ cyc }}z.mod_def.glo_500.bin]
+        # Wave mod_def file (1 file) - from waveinit job, COM_WAVE_INIT
+        - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/init/gefs.t{{ cyc }}z.mod_def.glo_500.bin,
+           {{ DST_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/wave/init/gefs.t{{ cyc }}z.mod_def.glo_500.bin]
 
         # Chemistry input files (NEXUS diagnostics for aerosol emissions)
         - [{{ SRC_DIR }}/gefs.{{ PDY }}/{{ cyc }}/mem001/model/chem/input/NEXUS_DIAG.20210323.nc,

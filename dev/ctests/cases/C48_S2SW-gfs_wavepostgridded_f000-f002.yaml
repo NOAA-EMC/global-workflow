@@ -4,14 +4,14 @@
 {% set DST_DIR = RUNTESTS + '/COMROOT/' + TEST_NAME %}
 
 # =============================================================================
-# C48_S2SW Wave Post Side-by-Side Test Case (f000-f002 segment)
+# C48_S2SW Wave Gridded Post Test Case (f000-f002 segment)
 # =============================================================================
-# This test validates the gfs_wavepostsbs_f000-f002 task from the S2SW workflow.
-# Tests wave gridded post-processing for forecast hours 0, 1, and 2.
+# This test validates the gfs_wavepostgridded_f000-f002 task from the S2SW
+# workflow. Tests wave gridded post-processing for forecast hours 0, 1, and 2.
 #
 # Workflow Context:
-# - Task: wavepostsbs_f000-f002 (from gfs_wavepostsbs metatask)
-# - Job: JGLOBAL_WAVE_POST_SBS -> exgfs_wave_post_gridded_sbs.sh
+# - Task: wavepostgridded_f000-f002 (from gfs_wavepostgridded metatask)
+# - Job: JGLOBAL_WAVE_POST_GRIDDED -> exgfs_wave_post_gridded_sbs.sh
 #
 # Source Logic: scripts/exgfs_wave_post_gridded_sbs.sh
 # - Reads binary gridded output from wave forecast (uglo_100km.fNNN.bin)
