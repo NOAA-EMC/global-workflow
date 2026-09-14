@@ -228,5 +228,21 @@ export NEXUS_DO_CAMS=.false. # Use CAMS global emissions
 # Enables time-varying scaling when CAMS is active.
 export NEXUS_DO_CAMSTEMPO=.true. # Use CAMS temporal emissions
 
-#================================================================================
-echo "END: config.aero"
+#================================================================================# 4. CATChem settings
+#===============================================================================
+# CATChem is an interactive atmospheric chemistry model coupled to FV3 through
+# its own NUOPC cap (chm_model='catchem'). Runtime configuration is provided as
+# a set of four YAML files (config, species, emissions, field mapping) that are
+# staged into the DATA directory under fixed names before the forecast runs.
+
+# CATChem configuration set (selects the *_<CATCHEM_CONFIG>.yaml bundle under
+# parm/chem/catchem). Options: gcafs_aero (default)
+#---------------------------------------------------------------------------------------------------
+export CATCHEM_CONFIG="{{ CATCHEM_CONFIG | default('gcafs_aero') }}"
+
+# Directory containing the CATChem runtime YAML sets. The selected config set is
+# resolved by filename suffix, e.g. CATChem_config_${CATCHEM_CONFIG}.yaml.
+#---------------------------------------------------------------------------------------------------
+export CATCHEM_CONFIG_DIR="${PARMglobal}/chem/catchem"
+
+#===============================================================================echo "END: config.aero"

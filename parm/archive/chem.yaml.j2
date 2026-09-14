@@ -1,5 +1,5 @@
 chem:
-    {% set head = "gocart" %}
+    {% set head = CHEM_MODEL | default('gocart') %}
     name: "CHEM"
     target: "{{ ATARDIR }}/{{ cycle_YMDH }}/chem.tar"
     required:

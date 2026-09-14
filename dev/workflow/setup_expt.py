@@ -177,7 +177,7 @@ def input_args(*argv):
         If start type is invalid
     """
 
-    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
+    ufs_apps = ['ATM', 'ATMA', 'ATMC', 'ATMW', 'S2S', 'S2SA', 'S2SW', 'S2SWA']
 
     def _validate_interval(interval_str):
         """

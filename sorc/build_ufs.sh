@@ -58,6 +58,7 @@ case "${EXEC_NAME}" in
     "gefs_model.x") COMPILE_ID=2 ;;
     "sfs_model.x") COMPILE_ID=3 ;;
     "gcafs_model.x") COMPILE_ID=4 ;;
+    "gcafs_catchem_model.x") COMPILE_ID=5 ;;
     *)
         echo "Unsupported executable name: ${EXEC_NAME}"
         exit 1

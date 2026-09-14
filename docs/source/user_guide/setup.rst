@@ -74,6 +74,7 @@ where:
 
      - ATM: atmosphere-only [default]
      - ATMA: atm-aerosols
+     - ATMC: atm-CATChem interactive chemistry (GCAFS)
      - ATMW: atm-wave (currently non-functional)
      - S2S: atm-ocean-ice
      - S2SA: atm-ocean-ice-aerosols

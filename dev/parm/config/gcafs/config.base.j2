@@ -164,7 +164,7 @@ shopt -s extglob
 # If a component (WAVES, etc) needs to be turned off by RUN, set it here
 case "${RUN}" in
     enkf*) # Turn off aerosols and waves
-        APP="${APP/%+([WA])}"
+        APP="${APP/%+([WAC])}"
         ;;
     *)     # Keep app unchanged
         ;;
@@ -234,6 +234,9 @@ case "${APP}" in
   ATMA)
     DO_AERO="YES"
     ;;
+  ATMC)  # Atmosphere + CATChem interactive chemistry
+    DO_AERO="YES"
+    ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
@@ -259,6 +262,19 @@ case "${APP}" in
   *)
     echo "FATAL ERROR: Unrecognized APP: '${APP}'"
     exit 3
+    ;;
+esac
+
+# Chemistry model selector: none (default), gocart (ATM*A apps), catchem (ATMC)
+case "${APP}" in
+  ATMC)
+    export CHEM_MODEL="catchem"
+    ;;
+  *A)
+    export CHEM_MODEL="gocart"
+    ;;
+  *)
+    export CHEM_MODEL="none"
     ;;
 esac
 

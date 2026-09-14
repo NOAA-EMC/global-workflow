@@ -213,3 +213,9 @@ versions/run.ver
 
 # jcb checkout and symlinks
 ush/python/jcb
+
+
+specs/
+.specify/
+.github/agents/
+.github/prompts/

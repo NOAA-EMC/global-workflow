@@ -101,7 +101,8 @@ UFS_configure() {
 
     if [[ "${cplchm}" = ".true." ]]; then
 
-        local chm_model="gocart"
+        local chm_model="${chm_model:-gocart}"
+        local cplcat="${cplcat:-.false.}"
         local chm_petlist_bounds="0 $((CHMPETS - 1))"
         local chm_omp_num_threads="${CHMTHREADS}"
         local coupling_interval_sec="${CPL_FAST}"
