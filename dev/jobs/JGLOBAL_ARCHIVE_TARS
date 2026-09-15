@@ -128,7 +128,7 @@ if [[ "${RUN}" == "sfs" && "${ARCH_ICSDIR}" == "YES" ]]; then
     mkdir -p "${TARGET_PREV}"
 
     echo "Starting parallel copy of ensemble member ICs..."
-    for ((i=0; i<=${NMEM_ENS}; i++)); do
+    for ((i= 0; i <= ${NMEM_ENS}; i++)); do
         MEM3=$(printf %03i "${i}")
 
         # Copy both current and previous cycle files in the background
@@ -136,7 +136,7 @@ if [[ "${RUN}" == "sfs" && "${ARCH_ICSDIR}" == "YES" ]]; then
         cp -r "${ICSDIR}/sfs.${precycle_YMD}/${precycle_HH}/mem${MEM3}" "${TARGET_PREV}" &
 
         # Prevent spawning too many processes at once (throttle every 10 members)
-        if (( i % 10 == 0 )); then
+        if ((i % 10 == 0)); then
             wait
         fi
     done
