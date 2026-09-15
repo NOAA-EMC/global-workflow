@@ -792,13 +792,6 @@ case ${step} in
       fi
     fi
 
-    if (( ntiles > 6 )); then
-      export layout_x_nest=${layout_x_nest:-10}
-      export layout_y_nest=${layout_y_nest:-10}
-      export npx_nest=${npx_nest:-1441}
-      export npy_nest=${npy_nest:-961}
-    fi
-
     # FV3
     if [[ "${USE_ESMF_THREADING:-}" == "YES" ]]; then
       (( FV3THREADS = nthreads_fv3 ))

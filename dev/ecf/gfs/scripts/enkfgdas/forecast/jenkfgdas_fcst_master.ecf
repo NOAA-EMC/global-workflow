@@ -56,7 +56,7 @@ might be the cause, but we can also look to decrease the model
 forecast time steps. 
 To  reduce the atm time step, in the GFSv17 package, in 
 parm/gfs/config.ufs change DELTIM=300 in the ${fv3_res}=C384 
-section without a nest, to DELTIM=150. 
+section, to DELTIM=150. 
 To reduce the ocn time step, in the GFSv17 package, in 
 parm/gfs/config.ufs in the "MOM6 specific settings" section for case 
 ${mom6_res}=025 change, OCNTIM='900' and

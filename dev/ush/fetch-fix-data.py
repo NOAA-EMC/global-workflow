@@ -251,9 +251,6 @@ class FetchFIXdata():
                     # skip gdas data, for DA projects, one should keep gdas part.
                     if (key.find('gdas_') >= 0):
                         continue
-                    # skip nest data
-                    if (key.find('nest') > 0):
-                        continue
                     self.fix_ver_dict[key] = value.strip()
 
 

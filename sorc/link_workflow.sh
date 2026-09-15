@@ -9,7 +9,7 @@ function usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: ${BASH_SOURCE[0]} [-h][-o][--nest]
+Usage: ${BASH_SOURCE[0]} [-h][-o]
   -h:
     Print this help message and exit
   -o:
@@ -22,17 +22,12 @@ RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":ho-:" option; do
+while getopts ":ho" option; do
     case "${option}" in
         h) usage ;;
         o)
             echo "-o option received, configuring for NCO"
             RUN_ENVIR="nco"
-            ;;
-        -)
-            if [[ "${OPTARG}" == "nest" ]]; then
-                LINK_NEST=ON
-            fi
             ;;
         :)
             echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -164,15 +159,6 @@ for dir in aer \
     fix_ver="${dir}_ver"
     safe_link_or_copy "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
-# global-nest uses different versions of orog and ugwd
-if [[ "${LINK_NEST:-OFF}" == "ON" ]]; then
-    for dir in orog \
-        ugwd; do
-        nestdir=${dir}_nest
-        fix_ver="${dir}_nest_ver"
-        safe_link_or_copy "${FIX_DIR}/${dir}/${!fix_ver}" "${nestdir}"
-    done
-fi
 
 #---------------------------------------
 #--link sorc/upp.fd before referencing files within it
@@ -217,7 +203,7 @@ fi
 
 # Link these templates from ufs-weather-model
 cd "${HOMEglobal}/parm/ufs" || exit 1
-declare -a ufs_templates=("model_configure.IN" "input_global_nest.nml.IN"
+declare -a ufs_templates=("model_configure.IN"
     "MOM_input_025.IN" "MOM_input_050.IN" "MOM_input_100.IN" "MOM_input_500.IN"
     "MOM6_data_table.IN"
     "ice_in.IN"
@@ -239,7 +225,6 @@ done
 
 # Link the CCPP suite XML files from ufs-weather-model
 declare -a ccpp_suites=(
-    "suite_FV3_global_nest_v1.xml"
     "suite_FV3_GFS_v17_p8_ugwpv1.xml"
     "suite_FV3_GFS_v17_coupled_p8_ugwpv1.xml"
 )

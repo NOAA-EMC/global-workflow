@@ -50,12 +50,6 @@
 {% endfilter %}
 {% endif %}
 
-{% if DO_NEST %}
-{% filter indent(width=4) %}
-{% include "atmosphere_nest.yaml.j2" %}
-{% endfilter %}
-{% endif %}
-
 {% if DO_ICE %}
 {% filter indent(width=4) %}
 {% include "ice.yaml.j2" %}

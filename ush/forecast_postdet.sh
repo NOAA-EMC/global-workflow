@@ -338,10 +338,6 @@ EOF
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
                 ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
                 ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
-                if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
-                fi
             fi
         done
     fi
@@ -383,14 +379,7 @@ FV3_nml() {
     source "${USHglobal}/parsing_namelists_fv3.sh"
     source "${USHglobal}/parsing_model_configure_fv3.sh"
 
-    # Call the appropriate namelist functions
-    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-        source "${USHglobal}/parsing_namelists_fv3_nest.sh"
-        FV3_namelists_nest global
-        FV3_namelists_nest nest
-    else
-        FV3_namelists
-    fi
+    FV3_namelists
     FV3_model_configure
 
     echo "SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created"

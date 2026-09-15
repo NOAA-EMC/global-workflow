@@ -185,17 +185,9 @@ export DO_AERO_ANL="NO"
 export DOBNDPNT_WAVE="NO"
 export DO_CHEM_WARMSTART="YES"
 export FRAC_GRID=".true."
-export DO_NEST="NO" # Whether to run a global-nested domain
-if [[ "${DO_NEST:-NO}" == "YES" ]] ; then
-  export ntiles=7
-  export NEST_OUTPUT_GRID="regional_latlon"
-  export FIXugwd="${FIXglobal}/ugwd_nest"
-  export FIXorog="${FIXglobal}/orog_nest"
-else
-  export ntiles=6
-  export FIXugwd="${FIXglobal}/ugwd"
-  export FIXorog="${FIXglobal}/orog"
-fi
+export ntiles=6
+export FIXugwd="${FIXglobal}/ugwd"
+export FIXorog="${FIXglobal}/orog"
 
 # Set operational resolution
 export OPS_RES="C768" # Do not change # TODO: Why is this needed and where is it used?

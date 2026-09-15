@@ -172,7 +172,6 @@ ush/parse-storm-type.pl @HananehJafary-NOAA
 ush/parsing_model_configure_FV3.sh @dpsarmie
 ush/parsing_namelists_CICE.sh @dpsarmie @DeniseWorthen
 ush/parsing_namelists_FV3.sh @dpsarmie
-ush/parsing_namelists_FV3_nest.sh @guoqing-noaa
 ush/parsing_namelists_MOM6.sh @dpsarmie @jiandewang
 ush/parsing_namelists_WW3.sh @JessicaMeixner-NOAA @sbanihash
 ush/parsing_ufs_configure.sh @dpsarmie
