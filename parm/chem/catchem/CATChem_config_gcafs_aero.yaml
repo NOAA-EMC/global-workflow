@@ -1,0 +1,470 @@
+### CATChem_config.yml: CATChem Runtime configuration options.
+###
+### NOTE: Add quotes around nitrogen oxide ('NO'), because YAML
+### parsers will confuse this with a negative "no" value.
+
+#============================================================================
+# Simulation settings
+#============================================================================
+simulation:
+  name: test
+  start_date: 20240501 0000
+  end_date: 20240501 0100
+  #species_filename: ./Configs/Default/CATChem_species.yml
+  #emission_filename: ./Configs/Default/CATChem_emission.yml
+  species_filename: ./CATChem_species.yml
+  emission_filename: ./CATChem_emission.yml
+  verbose:
+    activate: true
+#============================================================================
+# Grid settings
+#============================================================================
+grid:
+  number_of_levels: 64
+  number_of_soil_layers: 4
+#============================================================================
+# Timesteps settings
+#============================================================================
+timesteps:
+  transport_timestep_in_s: 10
+  chemistry_timestep_in_s: 60
+#============================================================================
+# Diagnostic settings
+#============================================================================
+diagnostics:
+  output:
+    enabled: true
+    directory: "./output"
+    prefix: "catchem_diag"
+    frequency: 3600  #output frequency in seconds; e.g., 3600 for hourly output
+    format: "netcdf" #only format supported now
+    compress_lev: 0 #compress NC file; 0 for no compression, 1-9 for increasing levels of compression (and run time)
+    latlon_output: true #stitch cubed-sphere tiles into a single lat/lon file (only applies when tile count > 1)
+    diag_list: [so2, so4, seas1, seas2, seas3, seas4, seas5, bc1, bc2, oc1, oc2, dust1, dust2, dust3, dust4, dust5]  #list of species to output; empty list for all species
+  collection:
+    enabled: true
+    buffer_size: 1000
+#============================================================================
+# Optics files for Mie
+#============================================================================
+mie:
+  #directory: "/gpfs/f6/bil-fire3/world-shared/Emissions/NASA/ExtData/monochromatic/"  #location on gaeac6
+  #directory: "/scratch4/NCEPDEV/naqfc/Barry.Baker/Emissions/Emissions/NASA/ExtData/monochromatic/"  #location on ursa
+  directory: "./ExtData/monochromatic/"  #in running directory after copying from the above directories
+  #directory: "../../../../../../optics/"
+  files:
+    # SS: opticsBands_SS.v3_3.RRTMG.nc
+    # DU: opticsBands_DU.v15_3.RRTMG.nc
+    # BC: opticsBands_BC.v1_3.RRTMG.nc
+    # OC: opticsBands_OC.v1_3.RRTMG.nc
+    # NI: opticsBands_NI.v2_5.RRTMG.nc
+    # SU: opticsBands_SU.v1_3.RRTMG.nc
+    SS: optics_SS.v3_5.nc
+    DU: optics_DU.v15_5.nc
+    BC: optics_BC.v1_5.nc
+    OC: optics_OC.v1_5.nc
+    NI: optics_NI.v2_5.nc
+    SU: optics_SU.v1_5.nc
+    #SS: optics_SS.v3_3.nc
+    #DU: optics_DU.v15_3.nc
+    #BC: optics_BC.v1_3.nc
+    #OC: optics_OC.v1_3.nc
+    #NI: optics_NI.v2_5.nc
+    #SU: optics_SU.v1_3.nc
+#============================================================================
+# RunPhase settings: define process running order
+#============================================================================
+run_phases:
+  test1:
+    description: "Test phase 1"
+    processes:
+      - seasalt
+      - dust
+      - carbchem
+      - settling
+      - drydep
+      - so4chem
+      - wetdep
+  # test2:
+  #   description: "Test phase 2"
+  #   processes:
+  #    - dust
+  #    - drydep
+  #    - wetdep
+
+#============================================================================
+# Settings for CATChem processes
+#============================================================================
+processes:
+  extemis:
+    activate: true
+    diagnostics: true
+    global_factor: 1.0
+    anthro1:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ChemInput/NEXUS_DIAG.%y4%m2%d2.nc"  # %y4=year, %m2=month, %d2=day
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "P100" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "hourly"
+      diagnostics: true
+      diag_list: [SO2, OC, BC]
+    anthro2:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ChemInput/NEXUS_DIAG.%y4%m2%d2.nc"  # %y4=year, %m2=month, %d2=day
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "P500" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "hourly"
+      diagnostics: true
+      diag_list: [SO2_elev, OC_elev, BC_elev]
+    ship:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ChemInput/NEXUS_DIAG.%y4%m2%d2.nc"  # %y4=year, %m2=month, %d2=day
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "P100" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "hourly"
+      diagnostics: true
+      diag_list: [SO2_ship, OC_ship, BC_ship]
+    bio:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/nexus/MEGAN_OFFLINE_BVOC/v2021-12/MEGAN_OFFLINE_CLIMO_2000_2022_%m2.nc"  # %y4=year, %m2=month, %d2=day
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "none" #biogenic is only at the surface.
+      frequency: "monthly"  #note it is monthly climatology from offline megan for now
+      diagnostics: true
+      diag_list: [isoprene, mtpa]
+    so2_aviation_lto:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_lto.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_lto" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [so2_aviation]
+    so2_aviation_cds:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_cds.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_cds" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [so2_aviation]
+    so2_aviation_crs:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.aviation_crs.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_crs" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [so2_aviation]
+    oc_aviation_lto:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_lto.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_lto" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [oc_aviation]
+    oc_aviation_cds:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_cds.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_cds" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [oc_aviation]
+    oc_aviation_crs:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_crs.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_crs" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [oc_aviation]
+    bc_aviation_lto:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_lto.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_lto" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [bc_aviation]
+    bc_aviation_cds:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_cds.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_cds" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [bc_aviation]
+    bc_aviation_crs:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_crs.x3600_y1800_t12.2010.nc4"
+      format: "netcdf"
+      gridded: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "aviation_crs" #options: none, P100, P500, Ppbl, aviation, aviation_lto, aviation_cds, aviation_crs
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [bc_aviation]
+    point: #not used for now
+      activate: true
+      scale_factor: 1.0
+      topfraction: -1.0
+      source_file: "INPUT/PT.nc"
+      format: "netcdf"
+      gridded: false
+      frequency: "hourly"
+      lat_name: "LATITUDE"
+      lon_name: "LONGITUDE"
+      plume_rise: "sofiev"
+      stack_diameter:    STKDM
+      stack_height:      STKHT
+      stack_temperature: STKTK
+      stack_velocity:    STKVE
+      diagnostics: true
+      diag_list: [NO, SO2, POC, PSO4]
+    gmi:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/PIESA/L127/A2_ACCMIP_gmic_MERRA_oh_h2o2_no3.x144_y91_z127_t14.%y4.nc"
+      format: "netcdf"
+      gridded: true
+      is_2d: false
+      apply_method: "replace"
+      reverse_vertical: true
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "none"
+      frequency: "monthly" # 14 months (Dec+Jan padding); time-coord matching selects the right slice
+      diagnostics: true
+      diag_list: [oh, h2o2]
+    dms:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/MERRA2/sfc/DMSclim_sfcconcentration.x360_y181_t12.Lana2011.nc4"
+      format: "netcdf"
+      gridded: true
+      is_2d: true
+      apply_method: "replace"
+      regrid_method: conserve
+      time_interpolation: linear
+      lat_name: "latitude"
+      lon_name: "longitude"
+      vertical_dist: "none"
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [conc]
+    volcano:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/nexus/VOLCANO/v2021-09/so2_volcanic_emissions_CARN_v202005.degassing_only.rc"
+      format: "volcano"      # triggers the point-source reader + 3D injector
+      gridded: false
+      frequency: "static"     # "daily" if seperated by day
+      diagnostics: false     #current will all be zeros
+      diag_list: [SO2]
+    fire:
+      activate: true
+      scale_factor: 0.7778
+      topfraction: -1.0
+      source_file: "ChemInput/FIRE_EMIS_%y4%m2%d2.nc"  # %y4=year, %m2=month, %d2=day
+      format: "netcdf"
+      gridded: true
+      is_2d: true
+      regrid_method: conserve
+      time_interpolation: linear
+      use_oc_fbb: true
+      diurnal_bb: true
+      lat_name: "lat"
+      lon_name: "lon"
+      vertical_dist: "Ppbl"
+      frequency: "daily"
+      plume_rise: "sofiev"
+      diagnostics: true
+      diag_list: [SO2,OC,BC]
+    dust:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v3.2.nc"
+      format: "netcdf"
+      gridded: true
+      regrid_method: neareststod
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      is_2d: true
+      apply_method: "replace"
+      frequency: "static"
+      diagnostics: true
+      diag_list: [clayfrac,sandfrac,uthres,sep]
+    fengsha:
+      activate: true
+      scale_factor: 1.0
+      source_file: "ExtData/FENGSHA/FENGSHA_2022_NESDIS_inputs_10km_v4.nc"
+      format: "netcdf"
+      gridded: true
+      regrid_method: neareststod
+      time_interpolation: linear
+      lat_name: "lat"
+      lon_name: "lon"
+      is_2d: true
+      apply_method: "replace"
+      frequency: "monthly"
+      diagnostics: true
+      diag_list: [albedo_drag]
+  seasalt:
+    activate: true
+    diagnostics: true
+    diag_species: []
+    scheme: 'geos12'
+    gong97:
+      scale_factor: 1.0
+      weibull_flag: false
+    gong03:
+      scale_factor: 1.0
+      weibull_flag: false
+    geos12:
+      scale_factor: 1.0
+      weibull_flag: false
+  dust:
+    activate: true
+    diagnostics: true
+    diag_species: []
+    scheme: 'fengsha'
+    fengsha:
+      alpha: 0.20
+      gamma: 1.0
+      drylimit_factor: 1.2
+      moist_correction_factor: 1.0
+      kvhmax: 0.0002
+      drag_option: 1
+      horizflux_option: 1
+      moist_option: 1
+      distribution_option: 1
+    ginoux:
+      Ch_DU: [0.07, 0.07, 0.07, 0.07, 0.07]
+  drydep:
+    activate: true
+    diagnostics: true
+    diag_species: [so2, so4, seas1, seas3, seas5, oc1,oc2,bc1,bc2,dust1, dust3, dust5]
+    gas_scheme: 'wesely'
+    aero_scheme: 'gocart'
+    wesely:
+      scale_factor: 1.0
+    gocart:
+      scale_factor: 1.0
+      resuspension: false
+      dust_resuspension_only: true   # default
+    zhang:
+      scale_factor: 1.0
+  wetdep:
+    activate: true
+    diagnostics: true
+    diag_species: [so2, so4, seas1, seas3, seas5, oc1,oc2,bc1,bc2,dust1, dust3, dust5]
+    scheme: 'jacob'
+    jacob:
+      scale_factor: 1.0       #washout scale for all species
+      radius_threshold: 0.05
+      so4_gocart_resusp: true #sulfate-only GOCART-style resuspension
+      so4_washout_eff: 0.3 #sulfate-only below-cloud washout efficiency (1.0=unchanged); reduce to cut excess SO4 washout
+  settling:
+    activate: true
+    diagnostics: true
+    diag_species: [so4, seas1, seas3, seas5, oc1,oc2,bc1,bc2,dust1, dust3, dust5]
+    scheme: 'gocart'
+    gocart:
+      scale_factor: 1.0 #not doing anything for now since we cannot edit gocart2g module
+      simple_scheme: false  #read in mie data for wet particles if true; otherwise calculate particles wet swelling internally
+      ####swelling_method: 1    # 1 for Fitzgerald 1975; 2 for Gerber 1985 if simple_scheme is false
+      swelling_rh_max: 0.95
+      correction_maring: true  #correction settling velocity following Maring et al, 2003 for both simple and non-simple schemes
+      ###maring_dust_only: true  #apply Maring correction to dust only (true) or all species (false)
+  so4chem:
+    activate: true
+    diagnostics: true
+    diag_species: [so2, so4]  #only msa, so2 and so4 for gocart now
+    scheme: 'gocart'
+    gocart:
+      update_so2: true #whether to update SO2 concentration based on chemical production/loss
+  carbchem:
+    activate: true
+    diagnostics: true
+    diag_species: [oc1,oc2,bc1,bc2]  #no brown carbon for now
+    scheme: 'gocart'
+    gocart:
+      time_days_hydrophobic_to_hydrophilic: 2.5  # Rate of conversion of hydrophobic to hydrophilic [days]

@@ -1,0 +1,327 @@
+### CATChem_species.yml: CATChem Runtime Species Configuration
+###
+### NOTE: Add quotes around nitrogen oxide ('NO'), because YAML
+### parsers will confuse this with a negative "no" value.
+
+# species (gas dey dep set to false to test GOCART only for now):
+- name: so2
+  __description: Sulfur dioxide
+  __is_gas: true
+  __is_drydep: true
+  __is_wetdep: true
+  __dd_f0: 0.0
+  __dd_hstar: 1.0e+5
+  molecular weight [kg mol-1]: 64.04e-3
+  __dd_DvzAerSnow: 0.03
+  __dd_DvzMinVal_snow: 0.2
+  __dd_DvzMinVal_land: 0.3
+  __viscosity: 0.0 #dummy value
+  #This is Luo's scheme for SO2 but adopted here
+  __henry_k0: 1.22
+  __henry_cr: 3100.0
+  __wd_retfactor: 5.0e-2
+  __wd_LiqAndGas: true
+  __wd_convfacI2G: 6.17395e-1
+  __wd_rainouteff: [1.0, 0.0, 1.0]
+  __wd_reevap_frac: 1.0  #GOCART resuspends full re-evaporated fraction (GEOS-Chem/Luo default 0.5)
+- name: h2o2
+  __description: Hydrogen peroxide
+  __is_gas: true
+  __is_drydep: false   #turn off for now due to climatology reading from GOCART inputs.
+  __is_wetdep: true
+  __is_advected: false
+  __dd_f0: 1.0
+  __dd_hstar: 5.0e+7
+  molecular weight [kg mol-1]: 34.02e-3
+  __viscosity: 0.0 #dummy value
+  __henry_k0: 8.3e+4
+  __henry_cr: 7400.0
+  __wd_retfactor: 5.0e-2
+  __wd_LiqAndGas: true
+  __wd_convfacI2G: 4.36564e-1
+- name: oh
+  __description: Hydroxyl radical
+  __is_gas: true
+  __is_advected: false
+  molecular weight [kg mol-1]: 17.01e-3
+- name: no3
+  __description: Nitrate radical
+  __is_gas: true
+  __is_photolysis: true
+  __is_advected: false
+  molecular weight [kg mol-1]: 62.01e-3
+- name: so4       #This is to match CMAQ name to use the restart file. so4 is used in GEOS-Chem.
+  __description: sulfate
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 96.06e-3
+  __radius: 0.35
+  __density: 1700.0
+  __dd_DvzAerSnow: 0.03
+  __dd_DvzMinVal_snow: 0.01
+  __dd_DvzMinVal_land: 0.01
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __wd_rainouteff: [1.0, 0.0, 1.0]
+  __wd_reevap_frac: 1.0  #GOCART resuspends full re-evaporated fraction (GEOS-Chem/Luo default 0.5)
+  __mie_name: SU
+- name: dms
+  __description: Dimethyl sulfide
+  molecular weight [kg mol-1]: 62.13e-3
+  __radius: 0.0
+  __is_gas: true   #gocart treat it as a gas without dry and wet deposition
+  __is_dust: false
+  __is_aerosol: false
+  __is_drydep: false
+  __henry_k0: 0.48
+  __henry_cr: 3100.0
+  __mie_name: SU
+- name: dms_in
+  __description: Dimethyl sulfide in ocean water (climatology for emissions calculation)
+  __is_advected: false
+  molecular weight [kg mol-1]: 62.13e-3
+  __radius: 8.7e-2
+- name: msa
+  __description: methanesulphonic acid
+  __is_aerosol: true   #gocart treat it as a gas, but we treat it as aerosol
+  __is_drydep: true
+  __is_wetdep: true
+  __radius: 0.35
+  __density: 1700.0
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  __dd_DvzAerSnow: 0.03
+  __dd_DvzMinVal_snow: 0.01
+  __dd_DvzMinVal_land: 0.01
+  molecular weight [kg mol-1]: 96.10e-3
+  __wd_rainouteff: [1.0, 0.0, 1.0]
+  __mie_name: SU
+- name: bc1
+  __description: BC1
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 12.01e-3    #gocart is 180 g/mol but it seems not used in gocart processes. So we go with GC
+  __radius: 0.35   #gocart is 0.35; GC is 0.087
+  __density: 1800.0
+  __dd_DvzAerSnow: 0.03
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __wd_rainouteff: [0.0, 0.0, 0.0]
+  __t_chem_loss: -1.0  #Rate of chemical destruction of carbon species [days]; Note -1 (any negative value) means carbon loss is turned off by default.
+  __mie_name: BC
+- name: bc2
+  __description: BC2
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 12.01e-3    #gocart is 180 g/mol but it seems not used in gocart processes. So we go with GC
+  __radius: 0.35   #gocart is 0.35; GC is 0.087
+  __density: 1800.0
+  __dd_DvzAerSnow: 0.03
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __t_chem_loss: -1.0  #Rate of chemical destruction of carbon species [days]; Note -1 (any negative value) means carbon loss is turned off by default.
+  __mie_name: BC
+- name: oc1
+  __description: OC1
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 12.01e-3    #gocart is 180 g/mol but it seems not used in gocart processes. So we go with GC
+  __radius: 0.35   #gocart is 0.35; GC is 0.087
+  __density: 1800.0
+  __dd_DvzAerSnow: 0.03
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __wd_rainouteff: [0.0, 0.0, 0.0]
+  __t_chem_loss: -1.0  #Rate of chemical destruction of carbon species [days]; Note -1 (any negative value) means carbon loss is turned off by default.
+  __mie_name: OC
+- name: oc2
+  __description: OC2
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 12.01e-3    #gocart is 180 g/mol but it seems not used in gocart processes. So we go with GC
+  __radius: 0.35   #gocart is 0.35; GC is 0.087
+  __density: 1800.0
+  __dd_DvzAerSnow: 0.03
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __t_chem_loss: -1.0  #Rate of chemical destruction of carbon species [days]; Note -1 (any negative value) means carbon loss is turned off by default.
+  __mie_name: OC
+- name: dust1
+  __long_name: dust1
+  __description: dust1
+  __lower_radius: 0.1
+  __upper_radius: 1.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 29.00e-3
+  __radius: 0.73
+  __density: 2500.
+  __is_dust: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [0.8, 0.8, 0.8]
+  __mie_name: DU
+- name: dust2
+  __long_name: dust2
+  __description: dust2
+  __lower_radius: 1.0
+  __upper_radius: 1.8
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 29.00e-3
+  __radius: 1.4
+  __density: 2650.
+  __is_dust: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [0.8, 0.8, 0.8]
+  __mie_name: DU
+- name: dust3
+  __long_name: dust3
+  __description: dust3
+  __lower_radius: 1.8
+  __upper_radius: 3.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 29.00e-3
+  __radius: 2.4
+  __density: 2650.
+  __is_dust: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [0.8, 0.8, 0.8]
+  __mie_name: DU
+- name: dust4
+  __long_name: dust4
+  __description: dust4
+  __lower_radius: 3.0
+  __upper_radius: 6.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 29.00e-3
+  __radius: 4.5
+  __density: 2650.
+  __is_dust: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: DU
+- name: dust5
+  __long_name: dust5
+  __description: dust5
+  __lower_radius: 6.0
+  __upper_radius: 10.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 29.00e-3
+  __radius: 8.0
+  __density: 2650.
+  __is_dust: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: DU
+- name: seas1
+  __long_name: seas1
+  __description: seas1
+  __lower_radius: 0.03
+  __upper_radius: 0.1
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 31.40e-3  #GEOS-Chem is 31.40; gocart is 58 but it seems not used in gocart processes. So we go with GC
+  __radius: 0.079
+  __density: 2200.
+  __is_seasalt: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: SS
+- name: seas2
+  __long_name: seas2
+  __description: seas2
+  __lower_radius: 0.1
+  __upper_radius: 0.5
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 31.40e-3  #GEOS-Chem is 31.40; gocart is 58
+  __radius: 0.316
+  __density: 2200.
+  __is_seasalt: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: SS
+- name: seas3
+  __long_name: seas3
+  __description: seas3
+  __lower_radius: 0.5
+  __upper_radius: 1.5
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 31.40e-3  #GEOS-Chem is 31.40; gocart is 58
+  __radius: 1.119
+  __density: 2200.
+  __is_seasalt: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: SS
+- name: seas4
+  __long_name: seas4
+  __description: seas4
+  __lower_radius: 1.5
+  __upper_radius: 5.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 31.40e-3  #GEOS-Chem is 31.40; gocart is 58
+  __radius: 2.818
+  __density: 2200.
+  __is_seasalt: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: SS
+- name: seas5
+  __long_name: seas5
+  __description: seas5
+  __lower_radius: 5.0
+  __upper_radius: 10.0
+  __dd_f0: 0.0
+  __dd_hstar: 0.0
+  molecular weight [kg mol-1]: 31.40e-3  #GEOS-Chem is 31.40; gocart is 58
+  __radius: 7.772
+  __density: 2200.
+  __is_seasalt: true
+  __is_aerosol: true
+  __is_drydep: true
+  __is_wetdep: true
+  __wd_rainouteff: [1.0, 1.0, 1.0]
+  __mie_name: SS

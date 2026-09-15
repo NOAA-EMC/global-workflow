@@ -291,6 +291,7 @@ FV3_namelists() {
     local DO_SKEB=${do_skeb:-".false."}
     local FRAC_GRID=${FRAC_GRID:-".true."}
     local CPLCHM=${cplchm:-".false."}
+    local CPLCAT=${cplcat:-".false."}
     local CPLFLX=${cplflx:-".false."}
     local CPLICE=${cplice:-".false."}
     local CPLWAV=${cplwav:-".false."}

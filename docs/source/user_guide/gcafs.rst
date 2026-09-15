@@ -34,6 +34,9 @@ GCAFS can be run using the global-workflow framework. To set up a free-forecast 
                 --idate 2023010100 --edate 2023010100 \
                 --resdetatmos 384 --comroot /path/to/com --expdir /path/to/exp
 
+Use ``--app ATMC`` instead of ``--app ATMA`` to run with the CATChem
+interactive chemistry model (see :ref:`gcafs_catchem` below).
+
 Configuration is managed through the standard global-workflow configuration files. GCAFS-specific
 settings are documented in :ref:`gcafs_config`.
 
@@ -108,6 +111,43 @@ The primary configuration file for aerosol settings, containing:
 
 These settings are processed as Jinja2 templates, allowing for experiment-specific customization
 through template variables like ``{{ NEXUS_CONFIG | default('gocart') }}``.
+
+.. _gcafs_catchem:
+
+-------------------
+CATChem (APP=ATMC)
+-------------------
+
+Selecting ``--app ATMC`` replaces the GOCART chemistry model with CATChem, an
+interactive atmospheric chemistry model coupled to FV3 through its own NUOPC
+cap (``chm_model='catchem'``, ``cplcat=.true.``).  The forecast executable is
+switched to ``ufs_model_gcafs_catchem.x`` (built via
+``./build_ufs.sh -a CATCHEM -e gcafs_catchem_model.x``) and the same aerosol
+forecast tasks (``prep_emissions``, ``aerosol_init``, ``fcst``) are used.
+
+**CATChem settings** (in ``config.aero.j2``):
+
+.. code-block:: bash
+
+   export CATCHEM_CONFIG="gcafs_aero"                # CATChem configuration set
+   export CATCHEM_CONFIG_DIR="${PARMglobal}/chem/catchem"  # Directory holding the YAML sets
+
+The selected configuration set resolves the four runtime YAML files staged
+into the forecast ``DATA`` directory under the fixed names expected by the
+CATChem cap:
+
+.. code-block:: text
+
+   CATChem_config_${CATCHEM_CONFIG}.yaml        -> CATChem_new_config.yml
+   CATChem_species_${CATCHEM_CONFIG}.yaml       -> CATChem_species.yml
+   CATChem_emissions_${CATCHEM_CONFIG}.yaml     -> CATChem_emission.yml
+   CATChem_field_mapping_${CATCHEM_CONFIG}.yaml -> CATChem_field_mapping.yml
+
+The staged ``CATChem_config.yml`` references ``./CATChem_species.yml`` and
+``./CATChem_emission.yml`` relative to ``DATA``, and reads Mie optics tables
+from ``./ExtData/monochromatic/`` (linked from ``AERO_INPUTS_DIR``).
+CATChem diagnostics (``catchem_diag*.nc``) are copied to
+``$COM/model/chem/history`` and archived into ``chem.tar``.
 
 =======================
 Emissions Preprocessing

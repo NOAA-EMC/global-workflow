@@ -1,0 +1,283 @@
+anthro1:
+  #NO:
+  #  long_name: "Nitrogen Oxide"
+  #  units: "kg/m2/s"
+  #  scale: [1.0]
+  #  map: ["NO"]   #double check upper or lower case
+  SO2:
+    long_name: "Sulfur Dioxide"
+    units: "kg/m2/s"
+    scale: [0.97, 0.045] #1-0.03; 0.03*96/64
+    map: ["so2", "so4"]
+  OC:
+    long_name: "Organic Carbon"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9] #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+  BC:
+    long_name: "Black Carbon"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2] #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+anthro2:
+  SO2_elev:
+    long_name: "Sulfur Dioxide at Elevated Levels"
+    units: "kg/m2/s"
+    scale: [0.97, 0.045] #1-0.03; 0.03*96/64
+    map: ["so2", "so4"]
+  OC_elev:
+    long_name: "Organic Carbon at Elevated Levels"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9] #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+  BC_elev:
+    long_name: "Black Carbon at Elevated Levels"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2] #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+ship:
+  SO2_ship:
+    long_name: "Sulfur Dioxide from Ships"
+    units: "kg/m2/s"
+    scale: [1.0]
+    map: ["so2"]
+  SO4_ship:
+    long_name: "Sulfate from Ships"
+    units: "kg/m2/s"
+    scale: [1.0]
+    map: ["so4"]
+  OC_ship:
+    long_name: "Organic Carbon from Ships"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9] #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+  BC_ship:
+    long_name: "Black Carbon from Ships"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2] #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+fire:
+  SO2:
+    long_name: "Sulfur Dioxide from Biomass Burning"
+    units: "kg/m2/s"
+    scale: [1.0]
+    map: ["so2"]
+  OC:
+    long_name: "Organic Carbon from Biomass Burning"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9]  #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+  BC:
+    long_name: "Black Carbon from Biomass Burning"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2]  #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+so2_aviation_lto:
+  so2_aviation:
+    long_name: "Sulfur Dioxide from Aviation LTO"
+    units: "kg/m2/s"
+    scale: [1.0]
+    map: ["so2"]
+oc_aviation_lto:
+  oc_aviation:
+    long_name: "Organic Carbon from Aviation LTO"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9] #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+bc_aviation_lto:
+  bc_aviation:
+    long_name: "Black Carbon from Aviation LTO"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2] #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+so2_aviation_cds:
+  so2_aviation:
+    long_name: "Sulfur Dioxide from Aviation CDS"
+    units: "kg/m2/s"
+    scale: [1.0]
+    map: ["so2"]
+oc_aviation_cds:
+  oc_aviation:
+    long_name: "Organic Carbon from Aviation CDS"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9] #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+bc_aviation_cds:
+  bc_aviation:
+    long_name: "Black Carbon from Aviation CDS"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2] #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+so2_aviation_crs:
+  so2_aviation:
+    long_name: "Sulfur Dioxide from Aviation CRS"
+    units: "kg/m2/s"
+    scale: [1.0]
+    map: ["so2"]
+oc_aviation_crs:
+  oc_aviation:
+    long_name: "Organic Carbon from Aviation CRS"
+    units: "kg/m2/s"
+    scale: [0.9, 0.9] #0.5 x 1.8; 0.5 is the fraction of OC that is hydrophobic/hydrophilic; 1.8 is the scaling factor from OC to POM
+    map: ["oc1", "oc2"]
+bc_aviation_crs:
+  bc_aviation:
+    long_name: "Black Carbon from Aviation CRS"
+    units: "kg/m2/s"
+    scale: [0.8, 0.2] #There is no 1.8 factor for BC
+    map: ["bc1", "bc2"]
+bio:
+  limo:
+    long_name: "Limonene"
+    units: "kg/m2/s"
+    scale: [0.09]
+    map: ["oc2"]     #0.05 x 1.8; Note: biogenic terpenes are assumed to be emitted as hydrophilic OC with 5% conversion rate
+  isoprene:
+    long_name: "Isoprene"
+    units: "kg/m2/s"
+    scale: [0.054]
+    map: ["oc2"]     #0.03 x 1.8; Note: biogenic isoprene is assumed to be emitted as hydrophilic OC with 3% conversion rate
+  mtpa:
+    long_name: "Monoterpene alpha-Pinene"
+    units: "kg/m2/s"
+    scale: [0.09]
+    map: ["oc2"]     #0.05 x 1.8; Note: biogenic terpenes are assumed to be emitted as hydrophilic OC with 5% conversion rate
+  mtpo:
+    long_name: "Monoterpene other"
+    units: "kg/m2/s"
+    scale: [0.09]
+    map: ["oc2"]     #0.05 x 1.8; Note: biogenic terpenes are assumed to be emitted as hydrophilic OC with 5% conversion rate
+  #PEC:
+  #  long_name: "Primary Elemental Carbon"
+  #  units: "kg/m2/s"
+  #  scale: [0.8, 0.2] # 0.8/0.2 is the fraction of hydrophobic/hydrophilic; 1.8 is not used for BC
+  #  map: ["bc1", "bc2"]
+  #PSO4:
+  #  long_name: "Primary Sulfate"
+  #  units: "kg/m2/s"
+  #  scale: [1.0]
+  #  map: ["so4"]    #will be changed to SO4 later
+gmi:
+  oh:
+    long_name: "Hydroxyl Radical"
+    units: "mol/mol"
+    scale: [1.0]
+    map: ["oh"]
+  h2o2:
+    long_name: "Hydrogen Peroxide"
+    units: "mol/mol"
+    scale: [1.0]
+    map: ["h2o2"]
+  no3:
+    long_name: "Nitrate Radical"
+    units: "mol/mol"
+    scale: [1.0]
+    map: ["no3"]
+dms:
+  conc:
+    long_name: "Dimethyl Sulfide"
+    units: "nmol/l"
+    scale: [1.0]
+    map: ["dms_in"]
+volcano:
+  SO2:
+    long_name: "Volcanic Sulfur Dioxide (degassing)"
+    units: "kg/m2/s"
+    scale: [2.0]   # file rate is kg S/s; 2.0 = fMassSO2/fMassSulfur (64/32) -> kg SO2/s
+    map: ["so2"]
+dust:
+  clayfrac:
+    long_name: "Clay Fraction"
+    units: "1"
+    scale: [1.0]
+    map: ["MET_CLAYFRAC"]
+  sandfrac:
+    long_name: "Sand Fraction"
+    units: "1"
+    scale: [1.0]
+    map: ["MET_SANDFRAC"]
+  sep:
+    long_name: "Sediment Supply Map"
+    units: "1"
+    scale: [1.0]
+    map: ["MET_SSM"]
+  uthres:
+    long_name: "Friction Velocity Threshold"
+    units: "m/s"
+    scale: [1.0]
+    map: ["MET_USTAR_THRESHOLD"]
+fengsha:
+  albedo_drag:
+    long_name: "Drag Partition"
+    units: "1"
+    scale: [1.0]
+    map: ["MET_RDRAG"]
+# point:
+#   NO:
+#     long_name: "Nitrogen Oxide"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["NO"]
+# fire:
+#   NO:
+#     long_name: "Nitrogen Oxide"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["NO"]
+#   FRP:
+#     long_name: "Fire Radiative Power"
+#     units: "1"
+#     scale: [1.0]
+#     map: []
+# dust:
+#   DU1:
+#     long_name: "Dust Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["dust1"]
+#   DU2:
+#     long_name: "Dust Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["dust2"]
+#   DU3:
+#     long_name: "Dust Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["dust3"]
+#   DU4:
+#     long_name: "Dust Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["dust4"]
+#   DU5:
+#     long_name: "Dust Species Coarse Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["dust5"]
+# seasalt:
+#   SeaS1:
+#     long_name: "Seasalt Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["seas1"] ##dummy mapping here for test only
+#   SeaS2:
+#     long_name: "Seasalt Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["seas2"]
+#   SeaS3:
+#     long_name: "Seasalt Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["seas3"]
+#   SeaS4:
+#     long_name: "Seasalt Species Fine Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["seas4"]
+#   SeaS5:
+#     long_name: "Seasalt Species Coarse Mode"
+#     units: "kg/m2/s"
+#     scale: [1.0]
+#     map: ["seas5"]

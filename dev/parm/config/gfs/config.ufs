@@ -17,6 +17,7 @@ if (( $# <= 1 )); then
     echo "--cice6 500|100|025"
     echo "--ww3 gwes_30m|glo_025|glo_100|glo_200|glo_500|mx025|uglo_100km"
     echo "--gocart"
+    echo "--catchem"
 
     exit 1
 
@@ -27,6 +28,7 @@ skip_mom6=true
 skip_cice6=true
 skip_ww3=true
 skip_gocart=true
+skip_catchem=true
 skip_mediator=true
 
 # Loop through named arguments
@@ -54,6 +56,9 @@ while (( $# > 0 )); do
       ;;
     "--gocart")
       skip_gocart=false
+      ;;
+    "--catchem")
+      skip_catchem=false
       ;;
     *)    # unknown option
       echo "FATAL ERROR: Unknown option: ${key}, ABORT!"
@@ -645,6 +650,18 @@ fi
 if [[ "${skip_gocart}" == "false" ]]; then
   source "${EXPDIR}/config.aero"
   export cplchm=".true."
+  model_list="${model_list}.aero"
+fi
+
+# CATChem specific settings
+# CATChem couples through its own NUOPC cap (chm_model='catchem') but reuses the
+# atmaero configure template: cplcat=true implies cplchm=true (the chemistry PETs
+# are the same as the GOCART/aerosol PETs), so the model_list suffix stays .aero.
+if [[ "${skip_catchem}" == "false" ]]; then
+  source "${EXPDIR}/config.aero"
+  export cplchm=".true."
+  export cplcat=".true."
+  export chm_model="catchem"
   model_list="${model_list}.aero"
 fi
 

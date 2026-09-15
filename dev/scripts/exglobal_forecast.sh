@@ -95,6 +95,7 @@ cpl=${cpl:-.false.}
 cplflx=${cplflx:-.false.} # default off,import from outside source
 cplwav=${cplwav:-.false.} # ? how to control 1-way/2-way?
 cplchm=${cplchm:-.false.} # Chemistry model
+cplcat=${cplcat:-.false.} # CATChem interactive chemistry model
 cplice=${cplice:-.false.} # ICE model
 
 OCNTIM=${OCNTIM:-1800}
@@ -122,7 +123,11 @@ if [[ "${cplice}" == ".true." ]]; then
     CICE_predet
 fi
 if [[ "${cplchm}" == ".true." ]]; then
-    GOCART_predet
+    if [[ "${cplcat}" == ".true." ]]; then
+        CATCHEM_predet
+    else
+        GOCART_predet
+    fi
 fi
 echo "MAIN: Variables before determination of run type loaded"
 
@@ -145,7 +150,11 @@ if [[ "${cplice}" == ".true." ]]; then
     CICE_postdet
 fi
 if [[ "${cplchm}" == ".true." ]]; then
-    GOCART_postdet
+    if [[ "${cplcat}" == ".true." ]]; then
+        CATCHEM_postdet
+    else
+        GOCART_postdet
+    fi
 fi
 echo "MAIN: Post-determination set up of run type finished"
 
@@ -161,7 +170,11 @@ if [[ "${cplice}" == ".true." ]]; then
     CICE_nml
 fi
 if [[ "${cplchm}" == ".true." ]]; then
-    GOCART_rc
+    if [[ "${cplcat}" == ".true." ]]; then
+        CATCHEM_rc
+    else
+        GOCART_rc
+    fi
 fi
 UFS_configure
 echo "MAIN: Name lists and model configuration written"
@@ -202,7 +215,11 @@ if [[ "${cplice}" == ".true." ]]; then
     CICE_out
 fi
 if [[ "${cplchm}" == ".true." ]]; then
-    GOCART_out
+    if [[ "${cplcat}" == ".true." ]]; then
+        CATCHEM_out
+    else
+        GOCART_out
+    fi
 fi
 if [[ "${esmf_profile:-}" == ".true." ]]; then
     CPL_out

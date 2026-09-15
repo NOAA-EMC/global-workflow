@@ -769,3 +769,16 @@ GOCART_predet() {
     # a subsequent PR to fix this properly.
     ${NLN} "${COMIN_CHEM_INPUT}" "${DATA}/ChemInput"
 }
+
+# shellcheck disable=SC2034
+CATCHEM_predet() {
+    echo "SUB ${FUNCNAME[0]}: CATChem before run type determination"
+
+    # FHMAX gets modified when IAU is on, so keep original value for CATChem output
+    GOCART_MAX=${FHMAX}
+
+    # Stage the prepared chemistry input (emissions) when available
+    if [[ -d "${COMIN_CHEM_INPUT}" ]]; then
+        ${NLN} "${COMIN_CHEM_INPUT}" "${DATA}/ChemInput"
+    fi
+}
