@@ -129,7 +129,7 @@ FV3_postdet() {
 
     #============================================================================
     # Determine increment files when doing cold start
-    if [[ "${warm_start}" == ".false." ]]; then
+    if [[ "${warm_start}" == ".false." ]] && [[ "${DOIAU_COLDSTART:-NO}" == "NO" ]]; then
 
         if [[ "${USE_ATM_ENS_PERTURB_FILES:-NO}" == "YES" ]]; then
             if ((MEMBER == 0)); then
@@ -148,7 +148,7 @@ FV3_postdet() {
         fi
 
     # Determine IAU and increment files when doing warm start
-    elif [[ "${warm_start}" == ".true." ]]; then
+    elif [[ "${warm_start}" == ".true." ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
 
         #--------------------------------------------------------------------------
         if [[ "${RERUN}" == "YES" ]]; then
@@ -178,10 +178,14 @@ FV3_postdet() {
       ${model_start_time:0:4}  ${model_start_time:4:2}  ${model_start_time:6:2}  ${model_start_time:8:2}  0  0        Model start time: year, month, day, hour, minute, second
       ${model_current_time:0:4}  ${model_current_time:4:2}  ${model_current_time:6:2}  ${model_current_time:8:2}  0  0        Current model time: year, month, day, hour, minute, second
 EOF
-
             # Create a array of increment files
             local inc_files inc_file iaufhrs iaufhr
-            if [[ "${DOIAU}" == "YES" ]]; then
+            if [[ "${DOIAU}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+                if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+                    IAUFHRS=0,3,6
+                    IAU_DELTHRS=6
+                    DO_LAND_IAU=".true."
+                fi
                 # create an array of inc_files for each IAU hour
                 IFS=',' read -ra iaufhrs <<< "${IAUFHRS}"
                 inc_files=()
@@ -245,7 +249,7 @@ EOF
                 fi
             fi
 
-            if [[ "${RUN}" == "enkfgfs" ]] || [[ "${RUN}" == "enkfgdas" ]]; then
+            if [[ "${RUN}" == "enkfgfs" || "${RUN}" == "enkfgdas" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" && ${MEMBER} -gt 0 ]]; then
                 if [[ "${DOENKFONLY_ATM:-NO}" == "YES" ]]; then
                     prefix_atminc=""
                 else
@@ -322,7 +326,7 @@ EOF
     #============================================================================
 
     #============================================================================
-    if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" ]]; then
+    if [[ "${QUILTING}" == ".true." ]] && [[ "${OUTPUT_GRID}" == "gaussian_grid" || "${OUTPUT_GRID}" == "global_latlon" ]]; then
         local FH2 FH3
         for fhr in ${FV3_OUTPUT_FH}; do
             FH3=$(printf %03i "${fhr}")
@@ -336,17 +340,44 @@ EOF
                 ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
             fi
             if [[ "${WRITE_DOPOST}" == ".true." ]]; then
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
-                ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
-                if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                if [[ "${RUN}" == "sfs" ]]; then
+                    # SFS hourly forecast data is not needed in COM as it is not used by downstream
+                    # applications or distributed. Instead, save it to an umbrella directory under DATAROOT
+                    # so it can be used to calculate averages by the <job name> job.
+                    if [[ "${MEMBER}" -eq 0 ]]; then
+                        mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master"
+                        ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                        ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    else
+                        mkdir -p "${DATAoutput}/FV3ATM_OUTPUT/model/master"
+                        ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                        ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    fi
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        if [[ "${MEMBER}" -eq 0 ]]; then
+                            ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master//${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                            ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                        else
+                            ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                            ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                        fi
+                    fi
+                else
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
+                    ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
+                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
+                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
+                        ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
+                    fi
                 fi
             fi
         done
     fi
     #============================================================================
     restart_interval=${restart_interval:-${FHMAX}}
+    if [[ ${restart_interval} -gt ${FHMAX} ]]; then
+        restart_interval=${FHMAX}
+    fi
     # restart_interval = 0 implies write restart at the END of the forecast i.e. at FHMAX
     # Convert restart interval into an explicit list for CMEPS/CICE/MOM6/WW3
     # Note, this must be computed after determination IAU in forecast_det and fhrot.
@@ -645,7 +676,11 @@ MOM6_postdet() {
         restart_date="${RERUN_DATE}"
     else # "${RERUN}" == "NO"
         restart_dir="${COMIN_OCEAN_RESTART_PREV}"
-        restart_date="${model_start_date_current_cycle}"
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+            restart_date="${current_cycle_begin}"
+        else
+            restart_date="${model_start_date_current_cycle}"
+        fi
     fi
 
     # Copy MOM6 ICs
@@ -664,14 +699,14 @@ MOM6_postdet() {
 
     # Copy increment (only when RERUN=NO)
     if [[ "${RERUN}" == "NO" ]]; then
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
             cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.mom6_increment.i006.nc" "${DATA}/INPUT/mom6_increment.nc"
         fi
     fi # if [[ "${RERUN}" == "NO" ]]; then
 
     # Link output files
     case ${RUN} in
-        gfs | enkfgfs | gefs | sfs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|sfs
+        gfs | enkfgfs | gefs | gcafs) # Link output files for RUN=gfs|enkfgfs|gefs|gcafs
             # Looping over MOM6 output hours
             local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
             for fhr in ${MOM6_OUTPUT_FH}; do
@@ -711,13 +746,60 @@ MOM6_postdet() {
             done
             ;;
 
+        sfs) # Link output files for RUN=sfs
+            # Looping over MOM6 output hours
+            local fhr fhr3 last_fhr interval midpoint vdate vdate_mid source_file dest_file ihour source_file_log dest_file_log
+            for fhr in ${MOM6_OUTPUT_FH}; do
+                fhr3=$(printf %03i "${fhr}")
+
+                if [[ -z ${last_fhr:-} ]]; then
+                    last_fhr=${fhr}
+                    continue
+                fi
+
+                ((interval = fhr - last_fhr))
+                ((midpoint = last_fhr + interval / 2))
+
+                vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
+                #If OFFSET_START_HOUR is greater than 0, OFFSET_START_HOUR should be added to the midpoint for first lead time
+                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + $((midpoint + OFFSET_START_HOUR)) hours" +%Y%m%d%H)
+                else
+                    vdate_mid=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${midpoint} hours" +%Y%m%d%H)
+                fi
+
+                # Native model output uses window midpoint in the filename, but we are mapping that to the end of the period for COM
+                if ((OFFSET_START_HOUR > 0)) && ((fhr == FHOUT_OCN)); then
+                    source_file="ocn_lead1_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                else
+                    source_file="ocn_${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}.nc"
+                fi
+                ihour=$(printf %02i "${interval}")
+                source_file_log="${vdate:0:8}.${vdate:8:2}0000.mom6.${ihour}h"
+                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                dest_file_log="${RUN}.t${cyc}z.${interval}hr_avg.log.f${fhr3}.txt"
+                if [[ "${MEMBER}" -eq 0 ]]; then
+                    mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/MOM6_OUTPUT/model/history"
+                    ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/MOM6_OUTPUT/model/history/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                    ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/MOM6_OUTPUT/model/history/${dest_file_log}" "${DATA}/${source_file_log}"
+                else
+                    mkdir -p "${DATAoutput}/MOM6_OUTPUT/model/history"
+                    ${NLN} "${DATAoutput}/MOM6_OUTPUT/model/history/${dest_file}" "${DATAoutput}/MOM6_OUTPUT/${source_file}"
+                    ${NLN} "${DATAoutput}/MOM6_OUTPUT/model/history/${dest_file_log}" "${DATA}/${source_file_log}"
+                fi
+
+                last_fhr=${fhr}
+
+            done
+            ;;
+
         gdas | enkfgdas) # Link output files for RUN=gdas|enkfgdas
             # Save (instantaneous) MOM6 backgrounds
             local fhr3 vdatestr
             for fhr in ${MOM6_OUTPUT_FH}; do
                 fhr3=$(printf %03i "${fhr}")
                 vdatestr=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${vdatestr}.nc"
+                ${NLN} "${COMOUT_OCEAN_HISTORY}/${RUN}.t${cyc}z.inst.f${fhr3}.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_da_${vdatestr}.nc"
             done
             ;;
         *)
@@ -815,9 +897,16 @@ CICE_postdet() {
         seconds=$(to_seconds "${restart_date:8:2}0000") # convert HHMMSS to seconds
         cice_restart_file="${DATArestart}/CICE_RESTART/cice_model.res.${restart_date:0:4}-${restart_date:4:2}-${restart_date:6:2}-${seconds}.nc"
     else # "${RERUN}" == "NO"
-        restart_date="${model_start_date_current_cycle}"
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+            restart_date="${current_cycle_begin}"
+        else
+            restart_date="${model_start_date_current_cycle}"
+        fi
         cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+            cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
+        fi
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             if [[ "${MEMBER}" -eq 0 ]]; then
                 # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
                 cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
@@ -858,22 +947,34 @@ CICE_postdet() {
             gdas | enkfgdas)
                 source_file="iceh_inst.${vdatestr}.nc"
                 dest_file="${RUN}.t${cyc}z.inst.f${fhr3}.nc"
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
                 ;;
-            gfs | enkfgfs | sfs | gcafs)
+            gfs | enkfgfs | gcafs)
                 source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                ;;
+            sfs)
+                source_file="iceh_$(printf "%0.2d" "${FHOUT_ICE}")h.${vdatestr}.nc"
+                dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                if [[ "${MEMBER}" -eq 0 ]]; then
+                    mkdir -p "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/CICE_OUTPUT/model/history"
+                    ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/CICE_OUTPUT/model/history/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                else
+                    mkdir -p "${DATAoutput}/CICE_OUTPUT/model/history"
+                    ${NLN} "${DATAoutput}/CICE_OUTPUT/model/history/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
+                fi
                 ;;
             gefs)
                 source_file="iceh.${vdatestr}.nc"
                 dest_file="${RUN}.t${cyc}z.${interval}hr_avg.f${fhr3}.nc"
+                ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
                 ;;
             *)
                 echo "FATAL ERROR: Unsupported RUN ${RUN} in CICE postdet"
                 exit 10
                 ;;
         esac
-
-        ${NLN} "${COMOUT_ICE_HISTORY}/${dest_file}" "${DATAoutput}/CICE_OUTPUT/${source_file}"
 
         last_fhr=${fhr}
     done

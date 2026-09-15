@@ -1,43 +1,37 @@
 #! /usr/bin/env bash
-set -x
 
-source "${HOMEglobal}/ush/jjob_header.sh" -e "epos" -c "base epos"
-
-#{% if false %}
-source "${HOMEglobal}/ush/jjob_standard_vars.sh"
-#{% else %}
-#{% include jjob_var_setup.j2 %}
-#{% endif %}
-
-source "${USHglobal}/jjob_shell_setup.sh"
-# Set strict mode which will exit on error or undefined variable
-# and exit on error in a pipeline (e.g. if a command in "cmd | cmd2" fails)
-source "${USHglobal}/set_strict.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "analdiag" -c "base anal analdiag"
 
 ##############################################
 # Set variables used in the script
 ##############################################
+#export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-export GFS_NCIO=${GFS_NCIO:-"YES"}
+# shellcheck disable=SC2153
+#GDATE=$(date --utc +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+#export gPDY=${GDATE:0:8}
+#export gcyc=${GDATE:8:2}
+#export GDUMP="gdas"
+#export GDUMP_ENS="enkf${GDUMP}"
 
-export PREFIX="${RUN}.t${cyc}z."
+#export OPREFIX="${RUN/enkf/}.t${cyc}z."
+#export GPREFIX="${GDUMP}.t${gcyc}z."
+#export APREFIX="${RUN}.t${cyc}z."
 
-export LEVS=$((LEVS - 1))
-
-# Additional variables are set in scripts/exgdas_enkf_post.sh:
-#  COMIN_ATMOS_HISTORY, set in a loop over ensemble members
-#  COMOUT_ATMOS_HISTORY_STAT
+YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
+    COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
+    COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
+mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 
 ###############################################################
 # Run relevant script
-
-${ENKFPOSTSH:-${SCRglobal}/exgdas_enkf_post.sh} && true
+${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
-    err_exit "Failed to run ensemble post processing"
+    err_exit
 fi
 
 ##############################################

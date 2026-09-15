@@ -1,0 +1,24 @@
+{% set cycle_YMDH = current_cycle | to_YMDH %}
+{% set cycle_YMD = current_cycle | to_YMD %}
+{% set cycle_HH = current_cycle | strftime("%H") %}
+{% set precycle_YMD = "precycle_YMD" | getenv %}
+{% set precycle_HH = "precycle_HH" | getenv %}
+{% set copy_icsdir = "icsdir." ~ cycle_YMDH %}
+{% set mem_ind = range(0, NMEM_ENS + 1) | list %}
+
+{%- for group in mem_ind | batch(10) %}
+  {%- set first_mem = "%03d" | format(group | first) %}
+  {%- set last_mem = "%03d" | format(group | last) %}
+icsdir_mem{{ first_mem }}_mem{{ last_mem }}:
+  name: "ICSDIR_MEM{{ first_mem }}_MEM{{ last_mem }}"
+  target: "{{ ATARDIR }}/{{ cycle_YMDH }}/icsdir_mem{{ first_mem }}_mem{{ last_mem }}.tar"
+  FileHandler:
+    mkdir:
+      - "{{ ROTDIR }}/{{ copy_icsdir }}"
+  required:
+  {%- for i in group %}
+    {%- set mem_char = "mem%03d" | format(i) %}
+    - "{{ ROTDIR }}/{{ copy_icsdir }}/sfs.{{ cycle_YMD }}/{{ cycle_HH }}/{{ mem_char }}"
+    - "{{ ROTDIR }}/{{ copy_icsdir }}/sfs.{{ precycle_YMD }}/{{ precycle_HH }}/{{ mem_char }}"
+  {%- endfor %}
+{% endfor %}
