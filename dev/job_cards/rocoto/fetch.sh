@@ -3,7 +3,8 @@
 set -x
 
 # Source FV3GFS workflow modules
-source "${HOMEglobal}/dev/ush/load_modules.sh" run
+# Runs on the data transfer nodes; see Tasks.DTN_TASKS
+source "${HOMEglobal}/dev/ush/load_modules.sh" dtn
 status=$?
 if [[ "${status}" -ne 0 ]]; then
     exit "${status}"

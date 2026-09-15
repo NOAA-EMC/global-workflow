@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_WAVE_PRDGEN_BULLS"
+"${HOMEglobal}/dev/jobs/JGFS_WAVE_AWIPS_BULLS"
 status=$?
 
 exit "${status}"

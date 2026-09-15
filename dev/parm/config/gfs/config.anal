@@ -147,7 +147,7 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
 fi
 
 if [[ ${USE_BUILD_GSINFO} == "YES" ]]; then
-   # these will be set based on date in scripts/exglobal_atmos_analysis.sh
+   # these will be set based on date in scripts/exglobal_atmos_anal.sh
    export SATINFO="generate"
    export CONVINFO="generate"
    export OZINFO="generate"

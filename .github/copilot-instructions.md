@@ -77,7 +77,7 @@ env/                        # HPC platform environment configurations
 ### Job-to-Script-to-Utility Pattern
 ```bash
 # Example execution chain:
-JGLOBAL_FORECAST              # Job sets environment, calls script
+JGLOBAL_FCST              # Job sets environment, calls script
 └── exglobal_forecast.py      # Script implements forecast logic
     └── forecast_det.sh       # Utility handles deterministic forecast
         └── ush/python/       # Python modules for specific tasks
