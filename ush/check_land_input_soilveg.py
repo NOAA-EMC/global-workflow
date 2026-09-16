@@ -9,7 +9,7 @@ For each FV3 tile, this utility checks:
 
 1. Vegetation type (vtype) is valid at land points.
 2. Soil type (stype) is valid at land points.
-3. First-layer soil moisture (smc) is defined and within the
+3. All four layers of soil moisture (smc) are defined and within the
    soil-type-dependent maximum soil moisture (maxsmc).
 
 Land points are defined as:
@@ -217,7 +217,7 @@ def check_land_surface_types(
 
 @logit(logger)
 def check_soil_moisture(
-    smc1: np.ndarray,
+    smc: np.ndarray,
     land_frac: np.ndarray,
     veg_type: np.ndarray,
     soil_type: np.ndarray,
@@ -226,7 +226,7 @@ def check_soil_moisture(
     fatal: bool = False,
 ) -> int:
     """
-    Check first-layer soil moisture for expected land grid cells.
+    Check all four layers of soil moisture for expected land grid cells.
 
     Expected soil-moisture cells are defined as:
 
@@ -252,8 +252,8 @@ def check_soil_moisture(
 
     Parameters
     ----------
-    smc1 : np.ndarray
-        First-layer soil moisture.
+    smc : np.ndarray
+        Soil moisture with dimensions (time, soil_layer, y, x)
     land_frac : np.ndarray
         Land fraction.
     veg_type : np.ndarray
@@ -270,7 +270,7 @@ def check_soil_moisture(
     Returns
     -------
     int
-        Number of invalid soil-moisture points.
+        Number of invalid soil-moisture values across all four layers.
     """
 
     soil_type = np.asarray(soil_type, dtype=np.int32)
@@ -290,6 +290,24 @@ def check_soil_moisture(
         f"Tile {tile}: expected soil moisture points: "
         f"{n_expected}"
     )
+
+    # ---------------------------------------------------------
+    # Check dimensions
+    # ---------------------------------------------------------
+
+    if smc.ndim != 4:
+        raise ValueError(
+            f"Tile {tile}: expected smc to have 4 dimensions "
+            f"(time, soil_layer, y, x), got shape {smc.shape}"
+        )
+
+    n_layers = smc.shape[1]
+
+    if n_layers != 4:
+        raise ValueError(
+            f"Tile {tile}: expected 4 soil-moisture layers, "
+            f"got {n_layers}"
+        )
 
     # ---------------------------------------------------------
     # Validate soil types used for maxsmc lookup
@@ -331,75 +349,88 @@ def check_soil_moisture(
     ]
 
     # ---------------------------------------------------------
-    # Check whether SMC is defined
+    # Check all four soil-moisture layers
     # ---------------------------------------------------------
 
-    # Handle both regular ndarrays and masked arrays.
-    smc_mask = np.ma.getmaskarray(smc1)
+    n_invalid_smc = 0
 
-    # Replace masked values with NaN so that they are caught
-    # by the finite-value check.
-    smc_values = np.ma.filled(
-        smc1,
-        np.nan,
-    )
+    for layer in range(n_layers):
 
-    # ---------------------------------------------------------
-    # Identify invalid soil-moisture points
-    # ---------------------------------------------------------
+        # Select one time and one soil layer.
+        smc_layer = smc[0, layer, :, :]
 
-    invalid_smc = (
-        expected_smc &
-        (
-            smc_mask |
-            ~np.isfinite(smc_values) |
-            (smc_values <= 0.0) |
-            (smc_values > maxsmc)
-        )
-    )
+        # Handle both regular ndarrays and masked arrays.
+        smc_mask = np.ma.getmaskarray(smc_layer)
 
-    n_invalid_smc = np.count_nonzero(invalid_smc)
-
-    # ---------------------------------------------------------
-    # Report invalid soil-moisture points
-    # ---------------------------------------------------------
-
-    if n_invalid_smc > 0:
-        logger.warning(
-            f"Tile {tile}: invalid soil moisture points: "
-            f"{n_invalid_smc} of {n_expected} expected points"
+        # Replace masked values with NaN so they are caught
+        # by the finite-value check.
+        smc_values = np.ma.filled(
+            smc_layer,
+            np.nan,
         )
 
-        iy, ix = np.where(invalid_smc)
+        # -----------------------------------------------------
+        # Identify invalid soil-moisture points
+        # -----------------------------------------------------
 
-        for j, i in zip(
-            iy[:MAX_SMC_LOG_POINTS],
-            ix[:MAX_SMC_LOG_POINTS],
-        ):
-            smc_value = smc_values[j, i]
-
-            if smc_mask[j, i]:
-                smc_display = "MISSING/MASKED"
-            elif not np.isfinite(smc_value):
-                smc_display = str(smc_value)
-            else:
-                smc_display = f"{smc_value:.4f}"
-
-            logger.warning(
-                f"Tile {tile}: ({j},{i}): "
-                f"land_frac={land_frac[j, i]:.3f}, "
-                f"vtype={veg_type[j, i]}, "
-                f"soil_type={soil_type[j, i]}, "
-                f"smc1={smc_display}, "
-                f"smcmax={maxsmc[j, i]:.4f}"
+        invalid_smc = (
+            expected_smc &
+            (
+                smc_mask |
+                ~np.isfinite(smc_values) |
+                (smc_values <= 0.0) |
+                (smc_values > maxsmc)
             )
+        )
 
-        if n_invalid_smc > MAX_SMC_LOG_POINTS:
-            logger.warning(
-                f"Tile {tile}: "
-                f"{n_invalid_smc - MAX_SMC_LOG_POINTS} additional "
-                "invalid soil moisture points not shown"
-            )
+        n_invalid_layer = np.count_nonzero(invalid_smc)
+        n_invalid_smc += n_invalid_layer
+
+        logger.info(
+            f"Tile {tile}: soil layer {layer + 1}: "
+            f"invalid soil moisture points = "
+            f"{n_invalid_layer} of {n_expected}"
+        )
+
+        # -----------------------------------------------------
+        # Report invalid soil-moisture points
+        # -----------------------------------------------------
+
+        if n_invalid_layer > 0:
+
+            iy, ix = np.where(invalid_smc)
+
+            for j, i in zip(
+                iy[:MAX_SMC_LOG_POINTS],
+                ix[:MAX_SMC_LOG_POINTS],
+            ):
+                smc_value = smc_values[j, i]
+
+                if smc_mask[j, i]:
+                    smc_display = "MISSING/MASKED"
+                elif not np.isfinite(smc_value):
+                    smc_display = str(smc_value)
+                else:
+                    smc_display = f"{smc_value:.4f}"
+
+                logger.warning(
+                    f"Tile {tile}: layer {layer + 1}: "
+                    f"({j},{i}): "
+                    f"land_frac={land_frac[j, i]:.3f}, "
+                    f"vtype={veg_type[j, i]}, "
+                    f"soil_type={soil_type[j, i]}, "
+                    f"smc={smc_display}, "
+                    f"smcmax={maxsmc[j, i]:.4f}"
+                )
+
+            if n_invalid_layer > MAX_SMC_LOG_POINTS:
+                logger.warning(
+                    f"Tile {tile}: layer {layer + 1}: "
+                    f"{n_invalid_layer - MAX_SMC_LOG_POINTS} "
+                    "additional invalid soil moisture points "
+                    "not shown"
+                )
+
 
     # ---------------------------------------------------------
     # Optional strict mode
@@ -459,7 +490,7 @@ def compare_landfrac_soilveg(
     1. Reads land_frac from the orography file.
     2. Reads vtype, stype, and smc from the surface file.
     3. Checks vtype and stype at land points.
-    4. Checks first-layer soil moisture against Noah-MP maxsmc.
+    4. Checks all four layers of soil moisture against Noah-MP maxsmc.
 
     Parameters
     ----------
@@ -553,8 +584,9 @@ def compare_landfrac_soilveg(
                 #
                 #     time, soil_layer, y, x
                 #
-                # Select the first time and first soil layer.
-                smc1 = smc[0, 0, :, :]
+                # Keep all four soil layers; the checker selects
+                # each layer at time index 0.
+                smc_all = np.asarray(smc[:])
 
         except FileNotFoundError:
             logger.warning(
@@ -603,7 +635,7 @@ def compare_landfrac_soilveg(
         # -----------------------------------------------------
 
         n_invalid_smc = check_soil_moisture(
-            smc1=smc1,
+            smc=smc_all,
             land_frac=land_frac,
             veg_type=veg_type,
             soil_type=soil_type,
