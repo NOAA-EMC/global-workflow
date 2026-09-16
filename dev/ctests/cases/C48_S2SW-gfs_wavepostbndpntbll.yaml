@@ -11,7 +11,7 @@
 #
 # Workflow Context:
 # - Task: wavepostbndpntbll (wave boundary point bulletin generation)
-# - Job: JGLOBAL_WAVE_POST_BNDPNTBLL -> exgfs_wave_post_pnt.sh
+# - Job: JGLOBAL_WAVE_POST_BNDPNT_BULLS -> exgfs_wave_post_pnt.sh
 #
 # Source Logic: scripts/exgfs_wave_post_pnt.sh
 # - DOBNDPNT_WAV='YES' - Process boundary points

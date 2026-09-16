@@ -31,8 +31,7 @@ export FHMIN_EPOS="%FHR%"
 export FHMAX_EPOS="%FHR%"
 export FHOUT_EPOS="%FHR%"
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/epos.sh
-${HOMEgfs}/jobs/JGDAS_ENKF_POST
+${HOMEgfs}/jobs/JENKFGDAS_ENS_POST
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

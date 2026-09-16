@@ -83,7 +83,17 @@ elif [[ ${MACHINE_ID} = gaeac6 ]]; then
     if (! eval module help > /dev/null 2>&1); then
         source /opt/cray/pe/lmod/lmod/init/bash
     fi
+    # Ensure the Cray PE default-modules variable is set before resetting.
+    # Shells started with --export=NONE (e.g. Rocoto Slurm jobs) need this
+    # sourced explicitly; interactive and login shells already have it.
+    set +u
+    if [[ -z "${LMOD_SYSTEM_DEFAULT_MODULES:-}" ]]; then
+        source /opt/cray/pe/lmod/lmod/init/crayPE_lmod.sh 2> /dev/null ||
+            source /etc/cray-pe.d/cray-pe-configuration.sh 2> /dev/null ||
+            true
+    fi
     module reset
+    set -u
 
 elif [[ ${MACHINE_ID} = expanse* ]]; then
     # We are on SDSC Expanse
