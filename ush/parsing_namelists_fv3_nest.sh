@@ -33,7 +33,6 @@ FV3_namelists_nest() {
     # setup the tables
     DIAG_TABLE=${DIAG_TABLE:-${PARMglobal}/ufs/fv3/diag_table}
     DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-${PARMglobal}/ufs/fv3/diag_table_aod}
-    DATA_TABLE=${DATA_TABLE:-${PARMglobal}/ufs/MOM6_data_table.IN}
     FIELD_TABLE=${FIELD_TABLE:-${PARMglobal}/ufs/fv3/field_table}
 
     # set cdmbgwd
@@ -68,9 +67,6 @@ FV3_namelists_nest() {
         local MOM6_OUTPUT_DIR="./MOM6_OUTPUT"
 
         atparse < "${template}" >> "diag_table"
-
-        # copy data table
-        cpreq "${DATA_TABLE}" data_table
 
         # build field_table
         if [[ -n "${AERO_FIELD_TABLE:-}" ]]; then
