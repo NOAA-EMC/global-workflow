@@ -109,7 +109,7 @@ fi
 status=$?
 if [[ ${status} -eq 0 ]]; then
     echo "Ice post success! Remove the original ice history files:"
-    #rm -f "${ICE_PRODUCT_OUTPUT}/native/sfs."*".nc"
+    rm -f "${ICE_PRODUCT_OUTPUT}/native/sfs."*".nc"
 fi
 
 ##############################################

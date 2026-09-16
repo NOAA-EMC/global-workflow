@@ -337,7 +337,7 @@ done
 
 if [[ ${err} -ne 0 ]]; then
     echo "FATAL ERROR: Failed to generate monthly mean grib2 files"
-    exit "${err}"
+    err_exit
 else
     echo "INFO: Stage 3 -- Monthly Processing Complete."
 fi
