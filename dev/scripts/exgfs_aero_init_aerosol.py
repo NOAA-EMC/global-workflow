@@ -57,8 +57,9 @@ restart_file_pattern = "{file_base}/{timestamp}fv_core.res.{tile}.nc"
 tracer_file_pattern = "{file_base}/{timestamp}fv_tracer.res.{tile}.nc"
 # Name of restart dycore file (time when restart is valid)
 dycore_file_pattern = "{file_base}/{timestamp}fv_core.res.nc"
-# Text list of tracer names to copy
+# Text list of tracer names to copy (selected from CHEM_MODEL at runtime)
 tracer_list_file_pattern = "{parm_gfs}/ufs/gocart/gocart_tracer.list"
+catchem_tracer_list_file_pattern = "{parm_gfs}/chem/catchem/catchem_tracer.list"
 merge_script_pattern = "{ush_gfs}/merge_fv3_aerosol_tile.py"
 n_tiles = 6
 # Maximum number of past cycles to look for for tracer data
@@ -84,11 +85,15 @@ def main() -> None:
     rot_dir = get_env_var("ROTDIR")
     ush_gfs = get_env_var("USHglobal")
     parm_gfs = get_env_var("PARMglobal")
+    chem_model = get_env_var("CHEM_MODEL", fail_on_missing=False) or "none"
 
     # os.chdir(data)
 
     merge_script = merge_script_pattern.format(ush_gfs=ush_gfs)
-    tracer_list_file = tracer_list_file_pattern.format(parm_gfs=parm_gfs)
+    if chem_model == "catchem":
+        tracer_list_file = catchem_tracer_list_file_pattern.format(parm_gfs=parm_gfs)
+    else:
+        tracer_list_file = tracer_list_file_pattern.format(parm_gfs=parm_gfs)
 
     time = datetime.strptime(f"{pdy}{cyc}", "%Y%m%d%H")
     atm_source_path = time.strftime(atm_base_pattern.format(**locals()))

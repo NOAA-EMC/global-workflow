@@ -189,6 +189,9 @@ Build Options
 +------------+-----------------------------------------------------------+
 | GCAFS      | Non-hydrostatic FV3/GOCART                                |
 +------------+-----------------------------------------------------------+
+| GCAFS      | Non-hydrostatic FV3/CATChem (APP=ATMC; build with         |
+| CATChem    | ./build_ufs.sh -a CATCHEM -e gcafs_catchem_model.x)       |
++------------+-----------------------------------------------------------+
 
 ^^^^^^^^^^^^^^^
 Link components

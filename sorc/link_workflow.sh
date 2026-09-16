@@ -415,6 +415,14 @@ for sys in "${model_systems[@]}"; do
     fi
 done
 
+# CATChem GCAFS executable (built via "./build_ufs.sh -a CATCHEM -e gcafs_catchem_model.x")
+if [[ -s "ufs_model_gcafs_catchem.x" ]]; then
+    rm -f "ufs_model_gcafs_catchem.x"
+fi
+if [[ -f "${HOMEglobal}/sorc/ufs_model.fd/tests/gcafs_catchem_model.x" ]]; then
+    safe_link_or_copy "${HOMEglobal}/sorc/ufs_model.fd/tests/gcafs_catchem_model.x" "ufs_model_gcafs_catchem.x"
+fi
+
 # WW3 pre/post executables
 declare -a ww3_exes=("ww3_grid" "ww3_prnc" "ww3_outp" "ww3_gint" "ww3_grib")
 declare -A wave_systems

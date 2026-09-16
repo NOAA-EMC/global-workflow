@@ -25,7 +25,11 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
     string="${string} --ww3 ${waveGRD}"
 fi
 if [[ "${DO_AERO_FCST}" == "YES" ]]; then
-    string="${string} --gocart"
+    if [[ "${CHEM_MODEL}" == "catchem" ]]; then
+        string="${string} --catchem"
+    else
+        string="${string} --gocart"
+    fi
 fi
 # We are counting on $string being multiple arguments
 # shellcheck disable=SC2086
@@ -78,7 +82,11 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 export FORECASTSH="${SCRglobal}/exglobal_forecast.sh"
 #export FORECASTSH="${SCRglobal}/exglobal_forecast.py"  # Temp. while this is worked on
-export FCSTEXEC="ufs_model_gcafs.x"
+if [[ "${CHEM_MODEL}" == "catchem" ]]; then
+    export FCSTEXEC="ufs_model_gcafs_catchem.x"
+else
+    export FCSTEXEC="ufs_model_gcafs.x"
+fi
 
 #######################################################################
 # Model configuration

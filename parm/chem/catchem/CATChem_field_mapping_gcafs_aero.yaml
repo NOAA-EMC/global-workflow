@@ -1,0 +1,269 @@
+import_fields:
+  - standard_name: "inst_temp_levels"
+    catchem_var: "T"
+    dimensions: 3
+    units: "K"
+    optional: false
+  # RH is intentionally NOT imported. Upstream/develop derives RH internally
+  # from T, QV, PMID (met_utilities::relative_humidity), and the C++ core uses
+  # the identical formula. Importing a host RH here would override the
+  # derivation and diverge hydrophilic swelling (settling/wetdep) from the
+  # legacy baseline. Keep RH derived to preserve numerical parity.
+  - standard_name: "inst_geop_interface"
+    catchem_var: "Z"
+    dimensions: 3
+    vertical_axis: "interface"
+    units: "m"
+    optional: false
+  - standard_name: "inst_geop_levels"
+    catchem_var: "ZMID"
+    dimensions: 3
+    units: "m"
+    optional: false
+  - standard_name: "inst_pres_interface"
+    catchem_var: "PEDGE"
+    dimensions: 3
+    vertical_axis: "interface"
+    units: "Pa"
+    optional: false
+  - standard_name: "inst_pres_levels"
+    catchem_var: "PMID"
+    dimensions: 3
+    units: "Pa"
+    optional: false
+  - standard_name: "inst_zonal_wind_levels"
+    catchem_var: "U"
+    dimensions: 3
+    units: "m/s"
+    optional: false
+  - standard_name: "inst_merid_wind_levels"
+    catchem_var: "V"
+    dimensions: 3
+    units: "m/s"
+    optional: false
+  - standard_name: "inst_cloud_frac_levels"
+    catchem_var: "CLDF"
+    dimensions: 3
+    units: "1"
+    optional: false
+  - standard_name: "inst_rainfall_amount"
+    catchem_var: "PRECLSC"
+    dimensions: 2
+    units: "m"
+    optional: false
+  - standard_name: "inst_convective_rainfall_amount"
+    catchem_var: "PRECCON"
+    dimensions: 2
+    units: "m"
+    optional: false
+  - standard_name: "inst_zonal_wind_height10m"
+    catchem_var: "U10M"
+    dimensions: 2
+    units: "m/s"
+    optional: false
+  - standard_name: "inst_merid_wind_height10m"
+    catchem_var: "V10M"
+    dimensions: 2
+    units: "m/s"
+    optional: false
+  - standard_name: "inst_friction_velocity"
+    catchem_var: "USTAR"
+    dimensions: 2
+    units: "m/s"
+    optional: false
+  - standard_name: "inst_land_sea_mask"
+    catchem_var: "LWI"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_temp_height_surface"
+    catchem_var: "TS"
+    dimensions: 2
+    units: "K"
+    optional: false
+  - standard_name: "inst_pres_height_surface"
+    catchem_var: "PS"
+    dimensions: 2
+    units: "Pa"
+    optional: false
+  - standard_name: "inst_temp_height2m"
+    catchem_var: "T2M"
+    dimensions: 2
+    units: "K"
+    optional: false
+  - standard_name: "inst_spec_humid_height2m"
+    catchem_var: "QV2M"
+    dimensions: 2
+    units: "kg/kg"
+    optional: false
+  - standard_name: "inst_sensi_heat_flx"
+    catchem_var: "HFLUX"
+    dimensions: 2
+    units: "w/m2"
+    optional: false
+  - standard_name: "inst_laten_heat_flx"
+    catchem_var: "EFLUX"
+    dimensions: 2
+    units: "w/m2"
+    optional: false
+  - standard_name: "inst_net_sw_flx"
+    catchem_var: "SWGDN"
+    dimensions: 2
+    units: "w/m2"
+    optional: false
+  - standard_name: "inst_aerodynamic_conductance"
+    catchem_var: "CMM"
+    dimensions: 2
+    units: "s/m"
+    optional: false
+  - standard_name: "inst_surface_roughness"
+    catchem_var: "Z0"
+    dimensions: 2
+    units: "m"
+    optional: false
+  - standard_name: "inst_pbl_height"
+    catchem_var: "PBLH"
+    dimensions: 2
+    units: "m"
+    optional: false
+  - standard_name: "height"
+    catchem_var: "ORO"
+    dimensions: 2
+    units: "m"
+    optional: true
+    advertise: true
+  - standard_name: "canopy_moisture_storage"
+    catchem_var: "WCA"
+    dimensions: 2
+    units: "m3"
+    optional: true
+    advertise: true
+  - standard_name: "inst_canopy_resistance"
+    catchem_var: "RCA"
+    dimensions: 2
+    units: "s/m"
+    optional: true
+    advertise: true
+  - standard_name: "surface_cell_area"
+    catchem_var: "AREA_M2"
+    dimensions: 2
+    units: "m2"
+    optional: false
+  - standard_name: "surface_snow_area_fraction"
+    catchem_var: "FRSNO"
+    dimensions: 2
+    units: "frac"
+    optional: false
+  - standard_name: "ice_fraction_in_atm"
+    catchem_var: "FRSEAICE"
+    dimensions: 2
+    units: "frac"
+    optional: false
+  - standard_name: "leaf_area_index"
+    catchem_var: "LAI"
+    dimensions: 2
+    units: "m2/m2"
+    optional: false
+  # FV3 exposes green vegetation fraction as ``vfrac``.  Keep the host
+  # exchange name here and translate it to the mechanism-independent CATChem
+  # met-state key below; the NUOPC cap uses this YAML mapping at runtime.
+  - standard_name: "inst_vegetation_area_frac"
+    catchem_var: "GVF"
+    dimensions: 2
+    units: "frac"
+    optional: false
+  - standard_name: "ocean_fraction"
+    catchem_var: "FROCEAN"
+    dimensions: 2
+    units: "frac"
+    optional: false
+  - standard_name: "vegetation_type"
+    catchem_var: "DLUSE"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "lake_fraction"
+    catchem_var: "FRLAKE"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_surface_soil_wetness"
+    catchem_var: "GWETTOP"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_ice_nonconv_tendency_levels"
+    catchem_var: "PFILSAN"
+    dimensions: 3
+    # UFS supplies nlev levels.  Preserve the upstream CATChem cap's
+    # nlev+1 interface layout by copying those values into entries 1:nlev
+    # and repeating the final host value at entry nlev+1.
+    vertical_axis: "level_to_interface"
+    units: "kg/m2/s"
+    optional: false
+  - standard_name: "inst_liq_nonconv_tendency_levels"
+    catchem_var: "PFLLSAN"
+    dimensions: 3
+    vertical_axis: "level_to_interface"
+    units: "kg/m2/s"
+    optional: false
+  - standard_name: "soil_type"
+    catchem_var: "DSOILTYPE"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_soil_moisture_content"
+    catchem_var: "SOILM"
+    dimensions: 3
+    vertical_axis: "soil_layer"
+    units: "m3/m3"
+    optional: false
+  - standard_name: "temperature_of_soil_layer"
+    catchem_var: "SOILT"
+    dimensions: 3
+    vertical_axis: "soil_layer"
+    units: "K"
+    optional: true
+    advertise: true
+  - standard_name: "inst_up_sensi_heat_flx"
+    catchem_var: "HFLUX_UP"
+    dimensions: 2
+    units: "w/m2"
+    optional: true
+    advertise: true
+  - standard_name: "inst_tracer_mass_frac"
+    catchem_var: "chem"
+    dimensions: 4
+    # Match upstream: specific humidity is supplied by the host-owned sphum
+    # tracer, rather than through a competing rank-3 meteorology import.
+    host_tracer_name: "sphum"
+    host_tracer_var: "QV"
+    units: "1"
+    optional: false
+
+export_fields:
+  - standard_name: "inst_tracer_mass_frac"
+    catchem_var: "chem"
+    dimensions: 4
+    units: "1"
+    optional: false
+  - standard_name: "inst_tracer_diag_aod"
+    catchem_var: "AOD"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_tracer_diag_coszens"
+    catchem_var: "coszens"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_tracer_diag_jo3o1d"
+    catchem_var: "jo3o1d"
+    dimensions: 2
+    units: "1"
+    optional: false
+  - standard_name: "inst_tracer_diag_jno2"
+    catchem_var: "jno2"
+    dimensions: 2
+    units: "1"
+    optional: false

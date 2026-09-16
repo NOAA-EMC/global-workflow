@@ -34,6 +34,7 @@ systems:
     - "gefs_ww3_prepost"
   gcafs:
     - "gcafs_model"
+    - "gcafs_catchem_model"
     - "nexus"
     - "gsi_utils"
 build:
@@ -67,6 +68,12 @@ build:
 
   gcafs_model:
     command: "./build_ufs.sh -a ATMAERO -e gcafs_model.x"
+    cores: 12
+    walltime: "00:40:00"
+    memory: "40G"
+
+  gcafs_catchem_model:
+    command: "./build_ufs.sh -a CATCHEM -e gcafs_catchem_model.x"
     cores: 12
     walltime: "00:40:00"
     memory: "40G"
