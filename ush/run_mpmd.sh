@@ -218,12 +218,13 @@ for ((i = 0; i < nm; i += chunk_size)); do
         set +eu
         # shellcheck disable=SC2086
         ${launcher:-} ${mpmd_opt:-} -n "${n_mpmd_tasks}" "${chunk_file}"
+        err=$?
         source "${USHglobal}/set_strict.sh"
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # shellcheck disable=SC2086
         ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+        err=$?
     fi
-    err=$?
     if [[ ${err} -ne 0 ]]; then
         echo "ERROR: MPMD job failed for ${chunk_file}"
         break
