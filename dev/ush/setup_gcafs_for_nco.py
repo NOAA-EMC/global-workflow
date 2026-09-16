@@ -19,13 +19,13 @@ current_dir_path = os.path.dirname(os.path.abspath(__file__))
 global_workflow_dir = os.path.abspath(os.path.join(current_dir_path, "../.."))
 
 gcafs_ex_scripts = {
-    "exgcafs_forecast.sh": "exglobal_forecast.sh",
+    "exgcafs_forecast.sh": "exglobal_fcst.sh",
     "exgcafs_prep_emissions.py": "exglobal_prep_emissions.py",
     "exgcafs_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
     "exgcafs_atmos_products.sh": "exglobal_atmos_products.sh",
 }
 gcdas_ex_scripts = {
-    "exgcdas_forecast.sh": "exglobal_forecast.sh",
+    "exgcdas_forecast.sh": "exglobal_fcst.sh",
     "exgcdas_prep_emissions.py": "exglobal_prep_emissions.py",
     "exgcdas_atmos_post_manager.sh": "exglobal_atmos_pmgr.sh",
     "exgcdas_atmos_products.sh": "exglobal_atmos_products.sh",
@@ -34,7 +34,7 @@ gcdas_ex_scripts = {
     "exgcdas_aero_analysis_initialize.py": "exglobal_aero_analysis_initialize.py",
     "exgcdas_aero_analysis_variational.py": "exglobal_aero_analysis_variational.py",
     "exgcdas_aero_analysis_finalize.py": "exglobal_aero_analysis_finalize.py",
-    "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_analysis_calc.sh",
+    "exgcdas_aero_analysis_calc.sh": "exglobal_atmos_anal_calc.sh",
     "exgcdas_aero_analysis_stats.py": "exglobal_analysis_stats.py",
     "exgcdas_aero_analysis_generate_bmatrix.py": "exgdas_aero_analysis_generate_bmatrix.py",
     "exgcdas_prepare_obs.py": "exgcdas_prepare_obs.py",
@@ -54,7 +54,7 @@ gcdas_jobs = {
     "JGCDAS_AERO_ANALYSIS_INITIALIZE": "JGLOBAL_AERO_ANALYSIS_INITIALIZE",
     "JGCDAS_AERO_ANALYSIS_VARIATIONAL": "JGLOBAL_AERO_ANALYSIS_VARIATIONAL",
     "JGCDAS_AERO_ANALYSIS_FINALIZE": "JGLOBAL_AERO_ANALYSIS_FINALIZE",
-    "JGCDAS_AERO_ANALYSIS_CALC": "JGLOBAL_ATMOS_ANALYSIS_CALC",
+    "JGCDAS_AERO_ANALYSIS_CALC": "JGLOBAL_ATMOS_ANAL_CALC",
     "JGCDAS_AERO_ANALYSIS_STATS": "JGLOBAL_ANALYSIS_STATS",
     "JGCDAS_AERO_ANALYSIS_GENERATE_BMATRIX": "JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX",
     "JGCDAS_PREPARE_OBS": "JGCDAS_PREPARE_OBS",

@@ -3,8 +3,10 @@
 ###############################################################
 # Consolidated module loading script for global-workflow
 # Usage: source load_modules.sh [module_type]
-# where module_type can be: run, gsi, verif, ufsda, ufswm, setup
+# where module_type can be: run, gsi, verif, ufsda, ufswm, setup, upp, dtn
 # Default module_type is 'run'
+# Types other than 'run' fall back to gw_run.${MACHINE_ID} when no
+# gw_${module_type}.${MACHINE_ID} modulefile exists for the current machine.
 ###############################################################
 
 if [[ "$-" == *x* ]]; then
@@ -171,7 +173,7 @@ case "${MODULE_TYPE}" in
 
         ;;
 
-    "run" | "gsi" | "setup" | "upp")
+    "run" | "gsi" | "setup" | "upp" | "dtn")
 
         # Test that the version file exists
         if [[ ! -f "${HOMEglobal}/versions/run.ver" ]]; then
@@ -228,7 +230,7 @@ case "${MODULE_TYPE}" in
 
     *)
         echo "FATAL ERROR: Unknown module type '${MODULE_TYPE}'"
-        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup"
+        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup, upp, dtn"
         ;;
 
 esac

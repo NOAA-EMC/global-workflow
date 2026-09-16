@@ -132,14 +132,14 @@ Test cases follow a structured naming convention that connects configuration cas
 +---------------------------+---------------------------------------+----------------------------+
 | CMakeLists.txt Entry      | YAML Filename                         | Job Script                 |
 +===========================+=======================================+============================+
-| ``CASE "C48_ATM"``        | ``C48_ATM-gfs_fcst_seg0.yaml``        | ``JGLOBAL_FORECAST``       |
+| ``CASE "C48_ATM"``        | ``C48_ATM-gfs_fcst_seg0.yaml``        | ``JGLOBAL_FCST``       |
 | ``JOB "gfs_fcst_seg0"``   |                                       |                            |
 +---------------------------+---------------------------------------+----------------------------+
 | ``CASE "C48_S2SW"``       | ``C48_S2SW-gfs_ocean_prod_f006.yaml`` | ``JGLOBAL_OCEAN_PRODUCTS`` |
 | ``JOB "gfs_ocean_prod_``  |                                       |                            |
 | ``f006"``                 |                                       |                            |
 +---------------------------+---------------------------------------+----------------------------+
-| ``CASE "C48_S2SWA_gefs"`` | ``C48_S2SWA_gefs-gefs_fcst_mem001_``  | ``JGLOBAL_FORECAST``       |
+| ``CASE "C48_S2SWA_gefs"`` | ``C48_S2SWA_gefs-gefs_fcst_mem001_``  | ``JGLOBAL_FCST``       |
 | ``JOB "gefs_fcst_mem001_``| ``seg0.yaml``                         |                            |
 | ``seg0"``                 |                                       |                            |
 +---------------------------+---------------------------------------+----------------------------+

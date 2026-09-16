@@ -25,8 +25,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/marineanlinit.sh
-${HOMEgfs}/jobs/JGLOBAL_MARINE_ANALYSIS_INITIALIZE
+${HOMEgfs}/jobs/JGLOBAL_MARINE_ANAL_INIT
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -43,7 +42,7 @@ background fields, observations, and B-matrix inputs for SOCA solver.
 
 TROUBLESHOOTING
 
-Python-based (exglobal_marine_analysis_initialize.py). Check Python
+Python-based (exglobal_marine_anal_init.py). Check Python
 traceback in stdout. Common failures: missing background restart files
 from previous cycle forecast, missing observation files from
 prepoceanobs, or B-matrix files from marine_bmat. If previous cycle

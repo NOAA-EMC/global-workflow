@@ -40,7 +40,7 @@ export RUN2=gfs_goessim
 export GRIB=goessimpgrb2.0p25.f
 export EXT=""
 
-"${SCRglobal}/exgfs_atmos_goes_nawips.sh" "${FHR3}"
+"${SCRglobal}/exgfs_atmos_gempak_pgrb2_spec.sh" "${FHR3}"
 
 #################################################################
 # Execute the script for the 221 grib
@@ -54,7 +54,7 @@ export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 
-"${SCRglobal}/exgfs_atmos_goes_nawips.sh" "${FHR3}" && true
+"${SCRglobal}/exgfs_atmos_gempak_pgrb2_spec.sh" "${FHR3}" && true
 
 export err=$?
 if [[ ${err} -ne 0 ]]; then
