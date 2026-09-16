@@ -13,7 +13,7 @@ echo "INFO: Validating script line endings..."
 # Scripts used
 PROCESS_ATMOS_6HRLYSH=${PROCESS_ATMOS_6HRLYSH:-"${USHglobal}/process_atmos_6hrly.sh"}
 PROCESS_ATMOS_DAILYSH=${PROCESS_ATMOS_DAILYSH:-"${USHglobal}/process_atmos_daily.sh"}
-RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd_sfs.sh"}
+RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
 chmod +x "${PROCESS_ATMOS_6HRLYSH}" "${PROCESS_ATMOS_DAILYSH}" "${RUN_MPMDSH}"
 
 # List all scripts involved in the workflow
@@ -204,8 +204,7 @@ for ((i = 0; i < ${#vars[@]}; i++)); do
 done
 
 if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Failed to generate 6-hourly grib2 files"
-    exit "${err}"
+    err_exit "FATAL ERROR: Failed to generate 6-hourly grib2 files"
 else
     echo "INFO: Stage 1 Complete."
 fi
