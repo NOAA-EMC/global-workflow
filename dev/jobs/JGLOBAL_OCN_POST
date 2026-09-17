@@ -55,8 +55,7 @@ if [[ "${#ocn_24hrly_files[@]}" -lt "${ocn_24hrly_num}" ]] || [[ "${#ocn_6hrly_f
     echo "ERROR: File count mismatch detected!"
     echo "Ocean 24hr_avg fistory files: ${#ocn_24hrly_files[@]} Found vs ${ocn_24hrly_num} Expected"
     echo "Ocean 6hr_avg history files:  ${#ocn_6hrly_files[@]} Found vs ${ocn_6hrly_num} Expected"
-    echo "FATAL: The ocean history files are incomplete. Ocean post job quits!"
-    exit 1
+    err_exit "FATAL: The ocean history files are incomplete. Ocean post job quits!"
 fi
 
 ##############################################

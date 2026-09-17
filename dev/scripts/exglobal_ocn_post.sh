@@ -21,7 +21,7 @@ echo "INFO: Validating script line endings..."
 PROCESS_OCEAN_6HRLYSH=${PROCESS_OCEAN_6HRLYSH:-"${USHglobal}/process_ocean_6hrly.sh"}
 PROCESS_OCEAN_DAILYSH=${PROCESS_OCEAN_DAILYSH:-"${USHglobal}/process_ocean_daily.sh"}
 PROCESS_OCEAN_MONTHLYSH=${PROCESS_OCEAN_MONTHLYSH:-"${USHglobal}/process_ocean_monthly.sh"}
-RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd_sfs.sh"}
+RUN_MPMDSH=${RUN_MPMDSH:-"${USHglobal}/run_mpmd.sh"}
 chmod +x "${PROCESS_OCEAN_6HRLYSH}" "${PROCESS_OCEAN_DAILYSH}" "${PROCESS_OCEAN_MONTHLYSH}" "${RUN_MPMDSH}"
 
 # List all scripts involved in the workflow
@@ -51,8 +51,7 @@ done
 declare -a required_execs=("cdo" "nccopy" "${PROCESS_OCEAN_6HRLYSH}" "${PROCESS_OCEAN_DAILYSH}" "${RUN_MPMDSH}")
 for tool in "${required_execs[@]}"; do
     if ! command -v "${tool}" > /dev/null 2>&1 && [[ ! -x "${tool}" ]]; then
-        echo "FATAL ERROR: Required ocean tool or script missing: ${tool}"
-        exit 1
+        err_exit "FATAL ERROR: Required ocean tool or script missing: ${tool}"
     fi
 done
 
@@ -155,8 +154,7 @@ if [[ "${RUN}" == sfs ]]; then
         cpfs "${DATA}/sfs.SSH.t00z.0p25.daily.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
         rm -f "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.nc"
     else
-        echo "FATAL: MPMD diagnostics failed. Keeping input files for debugging."
-        exit 1
+        err_exit "FATAL: MPMD diagnostics failed. Keeping input files for debugging."
     fi
 
     # -----------------------------------------------------------------------------
@@ -251,8 +249,7 @@ if [[ "${RUN}" == sfs ]]; then
         fi
 
         if [[ ${err} -ne 0 ]]; then
-            echo "FATAL ERROR: Failed MPMD monthly mean generation"
-            exit "${err}"
+            err_exit "FATAL ERROR: Failed MPMD monthly mean generation"
         fi
     else
         echo "No full months found to process."
