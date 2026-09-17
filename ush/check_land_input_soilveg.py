@@ -6,7 +6,7 @@ Validate FV3 land-surface fields against land fraction and Noah-MP soil paramete
 
 For each FV3 tile, this utility checks:
 
-1. Compare the land mask between input surface data files and 
+1. Compare the land mask between input surface data files and
    Orography files for consistency across tiles.
 2. Vegetation type (vtype) is valid at land points and
    Soil type (stype) is valid at land points.
@@ -99,6 +99,7 @@ NTILES = 6
 
 MAX_LOG_POINTS = 100
 MAX_SMC_LOG_POINTS = 10
+
 
 @logit(logger)
 def check_land_input_orography(
@@ -255,6 +256,7 @@ def check_land_input_orography(
     )
 
     return mismatch_counts
+
 
 @logit(logger)
 def check_land_surface_types(
@@ -1039,6 +1041,7 @@ def main() -> None:
         soilparm_dir=args.soilparm_dir,
         fatal=args.fatal,
     )
+
 
 if __name__ == "__main__":
     main()
