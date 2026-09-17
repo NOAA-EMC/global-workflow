@@ -99,9 +99,8 @@ if [[ "${RUN}" == sfs ]]; then
 
     export err=$?
     if [[ ${err} -ne 0 ]]; then
-        echo "FATAL ERROR: Failed to generate monthly mean ice products files"
         rm -f "${ICE_PRODUCT_OUTPUT}/native/${RUN}.ice.t${current_cycle}.monthly_avg."*"nc"
-        exit "${err}"
+        err_exit "FATAL ERROR: Failed to generate monthly mean ice products files"
     fi
 fi
 

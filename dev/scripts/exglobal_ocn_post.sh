@@ -51,8 +51,7 @@ done
 declare -a required_execs=("cdo" "nccopy" "${PROCESS_OCEAN_6HRLYSH}" "${PROCESS_OCEAN_DAILYSH}" "${RUN_MPMDSH}")
 for tool in "${required_execs[@]}"; do
     if ! command -v "${tool}" > /dev/null 2>&1 && [[ ! -x "${tool}" ]]; then
-        echo "FATAL ERROR: Required ocean tool or script missing: ${tool}"
-        exit 1
+        err_exit "FATAL ERROR: Required ocean tool or script missing: ${tool}"
     fi
 done
 
@@ -155,8 +154,7 @@ if [[ "${RUN}" == sfs ]]; then
         cpfs "${DATA}/sfs.SSH.t00z.0p25.daily.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
         rm -f "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.nc"
     else
-        echo "FATAL: MPMD diagnostics failed. Keeping input files for debugging."
-        exit 1
+        err_exit "FATAL ERROR: MPMD diagnostics failed. Keeping input files for debugging."
     fi
 
     # -----------------------------------------------------------------------------
