@@ -14,4 +14,3 @@ ice_history_{{ mem_char }}:
         {% set COMIN_ICE_HISTORY = COM_ICE_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         - "{{ COMIN_ICE_HISTORY | relpath(ROTDIR) }}/{{ head }}*.nc"
 {% endfor %}
-       

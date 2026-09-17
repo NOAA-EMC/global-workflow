@@ -14,5 +14,3 @@ namelists:
         {% set COMIN_CONF = COM_CONF_TMPL | replace_tmpl(tmpl_dict) %}
         - '{{ COMIN_CONF | relpath(ROTDIR) }}/ufs.*' 
         {% endfor %}
-        
-

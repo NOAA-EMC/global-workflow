@@ -14,4 +14,3 @@ ocean_history_monthly_{{ mem_char }}:
         {% set COMIN_OCEAN_HISTORY = COM_OCEAN_HISTORY_TMPL | replace_tmpl(tmpl_dict) %}
         - "{{ COMIN_OCEAN_HISTORY | relpath(ROTDIR) }}/{{ head }}*.nc"
 {% endfor %}
-       
