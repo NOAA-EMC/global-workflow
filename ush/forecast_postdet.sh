@@ -353,15 +353,6 @@ EOF
                         ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
                         ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
                     fi
-                    if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-                        if [[ "${MEMBER}" -eq 0 ]]; then
-                            ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master//${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                            ${NLN} "${DATAROOT}/${RUN}efcs000.${PDY:-}${cyc}/output/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
-                        else
-                            ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.master.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}.nest02"
-                            ${NLN} "${DATAoutput}/FV3ATM_OUTPUT/model/master/${RUN}.t${cyc}z.sflux.nest.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}.nest02"
-                        fi
-                    fi
                 else
                     ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.master.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSPRS.GrbF${FH2}"
                     ${NLN} "${COMOUT_ATMOS_MASTER}/${RUN}.t${cyc}z.sflux.f${FH3}.grib2" "${DATAoutput}/FV3ATM_OUTPUT/GFSFLX.GrbF${FH2}"
