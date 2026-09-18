@@ -18,13 +18,23 @@ The resulting tree is built lazily: any directory that no entry touches is a
 single symlink back to the base tree, so an overlay of one file under
 ``mom6/008/`` expands only ``mom6`` and ``mom6/008``, and every other component
 remains a single link.
+
+Two kinds of ``Path`` are used below and must not be mixed up:
+
+* ``base`` and ``dest`` are absolute and refer to real directories.
+* every other ``Path`` (``dst``, ``leaf``, ``rel``, ``ancestor``) is *relative
+  to the fix root* and is only ever used as a key: joined onto ``base``/``dest``,
+  compared, or walked with ``.parents``.  Never call ``.exists()``, ``.is_dir()``,
+  ``.glob()``, ``.mkdir()`` etc. on one of these; a relative ``Path`` resolves
+  against the current working directory, so such a call would silently answer
+  about the wrong tree instead of failing.
 """
 
 import glob
 import os
 import shutil
 from logging import getLogger
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 from wxflow import save_as_yaml
@@ -45,7 +55,7 @@ def _is_glob(path: str) -> bool:
     return any(ch in _GLOB_CHARS for ch in path)
 
 
-def _normalize_dst(dst: str) -> PurePosixPath:
+def _normalize_dst(dst: str) -> Path:
     """
     Validate a destination and return it as a relative, normalized path.
 
@@ -61,17 +71,17 @@ def _normalize_dst(dst: str) -> PurePosixPath:
     if dst.startswith('/'):
         raise FixOverlayError(f"fix: destination '{dst}' must be relative to the fix directory, not absolute")
 
-    parts = [p for p in PurePosixPath(dst).parts if p not in ('', '.')]
+    parts = [p for p in Path(dst).parts if p not in ('', '.')]
     if not parts:
         raise FixOverlayError(f"fix: destination '{dst}' resolves to the fix root itself; "
                               "override individual components instead")
     if '..' in parts:
         raise FixOverlayError(f"fix: destination '{dst}' may not contain '..'")
 
-    return PurePosixPath(*parts)
+    return Path(*parts)
 
 
-def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[PurePosixPath, str], List[Dict[str, str]]]:
+def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[Path, str], List[Dict[str, str]]]:
     """
     Turn the user's ``dst: src`` map into a map of leaf destinations to sources.
 
@@ -92,8 +102,8 @@ def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[PurePosixPath, str],
     FixOverlayError
         On a missing source, an empty glob, or a relative source.
     """
-    links: Dict[PurePosixPath, str] = {}
-    origin: Dict[PurePosixPath, str] = {}  # leaf -> user entry that produced it, for messages
+    links: Dict[Path, str] = {}
+    origin: Dict[Path, str] = {}  # leaf -> user entry that produced it, for messages
     overrides: List[Dict[str, str]] = []
 
     for raw_dst, raw_src in overlays.items():
@@ -109,7 +119,7 @@ def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[PurePosixPath, str],
             matches = sorted(glob.glob(src))
             if not matches:
                 raise FixOverlayError(f"fix: glob for '{raw_dst}' matched nothing: '{src}'")
-            leaves: List[Tuple[PurePosixPath, str]] = [(dst / os.path.basename(m), m) for m in matches]
+            leaves: List[Tuple[Path, str]] = [(dst / os.path.basename(m), m) for m in matches]
         else:
             if not os.path.exists(src):
                 raise FixOverlayError(f"fix: source for '{raw_dst}' does not exist: '{src}'")
@@ -134,8 +144,8 @@ def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[PurePosixPath, str],
     return links, overrides
 
 
-def _materialize(base: Path, dest: Path, rel: PurePosixPath,
-                 links: Dict[PurePosixPath, str], expanded: set) -> None:
+def _materialize(base: Path, dest: Path, rel: Path,
+                 links: Dict[Path, str], expanded: set) -> None:
     """
     Create ``dest/rel`` as a real directory whose children are either overlay
     links, further expanded directories, or links back to ``base/rel/<child>``.
@@ -203,9 +213,9 @@ def build_fix_overlay(base_dir: str, overlays: Dict[str, str], dest_dir: str) ->
             raise FixOverlayError(f"fix: '{dest}' exists and is not a fix overlay; remove it first")
 
     # Every proper ancestor of a leaf must be a real directory in the overlay.
-    expanded = {ancestor for leaf in links for ancestor in leaf.parents if ancestor != PurePosixPath('.')}
+    expanded = {ancestor for leaf in links for ancestor in leaf.parents if ancestor != Path('.')}
 
-    _materialize(base, dest, PurePosixPath('.'), links, expanded)
+    _materialize(base, dest, Path('.'), links, expanded)
 
     manifest = {
         'base': str(base),
