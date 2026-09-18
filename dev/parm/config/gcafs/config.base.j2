@@ -33,7 +33,7 @@ export HPSS_PROJECT="{{ HPSS_PROJECT }}"
 # Directories relative to installation areas:
 export HOMEglobal="{{ HOMEglobal }}"
 export EXECglobal="${HOMEglobal}/exec"
-export FIXglobal="${HOMEglobal}/fix"
+export FIXglobal="{{ FIXglobal | default('${HOMEglobal}/fix') }}"
 export PARMglobal="${HOMEglobal}/parm"
 export SCRglobal="${HOMEglobal}/scripts"
 export USHglobal="${HOMEglobal}/ush"
@@ -106,7 +106,7 @@ export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for au
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEglobal
-export FIXgsi="${HOMEglobal}/fix/gsi"
+export FIXgsi="${FIXglobal}/gsi"
 export HOMEpost="${HOMEglobal}"
 export HOMEobsproc="${BASE_GIT:-}/obsproc/v${obsproc_run_ver:-}"
 

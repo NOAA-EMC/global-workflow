@@ -16,6 +16,7 @@ from typing import Dict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, ArgumentTypeError
 
 from hosts import Host
+from fix_overlay import build_fix_overlay
 
 from wxflow import parse_j2yaml, AttrDict, to_datetime, to_timedelta, to_YMDH, Jinja, Logger, logit
 
@@ -96,6 +97,15 @@ def update_configs(host, inputs):
     # yaml_dict is in the form {defaults: {key1: val1, ...}, base: {key1: val1, ...}, ...}
     # _update_defaults replaces any keys/values in defaults with matching keys in base
     yaml_dict = _update_defaults(yaml_dict)
+
+    # An optional top-level `fix:` section overlays user files on the installed
+    # fix tree; the overlay is built in EXPDIR and FIXglobal is pointed at it.
+    fix_overlays = yaml_dict.pop('fix', None)
+    if fix_overlays:
+        logger.info('Building fix overlay from the `fix:` section of the experiment YAML')
+        host_plus_inputs_dict.FIXglobal = build_fix_overlay(base_dir=os.path.join(_top, 'fix'),
+                                                            overlays=fix_overlays,
+                                                            dest_dir=os.path.join(inputs.expdir, inputs.pslot, 'fix'))
 
     # Copy the config files to the experiment directory
     files = [ff for ff in os.listdir(inputs.configdir) if os.path.isfile(os.path.join(inputs.configdir, ff))]

@@ -230,6 +230,32 @@ Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend
 
 - Finally, there is a separate yaml that includes machine-specific settings, mostly default paths. These can be found in ``dev/workflow/hosts/`` and are applied automatically.
 
+======================
+Customizing fix files
+======================
+
+The experiment yaml (the one passed with ``--yaml``, or named by ``experiment:yaml:`` in a case file) may contain a top-level ``fix:`` section that overlays your own files on top of the installed fix tree. Each entry maps a destination, relative to the fix root, to an absolute source path:
+
+.. code-block:: yaml
+
+   {% set fix_008 = '/scratch4/NCEPDEV/marine/First.Last/fix_008' %}
+
+   fix:
+     wave:                      /scratch4/NCEPDEV/marine/First.Last/testfix/wave   # replace a whole component
+     cpl/aC384o008:             {{ fix_008 }}/CPL/aC384o008                        # add a directory
+     mom6/008/regional.mom6.nc: {{ fix_008 }}/MOM/regional.mom6.nc                 # add or replace one file
+     orog/C384:                 {{ fix_008 }}/OROG/C384/*                          # merge into a directory
+     mom6/008:                  {{ fix_008 }}/MOM/*.nc                             # merge a subset of files
+
+The shape of the source decides what happens:
+
+* A plain path **replaces**: the destination becomes a link to the source, whether or not it exists in the installed tree. The source may be a file or a directory.
+* A path containing a glob (``*``, ``?``, ``[]``) **merges**: every match is linked into the destination directory under its own name, next to whatever the installed tree already provides there.
+
+``setup_expt.py`` builds the overlay in ``$EXPDIR/fix`` and sets ``FIXglobal`` in ``config.base`` to point at it, so every job picks up the overlay through ``${FIXglobal}``. Only the paths you touch are expanded; every other component is a single link back to ``$HOMEglobal/fix``, so the overlay is quick to build and follows a re-run of ``link_workflow.sh``. A manifest of what was linked is written to ``$EXPDIR/fix/.fix_overlay.yaml``.
+
+A missing source, a glob that matches nothing, a destination outside the fix root, or two entries that set the same destination is an error and the experiment is not created. The yaml is rendered with Jinja2, so ``{% set %}`` can shorten repeated paths and ``MACHINE`` (e.g. ``URSA``, ``GAEAC6``) can select per-platform sources. Without a ``fix:`` section nothing changes and ``FIXglobal`` remains ``$HOMEglobal/fix``.
+
 =======================
 Running from case files
 =======================
