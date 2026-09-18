@@ -71,21 +71,30 @@ def _normalize_dst(dst: str) -> PurePosixPath:
     return PurePosixPath(*parts)
 
 
-def _expand_entries(overlays: Dict[str, str]) -> Dict[PurePosixPath, str]:
+def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[PurePosixPath, str], List[Dict[str, str]]]:
     """
     Turn the user's ``dst: src`` map into a map of leaf destinations to sources.
 
     Glob sources are expanded to one leaf per match under ``dst/<basename>``;
-    plain sources are a single leaf at ``dst``.
+    plain sources are a single leaf at ``dst``.  Entries are applied in order,
+    so a later entry that lands on the same leaf as an earlier one wins; this
+    is how a glob merge can be followed by a single-file exception.
+
+    Returns
+    -------
+    links : dict
+        Leaf destination -> source.
+    overrides : list
+        One record per leaf that a later entry replaced, for the log and manifest.
 
     Raises
     ------
     FixOverlayError
-        On a missing source, an empty glob, a relative source, or two entries
-        that resolve to the same destination.
+        On a missing source, an empty glob, or a relative source.
     """
     links: Dict[PurePosixPath, str] = {}
-    origin: Dict[PurePosixPath, str] = {}  # leaf -> user entry that produced it, for error messages
+    origin: Dict[PurePosixPath, str] = {}  # leaf -> user entry that produced it, for messages
+    overrides: List[Dict[str, str]] = []
 
     for raw_dst, raw_src in overlays.items():
         dst = _normalize_dst(raw_dst)
@@ -108,7 +117,9 @@ def _expand_entries(overlays: Dict[str, str]) -> Dict[PurePosixPath, str]:
 
         for leaf, leaf_src in leaves:
             if leaf in links:
-                raise FixOverlayError(f"fix: '{leaf}' is set by both '{origin[leaf]}' and '{raw_dst}'")
+                logger.info(f"fix: '{leaf}' from '{origin[leaf]}' overridden by '{raw_dst}'")
+                overrides.append({'dst': str(leaf), 'from': origin[leaf], 'by': raw_dst,
+                                  'was': links[leaf], 'now': leaf_src})
             links[leaf] = leaf_src
             origin[leaf] = raw_dst
 
@@ -120,7 +131,7 @@ def _expand_entries(overlays: Dict[str, str]) -> Dict[PurePosixPath, str]:
                 raise FixOverlayError(f"fix: '{leaf}' (from '{origin[leaf]}') lies inside "
                                       f"'{ancestor}' (from '{origin[ancestor]}'), which is replaced wholesale")
 
-    return links
+    return links, overrides
 
 
 def _materialize(base: Path, dest: Path, rel: PurePosixPath,
@@ -182,7 +193,7 @@ def build_fix_overlay(base_dir: str, overlays: Dict[str, str], dest_dir: str) ->
     if dest == base or base in dest.parents:
         raise FixOverlayError(f"fix: overlay destination '{dest}' may not be inside the base fix directory")
 
-    links = _expand_entries(overlays)
+    links, overrides = _expand_entries(overlays)
 
     if dest.is_symlink() or dest.exists():
         if dest.is_dir() and not dest.is_symlink() and (dest / MANIFEST_NAME).exists():
@@ -200,6 +211,7 @@ def build_fix_overlay(base_dir: str, overlays: Dict[str, str], dest_dir: str) ->
         'base': str(base),
         'entries': {str(k): v for k, v in overlays.items()},
         'links': {str(k): v for k, v in sorted(links.items())},
+        'overrides': overrides,
     }
     save_as_yaml(manifest, str(dest / MANIFEST_NAME))
 

@@ -192,12 +192,51 @@ def test_invalid_entries(base, user, tmp_path, entries, match):
     assert not dest.exists()
 
 
-def test_duplicate_destination_is_an_error(base, user, tmp_path):
+def test_later_entry_overrides_glob_match(base, user, tmp_path):
     dest = tmp_path / 'exp' / 'fix'
+    special = user / 'special' / 'ocean_hgrid.nc'
+    _touch(special)
     entries = {'mom6/025': str(user / 'MOM' / '*.nc'),
-               'mom6/025/ocean_hgrid.nc': str(user / 'MOM' / 'ocean_hgrid.nc')}
-    with pytest.raises(FixOverlayError, match='set by both'):
-        build_fix_overlay(str(base), entries, str(dest))
+               'mom6/025/ocean_hgrid.nc': str(special)}
+    build_fix_overlay(str(base), entries, str(dest))
+
+    d = dest / 'mom6' / '025'
+    assert _target(d / 'ocean_hgrid.nc') == str(special)
+    assert _target(d / 'regional.mom6.nc') == str(user / 'MOM' / 'regional.mom6.nc')
+
+    with open(dest / MANIFEST_NAME) as fh:
+        manifest = yaml.safe_load(fh)
+    assert manifest['links']['mom6/025/ocean_hgrid.nc'] == str(special)
+    assert manifest['overrides'] == [{
+        'dst': 'mom6/025/ocean_hgrid.nc',
+        'from': 'mom6/025',
+        'by': 'mom6/025/ocean_hgrid.nc',
+        'was': str(user / 'MOM' / 'ocean_hgrid.nc'),
+        'now': str(special),
+    }]
+
+
+def test_later_glob_overrides_earlier_entry(base, user, tmp_path):
+    # Order is what matters, not specificity: a glob after an explicit entry wins.
+    dest = tmp_path / 'exp' / 'fix'
+    special = user / 'special' / 'ocean_hgrid.nc'
+    _touch(special)
+    entries = {'mom6/025/ocean_hgrid.nc': str(special),
+               'mom6/025': str(user / 'MOM' / '*.nc')}
+    build_fix_overlay(str(base), entries, str(dest))
+
+    assert _target(dest / 'mom6' / '025' / 'ocean_hgrid.nc') == str(user / 'MOM' / 'ocean_hgrid.nc')
+    with open(dest / MANIFEST_NAME) as fh:
+        manifest = yaml.safe_load(fh)
+    assert [o['by'] for o in manifest['overrides']] == ['mom6/025']
+
+
+def test_no_overrides_gives_empty_list(base, user, tmp_path):
+    dest = tmp_path / 'exp' / 'fix'
+    build_fix_overlay(str(base), {'wave': str(user / 'wave')}, str(dest))
+    with open(dest / MANIFEST_NAME) as fh:
+        manifest = yaml.safe_load(fh)
+    assert manifest['overrides'] == []
 
 
 def test_entry_inside_replaced_directory_is_an_error(base, user, tmp_path):

@@ -254,7 +254,7 @@ The shape of the source decides what happens:
 
 ``setup_expt.py`` builds the overlay in ``$EXPDIR/fix`` and sets ``FIXglobal`` in ``config.base`` to point at it, so every job picks up the overlay through ``${FIXglobal}``. Only the paths you touch are expanded; every other component is a single link back to ``$HOMEglobal/fix``, so the overlay is quick to build and follows a re-run of ``link_workflow.sh``. A manifest of what was linked is written to ``$EXPDIR/fix/.fix_overlay.yaml``.
 
-A missing source, a glob that matches nothing, a destination outside the fix root, or two entries that set the same destination is an error and the experiment is not created. The yaml is rendered with Jinja2, so ``{% set %}`` can shorten repeated paths and ``MACHINE`` (e.g. ``URSA``, ``GAEAC6``) can select per-platform sources. Without a ``fix:`` section nothing changes and ``FIXglobal`` remains ``$HOMEglobal/fix``.
+Entries are applied in order, so a later entry that lands on the same file as an earlier one wins; this lets a glob merge be followed by a single-file exception (each override is logged and recorded in the manifest). A missing source, a glob that matches nothing, a destination outside the fix root, or an entry nested inside a directory that another entry replaces is an error and the experiment is not created. The yaml is rendered with Jinja2, so ``{% set %}`` can shorten repeated paths and ``MACHINE`` (e.g. ``URSA``, ``GAEAC6``) can select per-platform sources. Without a ``fix:`` section nothing changes and ``FIXglobal`` remains ``$HOMEglobal/fix``.
 
 =======================
 Running from case files
