@@ -113,7 +113,8 @@ fi
 # Env variables needed if we want to archive ICs for SFS
 if [[ "${RUN}" == "sfs" && "${ARCH_ICSDIR:-}" == "YES" ]]; then
     export current_cycle="${PDY}${cyc}"
-    export precycle=$(date -u -d"${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2} ${current_cycle:8:2}:00:00 6 hours ago" +%Y%m%d%H)
+    local predtg=$(date -u -d"${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2} ${current_cycle:8:2}:00:00 6 hours ago" +%Y%m%d%H)
+    export precycle=${predtg}
     export precycle_YMD="${precycle:0:8}"
     export precycle_HH="${precycle:8:2}"
 fi
