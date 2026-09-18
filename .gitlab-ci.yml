@@ -174,6 +174,42 @@ include:
         git config "branch.${_br}.pushRemote" origin
         unset _br
         git submodule update --init --recursive -j 8
+        # ── Commit-hash validation (mirror-lag race detection) ──────
+        # GITHUB_COMMIT_SHA is the PR HEAD SHA at trigger time, passed
+        # by trigger-gitlab-pipelines.yml.  If the GitLab mirror hasn't
+        # synced that commit yet, gh pr checkout lands on a stale ref.
+        # Detect and fail fast rather than testing wrong code.
+        if [[ -n "${GITHUB_COMMIT_SHA:-}" ]]; then
+          _actual_sha=$(git rev-parse HEAD)
+          if [[ "${_actual_sha}" == "${GITHUB_COMMIT_SHA}" ]]; then
+            echo "Commit hash verified: ${_actual_sha} matches expected PR HEAD"
+          else
+            echo "[ERROR] Commit hash mismatch detected — mirror-lag race condition" >&2
+            echo "[ERROR] Expected (GitHub PR HEAD): ${GITHUB_COMMIT_SHA}" >&2
+            echo "[ERROR] Actual   (checked out):    ${_actual_sha}" >&2
+            echo "[ERROR]" >&2
+            echo "[ERROR] The GitLab mirror has not yet synced the latest commit from GitHub." >&2
+            echo "[ERROR] This means the pipeline would build/test stale code." >&2
+            echo "[ERROR]" >&2
+            echo "[ERROR] Action: wait 2-5 minutes for the mirror to sync, then re-trigger" >&2
+            echo "[ERROR]         the pipeline from GitHub Actions." >&2
+            # Post a PR comment so the user sees the cause without digging
+            # into GitLab job logs.  Dedup on pipeline ID so that when all
+            # machines hit the same mirror-lag failure only the first posts.
+            _already_posted=$("${GH}" pr view "${PR_NUMBER}" --repo "${GW_REPO_URL}" \
+              --json comments --jq ".comments[].body" 2>/dev/null \
+              | grep -c "Mirror Sync.*pipeline ID: ${CI_PIPELINE_ID}" || true)
+            if [[ "${_already_posted}" -eq 0 ]]; then
+              _comment_body=$(printf '**CI Mirror Sync Failure** on %s (pipeline ID: %s)\n\nGitLab mirror has not synced the latest commit from GitHub — pipeline aborted to prevent testing stale code.\n\nExpected (GitHub PR HEAD): `%s`\nActual   (checked out):    `%s`\n\nWait 2-5 minutes for the mirror to sync, then re-trigger the pipeline from GitHub Actions.\n\n_This failure was detected automatically by global-workflow'\''s CI/CD Pipeline_' \
+                "${machine^}" "${CI_PIPELINE_ID}" "${GITHUB_COMMIT_SHA}" "${_actual_sha}")
+              "${GH}" pr comment "${PR_NUMBER}" --repo "${GW_REPO_URL}" --body "${_comment_body}" || true
+            else
+              echo "Mirror-lag comment already posted for pipeline ${CI_PIPELINE_ID}, skipping duplicate"
+            fi
+            exit 1
+          fi
+          unset _actual_sha
+        fi
       fi
 
       dev/ci/scripts/utils/ci_utils.sh build
