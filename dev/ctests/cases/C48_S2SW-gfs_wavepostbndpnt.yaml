@@ -23,7 +23,7 @@
 # - DOBNDPNT_WAV='YES' - Process boundary points
 #
 # Input Files:
-# - mod_def files from waveinit/waveprep
+# - mod_def files from waveinit
 # - points.fNNN.nc files from wave model point output
 #
 # Output Files:
@@ -33,19 +33,19 @@
 
 input_files:
     mkdir:
-        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep
+        - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init
         - {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/history
 
     copy:
         # Wave model definition files
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.glo_30m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.at_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.at_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.ep_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.ep_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.wc_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.wc_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin]
-        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/prep/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.uglo_100km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.glo_30m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.glo_30m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.aoc_9km.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.at_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.at_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.ep_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.ep_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.wc_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.wc_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.gnh_10m.bin]
+        - [{{ SRC_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin, {{ DST_DIR }}/gfs.{{ PDY }}/{{ cyc }}/model/wave/init/gfs.t{{ cyc }}z.mod_def.gsh_15m.bin]
 
         # Wave point output files - hourly from f000-f120 (all 121 hours)
 {% for fhr in range(0, 121) %}

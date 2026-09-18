@@ -30,7 +30,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-${HOMEgfs}/jobs/JGDAS_ATMOS_ANALYSIS_WDQMS
+${HOMEgfs}/jobs/JGDAS_ATMOS_ANAL_WDQMS
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

@@ -100,6 +100,14 @@ export DO_GSI_ANLSTAT="NO"               # GSI-based analysis statistics
 export MODE="{{ MODE }}" # cycled/forecast-only
 export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for automated testing
 
+# Verification options
+export DO_METP="{{ DO_METP }}" # METplus verification via EMC_verif-global
+# METplus verification is not enabled on Hera, Derecho or Orion
+if [[ "${machine}" == "HERA" || "${machine}" == "ORION" || "${machine}" == "DERECHO" ]] && [[ ${DO_METP} == "YES" ]]; then
+   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
+   export DO_METP="NO"
+fi
+
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
@@ -499,14 +507,6 @@ export binary_diag=".false."
 
 # Cellular automata
 export DO_CA="YES"
-
-# Verification options
-export DO_METP={{ DO_METP }} # METplus verification via EMC_verif-global
-# METplus verification is not enabled on Hera, Derecho or Orion
-if [[ "${machine}" == "hera" || "${machine}" == "orion" || "${machine}" == "derecho" ]] && [[ ${DO_METP} == "YES" ]]; then
-   echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
-   export DO_METP="NO"
-fi
 
 export DO_FIT2OBS="YES"      # Run fit to observations package
 #--online archive of netcdf files for fit2obs verification
