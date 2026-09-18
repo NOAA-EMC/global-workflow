@@ -21,7 +21,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "analdiag" -c "base anal analdiag"
 #export GPREFIX="${GDUMP}.t${gcyc}z."
 #export APREFIX="${RUN}.t${cyc}z."
 
-<<<<<<<< HEAD:dev/jobs/JGDAS_ATMOS_ANALYSIS_DIAG
 YMD=${PDY} HH=${cyc} declare_from_tmpl -rx \
     COMIN_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL \
     COMOUT_ATMOS_ANALYSIS:COM_ATMOS_ANALYSIS_TMPL
@@ -30,18 +29,6 @@ mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 ###############################################################
 # Run relevant script
 ${ANALDIAGSH:-${SCRgfs}/exglobal_diag.sh} && true
-========
-export LEVS=$((LEVS - 1))
-
-# Additional variables are set in scripts/exenkfgdas_ens_post.sh:
-#  COMIN_ATMOS_HISTORY, set in a loop over ensemble members
-#  COMOUT_ATMOS_HISTORY_STAT
-
-###############################################################
-# Run relevant script
-
-${ENKFPOSTSH:-${SCRglobal}/exenkfgdas_ens_post.sh} && true
->>>>>>>> origin/develop:dev/jobs/JENKFGDAS_ENS_POST
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit
