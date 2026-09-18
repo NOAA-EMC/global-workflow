@@ -30,7 +30,7 @@ copy_opt:
 
 {% if MODE == "cycled" %}
     # Deterministic analysis files (cycled mode only)
-    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.analysis.grib2",
+    - ["{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2",
        "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
 
     {% if DO_JEDIATMVAR == True %}
@@ -67,7 +67,7 @@ copy_opt:
 {% if RUN == "gfs" %}
     # GFS forecast files
     {% for fhr in range(0, FHMAX_GFS + 1, FHOUT_GFS) %}
-    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+    - ["{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ '%03d'|format(fhr) }}.grib2",
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
     {% endfor %}
 
@@ -95,7 +95,7 @@ copy_opt:
 {% elif RUN == "gdas" %}
     # GDAS forecast files
     {% for fhr in range(0, FHMAX + 1, FHOUT) %}
-    - ["{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_a.1p00.f{{ '%03d'|format(fhr) }}.grib2",
+    - ["{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.f{{ '%03d'|format(fhr) }}.grib2",
        "{{ ARCDIR }}/pgbf{{ '%02d'|format(fhr) }}.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
     {% endfor %}
 
