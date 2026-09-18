@@ -49,8 +49,7 @@ fi
 
 # Check if WGRIB2 is set; if not, print error and exit with status 1
 if [[ -z "${WGRIB2:-}" ]]; then
-    echo "Error: WGRIB2 is not defined. Exiting script." >&2
-    exit 1
+    err_exit "FATAL ERROR: WGRIB2 is not defined. Exiting script."
 fi
 
 #------------------------------------------------------------------------------
@@ -87,8 +86,7 @@ for exec_path in "${required_execs[@]}"; do
 done
 
 if [[ ${_missing_deps} -gt 0 ]]; then
-    echo "FATAL ERROR: ${_missing_deps} dependencies are missing. Exiting."
-    exit 1
+    err_exit "FATAL ERROR: ${_missing_deps} dependencies are missing. Exiting."
 fi
 
 echo "INFO: All dependencies verified successfully."
