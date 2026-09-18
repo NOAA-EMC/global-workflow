@@ -338,13 +338,5 @@ else
     echo "INFO: Stage 3 -- Monthly Processing Complete."
 fi
 
-#------------------------------------------------------------------------------
-# CLEANUP
-#------------------------------------------------------------------------------
-rm -f "${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f"*".grib2"
-rm -f "${DATA}"/mpmd_s*.txt
-rm -f "${DATA}"/mpmd.*.out
-rm -rf "${OUTDIR}"
-echo "INFO: Cleanup Complete. Workflow status: SUCCESS"
 
 exit 0
