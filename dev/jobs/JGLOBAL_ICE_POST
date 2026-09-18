@@ -41,8 +41,7 @@ echo "INFO: Found ${#ice_24hrly_files[@]} of ice 24hr_avg history files."
 if [[ "${#ice_24hrly_files[@]}" -lt "${ice_24hrly_num}" ]]; then
     echo "ERROR: Ice history file count mismatch detected!"
     echo "ice 24hr_avg history files: ${#ice_24hrly_files[@]} Found VS ${ice_24hrly_num} Expected"
-    echo "FATAL: The ice history files are incomplete. Ice post job quits!"
-    exit 1
+    err_exit "FATAL: The ice history files are incomplete. Ice post job quits!"
 fi
 
 ##############################################

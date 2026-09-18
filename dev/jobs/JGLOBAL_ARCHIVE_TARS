@@ -110,41 +110,13 @@ if [[ "${RUN}" == "sfs" ]]; then
     fi
 fi
 
-# If we want to copy ICs to ROTDIR to archive ICs for SFS
+# Env variables needed if we want to archive ICs for SFS
 if [[ "${RUN}" == "sfs" && "${ARCH_ICSDIR}" == "YES" ]]; then
     export current_cycle="${PDY}${cyc}"
-    pre_dtg=$(date -u -d"${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2} ${current_cycle:8:2}:00:00 6 hours ago" +%Y%m%d%H)
-    export precycle=${pre_dtg}
-    export cycle_YMD="${current_cycle:0:8}"
-    export cycle_YMDH="${current_cycle:0:10}"
-    export cycle_HH="${current_cycle:8:2}"
+    export precycle=$(date -u -d"${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2} ${current_cycle:8:2}:00:00 6 hours ago" +%Y%m%d%H)
     export precycle_YMD="${precycle:0:8}"
     export precycle_HH="${precycle:8:2}"
-
-    # Define target directories
-    TARGET_CURR="${ROTDIR}/icsdir.${cycle_YMDH}/sfs.${cycle_YMD}/${cycle_HH}/"
-    TARGET_PREV="${ROTDIR}/icsdir.${cycle_YMDH}/sfs.${precycle_YMD}/${precycle_HH}/"
-
-    mkdir -p "${TARGET_CURR}"
-    mkdir -p "${TARGET_PREV}"
-
-    echo "Starting parallel copy of ensemble member ICs..."
-    for ((i = 0; i <= NMEM_ENS; i++)); do
-        MEM3=$(printf %03i "${i}")
-
-        # Copy both current and previous cycle files in the background
-        cp -r "${ICSDIR}/sfs.${cycle_YMD}/${cycle_HH}/mem${MEM3}" "${TARGET_CURR}" &
-        cp -r "${ICSDIR}/sfs.${precycle_YMD}/${precycle_HH}/mem${MEM3}" "${TARGET_PREV}" &
-
-        # Prevent spawning too many processes at once (throttle every 10 members)
-        if ((i % 10 == 0)); then
-            wait
-        fi
-    done
-    wait # Ensure all remaining background copies finish before proceeding
-    echo "All IC copies completed successfully."
 fi
-
 ###############################################################
 # Run archive script
 ###############################################################
@@ -173,11 +145,6 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-if [[ -d "${ROTDIR}/icsdir.${PDY}${cyc}" ]]; then
-    echo "Purging temporary ROTDIR icsdir for ${PDY}${cyc}..."
-    rm -rf "${ROTDIR}/icsdir.${PDY}${cyc}"
-fi
-
 cd "${DATAROOT}" || true
 if [[ "${KEEPDATA}" == "NO" ]]; then
     rm -rf "${DATA}"

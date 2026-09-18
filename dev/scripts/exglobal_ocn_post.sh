@@ -249,8 +249,7 @@ if [[ "${RUN}" == sfs ]]; then
         fi
 
         if [[ ${err} -ne 0 ]]; then
-            echo "FATAL ERROR: Failed MPMD monthly mean generation"
-            exit "${err}"
+            err_exit "FATAL ERROR: Failed MPMD monthly mean generation"
         fi
     else
         echo "No full months found to process."

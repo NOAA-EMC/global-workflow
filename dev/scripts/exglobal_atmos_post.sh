@@ -273,8 +273,7 @@ if [[ -s "${cmdfile_s2}" ]]; then
 fi
 
 if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Stage 2 Daily Mean generation failed."
-    exit "${err}"
+    err_exit "FATAL ERROR: Stage 2 Daily Mean generation failed."
 else
     echo "INFO: Stage 2 Complete."
 fi
@@ -336,8 +335,7 @@ for file in "${insfilelist[@]}"; do
 done
 
 if [[ ${err} -ne 0 ]]; then
-    echo "FATAL ERROR: Failed to generate monthly mean grib2 files"
-    err_exit
+    err_exit "FATAL ERROR: Failed to generate monthly mean grib2 files."
 else
     echo "INFO: Stage 3 -- Monthly Processing Complete."
 fi
@@ -345,7 +343,7 @@ fi
 #------------------------------------------------------------------------------
 # CLEANUP
 #------------------------------------------------------------------------------
-#rm -f "${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f"*".grib2"
+rm -f "${ATMOS_MASTER_OUTPUT}/sfs.t${cyc}z.master.f"*".grib2"
 rm -f "${DATA}"/mpmd_s*.txt
 rm -f "${DATA}"/mpmd.*.out
 rm -rf "${OUTDIR}"
