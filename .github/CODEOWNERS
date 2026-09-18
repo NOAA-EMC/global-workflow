@@ -28,7 +28,7 @@ sorc/build_opts.yaml @DavidHuber-NOAA @TravisElless-NOAA
 # jobs
 dev/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
 dev/jobs/JGLOBAL_ATMOS_ANAL_DIAG @RussTreadon-NOAA @CoryMartin-NOAA
-dev/jobs/JGDAS_ATMOS_ANAL_WDQMS @AndrewCollard-NOAA
+dev/jobs/JGDAS_ATMOS_ANAL_WDQMS @ADCollard
 dev/jobs/JENKFGDAS_ATMOS_ENS_CHANGE_RES @RussTreadon-NOAA @CoryMartin-NOAA
 dev/jobs/JGDAS_ATMOS_GEMPAK @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/jobs/JGDAS_ATMOS_GEMPAK_META_NCDC @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
@@ -87,7 +87,7 @@ modulefiles/gw_upp_wcoss2.lua @WenMeng-NOAA
 dev/scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA
 dev/scripts/exenkfgdas_atmos_ens_change_res.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exenkfgdas_ens_post.sh @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
-dev/scripts/exgdas_atmos_anal_wdqms.sh @AndrewCollard-NOAA
+dev/scripts/exgdas_atmos_anal_wdqms.sh @ADCollard
 dev/scripts/exgdas_atmos_gempak.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgdas_atmos_gempak_gif_ncdc.sh @BenjaminBlake-NOAA @WenMeng-NOAA @JesseMeng-NOAA
 dev/scripts/exgdas_atmos_verfozn.sh @EdwardSafford-NOAA
@@ -112,7 +112,7 @@ dev/scripts/exglobal_atmos_anal*.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_atmos_diag.sh @RussTreadon-NOAA @CoryMartin-NOAA
 dev/scripts/exglobal_atmos_ens* @CoryMartin-NOAA @RussTreadon-NOAA @CatherineThomas-NOAA
 dev/scripts/exglobal_atmos_ensstat.sh @RussTreadon-NOAA
-dev/scripts/exglobal_atmos_pmgr.sh @lgannoaa
+dev/scripts/exglobal_atmos_pmgr.sh @LinGan-NOAA
 dev/scripts/exglobal_atmos_products.sh @WenMeng-NOAA
 dev/scripts/exglobal_atmos_anal_sfc_gcycle.sh @BrianCurtis-NOAA
 dev/scripts/exglobal_atmos_anal_sfc_regrid.sh @BrianCurtis-NOAA
@@ -188,7 +188,7 @@ ush/run_mpmd.sh @TravisElless-NOAA @DavidHuber-NOAA
 ush/syndat_getjtbul.sh @HananehJafary-NOAA
 ush/syndat_qctropcy.sh @HananehJafary-NOAA
 ush/wave_*.sh @JessicaMeixner-NOAA @sbanihash
-ush/wdqms.py @AndrewCollard-NOAA
+ush/wdqms.py @ADCollard
 ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
 
 # ush/python
