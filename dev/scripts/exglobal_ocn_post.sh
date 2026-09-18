@@ -261,8 +261,10 @@ fi
 # CLEANUP
 #------------------------------------------------------------------------------
 echo "Remove mpmd job outputs and executable script"
-rm -f "${DATA}"/*.txt
-rm -f "${DATA}"/mpmd.*.out
+if [[ "${KEEPDATA:-NO}" == "NO" ]]; then
+    rm -f "${DATA}"/*.txt
+    rm -f "${DATA}"/mpmd.*.out
+fi
 echo "Remove daily SSH fragments"
 rm -f "${DATA}/${RUN}.SSH.t00z.0p25.f"*".nc"
 echo "Ocean post success! Removing remapped input files and history files."
