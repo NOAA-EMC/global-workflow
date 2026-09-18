@@ -26,6 +26,6 @@ export CICE_DPSCALE=0.01
 export CICE_RFRACMIN=0.1
 export CICE_RFRACMAX=0.6
 export CICE_PNDASPECT=1.2
-export CICE_SNWREDIST='ITDrdg'
+#export CICE_SNWREDIST='ITDrdg'
 
 echo "END: config.ice"
