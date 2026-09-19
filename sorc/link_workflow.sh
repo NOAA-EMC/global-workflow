@@ -186,7 +186,7 @@ fi
 #---------------------------------------
 #--copy/link NoahMp table form ccpp-physics repository
 cd "${HOMEglobal}/parm/ufs" || exit 1
-safe_link_or_copy "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/noahmptable.tbl" .
+safe_link_or_copy "${HOMEglobal}/sorc/ufs_utils.fd/ccpp-physics/physics/SFC_Models/Land/Noahmp/noahmptable.tbl" .
 safe_link_or_copy "${HOMEglobal}/sorc/ufs_model.fd/tests/parm/fd_ufs.yaml" .
 
 cd "${HOMEglobal}/parm/post" || exit 1
