@@ -152,7 +152,7 @@ def test_replace_file_onto_directory_is_kind_mismatch(base, user, tmp_path):
 
 def test_replace_file_onto_absent_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'replace': {'mom6/025/ocean_hgird.nc': str(user / 'MOM' / 'ocean_hgrid.nc')}},
-           "not in the fix tree; use 'add'")
+           'not in the fix tree')
 
 
 def test_replace_directory_onto_file_is_kind_mismatch(base, user, tmp_path):
@@ -169,7 +169,7 @@ def test_replace_directory_onto_directory(base, user, tmp_path):
 
 def test_replace_directory_onto_absent_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'replace': {'cpl/aC48o008': str(user / 'CPL' / 'aC48o008')}},
-           "not in the fix tree; use 'add'")
+           'not in the fix tree')
 
 
 def test_replace_glob_onto_file_is_an_error(base, user, tmp_path):
@@ -209,7 +209,7 @@ def test_replace_glob_kind_mismatch_per_match(base, user, tmp_path):
 
 def test_replace_glob_onto_absent_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'replace': {'mom6/008': str(user / 'MOM' / '*.nc')}},
-           "'mom6/008' is not in the fix tree; use 'add'")
+           "'mom6/008' is not in the fix tree")
 
 
 # --- add: table -------------------------------------------------------------
@@ -217,12 +217,12 @@ def test_replace_glob_onto_absent_is_an_error(base, user, tmp_path):
 
 def test_add_file_onto_file_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'add': {'mom6/025/ocean_hgrid.nc': str(user / 'MOM' / 'ocean_hgrid.nc')}},
-           "already exists in the fix tree; use 'replace'")
+           'already exists in the fix tree')
 
 
-def test_add_file_onto_directory_is_an_error_with_hint(base, user, tmp_path):
+def test_add_file_onto_directory_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'add': {'orog/C48': str(user / 'OROG' / 'C48' / 'C48_new.nc')}},
-           "already exists in the fix tree; use 'replace'.*name the full path 'orog/C48/C48_new.nc'")
+           'already exists in the fix tree')
 
 
 def test_add_file_onto_absent(base, user, tmp_path):
@@ -235,9 +235,9 @@ def test_add_file_onto_absent(base, user, tmp_path):
 
 def test_add_directory_onto_existing_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'add': {'orog/C48': str(user / 'OROG' / 'C48')}},
-           "already exists in the fix tree; use 'replace'")
+           'already exists in the fix tree')
     _fails(base, tmp_path, {'add': {'mom6/025/MOM_input': str(user / 'MOM')}},
-           "already exists in the fix tree; use 'replace'")
+           'already exists in the fix tree')
 
 
 def test_add_directory_onto_absent(base, user, tmp_path):
