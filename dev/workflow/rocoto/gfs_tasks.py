@@ -1212,7 +1212,7 @@ class GFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_MASTER_TMPL"])
+        atm_master_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_ANALYSIS_TMPL"])
         deps = []
         data = f'{atm_master_path}/{self.run}.t@Hz.master.analysis.grib2'
         dep_dict = {'type': 'data', 'data': data, 'age': 120}
