@@ -94,10 +94,7 @@ def check_land_mask_consistency(
         Number of land-mask mismatches for each tile.
     """
 
-    # -----------------------------------------------------
     # Define land points
-    # -----------------------------------------------------
-
     input_land = veg_type > 0
     orog_land = land_frac > 0
 
@@ -109,10 +106,7 @@ def check_land_mask_consistency(
             f"land_frac {orog_land.shape}"
         )
 
-    # -----------------------------------------------------
     # Compare actual masks point-by-point
-    # -----------------------------------------------------
-
     mask_mismatch = input_land != orog_land
 
     n_mismatch = np.count_nonzero(mask_mismatch)
@@ -127,10 +121,7 @@ def check_land_mask_consistency(
         f"mask mismatches={n_mismatch}"
     )
 
-    # -----------------------------------------------------
     # Report examples
-    # -----------------------------------------------------
-
     if n_mismatch > 0:
 
         iy, ix = np.where(mask_mismatch)
@@ -194,10 +185,7 @@ def check_land_surface_types(
         Counts of invalid vegetation and soil points.
     """
 
-    # ---------------------------------------------------------
     # Valid vegetation and soil types
-    # ---------------------------------------------------------
-
     # Valid vegetation types: 1-16 and 18-20.
     valid_veg = (
         ((veg_type >= 1) & (veg_type <= 16)) |
@@ -219,9 +207,7 @@ def check_land_surface_types(
     n_invalid_veg = np.count_nonzero(invalid_veg)
     n_invalid_soil = np.count_nonzero(invalid_soil)
 
-    # ---------------------------------------------------------
     # Report invalid vegetation points
-    # ---------------------------------------------------------
     if n_invalid_veg > 0:
         j_fail, i_fail = np.where(invalid_veg)
 
@@ -242,9 +228,7 @@ def check_land_surface_types(
                 "invalid vegetation points not shown"
             )
 
-    # ---------------------------------------------------------
     # Report invalid soil points
-    # ---------------------------------------------------------
     if n_invalid_soil > 0:
         j_fail, i_fail = np.where(invalid_soil)
 
@@ -265,9 +249,7 @@ def check_land_surface_types(
                 "invalid soil-type points not shown"
             )
 
-    # ---------------------------------------------------------
     # Optional strict mode
-    # ---------------------------------------------------------
     if fatal and (n_invalid_veg > 0 or n_invalid_soil > 0):
         raise ValueError(
             f"Tile {tile} contains invalid vegetation/soil points"
@@ -339,10 +321,7 @@ def check_soil_moisture(
 
     soil_type = np.asarray(soil_type, dtype=np.int32)
 
-    # ---------------------------------------------------------
     # Define expected soil-moisture cells
-    # ---------------------------------------------------------
-
     expected_smc = (
         (land_frac > 0) &
         ~np.isin(veg_type, [15, 17])
@@ -355,10 +334,7 @@ def check_soil_moisture(
         f"{n_expected}"
     )
 
-    # ---------------------------------------------------------
     # Check dimensions
-    # ---------------------------------------------------------
-
     if smc.ndim != 4:
         raise ValueError(
             f"Tile {tile}: expected smc to have 4 dimensions "
@@ -373,10 +349,7 @@ def check_soil_moisture(
             f"got {n_layers}"
         )
 
-    # ---------------------------------------------------------
     # Validate soil types used for maxsmc lookup
-    # ---------------------------------------------------------
-
     invalid_soil_type = (
         (soil_type < 0) |
         (soil_type > len(porosity_table))
@@ -392,10 +365,7 @@ def check_soil_moisture(
             f"{invalid_values.tolist()}"
         )
 
-    # ---------------------------------------------------------
     # Build soil-type-dependent maxsmc array
-    # ---------------------------------------------------------
-
     # Default maxsmc is 1.0.
     # This handles soil_type == 0.
     maxsmc = np.ones_like(
@@ -412,10 +382,7 @@ def check_soil_moisture(
         soil_type[valid_lookup] - 1
     ]
 
-    # ---------------------------------------------------------
     # Check all four soil-moisture layers
-    # ---------------------------------------------------------
-
     n_invalid_smc = 0
 
     for layer in range(n_layers):
@@ -433,10 +400,7 @@ def check_soil_moisture(
             np.nan,
         )
 
-        # -----------------------------------------------------
         # Identify invalid soil-moisture points
-        # -----------------------------------------------------
-
         invalid_smc = (
             expected_smc &
             (
@@ -456,10 +420,7 @@ def check_soil_moisture(
             f"{n_invalid_layer} of {n_expected}"
         )
 
-        # -----------------------------------------------------
         # Report invalid soil-moisture points
-        # -----------------------------------------------------
-
         if n_invalid_layer > 0:
 
             iy, ix = np.where(invalid_smc)
@@ -495,10 +456,7 @@ def check_soil_moisture(
                     "not shown"
                 )
 
-    # ---------------------------------------------------------
     # Optional strict mode
-    # ---------------------------------------------------------
-
     if fatal and n_invalid_smc > 0:
         raise ValueError(
             f"Tile {tile} contains invalid soil moisture points"
@@ -585,10 +543,7 @@ def check_land_input_fields(
     total_invalid_soil = 0
     total_invalid_smc = 0
 
-    # ---------------------------------------------------------
     # Read Noah-MP soil parameters
-    # ---------------------------------------------------------
-
     soilparm_file = os.path.join(soilparm_dir, 'ufs/noahmptable.tbl')
 
     params = read_stas_params(
@@ -611,10 +566,7 @@ def check_land_input_fields(
         f"from {soilparm_file}"
     )
 
-    # ---------------------------------------------------------
     # Process FV3 tiles
-    # ---------------------------------------------------------
-
     for tile in range(1, NTILES + 1):
 
         sfc_file = os.path.join(
@@ -675,10 +627,7 @@ def check_land_input_fields(
             )
             continue
 
-        # -----------------------------------------------------
         # Check land mask consistency
-        # -----------------------------------------------------
-
         mismatch_counts = check_land_mask_consistency(
             land_frac=land_frac,
             veg_type=veg_type,
@@ -691,10 +640,7 @@ def check_land_input_fields(
         summary.mismatch_mask[f"tile{tile}"] = n_mismatch_mask
         total_mismatch_mask += n_mismatch_mask
 
-        # -----------------------------------------------------
         # Check vegetation and soil types
-        # -----------------------------------------------------
-
         surface_results = check_land_surface_types(
             land_frac=land_frac,
             veg_type=veg_type,
@@ -712,10 +658,7 @@ def check_land_input_fields(
         total_invalid_veg += n_invalid_veg
         total_invalid_soil += n_invalid_soil
 
-        # -----------------------------------------------------
         # Check soil moisture
-        # -----------------------------------------------------
-
         n_invalid_smc = check_soil_moisture(
             smc=smc_all,
             land_frac=land_frac,
@@ -729,10 +672,7 @@ def check_land_input_fields(
         summary.invalid_smc[f"tile{tile}"] = n_invalid_smc
         total_invalid_smc += n_invalid_smc
 
-    # ---------------------------------------------------------
     # Report summary
-    # ---------------------------------------------------------
-
     logger.info("Summary of invalid points by tile")
 
     for tile in range(1, NTILES + 1):
@@ -825,10 +765,7 @@ def read_stas_params(
         for line in file:
             line = line.strip()
 
-            # -------------------------------------------------
             # Detect block boundaries
-            # -------------------------------------------------
-
             if line.startswith("&noahmp_soil_stas_parameters"):
                 in_block = True
                 continue
@@ -843,10 +780,7 @@ def read_stas_params(
             if not line or line.startswith("!"):
                 continue
 
-            # -------------------------------------------------
             # Detect a new variable
-            # -------------------------------------------------
-
             match = re.match(
                 r"^([a-zA-Z0-9_]+)\s*=",
                 line,
@@ -868,10 +802,7 @@ def read_stas_params(
 
                 continue
 
-            # -------------------------------------------------
             # Handle continuation lines
-            # -------------------------------------------------
-
             if current_var is not None:
                 values = re.findall(
                     number_pattern,
@@ -889,10 +820,7 @@ def read_stas_params(
                         )
                     )
 
-    # ---------------------------------------------------------
     # Return only requested variables
-    # ---------------------------------------------------------
-
     if var_list is not None:
         requested = {
             name.lower()
