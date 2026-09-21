@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_land_input_soilveg.py
+check_land_input_fields.py
 
 Validate FV3 land-surface fields against land fraction and Noah-MP soil parameters.
 
@@ -8,57 +8,18 @@ For each FV3 tile, this utility checks:
 
 1. Compare the land mask between input surface data files and
    Orography files for consistency across tiles.
-2. Vegetation type (vtype) is valid at land points and
-   Soil type (stype) is valid at land points.
+2. Vegetation type (veg_type) is valid at land points and
+   Soil type (soil_type) is valid at land points.
 3. All four layers of soil moisture (smc) are defined and within the
    Soil-type-dependent maximum soil moisture (maxsmc).
 
-Land points are defined as:
-
-    land_frac > 0
-
-Expected files per tile
------------------------
-Surface file:
-    sfc_data.tile{tile}.nc
-
-Orography file:
-    oro_data.tile{tile}.nc
-
-Vegetation validity
--------------------
-Valid vtype values:
-
-    1-16, 18-20
-
-Soil type validity
-------------------
-Valid stype values:
-
-    1-13, 15-16
-
-Soil moisture
--------------
-For soil-moisture validation, expected cells are:
-
-    land_frac > 0
-    vtype != 15
-    vtype != 17
-
-where:
-
-    vtype = 15 : snow/ice (glacier)
-    vtype = 17 : water
-
-For expected cells, smc must:
-
-    - be defined (not masked or NaN)
-    - be greater than 0
-    - be less than or equal to maxsmc
-
-Soil type 0 is allowed for the maxsmc lookup and is assigned:
-
-    maxsmc = 1.0
+Vegetation type and soil type validation:
+    For land points: land_frac > 0
+        Valid veg_type: 1–16, 18–20
+        Valid soil_type: 1–13, 15–16
+Soil moisture (smc) checks:
+    For land points: land_frac > 0 and veg_type != 15, 17,
+        smc is defined (not masked/NaN), smc > 0 and smc <= maxsmc
 
 Output
 ------
@@ -75,7 +36,7 @@ values are found.
 
 Usage
 -----
-python check_land_input_soilveg.py \
+python check_land_input_fields.py \
     --input_dir /path/to/input \
     --orog_dir /path/to/orog \
     --soilparm_dir /path/to/noahmptable.tbl \
@@ -100,20 +61,19 @@ NTILES = 6
 MAX_LOG_POINTS = 100
 MAX_SMC_LOG_POINTS = 10
 
-
-@logit(logger)
-def check_land_input_orography(
-    input_dir: str,
-    orog_dir: str,
+def check_land_mask_consistency(
+    land_frac: np.ndarray,
+    veg_type: np.ndarray,
+    tile: int,
     fatal: bool = False,
 ) -> Dict[str, int]:
     """
-    Compare the number of land points in the surface input files
+    Compare the land-mask consistency between the surface input files
     and orography files for each FV3 tile.
 
     The surface-file land points are defined as:
 
-        vtype > 0
+        veg_type > 0
 
     The orography-file land points are defined as:
 
@@ -134,128 +94,74 @@ def check_land_input_orography(
         Number of land-mask mismatches for each tile.
     """
 
-    mismatch_counts = {}
+    # -----------------------------------------------------
+    # Define land points
+    # -----------------------------------------------------
 
-    for tile in range(1, NTILES + 1):
+    input_land = veg_type > 0
+    orog_land = land_frac > 0
 
-        sfc_file = os.path.join(
-            input_dir,
-            f"sfc_data.tile{tile}.nc",
+    # Check dimensions before comparing.
+    if input_land.shape != orog_land.shape:
+        raise ValueError(
+            f"Tile {tile}: dimension mismatch between "
+            f"veg_type {input_land.shape} and "
+            f"land_frac {orog_land.shape}"
         )
 
-        oro_file = os.path.join(
-            orog_dir,
-            f"oro_data.tile{tile}.nc",
-        )
+    # -----------------------------------------------------
+    # Compare actual masks point-by-point
+    # -----------------------------------------------------
 
-        try:
-            with Dataset(sfc_file, mode="r") as sfc, \
-                 Dataset(oro_file, mode="r") as oro:
+    mask_mismatch = input_land != orog_land
 
-                vtype = _read_2d_or_3d_surface_variable(
-                    sfc,
-                    "vtype",
-                )
+    n_mismatch = np.count_nonzero(mask_mismatch)
 
-                land_frac = oro.variables["land_frac"][:]
-
-        except FileNotFoundError:
-            logger.warning(
-                f"Tile {tile}: file not found. "
-                f"Skipping land-mask consistency check."
-            )
-            continue
-
-        except KeyError as exc:
-            logger.warning(
-                f"Tile {tile}: missing variable {exc}. "
-                f"Skipping land-mask consistency check."
-            )
-            continue
-
-        except Exception as exc:
-            logger.warning(
-                f"Tile {tile}: unexpected error reading files: "
-                f"{exc}. Skipping land-mask consistency check."
-            )
-            continue
-
-        # -----------------------------------------------------
-        # Define land points
-        # -----------------------------------------------------
-
-        input_land = vtype > 0
-        orog_land = land_frac > 0
-
-        # Check dimensions before comparing.
-        if input_land.shape != orog_land.shape:
-            raise ValueError(
-                f"Tile {tile}: dimension mismatch between "
-                f"vtype {input_land.shape} and "
-                f"land_frac {orog_land.shape}"
-            )
-
-        # -----------------------------------------------------
-        # Compare actual masks point-by-point
-        # -----------------------------------------------------
-
-        mask_mismatch = input_land != orog_land
-
-        n_mismatch = np.count_nonzero(mask_mismatch)
-
-        input_count = np.count_nonzero(input_land)
-        orog_count = np.count_nonzero(orog_land)
-
-        mismatch_counts[f"tile{tile}"] = n_mismatch
-
-        logger.info(
-            f"Tile {tile}: "
-            f"input land points={input_count}, "
-            f"orography land points={orog_count}, "
-            f"mask mismatches={n_mismatch}"
-        )
-
-        # -----------------------------------------------------
-        # Report examples
-        # -----------------------------------------------------
-
-        if n_mismatch > 0:
-
-            iy, ix = np.where(mask_mismatch)
-
-            for j, i in zip(
-                iy[:MAX_LOG_POINTS],
-                ix[:MAX_LOG_POINTS],
-            ):
-                logger.warning(
-                    f"Tile {tile}: land-mask mismatch at "
-                    f"({j},{i}): "
-                    f"vtype={vtype[j, i]}, "
-                    f"land_frac={land_frac[j, i]:.3f}"
-                )
-
-            if n_mismatch > MAX_LOG_POINTS:
-                logger.warning(
-                    f"Tile {tile}: "
-                    f"{n_mismatch - MAX_LOG_POINTS} additional "
-                    "land-mask mismatches not shown"
-                )
-
-            if fatal:
-                raise ValueError(
-                    f"Tile {tile}: land-mask mismatch: "
-                    f"{n_mismatch} points "
-                    f"(input={input_count}, "
-                    f"orography={orog_count})"
-                )
-
-    total_mismatches = sum(mismatch_counts.values())
+    input_count = np.count_nonzero(input_land)
+    orog_count = np.count_nonzero(orog_land)
 
     logger.info(
-        f"Total land-mask mismatches: {total_mismatches}"
+        f"Tile {tile}: "
+        f"input land points={input_count}, "
+        f"orography land points={orog_count}, "
+        f"mask mismatches={n_mismatch}"
     )
 
-    return mismatch_counts
+    # -----------------------------------------------------
+    # Report examples
+    # -----------------------------------------------------
+
+    if n_mismatch > 0:
+
+        iy, ix = np.where(mask_mismatch)
+
+        for j, i in zip(
+            iy[:MAX_LOG_POINTS],
+            ix[:MAX_LOG_POINTS],
+        ):
+            logger.warning(
+                f"Tile {tile}: land-mask mismatch at "
+                f"({j},{i}): "
+                f"veg_type={veg_type[j, i]}, "
+                f"land_frac={land_frac[j, i]:.3f}"
+            )
+
+        if n_mismatch > MAX_LOG_POINTS:
+            logger.warning(
+                f"Tile {tile}: "
+                f"{n_mismatch - MAX_LOG_POINTS} additional "
+                "land-mask mismatches not shown"
+            )
+
+        if fatal:
+            raise ValueError(
+                f"Tile {tile}: land-mask mismatch: "
+                f"{n_mismatch} points "
+                f"(input={input_count}, "
+                f"orography={orog_count})"
+            )
+
+    return { "mismatch_mask": n_mismatch }
 
 
 @logit(logger)
@@ -326,7 +232,7 @@ def check_land_surface_types(
             logger.warning(
                 f"Tile {tile}: invalid vegetation at ({j},{i}) "
                 f"land_frac={land_frac[j, i]:.3f}, "
-                f"vtype={veg_type[j, i]}"
+                f"veg_type={veg_type[j, i]}"
             )
 
         if n_invalid_veg > MAX_LOG_POINTS:
@@ -349,7 +255,7 @@ def check_land_surface_types(
             logger.warning(
                 f"Tile {tile}: invalid soil type at ({j},{i}) "
                 f"land_frac={land_frac[j, i]:.3f}, "
-                f"stype={soil_type[j, i]}"
+                f"soil_type={soil_type[j, i]}"
             )
 
         if n_invalid_soil > MAX_LOG_POINTS:
@@ -389,13 +295,13 @@ def check_soil_moisture(
     Expected soil-moisture cells are defined as:
 
         land_frac > 0
-        vtype != 15
-        vtype != 17
+        veg_type != 15
+        veg_type != 17
 
     where:
 
-        vtype = 15 : snow/ice (glacier)
-        vtype = 17 : water
+        veg_type = 15 : snow/ice (glacier)
+        veg_type = 17 : water
 
     For expected cells, soil moisture must:
 
@@ -575,7 +481,7 @@ def check_soil_moisture(
                     f"Tile {tile}: layer {layer + 1}: "
                     f"({j},{i}): "
                     f"land_frac={land_frac[j, i]:.3f}, "
-                    f"vtype={veg_type[j, i]}, "
+                    f"veg_type={veg_type[j, i]}, "
                     f"soil_type={soil_type[j, i]}, "
                     f"smc={smc_display}, "
                     f"smcmax={maxsmc[j, i]:.4f}"
@@ -633,7 +539,7 @@ def _read_2d_or_3d_surface_variable(
 
 
 @logit(logger)
-def compare_landfrac_soilveg(
+def check_land_input_fields(
     input_dir: str,
     orog_dir: str,
     soilparm_dir: str,
@@ -645,9 +551,10 @@ def compare_landfrac_soilveg(
     For each FV3 tile, this function:
 
     1. Reads land_frac from the orography file.
-    2. Reads vtype, stype, and smc from the surface file.
-    3. Checks vtype and stype at land points.
-    4. Checks all four layers of soil moisture against Noah-MP maxsmc.
+    2. Reads veg_type, soil_type, and smc from the surface file.
+    3. Checks land-mask consistency
+    4. Checks veg_type and soil_type at land points.
+    5. Checks all four layers of soil moisture against Noah-MP maxsmc.
 
     Parameters
     ----------
@@ -668,10 +575,12 @@ def compare_landfrac_soilveg(
 
     summary = AttrDict()
 
+    summary.mismatch_mask = {}
     summary.invalid_veg = {}
     summary.invalid_soil = {}
     summary.invalid_smc = {}
 
+    total_mismatch_mask = 0
     total_invalid_veg = 0
     total_invalid_soil = 0
     total_invalid_smc = 0
@@ -767,6 +676,22 @@ def compare_landfrac_soilveg(
             continue
 
         # -----------------------------------------------------
+        # Check land mask consistency
+        # -----------------------------------------------------
+
+        mismatch_counts = check_land_mask_consistency(
+            land_frac=land_frac,
+            veg_type=veg_type,
+            tile=tile,
+            fatal=fatal,
+        )
+
+        n_mismatch_mask = mismatch_counts["mismatch_mask"]
+
+        summary.mismatch_mask[f"tile{tile}"] = n_mismatch_mask
+        total_mismatch_mask += n_mismatch_mask
+
+        # -----------------------------------------------------
         # Check vegetation and soil types
         # -----------------------------------------------------
 
@@ -815,6 +740,8 @@ def compare_landfrac_soilveg(
 
         logger.info(
             f"Tile {tile}: "
+            f"mismatch mask points="
+            f"{summary.mismatch_mask.get(tile_key, 0)}, "
             f"invalid vegetation points="
             f"{summary.invalid_veg.get(tile_key, 0)}, "
             f"invalid soil points="
@@ -822,6 +749,11 @@ def compare_landfrac_soilveg(
             f"invalid soil moisture points="
             f"{summary.invalid_smc.get(tile_key, 0)}"
         )
+
+    logger.info(
+        f"Total mismatch land-mask points: "
+        f"{total_mismatch_mask}"
+    )
 
     logger.info(
         f"Total invalid vegetation points: "
@@ -980,7 +912,7 @@ def main() -> None:
     """Parse command-line arguments and run the validation."""
 
     description = (
-        "Validate vegetation (vtype), soil type (stype), and "
+        "Validate vegetation (veg_type), soil type (soil_type), and "
         "soil moisture (smc) against land fraction and "
         "Noah-MP soil parameters."
     )
@@ -1029,13 +961,7 @@ def main() -> None:
         colored_log=os.environ.get("COLORED_LOG", False),
     )
 
-    check_land_input_orography(
-        input_dir=args.input_dir,
-        orog_dir=args.orog_dir,
-        fatal=args.fatal,
-    )
-
-    compare_landfrac_soilveg(
+    check_land_input_fields(
         input_dir=args.input_dir,
         orog_dir=args.orog_dir,
         soilparm_dir=args.soilparm_dir,

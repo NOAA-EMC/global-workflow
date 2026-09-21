@@ -88,7 +88,7 @@ prepoceanobs:
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
 
 fcst:
-  CHECK_LAND_RESTART_SOILVEG: "YES"
+  CHECK_LAND_RESTART_FIELDS: "YES"
 
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
