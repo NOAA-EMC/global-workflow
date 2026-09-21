@@ -254,7 +254,9 @@ For example:
      add:                                    # none of these is in the fix tree yet
        cpl/aC384o008:             {{ fix_008 }}/CPL/aC384o008                          # new directory
        mom6/008/regional.mom6.nc: {{ fix_008 }}/MOM/regional.mom6.nc                   # new file
-       mom6/008:                  [{{ fix_008 }}/MOM/*zgrid*.nc, {{ fix_008 }}/MOM/MOM_*]  # new files into a (here also new) directory
+       mom6/008:                                                                          # new files into a (here also new) directory
+         - {{ fix_008 }}/MOM/*zgrid*.nc
+         - {{ fix_008 }}/MOM/MOM_*
 
 The rule for each sub-section
 -----------------------------
@@ -271,7 +273,7 @@ A source may be a glob (``*``, ``?``, ``[]``). Then the ``<path under fix/>`` is
 * under **replace**, the directory must already exist in the fix tree, and every matched file or directory must already exist inside it (and be of the same kind). A match that would be new is an error.
 * under **add**, the directory may already exist (your new files go beside the ones already there) or not (it is created), and no matched file or directory may already exist inside it. A match that would overwrite something is an error.
 
-So a source directory that holds a mix of new files and replacements is written as two entries, one glob under ``replace`` and one under ``add``. To apply several globs to the same directory under one sub-section, give a list of sources, as in the ``mom6/008`` example above.
+So a source directory that holds a mix of new files and replacements is written as two entries, one glob under ``replace`` and one under ``add``. To apply several globs to the same directory under one sub-section, give a list of sources, as in the ``mom6/008`` example above. Write the list one item per line (``- …``) rather than as ``[a, b]``: inside ``[ ]`` YAML treats ``?``, ``:``, ``[`` and ``]`` as syntax, so an unquoted glob such as ``file_?.nc`` or ``file_[ab].nc`` will not parse.
 
 Summary of what happens
 -----------------------
