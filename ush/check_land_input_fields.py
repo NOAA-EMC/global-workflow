@@ -15,8 +15,8 @@ For each FV3 tile, this utility checks:
 
 Vegetation type and soil type validation:
     For land points: land_frac > 0
-        Valid veg_type: 1–16, 18–20
-        Valid soil_type: 1–13, 15–16
+        Valid veg_type: 1-16, 18-20
+        Valid soil_type: 1-13, 15-16
 Soil moisture (smc) checks:
     For land points: land_frac > 0 and veg_type != 15, 17,
         smc is defined (not masked/NaN), smc > 0 and smc <= maxsmc
