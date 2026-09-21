@@ -61,6 +61,7 @@ NTILES = 6
 MAX_LOG_POINTS = 100
 MAX_SMC_LOG_POINTS = 10
 
+
 def check_land_mask_consistency(
     land_frac: np.ndarray,
     veg_type: np.ndarray,
@@ -152,7 +153,7 @@ def check_land_mask_consistency(
                 f"orography={orog_count})"
             )
 
-    return { "mismatch_mask": n_mismatch }
+    return {"mismatch_mask": n_mismatch}
 
 
 @logit(logger)
