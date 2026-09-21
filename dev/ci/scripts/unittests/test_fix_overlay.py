@@ -174,7 +174,7 @@ def test_replace_directory_onto_absent_is_an_error(base, user, tmp_path):
 
 def test_replace_glob_onto_file_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'replace': {'mom6/025/MOM_input': str(user / 'MOM' / '*.nc')}},
-           'is a file in the fix tree; a glob source needs a directory destination')
+           'is a file in the fix tree; a glob or a list of sources needs a directory destination')
 
 
 def test_replace_glob_into_directory(base, user, tmp_path):
@@ -256,7 +256,7 @@ def test_add_new_component(base, user, tmp_path):
 
 def test_add_glob_onto_file_is_an_error(base, user, tmp_path):
     _fails(base, tmp_path, {'add': {'mom6/025/MOM_input': str(user / 'MOM' / '*.nc')}},
-           'is a file in the fix tree; a glob source needs a directory destination')
+           'is a file in the fix tree; a glob or a list of sources needs a directory destination')
 
 
 def test_add_glob_into_existing_directory(base, user, tmp_path):
@@ -291,6 +291,48 @@ def test_list_of_sources_under_one_destination(base, user, tmp_path):
     assert _target(c48 / 'C48_oro_data.tile1.nc') == str(user / 'OROG' / 'C48' / 'C48_oro_data.tile1.nc')
     assert _target(c48 / 'C48_grid.tile1.nc') == str(user / 'OROG' / 'C48' / 'C48_grid.tile1.nc')
     assert _manifest(dest)['entries'] == fix_files
+
+
+def test_list_may_mix_globs_and_plain_files(base, user, tmp_path):
+    # a list always means "into this directory", so a plain file lands under its own name
+    fix_files = {'replace': {'orog/C48': [str(user / 'OROG' / 'C48' / '*_oro_*'),
+                                          str(user / 'OROG' / 'C48' / 'C48_grid.tile1.nc')]}}
+    dest = _build(base, tmp_path, fix_files)
+    c48 = dest / 'orog' / 'C48'
+    assert _target(c48 / 'C48_oro_data.tile1.nc') == str(user / 'OROG' / 'C48' / 'C48_oro_data.tile1.nc')
+    assert _target(c48 / 'C48_grid.tile1.nc') == str(user / 'OROG' / 'C48' / 'C48_grid.tile1.nc')
+
+
+def test_list_of_plain_files_under_add(base, user, tmp_path):
+    fix_files = {'add': {'mom6/008': [str(user / 'MOM' / 'regional.mom6.nc'),
+                                      str(user / 'MOM' / 'notes.txt')]}}
+    dest = _build(base, tmp_path, fix_files)
+    d = dest / 'mom6' / '008'
+    assert d.is_dir() and not d.is_symlink()
+    assert _target(d / 'regional.mom6.nc') == str(user / 'MOM' / 'regional.mom6.nc')
+    assert _target(d / 'notes.txt') == str(user / 'MOM' / 'notes.txt')
+
+
+def test_list_items_are_checked_individually(base, user, tmp_path):
+    # ocean_hgrid.nc exists in mom6/025, so it cannot be in an add list for that directory
+    fix_files = {'add': {'mom6/025': [str(user / 'MOM' / 'regional.mom6.nc'),
+                                      str(user / 'MOM' / 'ocean_hgrid.nc')]}}
+    _fails(base, tmp_path, fix_files, r"'mom6/025/ocean_hgrid.nc' \(from 'add: mom6/025'\) already exists")
+    fix_files = {'replace': {'mom6/025': [str(user / 'MOM' / 'ocean_hgrid.nc'),
+                                          str(user / 'MOM' / 'regional.mom6.nc')]}}
+    _fails(base, tmp_path, fix_files, r"'mom6/025/regional.mom6.nc' \(from 'replace: mom6/025'\) is not in the fix tree")
+
+
+def test_single_item_list_still_means_into_directory(base, user, tmp_path):
+    # [file] under a directory dst is "into"; the bare file would have been a kind mismatch
+    src = user / 'OROG' / 'C48' / 'C48_grid.tile1.nc'
+    dest = _build(base, tmp_path, {'replace': {'orog/C48': [str(src)]}})
+    assert _target(dest / 'orog' / 'C48' / 'C48_grid.tile1.nc') == str(src)
+
+
+def test_list_onto_file_is_an_error(base, user, tmp_path):
+    _fails(base, tmp_path, {'replace': {'mom6/025/MOM_input': [str(user / 'MOM' / 'ocean_hgrid.nc')]}},
+           'is a file in the fix tree; a glob or a list of sources needs a directory destination')
 
 
 def test_mixed_directory_is_replace_plus_add(base, user, tmp_path):

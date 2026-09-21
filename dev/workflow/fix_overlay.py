@@ -17,11 +17,12 @@ directory or glob, or a list of those.
     Every path named, or matched by a glob, must *not* exist in the fix tree
     yet and is linked in.
 
-A glob source needs a directory destination: each match is linked into the
-destination directory under its own name, and each is checked individually
-against the rule of its sub-section.  Under ``replace`` the destination
-directory must already exist; under ``add`` it may exist (new files go beside
-the existing ones) or not (it is created).
+A single plain source is linked *at* the destination path.  A glob, or a
+list of sources, means the destination is a directory: each match, or each
+listed file or directory, is linked into it under its own name, and each is
+checked individually against the rule of its sub-section.  Under ``replace``
+the destination directory must already exist; under ``add`` it may exist (new
+files go beside the existing ones) or not (it is created).
 
 Any path that disagrees with the sub-section it is under is an error, so a
 misspelled name can neither create a stray file nor clobber a system one.
@@ -172,15 +173,18 @@ def _expand_entries(base: Path, fix_files: Dict[str, Dict[str, Union[str, List[s
             dst = _normalize_dst(mode, raw_dst)
             entry = f"{mode}: {raw_dst}"
 
+            # A list, or a glob, means dst is a directory that the sources go into.
+            into_dir = isinstance(raw_src, list)
             for src in _normalize_srcs(mode, raw_dst, raw_src):
-                if _is_glob(src):
-                    # A glob fans out into the destination directory.
+                if into_dir or _is_glob(src):
                     if (base / dst).exists() and not (base / dst).is_dir():
                         raise FixOverlayError(f"fix_files: {mode}: '{dst}' is a file in the fix tree; "
-                                              f"a glob source needs a directory destination: '{src}'")
+                                              f"a glob or a list of sources needs a directory destination: '{src}'")
                     if mode == 'replace' and not (base / dst).exists():
                         raise FixOverlayError(f"fix_files: replace: '{dst}' is not in the fix tree; "
                                               "use 'add' to create a new directory")
+
+                if _is_glob(src):
                     matches = sorted(glob.glob(src))
                     if not matches:
                         raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' matched nothing: '{src}'")
@@ -189,7 +193,7 @@ def _expand_entries(base: Path, fix_files: Dict[str, Dict[str, Union[str, List[s
                 else:
                     if not os.path.exists(src):
                         raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' does not exist: '{src}'")
-                    leaves = [(dst, src)]
+                    leaves = [(dst / os.path.basename(src) if into_dir else dst, src)]
                     label = f"from '{entry}'"
 
                 for leaf, leaf_src in leaves:
@@ -243,7 +247,7 @@ def _summary(base: Path, dest: Path, applied: List[Dict[str, object]]) -> str:
     width = max((len(str(a['dst'])) for a in applied), default=0)
     lines = [f"Fix files: {dest}  (overlay on {base})"]
     for a in applied:
-        count = f"  ({a['files']} files)" if _is_glob(str(a['src'])) else ''
+        count = f"  ({a['files']} files)" if a['files'] != 1 or _is_glob(str(a['src'])) else ''
         lines.append(f"  {a['mode']:<8} {str(a['dst']):<{width}}{count}  <- {a['src']}")
     return '\n'.join(lines)
 

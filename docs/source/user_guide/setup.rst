@@ -265,20 +265,20 @@ The rule for each sub-section
 
 **add** — every path you name must *not* exist in the fix tree, and your file or directory is linked in at that path; missing parent directories are created. Naming a path that already exists is an error (this is how you are stopped from silently clobbering a system file).
 
-Globs
------
+Globs and lists
+---------------
 
-A source may be a glob (``*``, ``?``, ``[]``). Then the ``<path under fix/>`` is a *directory*, and each match is linked into it under its own name. Every match is checked one by one against the rule of the sub-section it is under:
+A source may be a glob (``*``, ``?``, ``[]``), or a list of files, directories and globs. In either case the ``<path under fix/>`` is a *directory*, and each match, or each listed item, is linked into it under its own name. Every one is checked one by one against the rule of the sub-section it is under:
 
 * under **replace**, the directory must already exist in the fix tree, and every matched file or directory must already exist inside it (and be of the same kind). A match that would be new is an error.
 * under **add**, the directory may already exist (your new files go beside the ones already there) or not (it is created), and no matched file or directory may already exist inside it. A match that would overwrite something is an error.
 
-So a source directory that holds a mix of new files and replacements is written as two entries, one glob under ``replace`` and one under ``add``. To apply several globs to the same directory under one sub-section, give a list of sources, as in the ``mom6/008`` example above. Write the list one item per line (``- …``) rather than as ``[a, b]``: inside ``[ ]`` YAML treats ``?``, ``:``, ``[`` and ``]`` as syntax, so an unquoted glob such as ``file_?.nc`` or ``file_[ab].nc`` will not parse.
+So a source directory that holds a mix of new files and replacements is written as two entries, one under ``replace`` and one under ``add``. To put several things into the same directory under one sub-section, give a list of sources, as in the ``mom6/008`` example above; a list may mix globs and individual files. Write the list one item per line (``- …``) rather than as ``[a, b]``: inside ``[ ]`` YAML treats ``?``, ``:``, ``[`` and ``]`` as syntax, so an unquoted glob such as ``file_?.nc`` or ``file_[ab].nc`` will not parse.
 
 Summary of what happens
 -----------------------
 
-For a plain (non-glob) source, ``<path under fix/>`` is the exact file or directory being replaced or added. For a glob, it is the directory the matches go into.
+For a single plain (non-glob) source, ``<path under fix/>`` is the exact file or directory being replaced or added. For a glob, or for a list, it is the directory the matches or listed items go into.
 
 .. list-table:: ``replace:``
    :header-rows: 1
@@ -296,7 +296,7 @@ For a plain (non-glob) source, ``<path under fix/>`` is the exact file or direct
      - error: kind mismatch
      - linked in place of it (wholesale)
      - error: use ``add``
-   * - a glob
+   * - a glob, or a list
      - error: needs a directory
      - each match must already exist inside it, same kind
      - error: use ``add``
@@ -317,7 +317,7 @@ For a plain (non-glob) source, ``<path under fix/>`` is the exact file or direct
      - error: use ``replace``
      - error: use ``replace``
      - linked there
-   * - a glob
+   * - a glob, or a list
      - error: needs a directory
      - each match must not already exist inside it
      - directory created; matches linked into it
