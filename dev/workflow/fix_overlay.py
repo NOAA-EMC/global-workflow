@@ -4,15 +4,25 @@
 Build a per-experiment fix directory that overlays user-supplied files on top of
 the installed ``${HOMEglobal}/fix`` tree.
 
-The overlay is described by the ``fix:`` section of the experiment YAML as a flat
-``dst: src`` map, where ``dst`` is a path relative to the fix root and ``src`` is
-an absolute path.  Two behaviours are selected by the shape of ``src``:
+The overlay is described by the ``fix_files:`` section of the experiment YAML.
+It has three sub-sections, each a flat map of ``<path under fix/>: <your path>``:
 
-* no glob characters -> **replace**: ``dst`` becomes a symlink to ``src``
-  (``src`` may be a file or a directory; ``dst`` need not exist in the base tree).
-* glob characters    -> **merge**: each match of ``src`` is linked into the
-  directory ``dst`` under its own basename, alongside whatever the base tree
-  already provides there.
+``replace:``
+    The path already exists in the fix tree and is swapped for yours.  The
+    source must be the same kind of thing (file for file, directory for
+    directory).  An entry whose path is *not* in the fix tree is an error.
+``add:``
+    The path does not exist in the fix tree yet and is linked in.  An entry
+    whose path *is* already in the fix tree is an error.
+``merge:``
+    The path is an existing directory in the fix tree; every file in the
+    source directory (or every match of a source glob) is linked into it beside
+    the files already there.  Merging into a directory that is not in the fix
+    tree is an error.
+
+``replace``/``add`` entries always take precedence over a ``merge`` match for
+the same file, so "everything in this directory, except this one file" is
+written as a ``merge`` plus one ``replace``.
 
 The resulting tree is built lazily: any directory that no entry touches is a
 single symlink back to the base tree, so an overlay of one file under
@@ -39,23 +49,25 @@ from typing import Dict, List, Tuple
 
 from wxflow import save_as_yaml
 
-__all__ = ['build_fix_overlay', 'FixOverlayError', 'MANIFEST_NAME']
+__all__ = ['build_fix_overlay', 'FixOverlayError', 'MANIFEST_NAME', 'MODES']
 
 logger = getLogger(__name__)
 
 MANIFEST_NAME = '.fix_overlay.yaml'
+# Order of application: explicit single-path entries win over merge matches.
+MODES = ('merge', 'add', 'replace')
 _GLOB_CHARS = set('*?[')
 
 
 class FixOverlayError(ValueError):
-    """Raised for an invalid or unsatisfiable ``fix:`` section."""
+    """Raised for an invalid or unsatisfiable ``fix_files:`` section."""
 
 
 def _is_glob(path: str) -> bool:
     return any(ch in _GLOB_CHARS for ch in path)
 
 
-def _normalize_dst(dst: str) -> Path:
+def _normalize_dst(mode: str, dst: str) -> Path:
     """
     Validate a destination and return it as a relative, normalized path.
 
@@ -65,83 +77,130 @@ def _normalize_dst(dst: str) -> Path:
         If ``dst`` is empty, absolute, or would escape the fix root.
     """
     if not isinstance(dst, str) or not dst.strip():
-        raise FixOverlayError(f"fix: destination must be a non-empty relative path, got {dst!r}")
+        raise FixOverlayError(f"fix_files: {mode}: path must be a non-empty path under fix/, got {dst!r}")
 
     dst = dst.strip()
     if dst.startswith('/'):
-        raise FixOverlayError(f"fix: destination '{dst}' must be relative to the fix directory, not absolute")
+        raise FixOverlayError(f"fix_files: {mode}: '{dst}' must be relative to fix/, not absolute")
 
     parts = [p for p in Path(dst).parts if p not in ('', '.')]
     if not parts:
-        raise FixOverlayError(f"fix: destination '{dst}' resolves to the fix root itself; "
-                              "override individual components instead")
+        raise FixOverlayError(f"fix_files: {mode}: '{dst}' is the fix root itself; "
+                              "name individual components instead")
     if '..' in parts:
-        raise FixOverlayError(f"fix: destination '{dst}' may not contain '..'")
+        raise FixOverlayError(f"fix_files: {mode}: '{dst}' may not contain '..'")
 
     return Path(*parts)
 
 
-def _expand_entries(overlays: Dict[str, str]) -> Tuple[Dict[Path, str], List[Dict[str, str]]]:
-    """
-    Turn the user's ``dst: src`` map into a map of leaf destinations to sources.
+def _normalize_src(mode: str, dst: str, src: str) -> str:
+    if not isinstance(src, str) or not src.strip():
+        raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' must be a non-empty path, got {src!r}")
+    src = os.path.expanduser(src.strip())
+    if not os.path.isabs(src):
+        raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' must be an absolute path, got '{src}'")
+    return src
 
-    Glob sources are expanded to one leaf per match under ``dst/<basename>``;
-    plain sources are a single leaf at ``dst``.  Entries are applied in order,
-    so a later entry that lands on the same leaf as an earlier one wins; this
-    is how a glob merge can be followed by a single-file exception.
+
+def _kind(path: str) -> str:
+    return 'directory' if os.path.isdir(path) else 'file'
+
+
+def _expand_entries(base: Path, fix_files: Dict[str, Dict[str, str]]) \
+        -> Tuple[Dict[Path, str], List[Dict[str, str]], List[Dict[str, object]]]:
+    """
+    Turn the ``fix_files:`` section into a map of leaf destinations to sources.
+
+    Each mode is validated against what the base tree actually contains (see
+    the module docstring).  Modes are applied in ``MODES`` order so that
+    ``replace``/``add`` entries override ``merge`` matches on the same leaf.
 
     Returns
     -------
     links : dict
         Leaf destination -> source.
     overrides : list
-        One record per leaf that a later entry replaced, for the log and manifest.
+        One record per leaf that a later entry replaced.
+    applied : list
+        One record per user entry, for the summary: mode, dst, src, number of files.
 
     Raises
     ------
     FixOverlayError
-        On a missing source, an empty glob, or a relative source.
+        On a malformed section, a missing source, an empty glob, or an entry
+        whose mode disagrees with the base tree.
     """
+    unknown = set(fix_files) - set(MODES)
+    if unknown:
+        raise FixOverlayError(f"fix_files: unknown sub-section(s) {sorted(unknown)}; "
+                              f"expected one or more of {list(MODES)}")
+
     links: Dict[Path, str] = {}
-    origin: Dict[Path, str] = {}  # leaf -> user entry that produced it, for messages
+    origin: Dict[Path, str] = {}  # leaf -> "mode: dst" that produced it, for messages
     overrides: List[Dict[str, str]] = []
+    applied: List[Dict[str, object]] = []
 
-    for raw_dst, raw_src in overlays.items():
-        dst = _normalize_dst(raw_dst)
+    for mode in MODES:
+        entries = fix_files.get(mode) or {}
+        if not isinstance(entries, dict):
+            raise FixOverlayError(f"fix_files: {mode}: must be a mapping of <path under fix/>: <your path>, "
+                                  f"got {type(entries).__name__}")
 
-        if not isinstance(raw_src, str) or not raw_src.strip():
-            raise FixOverlayError(f"fix: source for '{raw_dst}' must be a non-empty path, got {raw_src!r}")
-        src = os.path.expanduser(raw_src.strip())
-        if not os.path.isabs(src):
-            raise FixOverlayError(f"fix: source for '{raw_dst}' must be an absolute path, got '{raw_src}'")
+        for raw_dst, raw_src in entries.items():
+            dst = _normalize_dst(mode, raw_dst)
+            src = _normalize_src(mode, raw_dst, raw_src)
+            in_base = (base / dst).exists()
 
-        if _is_glob(src):
-            matches = sorted(glob.glob(src))
-            if not matches:
-                raise FixOverlayError(f"fix: glob for '{raw_dst}' matched nothing: '{src}'")
-            leaves: List[Tuple[Path, str]] = [(dst / os.path.basename(m), m) for m in matches]
-        else:
-            if not os.path.exists(src):
-                raise FixOverlayError(f"fix: source for '{raw_dst}' does not exist: '{src}'")
-            leaves = [(dst, src)]
+            if mode == 'merge':
+                if not in_base or not (base / dst).is_dir():
+                    raise FixOverlayError(f"fix_files: merge: '{dst}' is not a directory in the fix tree; "
+                                          "use 'add' to create a new directory")
+                pattern = src if _is_glob(src) else os.path.join(src, '*')
+                if not _is_glob(src) and not os.path.isdir(src):
+                    raise FixOverlayError(f"fix_files: merge: source for '{dst}' must be a directory or a glob, "
+                                          f"got '{src}'")
+                matches = sorted(glob.glob(pattern))
+                if not matches:
+                    raise FixOverlayError(f"fix_files: merge: source for '{dst}' matched nothing: '{pattern}'")
+                leaves: List[Tuple[Path, str]] = [(dst / os.path.basename(m), m) for m in matches]
 
-        for leaf, leaf_src in leaves:
-            if leaf in links:
-                logger.info(f"fix: '{leaf}' from '{origin[leaf]}' overridden by '{raw_dst}'")
-                overrides.append({'dst': str(leaf), 'from': origin[leaf], 'by': raw_dst,
-                                  'was': links[leaf], 'now': leaf_src})
-            links[leaf] = leaf_src
-            origin[leaf] = raw_dst
+            else:  # replace / add: a single path
+                if _is_glob(src):
+                    raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' may not be a glob; "
+                                          "use 'merge' to link several files into a directory")
+                if not os.path.exists(src):
+                    raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' does not exist: '{src}'")
+                if mode == 'replace':
+                    if not in_base:
+                        raise FixOverlayError(f"fix_files: replace: '{dst}' is not in the fix tree; "
+                                              "use 'add' for a new file or directory")
+                    if _kind(str(base / dst)) != _kind(src):
+                        raise FixOverlayError(f"fix_files: replace: '{dst}' is a {_kind(str(base / dst))} in the "
+                                              f"fix tree but the source is a {_kind(src)}: '{src}'")
+                elif in_base:
+                    raise FixOverlayError(f"fix_files: add: '{dst}' already exists in the fix tree; "
+                                          "use 'replace' to swap it for yours")
+                leaves = [(dst, src)]
+
+            label = f"{mode}: {raw_dst}"
+            for leaf, leaf_src in leaves:
+                if leaf in links:
+                    logger.info(f"fix_files: '{leaf}' from '{origin[leaf]}' overridden by '{label}'")
+                    overrides.append({'dst': str(leaf), 'from': origin[leaf], 'by': label,
+                                      'was': links[leaf], 'now': leaf_src})
+                links[leaf] = leaf_src
+                origin[leaf] = label
+            applied.append({'mode': mode, 'dst': str(dst), 'src': src, 'files': len(leaves)})
 
     # A leaf that sits inside another leaf would be written through the
     # replacing symlink into the user's source tree; refuse that.
     for leaf in links:
         for ancestor in leaf.parents:
             if ancestor in links:
-                raise FixOverlayError(f"fix: '{leaf}' (from '{origin[leaf]}') lies inside "
-                                      f"'{ancestor}' (from '{origin[ancestor]}'), which is replaced wholesale")
+                raise FixOverlayError(f"fix_files: '{leaf}' (from '{origin[leaf]}') lies inside "
+                                      f"'{ancestor}' (from '{origin[ancestor]}'), which is linked wholesale")
 
-    return links, overrides
+    return links, overrides, applied
 
 
 def _materialize(base: Path, dest: Path, rel: Path,
@@ -155,7 +214,7 @@ def _materialize(base: Path, dest: Path, rel: Path,
     dest_here.mkdir(parents=True, exist_ok=False)
 
     if base_here.exists() and not base_here.is_dir():
-        raise FixOverlayError(f"fix: cannot place entries under '{rel}': '{base_here}' is not a directory")
+        raise FixOverlayError(f"fix_files: cannot place entries under '{rel}': '{base_here}' is not a directory")
 
     children = set(os.listdir(base_here)) if base_here.is_dir() else set()
     children |= {leaf.relative_to(rel).parts[0] for leaf in links if rel in leaf.parents}
@@ -171,17 +230,27 @@ def _materialize(base: Path, dest: Path, rel: Path,
             os.symlink(base_here / child, target)
 
 
-def build_fix_overlay(base_dir: str, overlays: Dict[str, str], dest_dir: str) -> str:
+def _summary(base: Path, dest: Path, applied: List[Dict[str, object]]) -> str:
+    width = max((len(str(a['dst'])) for a in applied), default=0)
+    lines = [f"Fix files: {dest}  (overlay on {base})"]
+    for a in applied:
+        count = f"  ({a['files']} files)" if a['mode'] == 'merge' else ''
+        lines.append(f"  {a['mode']:<8} {str(a['dst']):<{width}}{count}  <- {a['src']}")
+    return '\n'.join(lines)
+
+
+def build_fix_overlay(base_dir: str, fix_files: Dict[str, Dict[str, str]], dest_dir: str) -> str:
     """
-    Build an overlay fix tree at ``dest_dir`` from ``base_dir`` and ``overlays``.
+    Build an overlay fix tree at ``dest_dir`` from ``base_dir`` and ``fix_files``.
 
     Parameters
     ----------
     base_dir : str
         The installed fix tree, normally ``${HOMEglobal}/fix``.  Untouched
         entries link back here, so the overlay follows re-links of the install.
-    overlays : dict
-        ``dst: src`` map from the experiment YAML ``fix:`` section.
+    fix_files : dict
+        The ``fix_files:`` section of the experiment YAML: up to three maps
+        under ``replace``, ``add`` and ``merge``.
     dest_dir : str
         Where to build the overlay, normally ``${EXPDIR}/fix``.  If it already
         holds an overlay (identified by its manifest) it is rebuilt; anything
@@ -192,25 +261,26 @@ def build_fix_overlay(base_dir: str, overlays: Dict[str, str], dest_dir: str) ->
     str
         ``dest_dir`` as an absolute path, suitable for ``FIXglobal``.
     """
-    if not isinstance(overlays, dict):
-        raise FixOverlayError(f"fix: section must be a mapping of destination: source, got {type(overlays).__name__}")
+    if not isinstance(fix_files, dict):
+        raise FixOverlayError(f"fix_files: must be a mapping with 'replace', 'add' and/or 'merge' sub-sections, "
+                              f"got {type(fix_files).__name__}")
 
     base = Path(base_dir).absolute()
     dest = Path(dest_dir).absolute()
 
     if not base.is_dir():
-        raise FixOverlayError(f"fix: base fix directory does not exist: '{base}'")
+        raise FixOverlayError(f"fix_files: base fix directory does not exist: '{base}'")
     if dest == base or base in dest.parents:
-        raise FixOverlayError(f"fix: overlay destination '{dest}' may not be inside the base fix directory")
+        raise FixOverlayError(f"fix_files: overlay destination '{dest}' may not be inside the base fix directory")
 
-    links, overrides = _expand_entries(overlays)
+    links, overrides, applied = _expand_entries(base, fix_files)
 
     if dest.is_symlink() or dest.exists():
         if dest.is_dir() and not dest.is_symlink() and (dest / MANIFEST_NAME).exists():
             logger.info(f"Removing previous fix overlay at {dest}")
             shutil.rmtree(dest)
         else:
-            raise FixOverlayError(f"fix: '{dest}' exists and is not a fix overlay; remove it first")
+            raise FixOverlayError(f"fix_files: '{dest}' exists and is not a fix overlay; remove it first")
 
     # Every proper ancestor of a leaf must be a real directory in the overlay.
     expanded = {ancestor for leaf in links for ancestor in leaf.parents if ancestor != Path('.')}
@@ -219,14 +289,12 @@ def build_fix_overlay(base_dir: str, overlays: Dict[str, str], dest_dir: str) ->
 
     manifest = {
         'base': str(base),
-        'entries': {str(k): v for k, v in overlays.items()},
+        'entries': {mode: dict(fix_files.get(mode) or {}) for mode in MODES if fix_files.get(mode)},
         'links': {str(k): v for k, v in sorted(links.items())},
         'overrides': overrides,
     }
     save_as_yaml(manifest, str(dest / MANIFEST_NAME))
 
-    logger.info(f"Built fix overlay at {dest} ({len(links)} link(s) over {base})")
-    for leaf, src in sorted(links.items()):
-        logger.info(f"  {leaf} -> {src}")
+    logger.info(_summary(base, dest, applied))
 
     return str(dest)

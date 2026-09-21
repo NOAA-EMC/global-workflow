@@ -234,27 +234,32 @@ Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend
 Customizing fix files
 ======================
 
-The experiment yaml (the one passed with ``--yaml``, or named by ``experiment:yaml:`` in a case file) may contain a top-level ``fix:`` section that overlays your own files on top of the installed fix tree. Each entry maps a destination, relative to the fix root, to an absolute source path:
+The experiment yaml (the one passed with ``--yaml``, or named by ``experiment:yaml:`` in a case file) may contain a top-level ``fix_files:`` section that overlays your own files on top of the installed fix tree. It has three sub-sections. Each is a map of ``<path under fix/>: <your file or directory>``:
 
 .. code-block:: yaml
 
    {% set fix_008 = '/scratch4/NCEPDEV/marine/First.Last/fix_008' %}
 
-   fix:
-     wave:                      /scratch4/NCEPDEV/marine/First.Last/testfix/wave   # replace a whole component
-     cpl/aC384o008:             {{ fix_008 }}/CPL/aC384o008                        # add a directory
-     mom6/008/regional.mom6.nc: {{ fix_008 }}/MOM/regional.mom6.nc                 # add or replace one file
-     orog/C384:                 {{ fix_008 }}/OROG/C384/*                          # merge into a directory
-     mom6/008:                  {{ fix_008 }}/MOM/*.nc                             # merge a subset of files
+   fix_files:
+     replace:                     # already in the fix tree; swapped for yours
+       wave:                      /scratch4/NCEPDEV/marine/First.Last/testfix/wave
+       mom6/025/ocean_hgrid.nc:   {{ fix_008 }}/MOM/ocean_hgrid.nc
+     add:                         # not in the fix tree yet
+       cpl/aC384o008:             {{ fix_008 }}/CPL/aC384o008
+       mom6/008/regional.mom6.nc: {{ fix_008 }}/MOM/regional.mom6.nc
+     merge:                       # existing directory; your files go beside the ones already there
+       orog/C384:                 {{ fix_008 }}/OROG/C384       # every file in the source directory
+       mom6/008:                  {{ fix_008 }}/MOM/*.nc        # or only those matching a glob
 
-The shape of the source decides what happens:
+* ``replace`` requires the path to exist in the fix tree, and the source to be the same kind of thing (file for file, directory for directory). A path that is not in the fix tree is an error, which catches misspelled file names.
+* ``add`` requires the path *not* to exist in the fix tree. A path that is already there is an error, so you cannot silently clobber a system file.
+* ``merge`` requires the path to be an existing directory in the fix tree. Every file in the source directory, or every match of the glob, is linked into it; files that already exist there are overridden and new ones are added.
 
-* A plain path **replaces**: the destination becomes a link to the source, whether or not it exists in the installed tree. The source may be a file or a directory.
-* A path containing a glob (``*``, ``?``, ``[]``) **merges**: every match is linked into the destination directory under its own name, next to whatever the installed tree already provides there.
+An explicit ``replace`` or ``add`` entry always wins over a ``merge`` match for the same file, so "everything in this directory except one file" is a ``merge`` plus one ``replace``. Each such override is logged and recorded in the manifest.
 
-``setup_expt.py`` builds the overlay in ``$EXPDIR/fix`` and sets ``FIXglobal`` in ``config.base`` to point at it, so every job picks up the overlay through ``${FIXglobal}``. Only the paths you touch are expanded; every other component is a single link back to ``$HOMEglobal/fix``, so the overlay is quick to build and follows a re-run of ``link_workflow.sh``. A manifest of what was linked is written to ``$EXPDIR/fix/.fix_overlay.yaml``.
+``setup_expt.py`` builds the overlay in ``$EXPDIR/fix``, prints a summary of what was linked, and sets ``FIXglobal`` in ``config.base`` to point at it, so every job picks up the overlay through ``${FIXglobal}``. Only the paths you touch are expanded; every other component is a single link back to ``$HOMEglobal/fix``, so the overlay is quick to build and follows a re-run of ``link_workflow.sh``. A manifest of what was linked is written to ``$EXPDIR/fix/.fix_overlay.yaml``.
 
-Entries are applied in order, so a later entry that lands on the same file as an earlier one wins; this lets a glob merge be followed by a single-file exception (each override is logged and recorded in the manifest). A missing source, a glob that matches nothing, a destination outside the fix root, or an entry nested inside a directory that another entry replaces is an error and the experiment is not created. The yaml is rendered with Jinja2, so ``{% set %}`` can shorten repeated paths and ``MACHINE`` (e.g. ``URSA``, ``GAEAC6``) can select per-platform sources. Without a ``fix:`` section nothing changes and ``FIXglobal`` remains ``$HOMEglobal/fix``.
+A missing source, a glob that matches nothing, a path outside the fix root, or an entry nested inside a directory that another entry links wholesale is an error and the experiment is not created. The yaml is rendered with Jinja2, so ``{% set %}`` can shorten repeated paths and ``MACHINE`` (e.g. ``URSA``, ``GAEAC6``) can select per-platform sources. Without a ``fix_files:`` section nothing changes and ``FIXglobal`` remains ``$HOMEglobal/fix``.
 
 =======================
 Running from case files
