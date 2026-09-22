@@ -171,7 +171,7 @@ AddJJOBTest(
 
 AddJJOBTest(
   CASE "C48_S2SW"
-  JOB "gfs_wavepostsbs_f000-f002"
+  JOB "gfs_wavepostgridded_f000-f002"
   TEST_DATE "2021032312"
 )
 

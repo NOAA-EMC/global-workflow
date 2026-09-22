@@ -380,12 +380,12 @@ FV3_nml() {
     # namelist output for a certain component
     echo "SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3"
 
-    source "${USHglobal}/parsing_namelists_FV3.sh"
-    source "${USHglobal}/parsing_model_configure_FV3.sh"
+    source "${USHglobal}/parsing_namelists_fv3.sh"
+    source "${USHglobal}/parsing_model_configure_fv3.sh"
 
     # Call the appropriate namelist functions
     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
-        source "${USHglobal}/parsing_namelists_FV3_nest.sh"
+        source "${USHglobal}/parsing_namelists_fv3_nest.sh"
         FV3_namelists_nest global
         FV3_namelists_nest nest
     else
@@ -567,7 +567,7 @@ WW3_postdet() {
 
 WW3_nml() {
     echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-    source "${USHglobal}/parsing_namelists_WW3.sh"
+    source "${USHglobal}/parsing_namelists_ww3.sh"
     WW3_namelists
 }
 
@@ -732,7 +732,7 @@ MOM6_postdet() {
 
 MOM6_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-    source "${USHglobal}/parsing_namelists_MOM6.sh"
+    source "${USHglobal}/parsing_namelists_mom6.sh"
     MOM6_namelists
 }
 
@@ -882,7 +882,7 @@ CICE_postdet() {
 
 CICE_nml() {
     echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-    source "${USHglobal}/parsing_namelists_CICE.sh"
+    source "${USHglobal}/parsing_namelists_cice.sh"
     CICE_namelists
 }
 
@@ -951,7 +951,7 @@ GOCART_rc() {
         fi
     fi
 
-    source "${USHglobal}/parsing_namelists_GOCART.sh"
+    source "${USHglobal}/parsing_namelists_gocart.sh"
     GOCART_namelists
 }
 

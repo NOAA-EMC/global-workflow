@@ -57,3 +57,5 @@ Department of Commerce seal and logo, or the seal and logo of a DOC bureau,
 shall not be used in any manner to imply endorsement of any commercial product
 or activity by DOC or the United States Government.
 
+Generative AI has been used to assist with the development of this code.
+The code has been reviewed, edited, and validated by NWS staff or affiliates.

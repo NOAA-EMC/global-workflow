@@ -29,8 +29,7 @@ export FHR_LIST="%FHR_LIST%"
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-#### ${HOMEgfs}/dev/job_cards/rocoto/awips_20km_1p0deg.sh
-${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG
+${HOMEgfs}/jobs/JGFS_ATMOS_AWIPS_20KM_1P0
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

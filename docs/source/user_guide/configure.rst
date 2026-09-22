@@ -77,6 +77,9 @@ The GW configs contain switches that change how the system runs. Many defaults a
 | QUILTING         | Use I/O quilting                 | .true.        | NO          | If .true. choose OUTPUT_GRID as cubed_sphere_grid |
 |                  |                                  |               |             | in netcdf or gaussian_grid                        |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| CAT_MPMD_LOGS    | Write MPMD logs back to the      | YES           | NO          | If YES, the contents of the MPMD logs will be     |
+|                  | parent log.                      |               |             | written to the parent log file.                   |
++------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | WRITE_DOPOST     | Run inline post                  | .true.        | NO          | If .true. produces master post output in forecast |
 |                  |                                  |               |             | job                                               |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
