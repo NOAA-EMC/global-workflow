@@ -6,7 +6,7 @@ the installed ``${HOMEglobal}/fix`` tree.
 
 The overlay is described by the ``fix_files:`` section of the experiment YAML.
 It has two sub-sections, ``replace:`` and ``add:``.  Each is a map of
-``<path under fix/>: <your path>``, where ``<your path>`` is an absolute file,
+``<path under ${HOMEglobal}/fix/>: <your path>``, where ``<your path>`` is an absolute file,
 directory or glob, or a list of those.
 
 ``replace:``
@@ -63,6 +63,7 @@ MODES = ('replace', 'add')
 _GLOB_CHARS = set('*?[')
 
 
+# define a custom error type
 class FixOverlayError(ValueError):
     """Raised for an invalid or unsatisfiable ``fix_files:`` section."""
 
@@ -110,7 +111,7 @@ def _normalize_srcs(mode: str, dst: str, raw: Union[str, List[str]]) -> List[str
     for src in srcs:
         if not isinstance(src, str) or not src.strip():
             raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' must be a non-empty path, got {src!r}")
-        src = os.path.expanduser(src.strip())
+        src = os.path.expanduser(src.strip())  # expands ~ and ~user
         if not os.path.isabs(src):
             raise FixOverlayError(f"fix_files: {mode}: source for '{dst}' must be an absolute path, got '{src}'")
         out.append(src)
@@ -124,6 +125,7 @@ def _check_leaf(base: Path, mode: str, leaf: Path, src: str, label: str) -> None
         if not in_base:
             raise FixOverlayError(f"fix_files: replace: '{leaf}' ({label}) is not in the fix tree; "
                                   "use 'add' for a new file or directory")
+        # verify dst and src types match
         have, want = _kind(str(base / leaf)), _kind(src)
         if have != want:
             raise FixOverlayError(f"fix_files: replace: '{leaf}' ({label}) is a {have} in the fix tree "
@@ -197,11 +199,13 @@ def _expand_entries(base: Path, fix_files: Dict[str, Dict[str, Union[str, List[s
                     label = f"from '{entry}'"
 
                 for leaf, leaf_src in leaves:
+                    # refuse to build a directory where a file already exists
                     for ancestor in leaf.parents:
                         if (base / ancestor).exists() and not (base / ancestor).is_dir():
                             raise FixOverlayError(f"fix_files: {mode}: cannot place '{leaf}' ({label}) under "
                                                   f"'{ancestor}', which is a file in the fix tree")
                     _check_leaf(base, mode, leaf, leaf_src, label)
+                    # a path may not be linked by two entries
                     if leaf in links:
                         raise FixOverlayError(f"fix_files: '{leaf}' is set by both '{origin[leaf]}' and '{entry}'")
                     links[leaf] = leaf_src
@@ -230,7 +234,7 @@ def _materialize(base: Path, dest: Path, rel: Path,
     dest_here.mkdir(parents=True, exist_ok=False)
 
     children = set(os.listdir(base_here)) if base_here.is_dir() else set()
-    children |= {leaf.relative_to(rel).parts[0] for leaf in links if rel in leaf.parents}
+    children |= {leaf.relative_to(rel).parts[0] for leaf in links if rel in leaf.parents}  # |= unions in-place
 
     for child in sorted(children):
         child_rel = rel / child

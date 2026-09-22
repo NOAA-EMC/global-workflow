@@ -238,7 +238,7 @@ The experiment yaml (the one passed with ``--yaml``, or named by ``experiment:ya
 
 .. code-block:: text
 
-   <path under fix/>:  <your file, directory or glob, or a list of them>
+   <path under ${HOMEglobal}/fix/>:  <your file, directory or glob, or a list of them>
 
 For example:
 
