@@ -9,8 +9,9 @@
 # dev/
 dev/ci/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
 dev/ctests/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
-
 dev/ecf/ @TravisElless-NOAA @DavidHuber-NOAA
+dev/ci/cases/sfsv1 @NeilBarton-NOAA @YangxingZheng-NOAA @XiaqiongZhou-NOAA
+parm/diag @YangxingZheng-NOAA @XiaqiongZhou-NOAA
 
 # Specific file owners
 # dev side scripts
@@ -24,6 +25,11 @@ dev/workflow/generate_workflows.sh @DavidHuber-NOAA
 sorc/build_*.sh @DavidHuber-NOAA @TravisElless-NOAA
 sorc/link_workflow.sh @DavidHuber-NOAA @TravisElless-NOAA
 sorc/build_opts.yaml @DavidHuber-NOAA @TravisElless-NOAA
+
+# job_cards/rocoto
+job_cards/rocoto/atmos_post.sh @NeilBarton-NOAA @YangxingZheng-NOAA
+job_cards/rocoto/ocn_post.sh @NeilBarton-NOAA @YangxingZheng-NOAA
+job_cards/rocoto/ice_post.sh @NeilBarton-NOAA @YangxingZheng-NOAA
 
 # jobs
 dev/jobs/JGDAS_AERO_ANALYSIS_GENERATE_BMATRIX @CoryMartin-NOAA
@@ -78,10 +84,14 @@ dev/jobs/JGLOBAL_PREP_OCEAN_OBS @guillaumevernieres @AndrewEichmann-NOAA
 dev/jobs/JGLOBAL_*SNOW* @jiaruidong2017
 dev/jobs/JGLOBAL_STAGE_IC @DavidHuber-NOAA @TravisElless-NOAA
 dev/jobs/JGLOBAL_WAVE_* @JessicaMeixner-NOAA @sbanihash
+dev/jobs/JGLOBAL_ATMOS_POST @YangxingZheng-NOAA
+dev/jobs/JGLOBAL_OCN_POST @YangxingZheng-NOAA
+dev/jobs/JGLOBAL_ICE_POST @YangxingZheng-NOAA
 
 # System-specific modules
 modulefiles/gw_gsi_wcoss2.lua @RussTreadon-NOAA @CoryMartin-NOAA
 modulefiles/gw_upp_wcoss2.lua @WenMeng-NOAA
+modulefiles/gw_atmos_post* @YangxingZheng-NOAA @NeilBarton-NOAA
 
 # scripts
 dev/scripts/exgdas_aero_analysis_generate_bmatrix.py @CoryMartin-NOAA
@@ -139,6 +149,9 @@ dev/scripts/exglobal_prep_snow_obs.py @jiaruidong2017
 dev/scripts/exglobal_snow_anal.py @jiaruidong2017
 dev/scripts/exglobal_snow_ens_anal.py @jiaruidong2017
 dev/scripts/exglobal_stage_ic.py @DavidHuber-NOAA @TravisElless-NOAA
+dev/scripts/exglobal_atmos_post.sh @YangxingZheng-NOAA @NeilBarton-NOAA
+dev/scripts/exglobal_ocn_post.sh @YangxingZheng-NOAA @NeilBarton-NOAA
+dev/scripts/exglobal_ice_post.sh @YangxingZheng-NOAA @NeilBarton-NOAA
 
 # ush
 ush/atmos_extractvars.sh @EricSinsky-NOAA
@@ -190,6 +203,14 @@ ush/syndat_qctropcy.sh @HananehJafary-NOAA
 ush/wave_*.sh @JessicaMeixner-NOAA @sbanihash
 ush/wdqms.py @ADCollard
 ush/regrid_gsiSfcIncr_to_tile.sh @ClaraDraper-NOAA
+ush/calc_d20.py @YangxingZheng-NOAA
+ush/calc_ohc.py @YangxingZheng-NOAA
+ush/calc_tchp.py @YangxingZheng-NOAA
+ush/process_atmos_6hrly.sh @YangxingZheng-NOAA
+ush/process_atmos_daily.sh @YangxingZheng-NOAA
+ush/process_ocean_6hrly.sh @YangxingZheng-NOAA
+ush/process_ocean_daily.sh @YangxingZheng-NOAA
+ush/process_ocean_monthly.sh @YangxingZheng-NOAA
 
 # ush/python
 ush/python/pygfs/jedi/__init__.py @TravisElless-NOAA @DavidNew-NOAA
@@ -220,6 +241,34 @@ ush/python/pygfs/ufswm/gfs.py @DavidHuber-NOAA
 ush/python/pygfs/ufswm/ufs.py @DavidHuber-NOAA
 ush/python/pygfs/utils/__init__.py @DavidHuber-NOAA
 ush/python/pygfs/utils/marine_da_utils.py @guillaumevernieres @AndrewEichmann-NOAA
+
+# parm
+parm/stage/atmosphere_fv3_increments.yaml.j2 @NeilBarton-NOAA
+parm/stage/master_sfs.yaml.j2 @NeilBarton-NOAA @YangxingZheng-NOAA
+parm/stage/ocean_mom6_increments.yaml.j2 @NeilBarton-NOAA
+parm/stage/surface_increments.yaml.j2 @NeilBarton-NOAA
+parm/ufs/fv3/daig_table_sfs @YangxingZheng-NOAA
+parm/archive/atmos_master_grib_mem.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/atmos_product_acc_mem_daily.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/atmos_product_acc_mem_monthly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/atmos_product_inst_mem_daily.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/atmos_product_inst_mem_monthly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/atmos_product_mem_6hrly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ice_history_mem.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ice_history_mem_daily.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ice_history_mem_monthly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ice_product_mem_daily.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ice_product_mem_monthly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/icsdir.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/master_sfs.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/namelist_sfs.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_history_mem.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_history_mem_6hrly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_history_mem_daily.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_history_mem_monthly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_product_mem_6hravg.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_product_mem_daily.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
+parm/archive/ocean_product_mem_monthly.yaml.j2 @YangxingZheng-NOAA @NeilBarton-NOAA
 
 # AWS
 dev/parm/config/gfs/config.resources.AWS-EC2 @WalterKolczynski-NOAA @weihuang-jedi

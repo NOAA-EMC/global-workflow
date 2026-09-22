@@ -62,6 +62,7 @@ class RocotoXML(WorkflowSuite, ABC):
         entity = OrderedDict()
 
         entity['PSLOT'] = self.pslot
+        entity['DATAROOT_BASE'] = f"{self._base['STMP']}/RUNDIRS/{self.pslot}"
         entity['ROTDIR'] = self._base['ROTDIR']
         entity['MAXTRIES'] = self.rocoto_config['maxtries']
 
@@ -177,7 +178,7 @@ class RocotoXML(WorkflowSuite, ABC):
         rocotorunstr = f'{rocotoruncmd} -d {self.expdir}/{self.pslot}.db -w {self.expdir}/{self.pslot}.xml'
         cronintstr = f'*/{cronint} * * * *'
 
-        replyto = os.environ.get('REPLYTO', None)
+        replyto = os.environ.get('REPLYTO', "")
         crontab_strings = [
             '',
             f'#################### {self.pslot} ####################'
