@@ -5,6 +5,7 @@ projects: ["NOAA-EMC/41"]
 assignees:
   - DavidHuber-NOAA
   - TravisElless-NOAA
+  - WalterKolczynski-NOAA
 
 body:
   - type: markdown
@@ -145,5 +146,6 @@ body:
         - label: Gaea C6
         - label: Ursa
         - label: MSU
-        - label: AWS
+        - label: Derecho
+        - label: AWS S3
         - label: HPSS

@@ -6,6 +6,7 @@ projects: ["NOAA-EMC/41"]
 assignees:
   - DavidHuber-NOAA
   - TravisElless-NOAA
+  - WalterKolczynski-NOAA
 
 body:
   - type: dropdown
@@ -17,6 +18,8 @@ body:
         - Gaea-C5
         - Gaea-C6
         - Orion/Hercules
+        - Derecho
+        - AWS
       multiple: true
     validations:
       required: true

@@ -46,6 +46,8 @@ body:
         - Gaea-C6
         - Orion
         - Hercules
+        - Derecho
+        - AWS
         - Cloud
     validations:
       required: true
