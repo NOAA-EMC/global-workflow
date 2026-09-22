@@ -19,6 +19,7 @@ dev/ush/de_template_com.sh @DavidHuber-NOAA
 
 # Specific workflow scripts
 dev/workflow/generate_workflows.sh @DavidHuber-NOAA
+dev/workflow/fix_overlay.py @AlexanderHrabski-NOAA
 
 # build scripts
 sorc/build_*.sh @DavidHuber-NOAA @TravisElless-NOAA
