@@ -6,11 +6,6 @@
 #  Y2K VERSION --  This script can process JTWC bulletins with EITHER a
 #                    2-digit year starting in column 20 or a 4-digit year
 #                    starting in column 20.
-# Mar 2013, DStokes - modified for WCOSS.  Added option to email developer.
-# Oct 2013, DStokes - Add check of stormname length and truncate if needed
-#                     in response to recent problems with JTWC reports.
-#                     Remove option to email developer.
-#
 #
 # Positional parameters passed in:
 #   1 - Run date (YYYYMMDDHH)
@@ -107,7 +102,7 @@ if [[ -s prep_step ]]; then
     source "${USHglobal}/set_strict.sh"
 else
     rm -f errfile
-    #shellcheck disable=SC2046
+    # shellcheck disable=SC2046
     unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 
@@ -115,7 +110,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p "${EXECglobal}/${pgm}" 2> errfile
+time -p "${EXECglobal}/${pgm}" 2> errfile && true
 errget=$?
 cat errfile
 rm errfile

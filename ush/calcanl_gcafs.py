@@ -94,9 +94,7 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
                 anl = bkg
             else:
                 increment = incfile.variables[incname][:]
-                # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
-                increment_reshape = np.transpose(increment, (2, 0, 1))
-                anl = bkg + increment_reshape[np.newaxis, :, :, :]
+                anl = bkg + increment[np.newaxis, :, :, :]
 
             anlfile.variables[ioname][:] = anl[:]
         # update time (from 6 to 0) and time units in anlfile so UPP can create anl variables

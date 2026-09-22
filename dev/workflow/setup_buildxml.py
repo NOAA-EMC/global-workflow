@@ -4,6 +4,7 @@
 Entry point for setting up a builds of global-workflow programs
 """
 
+import math
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from typing import Dict
@@ -82,6 +83,16 @@ def get_task_spec(task_name: str, task_spec: Dict, host_spec: Dict) -> Dict:
     task_dict.resources.ppn = task_spec.cores
     task_dict.resources.scheduler = host_spec.scheduler
     task_dict.resources.threads = 1
+
+    # Slurm 26.05+ on Gaea requires explicit --nodes alongside --ntasks.
+    # When the host YAML declares CPUS_PER_NODE, compute the node count and
+    # append --nodes to the native scheduler flags. Hosts without the field
+    # are unaffected (their Slurm version does not enforce this).
+    cpus_per_node = host_spec.get("cpus_per_node", 0)
+    if cpus_per_node > 0 and host_spec.scheduler == "slurm":
+        nodes = math.ceil(task_spec.cores / cpus_per_node)
+        native = task_dict.resources.native or ''
+        task_dict.resources.native = f"{native} --nodes={nodes}".strip()
 
     return task_dict
 
@@ -184,6 +195,7 @@ def get_host_specs(host: Dict) -> Dict:
     specs.partition = partition
     specs.native = native
     specs.machine = host.machine
+    specs.cpus_per_node = host.info.get("CPUS_PER_NODE", 0)
 
     return specs
 

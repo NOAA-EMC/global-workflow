@@ -1376,7 +1376,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def wavepostsbs(self):
+    def wavepostgridded(self):
 
         wave_grid = self._configs['base']['waveGRD']
         history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
@@ -1387,8 +1387,8 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
-        max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostgridded'], 'wave')
+        max_tasks = self._configs['wavepostgridded']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
         wave_post_envars = self.envars.copy()
@@ -1396,24 +1396,24 @@ class GFSTasks(Tasks):
         for key, value in postenvar_dict.items():
             wave_post_envars.append(rocoto.create_envar(name=key, value=str(value)))
 
-        resources = self.get_resource('wavepostsbs')
+        resources = self.get_resource('wavepostgridded')
         # Adjust walltime based on the largest group
         largest_group = max([len(grp.split(',')) for grp in fhr_var_dict['fhr_list'].split(' ')])
         resources['walltime'] = Tasks.multiply_HMS(resources['walltime'], largest_group)
 
-        task_name = f'{self.run}_wavepostsbs_#fhr_label#'
+        task_name = f'{self.run}_wavepostgridded_#fhr_label#'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
                      'envars': wave_post_envars,
                      'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/wavepostsbs.sh',
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/wavepostgridded.sh',
                      'job_name': f'{self.pslot}_{task_name}_@H',
                      'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
                      'maxtries': '&MAXTRIES;'
                      }
 
-        metatask_dict = {'task_name': f'{self.run}_wavepostsbs',
+        metatask_dict = {'task_name': f'{self.run}_wavepostgridded',
                          'task_dict': task_dict,
                          'var_dict': fhr_var_dict}
 
@@ -1481,13 +1481,13 @@ class GFSTasks(Tasks):
 
     def wavegempak(self):
 
-        # wave_gempak tasks depend on wave_postsbs tasks
-        # wave_postsbs runs on different forecast hours than wave_gempak,
-        # so we need to get the forecast hours for wave_postsbs and wave_gempak separately
+        # wave_gempak tasks depend on wave_post_gridded tasks
+        # wave_post_gridded runs on different forecast hours than wave_gempak,
+        # so we need to get the forecast hours for wave_post_gridded and wave_gempak separately
 
-        # Get the forecast hours for wave_postsbs
-        dep_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostsbs'], 'wave')
-        dep_max_tasks = self._configs['wavepostsbs']['MAX_TASKS']
+        # Get the forecast hours for wave_post_gridded
+        dep_fhrs = self._get_forecast_hours(self.run, self._configs['wavepostgridded'], 'wave')
+        dep_max_tasks = self._configs['wavepostgridded']['MAX_TASKS']
         dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
 
         # Get the forecast hours for wave_gempak
@@ -1495,11 +1495,11 @@ class GFSTasks(Tasks):
         max_tasks = self._configs['wavegempak']['MAX_TASKS']
         fhr_var_dict = self.get_grouped_fhr_dict(fhrs=fhrs, ngroups=max_tasks)
 
-        # Get the right dependency labels for wave_gempak on wave_postsbs groups
+        # Get the right dependency labels for wave_gempak on wave_post_gridded groups
         fhr_var_dict = self.get_dep_fhr_label(fhr_var_dict, dep_fhr_var_dict)
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostsbs_#dep_fhr_label#'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostgridded_#dep_fhr_label#'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1535,7 +1535,7 @@ class GFSTasks(Tasks):
 
     def waveawipsbulls(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostgridded'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1560,7 +1560,7 @@ class GFSTasks(Tasks):
 
     def waveawipsgridded(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostgridded'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1645,35 +1645,36 @@ class GFSTasks(Tasks):
     def _get_awipsgroups(run, config):
 
         fhmin = config['FHMIN']
-        fhmax = config['FHMAX']
-        fhout = config['FHOUT']
-
-        # Get a list of all forecast hours
-        fhrs = []
+        breakpoints = []
         if run in ['gdas']:
-            fhrs = range(fhmin, fhmax + fhout, fhout)
+            fhmax = config['FHMAX']
+            fhout = config['FHOUT']
+            fhrs = list(range(fhmin, fhmax + fhout, fhout))
         elif run in ['gfs']:
-            fhmax = config['FHMAX_GFS']
-            fhout = config['FHOUT_GFS']
-            fhmax_hf = config['FHMAX_HF_GFS']
-            fhout_hf = config['FHOUT_HF_GFS']
-            if fhmax > 240:
-                fhmax = 240
-            if fhmax_hf > 240:
-                fhmax_hf = 240
+            # AWIPS 20km parm files under parm/wmo/grib2_awpgfs_20km_${GRID}f${FHR}
+            # only exist every 3 hours to f084 and every 6 hours to f240. Use
+            # AWIPS-specific FHR overrides (with fallback to the model values)
+            # to build the parm-file hour list, and pass the HF/LF boundary as
+            # a breakpoint so Tasks.get_job_groups never places a group across
+            # the 3h/6h transition.
+            fhmax = min(config['FHMAX_GFS'], 240)
+            fhout = config.get('FHOUT_GFS_AWIPS', config['FHOUT_GFS'])
+            fhmax_hf = min(config.get('FHMAX_HF_GFS_AWIPS', config['FHMAX_HF_GFS']), 240)
+            fhout_hf = config.get('FHOUT_HF_GFS_AWIPS', config['FHOUT_HF_GFS'])
             fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
-            fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs_lf = list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+            fhrs = fhrs_hf + fhrs_lf
+            breakpoints = [fhmax_hf]
 
         nawipsgrp = config['MAX_TASKS']
         ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+        groups = [[f'f{h:03d}' for h in dct['fhrs']]
+                  for dct in Tasks.get_job_groups(fhrs=fhrs, ngroups=ngrps,
+                                                  breakpoints=breakpoints)]
 
-        fhrs = [f'f{fhr:03d}' for fhr in fhrs]
-        fhrs = np.array_split(fhrs, ngrps)
-        fhrs = [fhr.tolist() for fhr in fhrs]
-
-        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in fhrs])
-        dep = ' '.join([fhr[-1] for fhr in fhrs])
-        lst = ' '.join(['_'.join(fhr) for fhr in fhrs])
+        grp = ' '.join([f'_{fhr[0]}-{fhr[-1]}' for fhr in groups])
+        dep = ' '.join([fhr[-1] for fhr in groups])
+        lst = ' '.join(['_'.join(fhr) for fhr in groups])
 
         return grp, dep, lst
 
@@ -1724,7 +1725,7 @@ class GFSTasks(Tasks):
         # atmos_prod runs on different forecast hours than gempak,
         # so we need to get the forecast hours for atmos_prod and gempak separately
 
-        # Get the forecast hours for wave_postsbs
+        # Get the forecast hours for wave_post_gridded
         dep_fhrs = self._get_forecast_hours(self.run, self._configs['atmos_products'])
         dep_max_tasks = self._configs['atmos_products']['MAX_TASKS']
         dep_fhr_var_dict = self.get_grouped_fhr_dict(fhrs=dep_fhrs, ngroups=dep_max_tasks)
@@ -2225,7 +2226,7 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostgridded'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -2295,7 +2296,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_atmos_prod'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_wave']:
-            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostgridded'}
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -2638,8 +2639,8 @@ class GFSTasks(Tasks):
 
             # Other components only happen on full cycles
             if self.options['do_wave']:
-                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostsbs'}
-                deps_full.append(rocoto.add_dependency(dep_dict))
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_wavepostgridded'}
+                deps.append(rocoto.add_dependency(dep_dict))
                 dep_dict = {'type': 'task', 'name': f'{self.run}_wavepostpnt'}
                 deps_full.append(rocoto.add_dependency(dep_dict))
                 if self.options['do_wave_bnd']:

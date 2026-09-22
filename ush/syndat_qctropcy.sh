@@ -56,7 +56,7 @@
 #                (Default: /dcom/us007003)
 #   slmask    - path to t126 32-bit gaussian land/sea mask file
 #                (Default: ${FIXglobal}/am/syndat_slmask.t126.gaussian)
-#   copy_back - switch to copy updated files back to archive directory and
+#   SENDCOM   - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
 #   files_override - switch to override default "files" setting for given run
@@ -64,11 +64,11 @@
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
 ARCHSYND=${ARCHSYND:-${COMROOTp3}/gfs/prod/syndat}
-HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+HOMENHC=${HOMENHC:-${DCOMROOT}/nhc/atcf/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
 slmask=${slmask:-${FIXglobal}/am/syndat_slmask.t126.gaussian}
-copy_back=${copy_back:-YES}
+copy_back=${SENDCOM:-YES}
 files_override=${files_override:-""}
 
 cd "${DATA}" || exit 2
@@ -178,6 +178,10 @@ if [[ "${copy_back}" == 'YES' ]]; then
     cat nhc >> "${ARCHSYND}/syndat_tcvitals.${year}"
 fi
 
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL SYNDAT_TCVITALS "${job}" "${ARCHSYND}/syndat_tcvitals.${year}"
+fi
+
 mv -f nhc nhc1
 "${USHglobal}/parse-storm-type.pl" nhc1 > nhc
 
@@ -192,10 +196,6 @@ fi
 
 mv -f fnoc fnoc1
 "${USHglobal}/parse-storm-type.pl" fnoc1 > fnoc
-
-if [[ "${SENDDBN}" == "YES" ]]; then
-    "${DBNROOT}/bin/dbn_alert" MODEL SYNDAT_TCVITALS "${job}" "${ARCHSYND}/syndat_tcvitals.${year}"
-fi
 
 #########################################################################
 
@@ -288,7 +288,7 @@ fi
 
 ###################################
 
-#  This is the file that connects to the later RELOCATE and/or PREP scripts
+#  This is the file that connects to the later PREP scripts
 cpfs current "${COMOUT_OBS}/${RUN}.${cycle}.syndata.tcvitals.${tmmark}"
 
 #  Create the DBNet alert

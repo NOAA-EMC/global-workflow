@@ -632,7 +632,7 @@ WW3_predet() {
     # Copy mod_def files for wave grids
     local ww3_grid
     #if shel, only 1 waveGRD which is linked to mod_def.ww3
-    cpreq "${COMIN_WAVE_PREP}/${RUN}.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
+    cpreq "${COMIN_WAVE_INIT}/${RUN}.t${cyc}z.mod_def.${waveGRD}.bin" "${DATA}/mod_def.ww3"
 
     #If pnt_wght file exists, use it to speed up initialization for unstructured grids
     # this file does not exist for structured, and the model can run without it (just slower init)
@@ -644,7 +644,7 @@ WW3_predet() {
     # so these files are not generated.
     # TODO: Remove these lines or enable waveprep job
     if [[ "${WW3ICEINP}" == "YES" ]]; then
-        local wavicefile="${COMIN_WAVE_PREP}/${RUN}.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
+        local wavicefile="${COMIN_WAVE_INIT}/${RUN}.${WAVEICE_FID}.t${current_cycle:8:2}z.ice"
         if [[ ! -f "${wavicefile}" ]]; then
             echo "FATAL ERROR: WW3ICEINP='${WW3ICEINP}', but missing ice file '${wavicefile}', ABORT!"
             exit 1
@@ -653,7 +653,7 @@ WW3_predet() {
     fi
 
     if [[ "${WW3CURINP}" == "YES" ]]; then
-        local wavcurfile="${COMIN_WAVE_PREP}/${RUN}.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
+        local wavcurfile="${COMIN_WAVE_INIT}/${RUN}.${WAVECUR_FID}.t${current_cycle:8:2}z.cur"
         if [[ ! -f "${wavcurfile}" ]]; then
             echo "FATAL ERROR: WW3CURINP='${WW3CURINP}', but missing current file '${wavcurfile}', ABORT!"
             exit 1

@@ -77,7 +77,7 @@ env/                        # HPC platform environment configurations
 ### Job-to-Script-to-Utility Pattern
 ```bash
 # Example execution chain:
-JGLOBAL_FORECAST              # Job sets environment, calls script
+JGLOBAL_FCST              # Job sets environment, calls script
 └── exglobal_forecast.py      # Script implements forecast logic
     └── forecast_det.sh       # Utility handles deterministic forecast
         └── ush/python/       # Python modules for specific tasks
@@ -293,6 +293,7 @@ meta_tasks_state = {}  # State tracking per metatask
 - Never add extra whitespace at the end or beginning of lines
 - Use pycodestyle for Python code
 - Use shfmt where appropriate and shellcheck for linting
+- Only use ASCII characters in code and comments. Never use non-ASCII characters in code or comments.
 
 ### Code Quality
 - Ensure code is clean, well-commented, and follows best practices
@@ -364,7 +365,6 @@ envar_dict = {
     'EXPDIR': self._base.get('EXPDIR'),
     'NET': self._base.get('NET'),
     'RUN': self.run,
-    'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
     'PDY': '<cyclestr>@Y@m@d</cyclestr>',
     'cyc': '<cyclestr>@H</cyclestr>',
 }

@@ -1,0 +1,56 @@
+name: Check for Non-ASCII Characters
+# Gate pull requests that introduce non-ASCII characters into production code.
+#
+# Scope:
+#   * Only the diff is inspected -- specifically the lines *added* by the PR.
+#   * Only production-code directories are inspected (see the PROD_DIRS list in
+#     .github/scripts/check_non_ascii.py).
+# The job fails (and therefore blocks the PR) when a non-ASCII character is
+# found on an added line under one of those directories.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read  # for actions/checkout to fetch code
+
+jobs:
+  check_non_ascii:
+    runs-on: ubuntu-22.04
+    name: Check for non-ASCII characters in the PR diff
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Full history is required so both the base and head commits of the
+          # pull request are available locally for `git diff`.
+          fetch-depth: 0
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Resolve base and head commits
+        id: refs
+        run: |
+          set -euo pipefail
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+          # For manual (workflow_dispatch) runs there is no PR payload; fall
+          # back to comparing the previous commit with the current checkout.
+          if [ -z "${base_sha}" ]; then base_sha="$(git rev-parse HEAD~1)"; fi
+          if [ -z "${head_sha}" ]; then head_sha="$(git rev-parse HEAD)"; fi
+          # Make sure both objects are present locally.
+          git fetch --no-tags --depth=0 origin "${base_sha}" 2>/dev/null || true
+          git fetch --no-tags --depth=0 origin "${head_sha}" 2>/dev/null || true
+          echo "base=${base_sha}" >> "${GITHUB_OUTPUT}"
+          echo "head=${head_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check for non-ASCII characters in added production-code lines
+        run: |
+          python3 .github/scripts/check_non_ascii.py \
+            "${{ steps.refs.outputs.base }}" \
+            "${{ steps.refs.outputs.head }}"

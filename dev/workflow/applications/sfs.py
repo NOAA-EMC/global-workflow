@@ -78,7 +78,7 @@ class SFSAppConfig(AppConfig):
             configs += ['efcs', 'atmos_ensstat']
 
         if options['do_wave']:
-            configs += ['waveinit', 'wavepostsbs', 'wavepostpnt']
+            configs += ['waveinit', 'wavepostgridded', 'wavepostpnt']
             if options['do_wave_bnd']:
                 configs += ['wavepostbndpnt', 'wavepostbndpntbll']
 
@@ -158,7 +158,7 @@ class SFSAppConfig(AppConfig):
             tasks += ['ice_prod']
 
         if options['do_wave']:
-            tasks += ['wavepostsbs']
+            tasks += ['wavepostgridded']
             if options['do_wave_bnd']:
                 tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
             tasks += ['wavepostpnt']

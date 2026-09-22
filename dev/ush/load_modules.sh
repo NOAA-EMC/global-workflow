@@ -3,8 +3,10 @@
 ###############################################################
 # Consolidated module loading script for global-workflow
 # Usage: source load_modules.sh [module_type]
-# where module_type can be: run, gsi, verif, ufsda, ufswm, setup
+# where module_type can be: run, gsi, verif, ufsda, ufswm, setup, upp, dtn
 # Default module_type is 'run'
+# Types other than 'run' fall back to gw_run.${MACHINE_ID} when no
+# gw_${module_type}.${MACHINE_ID} modulefile exists for the current machine.
 ###############################################################
 
 if [[ "$-" == *x* ]]; then
@@ -155,13 +157,34 @@ case "${MODULE_TYPE}" in
         export PYTHONPATH
         ;;
 
-    "run" | "gsi" | "verif" | "setup" | "upp")
+    "verif")
+        # EMC_verif-global modules -- use that submodule's module files
+        if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
+            source "${HOMEglobal}/sorc/verif-global.fd/versions/run.ver"
+        fi
+        module use "${HOMEglobal}/sorc/verif-global.fd/modulefiles"
+        module load "emc_verif_global_${MACHINE_ID}"
+        export err=$?
+        if [[ ${err} -ne 0 ]]; then
+            echo "FATAL ERROR: Failed to load emc_verif_global_${MACHINE_ID}"
+            exit 1
+        fi
+        module list
+
+        ;;
+
+    "run" | "gsi" | "setup" | "upp" | "dtn")
 
         # Test that the version file exists
         if [[ ! -f "${HOMEglobal}/versions/run.ver" ]]; then
             echo "FATAL ERROR: ${HOMEglobal}/versions/run.ver does not exist!"
             echo "HINT: Run link_workflow.sh first."
-            exit 1
+            # Exit with 0 if loading setup modules (so the user's terminal doesn't close), else with 1
+            if [[ "${MODULE_TYPE}" == "setup" ]]; then
+                exit 0
+            else
+                exit 1
+            fi
         fi
 
         # Load our modules:
@@ -181,8 +204,8 @@ case "${MODULE_TYPE}" in
             mod_type="${MODULE_TYPE}"
         fi
 
-        # Source versions file (except for upp)
-        if [[ "${mod_type}" != "upp" ]]; then
+        # Source versions file (except for upp and verification)
+        if [[ "${mod_type}" != "upp" && "${mod_type}" != "verif" ]]; then
             source "${HOMEglobal}/versions/run.ver"
         fi
 
@@ -207,7 +230,7 @@ case "${MODULE_TYPE}" in
 
     *)
         echo "FATAL ERROR: Unknown module type '${MODULE_TYPE}'"
-        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup"
+        echo "Valid types: run, gsi, verif, ufsda, ufswm, setup, upp, dtn"
         ;;
 
 esac

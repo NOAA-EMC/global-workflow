@@ -79,7 +79,7 @@ declare -rx COM_ATMOS_ANLMON_TMPL=${COM_BASE}'/products/atmos/anlmon'
 declare -rx COM_ATMOS_WMO_TMPL=${COM_BASE}'/products/atmos/wmo'
 
 declare -rx COM_WAVE_RESTART_TMPL=${COM_BASE}'/model/wave/restart'
-declare -rx COM_WAVE_PREP_TMPL=${COM_BASE}'/model/wave/prep'
+declare -rx COM_WAVE_INIT_TMPL=${COM_BASE}'/model/wave/init'
 declare -rx COM_WAVE_HISTORY_TMPL=${COM_BASE}'/model/wave/history'
 declare -rx COM_WAVE_GRID_TMPL=${COM_BASE}'/products/wave/gridded'
 declare -rx COM_WAVE_GRID_RES_TMPL=${COM_BASE}'/products/wave/gridded/${GRDRESNAME}'

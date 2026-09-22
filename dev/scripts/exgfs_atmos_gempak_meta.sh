@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -x
 
 # Set default pgm for err_exit
 pgm=$(basename "${BASH_SOURCE[0]}")

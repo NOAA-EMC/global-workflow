@@ -15,6 +15,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEglobal}/dev/jobs/JGLOBAL_MARINE_ANALYSIS_VARIATIONAL"
+"${HOMEglobal}/dev/jobs/JGLOBAL_MARINE_ANAL_VAR"
 status=$?
 exit "${status}"

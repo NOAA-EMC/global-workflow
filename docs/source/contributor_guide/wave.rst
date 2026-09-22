@@ -91,7 +91,7 @@ You will need to update the following files:
  
 * parm/config/\*/config.ufs
 * parm/config/\*/config.wave
-* scripts/exgfs_wave_post_gridded_sbs.sh
+* scripts/exglobal_wave_post_gridded.sh
 
 You will need to add the following files: 
 
@@ -115,7 +115,7 @@ in global-workflow testing.  Ideally ICs for the grids being used for testing wi
 
 
 
-For scripts/exgfs_wave_post_gridded_sbs.sh and the inp.tmpl files: 
+For scripts/exglobal_wave_post_gridded.sh and the inp.tmpl files: 
 
 There are two case settings for either interpolated grid output or grib output for a computational grid that should be updated to 
 add to the possible cases for this new grid as appropriate.   If it's a new interpolated grid, you will also need to add a 

@@ -47,7 +47,7 @@ EOF
 
 date
 
-/bin/rm ./*.nts
+rm -f ./*.nts
 
 snd_out=${outfilbase}.soundings.bufr
 sfc_out=${outfilbase}.sfc.bufr

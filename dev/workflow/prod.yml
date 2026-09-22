@@ -13,7 +13,7 @@ suites:
             tasks:
               jgfs_atmos_post_manager:
                 triggers:
-                - task: jgfs_atmos_tropcy_qc_reloc
+                - task: jgfs_atmos_tropcy_qc
                   suite: prod00
   prod[00,06]:
     edits:
@@ -39,7 +39,7 @@ suites:
           obsproc:
             dump:
               tasks:
-                jgfs_atmos_tropcy_qc_reloc:
+                jgfs_atmos_tropcy_qc:
                   events:
                   - 'jtwc_bull_email'
             prep:
@@ -151,7 +151,7 @@ suites:
                   - task: jgfs_wave_init
             post:
               tasks:
-                jgfs_wave_postsbs:
+                jgfs_wave_post_gridded:
                   triggers:
                   - task: jgfs_atmos_post_manager
                     event: release_post000
@@ -168,19 +168,19 @@ suites:
                     event: release_post180
                 jgfs_wave_prdgen_gridded:
                   triggers:
-                  - task: jgfs_wave_postsbs
+                  - task: jgfs_wave_post_gridded
                     state: active
-                  - task: jgfs_wave_postsbs
+                  - task: jgfs_wave_post_gridded
                     operand: OR
                 jgfs_wave_prdgen_bulls:
                   triggers:
                   - task: jgfs_wave_postpnt
-                  - task: jgfs_wave_postsbs
+                  - task: jgfs_wave_post_gridded
             gempak:
               tasks:
                 jgfs_wave_gempak:
                   triggers:
-                  - task: jgfs_wave_postsbs
+                  - task: jgfs_wave_post_gridded
                     state: [active, complete]
                     operand: or
       gdas:
@@ -196,7 +196,7 @@ suites:
           obsproc:
             dump:
               tasks:
-                jgdas_atmos_tropcy_qc_reloc:
+                jgdas_atmos_tropcy_qc:
             prep:
               tasks:
                 jgdas_atmos_prep_sfc:
@@ -285,7 +285,7 @@ suites:
                 - task: jgdas_wave_init
           post:
             tasks:
-              jgdas_wave_postsbs:
+              jgdas_wave_post_gridded:
                 triggers:
                 - task: jgdas_atmos_post_manager
                   event: release_post000
