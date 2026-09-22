@@ -31,8 +31,7 @@ The utility reports:
     - Total invalid counts across all tiles
     - Warning messages with examples of invalid points
 
-With --fatal, the utility raises an exception when invalid
-values are found.
+With --fatal, the utility raises an exception when invalid values are found.
 
 Usage
 -----
@@ -53,7 +52,6 @@ import numpy as np
 from netCDF4 import Dataset
 from wxflow import AttrDict, Logger, logit
 
-
 logger = getLogger(__name__)
 
 NTILES = 6
@@ -72,13 +70,8 @@ def check_land_mask_consistency(
     Compare the land-mask consistency between the surface input files
     and orography files for each FV3 tile.
 
-    The surface-file land points are defined as:
-
-        veg_type > 0
-
-    The orography-file land points are defined as:
-
-        land_frac > 0
+    The surface-file land points are defined as: veg_type > 0
+    The orography-file land points are defined as: land_frac > 0
 
     Parameters
     ----------
@@ -124,9 +117,7 @@ def check_land_mask_consistency(
 
     # Report examples
     if n_mismatch > 0:
-
         iy, ix = np.where(mask_mismatch)
-
         for j, i in zip(
             iy[:MAX_LOG_POINTS],
             ix[:MAX_LOG_POINTS],
@@ -211,7 +202,6 @@ def check_land_surface_types(
     # Report invalid vegetation points
     if n_invalid_veg > 0:
         j_fail, i_fail = np.where(invalid_veg)
-
         for j, i in zip(
             j_fail[:MAX_LOG_POINTS],
             i_fail[:MAX_LOG_POINTS],
@@ -276,25 +266,20 @@ def check_soil_moisture(
     Check all four layers of soil moisture for expected land grid cells.
 
     Expected soil-moisture cells are defined as:
-
         land_frac > 0
         veg_type != 15
         veg_type != 17
-
-    where:
-
+      where:
         veg_type = 15 : snow/ice (glacier)
         veg_type = 17 : water
 
     For expected cells, soil moisture must:
-
         - be defined (not masked or NaN)
         - be greater than 0
         - be less than or equal to the soil-type-dependent
           maximum soil moisture (maxsmc / porosity)
 
     Soil type 0 is allowed and is assigned:
-
         maxsmc = 1.0
 
     Parameters
@@ -379,9 +364,7 @@ def check_soil_moisture(
         (soil_type <= len(porosity_table))
     )
 
-    maxsmc[valid_lookup] = porosity_table[
-        soil_type[valid_lookup] - 1
-    ]
+    maxsmc[valid_lookup] = porosity_table[soil_type[valid_lookup] - 1]
 
     # Check all four soil-moisture layers
     n_invalid_smc = 0
@@ -569,36 +552,27 @@ def check_land_input_fields(
 
     # Process FV3 tiles
     for tile in range(1, NTILES + 1):
-
         sfc_file = os.path.join(
             input_dir,
             f"sfc_data.tile{tile}.nc",
         )
-
         oro_file = os.path.join(
             orog_dir,
             f"oro_data.tile{tile}.nc",
         )
-
         logger.info(f"Checking tile {tile}")
-
         try:
             with Dataset(oro_file) as oro, Dataset(sfc_file) as sfc:
-
                 land_frac = oro.variables["land_frac"][:]
-
                 veg_type = _read_2d_or_3d_surface_variable(
                     sfc,
                     "vtype",
                 )
-
                 soil_type = _read_2d_or_3d_surface_variable(
                     sfc,
                     "stype",
                 )
-
                 smc = sfc.variables["smc"]
-
                 # Expected smc dimensions:
                 #
                 #     time, soil_layer, y, x
@@ -678,7 +652,6 @@ def check_land_input_fields(
 
     for tile in range(1, NTILES + 1):
         tile_key = f"tile{tile}"
-
         logger.info(
             f"Tile {tile}: "
             f"mismatch mask points="
@@ -726,9 +699,7 @@ def read_stas_params(
     """
     Read parameters from the Noah-MP soil STAS parameter block.
 
-    The function extracts values from the:
-
-        &noahmp_soil_stas_parameters
+    The function extracts values from the: &noahmp_soil_stas_parameters
 
     block in the supplied table.
 
@@ -737,10 +708,7 @@ def read_stas_params(
     file_path : str
         Path to noahmptable.tbl.
     var_list : list[str], optional
-        Variables to extract, for example:
-
-            ["bb", "maxsmc", "satpsi"]
-
+        Variables to extract, for example: ["bb", "maxsmc", "satpsi"]
         If None, all variables in the block are returned.
 
     Returns
@@ -762,45 +730,35 @@ def read_stas_params(
     )
 
     with open(file_path, "r") as file:
-
         for line in file:
             line = line.strip()
-
             # Detect block boundaries
             if line.startswith("&noahmp_soil_stas_parameters"):
                 in_block = True
                 continue
-
             if in_block and line.startswith("/"):
                 break
-
             if not in_block:
                 continue
-
             # Skip blank lines and comments.
             if not line or line.startswith("!"):
                 continue
-
             # Detect a new variable
             match = re.match(
                 r"^([a-zA-Z0-9_]+)\s*=",
                 line,
             )
-
             if match:
                 current_var = match.group(1).lower()
-
                 values = re.findall(
                     number_pattern,
                     line,
                 )
-
                 if values:
                     data[current_var] = np.asarray(
                         [float(value) for value in values],
                         dtype=float,
                     )
-
                 continue
 
             # Handle continuation lines
@@ -809,7 +767,6 @@ def read_stas_params(
                     number_pattern,
                     line,
                 )
-
                 if values:
                     data[current_var] = np.concatenate(
                         (
@@ -827,7 +784,6 @@ def read_stas_params(
             name.lower()
             for name in var_list
         }
-
         data = {
             name: values
             for name, values in data.items()
