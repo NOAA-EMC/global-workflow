@@ -57,7 +57,7 @@ export SLEEP_INT=${SLEEP_TIME:-5}
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
 ##############################################################################
-# Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
+# Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P25DEG
 ##############################################################################
 export SHOUR=0
 
@@ -100,18 +100,18 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
     # existence of the restart files
     ###############################
     export pgm="postcheck"
-    grib_file="${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_b.0p50.f${fhr3}.grib2.idx"
+    grib_file="${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_b.0p25.f${fhr3}.grib2.idx"
     if ! wait_for_file "${grib_file}" "${SLEEP_INT}" "${SLEEP_LOOP_MAX}"; then
         export err=9
-        err_exit "FATAL ERROR: 0p50 grib file not available after max sleep time"
+        err_exit "FATAL ERROR: 0p25 grib file not available after max sleep time"
     fi
 
     ######################################################################
-    # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
+    # Process Global NPOESS 0.25 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
     ######################################################################
     paramlist="${PARMglobal}/product/global_npoess_paramlist_g2"
-    cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_a.0p50.f${fhr3}.grib2" tmpfile2
-    cpreq "${COMIN_ATMOS_GRIB_0p50}/gfs.t${cyc}z.pres_b.0p50.f${fhr3}.grib2" tmpfile2b
+    cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_a.0p25.f${fhr3}.grib2" tmpfile2
+    cpreq "${COMIN_ATMOS_GRIB_0p25}/gfs.t${cyc}z.pres_b.0p25.f${fhr3}.grib2" tmpfile2b
     cat tmpfile2 tmpfile2b > tmpfile
     ${WGRIB2} tmpfile | grep -F -f "${paramlist}" | ${WGRIB2} -i -grib pgb2file tmpfile && true
     export err=$?
