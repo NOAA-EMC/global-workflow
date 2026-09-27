@@ -45,5 +45,5 @@ aero: {}
 #     CICE_TEMPLATE: /path/to/ice_in.IN
 #
 # Each path is used as given, so a custom template can be named anything.  See
-# docs/source/user_guide/configure.rst for the atparse tokens that a custom
-# template has to keep.
+# docs/source/user_guide/configure.rst for additional information regarding the
+# customization of these input files.
