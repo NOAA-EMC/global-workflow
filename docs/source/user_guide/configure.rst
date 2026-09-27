@@ -101,10 +101,9 @@ leaves the corresponding templates staged in ``${PARMglobal}/ufs`` intact, but
 unused.
 
 ``MOM6_INPUT_TEMPLATE`` (``config.ocn``)
-  Full path to the ``MOM_input`` template. The path is used exactly as given, so
-  the file name is up to you. Only the default follows the
-  ``MOM_input_<OCNRES>.IN`` pattern, where ``OCNRES`` is the three-digit ocean
-  resolution, e.g. ``MOM_input_025.IN``.
+  Full path to the ``MOM_input`` template. Note that the default follows the
+  ``MOM_input_<OCNRES>.IN`` pattern, e.g. ``MOM_input_025.IN``, but the override 
+  file may have any name.
 
 ``MOM6_DATA_TABLE_TEMPLATE`` (``config.ocn``)
   Full path to the ``data_table`` template.
@@ -134,25 +133,25 @@ alongside the templates they point at.
 A note on atparse tokens
 """"""""""""""""""""""""
 
-These files are templates, not finished namelists. They are rendered with
+These files are templates, not finished input files. They are rendered with
 ``atparse``, which substitutes every ``@[VARIABLE]`` token from the shell
 environment.
 
 We suggest model developers start from a copy of the base template in ``${PARMglobal}/ufs``
 and keep its tokens. They are how the workflow injects per-cycle and per-job settings,
 and a token deleted from a custom template fails silently: the model simply falls
-back to its own compiled default. The consequential cases are the tokens whose
+back to its own compiled default. A particularly consequential case is the tokens whose
 values differ by ``RUN``. As an example (though not the only example), ``@[CICE_HIST_AVG]``
 sets ``hist_avg`` in CICE's ``&setup_nml``, which decides whether each history stream
 is averaged over ``histfreq_n`` or written as an instantaneous snapshot.
 ``parsing_namelists_cice.sh`` sets it to ``.false.`` for ``gdas`` because data
-assimilation needs instantaneous history, and to ``.true.`` for the long ``gfs``
+assimilation uses an instantaneous history, and to ``.true.`` for the long ``gfs``
 forecast.
 Dropping that token gives a DA cycle time-averaged sea ice history with no error message.
 
 A token whose variable is *undefined* behaves differently: the forecast job runs
 under ``set -u``, so ``atparse`` aborts. Misspelling a token name is an error;
-removing one is not.
+replacing a token with a hard-coded value is not, even when it should be.
 
 Additional MOM6 and CICE6 input overrides
 """""""""""""""""""""""""""""""""""""""""
