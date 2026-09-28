@@ -215,6 +215,7 @@ export ECF_PORT=$(( $(id -u) + 1500 ))
 export ECF_HOST=uecflow01
 export ECF_HOME=/scratch3/NCEPDEV/global/${USER}/ecflow
 export HOMEglobal=/scratch3/NCEPDEV/global/${USER}/global-workflow  # adjust to your clone path
+export MACHINE_ID=URSA  # prevent misdetection on ufe nodes
 
 # 3. Verify the server is alive (must have been started on uecflow01)
 ecflow_client --ping
