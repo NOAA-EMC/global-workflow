@@ -182,12 +182,12 @@ ecflow_server (on uecflow01) finds:
   /my_C48_test/2021032312/gfs/stage_ic (triggers satisfied)
 │
 ├── reads EXPDIR/ecf_scripts/stage_ic.ecf
-│     %include <head.h>      → dev/ecflow/utils/head.h
-│     %include <envir.h>     → dev/ecflow/utils/envir.h
+│     %include <head.h>      → ecf_scripts/include/head.h
+│     %include <envir.h>     → ecf_scripts/include/envir.h
 │     export HOMEglobal=%HOMEglobal%
 │     export PDY=%PDY%
 │     ...
-│     %include <tail.h>      → dev/ecflow/utils/tail.h
+│     %include <tail.h>      → ecf_scripts/include/tail.h
 │
 ├── preprocesses: replaces all %VAR% with .def values
 │     %HOMEglobal% → /scratch3/.../global-workflow

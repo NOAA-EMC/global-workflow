@@ -57,6 +57,41 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         (currently only ``verbosity``).
     """
 
+    # Maps task names to script category subdirectories.
+    # Mirrors the layout of dev/ecflow/scripts/.
+    TASK_CATEGORY = {
+        'stage_ic': 'init',
+        'fetch': 'init',
+        'aerosol_init': 'init',
+        'waveinit': 'init',
+        'fcst': 'forecast',
+        'atmos_prod': 'product',
+        'ocean_prod': 'product',
+        'ice_prod': 'product',
+        'wavepostgridded': 'product',
+        'atmupp': 'product',
+        'goesupp': 'product',
+        'tracker': 'verf',
+        'genesis': 'verf',
+        'genesis_fsu': 'verf',
+        'metp': 'verf',
+        'wavepostpnt': 'verf',
+        'wavepostbndpnt': 'verf',
+        'wavepostbndpntbll': 'verf',
+        'wavegempak': 'verf',
+        'waveawipsbulls': 'verf',
+        'waveawipsgridded': 'verf',
+        'postsnd': 'verf',
+        'gempak': 'verf',
+        'gempakmeta': 'verf',
+        'awips_20km_1p0deg': 'verf',
+        'fbwind': 'verf',
+        'arch_vrfy': 'post',
+        'arch_tars': 'post',
+        'globus_arch': 'post',
+        'cleanup': 'post',
+    }
+
     def __init__(self, app_config: AppConfig, ecflow_config: Dict) -> None:
         super().__init__(app_config, ecflow_config)
 
@@ -100,15 +135,19 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         suite_name = self.pslot
 
-        # Script directory: all .ecf lookups resolve here.
+        # Script source directories.
         self._ecf_scripts_dir = Path(self.expdir) / 'ecf_scripts'
         self._ecf_src_dir = Path(
             os.environ.get('ECF_FILES',
                            os.path.join(self.HOMEglobal, 'dev', 'ecflow',
                                         'scripts')))
+        self._ecf_include_dir = Path(
+            os.environ.get('ECF_INCLUDE',
+                           os.path.join(self.HOMEglobal, 'dev', 'ecflow',
+                                        'include')))
 
-        # Collect copies to create: {dest_name: source_ecf_name}
-        self._copy_map: Dict[str, str] = {}
+        # {dest_name: (source_ecf_name, category)}
+        self._copy_map: Dict[str, tuple] = {}
 
         lines: List[str] = []
         lines.append(f'# Auto-generated ecFlow suite definition for {suite_name}')
@@ -137,11 +176,22 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         lines.append(f'{" " * indent}edit RUN \'{self._run}\'')
         lines.append('')
 
-        # Emit tasks from the tasks object
+        # Emit tasks grouped by category family
+        from collections import OrderedDict
+        category_tasks: Dict[str, List[str]] = OrderedDict()
         for task_name in self._task_names:
-            task_dict = self._tasks.get_ecflow_task(task_name)
-            task_lines = self._emit_task(task_dict, indent)
-            lines += task_lines
+            cat = self.TASK_CATEGORY.get(task_name, 'post')
+            category_tasks.setdefault(cat, []).append(task_name)
+
+        for cat, cat_task_names in category_tasks.items():
+            lines.append(f'{" " * indent}family {cat}')
+            cat_indent = indent + 2
+            for task_name in cat_task_names:
+                task_dict = self._tasks.get_ecflow_task(task_name)
+                task_lines = self._emit_task(task_dict, cat_indent)
+                lines += task_lines
+                lines.append('')
+            lines.append(f'{" " * indent}endfamily')
             lines.append('')
 
         # Close cycle family
@@ -162,20 +212,22 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         logger.info(f'ecFlow suite definition written to {def_file}')
 
         # Create ECF_HOME subdirectories matching the suite tree so
-        # ecFlow can write .job files before ECF_JOB_CMD runs.
+        # ecFlow can write .job files.
         rotdir = self._base.get(
             'ROTDIR',
             os.path.join(str(self._base.get('COMROOT', '/tmp')), self.pslot))
         ecf_home = os.path.join(rotdir, 'logs')
         sdate = self._base['SDATE_GFS']
         cycle_str = sdate.strftime('%Y%m%d%H')
-        job_dir = os.path.join(ecf_home, suite_name, cycle_str, self._run)
-        os.makedirs(job_dir, exist_ok=True)
-        # Product families create a subdirectory per family
+        run_dir = os.path.join(ecf_home, suite_name, cycle_str, self._run)
         for task_name in self._task_names:
+            cat = self.TASK_CATEGORY.get(task_name, 'post')
             td = self._tasks.get_ecflow_task(task_name)
+            cat_dir = os.path.join(run_dir, cat)
             if td['product_task']:
-                os.makedirs(os.path.join(job_dir, task_name), exist_ok=True)
+                os.makedirs(os.path.join(cat_dir, task_name), exist_ok=True)
+            else:
+                os.makedirs(cat_dir, exist_ok=True)
 
         # Create the ecf_scripts directory with copies
         self._create_ecf_scripts()
@@ -194,6 +246,39 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         if task_dict['product_task']:
             return self._emit_product_family(task_dict, indent)
         return self._emit_simple_task(task_dict, indent)
+
+    def _resolve_trigger(self, trigger: str, task_category: str,
+                         extra_depth: int = 0) -> str:
+        """Rewrite trigger references to use relative paths across category families.
+
+        A trigger like ``stage_ic == complete`` from a task in the
+        ``forecast`` category becomes ``../init/stage_ic == complete``
+        because ``init`` and ``forecast`` are sibling families.  Same-
+        category references are left unchanged.
+
+        Parameters
+        ----------
+        trigger : str
+            Raw trigger expression with bare task names.
+        task_category : str
+            Category of the task that owns this trigger.
+        extra_depth : int
+            Additional ``../`` levels for nested nodes (e.g. product
+            families sit one level below the category family).
+        """
+        import re
+        prefix = '../' * (1 + extra_depth)
+
+        def _rewrite(match):
+            name = match.group(1)
+            ref_cat = self.TASK_CATEGORY.get(name)
+            if ref_cat and ref_cat != task_category:
+                return f'{prefix}{ref_cat}/{name}'
+            if ref_cat and ref_cat == task_category and extra_depth > 0:
+                return f'{"../" * extra_depth}{name}'
+            return name
+
+        return re.sub(r'(\b\w+)\s*==', lambda m: _rewrite(m) + ' ==', trigger)
 
     def _resource_edits(self, resources: Dict, indent: int) -> List[str]:
         """Emit Slurm resource ``edit`` variables for a task or family.
@@ -234,14 +319,16 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         task_name = task_dict['task_name']
         trigger = task_dict['trigger']
+        category = self.TASK_CATEGORY.get(task_name, 'post')
 
-        self._copy_map[task_name] = task_name
+        self._copy_map[task_name] = (task_name, category)
 
         lines.append(f'{sp}task {task_name}')
         lines.append(f"{tsp}edit STEP '{task_dict['step']}'")
         lines += self._resource_edits(task_dict['resources'], indent + 2)
 
         if trigger:
+            trigger = self._resolve_trigger(trigger, category)
             lines.append(f'{tsp}trigger {trigger}')
 
         return lines
@@ -261,6 +348,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         trigger = task_dict['trigger']
         fhrs = task_dict['forecast_hours']
         config_name = task_dict['config']
+        category = self.TASK_CATEGORY.get(task_name, 'product')
 
         max_tasks = self._configs.get(config_name, {}).get('MAX_TASKS', 25)
         ngroups = min(max_tasks, len(fhrs))
@@ -272,6 +360,8 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         lines.append(f"{fsp}# {len(fhrs)} forecast hours in {ngroups} groups")
 
         if trigger:
+            # Product family is nested one level deeper than category
+            trigger = self._resolve_trigger(trigger, category, extra_depth=1)
             lines.append(f'{fsp}trigger {trigger}')
 
         lines.append('')
@@ -282,7 +372,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
             else:
                 label = f'f{grp[0]:03d}_f{grp[-1]:03d}'
 
-            self._copy_map[label] = task_name
+            self._copy_map[label] = (task_name, category)
 
             fhr_list_str = ','.join(str(f) for f in grp)
 
@@ -297,45 +387,63 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
     # ── ecf_scripts management ────────────────────────────────────────
 
     def _create_ecf_scripts(self) -> None:
-        """Populate the ECF_FILES directory under EXPDIR with copies.
+        """Populate the ECF_FILES directory under EXPDIR.
 
-        Creates ``{EXPDIR}/ecf_scripts/`` containing one ``.ecf`` file
-        per ecFlow task.  Simple tasks get a copy of their same-named
-        source.  Product family children (e.g. ``f000_f002``) get a
-        copy of the parent task's ``.ecf`` (e.g. ``atmos_prod.ecf``).
+        Creates a structured tree mirroring ``dev/ecf/gfs/``::
 
-        Also writes ``ecf_scripts.manifest`` — a two-column TSV
-        consumed by ``sync_ecf_scripts.sh``.
+            {EXPDIR}/ecf_scripts/
+              include/          ← head.h, tail.h, slurm.h, envir.h
+              scripts/
+                init/           ← stage_ic.ecf
+                forecast/       ← fcst.ecf
+                product/        ← atmos_prod.ecf, f000.ecf, ...
+                verf/           ← tracker.ecf, genesis.ecf, metp.ecf
+                post/           ← arch_tars.ecf, arch_vrfy.ecf, cleanup.ecf
+
+        Product family children (e.g. ``f000``) get a copy of the parent
+        task's ``.ecf`` in the same category subdirectory.
         """
-        scripts_dir = self._ecf_scripts_dir
-        src_dir = self._ecf_src_dir
-
-        if scripts_dir.exists():
-            for f in scripts_dir.iterdir():
-                if f.is_symlink() or f.is_file():
-                    f.unlink()
-        else:
-            scripts_dir.mkdir(parents=True)
-
         import shutil
+
+        base_dir = self._ecf_scripts_dir
+        src_dir = self._ecf_src_dir
+        include_src = self._ecf_include_dir
+
+        # Clean and recreate
+        if base_dir.exists():
+            shutil.rmtree(str(base_dir))
+        base_dir.mkdir(parents=True)
+
+        # Copy include files
+        dest_include = base_dir / 'include'
+        dest_include.mkdir()
+        for hdr in include_src.iterdir():
+            if hdr.is_file():
+                shutil.copy2(str(hdr), str(dest_include / hdr.name))
+
+        # Copy .ecf scripts into category subdirectories
+        dest_scripts = base_dir / 'scripts'
         skipped = []
-        for dest_name, src_name in self._copy_map.items():
-            dest = scripts_dir / f'{dest_name}.ecf'
-            src = src_dir / f'{src_name}.ecf'
+        for dest_name, (src_name, category) in self._copy_map.items():
+            cat_dir = dest_scripts / category
+            cat_dir.mkdir(parents=True, exist_ok=True)
+
+            dest = cat_dir / f'{dest_name}.ecf'
+            src = src_dir / category / f'{src_name}.ecf'
             if not src.is_file():
-                skipped.append(f'{src_name}.ecf')
+                skipped.append(f'{category}/{src_name}.ecf')
                 continue
             shutil.copy2(str(src), str(dest))
 
-        # Write manifest for sync_ecf_scripts.sh
-        manifest = scripts_dir / 'ecf_scripts.manifest'
+        # Write manifest
+        manifest = base_dir / 'ecf_scripts.manifest'
         with open(manifest, 'w') as fh:
             fh.write(f'# ECF_SRC_DIR={self._ecf_src_dir}\n')
-            for dest_name, src_name in sorted(self._copy_map.items()):
-                fh.write(f'{dest_name}\t{src_name}\n')
+            for dest_name, (src_name, category) in sorted(self._copy_map.items()):
+                fh.write(f'{category}/{dest_name}\t{category}/{src_name}\n')
 
         copied = len(self._copy_map) - len(skipped)
-        logger.info(f'Copied {copied} .ecf files to {scripts_dir}')
+        logger.info(f'Copied {copied} .ecf files to {base_dir}')
         if skipped:
             unique = sorted(set(skipped))
             logger.warning(f'Missing source .ecf (skipped): {", ".join(unique)}')
@@ -352,14 +460,13 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
                                                   self.pslot))
         ecf_log_dir = os.path.join(rotdir, 'logs')
 
-        ecf_scripts_dir = os.path.join(self.expdir, 'ecf_scripts')
-        ecf_include = os.environ.get('ECF_INCLUDE',
-                                     os.path.join(self.HOMEglobal, 'dev', 'ecflow',
-                                                  'utils'))
+        ecf_base_dir = os.path.join(self.expdir, 'ecf_scripts')
+        ecf_scripts_dir = os.path.join(ecf_base_dir, 'scripts')
+        ecf_include_dir = os.path.join(ecf_base_dir, 'include')
 
         lines.append(f"{sp}# File locations")
         lines.append(f"{sp}edit ECF_HOME    '{ecf_log_dir}'")
-        lines.append(f"{sp}edit ECF_INCLUDE '{ecf_include}'")
+        lines.append(f"{sp}edit ECF_INCLUDE '{ecf_include_dir}'")
         lines.append(f"{sp}edit ECF_FILES   '{ecf_scripts_dir}'")
         lines.append(f"{sp}edit ECF_JOBOUT  '{ecf_log_dir}/%TASK%.%ECF_TRYNO%'")
         lines.append(f"{sp}")
