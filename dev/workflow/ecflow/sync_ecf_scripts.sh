@@ -1,21 +1,24 @@
 #!/bin/bash
 # Refresh the ecf_scripts directory from the repo source .ecf files.
 #
-# Reads ecf_scripts.manifest (written by the .def generator) and
-# copies each source .ecf into the ECF_FILES directory used by ecFlow.
-# Run this after editing an .ecf file in the repo to pick up changes
-# without regenerating the full .def.
+# Reads ecf_scripts.manifest and per-task #SBATCH headers (written by
+# the .def generator), then reassembles each .ecf in the ECF_FILES
+# directory: shebang + sbatch_header + source body (minus shebang).
+#
+# Run this after editing an .ecf template in the repo to pick up
+# changes without regenerating the full .def.
 #
 # Usage:
 #   sync_ecf_scripts.sh <ecf_scripts_dir>
 #
-# The manifest lives inside <ecf_scripts_dir>/ecf_scripts.manifest
-# and contains:
-#   - A header line: # ECF_SRC_DIR=<path to repo .ecf sources>
-#   - One line per file: <child_name>\t<source_name>
+# The manifest at <ecf_scripts_dir>/ecf_scripts.manifest contains:
+#   - Header line: # ECF_SRC_DIR=<path to repo ecflow/scripts>
+#   - One line per file: <category/dest_name>\t<category/source_name>
+#
+# Per-task #SBATCH headers live in <ecf_scripts_dir>/sbatch_headers/<task>.hdr.
 #
 # Example:
-#   sync_ecf_scripts.sh /scratch3/.../EXPDIR/C48_ATM_ecflow/ecf_scripts
+#   sync_ecf_scripts.sh /scratch3/.../EXPDIR/my_C48_test/ecf_scripts
 
 set -eu
 
@@ -26,6 +29,8 @@ fi
 
 ecf_dir="$1"
 manifest="${ecf_dir}/ecf_scripts.manifest"
+scripts_dir="${ecf_dir}/scripts"
+headers_dir="${ecf_dir}/sbatch_headers"
 
 if [[ ! -f "${manifest}" ]]; then
   echo "[ERROR] Manifest not found: ${manifest}" >&2
@@ -33,7 +38,6 @@ if [[ ! -f "${manifest}" ]]; then
   exit 1
 fi
 
-# Read source directory from manifest header
 src_dir=$(grep '^# ECF_SRC_DIR=' "${manifest}" | head -1 | cut -d= -f2-)
 if [[ -z "${src_dir}" ]]; then
   echo "[ERROR] ECF_SRC_DIR not found in manifest header." >&2
@@ -46,20 +50,40 @@ if [[ ! -d "${src_dir}" ]]; then
 fi
 
 count=0
-while IFS=$'\t' read -r child_name source_name; do
-  # Skip comments and blank lines
-  [[ "${child_name}" =~ ^#.*$ || -z "${child_name}" ]] && continue
+while IFS=$'\t' read -r dest_path source_path; do
+  [[ "${dest_path}" =~ ^#.*$ || -z "${dest_path}" ]] && continue
 
-  src="${src_dir}/${source_name}.ecf"
-  dest="${ecf_dir}/${child_name}.ecf"
+  src="${src_dir}/${source_path}.ecf"
+  dest="${scripts_dir}/${dest_path}.ecf"
 
   if [[ ! -f "${src}" ]]; then
     echo "[WARN] Source not found, skipping: ${src}" >&2
     continue
   fi
 
-  cp "${src}" "${dest}"
-  count=$((count + 1))
-done < "${manifest}"
+  # Extract task name from dest_path (last component)
+  task_name="${dest_path##*/}"
+  hdr="${headers_dir}/${task_name}.hdr"
 
-echo "[OK] Synced ${count} .ecf files to ${ecf_dir}"
+  mkdir -p "$(dirname "${dest}")"
+
+  if [[ -f "${hdr}" ]]; then
+    # Reassemble: shebang + #SBATCH header + source body (skip shebang)
+    {
+      echo '#!/bin/bash'
+      cat "${hdr}"
+      # Strip the shebang line from the source if present
+      if head -1 "${src}" | grep -q '^#!/bin/bash'; then
+        tail -n +2 "${src}"
+      else
+        cat "${src}"
+      fi
+    } >"${dest}"
+  else
+    cp "${src}" "${dest}"
+  fi
+
+  count=$((count + 1))
+done <"${manifest}"
+
+echo "[OK] Synced ${count} .ecf files to ${scripts_dir}"

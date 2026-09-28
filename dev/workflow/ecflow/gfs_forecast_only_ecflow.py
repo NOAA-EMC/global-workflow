@@ -421,6 +421,8 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         # Copy .ecf scripts with #SBATCH injection
         dest_scripts = base_dir / 'scripts'
+        headers_dir = base_dir / 'sbatch_headers'
+        headers_dir.mkdir()
         skipped = []
         for dest_name, (src_name, category, resources) in self._copy_map.items():
             cat_dir = dest_scripts / category
@@ -434,6 +436,10 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
             content = src.read_text()
             sbatch = self._sbatch_header(resources, dest_name)
+
+            # Save the #SBATCH header for sync_ecf_scripts.sh
+            hdr_file = headers_dir / f'{dest_name}.hdr'
+            hdr_file.write_text(sbatch + '\n')
 
             # Insert #SBATCH directives after the #!/bin/bash shebang
             if content.startswith('#!/bin/bash\n'):
