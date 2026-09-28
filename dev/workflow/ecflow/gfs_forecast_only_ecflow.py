@@ -352,18 +352,11 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
                                                   self.pslot))
         ecf_log_dir = os.path.join(rotdir, 'logs')
 
-        ecf_host = os.environ.get('ECF_HOST', os.environ.get('HOSTNAME', 'localhost'))
-        ecf_port = os.environ.get('ECF_PORT', '3141')
-
         ecf_scripts_dir = os.path.join(self.expdir, 'ecf_scripts')
         ecf_include = os.environ.get('ECF_INCLUDE',
                                      os.path.join(self.HOMEglobal, 'dev', 'ecflow',
                                                   'utils'))
 
-        lines.append(f"{sp}# ecFlow server connection")
-        lines.append(f"{sp}edit ECF_LOGHOST '{ecf_host}'")
-        lines.append(f"{sp}edit ECF_PORT    '{ecf_port}'")
-        lines.append(f"{sp}")
         lines.append(f"{sp}# File locations")
         lines.append(f"{sp}edit ECF_HOME    '{ecf_log_dir}'")
         lines.append(f"{sp}edit ECF_INCLUDE '{ecf_include}'")
