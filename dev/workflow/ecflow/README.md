@@ -58,7 +58,7 @@ xterm &    # a small terminal window should appear on your screen
 ```bash
 # Check you are on Ursa
 hostname
-# Expected: ulogin01 or similar
+# Expected: ufe01 or similar
 
 # Navigate to your workspace
 cd /scratch3/NCEPDEV/global/${USER}
@@ -110,6 +110,9 @@ echo "ECF_HOME   = ${ECF_HOME}"
 echo "HOMEglobal = ${HOMEglobal}"
 ecflow_client --ping   # should say "ping ... succeeded"
 ```
+
+If `ecflow_client --ping` fails, go to [section 2](#2-ecflow-server)
+to start the server first, then come back here.
 
 ## 2. ecFlow Server
 
@@ -221,7 +224,16 @@ ecflow_client --ping
 
 ```bash
 cd ${HOMEglobal}
+
+# Quick start (all defaults)
 python3 dev/workflow/ecflow/c48_atm_ecflow.py
+
+# Or with custom paths
+python3 dev/workflow/ecflow/c48_atm_ecflow.py \
+    --pslot my_C48_test \
+    --comroot /scratch4/NCEPDEV/stmp/${USER}/COMROOT \
+    --expdir /scratch3/NCEPDEV/global/${USER}/EXPDIR \
+    --stmp /scratch4/NCEPDEV/stmp/${USER}
 ```
 
 Answer `y` to the cleanup and delete prompts. The suite starts
