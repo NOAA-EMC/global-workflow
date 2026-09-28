@@ -25,6 +25,7 @@ from typing import Dict, List
 from ecflow.ecflow_suite import EcFlowSuite
 from ecflow.ecflow_tasks_factory import ecflow_tasks_factory
 from applications.applications import AppConfig
+from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS
 
 logger = getLogger(__name__.split('.')[-1])
@@ -279,6 +280,13 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         return re.sub(r'(\b\w+)\s*==', lambda m: _rewrite(m) + ' ==', trigger)
 
+    @staticmethod
+    def _scaled_resources(resources: Dict, group_size: int) -> Dict:
+        """Return a copy of *resources* with walltime scaled by *group_size*."""
+        scaled = dict(resources)
+        scaled['walltime'] = Tasks.multiply_HMS(resources['walltime'], group_size)
+        return scaled
+
     def _sbatch_header(self, resources: Dict, task_name: str) -> str:
         """Generate ``#SBATCH`` directive lines for a task.
 
@@ -368,7 +376,8 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
             else:
                 label = f'f{grp[0]:03d}_f{grp[-1]:03d}'
 
-            self._copy_map[label] = (task_name, category, f'{category}/{task_name}', task_dict['resources'])
+            self._copy_map[label] = (task_name, category, f'{category}/{task_name}',
+                                     self._scaled_resources(task_dict['resources'], len(grp)))
 
             fhr_list_str = ','.join(str(f) for f in grp)
 
