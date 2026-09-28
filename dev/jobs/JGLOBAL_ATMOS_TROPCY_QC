@@ -21,6 +21,7 @@ source "${USHglobal}/set_strict.sh"
 export PROCESS_TROPCY=${PROCESS_TROPCY:-YES} # Turn on tropical cyclone tcvitals QC proc. if YES
 
 export tmmark=tm00
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 export ARCHSYND=${ROTDIR}/syndat # this location is unique, do not change
 mkdir -p "${ARCHSYND}"
 
