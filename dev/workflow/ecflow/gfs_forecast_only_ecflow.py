@@ -480,8 +480,9 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         base = self._base
         lines = []
 
-        rotdir = base.get('ROTDIR', os.path.join(str(base.get('COMROOT', '/tmp')),
-                                                  self.pslot))
+        default_rotdir = os.path.join(str(base.get('COMROOT', '/tmp')),
+                                      self.pslot)
+        rotdir = base.get('ROTDIR', default_rotdir)
         ecf_log_dir = os.path.join(rotdir, 'logs')
 
         ecf_base_dir = os.path.join(self.expdir, 'ecf_scripts')
