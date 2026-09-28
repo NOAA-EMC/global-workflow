@@ -31,7 +31,7 @@ export PYTHONPATH
 ##############################################
 
 # Construct COM variables
-if (( 10#${ENSMEM:--1} >= 0 )); then
+if ((10#${ENSMEM:--1} >= 0)); then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
     export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
