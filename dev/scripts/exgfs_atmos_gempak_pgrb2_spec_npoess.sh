@@ -129,7 +129,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
         echo "File ${RUN}.${cycle}.pgrb2f${fhr3}.npoess not posted to db_net."
     fi
 
-    echo "${PDY}${cyc}${fhr3}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.halfdeg.npoess"
+    echo "${PDY}${cyc}${fhr3}" > "${COMOUT_ATMOS_GOES}/${RUN}.t${cyc}z.control.quarterdeg.npoess"
     rm -f tmpfile pgb2file
 
 done
