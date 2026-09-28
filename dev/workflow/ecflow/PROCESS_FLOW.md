@@ -142,7 +142,7 @@ c48_atm_ecflow.py                              ← entry point
       │                 │
       │                 │     _emit_simple_task(task_dict) or _emit_product_family(task_dict)
       │                 │       → .def lines with edit STEP, trigger expressions
-      │                 │       → resource edits (WALLTIME, NODES, PARTITION, etc.)
+      │                 │       → NO resource edits (#SBATCH baked into .ecf at copy time)
       │                 │
       │                 ├── writes EXPDIR/my_C48_test.def
       │                 │
@@ -150,7 +150,10 @@ c48_atm_ecflow.py                              ← entry point
       │                 │     (so ecflow_server can write .job files)
       │                 │
       │                 └── _create_ecf_scripts()
-      │                       copies dev/ecflow/scripts/*.ecf → EXPDIR/ecf_scripts/
+      │                       creates {EXPDIR}/ecf_scripts/include/ + scripts/{category}/
+      │                       copies dev/ecflow/include/ → include/
+      │                       copies dev/ecflow/scripts/{category}/*.ecf → scripts/{category}/
+      │                       injects resolved #SBATCH directives after #!/bin/bash
       │                       product family children get copies of parent .ecf
       │                       writes ecf_scripts.manifest
       │
@@ -203,8 +206,8 @@ ecflow_server (on uecflow01) finds:
 └── runs ECF_JOB_CMD (from uecflow01):
       sbatch stage_ic.job1
       │
-      │   stage_ic.job1 contains #SBATCH directives (from slurm.h)
-      │   with resources baked in from the .def edit variables:
+      │   stage_ic.job1 contains #SBATCH directives (baked at config time)
+      │   with resources resolved from config.resources:
       │     --job-name=gfs_stage_ic_12
       │     --account=fv3-cpu
       │     --partition=u1-compute
@@ -224,7 +227,7 @@ ecflow_server (on uecflow01) finds:
 Slurm allocates compute node, runs stage_ic.job1:
 │
 ├── #!/bin/bash                              (from .ecf shebang)
-├── #SBATCH directives                       (from slurm.h — resources from .def)
+├── #SBATCH directives                       (baked into .ecf at config time)
 ├── date; hostname
 ├── module load ecflow
 ├── export ECF_NAME, ECF_HOST, ECF_PORT, ECF_PASS, ECF_TRYNO

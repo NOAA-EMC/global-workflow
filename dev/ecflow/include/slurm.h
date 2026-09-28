@@ -1,9 +1,0 @@
-#SBATCH --job-name=%RUN%_%STEP%_%CYC%
-#SBATCH --account=%ACCOUNT%
-#SBATCH --partition=%PARTITION%
-#SBATCH --time=%WALLTIME%
-#SBATCH --nodes=%NODES%
-#SBATCH --ntasks-per-node=%TASKS_PER_NODE%
-#SBATCH --cpus-per-task=%THREADS_PER_TASK%
-#SBATCH --output=%ECF_JOBOUT%
-#SBATCH %NATIVE%
