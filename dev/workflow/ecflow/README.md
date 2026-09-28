@@ -562,6 +562,3 @@ Execution:   .ecf scripts ──► #SBATCH + head.h + envir.h + J-Job + tail.h
                               │
 Submission:  sbatch runs the preprocessed .job (#SBATCH directives baked into .ecf)
 ```
-
-For a detailed comparison with Rocoto, see
-`.kiro/specs/feature-ecflow-c48-atm/ecflow-process-trace.md`.
