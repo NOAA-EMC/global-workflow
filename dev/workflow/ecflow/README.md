@@ -403,6 +403,17 @@ sleep 5
 ecflow_client --delete=force yes /C48_ATM_ecflow
 ```
 
+### Cancel Slurm jobs
+
+```bash
+# Cancel a specific job by ID (get the ID from squeue)
+squeue -u ${USER}
+scancel <job_id>
+
+# Cancel all your running jobs at once
+scancel -u ${USER}
+```
+
 ### Update .ecf scripts without regenerating the .def
 
 ```bash
