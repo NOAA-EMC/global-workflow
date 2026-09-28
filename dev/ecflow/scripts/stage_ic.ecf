@@ -1,9 +1,10 @@
+#!/bin/bash
+%include <slurm.h>
 %include <head.h>
 %include <envir.h>
 
 set -x
 
-# Paths and identity consumed by jjob_header.sh and the J-Job
 export HOMEglobal=%HOMEglobal%
 export EXPDIR=%EXPDIR%
 export COMROOT=%COMROOT%

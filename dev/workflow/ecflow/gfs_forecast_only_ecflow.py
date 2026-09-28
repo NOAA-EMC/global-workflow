@@ -5,16 +5,17 @@ GFS forecast-only ecFlow suite generator.
 
 Generates a complete ``.def`` file from the same ``AppConfig`` and task
 data that the Rocoto XML generator uses.  The output defines workflow
-structure (families, tasks, triggers, edit variables for paths and
-identity); Slurm resource allocation is handled at submission time by
-``ecf_sbatch.sh``, which sources the same ``config.resources`` files
-Rocoto uses.
+structure (families, tasks, triggers, edit variables) including per-task
+Slurm resource variables (WALLTIME, NODES, etc.) consumed by the
+``slurm.h`` header that each ``.ecf`` script includes.  This mirrors
+the production WCOSS2 pattern where ``#PBS`` directives live inside the
+``.ecf`` files rather than in an external submission wrapper.
 
-Task metadata (triggers, J-Job mapping, product-task flags) comes
-from the ``EcFlowTasks`` hierarchy (mirroring ``rocoto/gfs_tasks.py``),
-instantiated via ``ecflow_tasks_factory``.  This suite generator is a pure
-consumer — it iterates the task list, fetches each task dict, and renders
-it into the ``.def`` format.
+Task metadata (triggers, J-Job mapping, product-task flags, resources)
+comes from the ``EcFlowTasks`` hierarchy (mirroring
+``rocoto/gfs_tasks.py``), instantiated via ``ecflow_tasks_factory``.
+This suite generator is a pure consumer — it iterates the task list,
+fetches each task dict, and renders it into the ``.def`` format.
 """
 
 import os
@@ -35,9 +36,14 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
     ecFlow suite generator for GFS forecast-only workflows.
 
     Produces a ``.def`` file that mirrors the Rocoto XML for the same
-    ``AppConfig``.  Workflow variables (paths, identity, cycle info) are
-    baked in; Slurm resources are resolved at submission time by
-    ``ecf_sbatch.sh``.  The bootstrap sequence is::
+    ``AppConfig``.  Workflow variables (paths, identity, cycle info)
+    and per-task Slurm resources (walltime, nodes, partition, etc.)
+    are baked into the ``.def`` as ``edit`` variables.  The ``.ecf``
+    scripts include ``slurm.h`` which emits ``#SBATCH`` directives
+    from those variables — matching the production WCOSS2 pattern
+    where scheduler directives live inside the job scripts.
+
+    Bootstrap sequence::
 
         ecflow_client --load=<path>.def
         ecflow_client --begin=<suite_name>
@@ -189,8 +195,39 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
             return self._emit_product_family(task_dict, indent)
         return self._emit_simple_task(task_dict, indent)
 
+    def _resource_edits(self, resources: Dict, indent: int) -> List[str]:
+        """Emit Slurm resource ``edit`` variables for a task or family.
+
+        These variables are consumed by ``slurm.h`` via ``#SBATCH``
+        directives in the ``.ecf`` scripts.
+
+        Parameters
+        ----------
+        resources : dict
+            Resource dict from ``get_resource()`` with keys: walltime,
+            nodes, ppn, threads, partition, native.
+        indent : int
+            Current indentation level (number of spaces).
+
+        Returns
+        -------
+        list of str
+            Lines of ``edit VAR 'value'`` statements.
+        """
+        sp = ' ' * indent
+        lines = []
+        lines.append(f"{sp}edit WALLTIME '{resources['walltime']}'")
+        lines.append(f"{sp}edit NODES '{resources['nodes']}'")
+        lines.append(f"{sp}edit TASKS_PER_NODE '{resources['ppn']}'")
+        lines.append(f"{sp}edit THREADS_PER_TASK '{resources['threads']}'")
+        if resources.get('partition'):
+            lines.append(f"{sp}edit PARTITION '{resources['partition']}'")
+        if resources.get('native'):
+            lines.append(f"{sp}edit NATIVE '{resources['native']}'")
+        return lines
+
     def _emit_simple_task(self, task_dict: Dict, indent: int) -> List[str]:
-        """Emit a single non-product task node."""
+        """Emit a single non-product task node with Slurm resources."""
         sp = ' ' * indent
         tsp = ' ' * (indent + 2)
         lines = []
@@ -198,11 +235,11 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         task_name = task_dict['task_name']
         trigger = task_dict['trigger']
 
-        # Register in the copy map
         self._copy_map[task_name] = task_name
 
         lines.append(f'{sp}task {task_name}')
         lines.append(f"{tsp}edit STEP '{task_dict['step']}'")
+        lines += self._resource_edits(task_dict['resources'], indent + 2)
 
         if trigger:
             lines.append(f'{tsp}trigger {trigger}')
@@ -210,7 +247,11 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         return lines
 
     def _emit_product_family(self, task_dict: Dict, indent: int) -> List[str]:
-        """Emit a product task as a family of per-forecast-hour-group children."""
+        """Emit a product task as a family of per-forecast-hour-group children.
+
+        Slurm resource edits are set on the family node so all child
+        tasks inherit them.
+        """
         sp = ' ' * indent
         fsp = ' ' * (indent + 2)
         tsp = ' ' * (indent + 4)
@@ -225,9 +266,9 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         ngroups = min(max_tasks, len(fhrs))
         groups = self._group_fhrs(fhrs, ngroups)
 
-        # Family wrapping all forecast-hour groups
         lines.append(f'{sp}family {task_name}')
         lines.append(f"{fsp}edit STEP '{task_dict['step']}'")
+        lines += self._resource_edits(task_dict['resources'], indent + 2)
         lines.append(f"{fsp}# {len(fhrs)} forecast hours in {ngroups} groups")
 
         if trigger:
@@ -235,7 +276,6 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         lines.append('')
 
-        # One child task per forecast-hour group
         for i, grp in enumerate(groups):
             if len(grp) == 1:
                 label = f'f{grp[0]:03d}'
@@ -331,10 +371,8 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         lines.append(f"{sp}edit ECF_JOBOUT  '{ecf_log_dir}/%TASK%.%ECF_TRYNO%'")
         lines.append(f"{sp}")
 
-        lines.append(f"{sp}# Slurm job submission via ecf_sbatch.sh wrapper")
-        ecf_sbatch = os.path.join(self.HOMEglobal, 'dev', 'ecflow', 'utils',
-                                  'ecf_sbatch.sh')
-        lines.append(f"{sp}edit ECF_JOB_CMD  '{ecf_sbatch} %STEP% %EXPDIR% %ECF_JOBOUT% %ECF_JOB%'")
+        lines.append(f"{sp}# Slurm job submission — directives are in the .ecf via slurm.h")
+        lines.append(f"{sp}edit ECF_JOB_CMD  'sbatch %ECF_JOB%'")
         lines.append(f"{sp}edit ECF_KILL_CMD 'scancel %ECF_RID%'")
         lines.append(f"{sp}edit ECF_STATUS_CMD 'squeue -j %ECF_RID%'")
         lines.append(f"{sp}")

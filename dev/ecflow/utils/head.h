@@ -1,4 +1,3 @@
-#!/bin/bash
 date
 hostname
 set -xe
@@ -10,7 +9,7 @@ module load ecflow
 
 # ecFlow communication variables
 export ECF_NAME=%ECF_NAME%
-export ECF_HOST=%ECF_LOGHOST%
+export ECF_HOST=%ECF_HOST%
 export ECF_PORT=%ECF_PORT%
 export ECF_PASS=%ECF_PASS%
 export ECF_TRYNO=%ECF_TRYNO%
@@ -19,7 +18,7 @@ export ECF_JOB=%ECF_JOB%
 export ECF_JOBOUT=%ECF_JOBOUT%
 
 # Preserve ECF_HOST/ECF_PORT for use after load_modules.sh resets modules
-readonly _ECF_HOST_SAVED=%ECF_LOGHOST%
+readonly _ECF_HOST_SAVED=%ECF_HOST%
 readonly _ECF_PORT_SAVED=%ECF_PORT%
 
 # Notify ecFlow that the task has started

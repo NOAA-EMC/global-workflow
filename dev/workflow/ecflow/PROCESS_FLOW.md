@@ -121,7 +121,7 @@ c48_atm_ecflow.py                              ← entry point
       │                 ├── builds .def lines:
       │                 │     suite my_C48_test
       │                 │       edit ECF_HOME '...'
-      │                 │       edit ECF_JOB_CMD 'ecf_sbatch.sh %STEP% %EXPDIR% %ECF_JOBOUT% %ECF_JOB%'
+      │                 │       edit ECF_JOB_CMD 'sbatch %ECF_JOB%'
       │                 │       edit EXPDIR '...'
       │                 │       ...
       │                 │       family 2021032312
@@ -142,7 +142,7 @@ c48_atm_ecflow.py                              ← entry point
       │                 │
       │                 │     _emit_simple_task(task_dict) or _emit_product_family(task_dict)
       │                 │       → .def lines with edit STEP, trigger expressions
-      │                 │       → NO resource edits (WALLTIME, NODES, etc.)
+      │                 │       → resource edits (WALLTIME, NODES, PARTITION, etc.)
       │                 │
       │                 ├── writes EXPDIR/my_C48_test.def
       │                 │
@@ -201,34 +201,20 @@ ecflow_server (on uecflow01) finds:
 │     (pure bash — no macros left)
 │
 └── runs ECF_JOB_CMD (from uecflow01):
-      ecf_sbatch.sh stage_ic <EXPDIR> <jobout_path> <job1_path>
+      sbatch stage_ic.job1
       │
-      │   (dev/ecflow/utils/ecf_sbatch.sh)
+      │   stage_ic.job1 contains #SBATCH directives (from slurm.h)
+      │   with resources baked in from the .def edit variables:
+      │     --job-name=gfs_stage_ic_12
+      │     --account=fv3-cpu
+      │     --partition=u1-compute
+      │     --time=00:15:00
+      │     --nodes=1
+      │     --ntasks-per-node=1
+      │     --output=<jobout_path>
+      │     --export=NONE
       │
-      ├── source EXPDIR/config.base
-      │     → machine=URSA, CASE=C48, RUN=gfs, PARTITION_BATCH=u1-compute
-      │
-      ├── source EXPDIR/config.fcst     (only if STEP == fcst)
-      │
-      ├── source EXPDIR/config.resources stage_ic
-      │     → walltime=00:15:00, ntasks=1, tasks_per_node=1
-      │
-      ├── resolves ACCOUNT (from config.base or HPC_ACCOUNT fallback)
-      │
-      ├── mkdir -p <jobout_directory>
-      │
-      └── exec sbatch \
-            --job-name=gfs_stage_ic_12 \
-            --account=fv3-cpu \
-            --partition=u1-compute \
-            --time=00:15:00 \
-            --nodes=1 \
-            --ntasks-per-node=1 \
-            --output=<jobout_path> \
-            --export=NONE \
-            stage_ic.job1
-
-          Slurm responds: "Submitted batch job 1618091"
+      └── Slurm responds: "Submitted batch job 1618091"
           ecFlow captures 1618091 as ECF_RID
 ```
 
@@ -237,7 +223,8 @@ ecflow_server (on uecflow01) finds:
 ```
 Slurm allocates compute node, runs stage_ic.job1:
 │
-├── #!/bin/bash                              (from head.h)
+├── #!/bin/bash                              (from .ecf shebang)
+├── #SBATCH directives                       (from slurm.h — resources from .def)
 ├── date; hostname
 ├── module load ecflow
 ├── export ECF_NAME, ECF_HOST, ECF_PORT, ECF_PASS, ECF_TRYNO
@@ -277,8 +264,8 @@ ecflow_server (on uecflow01) receives --complete for stage_ic
 │     atmos_prod: "fcst == complete" → NO → wait
 │     ...
 │
-├── submits fcst via same ECF_JOB_CMD → ecf_sbatch.sh → sbatch
-│     (fcst sources config.fcst + config.resources for correct node count)
+├── submits fcst via same ECF_JOB_CMD → sbatch
+│     (fcst .def edits carry the correct node count from config.resources)
 │
 │   ... fcst completes ...
 │

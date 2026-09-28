@@ -542,9 +542,9 @@ Output:      {pslot}.def + ecf_scripts/
                               │
 Server:      ecflow_client --load / --begin
                               │
-Execution:   .ecf scripts ──► head.h + envir.h + J-Job + tail.h
+Execution:   .ecf scripts ──► slurm.h + head.h + envir.h + J-Job + tail.h
                               │
-Submission:  ecf_sbatch.sh sources config.resources for Slurm flags
+Submission:  sbatch runs the preprocessed .job (slurm.h carries #SBATCH directives)
 ```
 
 For a detailed comparison with Rocoto, see
