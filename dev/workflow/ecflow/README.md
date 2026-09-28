@@ -289,6 +289,7 @@ ecflow_client --delete=force yes /C48_ATM_ecflow
 # Optionally remove the experiment directories
 rm -rf ${RUNTESTS}/EXPDIR/C48_ATM_ecflow
 rm -rf ${RUNTESTS}/COMROOT/C48_ATM_ecflow
+rm -rf ${RUNTESTS}/RUNDIRS/C48_ATM_ecflow
 ```
 
 ### Update .ecf scripts after editing (without regenerating)
