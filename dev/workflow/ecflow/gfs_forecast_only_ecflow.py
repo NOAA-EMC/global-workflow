@@ -376,8 +376,9 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
             else:
                 label = f'f{grp[0]:03d}_f{grp[-1]:03d}'
 
-            self._copy_map[label] = (task_name, category, f'{category}/{task_name}',
-                                     self._scaled_resources(task_dict['resources'], len(grp)))
+            child_res = self._scaled_resources(task_dict['resources'], len(grp))
+            self._copy_map[label] = (task_name, category,
+                                     f'{category}/{task_name}', child_res)
 
             fhr_list_str = ','.join(str(f) for f in grp)
 
