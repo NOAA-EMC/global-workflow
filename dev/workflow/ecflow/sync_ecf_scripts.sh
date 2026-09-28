@@ -61,18 +61,15 @@ while IFS=$'\t' read -r dest_path source_path; do
     continue
   fi
 
-  # Extract task name from dest_path (last component)
   task_name="${dest_path##*/}"
   hdr="${headers_dir}/${task_name}.hdr"
 
   mkdir -p "$(dirname "${dest}")"
 
   if [[ -f "${hdr}" ]]; then
-    # Reassemble: shebang + #SBATCH header + source body (skip shebang)
     {
       echo '#!/bin/bash'
       cat "${hdr}"
-      # Strip the shebang line from the source if present
       if head -1 "${src}" | grep -q '^#!/bin/bash'; then
         tail -n +2 "${src}"
       else
