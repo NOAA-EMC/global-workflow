@@ -50,6 +50,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     `sorc/link_workflow.sh` links `exec/ufs_model_gcafs_catchem.x`.
   - Docs: `docs/source/user_guide/setup.rst`, `gcafs.rst`, and `clone.rst`
     describe the `ATMC` option.
+  - CI: `dev/ci/cases/pr/C96_gcafs_catchem_cycled.yaml` adds an `APP=ATMC`
+    cycled GCAFS case (modeled on `C96_gcafs_cycled_noDA.yaml`), registered
+    in the hera/gaeac6/ursa/derecho matrices of `dev/ci/gitlab-ci-hosts.yml`.
 
 ### Changed
 
