@@ -149,6 +149,12 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         # {dest_name: (source_ecf_name, category)}
         self._copy_map: Dict[str, tuple] = {}
 
+        sdate = self._base['SDATE_GFS']
+        cycle_str = sdate.strftime('%Y%m%d%H')
+
+        # Absolute path prefix for cross-category trigger references
+        self._trigger_base = f'/{suite_name}/{cycle_str}/{self._run}'
+
         lines: List[str] = []
         lines.append(f'# Auto-generated ecFlow suite definition for {suite_name}')
         lines.append(f'# Mode: {self._app_config.mode}  NET: {self._base["NET"]}')
@@ -162,8 +168,6 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         # ── Cycle family (e.g. "2021032312") ─────────────────────────
         indent = 2
-        sdate = self._base['SDATE_GFS']
-        cycle_str = sdate.strftime('%Y%m%d%H')
         lines.append(f'{" " * indent}family {cycle_str}')
         indent = 4
         lines.append(f'{" " * indent}edit PDY \'{sdate.strftime("%Y%m%d")}\'')
@@ -249,12 +253,12 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
     def _resolve_trigger(self, trigger: str, task_category: str,
                          extra_depth: int = 0) -> str:
-        """Rewrite trigger references to use relative paths across category families.
+        """Rewrite trigger references to use absolute paths across category families.
 
         A trigger like ``stage_ic == complete`` from a task in the
-        ``forecast`` category becomes ``../init/stage_ic == complete``
-        because ``init`` and ``forecast`` are sibling families.  Same-
-        category references are left unchanged.
+        ``forecast`` category becomes
+        ``/suite/cycle/gfs/init/stage_ic == complete``.
+        Same-category references are left as bare names.
 
         Parameters
         ----------
@@ -263,19 +267,16 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         task_category : str
             Category of the task that owns this trigger.
         extra_depth : int
-            Additional ``../`` levels for nested nodes (e.g. product
-            families sit one level below the category family).
+            Unused (kept for API compatibility).
         """
         import re
-        prefix = '../' * (1 + extra_depth)
+        base = self._trigger_base
 
         def _rewrite(match):
             name = match.group(1)
             ref_cat = self.TASK_CATEGORY.get(name)
             if ref_cat and ref_cat != task_category:
-                return f'{prefix}{ref_cat}/{name}'
-            if ref_cat and ref_cat == task_category and extra_depth > 0:
-                return f'{"../" * extra_depth}{name}'
+                return f'{base}/{ref_cat}/{name}'
             return name
 
         return re.sub(r'(\b\w+)\s*==', lambda m: _rewrite(m) + ' ==', trigger)
