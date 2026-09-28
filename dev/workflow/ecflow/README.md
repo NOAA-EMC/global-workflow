@@ -220,6 +220,9 @@ export HOMEglobal=/scratch3/NCEPDEV/global/${USER}/global-workflow  # adjust to 
 ecflow_client --ping
 ```
 
+If the ping fails, start the server per
+[section 2](#2-ecflow-server) before continuing.
+
 ### Run a case
 
 ```bash
