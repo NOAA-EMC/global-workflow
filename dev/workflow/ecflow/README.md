@@ -388,6 +388,48 @@ ls ${COMROOT}/C48_ATM_ecflow/logs/
 ecflow_client --force=queued /C48_ATM_ecflow/gfs/2021032312/fcst
 ```
 
+### Resume a partial run (keep previous output)
+
+If a run failed partway through and you want to reuse the existing
+output data (COMROOT, RUNDIRS) rather than starting from scratch:
+
+**CLI approach:**
+
+```bash
+# 1. Reload the .def — say "no" to cleaning EXPDIR/COMROOT
+#    so previous output is preserved, then "yes" to replace the suite
+python3 dev/workflow/ecflow/c48_atm_ecflow.py
+
+# 2. Suspend the suite before beginning so nothing auto-runs
+ecflow_client --suspend /C48_ATM_ecflow
+
+# 3. Begin the suite (all tasks go to "queued" but stay held)
+ecflow_client --begin=C48_ATM_ecflow
+
+# 4. Mark tasks that already completed successfully
+ecflow_client --force=complete /C48_ATM_ecflow/gfs/2021032312/init/stage_ic
+ecflow_client --force=complete /C48_ATM_ecflow/gfs/2021032312/forecast/fcst
+# ... repeat for each task that finished in the previous run
+
+# 5. Resume — remaining tasks will run based on their triggers
+ecflow_client --resume /C48_ATM_ecflow
+```
+
+**ecflow_ui approach:**
+
+1. Load the `.def` as above (say "no" to cleanup)
+2. In ecflow_ui, right-click the suite → **Suspend**
+3. Click **Begin** on the suite
+4. For each task that already completed: right-click →
+   **Force** → **Complete**
+5. Right-click the suite → **Resume**
+
+The CLI and ecflow_ui approaches can be combined — for example,
+load and begin from the command line, then mark completed tasks
+in the GUI where the suite tree makes it easier to see what ran.
+The trigger logic will pick up from where the previous run left
+off, running only the tasks whose dependencies are now satisfied.
+
 ### Suspend / resume the suite
 
 ```bash
