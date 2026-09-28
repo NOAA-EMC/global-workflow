@@ -503,6 +503,24 @@ Common causes:
 - J-Job script not found (HOMEglobal path wrong)
 - File permissions
 
+### Jinja2 or other Python imports not found
+
+```
+ModuleNotFoundError: No module named 'jinja2'
+```
+
+**Fix:** The workflow's Python dependencies (Jinja2, PyYAML, etc.)
+are provided by the build modules. Load them before running any
+ecFlow or setup script:
+```bash
+module use ${HOMEglobal}/modulefiles
+module load module_gwsetup.ursa
+```
+
+If `module_gwsetup.ursa` is not available, load the stack that was
+used to build the workflow (e.g. `module load intel`, `module load
+spack-stack`) — the exact modules depend on your build.
+
 ### METplus or archive tasks appear when they shouldn't
 
 If `metp` or `arch_tars` show up in the suite despite being
