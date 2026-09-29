@@ -21,6 +21,10 @@ case ${step} in
         export tasks_per_node=${max_tasks_per_node}
         ;;
 
+    "atmanlvar")
+        tasks_per_node=48
+        ;;
+
     "offlineanl")
         export is_exclusive="True"
         ;;
