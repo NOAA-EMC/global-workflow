@@ -33,3 +33,17 @@ nsst:
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}
+
+# MOM6 and CICE6 input templates.  These all default to the copies that
+# link_workflow.sh stages under ${PARMglobal}/ufs and are listed here only for
+# discoverability -- leave them unset to use the stock templates.
+#
+#   ocn:
+#     MOM6_INPUT_TEMPLATE: /path/to/MOM_input_008.IN
+#     MOM6_DATA_TABLE_TEMPLATE: /path/to/MOM6_data_table.IN
+#   ice:
+#     CICE_TEMPLATE: /path/to/ice_in.IN
+#
+# Each path is used as given, so a custom template can be named anything.  See
+# docs/source/user_guide/configure.rst for additional information regarding the
+# customization of these input files.
