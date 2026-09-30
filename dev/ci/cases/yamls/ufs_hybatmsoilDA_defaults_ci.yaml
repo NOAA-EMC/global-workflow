@@ -17,4 +17,4 @@ base:
   FHMAX_HF_GFS: 48
   DO_TEST_MODE: "NO"
   USE_IODADIR: "YES"
-  IODADIR: "/scratch4/NCEPDEV/land/data/DA/SMAP/data_proc/smap_sample/land"
+  IODADIR: "/scratch3/NCEPDEV/global/role.glopara/dump_ioda"
