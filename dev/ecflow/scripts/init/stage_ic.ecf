@@ -18,7 +18,6 @@ source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if [[ ${status} -ne 0 ]]; then
   ecflow_client --msg="***JOB ${ECF_NAME} ERROR loading modules***"
-  ecflow_client --abort
   exit "${status}"
 fi
 
@@ -29,7 +28,6 @@ export jobid="${job}.${SLURM_JOB_ID:-$$}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT***"
-  ecflow_client --abort
   exit "${status}"
 fi
 

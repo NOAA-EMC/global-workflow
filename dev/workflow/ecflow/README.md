@@ -4,6 +4,10 @@ This guide walks through running the C48_ATM forecast-only test case
 using ecFlow on Ursa. The same steps apply to other cases and platforms
 with minor path adjustments.
 
+> **Note:** This guide is Ursa-specific. Paths (e.g. `/scratch3/NCEPDEV/global/${USER}/`),
+> hostnames (e.g. `uecflow01`), and Slurm settings (e.g. `fv3-cpu`, `u1-compute`) below
+> are examples for Ursa; portability to other platforms is not yet supported.
+
 ## Prerequisites
 
 - NOAA RDHPCS account with Ursa access
