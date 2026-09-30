@@ -2340,7 +2340,7 @@ class GFSTasks(Tasks):
             deps2.append(rocoto.add_dependency(dep_dict))
             deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
 
-        # Safeguard for forecast`
+        # Safeguard for forecast
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
