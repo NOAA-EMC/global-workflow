@@ -79,7 +79,7 @@ elif [[ -d /lfs/h1 && ! -d /lfs/h3 ]]; then
 elif [[ -d /scratch3 ]]; then
     # We are on NOAA Hera or Ursa
     # Hostname-based detection for Ursa front-end and compute nodes
-    if [[ $(hostname -s) =~ ^ufe || $(hostname -s) =~ ^uecflow || $(hostname -s) =~ ^u[0-9] ]]; then
+    if [[ $(hostname -s) =~ ^ufe || $(hostname -s) =~ ^uecflow ]]; then
         MACHINE_ID=ursa
     else
         mount=$(findmnt -n -o SOURCE /apps) || true # /home doesn't exist on the GitHub runners
