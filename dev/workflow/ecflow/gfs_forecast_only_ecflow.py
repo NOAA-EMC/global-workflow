@@ -74,7 +74,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         'genesis': 'track',
         'genesis_fsu': 'track',
         'metp': 'verf',
-        'wavepostpnt': 'verf',
+        'wavepostpnt': 'product',
         'wavepostbndpnt': 'verf',
         'wavepostbndpntbll': 'verf',
         'wavegempak': 'verf',
