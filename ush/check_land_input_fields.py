@@ -478,9 +478,11 @@ def _read_2d_or_3d_surface_variable(
     variable = dataset.variables[variable_name]
 
     if variable.ndim == 3:
-        return variable[0, :, :]
+        values = variable[0, :, :]
+    else:
+        values = variable[:, :]
 
-    return variable[:, :]
+    return np.asarray(np.ma.filled(np.ma.asarray(values),np.nan),dtype=float)
 
 
 @logit(logger)
