@@ -482,7 +482,7 @@ def _read_2d_or_3d_surface_variable(
     else:
         values = variable[:, :]
 
-    return np.asarray(np.ma.filled(np.ma.asarray(values),np.nan),dtype=float)
+    return np.asarray(np.ma.filled(np.ma.asarray(values), np.nan), dtype=float)
 
 
 @logit(logger)
@@ -586,18 +586,13 @@ def check_land_input_fields(
                 # each layer at time index 0.
                 smc_all = np.asarray(smc[:])
 
-        except FileNotFoundError:
-            logger.warning(
-                f"File {sfc_file} or {oro_file} not found. "
-                f"Skipping tile {tile}."
+        except (FileNotFoundError, KeyError) as exc:
+            message = (
+                f"Required input for tile {tile} is missing or incomplete: {exc}"
             )
-            continue
-
-        except KeyError as exc:
-            logger.warning(
-                f"Missing variable in tile {tile}: {exc}. "
-                f"Skipping tile {tile}."
-            )
+            if fatal:
+                raise ValueError(message) from exc
+            logger.warning(message)
             continue
 
         except Exception as exc:
