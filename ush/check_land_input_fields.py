@@ -305,7 +305,7 @@ def check_soil_moisture(
         Number of invalid soil-moisture values across all four layers.
     """
 
-    soil_type_values = np.ma.filled(soil_type, np.nan)
+    soil_type_values = np.asarray(np.ma.filled(soil_type, np.nan), dtype=float)
 
     # Define expected soil-moisture cells
     expected_smc = (
@@ -343,7 +343,9 @@ def check_soil_moisture(
         (soil_type_values > len(porosity_table))
     )
 
-    if np.any(invalid_soil_type):
+    n_invalid_soil_type = np.count_nonzero(invalid_soil_type)
+
+    if n_invalid_soil_type > 0:
         invalid_values = np.unique(soil_type_values[invalid_soil_type])
 
         raise ValueError(
