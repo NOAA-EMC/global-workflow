@@ -305,7 +305,7 @@ def check_soil_moisture(
         Number of invalid soil-moisture values across all four layers.
     """
 
-    soil_type = np.asarray(soil_type, dtype=np.int32)
+    soil_type_values = np.ma.filled(soil_type, np.nan)
 
     # Define expected soil-moisture cells
     expected_smc = (
@@ -337,19 +337,20 @@ def check_soil_moisture(
 
     # Validate soil types used for maxsmc lookup
     invalid_soil_type = (
-        (soil_type < 0) |
-        (soil_type > len(porosity_table))
+        ~np.isfinite(soil_type_values) |
+        (soil_type_values != np.floor(soil_type_values)) |
+        (soil_type_values < 0) |
+        (soil_type_values > len(porosity_table))
     )
 
     if np.any(invalid_soil_type):
-        invalid_values = np.unique(
-            soil_type[invalid_soil_type]
-        )
+        invalid_values = np.unique(soil_type_values[invalid_soil_type])
 
         raise ValueError(
             f"Tile {tile}: invalid soil_type values: "
             f"{invalid_values.tolist()}"
         )
+    soil_type = soil_type_values.astype(np.int64)
 
     # Build soil-type-dependent maxsmc array
     # Default maxsmc is 1.0.
