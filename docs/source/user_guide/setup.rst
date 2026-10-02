@@ -230,6 +230,105 @@ Pre-configured cases for GW can be found in ``dev/ci/cases``, with the recommend
 
 - Finally, there is a separate yaml that includes machine-specific settings, mostly default paths. These can be found in ``dev/workflow/hosts/`` and are applied automatically.
 
+======================
+Customizing fix files
+======================
+
+The experiment yaml (the one passed with ``--yaml``, or named by ``experiment:yaml:`` in a case file) may contain a top-level ``fix_files:`` section that overlays your own files on top of the installed fix tree. It has two sub-sections, ``replace:`` and ``add:``. Each is a map of
+
+.. code-block:: text
+
+   <path under ${HOMEglobal}/fix/>:  <your file, directory or glob, or a list of them>
+
+For example:
+
+.. code-block:: yaml
+
+   {% set fix_008 = '/scratch4/NCEPDEV/marine/First.Last/fix_008' %}
+
+   fix_files:
+     replace:                                # each of these is already in the fix tree
+       wave:                      /scratch4/NCEPDEV/marine/First.Last/testfix/wave     # directory for directory
+       mom6/025/ocean_hgrid.nc:   {{ fix_008 }}/MOM/ocean_hgrid.nc                     # file for file
+       orog/C384:                 {{ fix_008 }}/OROG/C384/C384.mx008_oro*              # each matched file is already in orog/C384
+     add:                                    # none of these is in the fix tree yet
+       cpl/aC384o008:             {{ fix_008 }}/CPL/aC384o008                          # new directory
+       mom6/008/regional.mom6.nc: {{ fix_008 }}/MOM/regional.mom6.nc                   # new file
+       mom6/008:                                                                          # new files into a (here also new) directory
+         - {{ fix_008 }}/MOM/*zgrid*.nc
+         - {{ fix_008 }}/MOM/MOM_*
+
+The rule for each sub-section
+-----------------------------
+
+**replace** — every path you name must already exist in the fix tree, and your file or directory takes its place. The source must be the same kind of thing as what it replaces: a file for a file, a directory for a directory. Naming a path that is not in the fix tree is an error (this is how a misspelled file name is caught).
+
+**add** — every path you name must *not* exist in the fix tree, and your file or directory is linked in at that path; missing parent directories are created. Naming a path that already exists is an error (this is how you are stopped from silently clobbering a system file).
+
+Globs and lists
+---------------
+
+A source may be a glob (``*``, ``?``, ``[]``), or a list of files, directories and globs. In either case the ``<path under fix/>`` is a *directory*, and each match, or each listed item, is linked into it under its own name. Every one is checked one by one against the rule of the sub-section it is under:
+
+* under **replace**, the directory must already exist in the fix tree, and every matched file or directory must already exist inside it (and be of the same kind). A match that would be new is an error.
+* under **add**, the directory may already exist (your new files go beside the ones already there) or not (it is created), and no matched file or directory may already exist inside it. A match that would overwrite something is an error.
+
+So a source directory that holds a mix of new files and replacements is written as two entries, one under ``replace`` and one under ``add``. To put several things into the same directory under one sub-section, give a list of sources, as in the ``mom6/008`` example above; a list may mix globs and individual files. Write the list one item per line (``- …``) rather than as ``[a, b]``: inside ``[ ]`` YAML treats ``?``, ``:``, ``[`` and ``]`` as syntax, so an unquoted glob such as ``file_?.nc`` or ``file_[ab].nc`` will not parse.
+
+Summary of what happens
+-----------------------
+
+For a single plain (non-glob) source, ``<path under fix/>`` is the exact file or directory being replaced or added. For a glob, or for a list, it is the directory the matches or listed items go into.
+
+.. list-table:: ``replace:``
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - source \\ path in fix tree is …
+     - a file
+     - a directory
+     - absent
+   * - a file
+     - linked in place of it
+     - error: kind mismatch
+     - error: use ``add``
+   * - a directory
+     - error: kind mismatch
+     - linked in place of it (wholesale)
+     - error: use ``add``
+   * - a glob, or a list
+     - error: needs a directory
+     - each match must already exist inside it, same kind
+     - error: use ``add``
+
+.. list-table:: ``add:``
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - source \\ path in fix tree is …
+     - a file
+     - a directory
+     - absent
+   * - a file
+     - error: use ``replace``
+     - error: use ``replace`` (or name the full path of the new file)
+     - linked there
+   * - a directory
+     - error: use ``replace``
+     - error: use ``replace``
+     - linked there
+   * - a glob, or a list
+     - error: needs a directory
+     - each match must not already exist inside it
+     - directory created; matches linked into it
+
+What setup_expt.py does with it
+-------------------------------
+
+``setup_expt.py`` builds the overlay in ``$EXPDIR/fix``, prints a summary of every entry (mode, path, number of files for a glob, and the source), and sets ``FIXglobal`` in ``config.base`` to point at it, so every job picks up the overlay through ``${FIXglobal}``. Only the paths you touch are expanded; every other component is a single link back to ``$HOMEglobal/fix``, so the overlay is quick to build and follows a re-run of ``link_workflow.sh``. A manifest of what was linked is written to ``$EXPDIR/fix/.fix_overlay.yaml``.
+
+Any of the errors above, a source that does not exist, a glob that matches nothing, two entries that land on the same path, a path outside the fix root, or an entry nested inside a directory that another entry links wholesale stops ``setup_expt.py`` before the experiment directory is written. The yaml is rendered with Jinja2, so ``{% set %}`` can shorten repeated paths and ``MACHINE`` (e.g. ``URSA``, ``GAEAC6``) can select per-platform sources. Without a ``fix_files:`` section nothing changes and ``FIXglobal`` remains ``$HOMEglobal/fix``.
+
 =======================
 Running from case files
 =======================

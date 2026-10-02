@@ -33,7 +33,7 @@ export HPSS_PROJECT="{{ HPSS_PROJECT }}"
 # Directories relative to installation areas:
 export HOMEglobal="{{ HOMEglobal }}"
 export EXECglobal=${HOMEglobal}/exec
-export FIXglobal=${HOMEglobal}/fix
+export FIXglobal="{{ FIXglobal | default('${HOMEglobal}/fix') }}"
 export PARMglobal=${HOMEglobal}/parm
 export SCRglobal=${HOMEglobal}/scripts
 export USHglobal=${HOMEglobal}/ush
