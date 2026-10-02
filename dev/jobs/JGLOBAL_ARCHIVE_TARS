@@ -99,6 +99,25 @@ if [[ "${DO_WAVE}" == "YES" ]]; then
         export WAVE_OUT_GRIDS=""
     fi
 fi
+
+# If we want to save monthly average products (atmos/ocean(1p00)/ice) for SFS
+if [[ "${RUN}" == "sfs" ]]; then
+    filelist_monthly_mean=("${COMIN_OCEAN_NETCDF}/1p00/sfs.ocean."*"monthly_avg"*".nc")
+    if ((${#filelist_monthly_mean[@]} > 0)); then
+        export MONTHLY_DATA_EXIST="true"
+    else
+        export MONTHLY_DATA_EXIST="false"
+    fi
+fi
+
+# Env variables needed if we want to archive ICs for SFS
+if [[ "${RUN}" == "sfs" && "${ARCH_ICSDIR:-}" == "YES" ]]; then
+    export current_cycle="${PDY}${cyc}"
+    predtg=$(date -u -d"${current_cycle:0:4}-${current_cycle:4:2}-${current_cycle:6:2} ${current_cycle:8:2}:00:00 6 hours ago" +%Y%m%d%H)
+    export precycle=${predtg}
+    export precycle_YMD="${precycle:0:8}"
+    export precycle_HH="${precycle:8:2}"
+fi
 ###############################################################
 # Run archive script
 ###############################################################
