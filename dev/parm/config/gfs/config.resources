@@ -1415,7 +1415,6 @@ case ${step} in
     export layout_y
 
     walltime="01:00:00"
-    ens_size=${NMEM_ENS:-80}
     ntiles=${ntiles:-6}
     ntasks=$((ntiles * layout_x * layout_y))
     node_denominator=1
