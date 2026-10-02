@@ -94,8 +94,8 @@ case "${fv3_res}" in
         ;;
     "C96")
         export DELTIM=600
-        export layout_x=2
-        export layout_y=2
+        export layout_x=6
+        export layout_y=8
         export nthreads_fv3=1
         export nthreads_ufs=1
         export xr_cnvcld=".true."  # Pass conv. clouds to Xu-Randall cloud fraction
@@ -113,8 +113,8 @@ case "${fv3_res}" in
         ;;
     "C192")
         export DELTIM=600
-        export layout_x=4
-        export layout_y=6
+        export layout_x=8
+        export layout_y=8
         export nthreads_fv3=1
         export nthreads_ufs=1
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -306,17 +306,24 @@ if [[ "${skip_mom6}" == "false" ]]; then
       FRUNOFF="runoff.daitren.clim.1deg.nc"
       CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
       MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'r'}
-      MOM6_RIVER_RUNOFF='False'
+      MOM6_RIVER_RUNOFF='True'
       eps_imesh="2.5e-1"
       TOPOEDITS="ufs.topo_edits_011818.nc"
       case ${RUN} in
-        gfs|gefs|sfs)
+        sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_32L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.04 
+          ;;
+        gfs|gefs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.02 
           ;;
         gdas|enkfgdas|enkfgfs)
           MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
           MOM6_DIAG_MISVAL="0.0"
+          export MOM6_GUST_CONST=0.02 
           ;;
         *)
           echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
@@ -338,7 +345,11 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RIVER_RUNOFF='True'
       eps_imesh="1.0e-1"
       case ${RUN} in
-        gfs|gefs|sfs)
+        sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_32L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gfs|gefs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
           ;;
@@ -355,7 +366,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       TOPOEDITS=""
       ;;
     "025")
-      ntasks_mom6=220
+      ntasks_mom6=400
       OCNTIM=1800
       NX_GLB=1440
       NY_GLB=1080
@@ -367,13 +378,20 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_RESTART_SETTING=${MOM6_RESTART_SETTING:-'r'}
       eps_imesh="1.0e-1"
       case ${RUN} in
-        gfs|gefs|sfs)
+        sfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_32L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.02 
+          ;;
+        gfs|gefs)
           MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
           MOM6_DIAG_MISVAL="-1e34"
+          export MOM6_GUST_CONST=0.0 
           ;;
         gdas|enkfgdas|enkfgfs)
           MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
           MOM6_DIAG_MISVAL="0.0"
+          export MOM6_GUST_CONST=0.0 
           ;;
         *)
           echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
@@ -430,7 +448,11 @@ if [[ "${skip_cice6}" == "false" ]]; then
       cice6_processor_shape="slenderX2"
       ;;
     "025")
-      ntasks_cice6=120
+      if [[ "${fv3_res}" ==  "C192" ]]; then
+        ntasks_cice6=96
+      else
+        ntasks_cice6=120
+      fi
       cice6_processor_shape="slenderX2"
       ;;
     *)
