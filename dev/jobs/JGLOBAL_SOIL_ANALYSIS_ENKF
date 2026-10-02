@@ -61,8 +61,6 @@ mkdir -p "${COMOUT_ATMOS_ANALYSIS_ENS}"
 mkdir -p "${COMOUT_SOIL_DIAG_ENS}"
 mkdir -p "${COMOUT_CONF}"
 
-NMEM_ENS=${NMEM_ENS:-80}
-
 for imem in $(seq 1 "${NMEM_ENS}"); do
     cmem=$(printf %03i "${imem}")
     memchar="mem${cmem}"
