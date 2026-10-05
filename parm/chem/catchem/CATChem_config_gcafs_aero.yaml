@@ -15,12 +15,12 @@ simulation:
   species_filename: ./CATChem_species.yml
   emission_filename: ./CATChem_emission.yml
   verbose:
-    activate: true
+    activate: false
 #============================================================================
 # Grid settings
 #============================================================================
 grid:
-  number_of_levels: 64
+  number_of_levels: 127
   number_of_soil_layers: 4
 #============================================================================
 # Timesteps settings
@@ -48,35 +48,20 @@ diagnostics:
 # Optics files for Mie
 #============================================================================
 mie:
-  #directory: "/gpfs/f6/bil-fire3/world-shared/Emissions/NASA/ExtData/monochromatic/"  #location on gaeac6
-  #directory: "/scratch4/NCEPDEV/naqfc/Barry.Baker/Emissions/Emissions/NASA/ExtData/monochromatic/"  #location on ursa
   directory: "./ExtData/monochromatic/"  #in running directory after copying from the above directories
-  #directory: "../../../../../../optics/"
   files:
-    # SS: opticsBands_SS.v3_3.RRTMG.nc
-    # DU: opticsBands_DU.v15_3.RRTMG.nc
-    # BC: opticsBands_BC.v1_3.RRTMG.nc
-    # OC: opticsBands_OC.v1_3.RRTMG.nc
-    # NI: opticsBands_NI.v2_5.RRTMG.nc
-    # SU: opticsBands_SU.v1_3.RRTMG.nc
     SS: optics_SS.v3_5.nc
     DU: optics_DU.v15_5.nc
     BC: optics_BC.v1_5.nc
     OC: optics_OC.v1_5.nc
     NI: optics_NI.v2_5.nc
     SU: optics_SU.v1_5.nc
-    #SS: optics_SS.v3_3.nc
-    #DU: optics_DU.v15_3.nc
-    #BC: optics_BC.v1_3.nc
-    #OC: optics_OC.v1_3.nc
-    #NI: optics_NI.v2_5.nc
-    #SU: optics_SU.v1_3.nc
 #============================================================================
 # RunPhase settings: define process running order
 #============================================================================
 run_phases:
   test1:
-    description: "Test phase 1"
+    description: "Emission and chemistry processes"
     processes:
       - seasalt
       - dust
@@ -85,12 +70,6 @@ run_phases:
       - drydep
       - so4chem
       - wetdep
-  # test2:
-  #   description: "Test phase 2"
-  #   processes:
-  #    - dust
-  #    - drydep
-  #    - wetdep
 
 #============================================================================
 # Settings for CATChem processes
@@ -449,11 +428,10 @@ processes:
     scheme: 'gocart'
     gocart:
       scale_factor: 1.0 #not doing anything for now since we cannot edit gocart2g module
-      simple_scheme: false  #read in mie data for wet particles if true; otherwise calculate particles wet swelling internally
-      ####swelling_method: 1    # 1 for Fitzgerald 1975; 2 for Gerber 1985 if simple_scheme is false
-      swelling_rh_max: 0.95
-      correction_maring: true  #correction settling velocity following Maring et al, 2003 for both simple and non-simple schemes
-      ###maring_dust_only: true  #apply Maring correction to dust only (true) or all species (false)
+      simple_scheme: true  #read in mie data for wet particles if true; otherwise calculate particles wet swelling internally
+      swelling_method: 2    # 1 for Fitzgerald 1975; 2 for Gerber 1985 if simple_scheme is false
+      correction_maring: false  #correction settling velocity following Maring et al, 2003 for both simple and non-simple schemes
+      maring_dust_only: true  #apply Maring correction to dust only (true) or all species (false)
   so4chem:
     activate: true
     diagnostics: true
