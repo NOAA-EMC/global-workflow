@@ -176,6 +176,22 @@ def load_case_yaml(yaml_path: Path) -> AttrDict:
     return parse_j2yaml(path=yaml_path, data=data)
 
 
+def check_host_supported(testconf: AttrDict) -> None:
+    """Exit with an error if the current host is in ``skip_ci_on_hosts``.
+
+    Parameters
+    ----------
+    testconf : AttrDict
+        Parsed case YAML.
+    """
+    skip_hosts = [str(h).lower() for h in testconf.get('skip_ci_on_hosts', None) or []]
+    machine = str(Host().machine).lower()
+    if machine in skip_hosts:
+        print(f"[ERROR] This case is not supported on {machine.upper()} "
+              "(listed in skip_ci_on_hosts).")
+        sys.exit(1)
+
+
 def create_experiment(testconf: AttrDict, runtests: Path,
                       overwrite: bool = False) -> Path:
     """Create the experiment via setup_expt.main() and return the EXPDIR."""
@@ -346,6 +362,7 @@ def run(default_yaml: Path = None) -> None:
         os.environ['STMP'] = str(args.stmp)
 
     testconf = load_case_yaml(yaml_path)
+    check_host_supported(testconf)
     exp = testconf.experiment
     pslot = exp.pslot
     comroot = Path(exp.comroot)
