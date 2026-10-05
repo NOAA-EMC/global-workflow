@@ -1,6 +1,14 @@
 #! /usr/bin/env bash
 set -x
 
+if ((10#${ENSMEM:--1} >= 0)); then
+    memdir=$(printf "mem%03d" $((10#${ENSMEM})))
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+    export DATA="${DATAjob}/${jobid}"
+else
+    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
+    export DATA="${DATAjob}/${jobid}"
+fi
 source "${HOMEglobal}/ush/jjob_header.sh" -e "oceanice_products" -c "base oceanice_products"
 
 #{% if false %}
@@ -23,18 +31,13 @@ export PYTHONPATH
 ##############################################
 
 # Construct COM variables
-# shellcheck disable=SC2309
-if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+if ((10#${ENSMEM:--1} >= 0)); then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
     export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
-    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
-    export DATA="${DATAjob}/${jobid}"
 else
     export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
     export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
-    export DATAjob="${DATAROOT}/${RUN}fcst.${PDY:-}${cyc}"
-    export DATA="${DATAjob}/${jobid}"
 fi
 
 # Create the directory to hold output for this job
