@@ -205,7 +205,7 @@ case ${step} in
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x "walltime"="04:00:00"
+        declare -x "walltime"="06:00:00"
         ;;
       "C384" | "C768" | "C1152")
         declare -x "walltime"="06:00:00"
@@ -217,6 +217,30 @@ case ${step} in
     esac
 
     unset NTASKS_TOT
+    ;;
+
+  "atmos_post")
+    export walltime="00:30:00"
+    export ntasks=48
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export memory="120GB"
+    ;;
+
+  "ocn_post")
+    export walltime="00:30:00"
+    export ntasks=13
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export memory="120GB"
+    ;;
+
+  "ice_post")
+    export walltime="00:30:00"
+    export ntasks=1
+    export threads_per_task=1
+    export tasks_per_node="${ntasks}"
+    export memory="96GB"
     ;;
 
   "atmos_products")
@@ -320,6 +344,15 @@ case ${step} in
     export threads_per_task=1
     export memory="4096M"
     ;;
+
+  "globus")
+    export walltime="08:00:00"
+    export ntasks=1
+    export tasks_per_node=1
+    export threads_per_task=1
+    export memory="4096M"
+    ;;
+
 
   "cleanup")
     export walltime="00:30:00"
