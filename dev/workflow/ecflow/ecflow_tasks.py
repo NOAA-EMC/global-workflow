@@ -18,7 +18,7 @@ with keys consumed by the suite generator::
         'step':         str,        # config.resources step name
         'trigger':      str | None, # ecFlow trigger expression
         'product_task': bool,       # True → emit as family with fhr children
-        'metatask':     bool,       # True → emit as family with one child per value
+        'tarball_task': bool,       # True → emit as family with one child per tarball type
         'service_task': bool,       # True → service partition
         'component':    str | None, # 'atmos', 'ocean', 'ice', 'wave'
         'config':       str | None, # config step name (for product tasks)
@@ -104,7 +104,7 @@ class EcFlowTasks(Tasks):
             'step': step,
             'trigger': trigger,
             'product_task': False,
-            'metatask': False,
+            'tarball_task': False,
             'service_task': service,
             'component': None,
             'config': None,
@@ -152,7 +152,7 @@ class EcFlowTasks(Tasks):
             'step': step,
             'trigger': trigger,
             'product_task': True,
-            'metatask': False,
+            'tarball_task': False,
             'service_task': False,
             'component': component,
             'config': config,
@@ -192,18 +192,17 @@ class EcFlowTasks(Tasks):
             'step': step,
             'trigger': trigger,
             'product_task': False,
-            'metatask': True,
+            'tarball_task': True,
             'service_task': False,
             'component': None,
             'config': None,
             'forecast_hours': None,
-            'variable': 'TARBALL_TYPE',
             'children': {f'arch_tar_{t}': t for t in tarball_types},
         }
 
     def _get_tarball_types(self) -> List[str]:
         """
-        Determine the list of tarball types for arch_tars metatask.
+        Determine the list of tarball types for the arch_tars task.
 
         Mirrors rocoto/gfs_tasks.py arch_tars() logic.
         """
