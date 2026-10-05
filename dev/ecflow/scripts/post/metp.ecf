@@ -21,14 +21,18 @@ if [[ ${status} -ne 0 ]]; then
   exit "${status}"
 fi
 
-export job="metp"
-export jobid="${job}.${SLURM_JOB_ID:-$$}"
+# Rocoto runs one metp task per METplus use case; run them in sequence here
+for METPCASE in g2g1 g2o1 pcp1; do
+  export METPCASE
+  export job="metp${METPCASE}"
+  export jobid="${job}.${SLURM_JOB_ID:-$$}"
 
-"${HOMEglobal}/dev/jobs/JGFS_ATMOS_VERIFICATION"
-status=$?
-if [[ ${status} -ne 0 ]]; then
-  ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT***"
-  exit "${status}"
-fi
+  "${HOMEglobal}/dev/jobs/JGFS_ATMOS_VERIFICATION"
+  status=$?
+  if [[ ${status} -ne 0 ]]; then
+    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT (${METPCASE})***"
+    exit "${status}"
+  fi
+done
 
 %include <tail.h>

@@ -102,8 +102,8 @@ export DO_TEST_MODE="{{ DO_TEST_MODE }}" # option to change configuration for au
 
 # Verification options
 export DO_METP="{{ DO_METP }}" # METplus verification via EMC_verif-global
-# METplus verification is not enabled on Hera, Derecho, Orion, or Ursa
-if [[ "${machine}" == "HERA" || "${machine}" == "ORION" || "${machine}" == "DERECHO" || "${machine}" == "URSA" ]] && [[ ${DO_METP} == "YES" ]]; then
+# METplus verification is not enabled on Hera, Derecho or Orion
+if [[ "${machine}" == "HERA" || "${machine}" == "ORION" || "${machine}" == "DERECHO" ]] && [[ ${DO_METP} == "YES" ]]; then
    echo "WARNING: METplus verification not supported on ${machine}. Setting DO_METP=NO"
    export DO_METP="NO"
 fi

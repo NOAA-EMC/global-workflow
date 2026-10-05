@@ -73,7 +73,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         'tracker': 'track',
         'genesis': 'track',
         'genesis_fsu': 'track',
-        'metp': 'verf',
+        'metp': 'post',
         'wavepostpnt': 'product',
         'wavepostbndpnt': 'verf',
         'wavepostbndpntbll': 'verf',
@@ -404,8 +404,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
                 forecast/       ← fcst.ecf
                 product/        ← atmos_prod.ecf, f000.ecf, ...
                 track/          ← tracker.ecf, genesis.ecf
-                verf/           ← metp.ecf
-                post/           ← arch_tars.ecf, arch_vrfy.ecf, cleanup.ecf
+                post/           ← arch_tars.ecf, arch_vrfy.ecf, metp.ecf, cleanup.ecf
 
         Each ``.ecf`` copy gets ``#SBATCH`` directives injected after
         the shebang line, with resource values resolved from the task's

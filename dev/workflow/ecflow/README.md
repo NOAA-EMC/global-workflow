@@ -588,9 +588,10 @@ grep DO_METP ${EXPDIR}/C48_ATM_ecflow/config.base
 grep DO_ARCHCOM ${EXPDIR}/C48_ATM_ecflow/config.base
 ```
 
-On Ursa, `DO_METP` is forced to `"NO"` by a platform guard in
-`config.base.j2`. `DO_ARCHCOM` comes from `hosts/ursa.yaml` (`"YES"`,
-archiving to HPSS), so `arch_tars` is expected in the Ursa suite.
+`DO_METP` is forced to `"NO"` on Hera, Orion and Derecho by a platform
+guard in `config.base.j2`, but not on Ursa. `DO_ARCHCOM` comes from
+`hosts/ursa.yaml` (`"YES"`, archiving to HPSS), so `arch_tars` is
+expected in the Ursa suite.
 If the values do not match, the experiment was generated before the
 change - regenerate with `--overwrite`.
 
