@@ -159,16 +159,15 @@ class EcFlowTasks(Tasks):
             'forecast_hours': fhrs,
         }
 
-    def _metatask(self, task_name: str, *,
-                  jjob: str,
-                  variable: str,
-                  values: List[str],
-                  child_prefix: str,
-                  trigger: Optional[str] = None,
-                  resource_name: Optional[str] = None) -> Dict:
+    def _tarball_task(self, task_name: str, *,
+                      jjob: str,
+                      tarball_types: List[str],
+                      trigger: Optional[str] = None,
+                      resource_name: Optional[str] = None) -> Dict:
         """
-        Build a metatask ecFlow task dict (emitted as a family with one
-        child task per value, like a Rocoto metatask).
+        Build a tarball ecFlow task dict (emitted as a family with one
+        ``arch_tar_{tarball_type}`` child per tarball type, like the
+        Rocoto ``arch_tars`` metatask).
 
         Parameters
         ----------
@@ -176,12 +175,8 @@ class EcFlowTasks(Tasks):
             Logical task name (becomes the family name).
         jjob : str
             J-Job script basename.
-        variable : str
-            ecFlow variable set on each child (e.g. ``TARBALL_TYPE``).
-        values : list of str
-            One child task is created per value.
-        child_prefix : str
-            Children are named ``{child_prefix}_{value}``.
+        tarball_types : list of str
+            Tarball types; each child sets ``TARBALL_TYPE`` to one of them.
         trigger : str, optional
             ecFlow trigger expression, applied on the family.
         resource_name : str, optional
@@ -202,8 +197,8 @@ class EcFlowTasks(Tasks):
             'component': None,
             'config': None,
             'forecast_hours': None,
-            'variable': variable,
-            'children': {f'{child_prefix}_{v}': v for v in values},
+            'variable': 'TARBALL_TYPE',
+            'children': {f'arch_tar_{t}': t for t in tarball_types},
         }
 
     def _get_tarball_types(self) -> List[str]:

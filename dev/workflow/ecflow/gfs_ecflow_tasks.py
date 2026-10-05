@@ -227,12 +227,10 @@ class GFSEcFlowTasks(EcFlowTasks):
             deps.append('metp == complete')
         trigger = ' and '.join(deps)
 
-        return self._metatask(
+        return self._tarball_task(
             'arch_tars',
             jjob='JGLOBAL_ARCHIVE_TARS',
-            variable='TARBALL_TYPE',
-            values=self._get_tarball_types(),
-            child_prefix='arch_tar',
+            tarball_types=self._get_tarball_types(),
             trigger=trigger,
         )
 
