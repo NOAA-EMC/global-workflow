@@ -189,7 +189,7 @@ def create_experiment(testconf: AttrDict, runtests: Path,
         print("  EXPDIR already exists, recreating with --overwrite.")
 
     setup_expt_args = [exp.net, exp.mode]
-    skip_keys = {"net", "mode", "yaml"}
+    skip_keys = {"net", "mode"}
     for key, val in exp.items():
         if key in skip_keys:
             continue
