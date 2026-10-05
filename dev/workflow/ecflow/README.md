@@ -588,10 +588,11 @@ grep DO_METP ${EXPDIR}/C48_ATM_ecflow/config.base
 grep DO_ARCHCOM ${EXPDIR}/C48_ATM_ecflow/config.base
 ```
 
-On Ursa, these should be set to `"NO"` by the platform guards
-in `config.base.j2`. If they show `"YES"`, the experiment was
-generated before the guards were added — regenerate with
-`--overwrite`.
+On Ursa, `DO_METP` is forced to `"NO"` by a platform guard in
+`config.base.j2`. `DO_ARCHCOM` comes from `hosts/ursa.yaml` (`"YES"`,
+archiving to HPSS), so `arch_tars` is expected in the Ursa suite.
+If the values do not match, the experiment was generated before the
+change - regenerate with `--overwrite`.
 
 ## 7. Directory Layout
 
