@@ -2568,6 +2568,10 @@ class GFSTasks(Tasks):
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                 deps_full.append(rocoto.add_dependency(dep_dict))
+            elif self.options['do_enkfonly_atm']:
+                # No earc_vrfy or archive tasks run, so wait on the ensemble post-processing instead
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+                deps_full.append(rocoto.add_dependency(dep_dict))
 
             if self.run == 'enkfgdas':
                 # Date dependency for the first half cycle (only GDAS ensemble runs on the first half cycle)
