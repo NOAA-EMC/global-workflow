@@ -184,7 +184,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['metp']
 
         if options['do_gempak']:
-            configs += ['gempak', 'gempakmeta']
+            configs += ['gempak']
             if options['do_goes']:
                 configs += ['npoess']
 
@@ -382,9 +382,9 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['postsnd']
 
                     if options['do_gempak']:
-                        task_names[run] += ['gempak', 'gempakmeta', 'gempakncdcupapgif']
+                        task_names[run] += ['gempak']
                         if options['do_goes']:
-                            task_names[run] += ['npoess_pgrb2_0p5deg', 'gempakpgrb2spec']
+                            task_names[run] += ['npoess_pgrb2_0p25deg', 'gempakpgrb2spec']
 
                     if options['do_awips']:
                         task_names[run] += ['awips_20km_1p0deg', 'fbwind']
