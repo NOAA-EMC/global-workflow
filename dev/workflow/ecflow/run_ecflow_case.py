@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
-"""C48_ATM ecFlow test case loader.
+"""Generic ecFlow test case loader.
 
-Thin entry point that loads the C48_ATM forecast-only test case into
-an ecFlow server.  Delegates all work to ``load_ecflow_case.run()``
-with the C48_ATM case YAML as the default.
+Entry point that loads an ecFlow case YAML into an ecFlow server.
+Delegates all work to ``load_ecflow_case.run()`` with the C48_ATM case
+YAML as the default.
 
 Usage::
 
-    python3 dev/workflow/ecflow/c48_atm_ecflow.py
-    python3 dev/workflow/ecflow/c48_atm_ecflow.py --load-only
-    python3 dev/workflow/ecflow/c48_atm_ecflow.py --yaml /other/case.yaml
+    python3 dev/workflow/ecflow/run_ecflow_case.py
+    python3 dev/workflow/ecflow/run_ecflow_case.py --load-only
+    python3 dev/workflow/ecflow/run_ecflow_case.py --yaml /other/case.yaml
 """
 
 import sys

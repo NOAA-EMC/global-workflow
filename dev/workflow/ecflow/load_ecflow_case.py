@@ -10,7 +10,7 @@ The generated .def contains all edit variables (paths, resources,
 partitions) baked in from the experiment's config files, so no
 ``--alter`` overrides are needed after loading.
 
-Test-specific entry points (e.g. ``c48_atm_ecflow.py``) provide
+Test-specific entry points (e.g. ``run_ecflow_case.py``) provide
 default YAML paths and delegate to this module's ``run()`` function.
 
 Prerequisites

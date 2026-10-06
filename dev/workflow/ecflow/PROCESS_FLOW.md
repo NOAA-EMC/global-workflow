@@ -48,10 +48,10 @@ If the server has stopped (node reboot, etc.):
 ## Step 1: Launch the Test Case
 
 ```
-$ python3 dev/workflow/ecflow/c48_atm_ecflow.py
+$ python3 dev/workflow/ecflow/run_ecflow_case.py
 
-c48_atm_ecflow.py                              ← entry point
-│   (dev/workflow/ecflow/c48_atm_ecflow.py)
+run_ecflow_case.py                              ← entry point
+│   (dev/workflow/ecflow/run_ecflow_case.py)
 │
 ├── sets default YAML = dev/ci/cases/pr/C48_ATM.yaml
 │
@@ -331,5 +331,5 @@ $ ecflow_ui &
 
 # Delete and start over
 $ ecflow_client --delete=force yes /my_C48_test
-$ python3 dev/workflow/ecflow/c48_atm_ecflow.py
+$ python3 dev/workflow/ecflow/run_ecflow_case.py
 ```
