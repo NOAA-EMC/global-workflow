@@ -31,12 +31,15 @@ UFS_det() {
             exit 1
         fi
 
-        # Since warm start is false, we cannot do IAU
-        DOIAU="NO"
-        IAU_OFFSET=0
-        model_start_date_current_cycle=${current_cycle}
-
-        DO_LAND_IAU=".false."
+        # Check if we are doing a cold start IAU
+        if [[ ${DOIAU_COLDSTART:-"NO"} == "NO" ]]; then
+            DOIAU="NO"
+            IAU_OFFSET=0
+            model_start_date_current_cycle=${current_cycle}
+            DO_LAND_IAU=".false."
+        else
+            IAU_OFFSET=${IAU_OFFSET:-0}
+        fi
 
         # It is still possible that a restart is available from a previous forecast attempt
         # So we have to continue checking for restarts

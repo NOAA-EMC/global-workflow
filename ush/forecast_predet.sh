@@ -425,19 +425,33 @@ FV3_predet() {
     FNSNOC=${FNSNOC:-"${FIXglobal}/am/global_snoclim.1.875.grb"}
     FNZORC=${FNZORC:-"igbp"}
     FNAISC=${FNAISC:-"${FIXglobal}/am/IMS-NIC.blended.ice.monthly.clim.grb"}
-    FNALBC2=${FNALBC2:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
-    FNTG3C=${FNTG3C:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
-    FNVEGC=${FNVEGC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-    FNMSKH=${FNMSKH:-"${FIXglobal}/am/global_slmask.t1534.3072.1536.grb"}
-    FNVMNC=${FNVMNC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-    FNVMXC=${FNVMXC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
-    FNSLPC=${FNSLPC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
-    FNALBC=${FNALBC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
-    FNVETC=${FNVETC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
-    FNSOTC=${FNSOTC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
-    FNSOCC=${FNSOCC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
-    FNABSC=${FNABSC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
     FNSMCC=${FNSMCC:-"${FIXglobal}/am/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
+    FNMSKH=${FNMSKH:-"${FIXglobal}/am/global_slmask.t1534.3072.1536.grb"}
+    if [[ "${RUN}" == "sfs" ]]; then
+        FNALBC2=${FNALBC2:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
+        FNTG3C=${FNTG3C:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
+        FNVEGC=${FNVEGC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+        FNVMNC=${FNVMNC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+        FNVMXC=${FNVMXC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+        FNSLPC=${FNSLPC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
+        FNALBC=${FNALBC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
+        FNVETC=${FNVETC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
+        FNSOTC=${FNSOTC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
+        FNSOCC=${FNSOCC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
+        FNABSC=${FNABSC:-"${FIXorog}/${CASE}_gwd_hr3/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
+    else
+        FNALBC2=${FNALBC2:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.facsf.tileX.nc"}
+        FNTG3C=${FNTG3C:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.substrate_temperature.tileX.nc"}
+        FNVEGC=${FNVEGC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+        FNVMNC=${FNVMNC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+        FNVMXC=${FNVMXC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_greenness.tileX.nc"}
+        FNSLPC=${FNSLPC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.slope_type.tileX.nc"}
+        FNALBC=${FNALBC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.snowfree_albedo.tileX.nc"}
+        FNVETC=${FNVETC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.vegetation_type.tileX.nc"}
+        FNSOTC=${FNSOTC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_type.tileX.nc"}
+        FNSOCC=${FNSOCC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.soil_color.tileX.nc"}
+        FNABSC=${FNABSC:-"${FIXorog}/${CASE}/sfc/${CASE}.mx${OCNRES}.maximum_snow_albedo.tileX.nc"}
+    fi
 
     # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
     if [[ ! -f "${FNSMCC}" ]]; then
@@ -445,10 +459,18 @@ FV3_predet() {
     fi
 
     # Grid and orography data
-    if [[ "${cplflx}" == ".false." ]]; then
-        cpreq "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+    if [[ "${RUN}" == "sfs" ]]; then
+        if [[ "${cplflx}" == ".false." ]]; then
+            cpreq "${FIXorog}/${CASE}_gwd_hr3/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+        else
+            cpreq "${FIXorog}/${CASE}_gwd_hr3/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+        fi
     else
-        cpreq "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+        if [[ "${cplflx}" == ".false." ]]; then
+            cpreq "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/grid_spec.nc"
+        else
+            cpreq "${FIXorog}/${CASE}/${CASE}_mosaic.nc" "${DATA}/INPUT/${CASE}_mosaic.nc"
+        fi
     fi
 
     # Files for GWD
@@ -456,12 +478,22 @@ FV3_predet() {
 
     # Files for orography, GWD tiles
     local tt
-    for ((tt = 1; tt <= ntiles; tt++)); do
-        cpreq "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
-        cpreq "${FIXorog}/${CASE}/${CASE}_grid.tile${tt}.nc" "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
-        cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc" "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
-        cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc" "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
-    done
+    if [[ "${RUN}" == "sfs" ]]; then
+        for ((tt = 1; tt <= ntiles; tt++)); do
+            cpreq "${FIXorog}/${CASE}_gwd_hr3/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
+            cpreq "${FIXorog}/${CASE}_gwd_hr3/${CASE}_grid.tile${tt}.nc" "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
+            cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc" "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
+            cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc" "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
+        done
+    else
+        for ((tt = 1; tt <= ntiles; tt++)); do
+            cpreq "${FIXorog}/${CASE}/${CASE}.mx${OCNRES}_oro_data.tile${tt}.nc" "${DATA}/INPUT/oro_data.tile${tt}.nc"
+            cpreq "${FIXorog}/${CASE}/${CASE}_grid.tile${tt}.nc" "${DATA}/INPUT/${CASE}_grid.tile${tt}.nc"
+            cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ls.tile${tt}.nc" "${DATA}/INPUT/oro_data_ls.tile${tt}.nc"
+            cpreq "${FIXugwd}/${CASE}/${CASE}_oro_data_ss.tile${tt}.nc" "${DATA}/INPUT/oro_data_ss.tile${tt}.nc"
+        done
+    fi
+
     if [[ "${DO_NEST:-NO}" == "YES" ]]; then
         ${NLN} "${DATA}/INPUT/oro_data.tile7.nc" "${DATA}/INPUT/oro_data.nest02.tile7.nc"
         ${NLN} "${DATA}/INPUT/${CASE}_grid.tile7.nc" "${DATA}/INPUT/${CASE}_grid.nest02.tile7.nc"
@@ -522,6 +554,10 @@ FV3_predet() {
                     break
                 fi
             done
+            if ((Syear >= 2025)); then
+                Eyear=$((Eyear - 5))
+                Syear=$((Syear - 5))
+            fi
             for ((month = 1; month <= 12; month++)); do
                 mm=$(printf %02d "${month}")
                 cpreq "${FIXglobal}/aer/y${Syear}-${Eyear}/merra2_${Syear}-${Eyear}_${mm}.nc" "aeroclim.m${mm}.nc"
@@ -701,6 +737,9 @@ MOM6_predet() {
     if [[ ! -d "${COMOUT_OCEAN_HISTORY}" ]]; then mkdir -p "${COMOUT_OCEAN_HISTORY}"; fi
     if [[ ! -d "${DATAoutput}/MOM6_OUTPUT" ]]; then mkdir -p "${DATAoutput}/MOM6_OUTPUT"; fi
     if [[ ! -d "${DATArestart}/MOM6_RESTART" ]]; then mkdir -p "${DATArestart}/MOM6_RESTART"; fi
+
+    # rm ocean_geometry.nc as model fails if zero length exist
+    rm -f "${DATAoutput}/MOM6_OUTPUT/ocean_geometry.nc"
 
     # Link the output and restart directories to the DATA directory
     ${NLN} "${DATAoutput}/MOM6_OUTPUT" "${DATA}/MOM6_OUTPUT"
