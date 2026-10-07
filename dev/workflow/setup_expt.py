@@ -98,13 +98,15 @@ def update_configs(host, inputs):
     # _update_defaults replaces any keys/values in defaults with matching keys in base
     yaml_dict = _update_defaults(yaml_dict)
 
-    # An optional top-level `fix_files:` section overlays user files on the
-    # installed fix tree; the overlay is built in EXPDIR and FIXglobal is pointed at it.
+    # An optional top-level `fix_files:` section overlays user files on the installed
+    # fix tree.  The overlay is built in EXPDIR and the base FIXglobal, whose default
+    # is set in yaml/defaults.yaml, is rewritten to point at it.
     fix_files = yaml_dict.pop('fix_files', None)
     if fix_files:
-        host_plus_inputs_dict.FIXglobal = build_fix_overlay(base_dir=os.path.join(_top, 'fix'),
-                                                            fix_files=fix_files,
-                                                            dest_dir=os.path.join(inputs.expdir, inputs.pslot, 'fix'))
+        yaml_dict.setdefault('base', AttrDict())['FIXglobal'] = \
+            build_fix_overlay(base_dir=os.path.join(_top, 'fix'),
+                              fix_files=fix_files,
+                              dest_dir=os.path.join(inputs.expdir, inputs.pslot, 'fix'))
 
     # Copy the config files to the experiment directory
     files = [ff for ff in os.listdir(inputs.configdir) if os.path.isfile(os.path.join(inputs.configdir, ff))]

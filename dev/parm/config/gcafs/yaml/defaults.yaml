@@ -37,6 +37,18 @@ base:
   FHMAX: 9
   FHOUT_AERO: 3
 
+  # Root of the fix file tree.  This default is the installation that
+  # link_workflow.sh populates.  An experiment that customizes fix files with a
+  # top-level `fix_files:` section has this rewritten by setup_expt.py to point at
+  # the overlay it builds in EXPDIR, e.g.
+  #
+  #   fix_files:
+  #     add:
+  #       mom6/008/regional.mom6.nc: /path/to/my_experiment/regional.mom6.nc
+  #
+  # See docs/source/user_guide/setup.rst for the full syntax.
+  FIXglobal: "${HOMEglobal}/fix"
+
 atmanl:
   STATICB_TYPE: "gsibec"
   LAYOUT_X_ATMANL: 8
