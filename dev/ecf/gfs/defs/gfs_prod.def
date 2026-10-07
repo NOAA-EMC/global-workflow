@@ -2758,10 +2758,6 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../product/jgfs_atmos_products_f384==complete
               endfamily		//gempak
-              task jgfs_atmos_gempak_meta
-                trigger gempak==complete
-              task jgfs_atmos_gempak_ncdc_upapgif
-                trigger gempak==complete
               family goesupp
                 task jgfs_atmos_upp_goes_f000
                   edit FHR '000'
@@ -3600,10 +3596,10 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_upp_goes_f384
               endfamily		//goesupp
-              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p5
+              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p25
                 trigger goesupp==complete
               family grb2spec
-                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p5==complete
+                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p25==complete
                 task jgfs_atmos_gempak_pgrb2_spec_f000
                   edit FHR '000'
                   edit FHR_LIST '0'
@@ -8666,10 +8662,6 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../product/jgfs_atmos_products_f384==complete
               endfamily		//gempak
-              task jgfs_atmos_gempak_meta
-                trigger gempak==complete
-              task jgfs_atmos_gempak_ncdc_upapgif
-                trigger gempak==complete
               family goesupp
                 task jgfs_atmos_upp_goes_f000
                   edit FHR '000'
@@ -9508,10 +9500,10 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_upp_goes_f384
               endfamily		//goesupp
-              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p5
+              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p25
                 trigger goesupp==complete
               family grb2spec
-                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p5==complete
+                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p25==complete
                 task jgfs_atmos_gempak_pgrb2_spec_f000
                   edit FHR '000'
                   edit FHR_LIST '0'
@@ -14573,10 +14565,6 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../product/jgfs_atmos_products_f384==complete
               endfamily		//gempak
-              task jgfs_atmos_gempak_meta
-                trigger gempak==complete
-              task jgfs_atmos_gempak_ncdc_upapgif
-                trigger gempak==complete
               family goesupp
                 task jgfs_atmos_upp_goes_f000
                   edit FHR '000'
@@ -15415,10 +15403,10 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_upp_goes_f384
               endfamily		//goesupp
-              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p5
+              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p25
                 trigger goesupp==complete
               family grb2spec
-                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p5==complete
+                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p25==complete
                 task jgfs_atmos_gempak_pgrb2_spec_f000
                   edit FHR '000'
                   edit FHR_LIST '0'
@@ -20480,10 +20468,6 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../product/jgfs_atmos_products_f384==complete
               endfamily		//gempak
-              task jgfs_atmos_gempak_meta
-                trigger gempak==complete
-              task jgfs_atmos_gempak_ncdc_upapgif
-                trigger gempak==complete
               family goesupp
                 task jgfs_atmos_upp_goes_f000
                   edit FHR '000'
@@ -21322,10 +21306,10 @@ suite gfs_v17_nco
                   edit FHR_LIST '384'
                   trigger ../../../../forecast/jgfs_fcst_fsm:release_gfs_atmos_upp_goes_f384
               endfamily		//goesupp
-              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p5
+              task jgfs_atmos_gempak_pgrb2_spec_npoess_0p25
                 trigger goesupp==complete
               family grb2spec
-                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p5==complete
+                trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p25==complete
                 task jgfs_atmos_gempak_pgrb2_spec_f000
                   edit FHR '000'
                   edit FHR_LIST '0'

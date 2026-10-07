@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_gempak_pgrb2_spec_npoess_0p5_%CYC%
+#PBS -N gfs_atmos_gempak_pgrb2_spec_npoess_0p25_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -35,9 +35,9 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_atmos_gempak_pgrb2_spec_npoess_0p5
+TASK gfs_atmos_gempak_pgrb2_spec_npoess_0p25
 
-PURPOSE: Produces NPOESS 0.5-degree GRIB2 subsets and simulated GOES imagery
+PURPOSE: Produces NPOESS 0.25-degree GRIB2 subsets and simulated GOES imagery
 regridded to 0.25-degree/CONUS grids. Single-instance task looping over
 all hours internally.
 
