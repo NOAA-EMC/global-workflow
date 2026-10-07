@@ -6,11 +6,10 @@ echo "BEGIN: config.ice"
 export min_seaice="1.0e-6"
 export use_cice_alb=".true."
 
-# Location of the CICE6 input template.  link_workflow.sh stages ice_in.IN under
-# ${PARMglobal}/ufs and recreates it on every run, so an experiment that tracks a
-# modified ice_in points at its own copy here instead.  The path is used as given,
-# so a custom template can be named anything.
-export CICE_TEMPLATE="{{ CICE_TEMPLATE | default('${PARMglobal}/ufs/ice_in.IN') }}"
+# Location of the CICE6 input template.  The default points at the copy
+# link_workflow.sh stages under ${PARMglobal}/ufs; see the ice section of
+# yaml/defaults.yaml to override it from an experiment yaml.
+export CICE_TEMPLATE="{{ CICE_TEMPLATE }}"
 
 export MESH_ICE="mesh.mx${ICERES}.nc"
 

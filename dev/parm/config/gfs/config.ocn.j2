@@ -7,12 +7,11 @@ export MESH_OCN="mesh.mx${OCNRES}.nc"
 export DO_OCN_SPPT="NO"  # In MOM_input, this variable is determines OCN_SPPT (OCN_SPPT = True|False)
 export DO_OCN_PERT_EPBL="NO"  # In MOM_input, this variable determines PERT_EPBL (PERT_EPBL = True|False)
 
-# Locations of the MOM6 input templates.  link_workflow.sh stages these under
-# ${PARMglobal}/ufs and recreates them on every run, so an experiment that tracks
-# a modified MOM_input points at its own copy here instead.  Each path is used as
-# given, so a custom template can be named anything.
-export MOM6_INPUT_TEMPLATE="{{ MOM6_INPUT_TEMPLATE | default('${PARMglobal}/ufs/MOM_input_${OCNRES}.IN') }}"
-export MOM6_DATA_TABLE_TEMPLATE="{{ MOM6_DATA_TABLE_TEMPLATE | default('${PARMglobal}/ufs/MOM6_data_table.IN') }}"
+# Locations of the MOM6 input templates.  The defaults point at the copies
+# link_workflow.sh stages under ${PARMglobal}/ufs; see the ocn section of
+# yaml/defaults.yaml to override them from an experiment yaml.
+export MOM6_INPUT_TEMPLATE="{{ MOM6_INPUT_TEMPLATE }}"
+export MOM6_DATA_TABLE_TEMPLATE="{{ MOM6_DATA_TABLE_TEMPLATE }}"
 
 # Templated variables in MOM_input_template
 export MOM6_USE_LI2016="True" # set to False for restart reproducibility

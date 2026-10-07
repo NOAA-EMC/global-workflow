@@ -100,6 +100,9 @@ a different directory as an optional override. Note that using these variables
 leaves the corresponding templates staged in ``${PARMglobal}/ufs`` intact, but
 unused.
 
+Their defaults live in the ``ocn`` and ``ice`` sections of each net's
+``yaml/defaults.yaml``, which is also where you can see the stock paths.
+
 ``MOM6_INPUT_TEMPLATE`` (``config.ocn``)
   Full path to the ``MOM_input`` template. Note that the default follows the
   ``MOM_input_<OCNRES>.IN`` pattern, e.g. ``MOM_input_025.IN``, but the override 
@@ -113,8 +116,8 @@ unused.
 
 Set them in the YAML passed to ``setup_expt.py --yaml``, under the section named
 for the config that owns each one (see below example). That YAML must include the
-defaults with ``!INC`` -- the sections beside ``defaults`` override it, they do
-not add to it, so a file without the include would drop every other setting::
+defaults with ``!INC``; keys beside ``defaults`` are merged over them, so a file
+without the include would start from nothing and drop every other setting::
 
   defaults:
     !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
