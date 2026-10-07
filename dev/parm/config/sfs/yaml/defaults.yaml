@@ -34,17 +34,6 @@ nsst:
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}
-
-# MOM6 and CICE6 input templates.  These point at the copies that
-# link_workflow.sh stages under ${PARMglobal}/ufs.  Override any of them in an
-# experiment yaml to track a modified template outside the workflow, e.g.
-#
-#   ocn:
-#     MOM6_INPUT_TEMPLATE: /path/to/my_experiment/MOM_input_008.IN
-#
-# Each path is used as given, so a custom template can be named anything.  See
-# docs/source/user_guide/configure.rst for additional information regarding the
-# customization of these input files.
 ocn:
   MOM6_INPUT_TEMPLATE: "${PARMglobal}/ufs/MOM_input_${OCNRES}.IN"
   MOM6_DATA_TABLE_TEMPLATE: "${PARMglobal}/ufs/MOM6_data_table.IN"
