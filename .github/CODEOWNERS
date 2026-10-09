@@ -7,8 +7,8 @@
 
 # Specific directory owners
 # dev/
-dev/ci/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
-dev/ctests/ @TerrenceMcGuinness-NOAA @DavidHuber-NOAA
+dev/ci/ @TravisElless-NOAA @DavidHuber-NOAA
+dev/ctests/ @TravisElless-NOAA @DavidHuber-NOAA
 dev/ecf/ @TravisElless-NOAA @DavidHuber-NOAA
 dev/ci/cases/sfsv1 @NeilBarton-NOAA @YangxingZheng-NOAA @XiaqiongZhou-NOAA
 parm/diag @YangxingZheng-NOAA @XiaqiongZhou-NOAA
@@ -282,5 +282,5 @@ versions/build.aws-ec2.ver @WalterKolczynski-NOAA @weihuang-jedi
 versions/run.aws-ec2.ver @WalterKolczynski-NOAA @weihuang-jedi
 
 # Workflows
-.github/workflows @DavidHuber-NOAA @TravisElless-NOAA @TerrenceMcGuinness-NOAA
-.github/scripts @DavidHuber-NOAA @TravisElless-NOAA @TerrenceMcGuinness-NOAA
+.github/workflows @DavidHuber-NOAA @TravisElless-NOAA
+.github/scripts @DavidHuber-NOAA @TravisElless-NOAA
