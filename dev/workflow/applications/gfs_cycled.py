@@ -456,5 +456,8 @@ class GFSCycledAppConfig(AppConfig):
                             task_names[run] += ['atmensanlletkf']
                     else:
                         task_names[run] += ['eobs', 'eupd', 'ecen', 'ediag']
-                    task_names[run] += ['efcs', 'epos', 'esfc_gcycle', 'earc_tars', 'cleanup']
+                    task_names[run] += ['efcs', 'epos', 'esfc_gcycle']
+                    if options['do_archcom']:
+                        task_names[run] += ['earc_tars']
+                    task_names[run] += ['cleanup']
         return task_names

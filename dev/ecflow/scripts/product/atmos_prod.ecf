@@ -1,0 +1,45 @@
+#!/bin/bash
+# shellcheck disable=SC1009,SC1072,SC1073
+%include <head.h>
+%include <envir.h>
+
+set -x
+
+export HOMEglobal=%HOMEglobal%
+export EXPDIR=%EXPDIR%
+export COMROOT=%COMROOT%
+export DATAROOT=%DATAROOT%
+export NET=%NET%
+export PDY=%PDY%
+export cyc=%CYC%
+export machine=URSA
+
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
+status=$?
+if [[ ${status} -ne 0 ]]; then
+  ecflow_client --msg="***JOB ${ECF_NAME} ERROR loading modules***"
+  exit "${status}"
+fi
+
+export job="atmos_products"
+
+# Process the forecast hours assigned to this task via FHR_LIST.
+# When run as a family child (generator .def), FHR_LIST is a
+# comma-separated subset like "0,1,2,3,4".  When run as a single
+# task (static .def), set FHR_LIST to the full range externally.
+export FORECAST_HOUR jobid
+IFS=',' read -ra _fhrs <<< "%FHR_LIST%"
+for fhr in "${_fhrs[@]}"; do
+  fhr3=$(printf '%%03d' "${fhr}")
+  export FORECAST_HOUR="${fhr}"
+  jobid="${job}_f${fhr3}.${SLURM_JOB_ID:-$$}"
+
+  "${HOMEglobal}/dev/jobs/JGLOBAL_ATMOS_PRODUCTS"
+  status=$?
+  if [[ ${status} -ne 0 ]]; then
+    ecflow_client --msg="***JOB ${ECF_NAME} ERROR at f${fhr3}***"
+    exit "${status}"
+  fi
+done
+
+%include <tail.h>
