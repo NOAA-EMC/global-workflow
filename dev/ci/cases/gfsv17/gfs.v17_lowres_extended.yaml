@@ -18,7 +18,6 @@ experiment:
 
 skip_ci_on_hosts:
   - ursa
-  - gaeac5
   - gaeac6
   - orion
   - hercules
