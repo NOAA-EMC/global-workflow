@@ -19,7 +19,6 @@ skip_ci_on_hosts:
   - gaeac5
   - orion
   - hercules
-  - derecho
   - aws-ec2
   - awsepicglobalworkflow
 

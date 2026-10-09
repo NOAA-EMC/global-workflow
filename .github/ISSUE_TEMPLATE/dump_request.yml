@@ -18,7 +18,6 @@ body:
         - Gaea-C5
         - Gaea-C6
         - Orion/Hercules
-        - Derecho
         - AWS
       multiple: true
     validations:

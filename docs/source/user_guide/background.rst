@@ -73,7 +73,7 @@ The `global-workflow GitHub Discussions <https://github.com/NOAA-EMC/global-work
 
 When posting a question, it is recommended that users provide the following information:
 
-* The platform or system being used (e.g., Orion, Hercules, Derecho)
+* The platform or system being used (e.g., Orion, Hercules)
 * The version of the GW being used (e.g., develop, release/public-vx.y.z). (To determine this, users can run git branch, and the name of the branch with an asterisk * in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties.   Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
 * Configuration file contents (e.g., config.yaml contents)
 * Full error message (preferably in text form rather than a screenshot)

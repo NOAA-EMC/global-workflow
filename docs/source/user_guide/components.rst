@@ -95,7 +95,6 @@ Observation data, also known as dump data, is prepared in production and then ar
 * Ursa: ``/scratch3/NCEPDEV/global/role.glopara/dump``
 * Hercules/Orion: ``/work/noaa/rstprod/dump``
 * Gaea C6: ``/gpfs/f6/drsa-precip3/world-shared/role.glopara/dump``
-* Derecho: ``/lustre/desc1/p/nral0032/global/dump_nr`` (non-restricted)
 * AWS S3 Bucket: https://noaa-epic-global-release-pds.s3.amazonaws.com/index.html#dump_nr/ (non-restricted)
    * Mounted in AWS instance to ``/lustre/noaa-epic-global-release-pds``
 
@@ -134,7 +133,7 @@ The GDA also contains special versions of some datasets and experimental data th
 
 .. note::
 
-   The provided dump on Derecho and AWS are both non-restricted, but omit the ``nr`` from the PDY directory.
+   The provided dump on AWS is non-restricted, but omit the ``nr`` from the PDY directory.
 
 ***************
 Data processing

@@ -146,6 +146,5 @@ body:
         - label: Gaea C6
         - label: Ursa
         - label: MSU
-        - label: Derecho
         - label: AWS S3
         - label: HPSS

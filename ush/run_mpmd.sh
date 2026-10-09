@@ -69,21 +69,6 @@ if [[ "${USE_CFP}" != "YES" ]]; then
     exit "${rc}"
 fi
 
-# the Derecho mpiexec implementations does not respect stdout redirection,
-# so make a wrapper script.
-if [[ "${machine}" == "DERECHO" ]]; then
-    wrapper_script="stdout_wrapper.sh"
-    rm -f "${wrapper_script}"
-    cat << 'EOF' > "${wrapper_script}"
-#! /usr/bin/bash
-# Run the rest of the args and redirect stdout and stderr to the
-# file named by the last argument
-${@: 1:$#-1} > ${@: -1} 2>&1
-exit $?
-EOF
-    chmod 755 "${wrapper_script}"
-fi
-
 # Set OMP_NUM_THREADS to 1 to avoid oversubscription when doing MPMD
 export OMP_NUM_THREADS=1
 
@@ -136,13 +121,7 @@ chunk_mpmd() {
             if [[ "${_mpmd_launcher}" == "srun" ]]; then
                 echo "${i} ${line}" >> "${chunk_file}"
             elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-                # The MPMD implemtation is different between WCOSS and Derecho, but both
-                # use mpiexec
-                if [[ "${machine}" == "DERECHO" ]]; then
-                    echo "-n 1 ${wrapper_script} ${line} mpmd.${i}.out" >> "${chunk_file}"
-                else
-                    echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
-                fi
+                echo "${line} > mpmd.${i}.out 2>&1" >> "${chunk_file}"
             fi
             err=$?
             if [[ ${err} -ne 0 ]]; then
@@ -243,17 +222,9 @@ for ((i = 0; i < nm; i += chunk_size)); do
         err=$?
         source "${USHglobal}/set_strict.sh"
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
-        # The MPMD implemtation is different between WCOSS and Derecho, but both
-        # use mpiexec
-        if [[ "${machine}" == "DERECHO" ]]; then
-            # shellcheck disable=SC2086
-            ${launcher:-} ${mpmd_opt:-} "${chunk_file}"
-            err=$?
-        else
-            # shellcheck disable=SC2086
-            ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
-            err=$?
-        fi
+        # shellcheck disable=SC2086
+        ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+        err=$?
     fi
     if [[ ${err} -ne 0 ]]; then
         echo "ERROR: MPMD job failed for ${chunk_file}"

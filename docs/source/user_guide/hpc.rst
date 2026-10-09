@@ -61,8 +61,6 @@ The GW provides capabilities for deterministic and ensemble forecasts, along wit
 +-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
 | Gaea C6         | 1    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |    X    |   X  |
 +-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
-| Derecho         | 1    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |      |
-+-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
 | AWS (native)    | 2    |  X  |   X  |   X   |  X  |  X  |    X    |      X     |      X     |       |     |    X    |         |      |
 +-----------------+------+-----+------+-------+-----+-----+---------+------------+------------+-------+-----+---------+---------+------+
 | Orion           | 2    |  X  |   X  |       |  X  |  X  |    X    |            |      X     |       |     |    X    |    X    |  \*  |
@@ -87,7 +85,6 @@ HPC Helpdesks
 * HPSS: rdhpcs.hpss.help@noaa.gov
 * Gaea: oar.gfdl.help@noaa.gov
 * NOAA Cloud: rdhpcs.cloud.help@noaa.gov
-* Derecho: https://rchelp.ucar.edu
 
 .. _restricted_data:
 
@@ -125,4 +122,4 @@ Contact your PI and request access.
 
 .. note::
 
-   Data that has been staged on Derecho or in an AWS S3 data bucket has already had restricted data removed.
+   Data that has been staged on an AWS S3 data bucket has already had restricted data removed.
