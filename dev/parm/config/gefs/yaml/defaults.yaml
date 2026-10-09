@@ -33,3 +33,8 @@ nsst:
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}
+ocn:
+  MOM6_INPUT_TEMPLATE: "${PARMglobal}/ufs/MOM_input_${OCNRES}.IN"
+  MOM6_DATA_TABLE_TEMPLATE: "${PARMglobal}/ufs/MOM6_data_table.IN"
+ice:
+  CICE_TEMPLATE: "${PARMglobal}/ufs/ice_in.IN"
