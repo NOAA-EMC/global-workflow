@@ -17,7 +17,7 @@ echo "BEGIN: config.aero"
 # Base directory for aerosol input data files (e.g., initial conditions, climatologies).
 # This path is mounted or staged in the workflow and referenced by the model for reading aerosol fields.
 #---------------------------------------------------------------------------------------------------
-export AERO_INPUTS_DIR="${HOMEglobal}/fix/chem/Emission_data"
+export AERO_INPUTS_DIR="${FIXglobal}/chem/Emission_data"
 
 #-------------------------------------------------
 # Diag Table and Field Table for GOCART aerosols
@@ -81,7 +81,7 @@ export AERO_EMIS_FIRE_HIST=1 # Use historical fire emissions | 1 = true 0 = fals
 
 #---------------------------------------------------------------------------------------------------
 export FIRE_EMIS_NRT_DIR="" #TODO: set to DCOM for WCOSS2 "${DCOMROOT}/YYYYMMDD/firewx" # Directory containing NRT fire emissions
-export FIRE_EMIS_DIR="${HOMEglobal}/fix/chem/Emission_data/fires_data/GBBEPx/v4" # Directory containing historical fire emissions
+export FIRE_EMIS_DIR="${FIXglobal}/chem/Emission_data/fires_data/GBBEPx/v4" # Directory containing historical fire emissions
 
 
 #===============================================================================
@@ -112,7 +112,7 @@ export NEXUS_CONFIG_DIR="${PARMglobal}/chem/nexus/${NEXUS_CONFIG}" # Directory c
 # Specific path for GCAFS external data on this filesystem.
 # Contains emission datasets (e.g., CEDS2019/2024, HTAPv2, CAMS) processed by NEXUS.
 #---------------------------------------------------------------------------------------------------
-export NEXUS_INPUT_DIR="${HOMEglobal}/fix/chem/Emission_data/nexus"
+export NEXUS_INPUT_DIR="${FIXglobal}/chem/Emission_data/nexus"
 
 
 

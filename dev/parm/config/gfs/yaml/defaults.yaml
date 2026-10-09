@@ -31,6 +31,7 @@ base:
   NMEM_ENS_GFS: 30
   NMEM_ENS_GFS_OFFSET: 20
   MOM6_INTERP_ICS: "NO"
+  FIXglobal: "${HOMEglobal}/fix"
 
 atmanl:
   STATICB_TYPE: "gsibec"
