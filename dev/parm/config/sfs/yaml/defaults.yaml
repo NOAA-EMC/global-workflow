@@ -22,6 +22,7 @@ base:
   USE_ATM_ENS_PERTURB_FILES: "YES"
   DO_TEST_MODE: "NO"
   MOM6_INTERP_ICS: "NO"
+  FIXglobal: "${HOMEglobal}/fix"
   DOIAU_COLDSTART: "NO"
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
@@ -34,3 +35,8 @@ nsst:
 # config.aero has just a system-specific path to add.
 # This is handled by the setup_expt.py, but it has to be told to write to it.
 aero: {}
+ocn:
+  MOM6_INPUT_TEMPLATE: "${PARMglobal}/ufs/MOM_input_${OCNRES}.IN"
+  MOM6_DATA_TABLE_TEMPLATE: "${PARMglobal}/ufs/MOM6_data_table.IN"
+ice:
+  CICE_TEMPLATE: "${PARMglobal}/ufs/ice_in.IN"

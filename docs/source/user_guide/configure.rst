@@ -88,3 +88,86 @@ The GW configs contain switches that change how the system runs. Many defaults a
 |                  |                                  |               |             | If NO, static versions located in the GSI FIX     |
 |                  |                                  |               |             | directory will be used.                           |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Custom MOM6 and CICE6 input template paths
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+During workflow installation ``link_workflow.sh`` stages the MOM6 and CICE6
+input templates from ``sorc/ufs_model.fd/tests/parm`` into ``${PARMglobal}/ufs``.
+The variables described in this section let an experiment take those templates from
+a different directory as an optional override. Note that using these variables
+leaves the corresponding templates staged in ``${PARMglobal}/ufs`` intact, but
+unused.
+
+Their defaults live in the ``ocn`` and ``ice`` sections of each net's
+``yaml/defaults.yaml``, which is also where you can see the stock paths.
+
+``MOM6_INPUT_TEMPLATE`` (``config.ocn``)
+  Full path to the ``MOM_input`` template. Note that the default follows the
+  ``MOM_input_<OCNRES>.IN`` pattern, e.g. ``MOM_input_025.IN``, but the override 
+  file may have any name.
+
+``MOM6_DATA_TABLE_TEMPLATE`` (``config.ocn``)
+  Full path to the ``data_table`` template.
+
+``CICE_TEMPLATE`` (``config.ice``)
+  Full path to the ``ice_in`` template.
+
+Set them in the YAML passed to ``setup_expt.py --yaml``, under the section named
+for the config that owns each one (see below example). That YAML must include the
+defaults with ``!INC``; keys beside ``defaults`` are merged over them, so a file
+without the include would start from nothing and drop every other setting::
+
+  defaults:
+    !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
+  ocn:
+    MOM6_INPUT_TEMPLATE: /path/to/my_experiment/configs/MOM_input_008.IN
+  ice:
+    CICE_TEMPLATE: /path/to/my_experiment/configs/ice_in.IN
+
+See ``dev/ci/cases/yamls/gfs_defaults_ci.yaml`` for a working example of that
+layout.
+
+Because the paths live in the experiment YAML rather than in an edited ``$EXPDIR``
+config, they survive re-running ``setup_expt.py`` and can be version controlled
+alongside the templates they point at.
+
+A note on atparse tokens
+""""""""""""""""""""""""
+
+These files are templates, not finished input files. They are rendered with
+``atparse``, which substitutes every ``@[VARIABLE]`` token from the shell
+environment.
+
+We suggest model developers start from a copy of the base template in ``${PARMglobal}/ufs``
+and keep its tokens. They are how the workflow injects per-cycle and per-job settings,
+and a token deleted from a custom template fails silently: the model simply falls
+back to its own compiled default. A particularly consequential case is the tokens whose
+values differ by ``RUN``. As an example (though not the only example), ``@[CICE_HIST_AVG]``
+sets ``hist_avg`` in CICE's ``&setup_nml``, which decides whether each history stream
+is averaged over ``histfreq_n`` or written as an instantaneous snapshot.
+``parsing_namelists_cice.sh`` sets it to ``.false.`` for ``gdas`` because data
+assimilation uses an instantaneous history, and to ``.true.`` for the long ``gfs``
+forecast.
+Dropping that token gives a DA cycle time-averaged sea ice history with no error message.
+
+A token whose variable is *undefined* behaves differently: the forecast job runs
+under ``set -u``, so ``atparse`` aborts. Misspelling a token name is an error;
+replacing a token with a hard-coded value is not, even when it should be.
+
+Additional MOM6 and CICE6 input overrides
+"""""""""""""""""""""""""""""""""""""""""
+
+``input.nml`` and ``diag_table`` are rendered into the run directory from
+``${PARMglobal}/ufs/global_control.nml.IN`` and ``${PARMglobal}/ufs/fv3/diag_table``
+respectively, and each hold both FV3 and MOM6 content, because FMS opens only one
+of each. Therefore, no MOM6-specific ``MOM6/input.nml`` exists. MOM6's share of
+``input.nml`` is the ``&MOM_input_nml`` group, and its share of ``diag_table`` is
+the ``"ocean_model"`` and ``"ocean_model_z"`` lines.
+
+``MOM_layout``, ``MOM_override`` and ``MOM_channels`` are staged from
+``${FIXglobal}/mom6/${OCNRES}``. Overriding this default location is possible via the fix file overrides, not by
+the variables above. Also note that, by default ``MOM_layout`` is not read by MOM6:
+it opens only the files listed in ``parameter_filename`` in ``&MOM_input_nml``, which includes only
+``MOM_input`` and ``MOM_override`` by default.
