@@ -59,6 +59,7 @@ parm/gdas/io
 parm/gdas/ioda
 parm/gdas/marine
 parm/gdas/snow
+parm/gdas/soil
 parm/gdas/soca
 parm/gdas/spoc
 parm/gdas/stat
