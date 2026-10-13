@@ -403,10 +403,11 @@ function select_all_yamls() {
         done
 
         if [[ ${_yaml_count} -eq 0 ]]; then
-            read -r -d '' _message << EOM
-            "No YAMLs or ${_net^^} were found in the directory (${_yaml_dir})!"
-            "Please check the directory/YAMLs and try again"
-EOM
+            _message=$(cat << EOF
+                "No YAMLs with net=${_net} were found in the directory (${_yaml_dir})!"
+                "Please check the directory/YAMLs and try again"
+EOF
+            )
             echo "${_message}"
             if [[ "${_set_email}" == true ]]; then
                 send_email "${_message}"
@@ -482,13 +483,13 @@ if [[ "${_update_submods}" == "true" ]]; then
         ${_git_cmd}
     else
         if ! ${_git_cmd} 2> stderr 1> stdout; then
-            cat stdout stderr
-            read -r -d '' _message << EOM
-The git command (${_git_cmd}) failed with a non-zero status
-Messages from git:
+            git_error_message=$(cat stdout stderr)
+            _message=$(cat << EOM
+                "The git command (${_git_cmd}) failed with a non-zero status"
+                "Messages from git:"
+                "${git_error_message}"
 EOM
-            _newline=$'\n'
-            _message="${_message}${_newline}$(cat stdout stderr)"
+            )
             if [[ "${_set_email}" == true ]]; then
                 send_email "${_message}"
             fi
@@ -620,10 +621,11 @@ for i in "${!_yaml_list[@]}"; do
         echo "The YAML file ${_yaml_file} does not exist!"
         echo "Please check the input yaml list and directory."
         if [[ "${_set_email}" == true ]]; then
-            read -r -d '' _message << EOM
-         generate_workflows.sh failed to find one of the specified YAMLs (${_yaml_file})
-         in the specified YAML directory (${_yaml_dir}).
+            _message=$(cat << EOM
+                "generate_workflows.sh failed to find one of the specified YAMLs (${_yaml_file})"
+                "in the specified YAML directory (${_yaml_dir})."
 EOM
+            )
             send_email "${_message}"
         fi
         exit 10
@@ -691,8 +693,11 @@ for _case in "${_yaml_list[@]}"; do
     else
         if ! pslot=${_pslot} RUNTESTS=${_runtests} ${_create_exp_cmd} 2> stderr 1> stdout; then
             _output=$(cat stdout stderr)
-            _message="The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
-            _message="${_message}"$'\n'"${_output}"
+            _message=$(cat << EOF
+                "The create_experiment command (${_create_exp_cmd}) failed with a non-zero status.  Output:"
+                "${_output}"
+EOF
+            )
             if [[ "${_set_email}" == true ]]; then
                 send_email "${_message}"
             fi
@@ -898,13 +903,23 @@ if [[ "${_update_cron}" == "true" ]]; then
     ${_crontab_cmd} final.cron
 else
     mail_warning
-    _message="Add the following to your crontab or scrontab to start running:"
     _cron_tests=$(cat tests.cron)
-    _message="${_message}"$'\n'"${_cron_tests}"
-    echo "${_message}"
+    _message=$(cat << EOF
+        "Add the following to your crontab or scrontab to start running:"
+        "${_cron_tests}"
+EOF
+    )
     echo
     if [[ "${_set_email}" == true ]]; then
-        final_message="${final_message:-}"$'\n'"${_message}"
+        final_message=$(cat << EOF
+            "${final_message:-}"
+            "${_message}"
+EOF
+        )
+        echo "${_message}"
+        send_email "${final_message}"
+    else
+        echo "${_message}"
     fi
 fi
 
@@ -919,6 +934,10 @@ fi
 
 echo "Success!!"
 if [[ "${_set_email}" == true && "${_debug}" == "true" ]]; then
-    final_message=$'Success!\n'"${final_message:-}"
+    final_message=$(cat << EOF
+        "Success!"
+        "${final_message:-}"
+EOF
+    )
     _subject="generate_workflow.sh completed successfully" send_email "${final_message}"
 fi
