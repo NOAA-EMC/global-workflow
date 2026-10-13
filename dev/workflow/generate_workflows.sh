@@ -56,6 +56,11 @@ function _usage() {
        \$HOMEglobal/dev/ci/platform/config.\$machine
        will be used.
 
+    -L List mode. Resolve the final, host-filtered list of case names
+       (honoring -y/-G/-E/-S/-C) and print it to stdout, without building,
+       linking, or creating any experiments. RUNTESTS is not required
+       when this option is used.
+
     -I "/path/to/base_ic"  Override BASE_IC for all cases.
        If this is not set, BASE_IC is read from the hosts YAML
        (\$HOMEglobal/dev/workflow/hosts/\$machine.yaml).
@@ -106,6 +111,7 @@ _run_all_sfs=false
 _run_all_gcafs=false
 _hpc_account=""
 _set_account=false
+_list_only=false
 _base_ic=""
 _set_base_ic=false
 _update_cron=false
@@ -172,6 +178,7 @@ function _parse_option() {
 
         # HPC account and usage
         A) _set_account=true && _hpc_account="${OPTARG}" ;;
+        L) _list_only=true ;;
         h) _usage && exit 0 ;;
 
         :)
@@ -189,7 +196,7 @@ function _parse_option() {
 
 function _parse_args() {
     while [[ $# -gt 0 && "$1" != "--" ]]; do
-        while getopts ":H:bBDuy:Y:GESCA:I:ce:t:vVdh" option; do
+        while getopts ":H:bBDuy:Y:GESCA:I:ce:t:vVdhL" option; do
             _parse_option
         done
 
@@ -269,7 +276,7 @@ function delete_dir() {
 # Validate Required Inputs
 # --------------------------------------------------------------------------- #
 
-if [[ -z "${_runtests}" ]]; then
+if [[ "${_list_only}" == "false" && -z "${_runtests}" ]]; then
     echo "Missing run directory (RUNTESTS) argument/environment variable."
     sleep 2
     _usage
@@ -285,27 +292,29 @@ fi
 # Prepare RUNTESTS Directory
 # --------------------------------------------------------------------------- #
 
-# Create the RUNTESTS directory
-# Start by getting the full path
-_runtests="$(realpath "${_runtests}")"
-if [[ "${_verbose}" == "true" ]]; then
-    printf "Creating RUNTESTS in %s\n\n" "${_runtests}"
-fi
-if [[ ! -d "${_runtests}" ]]; then
-    set +e
-    if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
-        echo "Unable to create RUNTESTS directory: ${_runtests}"
-        echo "Rerun with -h for usage examples."
-        exit 4
+if [[ "${_list_only}" == "false" ]]; then
+    # Create the RUNTESTS directory
+    # Start by getting the full path
+    _runtests="$(realpath "${_runtests}")"
+    if [[ "${_verbose}" == "true" ]]; then
+        printf "Creating RUNTESTS in %s\n\n" "${_runtests}"
     fi
-    set -e
-else
-    echo "The RUNTESTS directory ${_runtests} already exists."
-    if [[ "${_auto_del}" == "true" ]]; then
-        echo "Removing."
-        rm -rf "${_runtests}"
+    if [[ ! -d "${_runtests}" ]]; then
+        set +e
+        if ! mkdir -p "${_runtests}" "${_verbose_flag}"; then
+            echo "Unable to create RUNTESTS directory: ${_runtests}"
+            echo "Rerun with -h for usage examples."
+            exit 4
+        fi
+        set -e
     else
-        delete_dir "${_runtests}"
+        echo "The RUNTESTS directory ${_runtests} already exists."
+        if [[ "${_auto_del}" == "true" ]]; then
+            echo "Removing."
+            rm -rf "${_runtests}"
+        else
+            delete_dir "${_runtests}"
+        fi
     fi
 fi
 
@@ -495,92 +504,106 @@ fi
 # Load Workflow Environment
 # --------------------------------------------------------------------------- #
 
-# Loading modules sometimes raises unassigned errors, so disable checks
-set +u
-if [[ "${_verbose}" == "true" ]]; then
-    printf "Loading modules\n\n"
+if [[ "${_list_only}" == "true" ]]; then
+    # List mode only needs to know which machine we're on; avoid the cost of
+    # loading the full module environment via gw_setup.sh.
+    set +u
+    # shellcheck disable=SC1091
+    source "${HOMEglobal}/ush/detect_machine.sh"
+    set -u
+    machine=${MACHINE_ID}
+else
+    # Loading modules sometimes raises unassigned errors, so disable checks
+    set +u
+    if [[ "${_verbose}" == "true" ]]; then
+        printf "Loading modules\n\n"
+    fi
+    if [[ "${_debug}" == "true" ]]; then
+        set +x
+    fi
+    if ! source "${HOMEglobal}/dev/ush/gw_setup.sh" >&stdout; then
+        cat stdout
+        echo "Failed to source ${HOMEglobal}/dev/ush/gw_setup.sh!"
+        exit 7
+    fi
+    if [[ "${_verbose}" == "true" ]]; then
+        cat stdout
+    fi
+    rm -f stdout
+    if [[ "${_debug}" == "true" ]]; then
+        set -x
+    fi
+    set -u
+    machine=${MACHINE_ID}
 fi
-if [[ "${_debug}" == "true" ]]; then
-    set +x
-fi
-if ! source "${HOMEglobal}/dev/ush/gw_setup.sh" >&stdout; then
-    cat stdout
-    echo "Failed to source ${HOMEglobal}/dev/ush/gw_setup.sh!"
-    exit 7
-fi
-if [[ "${_verbose}" == "true" ]]; then
-    cat stdout
-fi
-rm -f stdout
-if [[ "${_debug}" == "true" ]]; then
-    set -x
-fi
-set -u
-machine=${MACHINE_ID}
 
 # If _yaml_dir is not set, set it to $HOMEglobal/dev/ci/cases/pr
 if [[ -z ${_yaml_dir} ]]; then
     _yaml_dir="${HOMEglobal}/dev/ci/cases/pr"
 fi
 
-# --------------------------------------------------------------------------- #
-# Resolve HPC Account
-# --------------------------------------------------------------------------- #
+if [[ "${_list_only}" == "false" ]]; then
 
-# Update the account: -A flag > existing env var > platform config default
-if [[ "${_set_account}" == true ]]; then
-    export HPC_ACCOUNT="${_hpc_account}"
-    if [[ "${_verbose}" == true ]]; then
-        printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
-    fi
-elif [[ -z "${HPC_ACCOUNT:-}" ]]; then
-    platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
-    if [[ -f "${platform_config}" ]]; then
-        _platform_account=$(sed -n "s/^export HPC_ACCOUNT=\${HPC_ACCOUNT:-\([^}]*\)}.*/\1/p" "${platform_config}")
-        export HPC_ACCOUNT="${_platform_account}"
+    # --------------------------------------------------------------------------- #
+    # Resolve HPC Account
+    # --------------------------------------------------------------------------- #
+
+    # Update the account: -A flag > existing env var > platform config default
+    if [[ "${_set_account}" == true ]]; then
+        export HPC_ACCOUNT="${_hpc_account}"
         if [[ "${_verbose}" == true ]]; then
-            printf "Setting HPC account to %s from platform config\n\n" "${HPC_ACCOUNT}"
+            printf "Setting HPC account to %s\n\n" "${HPC_ACCOUNT}"
         fi
-    else
-        echo "ERROR Unknown HPC account! Please use the -A option to specify."
-        exit 11
-    fi
-fi
-
-# --------------------------------------------------------------------------- #
-# Build and Link Workflow
-# --------------------------------------------------------------------------- #
-
-# Build the system if requested
-if [[ "${_build}" == "true" ]]; then
-    printf "Building via build_all.sh %s\n\n" "${_build_flags}"
-    # Let the output of build_all.sh go to stdout regardless of verbose options
-    if [[ "${_compute_build}" == true ]]; then
-        if [[ -z "${HPC_ACCOUNT:-}" ]]; then
-            echo "ERROR Unknown HPC account!  Please use the -A option to specify."
+    elif [[ -z "${HPC_ACCOUNT:-}" ]]; then
+        platform_config="${HOMEglobal}/dev/ci/platforms/config.${machine}"
+        if [[ -f "${platform_config}" ]]; then
+            _platform_account=$(sed -n "s/^export HPC_ACCOUNT=\${HPC_ACCOUNT:-\([^}]*\)}.*/\1/p" "${platform_config}")
+            export HPC_ACCOUNT="${_platform_account}"
+            if [[ "${_verbose}" == true ]]; then
+                printf "Setting HPC account to %s from platform config\n\n" "${HPC_ACCOUNT}"
+            fi
+        else
+            echo "ERROR Unknown HPC account! Please use the -A option to specify."
             exit 11
         fi
-        _compute_build_flag="-c -A ${HPC_ACCOUNT}"
     fi
-    #shellcheck disable=SC2086,SC2248
-    ${HOMEglobal}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
-fi
 
-# Link the workflow silently unless there's an error
-if [[ "${_verbose}" == true ]]; then
-    printf "Linking the workflow\n\n"
-fi
-if ! "${HOMEglobal}/sorc/link_workflow.sh" >&stdout; then
-    cat stdout
-    echo "link_workflow.sh failed!"
-    if [[ "${_set_email}" == true ]]; then
-        _stdout=$(cat stdout)
-        send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+    # --------------------------------------------------------------------------- #
+    # Build and Link Workflow
+    # --------------------------------------------------------------------------- #
+
+    # Build the system if requested
+    if [[ "${_build}" == "true" ]]; then
+        printf "Building via build_all.sh %s\n\n" "${_build_flags}"
+        # Let the output of build_all.sh go to stdout regardless of verbose options
+        if [[ "${_compute_build}" == true ]]; then
+            if [[ -z "${HPC_ACCOUNT:-}" ]]; then
+                echo "ERROR Unknown HPC account!  Please use the -A option to specify."
+                exit 11
+            fi
+            _compute_build_flag="-c -A ${HPC_ACCOUNT}"
+        fi
+        #shellcheck disable=SC2086,SC2248
+        ${HOMEglobal}/sorc/build_all.sh ${_compute_build_flag:-} ${_verbose_flag} ${_build_flags}
+    fi
+
+    # Link the workflow silently unless there's an error
+    if [[ "${_verbose}" == true ]]; then
+        printf "Linking the workflow\n\n"
+    fi
+    if ! "${HOMEglobal}/sorc/link_workflow.sh" >&stdout; then
+        cat stdout
+        echo "link_workflow.sh failed!"
+        if [[ "${_set_email}" == true ]]; then
+            _stdout=$(cat stdout)
+            send_email "link_workflow.sh failed with the message"$'\n'"${_stdout}"
+        fi
+        rm -f stdout
+        exit 9
     fi
     rm -f stdout
-    exit 9
+
 fi
-rm -f stdout
 
 # --------------------------------------------------------------------------- #
 # Validate YAML Inputs For This Host
@@ -624,6 +647,15 @@ EOM
         fi
     done
 done
+
+# In list mode, print the final host-filtered case list and exit before doing
+# anything else (BASE_IC override, experiment creation, cron/scron setup).
+if [[ "${_list_only}" == "true" ]]; then
+    for _case in "${_yaml_list[@]}"; do
+        echo "${_case}"
+    done
+    exit 0
+fi
 
 # --------------------------------------------------------------------------- #
 # Apply BASE_IC Override
