@@ -243,8 +243,6 @@ Available low-resolution cases (in the ``dev/ci/cases/pr`` directory):
 +==========================+=================+============+============+============+============+============+============+
 | C48_ATM                  | gfs             |     X      |     X      |     X      |     X      |     X      |     X      |
 +--------------------------+-----------------+------------+------------+------------+------------+------------+------------+
-| C48_ATM_ecflow           | gfs             | Only run in special circumstances                                           |
-+--------------------------+-----------------+------------+------------+------------+------------+------------+------------+
 | C48_S2SW                 | gfs             |  extended  |     X      |     X      |     X      |     X      |     X      |
 +--------------------------+-----------------+------------+------------+------------+------------+------------+------------+
 | C48_S2SWA_gefs           | gefs            |     X      |     X      |     X      |     X      |     X      |     X      |
@@ -288,3 +286,7 @@ Instead of specifying tests with ``-y``, you can also instead run all tests in a
 -S  Run all SFS cases
 
 Specifying ``-GECS`` would run all tests valid for the current system.
+
+ecFlow cases (e.g. ``C48_ATM_ecflow``) are kept in the ``dev/ci/cases/ecflow_pr`` directory so that they
+are not picked up by CI or by the default ``generate_workflows.sh`` runs. To generate one, point the script at that directory
+with ``-Y``, for example ``./generate_workflows.sh -y C48_ATM_ecflow -Y ${HOMEglobal}/dev/ci/cases/ecflow_pr``.
