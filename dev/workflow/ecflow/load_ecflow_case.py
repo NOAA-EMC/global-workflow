@@ -20,7 +20,7 @@ Prerequisites
 3. Environment sourced with ECF_HOST, ECF_PORT, ECF_HOME, HOMEglobal::
 
        python3 dev/workflow/ecflow/load_ecflow_case.py \\
-           --yaml dev/ci/cases/pr/<CASE>.yaml
+           --yaml dev/ci/cases/pr/<CASE>.yaml  (or dev/ci/cases/ecflow_pr/<CASE>.yaml)
 """
 
 import argparse
