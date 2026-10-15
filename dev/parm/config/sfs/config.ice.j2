@@ -6,6 +6,13 @@ echo "BEGIN: config.ice"
 export min_seaice="1.0e-6"
 export use_cice_alb=".true."
 
+# Location of the CICE6 input template.  The default is set in the ice section of
+# yaml/defaults.yaml and points at the copy link_workflow.sh stages under
+# ${PARMglobal}/ufs.  See docs/source/user_guide/configure.rst for how to
+# override it from an experiment yaml and for what a custom template must
+# preserve.
+export CICE_TEMPLATE="{{ CICE_TEMPLATE }}"
+
 export MESH_ICE="mesh.mx${ICERES}.nc"
 
 export CICE_GRID="grid_cice_NEMS_mx${ICERES}.nc"

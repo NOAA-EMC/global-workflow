@@ -71,7 +71,7 @@ MOM6_namelists() {
     fi
     local MOM6_HFREEZE=${MOM6_HFREEZE:-20.0}
     # Ensure the template exists
-    local template=${MOM6_INPUT_TEMPLATE:-"${PARMglobal}/ufs/MOM_input_${OCNRES}.IN"}
+    local template="${MOM6_INPUT_TEMPLATE}"
     if [[ ! -f "${template}" ]]; then
         echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
         exit 1
@@ -88,7 +88,7 @@ MOM6_namelists() {
     local MOM6_FRUNOFF=${FRUNOFF}
 
     # Ensure the template exists
-    local template=${MOM6_DATA_TABLE_TEMPLATE:-"${PARMglobal}/ufs/MOM6_data_table.IN"}
+    local template="${MOM6_DATA_TABLE_TEMPLATE}"
     if [[ ! -f "${template}" ]]; then
         echo "FATAL ERROR: template '${template}' does not exist, ABORT!"
         exit 1
