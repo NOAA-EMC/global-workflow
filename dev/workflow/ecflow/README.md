@@ -92,26 +92,11 @@ Then run the case from any directory; there is no `HOMEglobal`,
 You normally do not need to give the loader a host or port. It finds your
 server on its own.
 
-The server is started on the dedicated ecFlow node `uecflow01`. From a login
-node, log in to that node first and run the start command there:
-
-```bash
-ssh uecflow01
-module load ecflow
-export ECF_PORT=$(( $(id -u) + 1500 ))   # a port unique to your user
-export ECF_HOME=${HOME}/ecflow           # the server directory
-mkdir -p "${ECF_HOME}"
-ecflow_start.sh -p ${ECF_PORT} -d ${ECF_HOME}
-exit                                     # the server keeps running
-```
-
-`-p` is the port and `-d` is the server directory. The start command writes a
-log file named `<host>.<port>.ecf.log` in the `-d` directory. The host and
-port are part of the file name, for example `~/ecflow/<host>.<port>.ecf.log`.
-See [section 2](#2-ecflow-server) for checking, restarting and stopping the
-server.
-
-The loader reads that log file to find the server.
+The loader finds your server from the `<host>.<port>.ecf.log` file that
+`ecflow_start.sh` writes in the server directory (its `-d` option). The host
+and port are part of the file name, for example
+`~/ecflow/<host>.<port>.ecf.log`. If you have not started a server yet, see
+[section 2](#2-ecflow-server).
 
 The loader looks for the server in this order:
 
@@ -192,7 +177,8 @@ the loader stops with the error.
 
 ### Start the server (first time)
 
-The ecFlow server must run on the dedicated node `uecflow01`.
+The ecFlow server must run on the dedicated node `uecflow01`. From a login
+node, log in to that node first and run the start command there:
 
 ```bash
 # 1. SSH into the ecFlow node
@@ -217,9 +203,10 @@ exit
 ```
 
 The `export` lines above only affect that ssh session on `uecflow01`, not
-your login shell. Your port is always `$(id -u) + 1500` — deterministic
-for your user, and it is also in the `<host>.<port>.ecf.log` file name, so
-you never need to remember it.
+your login shell. In `ecflow_start.sh`, `-p` is the port and `-d` is the
+server directory, where the `<host>.<port>.ecf.log` file is written. Your port
+is always `$(id -u) + 1500` -- deterministic for your user, and it is also in
+the `<host>.<port>.ecf.log` file name, so you never need to remember it.
 
 ### Restart a stopped server
 
