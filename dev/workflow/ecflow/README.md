@@ -273,12 +273,19 @@ cd <path to your global-workflow clone>
 # Quick start (all defaults)
 python3 dev/workflow/ecflow/run_ecflow_case.py
 
-# Or with custom paths
+# Or with every option (all are optional; see "CLI options" in section 3)
 python3 dev/workflow/ecflow/run_ecflow_case.py \
+    --yaml dev/ci/cases/ecflow_pr/C48_ATM_ecflow.yaml \
     --pslot my_C48_test \
+    --suite-name my_C48_test \
     --comroot /scratch4/NCEPDEV/stmp/${USER}/COMROOT \
     --expdir /scratch3/NCEPDEV/global/${USER}/EXPDIR \
-    --stmp /scratch4/NCEPDEV/stmp/${USER}
+    --stmp /scratch4/NCEPDEV/stmp/${USER} \
+    --ecf-home ${HOME}/ecflow \
+    --ecf-host uecflow01 \
+    --ecf-port 22885 \
+    --start-server \
+    --overwrite
 ```
 
 Answer `y` to the cleanup and delete prompts. The suite starts
@@ -366,15 +373,27 @@ This will:
 The suite is loaded but **not started**. The script prints the
 `ecflow_client --begin` command to run when you are ready.
 
-### With custom paths
+### With every option
 
 ```bash
 python3 dev/workflow/ecflow/run_ecflow_case.py \
+    --yaml dev/ci/cases/ecflow_pr/C48_ATM_ecflow.yaml \
     --pslot my_C48_test \
+    --suite-name my_C48_test \
     --comroot /scratch4/NCEPDEV/stmp/${USER}/COMROOT \
     --expdir /scratch3/NCEPDEV/global/${USER}/EXPDIR \
-    --stmp /scratch4/NCEPDEV/stmp/${USER}
+    --stmp /scratch4/NCEPDEV/stmp/${USER} \
+    --ecf-home ${HOME}/ecflow \
+    --ecf-host uecflow01 \
+    --ecf-port 22885 \
+    --start-server \
+    --overwrite
 ```
+
+Every option is optional. `--ecf-host`, `--ecf-port` and `--ecf-home` only
+need to be given to override the server found in the logs (use your own
+port; it is the number in the `<host>.<port>.ecf.log` file name), and
+`--start-server` only acts when the server does not answer.
 
 ### CLI options
 
