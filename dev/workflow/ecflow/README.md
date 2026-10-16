@@ -287,7 +287,7 @@ python3 dev/workflow/ecflow/run_ecflow_case.py
 
 # Or with every option (all are optional; see "CLI options" in section 3)
 python3 dev/workflow/ecflow/run_ecflow_case.py \
-    --yaml dev/ci/cases/ecflow_pr/C48_ATM_ecflow.yaml \
+    --yaml dev/ci/cases/ecflowpr/C48_ATM_ecflow.yaml \
     --pslot my_C48_test \
     --suite-name my_C48_test \
     --comroot /scratch4/NCEPDEV/stmp/${USER}/COMROOT \
@@ -389,7 +389,7 @@ The suite is loaded but **not started**. The script prints the
 
 ```bash
 python3 dev/workflow/ecflow/run_ecflow_case.py \
-    --yaml dev/ci/cases/ecflow_pr/C48_ATM_ecflow.yaml \
+    --yaml dev/ci/cases/ecflowpr/C48_ATM_ecflow.yaml \
     --pslot my_C48_test \
     --suite-name my_C48_test \
     --comroot /scratch4/NCEPDEV/stmp/${USER}/COMROOT \

@@ -26,7 +26,7 @@ Prerequisites
    ``ECF_HOSTFILE`` is ignored for ecflow_client calls only::
 
        python3 dev/workflow/ecflow/load_ecflow_case.py \\
-           --yaml dev/ci/cases/pr/<CASE>.yaml  (or dev/ci/cases/ecflow_pr/<CASE>.yaml)
+           --yaml dev/ci/cases/pr/<CASE>.yaml  (or dev/ci/cases/ecflowpr/<CASE>.yaml)
 """
 
 import argparse

@@ -287,6 +287,6 @@ Instead of specifying tests with ``-y``, you can also instead run all tests in a
 
 Specifying ``-GECS`` would run all tests valid for the current system.
 
-ecFlow cases (e.g. ``C48_ATM_ecflow``) are kept in the ``dev/ci/cases/ecflow_pr`` directory so that they
+ecFlow cases (e.g. ``C48_ATM_ecflow``) are kept in the ``dev/ci/cases/ecflowpr`` directory so that they
 are not picked up by CI or by the default ``generate_workflows.sh`` runs. To generate one, point the script at that directory
-with ``-Y``, for example ``./generate_workflows.sh -y C48_ATM_ecflow -Y ${HOMEglobal}/dev/ci/cases/ecflow_pr``.
+with ``-Y``, for example ``./generate_workflows.sh -y C48_ATM_ecflow -Y ${HOMEglobal}/dev/ci/cases/ecflowpr``.
