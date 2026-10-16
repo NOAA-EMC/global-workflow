@@ -15,9 +15,15 @@ default YAML paths and delegate to this module's ``run()`` function.
 
 Prerequisites
 -------------
-1. ecFlow server running (ECF_HOST / ECF_PORT set).
+1. ecFlow server running.
 2. global-workflow built and linked.
-3. Environment sourced with ECF_HOST, ECF_PORT, ECF_HOME, HOMEglobal::
+3. Nothing needs to be exported in the login shell.  The server is found
+   automatically: the ``<host>.<port>.ecf.log`` files that ecflow_start.sh
+   leaves in the server directory (``--ecf-home``, default: ``ecflow`` next
+   to the repo) name the host and port, and the newest one that answers a
+   ping is used.  ``--ecf-host`` / ``--ecf-port`` (or ``$ECF_HOST`` /
+   ``$ECF_PORT``) override the search.  The ecflow module is loaded and
+   ``ECF_HOSTFILE`` is ignored for ecflow_client calls only::
 
        python3 dev/workflow/ecflow/load_ecflow_case.py \\
            --yaml dev/ci/cases/pr/<CASE>.yaml  (or dev/ci/cases/ecflow_pr/<CASE>.yaml)
@@ -25,9 +31,12 @@ Prerequisites
 
 import argparse
 import os
+import re
+import shlex
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 # Resolve repo root from this script's location (dev/workflow/ecflow/)
@@ -44,17 +53,185 @@ import setup_workflow  # noqa: E402
 from hosts import Host  # noqa: E402
 from wxflow import AttrDict, parse_j2yaml  # noqa: E402
 
-REQUIRED_ENV = ("ECF_HOST", "ECF_PORT", "ECF_HOME", "HOMEglobal")
+DEFAULT_ECF_HOST = "uecflow01"
+
+# Load the ecflow module only for the ecflow_client child process so that
+# the caller's shell and this process keep their own module environment.
+_MODULE_WRAPPER = (
+    'type module &> /dev/null || source "${MODULESHOME}/init/bash"; '
+    'module load ecflow &> /dev/null; exec ecflow_client "$@"'
+)
+
+
+class EcflowServer:
+    """ecFlow server coordinates used to build ecflow_client commands.
+
+    The host and port are passed to ecflow_client with ``--host`` and
+    ``--port`` and ``ECF_HOSTFILE`` is removed from the child environment,
+    so nothing has to be exported in the user's shell.
+
+    Parameters
+    ----------
+    host : str
+        ecFlow server host name.
+    port : int or str
+        ecFlow server port.
+    """
+
+    def __init__(self, host: str, port) -> None:
+        self.host = host
+        self.port = str(port)
+
+    @property
+    def connection_args(self) -> list:
+        """Return the ``--host`` and ``--port`` arguments."""
+        return [f"--host={self.host}", f"--port={self.port}"]
+
+    def command(self, *args: str) -> list:
+        """Return the full ecflow_client command line for ``args``."""
+        if shutil.which("ecflow_client"):
+            base = ["ecflow_client"]
+        else:
+            base = ["bash", "-c", _MODULE_WRAPPER, "ecflow_client"]
+        return [*base, *args, *self.connection_args]
+
+    @staticmethod
+    def environment() -> dict:
+        """Return the child environment without ``ECF_HOSTFILE``."""
+        return {k: v for k, v in os.environ.items() if k != "ECF_HOSTFILE"}
+
+    def is_alive(self) -> bool:
+        """Return True if the server answers a ping."""
+        try:
+            result = subprocess.run(self.command("--ping"), capture_output=True,
+                                    timeout=30, env=self.environment())
+            return result.returncode == 0
+        except subprocess.TimeoutExpired:
+            return False
+
+
+# ecflow_start.sh names the server log <host>.<port>.ecf.log
+SERVER_LOG_PATTERN = re.compile(r"^(?P<host>.+)\.(?P<port>\d+)\.ecf\.log$")
+
+
+def find_server_candidates(ecf_home: Path, host: str = None) -> list:
+    """List the servers that have left a log in ``ecf_home``, newest first.
+
+    Parameters
+    ----------
+    ecf_home : Path
+        Server directory passed to ``ecflow_start.sh -d``.
+    host : str, optional
+        Only return servers running on this host.
+    """
+    logs = []
+    for log in ecf_home.glob("*.ecf.log"):
+        match = SERVER_LOG_PATTERN.match(log.name)
+        if match and host in (None, match["host"]):
+            logs.append((log.stat().st_mtime, match["host"], match["port"]))
+    return [EcflowServer(h, p) for _, h, p in sorted(logs, reverse=True)]
+
+
+def select_server(host: str, port: str, ecf_home: Path) -> EcflowServer:
+    """Return the ecFlow server to use.
+
+    An explicit port wins.  Otherwise the newest server found in
+    ``ecf_home`` that answers a ping is used.  When none answers, the
+    newest one is returned so the caller can report it, and when there
+    is no server log at all the port falls back to ``UID + 1500``.
+
+    Parameters
+    ----------
+    host : str or None
+        Requested host, or None to take it from the server logs.
+    port : str or None
+        Requested port, or None to search ``ecf_home``.
+    ecf_home : Path
+        Server directory searched for ``<host>.<port>.ecf.log`` files.
+    """
+    if port:
+        return EcflowServer(host or DEFAULT_ECF_HOST, port)
+    candidates = find_server_candidates(ecf_home, host)
+    for candidate in candidates:
+        if candidate.is_alive():
+            return candidate
+    if candidates:
+        return candidates[0]
+    return EcflowServer(host or DEFAULT_ECF_HOST, os.getuid() + 1500)
+
+
+def start_server_command(server: EcflowServer, ecf_home: Path) -> list:
+    """Return the ssh command that starts ``server`` on its own node.
+
+    ``ecflow_start.sh`` only runs on the server node, so it is started
+    over ssh.  Its output goes to a file because the server it forks would
+    otherwise keep the ssh pipe open.
+
+    Parameters
+    ----------
+    server : EcflowServer
+        Server to start; its host is the node ssh connects to.
+    ecf_home : Path
+        Server directory passed to ``ecflow_start.sh -d``.
+    """
+    out = shlex.quote(f"{ecf_home}/start_server.out")
+    script = (
+        f"module load ecflow; export ECF_HOST={server.host} ECF_PORT={server.port}; "
+        f"mkdir -p {shlex.quote(str(ecf_home))}; "
+        f"ecflow_start.sh -p {server.port} -d {shlex.quote(str(ecf_home))} "
+        f"> {out} 2>&1 < /dev/null; cat {out}"
+    )
+    return ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+            server.host, f"bash -lc {shlex.quote(script)}"]
+
+
+def start_server(server: EcflowServer, ecf_home: Path, wait: int = 30) -> bool:
+    """Start the ecFlow server over ssh and wait until it answers a ping.
+
+    Parameters
+    ----------
+    server : EcflowServer
+        Server to start.
+    ecf_home : Path
+        Server directory passed to ``ecflow_start.sh -d``.
+    wait : int, optional
+        Seconds to wait for the server to answer.
+
+    Returns
+    -------
+    bool
+        True if the server answers a ping.
+    """
+    print(f"  Starting ecFlow server {server.host}:{server.port} "
+          f"in {ecf_home} via ssh...")
+    try:
+        result = subprocess.run(start_server_command(server, ecf_home),
+                                capture_output=True, text=True, timeout=120)
+    except subprocess.TimeoutExpired:
+        print("[ERROR] Timed out starting the ecFlow server over ssh.")
+        return False
+    if result.returncode != 0:
+        print(f"[ERROR] Could not start the server: {result.stderr.strip() or result.stdout.strip()}")
+        return False
+    deadline = time.monotonic() + wait
+    while time.monotonic() < deadline:
+        if server.is_alive():
+            return True
+        time.sleep(2)
+    return server.is_alive()
+
+
+_server = EcflowServer(DEFAULT_ECF_HOST, os.getuid() + 1500)
 
 
 def ecflow_client(*args: str) -> subprocess.CompletedProcess:
     """Run ecflow_client with the given arguments."""
-    cmd = ["ecflow_client", *args]
+    cmd = _server.command(*args)
     try:
         return subprocess.run(cmd, check=True, capture_output=True, text=True,
-                              timeout=30)
+                              timeout=30, env=_server.environment())
     except subprocess.CalledProcessError as e:
-        print(f"[ERROR] ecflow_client failed: {' '.join(cmd)}")
+        print(f"[ERROR] ecflow_client failed: {' '.join(args)}")
         if e.stdout:
             print(f"  stdout: {e.stdout.strip()}")
         if e.stderr:
@@ -64,10 +241,10 @@ def ecflow_client(*args: str) -> subprocess.CompletedProcess:
 
 def ecflow_client_quiet(*args: str) -> bool:
     """Run ecflow_client, returning True on success and False on failure."""
-    cmd = ["ecflow_client", *args]
+    cmd = _server.command(*args)
     try:
         result = subprocess.run(cmd, capture_output=True, text=True,
-                                timeout=30)
+                                timeout=30, env=_server.environment())
         return result.returncode == 0
     except subprocess.TimeoutExpired:
         return False
@@ -129,32 +306,33 @@ def parse_args(default_yaml: Path = None) -> argparse.Namespace:
         help="Override STMP (scratch/tmp) path used to build "
              "DATAROOT = <stmp>/RUNDIRS/<pslot>.",
     )
+    parser.add_argument(
+        "--ecf-host",
+        default=os.environ.get("ECF_HOST"),
+        help="ecFlow server host (default: $ECF_HOST, else found from the "
+             "server logs in --ecf-home, else %s)." % DEFAULT_ECF_HOST,
+    )
+    parser.add_argument(
+        "--ecf-port",
+        default=os.environ.get("ECF_PORT"),
+        help="ecFlow server port (default: $ECF_PORT, else found from the "
+             "server logs in --ecf-home, else UID + 1500).",
+    )
+    parser.add_argument(
+        "--start-server",
+        action="store_true",
+        help="If the ecFlow server does not answer, start it over ssh on its "
+             "node with ecflow_start.sh (off by default).",
+    )
+    parser.add_argument(
+        "--ecf-home",
+        type=Path,
+        default=Path(os.environ.get("ECF_HOME", HOMEglobal.parent / "ecflow")),
+        help="Directory the ecFlow server was started in "
+             "(ecflow_start.sh -d); its <host>.<port>.ecf.log files give "
+             "the server port (default: $ECF_HOME or %(default)s).",
+    )
     return parser.parse_args()
-
-
-def validate_environment() -> None:
-    """Exit with an error if required environment variables are missing."""
-    missing = [v for v in REQUIRED_ENV if not os.environ.get(v)]
-    if missing:
-        print(f"[ERROR] Missing environment variables: {', '.join(missing)}")
-        print()
-        print("  Add these to your environment before running:")
-        print()
-        print("    unset ECF_HOSTFILE")
-        print("    module load ecflow")
-        print("    export ECF_HOST=<ecflow_server_host>")
-        print("    export ECF_PORT=<ecflow_server_port>")
-        print("    export ECF_HOME=<path_for_ecflow_job_files>")
-        print("    export HOMEglobal=<path_to_global_workflow>")
-        print()
-        print("  Example (Ursa):")
-        print("    unset ECF_HOSTFILE")
-        print("    module load ecflow")
-        print("    export ECF_HOST=uecflow01")
-        print("    export ECF_PORT=23385")
-        print("    export ECF_HOME=/scratch3/NCEPDEV/global/$USER/ecflow")
-        print("    export HOMEglobal=/scratch3/NCEPDEV/global/$USER/global-workflow")
-        sys.exit(1)
 
 
 def load_case_yaml(yaml_path: Path) -> AttrDict:
@@ -255,6 +433,11 @@ def generate_ecflow_def(expdir: Path) -> Path:
     return def_files[0]
 
 
+def _client_hint() -> str:
+    """Return an ecflow_client command prefix users can paste into a shell."""
+    return f"ecflow_client --host={_server.host} --port={_server.port}"
+
+
 def load_suite(suite_name: str, def_file: Path) -> None:
     """Prompt to delete any existing suite, then load the .def file."""
     # Check if the suite already exists on the server
@@ -267,18 +450,16 @@ def load_suite(suite_name: str, def_file: Path) -> None:
         print(f"  Stopping /{suite_name}...")
         ecflow_client_quiet("--suspend", f"/{suite_name}")
         ecflow_client_quiet("--kill", f"/{suite_name}")
-        import time
         time.sleep(5)
         print(f"  Deleting /{suite_name}...")
-        cmd = ["ecflow_client", "--delete=force", "yes",
-               f"/{suite_name}"]
+        cmd = _server.command("--delete=force", "yes", f"/{suite_name}")
         try:
             subprocess.run(cmd, check=True, capture_output=True,
-                           text=True, timeout=60)
+                           text=True, timeout=60, env=_server.environment())
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
             msg = getattr(e, 'stderr', '') or ''
             print(f"[WARN] Delete failed: {msg.strip() if msg else 'timeout'}")
-            print(f"  Try manually: ecflow_client --delete=force yes /{suite_name}")
+            print(f"  Try manually: {_client_hint()} --delete=force yes /{suite_name}")
             sys.exit(1)
         print(f"  Deleted /{suite_name}.")
     ecflow_client(f"--load={def_file}")
@@ -337,7 +518,9 @@ def run(default_yaml: Path = None) -> None:
     """
     args = parse_args(default_yaml=default_yaml)
 
-    validate_environment()
+    selected = select_server(args.ecf_host, args.ecf_port, args.ecf_home)
+    _server.host = selected.host
+    _server.port = selected.port
 
     yaml_path = args.yaml.resolve()
     if not yaml_path.is_file():
@@ -371,14 +554,10 @@ def run(default_yaml: Path = None) -> None:
 
     suite_name = args.suite_name or pslot
 
-    ecf_host = os.environ["ECF_HOST"]
-    ecf_port = os.environ["ECF_PORT"]
-
     print("=== Load ecFlow case ===")
     print(f"  Case YAML:   {yaml_path.relative_to(HOMEglobal)}")
     print(f"  Suite:       {suite_name}")
-    print(f"  ECF_HOST:    {ecf_host}")
-    print(f"  ECF_PORT:    {ecf_port}")
+    print(f"  ecFlow server: {_server.host}:{_server.port}")
     print(f"  HOMEglobal:  {HOMEglobal}")
     print(f"  PSLOT:       {pslot}")
     print(f"  RUNTESTS:    {runtests}")
@@ -405,30 +584,32 @@ def run(default_yaml: Path = None) -> None:
         n_ecf = sum(1 for f in ecf_scripts_dir.glob("*.ecf"))
         print(f"  ECF_FILES directory: {ecf_scripts_dir} ({n_ecf} files)")
 
-    # Restore ecFlow server vars — setup_workflow's config parsing
-    # may alter the module environment, unsetting ECF_HOST/ECF_PORT.
-    os.environ['ECF_HOST'] = ecf_host
-    os.environ['ECF_PORT'] = ecf_port
-
     # Step 3: Load into ecFlow server
     print("[3/4] Loading suite into ecFlow server...")
-    if not ecflow_client_quiet("--ping"):
-        print(f"[ERROR] Cannot reach ecFlow server at {ecf_host}:{ecf_port}")
+    if args.start_server and not _server.is_alive():
+        start_server(_server, args.ecf_home)
+    if not _server.is_alive():
+        print(f"[ERROR] Cannot reach ecFlow server at {_server.host}:{_server.port}")
+        print(f"  Searched {args.ecf_home} for <host>.<port>.ecf.log files.")
+        print("  Start the server, pass --ecf-host/--ecf-port/--ecf-home, "
+              "or use --start-server.")
         sys.exit(1)
     print("  Server is alive.")
     load_suite(suite_name, def_file)
     print(f"  Suite {suite_name} loaded.")
 
+    client = _client_hint()
     print()
     print("=== Done ===")
-    print(f"Suite loaded but NOT started. To begin the run:")
-    print(f"    ecflow_client --begin={suite_name}")
+    print("Suite loaded but NOT started. To begin the run:")
+    print(f"    {client} --begin={suite_name}")
     print()
-    print(f"To delete the suite:")
-    print(f"    ecflow_client --delete=force yes /{suite_name}")
+    print("To delete the suite:")
+    print(f"    {client} --delete=force yes /{suite_name}")
     print()
-    print(f"Monitor with: ecflow_client --get_state /{suite_name}")
+    print(f"Monitor with: {client} --get_state /{suite_name}")
     print("         or:  ecflow_ui  (if X11 available)")
+    print("(load the module first with: module load ecflow)")
     print()
     print("To refresh .ecf files after editing (without regenerating .def):")
     print(f"  bash dev/workflow/ecflow/sync_ecf_scripts.sh {expdir_path}/ecf_scripts")

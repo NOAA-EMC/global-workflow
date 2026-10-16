@@ -70,53 +70,68 @@ cd /scratch3/NCEPDEV/global/${USER}
 
 ## 1. Environment Setup
 
-Set these variables before running any ecFlow scripts. Add them to
-your `~/.bashrc` or source them in each session.
+Nothing has to be exported in your login shell. `run_ecflow_case.py`
+loads the ecflow module and ignores `ECF_HOSTFILE` for its own
+`ecflow_client` calls, takes `HOMEglobal` from its location in the repo,
+and finds your ecFlow server by itself.
+
+The only setup is loading the workflow Python modules (Jinja2, PyYAML,
+...) once per login, from your global-workflow clone:
 
 ```bash
-# ── Step 1a: Load the ecFlow module ──────────────────────────────
+cd <path to your global-workflow clone>
+module use modulefiles
+module load module_gwsetup.ursa
+```
+
+Then run the case from any directory; there is no `HOMEglobal`,
+`ECF_HOST`, `ECF_PORT` or `ECF_HOME` to set.
+
+### How the server is found
+
+`ecflow_start.sh` leaves a `<host>.<port>.ecf.log` file in the directory
+the server was started in (`-d`), for example
+`/scratch3/NCEPDEV/global/${USER}/ecflow/uecflow01.22885.ecf.log`.
+The file name holds the host and the port. The loader:
+
+1. uses `--ecf-port` (or `$ECF_PORT`) if you give one;
+2. otherwise lists the `*.ecf.log` files in `--ecf-home`, newest first,
+   and uses the first server that answers a ping;
+3. if none answers, keeps the newest one and reports it when the ping
+   fails;
+4. if there is no log at all, uses `uecflow01` and `$(id -u) + 1500`.
+
+| Option | Default |
+|--------|---------|
+| `--ecf-home` | `$ECF_HOME` if set, otherwise `ecflow` next to the repo (`<repo>/../ecflow`) |
+| `--ecf-host` | `$ECF_HOST` if set, otherwise from the server logs |
+| `--ecf-port` | `$ECF_PORT` if set, otherwise from the server logs |
+
+To use another server or server directory:
+
+```bash
+python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-home /path/to/ecflow
+python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-host uecflow01 --ecf-port 22885
+```
+
+If the mount-based auto-detection in `hosts.py` misidentifies some Ursa
+front-end nodes (e.g. ufe12) as Hera, force the machine for one command
+instead of exporting it:
+
+```bash
+MACHINE_ID=URSA python3 dev/workflow/ecflow/run_ecflow_case.py
+```
+
+To find your port and check the server from your shell without exporting
+anything:
+```bash
+ls /scratch3/NCEPDEV/global/${USER}/ecflow/*.ecf.log
 module load ecflow
-
-# Remove any stale host file that might redirect ecflow_client
-unset ECF_HOSTFILE
-
-# ── Step 1b: Set the global-workflow repo path ───────────────────
-# Point this to wherever you cloned the repo.  The loader script
-# auto-detects HOMEglobal from its own location, but ecFlow tasks
-# read it from the environment during validation.
-export HOMEglobal=/scratch3/NCEPDEV/global/${USER}/global-workflow
-
-# ── Step 1b-workaround: Machine detection on ufe nodes ───────────
-# The mount-based auto-detection in hosts.py may misidentify some
-# Ursa front-end nodes (e.g. ufe12) as Hera.  If you hit unexpected
-# platform errors, force the machine identity:
-export MACHINE_ID=URSA
-
-# ── Step 1c: Choose an ecFlow server ─────────────────────────────
-# Each user runs their own ecFlow server on a unique port.
-# Use your UID offset by 1500 to avoid collisions with other users:
-export ECF_PORT=$(( $(id -u) + 1500 ))
-export ECF_HOST=uecflow01
-echo "Your ecFlow server: ${ECF_HOST}:${ECF_PORT}"
-
-# ── Step 1d: Set the ecFlow job directory ────────────────────────
-# This is where ecFlow writes .job files and captures .jobout output.
-# Create it if it doesn't exist.
-export ECF_HOME=/scratch3/NCEPDEV/global/${USER}/ecflow
-mkdir -p "${ECF_HOME}"
+ecflow_client --host=uecflow01 --port=<port from the file name> --ping
 ```
 
-Verify everything is set:
-```bash
-echo "ECF_HOST   = ${ECF_HOST}"
-echo "ECF_PORT   = ${ECF_PORT}"
-echo "ECF_HOME   = ${ECF_HOME}"
-echo "HOMEglobal = ${HOMEglobal}"
-ecflow_client --ping   # should say "ping ... succeeded"
-```
-
-If `ecflow_client --ping` fails, go to [section 2](#2-ecflow-server)
-to start the server first, then come back here.
+If the ping fails, go to [section 2](#2-ecflow-server)
+to start the server first (or run with `--start-server`), then come back here.
 
 ## 2. ecFlow Server
 
@@ -125,13 +140,30 @@ to start the server first, then come back here.
 From any login node, check if your server on `uecflow01` is alive:
 
 ```bash
-export ECF_HOST=uecflow01
-export ECF_PORT=$(( $(id -u) + 1500 ))
-ecflow_client --ping
+module load ecflow
+ls /scratch3/NCEPDEV/global/${USER}/ecflow/*.ecf.log   # <host>.<port>.ecf.log
+ecflow_client --host=uecflow01 --port=<port from the file name> --ping
 ```
 
 If it responds with `ping server(...) succeeded`, skip to step 3.
 If it fails, start or restart the server (see below).
+
+### Start the server from the loader (optional)
+
+Instead of the steps below, add `--start-server` and the loader starts the
+server for you when it does not answer a ping:
+
+```bash
+python3 dev/workflow/ecflow/run_ecflow_case.py --start-server
+```
+
+`ecflow_start.sh` only runs on `uecflow01`, so the loader does
+`ssh uecflow01` (no password prompt, `BatchMode`) and runs
+`ecflow_start.sh -p <port> -d <ecf-home>` there, then waits up to 30 s for
+the server to answer. The port is the one found in the server logs, or
+`$(id -u) + 1500` when there are none. The output of the start is in
+`<ecf-home>/start_server.out`. It is off by default, and if the ssh fails
+the loader stops with the error.
 
 ### Start the server (first time)
 
@@ -153,15 +185,16 @@ mkdir -p "${ECF_HOME}"
 ecflow_start.sh -p ${ECF_PORT} -d ${ECF_HOME}
 
 # 5. Verify
-export ECF_HOST=uecflow01
-ecflow_client --ping
+ecflow_client --host=uecflow01 --port=${ECF_PORT} --ping
 
 # 6. Exit back to your login node — the server keeps running
 exit
 ```
 
-Your port is always `$(id -u) + 1500` — deterministic for your user,
-no need to remember it.
+The `export` lines above only affect that ssh session on `uecflow01`, not
+your login shell. Your port is always `$(id -u) + 1500` — deterministic
+for your user, and it is also in the `<host>.<port>.ecf.log` file name, so
+you never need to remember it.
 
 ### Restart a stopped server
 
@@ -183,7 +216,7 @@ ecflow_start.sh -p ${ECF_PORT} -d ${ECF_HOME}
 
 # The server restores state from its checkpoint file.
 # Previously loaded suites reappear with their last known state.
-ecflow_client --ping
+ecflow_client --host=uecflow01 --port=${ECF_PORT} --ping
 exit
 ```
 
@@ -212,26 +245,30 @@ Once steps 0–2 are done, this is all you need each day.
 # 1. SSH into Ursa
 ssh -X <username>@ursa.rdhpcs.noaa.gov
 
-# 2. Source your environment (or add to ~/.bashrc once)
-module load ecflow
-unset ECF_HOSTFILE
-export ECF_PORT=$(( $(id -u) + 1500 ))
-export ECF_HOST=uecflow01
-export ECF_HOME=/scratch3/NCEPDEV/global/${USER}/ecflow
-export HOMEglobal=/scratch3/NCEPDEV/global/${USER}/global-workflow  # adjust to your clone path
-export MACHINE_ID=URSA  # prevent misdetection on ufe nodes
-
-# 3. Verify the server is alive (must have been started on uecflow01)
-ecflow_client --ping
+# 2. Load the workflow Python modules (no exports)
+cd <path to your global-workflow clone>
+module use modulefiles
+module load module_gwsetup.ursa
 ```
 
-If the ping fails, start the server per
-[section 2](#2-ecflow-server) before continuing.
+That is all. There is no separate step to find or check the server:
+`run_ecflow_case.py` finds it from the `<host>.<port>.ecf.log` files
+(see [section 1](#1-environment-setup)) and stops with a message if it
+does not answer. If the server is down, start it per
+[section 2](#2-ecflow-server) or add `--start-server` to the command below.
+
+> **Note on `ecflow_client` commands:** the `ecflow_client` commands in
+> this README (monitoring, rerun, cleanup) are run after
+> `module load ecflow` and need the server given explicitly, e.g.
+> `ecflow_client --host=uecflow01 --port=<port> --get_state ...`. The port
+> is in the log file name, `ls /scratch3/NCEPDEV/global/${USER}/ecflow/*.ecf.log`.
+> The loader prints ready-to-copy commands with the right `--host/--port`
+> at the end of its output.
 
 ### Run a case
 
 ```bash
-cd ${HOMEglobal}
+cd <path to your global-workflow clone>
 
 # Quick start (all defaults)
 python3 dev/workflow/ecflow/run_ecflow_case.py
@@ -267,9 +304,8 @@ ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 ```bash
 # 1. Check the job output for the error
-cat ${ECF_HOME}/<task_name>.1
-
-# 2. Fix the issue (edit .ecf, fix paths, etc.)
+cat /scratch3/NCEPDEV/global/${USER}/ecflow/<task_name>.1   # the --ecf-home directory
+ the issue (edit .ecf, fix paths, etc.)
 
 # 3. Rerun the task
 ecflow_client --force=queued /C48_ATM_ecflow/gfs/2021032312/<task_name>
@@ -307,19 +343,21 @@ bash dev/workflow/ecflow/sync_ecf_scripts.sh \
 
 The ecFlow server persists across sessions. You can log out and
 come back tomorrow — the suite continues running (or waiting) on
-the server. Just re-source your environment variables when you
-reconnect.
+the server. When you reconnect, load the `module_gwsetup` module again
+(see [Starting a new session](#starting-a-new-session)); nothing else is
+needed.
 
 ## 3. Run the C48_ATM Case
 
 ### Quick start (all defaults)
 
 ```bash
-cd ${HOMEglobal}
+cd <path to your global-workflow clone>
 python3 dev/workflow/ecflow/run_ecflow_case.py
 ```
 
 This will:
+0. Find your ecFlow server (and start it first if you added `--start-server`)
 1. Clean up any previous run directories (with prompt)
 2. Create the experiment via `setup_expt`
 3. Generate the `.def` file and copy `.ecf` scripts
@@ -349,6 +387,10 @@ python3 dev/workflow/ecflow/run_ecflow_case.py \
 | `--stmp PATH` | Override runtime scratch directory |
 | `--suite-name NAME` | Override ecFlow suite name |
 | `--overwrite` | Overwrite a previously created experiment |
+| `--ecf-home PATH` | Server directory searched for `<host>.<port>.ecf.log` files (default: `<repo>/../ecflow`) |
+| `--ecf-host HOST` | Use this ecFlow host instead of the one found in the logs |
+| `--ecf-port PORT` | Use this ecFlow port instead of the one found in the logs |
+| `--start-server` | Start the server over ssh if it does not answer (off by default) |
 
 ## 4. Monitoring
 
@@ -358,7 +400,8 @@ python3 dev/workflow/ecflow/run_ecflow_case.py \
 ecflow_ui &
 ```
 
-Connect to `${ECF_HOST}:${ECF_PORT}`. The suite tree shows task
+Add your server (host `uecflow01`, port from the
+`<host>.<port>.ecf.log` file name) in ecflow_ui. The suite tree shows task
 states: queued (blue), submitted (cyan), active (green),
 complete (yellow), aborted (red).
 
@@ -372,7 +415,7 @@ ecflow_client --get_state /C48_ATM_ecflow
 ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 # View job output for a task
-cat ${ECF_HOME}/fcst.1    # .1 = first try number
+cat /scratch3/NCEPDEV/global/${USER}/ecflow/fcst.1    # .1 = first try number
 ```
 
 ### Log files
@@ -476,22 +519,19 @@ python3 dev/workflow/ecflow/run_ecflow_case.py --overwrite
 
 ## 6. Troubleshooting
 
-### "Missing environment variables"
+### "Cannot reach ecFlow server" / wrong server
 
-```
-[ERROR] Missing environment variables: ECF_HOST, ECF_PORT, ECF_HOME
-```
-
-**Fix:** Source the environment variables from step 1. Make sure
-`module load ecflow` has been run and `unset ECF_HOSTFILE` is set.
-
-### "Cannot reach ecFlow server"
+The loader no longer requires `ECF_HOST`, `ECF_PORT`, `ECF_HOME` or
+`HOMEglobal`. It looks for `<host>.<port>.ecf.log` files in `--ecf-home`
+(default `<repo>/../ecflow`). If it targets the wrong server or finds
+none, pass `--ecf-home`, or `--ecf-host` and `--ecf-port`.
 
 ```
 [ERROR] Cannot reach ecFlow server at uecflow01:23385
+  Searched /scratch3/NCEPDEV/global/<user>/ecflow for <host>.<port>.ecf.log files.
 ```
 
-**Fix:** Check that the server is running (`ecflow_client --ping`).
+**Fix:** Check that the server is running (see the ping in section 2).
 If using a shared server, verify the hostname and port. If running
 your own, start it with `ecflow_start.sh`.
 
@@ -553,7 +593,7 @@ ls ${EXPDIR}/C48_ATM_ecflow/ecf_scripts/<task_name>.ecf
 
 **Check the job output:**
 ```bash
-cat ${ECF_HOME}/<task_name>.1
+cat /scratch3/NCEPDEV/global/${USER}/ecflow/<task_name>.1
 ```
 
 Common causes:
@@ -571,7 +611,7 @@ ModuleNotFoundError: No module named 'jinja2'
 are provided by the build modules. Load them before running any
 ecFlow or setup script:
 ```bash
-module use ${HOMEglobal}/modulefiles
+module use <path to your global-workflow clone>/modulefiles
 module load module_gwsetup.ursa
 ```
 
