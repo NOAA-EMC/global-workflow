@@ -38,7 +38,7 @@ declare -rx COMIN_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
 declare -rx COMOUT_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
 declare -rx COMINobsproc="${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos"
 declare -rx COMINobsforge="${IODADIR}/${RUN_local}.${PDY}/${cyc}"
-declare -rx COMIN_TCVITAL="${DMPDIR}/${RUN_local}.${PDY}/${cyc}/atmos"
+declare -rx COMIN_TCVITAL="${ROTDIR}/${RUN_local}.${PDY}/${cyc}"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/analysis/atmos"
 
 declare -rx COMOUT_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
@@ -140,8 +140,8 @@ rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr"
 rm -f "${COMOUT_OBS}/${OPREFIX}prepbufr.acft_profiles"
 rm -f "${COMOUT_OBS}/${OPREFIX}nsstbufr"
 
-declare -rx COMIN_ATMOS_HISTORY_GDAS="${ROTDIR}/gdas.${PDY}/${cyc}/model/atmos/history"
-declare -rx COMIN_ATMOS_HISTORY_GFS="${ROTDIR}/gfs.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMIN_ATMOS_HISTORY_GDAS="${ROTDIR}/gdas.${PDY}/${cyc}"
+declare -rx COMIN_ATMOS_HISTORY_GFS="${ROTDIR}/gfs.${PDY}/${cyc}"
 
 export job="j${RUN_local}_prep_${cyc}"
 
