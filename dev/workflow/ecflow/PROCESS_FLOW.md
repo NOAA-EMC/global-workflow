@@ -28,7 +28,7 @@ User on Ursa login node (e.g. ufe01)
 └── Check the server by hand (only if you want to):
       module load ecflow
       ecflow_client --host=uecflow01 --port=$(( $(id -u) + 1500 )) --ping
-      └── "ping server(uecflow01:22885) succeeded"
+      └── "ping server(uecflow01:<port>) succeeded"
 ```
 
 If the server has stopped (node reboot, etc.):
@@ -184,14 +184,14 @@ run_ecflow_case.py                              ← entry point
       │
       └── prints:
             "Suite loaded but NOT started."
-            "ecflow_client --host=uecflow01 --port=22885 --begin=my_C48_test"
+            "ecflow_client --host=uecflow01 --port=<port> --begin=my_C48_test"
 ```
 
 ## Step 2: Begin the Suite
 
 ```
 $ module load ecflow
-$ ecflow_client --host=uecflow01 --port=22885 --begin=my_C48_test
+$ ecflow_client --host=uecflow01 --port=<port> --begin=my_C48_test
   (the exact command with your host and port is printed by run_ecflow_case.py)
 
 ecflow_server (on uecflow01)

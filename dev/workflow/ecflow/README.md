@@ -89,29 +89,53 @@ Then run the case from any directory; there is no `HOMEglobal`,
 
 ### How the server is found
 
-`ecflow_start.sh` leaves a `<host>.<port>.ecf.log` file in the directory
-the server was started in (`-d`), for example
-`~/ecflow/uecflow01.22885.ecf.log`.
-The file name holds the host and the port. The loader:
+You normally do not need to give the loader a host or port. It finds your
+server on its own.
 
-1. uses `--ecf-port` (or `$ECF_PORT`) if you give one;
-2. otherwise lists the `*.ecf.log` files in `--ecf-home`, newest first,
-   and uses the first server that answers a ping;
-3. if none answers, keeps the newest one and reports it when the ping
-   fails;
-4. if there is no log at all, uses `uecflow01` and `$(id -u) + 1500`.
+The server is started on the dedicated ecFlow node `uecflow01`. From a login
+node, log in to that node first and run the start command there:
 
-| Option | Default |
-|--------|---------|
+```bash
+ssh uecflow01
+module load ecflow
+export ECF_PORT=$(( $(id -u) + 1500 ))   # a port unique to your user
+export ECF_HOME=${HOME}/ecflow           # the server directory
+mkdir -p "${ECF_HOME}"
+ecflow_start.sh -p ${ECF_PORT} -d ${ECF_HOME}
+exit                                     # the server keeps running
+```
+
+`-p` is the port and `-d` is the server directory. The start command writes a
+log file named `<host>.<port>.ecf.log` in the `-d` directory. The host and
+port are part of the file name, for example `~/ecflow/<host>.<port>.ecf.log`.
+See [section 2](#2-ecflow-server) for checking, restarting and stopping the
+server.
+
+The loader reads that log file to find the server.
+
+The loader looks for the server in this order:
+
+1. If you pass `--ecf-port` (or `$ECF_PORT` is set), it uses that port.
+2. Otherwise it reads the `*.ecf.log` files in the server directory
+   (`--ecf-home`), newest first, and uses the first server that answers a
+   ping.
+3. If no server answers, it uses the newest log and reports the failed ping.
+4. If there are no logs at all, it falls back to host `uecflow01` and port
+   `$(id -u) + 1500`.
+
+Each setting can be overridden:
+
+| Option | Used when not given |
+|--------|---------------------|
 | `--ecf-home` | `$ECF_HOME` if set, otherwise `~/ecflow` |
-| `--ecf-host` | `$ECF_HOST` if set, otherwise from the server logs |
-| `--ecf-port` | `$ECF_PORT` if set, otherwise from the server logs |
+| `--ecf-host` | `$ECF_HOST` if set, otherwise the host in the newest server log |
+| `--ecf-port` | `$ECF_PORT` if set, otherwise the port in the newest server log |
 
-To use another server or server directory:
+To use a different server directory, or a specific host and port:
 
 ```bash
 python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-home /path/to/ecflow
-python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-host uecflow01 --ecf-port 22885
+python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-host <host> --ecf-port <port>
 ```
 
 If the mount-based auto-detection in `hosts.py` misidentifies some Ursa
@@ -122,12 +146,13 @@ instead of exporting it:
 MACHINE_ID=URSA python3 dev/workflow/ecflow/run_ecflow_case.py
 ```
 
-To find your port and check the server from your shell without exporting
-anything:
+To check the server yourself, take the host and port from the log file name
+(`<host>.<port>.ecf.log`):
+
 ```bash
 ls ~/ecflow/*.ecf.log
 module load ecflow
-ecflow_client --host=uecflow01 --port=<port from the file name> --ping
+ecflow_client --host=<host> --port=<port> --ping
 ```
 
 If the ping fails, go to [section 2](#2-ecflow-server)
@@ -283,7 +308,7 @@ python3 dev/workflow/ecflow/run_ecflow_case.py \
     --stmp /scratch4/NCEPDEV/stmp/${USER} \
     --ecf-home ${HOME}/ecflow \
     --ecf-host uecflow01 \
-    --ecf-port 22885 \
+    --ecf-port <port> \
     --start-server \
     --overwrite
 ```
@@ -385,7 +410,7 @@ python3 dev/workflow/ecflow/run_ecflow_case.py \
     --stmp /scratch4/NCEPDEV/stmp/${USER} \
     --ecf-home ${HOME}/ecflow \
     --ecf-host uecflow01 \
-    --ecf-port 22885 \
+    --ecf-port <port> \
     --start-server \
     --overwrite
 ```
@@ -546,7 +571,7 @@ The loader no longer requires `ECF_HOST`, `ECF_PORT`, `ECF_HOME` or
 none, pass `--ecf-home`, or `--ecf-host` and `--ecf-port`.
 
 ```
-[ERROR] Cannot reach ecFlow server at uecflow01:23385
+[ERROR] Cannot reach ecFlow server at uecflow01:<port>
   Searched /scratch3/NCEPDEV/global/<user>/ecflow for <host>.<port>.ecf.log files.
 ```
 
