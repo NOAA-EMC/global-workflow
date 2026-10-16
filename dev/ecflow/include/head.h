@@ -15,7 +15,7 @@ export ECF_PASS=%ECF_PASS%
 export ECF_TRYNO=%ECF_TRYNO%
 export ECF_RID=${ECF_RID:-${SLURM_JOB_ID:-$(hostname -s).$$}}
 export ECF_JOB=%ECF_JOB%
-export ECF_JOBOUT=%ECF_JOBOUT%
+export ECF_JOBOUT=%LOGDIR%/%LOG_NAME%.log
 
 # Preserve ECF_HOST/ECF_PORT for use after load_modules.sh resets modules
 readonly _ECF_HOST_SAVED=%ECF_HOST%

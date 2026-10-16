@@ -171,6 +171,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
         indent = 4
         lines.append(f'{" " * indent}edit PDY \'{sdate.strftime("%Y%m%d")}\'')
         lines.append(f'{" " * indent}edit CYC \'{sdate.strftime("%H")}\'')
+        lines.append(f'{" " * indent}edit LOGDIR \'{os.path.join(self._log_dir(), cycle_str)}\'')
         lines.append('')
 
         # ── RUN family (e.g. "gfs") ──────────────────────────────────
@@ -214,14 +215,12 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         logger.info(f'ecFlow suite definition written to {def_file}')
 
+        # Job logs go in one directory per cycle, like the Rocoto workflow.
+        os.makedirs(os.path.join(self._log_dir(), cycle_str), exist_ok=True)
+
         # Create ECF_HOME subdirectories matching the suite tree so
         # ecFlow can write .job files.
-        rotdir = self._base.get(
-            'ROTDIR',
-            os.path.join(str(self._base.get('COMROOT', '/tmp')), self.pslot))
-        ecf_home = os.path.join(rotdir, 'logs')
-        sdate = self._base['SDATE_GFS']
-        cycle_str = sdate.strftime('%Y%m%d%H')
+        ecf_home = self._ecf_home_dir()
         run_dir = os.path.join(ecf_home, suite_name, cycle_str, self._run)
         for task_name in self._task_names:
             cat = self.TASK_CATEGORY.get(task_name, 'post')
@@ -319,7 +318,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
             f"#SBATCH --nodes={resources['nodes']}",
             f"#SBATCH --ntasks-per-node={resources['ppn']}",
             f"#SBATCH --cpus-per-task={resources['threads']}",
-            "#SBATCH --output=%ECF_JOBOUT%",
+            "#SBATCH --output=%LOGDIR%/%LOG_NAME%.log",
         ]
         if resources.get('native'):
             lines.append(f"#SBATCH {resources['native']}")
@@ -339,6 +338,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
         lines.append(f'{sp}task {task_name}')
         lines.append(f"{tsp}edit STEP '{task_dict['step']}'")
+        lines.append(f"{tsp}edit LOG_NAME '{self._run}_{task_name}'")
 
         if trigger:
             trigger = self._resolve_trigger(trigger, category)
@@ -387,6 +387,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
             lines.append(f'{fsp}task {label}')
             lines.append(f"{tsp}edit FHR_LIST '{fhr_list_str}'")
+            lines.append(f"{tsp}edit LOG_NAME '{self._run}_{task_name}_{label}'")
             lines.append('')
 
         lines.append(f'{sp}endfamily')
@@ -419,6 +420,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
             lines.append(f'{fsp}task {child}')
             lines.append(f"{tsp}edit TARBALL_TYPE '{tarball_type}'")
+            lines.append(f"{tsp}edit LOG_NAME '{self._run}_{child}'")
             lines.append('')
 
         lines.append(f'{sp}endfamily')
@@ -508,26 +510,30 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
 
     # ── Suite-level variables ─────────────────────────────────────────
 
+    def _log_dir(self) -> str:
+        """Return the directory that holds one log directory per cycle."""
+        default_rotdir = os.path.join(str(self._base.get('COMROOT', '/tmp')),
+                                      self.pslot)
+        return os.path.join(self._base.get('ROTDIR', default_rotdir), 'logs')
+
+    def _ecf_home_dir(self) -> str:
+        """Return ECF_HOME, where ecFlow writes its .job files (not in the logs)."""
+        return os.path.join(self.expdir, 'ecfjobs')
+
     def _suite_variables(self, indent: int = 2) -> List[str]:
         """Emit suite-level edit variables."""
         sp = ' ' * indent
         base = self._base
         lines = []
 
-        default_rotdir = os.path.join(str(base.get('COMROOT', '/tmp')),
-                                      self.pslot)
-        rotdir = base.get('ROTDIR', default_rotdir)
-        ecf_log_dir = os.path.join(rotdir, 'logs')
-
         ecf_base_dir = os.path.join(self.expdir, 'ecf_scripts')
         ecf_scripts_dir = os.path.join(ecf_base_dir, 'scripts')
         ecf_include_dir = os.path.join(ecf_base_dir, 'include')
 
         lines.append(f"{sp}# File locations")
-        lines.append(f"{sp}edit ECF_HOME    '{ecf_log_dir}'")
+        lines.append(f"{sp}edit ECF_HOME    '{self._ecf_home_dir()}'")
         lines.append(f"{sp}edit ECF_INCLUDE '{ecf_include_dir}'")
         lines.append(f"{sp}edit ECF_FILES   '{ecf_scripts_dir}'")
-        lines.append(f"{sp}edit ECF_JOBOUT  '{ecf_log_dir}/%TASK%.%ECF_TRYNO%'")
         lines.append(f"{sp}")
 
         lines.append(f"{sp}# Slurm job submission — #SBATCH directives are baked into .ecf files")

@@ -323,7 +323,7 @@ ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 ```bash
 # 1. Check the job output for the error
-cat ${COMROOT}/C48_ATM_ecflow/logs/<task_name>.1
+cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log
  the issue (edit .ecf, fix paths, etc.)
 
 # 3. Rerun the task
@@ -446,15 +446,20 @@ ecflow_client --get_state /C48_ATM_ecflow
 ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 # View job output for a task
-cat ${COMROOT}/C48_ATM_ecflow/logs/fcst.1    # .1 = first try number
+cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_fcst.log
 ```
 
 ### Log files
 
-Task logs are written to `{ROTDIR}/logs/`:
+As in the Rocoto workflow, task logs are written to one directory per cycle,
+`{ROTDIR}/logs/<cycle>/`, named `<run>_<task>.log`. Product and tarball tasks
+add their group, for example `gfs_atmos_prod_f000_f002.log`:
 ```bash
-ls ${COMROOT}/C48_ATM_ecflow/logs/
+ls ${COMROOT}/C48_ATM_ecflow/logs/2021032312/
 ```
+
+ecFlow also writes its generated job scripts (`<task>.job<try>`) under
+`{EXPDIR}/ecfjobs/`, in the suite family tree, so they do not mix with the logs.
 
 ## 5. Common Operations
 
@@ -624,7 +629,7 @@ ls ${EXPDIR}/C48_ATM_ecflow/ecf_scripts/<task_name>.ecf
 
 **Check the job output:**
 ```bash
-cat ${COMROOT}/C48_ATM_ecflow/logs/<task_name>.1
+cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log
 ```
 
 Common causes:
@@ -679,10 +684,11 @@ ${RUNTESTS}/
     ...
     C48_ATM_ecflow.def              generated ecFlow definition
     ecf_scripts/                    copied .ecf files + manifest
+    ecfjobs/                        ecFlow generated job scripts (.job files)
   COMROOT/C48_ATM_ecflow/           ← output data
     gfs.20210323/12/                 forecast output
       model_data/atmos/history/      atmospheric history files
-    logs/                            task log files
+    logs/<cycle>/                    task log files (<run>_<task>.log)
   RUNDIRS/C48_ATM_ecflow/           ← runtime scratch (cleaned up)
 ```
 
