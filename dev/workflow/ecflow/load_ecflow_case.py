@@ -19,8 +19,8 @@ Prerequisites
 2. global-workflow built and linked.
 3. Nothing needs to be exported in the login shell.  The server is found
    automatically: the ``<host>.<port>.ecf.log`` files that ecflow_start.sh
-   leaves in the server directory (``--ecf-home``, default: ``ecflow`` next
-   to the repo) name the host and port, and the newest one that answers a
+   leaves in the server directory (``--ecf-home``, default: ``~/ecflow``)
+   name the host and port, and the newest one that answers a
    ping is used.  ``--ecf-host`` / ``--ecf-port`` (or ``$ECF_HOST`` /
    ``$ECF_PORT``) override the search.  The ecflow module is loaded and
    ``ECF_HOSTFILE`` is ignored for ecflow_client calls only::
@@ -327,7 +327,7 @@ def parse_args(default_yaml: Path = None) -> argparse.Namespace:
     parser.add_argument(
         "--ecf-home",
         type=Path,
-        default=Path(os.environ.get("ECF_HOME", HOMEglobal.parent / "ecflow")),
+        default=Path(os.environ.get("ECF_HOME", Path.home() / "ecflow")),
         help="Directory the ecFlow server was started in "
              "(ecflow_start.sh -d); its <host>.<port>.ecf.log files give "
              "the server port (default: $ECF_HOME or %(default)s).",

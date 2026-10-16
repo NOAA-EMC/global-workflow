@@ -10,7 +10,7 @@ User on Ursa login node (e.g. ufe01)
 │   On uecflow01:
 │   ├── module load ecflow
 │   ├── export ECF_PORT=$(( $(id -u) + 1500 ))
-│   ├── export ECF_HOME=/scratch3/NCEPDEV/global/$USER/ecflow
+│   ├── export ECF_HOME=$HOME/ecflow
 │   ├── mkdir -p ${ECF_HOME}
 │   ├── ecflow_start.sh -p ${ECF_PORT} -d ${ECF_HOME}
 │   │     └── starts ecflow_server daemon on uecflow01:${ECF_PORT}
@@ -37,7 +37,7 @@ If the server has stopped (node reboot, etc.):
 ├── ssh uecflow01
 │   ├── module load ecflow
 │   ├── export ECF_PORT=$(( $(id -u) + 1500 ))
-│   ├── export ECF_HOME=/scratch3/NCEPDEV/global/$USER/ecflow
+│   ├── export ECF_HOME=$HOME/ecflow
 │   ├── ps -u $USER -f | grep ecflow_server   # check if running
 │   ├── ecflow_start.sh -p ${ECF_PORT} -d ${ECF_HOME}   # restart
 │   │     └── restores state from checkpoint — suites reappear

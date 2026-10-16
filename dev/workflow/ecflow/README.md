@@ -91,7 +91,7 @@ Then run the case from any directory; there is no `HOMEglobal`,
 
 `ecflow_start.sh` leaves a `<host>.<port>.ecf.log` file in the directory
 the server was started in (`-d`), for example
-`/scratch3/NCEPDEV/global/${USER}/ecflow/uecflow01.22885.ecf.log`.
+`~/ecflow/uecflow01.22885.ecf.log`.
 The file name holds the host and the port. The loader:
 
 1. uses `--ecf-port` (or `$ECF_PORT`) if you give one;
@@ -103,7 +103,7 @@ The file name holds the host and the port. The loader:
 
 | Option | Default |
 |--------|---------|
-| `--ecf-home` | `$ECF_HOME` if set, otherwise `ecflow` next to the repo (`<repo>/../ecflow`) |
+| `--ecf-home` | `$ECF_HOME` if set, otherwise `~/ecflow` |
 | `--ecf-host` | `$ECF_HOST` if set, otherwise from the server logs |
 | `--ecf-port` | `$ECF_PORT` if set, otherwise from the server logs |
 
@@ -125,7 +125,7 @@ MACHINE_ID=URSA python3 dev/workflow/ecflow/run_ecflow_case.py
 To find your port and check the server from your shell without exporting
 anything:
 ```bash
-ls /scratch3/NCEPDEV/global/${USER}/ecflow/*.ecf.log
+ls ~/ecflow/*.ecf.log
 module load ecflow
 ecflow_client --host=uecflow01 --port=<port from the file name> --ping
 ```
@@ -141,7 +141,7 @@ From any login node, check if your server on `uecflow01` is alive:
 
 ```bash
 module load ecflow
-ls /scratch3/NCEPDEV/global/${USER}/ecflow/*.ecf.log   # <host>.<port>.ecf.log
+ls ~/ecflow/*.ecf.log   # <host>.<port>.ecf.log
 ecflow_client --host=uecflow01 --port=<port from the file name> --ping
 ```
 
@@ -178,7 +178,7 @@ module load ecflow
 export ECF_PORT=$(( $(id -u) + 1500 ))
 
 # 3. Create the job directory
-export ECF_HOME=/scratch3/NCEPDEV/global/${USER}/ecflow
+export ECF_HOME=${HOME}/ecflow
 mkdir -p "${ECF_HOME}"
 
 # 4. Start the server
@@ -206,7 +206,7 @@ preserved in `ECF_HOME`.
 ssh uecflow01
 module load ecflow
 export ECF_PORT=$(( $(id -u) + 1500 ))
-export ECF_HOME=/scratch3/NCEPDEV/global/${USER}/ecflow
+export ECF_HOME=${HOME}/ecflow
 
 # Check if it's still running
 ps -u ${USER} -f | grep ecflow_server
@@ -261,7 +261,7 @@ does not answer. If the server is down, start it per
 > this README (monitoring, rerun, cleanup) are run after
 > `module load ecflow` and need the server given explicitly, e.g.
 > `ecflow_client --host=uecflow01 --port=<port> --get_state ...`. The port
-> is in the log file name, `ls /scratch3/NCEPDEV/global/${USER}/ecflow/*.ecf.log`.
+> is in the log file name, `ls ~/ecflow/*.ecf.log`.
 > The loader prints ready-to-copy commands with the right `--host/--port`
 > at the end of its output.
 
@@ -304,7 +304,7 @@ ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 ```bash
 # 1. Check the job output for the error
-cat /scratch3/NCEPDEV/global/${USER}/ecflow/<task_name>.1   # the --ecf-home directory
+cat ${COMROOT}/C48_ATM_ecflow/logs/<task_name>.1
  the issue (edit .ecf, fix paths, etc.)
 
 # 3. Rerun the task
@@ -387,7 +387,7 @@ python3 dev/workflow/ecflow/run_ecflow_case.py \
 | `--stmp PATH` | Override runtime scratch directory |
 | `--suite-name NAME` | Override ecFlow suite name |
 | `--overwrite` | Overwrite a previously created experiment |
-| `--ecf-home PATH` | Server directory searched for `<host>.<port>.ecf.log` files (default: `<repo>/../ecflow`) |
+| `--ecf-home PATH` | Server directory searched for `<host>.<port>.ecf.log` files (default: `~/ecflow`) |
 | `--ecf-host HOST` | Use this ecFlow host instead of the one found in the logs |
 | `--ecf-port PORT` | Use this ecFlow port instead of the one found in the logs |
 | `--start-server` | Start the server over ssh if it does not answer (off by default) |
@@ -415,7 +415,7 @@ ecflow_client --get_state /C48_ATM_ecflow
 ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 # View job output for a task
-cat /scratch3/NCEPDEV/global/${USER}/ecflow/fcst.1    # .1 = first try number
+cat ${COMROOT}/C48_ATM_ecflow/logs/fcst.1    # .1 = first try number
 ```
 
 ### Log files
@@ -523,7 +523,7 @@ python3 dev/workflow/ecflow/run_ecflow_case.py --overwrite
 
 The loader no longer requires `ECF_HOST`, `ECF_PORT`, `ECF_HOME` or
 `HOMEglobal`. It looks for `<host>.<port>.ecf.log` files in `--ecf-home`
-(default `<repo>/../ecflow`). If it targets the wrong server or finds
+(default `~/ecflow`). If it targets the wrong server or finds
 none, pass `--ecf-home`, or `--ecf-host` and `--ecf-port`.
 
 ```
@@ -593,7 +593,7 @@ ls ${EXPDIR}/C48_ATM_ecflow/ecf_scripts/<task_name>.ecf
 
 **Check the job output:**
 ```bash
-cat /scratch3/NCEPDEV/global/${USER}/ecflow/<task_name>.1
+cat ${COMROOT}/C48_ATM_ecflow/logs/<task_name>.1
 ```
 
 Common causes:
