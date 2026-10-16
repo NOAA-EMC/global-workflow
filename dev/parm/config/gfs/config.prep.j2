@@ -19,7 +19,10 @@ export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
 # Allow users to control the generation or use of either operational or
 # their processed prepbufr, prepbufr.acft_profiles, nsstbufr files
-export MAKE_PREPBUFR="YES"  # Generate prepbufr, etc. files by executing obsproc
+# Obsproc v1.3 is only supported on WCOSS2 and Gaea-C6 at this time. 
+# Set MAKE_PREPBUFR=NO on other machines for PDY after Oct 2026
+
+export MAKE_PREPBUFR="NO"  # YES = Generate prepbufr, etc. files by executing obsproc
 if [[ "${MAKE_PREPBUFR^^}" != "YES" ]]; then
   export USE_PREPBUFR_FROM_OPS="YES"  # Copy operational prepbufr, etc files
   if [[ "${USE_PREPBUFR_FROM_OPS^^}" != "YES" ]]; then
