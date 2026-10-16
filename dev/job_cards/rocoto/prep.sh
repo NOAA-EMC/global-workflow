@@ -39,7 +39,6 @@ declare -rx COMOUT_OBS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/obs"
 declare -rx COMINobsproc="${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos"
 declare -rx COMINobsforge="${IODADIR}/${RUN_local}.${PDY}/${cyc}"
 declare -rx COMIN_TCVITAL="${ROTDIR}/${RUN_local}.${PDY}/${cyc}"
-#declare -rx COMIN_TCVITAL="${DMPDIR}/${RUN_local}.${PDY}/${cyc}/atmos"
 declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN_local}.${PDY}/${cyc}/analysis/atmos"
 
 declare -rx COMOUT_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
@@ -112,8 +111,6 @@ if [[ ${PROCESS_TROPCY} == "YES" ]]; then
     fi
 
 else
-    #Change not needed if pointing to v1.3 obs in GDA
-    #cpfs "${DMPDIR}/${RUN_local}.${PDY}/${cyc}/atmos/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
     cpfs "${COMINobsproc}/${RUN_local}.t${cyc}z.syndata.tcvitals.tm00" "${COMOUT_OBS}/"
 fi
 
