@@ -207,7 +207,7 @@ class EcFlowTasks(Tasks):
         Mirrors rocoto/gfs_tasks.py arch_tars() logic.
         """
         if self.run == 'gfs':
-            tarball_types = ['gfsa', 'gfsb']
+            tarball_types = ['gfsa']
 
             if self._configs['arch_tars'].get('ARCH_GAUSSIAN', True):
                 tarball_types.extend(['gfs_flux', 'gfs_netcdfb', 'gfs_pgrb2b'])
@@ -221,7 +221,7 @@ class EcFlowTasks(Tasks):
                 tarball_types.append('chem')
 
             if self.options['do_ocean']:
-                tarball_types.extend(['ocean_6hravg', 'ocean_native', 'gfs_flux_1p00'])
+                tarball_types.extend(['ocean_6hravg', 'ocean_native'])
                 if self.options.get('do_jediocnvar', False) and self.app_config.mode == 'cycled':
                     tarball_types.append('gfsocean_analysis')
 
