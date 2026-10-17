@@ -323,7 +323,7 @@ ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 ```bash
 # 1. Check the job output for the error
-cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log
+cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log.<try>
  the issue (edit .ecf, fix paths, etc.)
 
 # 3. Rerun the task
@@ -446,14 +446,17 @@ ecflow_client --get_state /C48_ATM_ecflow
 ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
 
 # View job output for a task
-cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_fcst.log
+cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_fcst.log.1
 ```
 
 ### Log files
 
 As in the Rocoto workflow, task logs are written to one directory per cycle,
-`{ROTDIR}/logs/<cycle>/`, named `<run>_<task>.log`. Product and tarball tasks
-add their group, for example `gfs_atmos_prod_f000_f002.log`:
+`{ROTDIR}/logs/<cycle>/`, named `<run>_<task>.log.<try>`. Product and tarball
+tasks add their group, for example `gfs_atmos_prod_f000_f002.log.1`. The try
+number is ecFlow's `ECF_TRYNO`, so a rerun or automatic retry writes a new
+file (`gfs_fcst.log.1`, `gfs_fcst.log.2`, ...) instead of overwriting the
+previous one:
 ```bash
 ls ${COMROOT}/C48_ATM_ecflow/logs/2021032312/
 ```
@@ -629,7 +632,7 @@ ls ${EXPDIR}/C48_ATM_ecflow/ecf_scripts/<task_name>.ecf
 
 **Check the job output:**
 ```bash
-cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log
+cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log.<try>
 ```
 
 Common causes:
@@ -688,7 +691,7 @@ ${RUNTESTS}/
   COMROOT/C48_ATM_ecflow/           ← output data
     gfs.20210323/12/                 forecast output
       model_data/atmos/history/      atmospheric history files
-    logs/<cycle>/                    task log files (<run>_<task>.log)
+    logs/<cycle>/                    task log files (<run>_<task>.log.<try>)
   RUNDIRS/C48_ATM_ecflow/           ← runtime scratch (cleaned up)
 ```
 

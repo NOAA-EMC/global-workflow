@@ -318,7 +318,7 @@ class GFSForecastOnlyEcFlowSuite(EcFlowSuite):
             f"#SBATCH --nodes={resources['nodes']}",
             f"#SBATCH --ntasks-per-node={resources['ppn']}",
             f"#SBATCH --cpus-per-task={resources['threads']}",
-            "#SBATCH --output=%LOGDIR%/%LOG_NAME%.log",
+            "#SBATCH --output=%LOGDIR%/%LOG_NAME%.log.%ECF_TRYNO%",
         ]
         if resources.get('native'):
             lines.append(f"#SBATCH {resources['native']}")
