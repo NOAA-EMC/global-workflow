@@ -25,7 +25,7 @@ Prerequisites
    ``$ECF_PORT``) override the search.  The ecflow module is loaded and
    ``ECF_HOSTFILE`` is ignored for ecflow_client calls only::
 
-       python3 dev/workflow/ecflow/load_ecflow_case.py \\
+       python3 dev/workflow/ecflowgw/load_ecflow_case.py \\
            --yaml dev/ci/cases/pr/<CASE>.yaml  (or dev/ci/cases/ecflowpr/<CASE>.yaml)
 """
 
@@ -39,7 +39,7 @@ import sys
 import time
 from pathlib import Path
 
-# Resolve repo root from this script's location (dev/workflow/ecflow/)
+# Resolve repo root from this script's location (dev/workflow/ecflowgw/)
 SCRIPT_DIR = Path(__file__).resolve().parent
 HOMEglobal = SCRIPT_DIR.parent.parent.parent
 
@@ -612,7 +612,7 @@ def run(default_yaml: Path = None) -> None:
     print("(load the module first with: module load ecflow)")
     print()
     print("To refresh .ecf files after editing (without regenerating .def):")
-    print(f"  bash dev/workflow/ecflow/sync_ecf_scripts.sh {expdir_path}/ecf_scripts")
+    print(f"  bash dev/workflow/ecflowgw/sync_ecf_scripts.sh {expdir_path}/ecf_scripts")
 
 
 def main() -> None:

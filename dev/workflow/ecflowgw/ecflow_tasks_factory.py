@@ -5,7 +5,7 @@ Mirrors ``rocoto/tasks_factory.py``: registers per-NET task classes
 that the suite generator instantiates to get per-task ecFlow dicts.
 """
 from wxflow import Factory
-from ecflow.gfs_ecflow_tasks import GFSEcFlowTasks
+from ecflowgw.gfs_ecflow_tasks import GFSEcFlowTasks
 
 ecflow_tasks_factory = Factory('ecFlowTasks')
 

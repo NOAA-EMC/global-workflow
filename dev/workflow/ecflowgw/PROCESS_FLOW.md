@@ -51,15 +51,15 @@ If the server has stopped (node reboot, etc.):
 ## Step 1: Launch the Test Case
 
 ```
-$ python3 dev/workflow/ecflow/run_ecflow_case.py
+$ python3 dev/workflow/ecflowgw/run_ecflow_case.py
 
 run_ecflow_case.py                              ← entry point
-│   (dev/workflow/ecflow/run_ecflow_case.py)
+│   (dev/workflow/ecflowgw/run_ecflow_case.py)
 │
 ├── sets default YAML = dev/ci/cases/pr/C48_ATM.yaml
 │
 └── calls load_ecflow_case.run(default_yaml)
-      │   (dev/workflow/ecflow/load_ecflow_case.py)
+      │   (dev/workflow/ecflowgw/load_ecflow_case.py)
       │
       ├── parse_args()
       │     reads --yaml, --pslot, --expdir, --comroot, --stmp, --overwrite,
@@ -121,17 +121,17 @@ run_ecflow_case.py                              ← entry point
       │           │           [stage_ic, fcst, atmos_prod, tracker, genesis, arch_vrfy, cleanup]
       │           │
       │           ├── ecflow_suite_factory.create("gfs_forecast-only", app_config, ecflow_config)
-      │           │     │   (dev/workflow/ecflow/ecflow_suite_factory.py)
+      │           │     │   (dev/workflow/ecflowgw/ecflow_suite_factory.py)
       │           │     └── returns GFSForecastOnlyEcFlowSuite instance
       │           │
       │           └── suite.write()
-      │                 │   (dev/workflow/ecflow/gfs_forecast_only_ecflow.py)
+      │                 │   (dev/workflow/ecflowgw/gfs_forecast_only_ecflow.py)
       │                 │
       │                 ├── __init__():
       │                 │     ecflow_tasks_factory.create("gfs", app_config, "gfs")
-      │                 │       (dev/workflow/ecflow/ecflow_tasks_factory.py)
+      │                 │       (dev/workflow/ecflowgw/ecflow_tasks_factory.py)
       │                 │       → GFSEcFlowTasks instance
-      │                 │           (dev/workflow/ecflow/gfs_ecflow_tasks.py)
+      │                 │           (dev/workflow/ecflowgw/gfs_ecflow_tasks.py)
       │                 │
       │                 ├── builds .def lines:
       │                 │     suite my_C48_test
@@ -149,7 +149,7 @@ run_ecflow_case.py                              ← entry point
       │                 │     task_dict = GFSEcFlowTasks.get_ecflow_task(task_name)
       │                 │       │   dispatches to e.g. self.fcst()
       │                 │       │   calls self._simple_task() or self._product_task()
-      │                 │       │     (dev/workflow/ecflow/ecflow_tasks.py)
+      │                 │       │     (dev/workflow/ecflowgw/ecflow_tasks.py)
       │                 │       │   calls Tasks.get_resource() from parent class
       │                 │       │     (dev/workflow/rocoto/tasks.py — inherited)
       │                 │       └── returns dict:
@@ -354,5 +354,5 @@ $ ecflow_ui &
 
 # Delete and start over
 $ ecflow_client --delete=force yes /my_C48_test
-$ python3 dev/workflow/ecflow/run_ecflow_case.py
+$ python3 dev/workflow/ecflowgw/run_ecflow_case.py
 ```

@@ -119,8 +119,8 @@ Each setting can be overridden:
 To use a different server directory, or a specific host and port:
 
 ```bash
-python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-home /path/to/ecflow
-python3 dev/workflow/ecflow/run_ecflow_case.py --ecf-host <host> --ecf-port <port>
+python3 dev/workflow/ecflowgw/run_ecflow_case.py --ecf-home /path/to/ecflow
+python3 dev/workflow/ecflowgw/run_ecflow_case.py --ecf-host <host> --ecf-port <port>
 ```
 
 If the mount-based auto-detection in `hosts.py` misidentifies some Ursa
@@ -128,7 +128,7 @@ front-end nodes (e.g. ufe12) as Hera, force the machine for one command
 instead of exporting it:
 
 ```bash
-MACHINE_ID=URSA python3 dev/workflow/ecflow/run_ecflow_case.py
+MACHINE_ID=URSA python3 dev/workflow/ecflowgw/run_ecflow_case.py
 ```
 
 To check the server yourself, take the host and port from the log file name
@@ -164,7 +164,7 @@ Instead of the steps below, add `--start-server` and the loader starts the
 server for you when it does not answer a ping:
 
 ```bash
-python3 dev/workflow/ecflow/run_ecflow_case.py --start-server
+python3 dev/workflow/ecflowgw/run_ecflow_case.py --start-server
 ```
 
 `ecflow_start.sh` only runs on `uecflow01`, so the loader does
@@ -283,10 +283,10 @@ does not answer. If the server is down, start it per
 cd <path to your global-workflow clone>
 
 # Quick start (all defaults)
-python3 dev/workflow/ecflow/run_ecflow_case.py
+python3 dev/workflow/ecflowgw/run_ecflow_case.py
 
 # Or with every option (all are optional; see "CLI options" in section 3)
-python3 dev/workflow/ecflow/run_ecflow_case.py \
+python3 dev/workflow/ecflowgw/run_ecflow_case.py \
     --yaml dev/ci/cases/ecflowpr/C48_ATM_ecflow.yaml \
     --pslot my_C48_test \
     --suite-name my_C48_test \
@@ -333,7 +333,7 @@ ecflow_client --force=queued /C48_ATM_ecflow/gfs/2021032312/<task_name>
 ### Rerun the whole suite from scratch
 
 ```bash
-python3 dev/workflow/ecflow/run_ecflow_case.py --overwrite
+python3 dev/workflow/ecflowgw/run_ecflow_case.py --overwrite
 ```
 
 ### Clean up after a run
@@ -354,7 +354,7 @@ rm -rf ${STMP}/RUNDIRS/C48_ATM_ecflow
 ### Update .ecf scripts after editing (without regenerating)
 
 ```bash
-bash dev/workflow/ecflow/sync_ecf_scripts.sh \
+bash dev/workflow/ecflowgw/sync_ecf_scripts.sh \
     ${RUNTESTS}/EXPDIR/C48_ATM_ecflow/ecf_scripts
 ```
 
@@ -372,7 +372,7 @@ needed.
 
 ```bash
 cd <path to your global-workflow clone>
-python3 dev/workflow/ecflow/run_ecflow_case.py
+python3 dev/workflow/ecflowgw/run_ecflow_case.py
 ```
 
 This will:
@@ -388,7 +388,7 @@ The suite is loaded but **not started**. The script prints the
 ### With every option
 
 ```bash
-python3 dev/workflow/ecflow/run_ecflow_case.py \
+python3 dev/workflow/ecflowgw/run_ecflow_case.py \
     --yaml dev/ci/cases/ecflowpr/C48_ATM_ecflow.yaml \
     --pslot my_C48_test \
     --suite-name my_C48_test \
@@ -484,7 +484,7 @@ output data (COMROOT, RUNDIRS) rather than starting from scratch:
 ```bash
 # 1. Reload the .def — say "no" to cleaning EXPDIR/COMROOT
 #    so previous output is preserved, then "yes" to replace the suite
-python3 dev/workflow/ecflow/run_ecflow_case.py
+python3 dev/workflow/ecflowgw/run_ecflow_case.py
 
 # 2. Suspend the suite before beginning so nothing auto-runs
 ecflow_client --suspend /C48_ATM_ecflow
@@ -546,14 +546,14 @@ scancel -u ${USER}
 ### Update .ecf scripts without regenerating the .def
 
 ```bash
-bash dev/workflow/ecflow/sync_ecf_scripts.sh \
+bash dev/workflow/ecflowgw/sync_ecf_scripts.sh \
     ${EXPDIR}/C48_ATM_ecflow/ecf_scripts
 ```
 
 ### Regenerate the .def from scratch
 
 ```bash
-python3 dev/workflow/ecflow/run_ecflow_case.py --overwrite
+python3 dev/workflow/ecflowgw/run_ecflow_case.py --overwrite
 ```
 
 ## 6. Troubleshooting

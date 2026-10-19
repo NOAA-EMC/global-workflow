@@ -15,7 +15,7 @@ from logging import getLogger
 from typing import Optional
 
 from applications.applications import AppConfig
-from ecflow.ecflow_tasks import EcFlowTasks
+from ecflowgw.ecflow_tasks import EcFlowTasks
 
 logger = getLogger(__name__.split('.')[-1])
 

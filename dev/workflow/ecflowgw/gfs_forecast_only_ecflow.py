@@ -22,8 +22,8 @@ from logging import getLogger
 from pathlib import Path
 from typing import Dict, List
 
-from ecflow.ecflow_suite import EcFlowSuite
-from ecflow.ecflow_tasks_factory import ecflow_tasks_factory
+from ecflowgw.ecflow_suite import EcFlowSuite
+from ecflowgw.ecflow_tasks_factory import ecflow_tasks_factory
 from applications.applications import AppConfig
 from rocoto.tasks import Tasks
 from wxflow import timedelta_to_HMS

@@ -8,22 +8,23 @@ YAML as the default.
 
 Usage::
 
-    python3 dev/workflow/ecflow/run_ecflow_case.py
-    python3 dev/workflow/ecflow/run_ecflow_case.py --load-only
-    python3 dev/workflow/ecflow/run_ecflow_case.py --yaml /other/case.yaml
+    python3 dev/workflow/ecflowgw/run_ecflow_case.py
+    python3 dev/workflow/ecflowgw/run_ecflow_case.py --load-only
+    python3 dev/workflow/ecflowgw/run_ecflow_case.py --yaml /other/case.yaml
 """
 
 import sys
 from pathlib import Path
 
-# Ensure dev/workflow/ is on sys.path so that "from ecflow.load_ecflow_case"
-# resolves to our ecflow/ package, not the system ecFlow Python bindings.
-_SCRIPT_DIR = Path(__file__).resolve().parent          # dev/workflow/ecflow/
+# Ensure dev/workflow/ is on sys.path so that "from ecflowgw.load_ecflow_case"
+# resolves to this package. It is named ecflowgw so it does not shadow the
+# ecFlow Python API, which is imported as "ecflow".
+_SCRIPT_DIR = Path(__file__).resolve().parent          # dev/workflow/ecflowgw/
 _WORKFLOW_DIR = _SCRIPT_DIR.parent                     # dev/workflow/
 if str(_WORKFLOW_DIR) not in sys.path:
     sys.path.insert(0, str(_WORKFLOW_DIR))
 
-from ecflow.load_ecflow_case import HOMEglobal, run  # noqa: E402
+from ecflowgw.load_ecflow_case import HOMEglobal, run  # noqa: E402
 
 C48_ATM_YAML = HOMEglobal / "dev" / "ci" / "cases" / "pr" / "C48_ATM.yaml"
 
