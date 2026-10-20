@@ -123,7 +123,7 @@ base_script_list = [
     "exglobal_oceanice_products.py",
     "exglobal_marine_obs_dump.py",
     "exglobal_marine_obs_bufr_dump.py",
-    "exglobal_prep_sfc.sh",
+    "exglobal_atmos_prep_sfc.sh",
     "exglobal_snow_anal.py",
     "exglobal_snow_ens_anal.py",
     "exglobal_atmos_ens_recenter.sh",
