@@ -3,7 +3,7 @@ set -x
 
 ####  UNIX Script Documentation Block ###################################
 #                      .                                             .
-# Script name:  exglobal_prep_sfc.sh
+# Script name:  exglobal_atmos_prep_sfc.sh
 # RFC Contact:  George Gayno
 # Abstract:  This script calls two utility scripts to prepare a global
 #    blended ice analysis and global snow analyses for use by GFS/GDAS.
