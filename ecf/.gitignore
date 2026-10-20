@@ -8,9 +8,9 @@ scripts/enkfgdas/analysis/recenter/ecen/jenkfgdas_ecen0*.ecf
 scripts/enkfgdas/forecast/jenkfgdas_fcst_mem0*.ecf
 scripts/enkfgdas/forecast/jenkfgdas_fcst_manager_mem*.ecf
 scripts/enkfgdas/post/jenkfgdas_epos0*.ecf
-scripts/gfs/gempak/atmos/gempak/jgfs_atmos_gempak_f*.ecf
-scripts/gfs/gempak/wave/jgfs_wave_gempak_f*.ecf
-scripts/gdas/gempak/atmos/gempak/jgdas_atmos_gempak_f*.ecf
-scripts/gfs/gempak/atmos/goesupp/jgfs_atmos_upp_goes_f*.ecf
+scripts/gfs/product/atmos/gempak/jgfs_atmos_gempak_f*.ecf
+scripts/gfs/product/wave/gempak/jgfs_wave_gempak_f*.ecf
+scripts/gdas/product/atmos/gempak/jgdas_atmos_gempak_f*.ecf
+scripts/gfs/product/atmos/goesupp/jgfs_atmos_upp_goes_f*.ecf
 scripts/gfs/product/atmos/awips_20km_1p0/jgfs_atmos_awips_20km_1p0_f*.ecf
-scripts/gfs/gempak/atmos/grb2spec/jgfs_atmos__gempak_pgrb2_spec_f*.ecf
+scripts/gfs/product/atmos/grb2spec/jgfs_atmos_gempak_pgrb2_spec_f*.ecf
