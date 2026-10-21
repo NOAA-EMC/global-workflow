@@ -46,18 +46,18 @@ The clone extracts the following GFS components:
 | jcb-gdas | https://github.com/NOAA-EMC/jcb-gdas/tree/release/1.0 | 
 | bufr-query | https://github.com/NOAA-EMC/bufr-query/tree/release/1.0 |
 | DA-utils | https://github.com/NOAA-EMC/DA-utils/tree/release/1.0 | 
-| fv3-jedi | https://github.com/JCSDA/fv3-jedi/tree/release/1.11 | 
-| fv3-jedi-linearmodel | https://github.com/JCSDA/fv3-jedi-linearmodel/tree/release/1.7 | 
+| fv3-jedi | https://github.com/NOAA-EMC/fv3-jedi/tree/hotfix/warnings-777c784b | 
+| fv3-jedi-linearmodel | https://github.com/NOAA-EMC/fv3-jedi-linearmodel/tree/hotfix/warnings-d1826a7 | 
 | GSW-Fortran | https://github.com/JCSDA-internal/GSW-Fortran/tree/release/soca-1.0.0 | 
-| ioda | https://github.com/JCSDA/ioda/tree/release/2.11 | 
+| ioda | https://github.com/NOAA-EMC/ioda/tree/hotfix/warnings-release/2.11 | 
 | jcb | https://github.com/NOAA-EMC/jcb/tree/release/1.0 |
 | jedi-cmake | https://github.com/JCSDA/jedi-cmake/tree/master | 
 | land-apply_jedi_incr | https://github.com/NOAA-EMC/land-apply_jedi_incr/tree/release/1.0 |
 | oops | https://github.com/JCSDA/oops/tree/release/1.12 | 
-| saber | https://github.com/JCSDA/saber/tree/release/1.12 | 
+| saber | https://github.com/NOAA-EMC/saber/tree/hotfix/warnings-c8e0e3c3 | 
 | soca | https://github.com/NOAA-EMC/soca/tree/release/1.0 |
 | spoc| https://github.com/NOAA-EMC/spoc/tree/release/1.0 | 
-| ufo | https://github.com/JCSDA/ufo/tree/release/1.12 |
+| ufo | https://github.com/NOAA-EMC/ufo/tree/hotfix/warnings-bb78f475 |
 | vader | https://github.com/JCSDA/vader/tree/release/1.9 |
 | UFS_UTILS | https://github.com/ufs-community/UFS_UTILS/tree/production/GFS.v17.0.0 |
 | ufs-weather-model | https://github.com/ufs-community/ufs-weather-model/tree/production/GFS.v17 |
