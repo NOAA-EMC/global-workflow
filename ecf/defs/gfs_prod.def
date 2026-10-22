@@ -3786,7 +3786,7 @@ suite gfs_v17_nco
               task jgfs_atmos_gempak_pgrb2_spec_f180
                 edit FHR '180'
                 edit FHR_LIST '180'
-            endfamily		//gempakgrb2spec
+            endfamily		//grb2spec
           endfamily		//atmos
           family ice
             edit WGF 'ice'
@@ -10009,7 +10009,7 @@ suite gfs_v17_nco
               task jgfs_atmos_gempak_pgrb2_spec_f180
                 edit FHR '180'
                 edit FHR_LIST '180'
-            endfamily		//gempakgrb2spec
+            endfamily		//grb2spec
           endfamily		//atmos
           family ice
             edit WGF 'ice'
@@ -16231,7 +16231,7 @@ suite gfs_v17_nco
               task jgfs_atmos_gempak_pgrb2_spec_f180
                 edit FHR '180'
                 edit FHR_LIST '180'
-            endfamily		//gempakgrb2spec
+            endfamily		//grb2spec
           endfamily		//atmos
           family ice
             edit WGF 'ice'
@@ -20372,223 +20372,223 @@ suite gfs_v17_nco
               task jgfs_atmos_awips_20km_1p0_f000
                 edit FHR '000'
                 edit FHR_LIST '0'
-                trigger ../product/jgfs_atmos_products_f000==complete
+                trigger ../products/jgfs_atmos_products_f000==complete
               task jgfs_atmos_awips_20km_1p0_f003
                 edit FHR '003'
                 edit FHR_LIST '3'
-                trigger ../product/jgfs_atmos_products_f003==complete
+                trigger ../products/jgfs_atmos_products_f003==complete
               task jgfs_atmos_awips_20km_1p0_f006
                 edit FHR '006'
                 edit FHR_LIST '6'
-                trigger ../product/jgfs_atmos_products_f006==complete
+                trigger ../products/jgfs_atmos_products_f006==complete
               task jgfs_atmos_awips_20km_1p0_f009
                 edit FHR '009'
                 edit FHR_LIST '9'
-                trigger ../product/jgfs_atmos_products_f009==complete
+                trigger ../products/jgfs_atmos_products_f009==complete
               task jgfs_atmos_awips_20km_1p0_f012
                 edit FHR '012'
                 edit FHR_LIST '12'
-                trigger ../product/jgfs_atmos_products_f012==complete
+                trigger ../products/jgfs_atmos_products_f012==complete
               task jgfs_atmos_awips_20km_1p0_f015
                 edit FHR '015'
                 edit FHR_LIST '15'
-                trigger ../product/jgfs_atmos_products_f015==complete
+                trigger ../products/jgfs_atmos_products_f015==complete
               task jgfs_atmos_awips_20km_1p0_f018
                 edit FHR '018'
                 edit FHR_LIST '18'
-                trigger ../product/jgfs_atmos_products_f018==complete
+                trigger ../products/jgfs_atmos_products_f018==complete
               task jgfs_atmos_awips_20km_1p0_f021
                 edit FHR '021'
                 edit FHR_LIST '21'
-                trigger ../product/jgfs_atmos_products_f021==complete
+                trigger ../products/jgfs_atmos_products_f021==complete
               task jgfs_atmos_awips_20km_1p0_f024
                 edit FHR '024'
                 edit FHR_LIST '24'
-                trigger ../product/jgfs_atmos_products_f024==complete
+                trigger ../products/jgfs_atmos_products_f024==complete
               task jgfs_atmos_awips_20km_1p0_f027
                 edit FHR '027'
                 edit FHR_LIST '27'
-                trigger ../product/jgfs_atmos_products_f027==complete
+                trigger ../products/jgfs_atmos_products_f027==complete
               task jgfs_atmos_awips_20km_1p0_f030
                 edit FHR '030'
                 edit FHR_LIST '30'
-                trigger ../product/jgfs_atmos_products_f030==complete
+                trigger ../products/jgfs_atmos_products_f030==complete
               task jgfs_atmos_awips_20km_1p0_f033
                 edit FHR '033'
                 edit FHR_LIST '33'
-                trigger ../product/jgfs_atmos_products_f033==complete
+                trigger ../products/jgfs_atmos_products_f033==complete
               task jgfs_atmos_awips_20km_1p0_f036
                 edit FHR '036'
                 edit FHR_LIST '36'
-                trigger ../product/jgfs_atmos_products_f036==complete
+                trigger ../products/jgfs_atmos_products_f036==complete
               task jgfs_atmos_awips_20km_1p0_f039
                 edit FHR '039'
                 edit FHR_LIST '39'
-                trigger ../product/jgfs_atmos_products_f039==complete
+                trigger ../products/jgfs_atmos_products_f039==complete
               task jgfs_atmos_awips_20km_1p0_f042
                 edit FHR '042'
                 edit FHR_LIST '42'
-                trigger ../product/jgfs_atmos_products_f042==complete
+                trigger ../products/jgfs_atmos_products_f042==complete
               task jgfs_atmos_awips_20km_1p0_f045
                 edit FHR '045'
                 edit FHR_LIST '45'
-                trigger ../product/jgfs_atmos_products_f045==complete
+                trigger ../products/jgfs_atmos_products_f045==complete
               task jgfs_atmos_awips_20km_1p0_f048
                 edit FHR '048'
                 edit FHR_LIST '48'
-                trigger ../product/jgfs_atmos_products_f048==complete
+                trigger ../products/jgfs_atmos_products_f048==complete
               task jgfs_atmos_awips_20km_1p0_f051
                 edit FHR '051'
                 edit FHR_LIST '51'
-                trigger ../product/jgfs_atmos_products_f051==complete
+                trigger ../products/jgfs_atmos_products_f051==complete
               task jgfs_atmos_awips_20km_1p0_f054
                 edit FHR '054'
                 edit FHR_LIST '54'
-                trigger ../product/jgfs_atmos_products_f054==complete
+                trigger ../products/jgfs_atmos_products_f054==complete
               task jgfs_atmos_awips_20km_1p0_f057
                 edit FHR '057'
                 edit FHR_LIST '57'
-                trigger ../product/jgfs_atmos_products_f057==complete
+                trigger ../products/jgfs_atmos_products_f057==complete
               task jgfs_atmos_awips_20km_1p0_f060
                 edit FHR '060'
                 edit FHR_LIST '60'
-                trigger ../product/jgfs_atmos_products_f060==complete
+                trigger ../products/jgfs_atmos_products_f060==complete
               task jgfs_atmos_awips_20km_1p0_f063
                 edit FHR '063'
                 edit FHR_LIST '63'
-                trigger ../product/jgfs_atmos_products_f063==complete
+                trigger ../products/jgfs_atmos_products_f063==complete
               task jgfs_atmos_awips_20km_1p0_f066
                 edit FHR '066'
                 edit FHR_LIST '66'
-                trigger ../product/jgfs_atmos_products_f066==complete
+                trigger ../products/jgfs_atmos_products_f066==complete
               task jgfs_atmos_awips_20km_1p0_f069
                 edit FHR '069'
                 edit FHR_LIST '69'
-                trigger ../product/jgfs_atmos_products_f069==complete
+                trigger ../products/jgfs_atmos_products_f069==complete
               task jgfs_atmos_awips_20km_1p0_f072
                 edit FHR '072'
                 edit FHR_LIST '72'
-                trigger ../product/jgfs_atmos_products_f072==complete
+                trigger ../products/jgfs_atmos_products_f072==complete
               task jgfs_atmos_awips_20km_1p0_f075
                 edit FHR '075'
                 edit FHR_LIST '75'
-                trigger ../product/jgfs_atmos_products_f075==complete
+                trigger ../products/jgfs_atmos_products_f075==complete
               task jgfs_atmos_awips_20km_1p0_f078
                 edit FHR '078'
                 edit FHR_LIST '78'
-                trigger ../product/jgfs_atmos_products_f078==complete
+                trigger ../products/jgfs_atmos_products_f078==complete
               task jgfs_atmos_awips_20km_1p0_f081
                 edit FHR '081'
                 edit FHR_LIST '81'
-                trigger ../product/jgfs_atmos_products_f081==complete
+                trigger ../products/jgfs_atmos_products_f081==complete
               task jgfs_atmos_awips_20km_1p0_f084
                 edit FHR '084'
                 edit FHR_LIST '84'
-                trigger ../product/jgfs_atmos_products_f084==complete
+                trigger ../products/jgfs_atmos_products_f084==complete
               task jgfs_atmos_awips_20km_1p0_f090
                 edit FHR '090'
                 edit FHR_LIST '90'
-                trigger ../product/jgfs_atmos_products_f090==complete
+                trigger ../products/jgfs_atmos_products_f090==complete
               task jgfs_atmos_awips_20km_1p0_f096
                 edit FHR '096'
                 edit FHR_LIST '96'
-                trigger ../product/jgfs_atmos_products_f096==complete
+                trigger ../products/jgfs_atmos_products_f096==complete
               task jgfs_atmos_awips_20km_1p0_f102
                 edit FHR '102'
                 edit FHR_LIST '102'
-                trigger ../product/jgfs_atmos_products_f102==complete
+                trigger ../products/jgfs_atmos_products_f102==complete
               task jgfs_atmos_awips_20km_1p0_f108
                 edit FHR '108'
                 edit FHR_LIST '108'
-                trigger ../product/jgfs_atmos_products_f108==complete
+                trigger ../products/jgfs_atmos_products_f108==complete
               task jgfs_atmos_awips_20km_1p0_f114
                 edit FHR '114'
                 edit FHR_LIST '114'
-                trigger ../product/jgfs_atmos_products_f114==complete
+                trigger ../products/jgfs_atmos_products_f114==complete
               task jgfs_atmos_awips_20km_1p0_f120
                 edit FHR '120'
                 edit FHR_LIST '120'
-                trigger ../product/jgfs_atmos_products_f120==complete
+                trigger ../products/jgfs_atmos_products_f120==complete
               task jgfs_atmos_awips_20km_1p0_f126
                 edit FHR '126'
                 edit FHR_LIST '126'
-                trigger ../product/jgfs_atmos_products_f126==complete
+                trigger ../products/jgfs_atmos_products_f126==complete
               task jgfs_atmos_awips_20km_1p0_f132
                 edit FHR '132'
                 edit FHR_LIST '132'
-                trigger ../product/jgfs_atmos_products_f132==complete
+                trigger ../products/jgfs_atmos_products_f132==complete
               task jgfs_atmos_awips_20km_1p0_f138
                 edit FHR '138'
                 edit FHR_LIST '138'
-                trigger ../product/jgfs_atmos_products_f138==complete
+                trigger ../products/jgfs_atmos_products_f138==complete
               task jgfs_atmos_awips_20km_1p0_f144
                 edit FHR '144'
                 edit FHR_LIST '144'
-                trigger ../product/jgfs_atmos_products_f144==complete
+                trigger ../products/jgfs_atmos_products_f144==complete
               task jgfs_atmos_awips_20km_1p0_f150
                 edit FHR '150'
                 edit FHR_LIST '150'
-                trigger ../product/jgfs_atmos_products_f150==complete
+                trigger ../products/jgfs_atmos_products_f150==complete
               task jgfs_atmos_awips_20km_1p0_f156
                 edit FHR '156'
                 edit FHR_LIST '156'
-                trigger ../product/jgfs_atmos_products_f156==complete
+                trigger ../products/jgfs_atmos_products_f156==complete
               task jgfs_atmos_awips_20km_1p0_f162
                 edit FHR '162'
                 edit FHR_LIST '162'
-                trigger ../product/jgfs_atmos_products_f162==complete
+                trigger ../products/jgfs_atmos_products_f162==complete
               task jgfs_atmos_awips_20km_1p0_f168
                 edit FHR '168'
                 edit FHR_LIST '168'
-                trigger ../product/jgfs_atmos_products_f168==complete
+                trigger ../products/jgfs_atmos_products_f168==complete
               task jgfs_atmos_awips_20km_1p0_f174
                 edit FHR '174'
                 edit FHR_LIST '174'
-                trigger ../product/jgfs_atmos_products_f174==complete
+                trigger ../products/jgfs_atmos_products_f174==complete
               task jgfs_atmos_awips_20km_1p0_f180
                 edit FHR '180'
                 edit FHR_LIST '180'
-                trigger ../product/jgfs_atmos_products_f180==complete
+                trigger ../products/jgfs_atmos_products_f180==complete
               task jgfs_atmos_awips_20km_1p0_f186
                 edit FHR '186'
                 edit FHR_LIST '186'
-                trigger ../product/jgfs_atmos_products_f186==complete
+                trigger ../products/jgfs_atmos_products_f186==complete
               task jgfs_atmos_awips_20km_1p0_f192
                 edit FHR '192'
                 edit FHR_LIST '192'
-                trigger ../product/jgfs_atmos_products_f192==complete
+                trigger ../products/jgfs_atmos_products_f192==complete
               task jgfs_atmos_awips_20km_1p0_f198
                 edit FHR '198'
                 edit FHR_LIST '198'
-                trigger ../product/jgfs_atmos_products_f198==complete
+                trigger ../products/jgfs_atmos_products_f198==complete
               task jgfs_atmos_awips_20km_1p0_f204
                 edit FHR '204'
                 edit FHR_LIST '204'
-                trigger ../product/jgfs_atmos_products_f204==complete
+                trigger ../products/jgfs_atmos_products_f204==complete
               task jgfs_atmos_awips_20km_1p0_f210
                 edit FHR '210'
                 edit FHR_LIST '210'
-                trigger ../product/jgfs_atmos_products_f210==complete
+                trigger ../products/jgfs_atmos_products_f210==complete
               task jgfs_atmos_awips_20km_1p0_f216
                 edit FHR '216'
                 edit FHR_LIST '216'
-                trigger ../product/jgfs_atmos_products_f216==complete
+                trigger ../products/jgfs_atmos_products_f216==complete
               task jgfs_atmos_awips_20km_1p0_f222
                 edit FHR '222'
                 edit FHR_LIST '222'
-                trigger ../product/jgfs_atmos_products_f222==complete
+                trigger ../products/jgfs_atmos_products_f222==complete
               task jgfs_atmos_awips_20km_1p0_f228
                 edit FHR '228'
                 edit FHR_LIST '228'
-                trigger ../product/jgfs_atmos_products_f228==complete
+                trigger ../products/jgfs_atmos_products_f228==complete
               task jgfs_atmos_awips_20km_1p0_f234
                 edit FHR '234'
                 edit FHR_LIST '234'
-                trigger ../product/jgfs_atmos_products_f234==complete
+                trigger ../products/jgfs_atmos_products_f234==complete
               task jgfs_atmos_awips_20km_1p0_f240
                 edit FHR '240'
                 edit FHR_LIST '240'
-                trigger ../product/jgfs_atmos_products_f240==complete
+                trigger ../products/jgfs_atmos_products_f240==complete
             endfamily		//awips_20km_1p0
             family gempak
               task jgfs_atmos_gempak_f000
@@ -22269,7 +22269,7 @@ suite gfs_v17_nco
             task jgfs_atmos_pgrb2_spec_npoess_0p25
               trigger goesupp==complete
             family grb2spec
-              trigger jgfs_atmos_gempak_pgrb2_spec_npoess_0p25==complete
+              trigger jgfs_atmos_pgrb2_spec_npoess_0p25==complete
               task jgfs_atmos_pgrb2_spec_f000
                 edit FHR '000'
                 edit FHR_LIST '0'
@@ -22453,7 +22453,7 @@ suite gfs_v17_nco
               task jgfs_atmos_gempak_pgrb2_spec_f180
                 edit FHR '180'
                 edit FHR_LIST '180'
-            endfamily		//gempakgrb2spec
+            endfamily		//grb2spec
           endfamily		//atmos
           family ice
             edit WGF 'ice'
@@ -24164,43 +24164,43 @@ suite gfs_v17_nco
               task jgdas_atmos_gempak_f000
                 edit FHR '000'
                 edit FHR_LIST '0'
-                trigger ../../products/jgdas_atmos_products_f000==complete
+                trigger ../products/jgdas_atmos_products_f000==complete
               task jgdas_atmos_gempak_f001
                 edit FHR '001'
                 edit FHR_LIST '1'
-                trigger ../../products/jgdas_atmos_products_f001==complete
+                trigger ../products/jgdas_atmos_products_f001==complete
               task jgdas_atmos_gempak_f002
                 edit FHR '002'
                 edit FHR_LIST '2'
-                trigger ../../products/jgdas_atmos_products_f002==complete
+                trigger ../products/jgdas_atmos_products_f002==complete
               task jgdas_atmos_gempak_f003
                 edit FHR '003'
                 edit FHR_LIST '3'
-                trigger ../../products/jgdas_atmos_products_f003==complete
+                trigger ../products/jgdas_atmos_products_f003==complete
               task jgdas_atmos_gempak_f004
                 edit FHR '004'
                 edit FHR_LIST '4'
-                trigger ../../products/jgdas_atmos_products_f004==complete
+                trigger ../products/jgdas_atmos_products_f004==complete
               task jgdas_atmos_gempak_f005
                 edit FHR '005'
                 edit FHR_LIST '5'
-                trigger ../../products/jgdas_atmos_products_f005==complete
+                trigger ../products/jgdas_atmos_products_f005==complete
               task jgdas_atmos_gempak_f006
                 edit FHR '006'
                 edit FHR_LIST '6'
-                trigger ../../products/jgdas_atmos_products_f006==complete
+                trigger ../products/jgdas_atmos_products_f006==complete
               task jgdas_atmos_gempak_f007
                 edit FHR '007'
                 edit FHR_LIST '7'
-                trigger ../../products/jgdas_atmos_products_f007==complete
+                trigger ../products/jgdas_atmos_products_f007==complete
               task jgdas_atmos_gempak_f008
                 edit FHR '008'
                 edit FHR_LIST '8'
-                trigger ../../products/jgdas_atmos_products_f008==complete
+                trigger ../products/jgdas_atmos_products_f008==complete
               task jgdas_atmos_gempak_f009
                 edit FHR '009'
                 edit FHR_LIST '9'
-                trigger ../../products/jgdas_atmos_products_f009==complete
+                trigger ../products/jgdas_atmos_products_f009==complete
             endfamily		//gempak
             task jgdas_atmos_gempak_meta_ncdc
               trigger gempak==complete
