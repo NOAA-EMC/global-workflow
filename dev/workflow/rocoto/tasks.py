@@ -25,6 +25,7 @@ class Tasks:
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
+                   'soilanlvar', 'soilanlens',
                    'offlineanl',
                    'fcst',
                    'atmos_post', 'ocn_post', 'ice_post',
@@ -34,7 +35,7 @@ class Tasks:
                    'metp', 'fit2obs', 'extractvars',
                    'tracker', 'genesis', 'genesis_fsu',
                    'postsnd', 'awips', 'awips_20km_1p0deg', 'fbwind', 'npoess',
-                   'gempak', 'gempakmeta', 'gempakmetancdc', 'gempakncdcupapgif', 'gempakpgrb2spec', 'npoess_pgrb2_0p5deg',
+                   'gempak', 'gempakmetancdc', 'gempakpgrb2spec', 'npoess_pgrb2_0p25deg',
                    'waveawipsbulls', 'waveawipsgridded', 'wavegempak', 'waveinit',
                    'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavepostgridded', 'waveprep', 'wave_stat', 'wave_stat_pnt']
 

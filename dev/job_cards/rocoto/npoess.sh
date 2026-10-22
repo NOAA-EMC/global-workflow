@@ -7,7 +7,7 @@ source "${HOMEglobal}/dev/ush/load_modules.sh" run
 status=$?
 if ((status != 0)); then exit "${status}"; fi
 
-export job="npoess_pgrb2_0p5deg"
+export job="npoess_pgrb2_0p25deg"
 export jobid="${job}.$$"
 
 # Execute the JJOB

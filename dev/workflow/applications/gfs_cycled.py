@@ -84,6 +84,8 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
+            run_options[run]['do_jedisoildavar'] = base.get('DO_JEDISOILDAVAR', False)
+            run_options[run]['do_jedisoildaens'] = base.get('DO_JEDISOILDAENS', False)
             run_options[run]['do_gsiliau'] = base.get('DO_LAND_IAU', run_options[run]['do_gsisoilda'])
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
             run_options[run]['do_wdqms'] = base.get('DO_WDQMS', False)
@@ -184,7 +186,7 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['metp']
 
         if options['do_gempak']:
-            configs += ['gempak', 'gempakmeta']
+            configs += ['gempak']
             if options['do_goes']:
                 configs += ['npoess']
 
@@ -215,6 +217,13 @@ class GFSCycledAppConfig(AppConfig):
             configs += ['sfcanl_regrid']
             if options['do_hybvar']:
                 configs += ['esfc_regrid']
+
+        if options['do_jedisoildavar']:
+            configs += ['soilanlvar']
+        # TODO: do we need hybvar as condition for soil enkf?
+        # if options['do_hybvar']:
+        if options['do_jedisoildaens']:
+            configs += ['soilanlens']
 
         if options['do_globusarch']:
             configs += ['globus']
@@ -280,6 +289,9 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_jedisnowda']:
                     task_names[run] += ['snowanl']
+
+                if options['do_jedisoildavar']:
+                    task_names[run] += ['soilanlvar']
 
                 wave_prep_tasks = ['waveinit']
                 wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
@@ -382,9 +394,9 @@ class GFSCycledAppConfig(AppConfig):
                         task_names[run] += ['postsnd']
 
                     if options['do_gempak']:
-                        task_names[run] += ['gempak', 'gempakmeta', 'gempakncdcupapgif']
+                        task_names[run] += ['gempak']
                         if options['do_goes']:
-                            task_names[run] += ['npoess_pgrb2_0p5deg', 'gempakpgrb2spec']
+                            task_names[run] += ['npoess_pgrb2_0p25deg', 'gempakpgrb2spec']
 
                     if options['do_awips']:
                         task_names[run] += ['awips_20km_1p0deg', 'fbwind']
@@ -435,6 +447,10 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['esfc_gcycle']
                 if options['do_gsisoilda']:
                     task_names[run].append('esfc_regrid') if 'gdas' in run else 0
+
+                if options['do_jedisoildaens']:
+                    task_names[run] += ['soilanlens']
+
                 task_names[run] += ['earc_vrfy']
 
                 if options['do_archcom']:

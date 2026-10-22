@@ -749,6 +749,29 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
+    def soilanlvar(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('soilanlvar')
+        task_name = f'{self.run}_soilanlvar'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/soilanlvar.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+        return task
+
     def prepoceanobs(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
@@ -1105,6 +1128,10 @@ class GFSTasks(Tasks):
 
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.options['do_jedisoildavar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_soilanlvar'}
             deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -1773,29 +1800,6 @@ class GFSTasks(Tasks):
 
         return task
 
-    def gempakmeta(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('gempakmeta')
-        task_name = f'{self.run}_gempakmeta'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakmeta.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def gempakmetancdc(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
@@ -1819,32 +1823,9 @@ class GFSTasks(Tasks):
 
         return task
 
-    def gempakncdcupapgif(self):
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempak'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('gempak')
-        task_name = f'{self.run}_gempakncdcupapgif'
-        task_dict = {'task_name': task_name,
-                     'resources': resources,
-                     'dependency': dependencies,
-                     'envars': self.envars,
-                     'cycledef': self.run.replace('enkf', ''),
-                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/gempakncdcupapgif.sh',
-                     'job_name': f'{self.pslot}_{task_name}_@H',
-                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
-                     'maxtries': '&MAXTRIES;'
-                     }
-
-        task = rocoto.create_task(task_dict)
-
-        return task
-
     def gempakpgrb2spec(self):
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p25deg'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1886,7 +1867,7 @@ class GFSTasks(Tasks):
 
         return task
 
-    def npoess_pgrb2_0p5deg(self):
+    def npoess_pgrb2_0p25deg(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.run}_atmanlprod'}
@@ -1896,7 +1877,7 @@ class GFSTasks(Tasks):
         dependencies = rocoto.create_dependency(dep=deps, dep_condition='and')
 
         resources = self.get_resource('npoess')
-        task_name = f'{self.run}_npoess_pgrb2_0p5deg'
+        task_name = f'{self.run}_npoess_pgrb2_0p25deg'
         task_dict = {'task_name': task_name,
                      'resources': resources,
                      'dependency': dependencies,
@@ -2318,13 +2299,9 @@ class GFSTasks(Tasks):
                 dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
                 deps.append(rocoto.add_dependency(dep_dict))
             elif self.run in ['gfs']:
-                dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
-                deps.append(rocoto.add_dependency(dep_dict))
                 if self.app_config.mode in ['cycled']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
-                    deps.append(rocoto.add_dependency(dep_dict))
                     if self.options['do_goes']:
-                        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+                        dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p25deg'}
                         deps.append(rocoto.add_dependency(dep_dict))
                         dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                         deps.append(rocoto.add_dependency(dep_dict))
@@ -2365,7 +2342,7 @@ class GFSTasks(Tasks):
         # Split up the tarball_types based on the run and configuration options
         # Define all possible tarball types
         if self.run == 'gfs':
-            tarball_types = ['gfsa', 'gfsb']
+            tarball_types = ['gfsa']
 
             # Add optional tarballs based on configuration
             if self._configs['arch_tars'].get('ARCH_GAUSSIAN', True):
@@ -2380,7 +2357,7 @@ class GFSTasks(Tasks):
                 tarball_types.append('chem')
 
             if self.options['do_ocean']:
-                tarball_types.extend(['ocean_6hravg', 'ocean_native', 'gfs_flux_1p00'])
+                tarball_types.extend(['ocean_6hravg', 'ocean_native'])
                 if self.options.get('do_jediocnvar', False) and self.app_config.mode == 'cycled':
                     tarball_types.append('gfsocean_analysis')
 
@@ -2661,13 +2638,9 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
                     deps_full.append(rocoto.add_dependency(dep_dict))
                 elif self.run in ['gfs']:
-                    dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmeta'}
-                    deps_full.append(rocoto.add_dependency(dep_dict))
                     if self.app_config.mode in ['cycled']:
-                        dep_dict = {'type': 'task', 'name': f'{self.run}_gempakncdcupapgif'}
-                        deps_full.append(rocoto.add_dependency(dep_dict))
                         if self.options['do_goes']:
-                            dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p5deg'}
+                            dep_dict = {'type': 'task', 'name': f'{self.run}_npoess_pgrb2_0p25deg'}
                             deps_full.append(rocoto.add_dependency(dep_dict))
                             dep_dict = {'type': 'metatask', 'name': f'{self.run}_gempakgrb2spec'}
                             deps_full.append(rocoto.add_dependency(dep_dict))
@@ -3110,6 +3083,31 @@ class GFSTasks(Tasks):
 
         return task
 
+    def soilanlens(self):
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prep"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('soilanlens')
+        task_name = f'{self.run}_soilanlens'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/soilanlens.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+        return task
+
     def esfc_gcycle(self):
 
         deps = []
@@ -3195,6 +3193,9 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlecen'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisoildaens']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_soilanlens'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
