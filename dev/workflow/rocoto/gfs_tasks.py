@@ -2528,8 +2528,8 @@ class GFSTasks(Tasks):
 
             dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
 
-        # Cycle throttle is 3 by default, so don't check if interval_gfs is more than 3 cycles long.
-        elif interval_gfs > assim_freq and interval_gfs <= assim_freq * 3:
+        # Cycle throttle is 3 by default, so don't check if interval_gfs is more than 2 cycles long.
+        elif interval_gfs > assim_freq and interval_gfs <= assim_freq * 2:
             # If the GFS interval is greater than the assimilation frequency, then we need to
             # check that the next forecast segment is complete before cleaning up.
             # However, the timedelta offset is variable as gdas/enkfgdas runs every
