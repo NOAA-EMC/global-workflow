@@ -61,7 +61,9 @@ machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 #------------------------------
 #--Set up build.ver and run.ver
 #------------------------------
-${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/versions/build.ver"
+if [[ "${MACHINE_ID}" != "wcoss2" ]]; then
+    ${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/versions/build.ver"
+fi
 ${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
 
 #------------------------------
