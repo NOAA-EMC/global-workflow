@@ -61,11 +61,12 @@ machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 #------------------------------
 #--Set up build.ver and run.ver
 #------------------------------
-if [[ "${MACHINE_ID}" != "wcoss2" ]]; then
+if [[ ! -s "${HOMEglobal}/versions/build.ver" ]]; then
     ${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/versions/build.ver"
 fi
-${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
-
+if [[ ! -s "${HOMEglobal}/versions/run.ver" ]]; then
+    ${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
+fi
 #------------------------------
 #--Remove machine specific build and run version files that are not linked to build.ver and run.ver to avoid confusion
 #------------------------------
