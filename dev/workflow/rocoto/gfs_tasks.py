@@ -2505,7 +2505,7 @@ class GFSTasks(Tasks):
         # Build a dependency for the next forecast cycle
         # This only applies for the last GFS cycle
         dep_next_fcst_seg = None
-        if interval_gfs >= assim_freq:
+        if interval_gfs == assim_freq:
             deps = []
             dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
                         f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
