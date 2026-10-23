@@ -9826,7 +9826,7 @@ suite gfs_v17_nco
               trigger goesupp==complete
             family grb2spec
               trigger jgfs_atmos_pgrb2_spec_npoess_0p25==complete
-              task jgfs_atmos_pgrb2_spec_f000
+              task jgfs_atmos_gempak_pgrb2_spec_f000
                 edit FHR '000'
                 edit FHR_LIST '0'
               task jgfs_atmos_gempak_pgrb2_spec_f003
@@ -22270,7 +22270,7 @@ suite gfs_v17_nco
               trigger goesupp==complete
             family grb2spec
               trigger jgfs_atmos_pgrb2_spec_npoess_0p25==complete
-              task jgfs_atmos_pgrb2_spec_f000
+              task jgfs_atmos_gempak_pgrb2_spec_f000
                 edit FHR '000'
                 edit FHR_LIST '0'
               task jgfs_atmos_gempak_pgrb2_spec_f003
