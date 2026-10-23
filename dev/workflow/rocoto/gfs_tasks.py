@@ -724,15 +724,22 @@ class GFSTasks(Tasks):
         dmpdir = self._configs['prepoceanobs']["DMPDIR"]
 
         deps = []
+        data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/insitu/{self.run}.t@Hz.obsforge_marine_bufr_status.log'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_bufr_status.log'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+        deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/insitu/{self.run}.t@Hz.obsforge_marine_bufr_status.log'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
+        deps.append(dependencies1)
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('prepoceanobs')
@@ -2293,6 +2300,9 @@ class GFSTasks(Tasks):
             if self.run in ['gfs']:
                 dep_dict = {'type': 'metatask', 'name': f'{self.run}_ice_prod'}
                 deps.append(rocoto.add_dependency(dep_dict))
+        if self.run in ['gfs'] and self.options['do_bufrsnd']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_postsnd'}
+            deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gempak']:
             if self.run in ['gdas']:
                 dep_dict = {'type': 'task', 'name': f'{self.run}_gempakmetancdc'}
@@ -2329,6 +2339,12 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'metatask', 'name': f'{self.run}_metp'}
             deps2.append(rocoto.add_dependency(dep_dict))
             deps.append(rocoto.create_dependency(dep_condition='or', dep=deps2))
+
+        # Safeguard for forecast
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
+        deps.append(rocoto.add_dependency(dep_dict))
 
         dep_dict = {'type': 'task', 'name': f'{self.run}_arch_vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
