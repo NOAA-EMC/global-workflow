@@ -99,6 +99,24 @@ cd ${HOMEgfs}/ecf
 
 The ecflow definition file is ${HOMEgfs}/ecf/defs/gfs_prod.def
 
+COM set-up: 
+To obtain initial conditions, run the following commands, where PDY=YYYYMMDD and CC=HH should be for the previous cycle. 
+DEVCOM=/lfs/h2/emc/gfstemp/emc.global/comroot/retrov17_01_realtime for the rocoto parallel or the ecflow parallel /lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/gfs/v17.0 
+```bash
+cd ${COMROOT}/${NET}/${model_ver}/
+mkdir enkfgdas.${PDY} 
+mkdir  gdas.${PDY} 
+cd enkfgdas.${PDY} 
+ln -sf ${DEVCOM}/enkfgdas.${PDY}/${CC} ${CC} 
+cd ../gdas.${PDY} 
+ln -sf ${DEVCOM}/gdas.${PDY}/${CC} ${CC} 
+```
+
+Copy in the operational syndat files (if they aren’t already present)
+```bash
+cp -rf /lfs/h1/ops/prod/com/gfs/v16.3/syndat .
+```
+
 
 VERSION FILE CHANGES
 --------------------
