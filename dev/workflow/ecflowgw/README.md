@@ -12,7 +12,17 @@ with minor path adjustments.
 
 - NOAA RDHPCS account with Ursa access
 - PuTTY (Windows) or SSH client (Mac/Linux)
-- Global-workflow repo checked out and built on Ursa
+- Global-workflow repo checked out on Ursa
+- **Build and link the workflow components** (REQUIRED before running any case):
+  - From the global-workflow repository root (`HOMEglobal`), run:
+    ```bash
+    cd sorc
+    ./build_all.sh [gfs|gefs|sfs|gcafs|gsi|gdas|all]
+    ./link_workflow.sh
+    ```
+  - `build_all.sh` compiles all forecast model components (GFS, GEFS, SFS, GCAFS, GSI, GDAS)
+  - `link_workflow.sh` assembles the runtime workflow by linking/copying dependencies, fix data, and configuration files to their operational locations
+  - Without these steps, the workflow cannot execute
 - Slurm scheduler access for job submission
 
 ## 0. Connecting to Ursa
