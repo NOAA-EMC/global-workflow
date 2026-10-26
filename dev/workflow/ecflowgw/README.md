@@ -257,125 +257,6 @@ ecflow_client --check_pt       # save server state
 ecflow_client --terminate=yes  # shut down the server process
 ```
 
-## Day-to-Day Operations (Quick Reference)
-
-Once steps 0–2 are done, this is all you need each day.
-
-### Starting a new session
-
-```bash
-# 1. SSH into Ursa
-ssh -X <username>@ursa.rdhpcs.noaa.gov
-
-# 2. Load the workflow Python modules (no exports)
-cd <path to your global-workflow clone>
-module use modulefiles
-module load module_gwsetup.ursa
-```
-
-That is all. There is no separate step to find or check the server:
-`run_ecflow_case.py` finds it from the `<host>.<port>.ecf.log` files
-(see [section 1](#1-environment-setup)) and stops with a message if it
-does not answer. If the server is down, start it per
-[section 2](#2-ecflow-server) or add `--start-server` to the command below.
-
-> **Note on `ecflow_client` commands:** the `ecflow_client` commands in
-> this README (monitoring, rerun, cleanup) are run after
-> `module load ecflow` and need the server given explicitly, e.g.
-> `ecflow_client --host=uecflow01 --port=<port> --get_state ...`. The port
-> is in the log file name, `ls ~/ecflow/*.ecf.log`.
-> The loader prints ready-to-copy commands with the right `--host/--port`
-> at the end of its output.
-
-### Run a case
-
-```bash
-cd <path to your global-workflow clone>
-
-# Quick start (all defaults)
-python3 dev/workflow/ecflowgw/run_ecflow_case.py
-
-# Or with every option (all are optional; see "CLI options" in section 4)
-python3 dev/workflow/ecflowgw/run_ecflow_case.py \
-    --yaml dev/ci/cases/ecflowpr/C48_ATM_ecflow.yaml \
-    --pslot my_C48_test \
-    --suite-name my_C48_test \
-    --comroot /scratch4/NCEPDEV/stmp/${USER}/COMROOT \
-    --expdir /scratch3/NCEPDEV/global/${USER}/EXPDIR \
-    --stmp /scratch4/NCEPDEV/stmp/${USER} \
-    --ecf-home ${HOME}/ecflow \
-    --ecf-host uecflow01 \
-    --ecf-port <port> \
-    --start-server \
-    --overwrite
-```
-
-Answer `y` to the cleanup and delete prompts. The suite starts
-automatically. Monitor with:
-
-```bash
-ecflow_ui &                    # GUI (needs X11 forwarding)
-# or
-ecflow_client --get_state /C48_ATM_ecflow   # CLI
-```
-
-### Check task progress
-
-```bash
-# See all tasks and their states
-ecflow_client --get_state /C48_ATM_ecflow
-
-# Check if a specific task is done
-ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
-```
-
-### If a task fails (red/aborted)
-
-```bash
-# 1. Check the job output for the error
-cat ${COMROOT}/C48_ATM_ecflow/logs/2021032312/gfs_<task_name>.log.<try>
- the issue (edit .ecf, fix paths, etc.)
-
-# 3. Rerun the task
-ecflow_client --force=queued /C48_ATM_ecflow/gfs/2021032312/<task_name>
-```
-
-### Rerun the whole suite from scratch
-
-```bash
-python3 dev/workflow/ecflowgw/run_ecflow_case.py --overwrite
-```
-
-### Clean up after a run
-
-```bash
-# Delete the suite from the server
-ecflow_client --suspend /C48_ATM_ecflow
-ecflow_client --kill /C48_ATM_ecflow
-sleep 5
-ecflow_client --delete=force yes /C48_ATM_ecflow
-
-# Optionally remove the experiment directories
-rm -rf ${RUNTESTS}/EXPDIR/C48_ATM_ecflow
-rm -rf ${RUNTESTS}/COMROOT/C48_ATM_ecflow
-rm -rf ${STMP}/RUNDIRS/C48_ATM_ecflow
-```
-
-### Update .ecf scripts after editing (without regenerating)
-
-```bash
-bash dev/workflow/ecflowgw/sync_ecf_scripts.sh \
-    ${RUNTESTS}/EXPDIR/C48_ATM_ecflow/ecf_scripts
-```
-
-### End of day
-
-The ecFlow server persists across sessions. You can log out and
-come back tomorrow — the suite continues running (or waiting) on
-the server. When you reconnect, load the `module_gwsetup` module again
-(see [Starting a new session](#starting-a-new-session)); nothing else is
-needed.
-
 ## 3. Build and Link Workflow Components
 
 > **Prerequisite:** Before running any forecast case, build and link the workflow
@@ -744,3 +625,67 @@ Execution:   .ecf scripts ──► #SBATCH + head.h + envir.h + J-Job + tail.h
                               │
 Submission:  sbatch runs the preprocessed .job (#SBATCH directives baked into .ecf)
 ```
+
+## 10. Day-to-Day Quick Reference
+
+Once steps 0–4 are complete, use this section for daily workflow operations.
+
+### Setup checklist (first time only)
+
+Before running any case, verify:
+
+```bash
+cd <path to your global-workflow clone>
+
+# 1. Confirm build is complete
+ls -la sorc/ufs_model.fd/ufs_model.exe    # Should exist
+
+# 2. Confirm links are in place
+ls -la fix/gsi                            # Should be a link or directory
+ls -la ush/python/wxflow                  # Should be a link or directory
+```
+
+If either is missing, run from `sorc/`:
+```bash
+./build_all.sh              # Step 3: Build
+./link_workflow.sh          # Step 3: Link
+```
+
+### Starting a session
+
+```bash
+# 1. SSH into Ursa
+ssh -X <username>@ursa.rdhpcs.noaa.gov
+
+# 2. Load workflow modules (one per login session)
+cd <path to your global-workflow clone>
+module use modulefiles
+module load module_gwsetup.ursa
+```
+
+### Run a case
+
+```bash
+cd <path to your global-workflow clone>
+python3 dev/workflow/ecflowgw/run_ecflow_case.py
+```
+
+See [section 4](#4-run-the-c48_atm-case) for full options.
+
+### Monitor and manage
+
+```bash
+# View all tasks
+ecflow_client --get_state /C48_ATM_ecflow
+
+# Check specific task
+ecflow_client --get_state /C48_ATM_ecflow/gfs/2021032312/fcst
+
+# If task fails: check logs, fix, then requeue
+ecflow_client --force=queued /C48_ATM_ecflow/gfs/2021032312/<task_name>
+
+# Clean up when done
+python3 dev/workflow/ecflowgw/run_ecflow_case.py --overwrite
+```
+
+See [section 6](#6-common-operations) for more details.
