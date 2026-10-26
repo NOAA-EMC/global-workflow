@@ -341,6 +341,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd/build" ]]; then
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
     mkdir -p "${HOMEglobal}/ush/bufr2ioda"
     cd "${HOMEglobal}/ush/bufr2ioda" || exit 1
+    ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/ush/b2i/b2iconverter" .
     b2i_src_dir="${HOMEglobal}/sorc/gdas.cd/ush/b2i"
     b2i_python_scripts=("${b2i_src_dir}"/*.py)
     if [[ -e "${b2i_python_scripts[0]}" ]]; then
