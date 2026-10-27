@@ -1,4 +1,4 @@
-GFS V16.3.34 RELEASE NOTES
+GFS V16.3.35 RELEASE NOTES
 
 -------
 PRELUDE
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.34
-cd gfs.v16.3.34
-git clone -b OMD-gfs.v16.3.34 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.35
+cd gfs.v16.3.35
+git clone -b OMD-gfs.v16.3.35 https://github.com/NOAA-EMC/global-workflow.git .
 
 cd sorc
 ./checkout.sh -o
@@ -52,13 +52,13 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.34` and `gfs_ver=v16.3.34`
+* in `versions/run.ver` change `version=v16.3.35` and `gfs_ver=v16.3.35`
 * in `versions/run.ver` remove `nam_ver=v4.2`
 
 SORC CHANGES
 ------------
 
-* No changes from GFS v16.3.33 
+* No changes from GFS v16.3.34 
 
 JOBS CHANGES
 ------------
@@ -68,7 +68,7 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 SCRIPT CHANGES
 --------------
@@ -83,7 +83,7 @@ FIX CHANGES
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.33.
+* No changes from GFS v16.3.34
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
@@ -94,7 +94,7 @@ CHANGES TO FILE AND FILE SIZES
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.33.
+* No changes from GFS v16.3.34
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -113,17 +113,17 @@ DISSEMINATION INFORMATION
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 PREPARED BY
 -----------
