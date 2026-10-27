@@ -150,7 +150,7 @@ ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
 IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
 AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
 AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
-GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}}
+GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}} 
 SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
 SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
 AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahicsr.tm00.bufr_d${OSUFFIX}}
@@ -519,7 +519,7 @@ $NLN $ESIASI           iasibufrears
 $NLN $IASIDB           iasibufr_db
 $NLN $AMSREBF          amsrebufr
 $NLN $AMSR2BF          amsr2bufr
-# $NLN $GMI1CRBF         gmibufr *Temporarily commented out pending bug fix*  
+#$NLN $GMI1CRBF         gmibufr *Temporarily commented out while waiting for data stream to resume*
 $NLN $SAPHIRBF         saphirbufr
 $NLN $SEVIRIBF         seviribufr
 $NLN $CRISBF           crisbufr
@@ -734,7 +734,7 @@ fi # if [ $USE_RADSTAT = "YES" ]
 if [ $DOHYBVAR = "YES" ]; then
    HYBRID_ENSEMBLE="n_ens=$NMEM_ENKF,jcap_ens=$JCAP_ENKF,nlat_ens=$NLAT_ENKF,nlon_ens=$NLON_ENKF,jcap_ens_test=$JCAP_ENKF,$HYBRID_ENSEMBLE"
    if [ $l4densvar = ".true." ]; then
-      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,gmi_method=4,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
       JCOPTS="ljc4tlevs=.true.,$JCOPTS"
       STRONGOPTS="tlnmc_option=3,$STRONGOPTS"
       OBSQC="c_varqc=0.04,$OBSQC"
