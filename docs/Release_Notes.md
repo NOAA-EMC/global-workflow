@@ -1,11 +1,8 @@
 GFS V16.3.33 RELEASE NOTES
-
 -------
 PRELUDE
 -------
 Turn off Metop-C AMSU-A channels 1-6 and 15 as channel 4 has become unusable and affects the QC of the other channels.
-
-IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
 The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used to manage the GFS code.  The SPA(s) handling the GFS implementation need to have permissions to clone VLab Gerrit repositories.  All NOAA-EMC organization repositories on GitHub are publicly readable and do not require access permissions.  Please proceed with the following steps to install the package on WCOSS2:
@@ -128,3 +125,5 @@ PREPARED BY
 Andrew.Collard@noaa.gov
 Travis.J.Elless@noaa.gov
 David.Huber@noaa.gov
+Andrew.Collard@noaa.gov
+Russ.Treadon@noaa.gov
