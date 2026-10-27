@@ -1,9 +1,9 @@
-GFS V16.3.33 RELEASE NOTES
+GFS V16.3.34 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Turn off Metop-C AMSU-A channels 1-6 and 15 as channel 4 has become unusable and affects the QC of the other channels.
+Updates obsproc versioning to match operational implementation of obsproc.v1.3.1
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.33
-cd gfs.v16.3.33
-git clone -b OMD-gfs.v16.3.33 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.34
+cd gfs.v16.3.34
+git clone -b OMD-gfs.v16.3.34 https://github.com/NOAA-EMC/global-workflow.git .
 
 cd sorc
 ./checkout.sh -o
@@ -52,48 +52,48 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.33` and `gfs_ver=v16.3.33`
+* in `versions/run.ver` change `version=v16.3.34` and `gfs_ver=v16.3.34`
+* in `versions/run.ver` change `obsproc_ver=v1.3`
 
 SORC CHANGES
 ------------
 
-* No source code changes from GFS v16.3.32
-* Update GSI checkout tag to `gfsda.v16.3.33` (was `gfsda.v16.3.32`) due to fix file change.
+* No source code changes from GFS v16.3.33
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 FIX CHANGES
 -----------
 
-* Turn off Metop-C AMSU-A channels 1-6 and 15.
+* No changes from GFSv16.3.33
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.32.
+* No changes from GFS v16.3.33
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No changes from GFS v16.3.32.
+* No changes from GFS v16.3.33
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.32.
+* No changes from GFS v16.3.33
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -106,25 +106,23 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.32
+* No changes from GFS v16.3.33
 
 PREPARED BY
 -----------
-Andrew.Collard@noaa.gov
 Travis.J.Elless@noaa.gov
-David.Huber@noaa.gov
