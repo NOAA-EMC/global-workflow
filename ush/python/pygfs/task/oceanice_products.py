@@ -304,7 +304,7 @@ class OceanIceProducts(Task):
                     ds_subset = ds[varlist]
                 else:
                     ds_subset = ds[varlist].sel(z_l=levels)
-            
+
             # save global attributes from the old netcdf file into new netcdf file
             ds_subset.attrs = ds.attrs
 
