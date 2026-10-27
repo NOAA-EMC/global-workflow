@@ -32,7 +32,7 @@ ocean:
     {% if model_grid == 'mx025' or model_grid == 'mx050' or model_grid == 'mx100' %}
     ocean_levels: [1, 3, 5, 10, 20, 30, 50, 100, 200, 500, 1000]
     {% elif model_grid == 'mx500' %}
-    ocean_levels: [2.5, 7.5, 12.5, 17.5, 116] 
+    ocean_levels: [2.5, 7.5, 12.5, 17.5, 116]
     {% endif %}
   subset: 
     variables: ['SSH', 'MLD_003', 'SST', 'SSS', 'temp', 'tob', 'so', 'uo', 'vo']
