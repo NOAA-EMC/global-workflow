@@ -31,6 +31,10 @@ if [[ "${MAKE_PREPBUFR^^}" != "YES" ]]; then
   fi
 fi
 
+if [[ "${PDY}${cyc}" -eq "2026102100" && "${RUN}" -eq "gfs" ]]; then
+    export PREPACQC="NO"
+fi
+
 # Adjust observation error for GFS v16 parallels
 #
 #   NOTE:  Remember to set OBERROR in config.anal as PRVT is set below
