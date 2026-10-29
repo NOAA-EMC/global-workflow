@@ -1,0 +1,34 @@
+#!/bin/bash
+# shellcheck disable=SC1009,SC1072,SC1073
+%include <head.h>
+%include <envir.h>
+
+set -x
+
+export HOMEglobal=%HOMEglobal%
+export EXPDIR=%EXPDIR%
+export COMROOT=%COMROOT%
+export DATAROOT=%DATAROOT%
+export NET=%NET%
+export PDY=%PDY%
+export cyc=%CYC%
+export machine=URSA
+
+source "${HOMEglobal}/dev/ush/load_modules.sh" run
+status=$?
+if [[ ${status} -ne 0 ]]; then
+  ecflow_client --msg="***JOB ${ECF_NAME} ERROR loading modules***"
+  exit "${status}"
+fi
+
+export job="arch_vrfy"
+export jobid="${job}.${SLURM_JOB_ID:-$$}"
+
+"${HOMEglobal}/dev/jobs/JGLOBAL_ARCHIVE_VRFY"
+status=$?
+if [[ ${status} -ne 0 ]]; then
+  ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT***"
+  exit "${status}"
+fi
+
+%include <tail.h>
