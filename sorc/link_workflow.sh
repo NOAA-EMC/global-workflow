@@ -659,7 +659,7 @@ for prog in enkf_chgres_recenter_nc.fd \
     wave_stat.fd \
     webtitle.fd; do
     if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
-    ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
+    ${LINK} "gfs_utils.fd/src/${prog}" .
 done
 
 exit 0
