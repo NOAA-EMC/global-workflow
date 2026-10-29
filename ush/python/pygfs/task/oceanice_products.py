@@ -286,6 +286,11 @@ class OceanIceProducts(Task):
             if config.component == 'ice':
                 # subset the variables
                 ds_subset = ds[varlist]
+                # albsni variable has values over 100, which is wrong, clip at 100
+                if any(v.startswith('albsni_') for v in varlist):
+                    albsni_var = next((v for v in varlist if v.startswith('albsni_')), None)
+                    ds_subset[albsni_var] = ds_subset[albsni_var].clip(max=100)
+
                 # remove coords that were carried from original file but not used
                 ds_subset = ds_subset.drop_vars('ELON', errors='ignore')
                 ds_subset = ds_subset.drop_vars('ELAT', errors='ignore')
