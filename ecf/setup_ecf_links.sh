@@ -61,7 +61,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
 done
 
 # gfs atmos product files
-cd "${ECF_DIR}/scripts/gfs/product/atmos/product"
+cd "${ECF_DIR}/scripts/gfs/product/atmos/products"
 echo "Copy gfs atmos product files ..."
 rm -f jgfs_atmos_products_f*.ecf
 fhr_end=384
@@ -74,7 +74,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     else
         fhr_start=$((fhr_start + 3))
     fi
-    add_to_tmpfile "scripts/gfs/product/atmos/jgfs_atmos_products_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/atmos/products/jgfs_atmos_products_f${head_3d}.ecf"
 done
 
 # gfs ocean product files
@@ -104,7 +104,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
 done
 
 # gdas atmos product files
-cd "${ECF_DIR}/scripts/gdas/product/atmos/product"
+cd "${ECF_DIR}/scripts/gdas/product/atmos/products"
 echo "Copy gdas atmos product files ..."
 rm -f jgdas_atmos_products_f*.ecf
 fhr_end=9
@@ -114,7 +114,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     head_3d=$(printf "%03d" "${fhr_start}")
     cp jgdas_atmos_products_master.ecf "jgdas_atmos_products_f${head_3d}.ecf"
     fhr_start=$((fhr_start + step))
-    add_to_tmpfile "scripts/gdas/product/atmos/product/jgdas_atmos_products_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gdas/product/atmos/products/jgdas_atmos_products_f${head_3d}.ecf"
 done
 
 # gdas wave post gridded files
@@ -187,7 +187,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
 done
 
 # gfs atmos gempak files
-cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/gempak"
+cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak"
 echo "Copy gfs atmos gempak files ..."
 rm -f jgfs_atmos_gempak_f*.ecf
 fhr_end=384
@@ -219,7 +219,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
 done
 
 # gdas atmos gempak files
-cd "${ECF_DIR}/scripts/gdas/product/atmos/gempak/gempak"
+cd "${ECF_DIR}/scripts/gdas/product/atmos/gempak"
 echo "Copy gfs atmos gempak files ..."
 rm -f jgdas_atmos_gempak_f*.ecf
 fhr_end=9
@@ -232,7 +232,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
 done
 
 # gfs atmos goesupp files
-cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/goesupp"
+cd "${ECF_DIR}/scripts/gfs/product/atmos/goesupp"
 echo "Copy gfs atmos goesupp files ..."
 rm -f jgfs_atmos_upp_goes_f*.ecf
 fhr_end=384
@@ -245,7 +245,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     else
         fhr_start=$((fhr_start + 3))
     fi
-    add_to_tmpfile "scripts/gfs/product/atmos/gempak/goesupp/jgfs_atmos_upp_goes_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/atmos/goesupp/jgfs_atmos_upp_goes_f${head_3d}.ecf"
 done
 
 # gfs atmos 20km 1p0 files
@@ -266,7 +266,7 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
 done
 
 # gfs atmos grb2spec files
-cd "${ECF_DIR}/scripts/gfs/product/atmos/gempak/grb2spec"
+cd "${ECF_DIR}/scripts/gfs/product/atmos/grb2spec"
 echo "Copy gfs atmos gempak grb2spec files ..."
 rm -f jgfs_atmos_gempak_pgrb2_spec_f*.ecf
 fhr_end=180
@@ -275,5 +275,5 @@ while [[ "${fhr_start}" -le "${fhr_end}" ]]; do
     head_3d=$(printf "%03d" "${fhr_start}")
     cp jgfs_atmos_gempak_pgrb2_spec_master.ecf "jgfs_atmos_gempak_pgrb2_spec_f${head_3d}.ecf"
     fhr_start=$((fhr_start + 3))
-    add_to_tmpfile "scripts/gfs/product/atmos/gempak/grb2spec/jgfs_atmos_gempak_pgrb2_spec_f${head_3d}.ecf"
+    add_to_tmpfile "scripts/gfs/product/atmos/grb2spec/jgfs_atmos_gempak_pgrb2_spec_f${head_3d}.ecf"
 done
