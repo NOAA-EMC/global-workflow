@@ -243,15 +243,15 @@ def build_syndata_copy_commands(complete_command, PDYcyc):
 def get_comroot():
     # Get COMROOT from the version file
     # This is not straightforward as this is usually determined by compath.py in real
-    # time, but we can simulate it by splicing the versions/run.wcoss2.ver file's
+    # time, but we can simulate it by splicing the versions/run.ver file's
     # declaration of COMPATH. COMROOT will be the last entry, split by colons, then
-    # appended by the run.wcoss2.ver file's `gfs_ver` variable's 'v<major>.<minor>'
+    # appended by the run.ver file's `gfs_ver` variable's 'v<major>.<minor>'
     # value (ignore the patch version). This is a bit of a hack, but it should work for
     # now.
     # Get the path to this script's directory to build the path to
-    # versions/run.wcoss2.ver
+    # versions/run.ver
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    run_ver_path = os.path.join(script_dir, "..", "..", "versions", "run.wcoss2.ver")
+    run_ver_path = os.path.join(script_dir, "..", "..", "versions", "run.ver")
     compath_line = None
     gfs_ver_line = None
     with open(run_ver_path, "r") as f:

@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_gempak_pgrb2_spec_npoess_0p25_%CYC%
+#PBS -N gfs_atmos_pgrb2_spec_npoess_0p25_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -31,7 +31,7 @@ module list
 ############################################################
 export HOMEglobal=${HOMEgfs}
 
-${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC_NPOESS
+${HOMEgfs}/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS_0P25
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -41,7 +41,7 @@ fi
 %include <tail.h>
 %manual
 
-TASK gfs_atmos_gempak_pgrb2_spec_npoess_0p25
+TASK gfs_atmos_pgrb2_spec_npoess_0p25
 
 PURPOSE: Produces NPOESS 0.25-degree GRIB2 subsets and simulated GOES imagery
 regridded to 0.25-degree/CONUS grids. Single-instance task looping over
