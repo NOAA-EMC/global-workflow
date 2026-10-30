@@ -2508,7 +2508,7 @@ class GFSTasks(Tasks):
         # Build a dependency for the next forecast cycle
         # This only applies for the last GFS cycle
         dep_next_fcst_seg = None
-        if interval_gfs >= assim_freq:
+        if interval_gfs == assim_freq:
             deps = []
             dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
                         f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
@@ -2529,6 +2529,43 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'streq', 'left': '@Y@m@d@H', 'right': skip_date}
                     deps.append(rocoto.add_dependency(dep_dict))
 
+            dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+        # Cycle throttle is 3 by default, so don't check if interval_gfs is more than 2 cycles long.
+        elif interval_gfs > assim_freq and interval_gfs <= assim_freq * 2:
+            # If the GFS interval is greater than the assimilation frequency, then we need to
+            # check that the next forecast segment is complete before cleaning up.
+            # However, the timedelta offset is variable as gdas/enkfgdas runs every
+            # assim_freq hours, but the next forecast segment is only available every
+            # interval_gfs hours.
+            # We need to do some math to determine the next forecast segment time based
+            # on the current cycle time. rocoto only support streq, so we need a full
+            # list of all the possible next forecast segment times to check against.
+            # We then need to check if the current cycle time plus the interval_gfs is
+            # equal to any of the next forecast segment times.
+            # Start by building the list of valid gfs YYYYMMDDHH00 times.
+            sdate_gfs = self._base.get('SDATE_GFS')
+            edate = self._base.get('EDATE')
+            gfs_times = []
+            n_intervals = int((edate - sdate_gfs) // to_timedelta(f'{interval_gfs}H'))
+            # Do not include the last interval, as there is no next forecast segment.
+            for i in range(n_intervals):
+                gfs_time = (sdate_gfs + to_timedelta(f'{i * interval_gfs}H')).strftime("%Y%m%d%H")
+                gfs_times.append(gfs_time)
+
+            # Now check if the current cycle time plus interval_gfs is equal to any of
+            # the gfs_times
+            deps = []
+            for gfs_time in gfs_times:
+                dep_dict = {'type': 'streq', 'condition': 'not',
+                            'left': '@Y@m@d@H', 'right': gfs_time}
+                deps.append(rocoto.add_dependency(dep_dict))
+            dep_wait_on_fcst = rocoto.create_dependency(dep_condition='and', dep=deps)
+            dep_dict = {'type': 'task',
+                        'offset': f"{timedelta_to_HMS(to_timedelta(f'{interval_gfs}H'))}",
+                        'name': 'gfs_fcst_seg0'}
+            dep_next_fcst = rocoto.add_dependency(dep_dict)
+            deps = [dep_wait_on_fcst, dep_next_fcst]
             dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         # Now start building RUN-specific dependencies
