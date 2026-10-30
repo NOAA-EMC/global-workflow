@@ -2545,7 +2545,8 @@ class GFSTasks(Tasks):
             edate = self._base.get('EDATE')
             gfs_times = []
             n_intervals = int((edate - sdate_gfs) // to_timedelta(f'{interval_gfs}H'))
-            for i in range(n_intervals + 1):
+            # Do not include the last interval, as there is no next forecast segment.
+            for i in range(n_intervals):
                 gfs_time = (sdate_gfs + to_timedelta(f'{i * interval_gfs}H')).strftime("%Y%m%d%H")
                 gfs_times.append(gfs_time)
 
