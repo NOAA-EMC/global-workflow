@@ -372,6 +372,7 @@ class SnowAnalysis(Analysis):
                 'CASE': self.task_config.CASE,
                 'DATA': self.task_config.DATA,
                 'HOMEglobal': self.task_config.HOMEglobal,
+                'FIXorog': self.task_config.FIXorog,
                 'OCNRES': self.task_config.OCNRES,
                 'ens_size': self.task_config.ens_size,
                 'ntiles': self.task_config.ntiles,
