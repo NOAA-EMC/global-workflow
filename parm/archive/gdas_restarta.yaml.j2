@@ -33,7 +33,7 @@ gdas_restarta:
         {% endfor %}
 
         # Initial biases
-        {% if not DO_JEDIATMVAR %}
+        {% if not (DO_JEDIATMVAR or DO_JEDICOUPLEDVAR) %}
         {% for suffix in [
             'abias.txt',
             'abias_air.txt',

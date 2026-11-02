@@ -231,7 +231,8 @@ class ArchiveTarVars:
                 # Model components
                 'DO_OCN', 'DO_ICE', 'DO_WAVE', 'DO_PREP_OBS_AERO', 'WRITE_DOPOST',
                 # Data assimilation
-                'DO_JEDIATMVAR', 'DO_JEDIOCNVAR', 'DO_AERO_ANL', 'DO_AERO_FCST', 'ATMINC_GRID',
+                'DO_JEDIATMVAR', 'DO_JEDIOCNVAR', 'DO_JEDICOUPLEDVAR',
+                'DO_AERO_ANL', 'DO_AERO_FCST', 'ATMINC_GRID',
                 # Restart intervals
                 'restart_interval_gdas', 'restart_interval_gfs',
                 # Archive control
