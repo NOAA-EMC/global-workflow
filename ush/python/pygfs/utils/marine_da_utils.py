@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 import dateutil.parser as dparser
 import os
 from netCDF4 import Dataset
@@ -233,7 +234,8 @@ def prep_var_input_nml(task_config: AttrDict) -> None:
 
 
 @logit(logger)
-def initialize_obs_stats(jedi_var: Jedi, jedi_obs_stats: Jedi, task_config: AttrDict) -> None:
+def initialize_obs_stats(jedi_var: Jedi, jedi_obs_stats: Jedi, task_config: AttrDict,
+                         component: Optional[str] = None) -> None:
     """Initialize the SOCA observation statistics application
 
     The observation spaces it reports on are whichever ones survived in the variational
@@ -248,15 +250,24 @@ def initialize_obs_stats(jedi_var: Jedi, jedi_obs_stats: Jedi, task_config: Attr
     task_config: AttrDict
         Attribute-dictionary of task configuration; the observation names and variables
         are added to it
+    component (optional): str
+        keep only the observations this component owns. Needed when the variational
+        application spans more than one component, as the coupled one does, since the
+        statistics application is marine only
 
     Returns
     ----------
     None
     """
 
+    observers = jedi_var.jedi_config.input_config['cost function']['observations']['observers']
+    if component is not None:
+        owned = jedi_var.get_observations_by_component().get(component, [])
+        observers = [obs_space for obs_space in observers if obs_space['obs space']['name'] in owned]
+
     cleaned_observations = []
     obs_variables = {}
-    for obs_space in jedi_var.jedi_config.input_config['cost function']['observations']['observers']:
+    for obs_space in observers:
         name = obs_space['obs space']['name']
         variable = obs_space['obs space']['simulated variables'][0]
 
