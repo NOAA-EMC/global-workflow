@@ -55,6 +55,7 @@ parm/gdas/aero
 parm/gdas/analcalc
 parm/gdas/anlstat
 parm/gdas/atm
+parm/gdas/coupled
 parm/gdas/io
 parm/gdas/ioda
 parm/gdas/marine

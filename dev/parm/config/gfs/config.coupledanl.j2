@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+
+########## config.coupledanl ##########
+# configuration common to all coupled (atmosphere + ocean and sea ice) var analysis tasks
+
+echo "BEGIN: config.coupledanl"
+
+export OBS_LIST_YAML="{{ COUPLED_OBS_LIST }}"
+
+# Atmosphere
+export STATICB_TYPE="{{ STATICB_TYPE }}"
+export layout_x_coupledanl="{{ LAYOUT_X_COUPLEDANL }}"
+export layout_y_coupledanl="{{ LAYOUT_Y_COUPLEDANL }}"
+export io_layout_x="{{ IO_LAYOUT_X }}"
+export io_layout_y="{{ IO_LAYOUT_Y }}"
+
+# Ocean and sea ice. NINNER is unused by the coupled minimization, which has its own
+# outer loop, but the marine keys reference it.
+export INPUT_FIX_DIR="{{ SOCA_INPUT_FIX_DIR }}"
+export ANL_GEOM="{{ SOCA_ANL_GEOM }}"
+export NINNER="{{ SOCA_NINNER }}"
+
+# Inner iterations of the coupled minimization's single outer loop. One minimizer for both
+# components, so this replaces the per-component iteration counts
+export COUPLED_NINNER_LOOP1="{{ COUPLED_NINNER_LOOP1 }}"
+
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/coupled/coupled_det_config.yaml.j2"
+
+echo "END: config.coupledanl"
