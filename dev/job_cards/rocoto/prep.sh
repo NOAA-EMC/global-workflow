@@ -206,7 +206,10 @@ else
 fi
 
 # Check if prepbufr, etc files were copied to COMOUT_OBS
-files="prepbufr prepbufr.acft_profiles"
+files="prepbufr"
+if [[ "${PREPACQC:-"YES"}" == "YES" ]]; then
+    files="${files} prepbufr.acft_profiles"
+fi
 if [[ ${DONST} == "YES" ]]; then
     files="${files} nsstbufr"
 fi
