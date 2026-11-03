@@ -723,10 +723,8 @@ class GFSTasks(Tasks):
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
         dmpdir = self._configs['prepoceanobs']["DMPDIR"]
         ecf_ob = self._configs['prepoceanobs']["USE_ECF_OBS"]
-        print(f'DEBUG ecf_ob evaulates as {ecf_ob}')
         deps = []
         if not ecf_ob:
-        #if f'{ecf_ob}' == 'False':
             data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/insitu/{self.run}.t@Hz.obsforge_marine_bufr_status.log'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -740,16 +738,13 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if ecf_ob:
-        #if f'{ecf_ob}' == 'True':
             data = f'/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/gfs/v17.0/{self.run}.@Y@m@d/@H/analysis/ocean/gdas.t@Hz.mom6_increment.i006.nc'
             dep_dict={'type': 'data', 'data':data}
         if not ecf_ob:
-        #if f'{ecf_ob}' == 'False':
             data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
             dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         if not ecf_ob:
-        #if f'{ecf_ob}' == 'False':
             deps.append(dependencies1)
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
