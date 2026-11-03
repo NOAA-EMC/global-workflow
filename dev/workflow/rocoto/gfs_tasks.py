@@ -739,7 +739,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         if ecf_ob:
             data = f'/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/gfs/v17.0/{self.run}.@Y@m@d/@H/analysis/ocean/gdas.t@Hz.mom6_increment.i006.nc'
-            dep_dict={'type': 'data', 'data':data}
+            dep_dict = {'type': 'data', 'data': data}
         if not ecf_ob:
             data = f'{dmpdir}/{self.run}.@Y@m@d/@H/ocean/{self.run}.t@Hz.obsforge_marine_status.log'
             dep_dict = {'type': 'data', 'data': data}
