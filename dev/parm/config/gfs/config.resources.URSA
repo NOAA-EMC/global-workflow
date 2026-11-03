@@ -61,6 +61,13 @@ case ${step} in
     export tasks_per_node=48
     ;;
 
+  "coupledanlvar")
+    # mx025: the generic half packing (96 per node) runs out of memory
+    if [[ "${OCNRES}" == "025" ]]; then
+      export tasks_per_node=48
+    fi
+    ;;
+
   "atmensanlobs")
     export tasks_per_node=24
     export memory="240GB"
