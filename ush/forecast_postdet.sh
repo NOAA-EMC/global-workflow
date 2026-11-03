@@ -870,7 +870,14 @@ MOM6_out() {
             mkdir -p "${COMOUT_OCEAN_RESTART}"
         fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        # The MOM6 restart files are several GB each. With srun, a copy task otherwise gets only
+        # its per-CPU share of the node memory, which writing such a file to Lustre can exceed
+        # (OOM kill); let each copy task use all of its node's memory.
+        local mom6_mpmd_opt="${mpmd_opt:-}"
+        if [[ "${launcher:-}" =~ ^srun ]]; then
+            mom6_mpmd_opt+=" --mem=0"
+        fi
+        mpmd_opt="${mom6_mpmd_opt}" "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
