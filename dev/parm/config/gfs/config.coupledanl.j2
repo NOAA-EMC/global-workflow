@@ -9,6 +9,10 @@ export OBS_LIST_YAML="{{ COUPLED_OBS_LIST }}"
 
 # Atmosphere
 export STATICB_TYPE="{{ STATICB_TYPE }}"
+# The GSIBEC namelist variant to stage (gfs_gsi_global_<type>.nml). The name comes from the
+# hybrid B, where it picks the ensemble localization; the coupled B is static only, and
+# "gsibec" is the variant that carries TLNMC. The init job switches its hybrid block off.
+export LOCALIZATION_TYPE="gsibec"
 export layout_x_coupledanl="{{ LAYOUT_X_COUPLEDANL }}"
 export layout_y_coupledanl="{{ LAYOUT_Y_COUPLEDANL }}"
 export io_layout_x="{{ IO_LAYOUT_X }}"

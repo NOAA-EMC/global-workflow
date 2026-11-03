@@ -57,6 +57,20 @@ if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to initialize the coupled analysis"
 fi
 
+# Fill in the gsibec namelist variant staged above: TLNMC on the static increment (option 1,
+# what GSIBEC uses without an ensemble) and the hybrid ensemble block off, which leaves the
+# static B at full weight. beta_s0 and n_ens must still be numbers for the namelist read.
+if [[ "${LOCALIZATION_TYPE}" == "gsibec" ]]; then
+    target_file="${DATA}/berror/gfs_gsi_global.nml"
+
+    sed -i \
+        -e "s|TLNMC_OPTION|1|g" \
+        -e "s|l_hyb_ens=\.true\.|l_hyb_ens=.false.|g" \
+        -e "s|BETAS0|1.0|g" \
+        -e "s|NMEM_ENS|0|g" \
+        "${target_file}"
+fi
+
 ##############################################
 # End JOB SPECIFIC work
 ##############################################
