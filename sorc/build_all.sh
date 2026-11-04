@@ -56,7 +56,9 @@ fi
 #------------------------------------
 if [[ "${MACHINE_ID}" == "wcoss2" ]]; then
     cd "${HOMEglobal}/versions" || exit 1
-    ln -sf "${HOMEglobal}"/versions/build."${MACHINE_ID}".ver "${HOMEglobal}"/versions/build.ver
+    if [[ ! -s "${HOMEglobal}"/versions/build.ver ]]; then
+        cp -rp "${HOMEglobal}"/versions/build."${MACHINE_ID}".ver "${HOMEglobal}"/versions/build.ver
+    fi
     source "${HOMEglobal}"/versions/build.ver
 fi
 

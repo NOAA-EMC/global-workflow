@@ -3,7 +3,7 @@ set -x
 
 ####  UNIX Script Documentation Block ###################################
 #                      .                                             .
-# Script name:  exglobal_prep_sfc.sh
+# Script name:  exglobal_atmos_prep_sfc.sh
 # RFC Contact:  George Gayno
 # Abstract:  This script calls two utility scripts to prepare a global
 #    blended ice analysis and global snow analyses for use by GFS/GDAS.
@@ -83,7 +83,7 @@ export AFWA_SH_FILE="${COMINobsproc}/${RUN}.t${cyc}z.NPR.SNWS.SP.S1200.MESH16.gr
 export BLENDED_ICE_FILE="${RUN}.t${cyc}z.seaice.5min.blend.grb"
 
 # the 6-hour old output ice blend data.
-export BLENDED_ICE_FILE_PREV="${COMINobsproc_PREV}/${RUN}.t${gcyc}z.seaice.5min.blend.grb"
+export BLENDED_ICE_FILE_PREV="${COMIN_OBS_PREV}/${RUN}.t${gcyc}z.seaice.5min.blend.grb"
 
 # the emcsfc_ice_blend executable
 export BLENDICEEXEC=${BLENDICEEXEC:-${EXECglobal}/emcsfc_ice_blend}
@@ -138,7 +138,7 @@ export MODEL_LATITUDE_FILE=${MDL_LATS:-${FIXglobal}/am/global_latitudes.t${JCAP_
 export MODEL_LONGITUDE_FILE=${MDL_LONS:-${FIXglobal}/am/global_longitudes.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.grb}
 export GFS_LONSPERLAT_FILE=${LONSPERLAT:-${FIXglobal}/am/global_lonsperlat.t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}.txt}
 export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}
-export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}
+export MODEL_SNOW_FILE_PREV=${COMIN_OBS_PREV}/${RUN}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}
 
 echo "Create ${JCAP_CASE} snow data."
 "${USHglobal}/prep_sfc_snow.sh"
@@ -181,7 +181,7 @@ if [[ "${EUPD_CYC}" = "${RUN}" ]] || [[ "${EUPD_CYC^^}" = "BOTH" ]]; then
     export MODEL_LONGITUDE_FILE=${MDL_LONS_ENKF:-${FIXglobal}/am/global_longitudes.t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.grb}
     export GFS_LONSPERLAT_FILE=${LONSPERLAT_ENKF:-${FIXglobal}/am/global_lonsperlat.t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}.txt}
     export MODEL_SNOW_FILE=${RUN}.t${cyc}z.snogrb_t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
-    export MODEL_SNOW_FILE_PREV=${COMINobsproc_PREV}/${RUN}.t${gcyc}z.snogrb_t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
+    export MODEL_SNOW_FILE_PREV=${COMIN_OBS_PREV}/${RUN}.t${gcyc}z.snogrb_t${JCAP_CASE_ENS}.${LONB_CASE_ENS}.${LATB_CASE_ENS}
 
     echo "Create enkf snow data."
     "${USHglobal}/prep_sfc_snow.sh"

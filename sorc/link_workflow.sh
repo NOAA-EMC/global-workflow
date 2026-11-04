@@ -61,9 +61,12 @@ machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 #------------------------------
 #--Set up build.ver and run.ver
 #------------------------------
-${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/versions/build.ver"
-${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
-
+if [[ ! -s "${HOMEglobal}/versions/build.ver" ]]; then
+    ${LINK_OR_COPY} "${HOMEglobal}/versions/build.${machine}.ver" "${HOMEglobal}/versions/build.ver"
+fi
+if [[ ! -s "${HOMEglobal}/versions/run.ver" ]]; then
+    ${LINK_OR_COPY} "${HOMEglobal}/versions/run.${machine}.ver" "${HOMEglobal}/versions/run.ver"
+fi
 #------------------------------
 #--Remove machine specific build and run version files that are not linked to build.ver and run.ver to avoid confusion
 #------------------------------
@@ -338,6 +341,7 @@ if [[ -d "${HOMEglobal}/sorc/gdas.cd/build" ]]; then
     ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/ush/snow/bufr_snocvr_snomad.py" .
     mkdir -p "${HOMEglobal}/ush/bufr2ioda"
     cd "${HOMEglobal}/ush/bufr2ioda" || exit 1
+    ${LINK_OR_COPY} "${HOMEglobal}/sorc/gdas.cd/ush/b2i/b2iconverter" .
     b2i_src_dir="${HOMEglobal}/sorc/gdas.cd/ush/b2i"
     b2i_python_scripts=("${b2i_src_dir}"/*.py)
     if [[ -e "${b2i_python_scripts[0]}" ]]; then
@@ -655,7 +659,7 @@ for prog in enkf_chgres_recenter_nc.fd \
     wave_stat.fd \
     webtitle.fd; do
     if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
-    ${LINK_OR_COPY} "gfs_utils.fd/src/${prog}" .
+    ${LINK} "gfs_utils.fd/src/${prog}" .
 done
 
 exit 0
