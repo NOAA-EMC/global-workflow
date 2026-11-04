@@ -47,12 +47,13 @@ fi
 TASK enkfgdas_marine_ens_recenter
 
 PURPOSE: Recenters ensemble ocean/ice analysis around the deterministic marine
-analysis.
+forecast.
 
 TROUBLESHOOTING
 
-Depends on both deterministic marine analysis (marine_anlfinal) and
-ensemble member ocean states. If deterministic marine analysis failed,
-cannot recenter. Check SOCA output availability.
+Depends on both deterministic marine forecast from the previous cycle and
+ensemble member ocean states. If deterministic coupled forecast failed,
+cannot recenter. If one members data is corrupted, rerun the ensemble 
+forecast.
 
 %end

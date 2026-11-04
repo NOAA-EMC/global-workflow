@@ -43,4 +43,16 @@ fi
 %include <tail.h>
 %manual
 
+
+TASK gdas_fcst_manager
+
+PURPOSE: GDAS forecast manager. Copies data to COM as the 
+model writes them. 
+
+TROUBLESHOOTING
+
+Launches MPMD to copy data for component from DATA to COM.
+Relies on the forecast to integrate successfully.  Check mpmd output
+for more log output. I/O job only -- check for disk issues.
+
 %end

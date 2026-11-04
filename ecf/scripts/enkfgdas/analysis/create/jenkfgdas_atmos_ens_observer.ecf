@@ -51,10 +51,10 @@ innovations (O-F) for all ensemble members. 4 nodes.
 
 TROUBLESHOOTING
 
-Prerequisite for eupd. Depends on ensemble member forecasts and
-observation data (from prep). If prep failed or ensemble forecasts are
-missing, eobs cannot compute innovations. Check GSI observer mode stdout
-for missing data types or computation errors. If most observations are
-rejected in QC, check observation input quality.
+Prerequisite for eupd. Depends on ensemble mean forecasts and
+observation data. If obsproc failed or ensemble mean forecasts are
+missing or corrupted, cannot compute innovations. Rerun previous
+cycles ens_post to recreate corrupted ensmean files. Check GSI observer 
+mode stdout for missing data types or computation errors. 
 
 %end
