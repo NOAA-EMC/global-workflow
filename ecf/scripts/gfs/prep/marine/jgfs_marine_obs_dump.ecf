@@ -44,4 +44,12 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_marine_obs_dump
+
+PURPOSE: GFS ocean observation prep -- Convert raw observations from dcom into IODA format and place in com.
+
+TROUBLESHOOTING
+
+Check raw observation file availability. All data should be considered data of opportunity.
+
 %end
