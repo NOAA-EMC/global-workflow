@@ -11,7 +11,7 @@ if [[ "${use_exp_obs}" == "YES" ]]; then
 fi
 
 export DMPDIR="${dmpdir_exp:-${DMPDIR}}"
-export USE_ECF_OBS=False
+export USE_ECF_OBS="{{ USE_ECF_OBS }}"
 export MARINE_JCB_GDAS_OBS="${PARMglobal}/gdas/jcb-gdas/observations/marine"
 
 # Get task specific resources

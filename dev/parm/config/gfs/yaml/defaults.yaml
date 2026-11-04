@@ -83,6 +83,7 @@ prep:
 prepoceanobs:
   use_exp_obs: "YES"
   dmpdir_exp: "${BASE_DATA}/experimental_obs"
+  USE_ECF_OBS: "False"
 
 fcst:
   CHECK_LAND_RESTART_OROG: "YES"
