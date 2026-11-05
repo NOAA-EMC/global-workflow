@@ -39,4 +39,15 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_anal_wdqms
+
+PURPOSE: Creates observation diagnostic CSV files to send 
+to the WMO.
+
+TROUBLESHOOTING
+
+Not in the critical path. Depends on the gdas_atmos_anal_diag 
+job.  Unpacks the cnvstat tarball produced by the diag step. 
+If a problem with the tarball itself, rerun the diag step.  
+
 %end

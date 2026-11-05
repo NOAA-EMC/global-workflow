@@ -51,4 +51,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_atmos_tropcy_qc
+
+PURPOSE: Performs tropical cyclone tcvitals quality control
+
+TROUBLESHOOTING
+
+Reads seasonal statistics as well as current TC data from NHC and JTWC.
+If an error occurs in the qctropcy utility script, a null tcvitals
+file should be produced and cycling should continue. If null file is
+not produced and error is not easily rectified by rerunning, create
+null tcvitals file and continue cycling.
+
 %end

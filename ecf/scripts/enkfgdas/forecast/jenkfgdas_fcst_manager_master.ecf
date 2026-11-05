@@ -45,4 +45,16 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_fcst_manager_master
+
+PURPOSE: EnKF ensemble member forecast manager. Copies data to 
+COM as the model writes them. Per-member _master template (80
+members).
+
+TROUBLESHOOTING
+
+Launches MPMD to copy data for each member separately.  Relies 
+on each members ensemble forecast to integrate successfully.
+I/O job only -- check for disk issues.
+
 %end

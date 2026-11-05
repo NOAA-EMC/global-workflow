@@ -42,5 +42,18 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_anal_sfc_regrid
+
+PURPOSE: Deterministic surface analysis -- regrids the surface
+increments for the ensemble mean from the Gaussian grid to
+the FV3 tiles
+
+TROUBLESHOOTING
+
+This job is dependent on enkfgdas_atmos_ens_update. It regrids
+the increments from the ensemble mean -- if those input files are 
+corrupted, rerun ens_update. Runs via MPMD, check cmdfile
+for more logging.
+
 %end
 
