@@ -44,8 +44,7 @@ fi
 
 TASK gdas_atmos_products_anal
 
-PURPOSE: GDAS analysis product generation. On disk as jgdas_atmos_analprod.ecf --
-name differs from manifest.
+PURPOSE: GDAS Analysis product generation from atmospheric analysis fields.
 
 TROUBLESHOOTING
 
