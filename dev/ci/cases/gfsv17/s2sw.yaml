@@ -29,8 +29,10 @@ prepoceanobs:
   # retro
   # dmpdir_exp: /lfs/h2/emc/da/noscrub/common_obsForge
   # realtime
-  dmpdir_exp: /lfs/h2/emc/da/noscrub/mindo.choi/MARINE_obs/COMROOT/realtime
-
+  dmpdir_exp: /lfs/h2/emc/global/noscrub/emc.global/ocean
+  USE_ECF_OBS: "False"
+ # dmpdir_exp: /lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/gfs/v17.0
+ # USE_ECF_OBS: "True"
 marinebmat:
   SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
   SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
