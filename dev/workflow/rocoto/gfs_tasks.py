@@ -840,6 +840,9 @@ class GFSTasks(Tasks):
         data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
+        # The f009 file exists as soon as MOM6 opens it; wait for the forecast to finish writing it
+        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -2544,6 +2547,10 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_globus_earc'}
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
+                deps_full.append(rocoto.add_dependency(dep_dict))
+            elif self.options['do_enkfonly_atm']:
+                # No earc_vrfy or archive tasks run, so wait on the ensemble post-processing instead
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
                 deps_full.append(rocoto.add_dependency(dep_dict))
 
             if self.run == 'enkfgdas':
