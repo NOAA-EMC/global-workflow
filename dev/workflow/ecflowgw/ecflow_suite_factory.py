@@ -21,7 +21,6 @@ for loader, module_name, is_pkg in pkgutil.iter_modules([_ecflowgw_dir]):
     # Get the list of importable classes with EcFlowSuite in their name
     if not module_name.endswith('ecflow'):
         continue
-    print(f"Importing module: {module_name}")
     # Skip the ecflow_definitions and ecflow_setup modules as they do not contain EcFlowSuite classes
     # and require access to the ecflow module, which is not guaranteed at this point.
     module = import_module(f"ecflowgw.{module_name}")
