@@ -258,6 +258,24 @@ while [[ "${remaining}" -gt 0 ]]; do
                 break
             fi
         fi
+
+        # Propagate JGLOBAL_FORECAST failure: if the finalized sentinel exists and its
+        # content matches "aborted rc=<rc>", exit with that rc so JGLOBAL_FORECAST_MANAGER
+        # also fails instead of masking a broken forecast with a green manager job.
+        if [[ -n "${FCST_FINALIZED_SENTINEL:-}" && -f "${FCST_FINALIZED_SENTINEL}" ]]; then
+            _fcst_final_content=$(< "${FCST_FINALIZED_SENTINEL}")
+            if [[ "${_fcst_final_content}" == *aborted* ]]; then
+                _fcst_rc=1
+                if [[ "${_fcst_final_content}" =~ rc=([0-9]+) ]]; then
+                    _fcst_rc="${BASH_REMATCH[1]}"
+                    if ((_fcst_rc == 0)); then
+                        _fcst_rc=1
+                    fi
+                fi
+                echo "FATAL ERROR [${component}]: JGLOBAL_FORECAST aborted (rc=${_fcst_rc}); propagating failure" >&2
+                exit "${_fcst_rc}"
+            fi
+        fi
         # Sleep before the next poll cycle.  The interval is short enough to
         # keep copy-to-COM latency low but long enough to avoid hammering the
         # parallel filesystem with stat calls on every dep path.

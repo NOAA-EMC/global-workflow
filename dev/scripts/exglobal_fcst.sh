@@ -156,6 +156,9 @@ echo "MAIN: Post-determination set up of run type finished"
 # This is created AFTER all component postdet functions complete to ensure
 # the manager only starts when all tables (ATM, WW3, OCN, ICE) are fully written.
 if [[ -n "${DATAjob:-}" ]]; then
+    if [[ -s "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}" ]]; then
+        mv "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}" "${DATAjob}/failed_fcst_finalized_seg${FCST_SEGMENT:-0}"
+    fi
     echo "${RUN}_fcst_seg${FCST_SEGMENT} table ready at $(date)" > "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT}"
     if [[ "${SENDECF}" == "YES" ]]; then
         case "${RUN}" in
