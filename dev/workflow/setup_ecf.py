@@ -25,7 +25,7 @@
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from configuration import Configuration
-from ecFlow.ecflow_setup import Ecflowsetup
+from ecflowgw.ecflow_setup import Ecflowsetup
 
 
 def input_args():
