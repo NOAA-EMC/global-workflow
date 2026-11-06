@@ -191,6 +191,7 @@ echo "MAIN: Name lists and model configuration written"
 if [[ ${CHECK_DEAD_LINKS} == "YES" ]]; then
     "${HOMEglobal}/dev/ush/check_dead_links.sh" "${DATA}"
 fi
+
 #------------------------------------------------------------------
 # run the executable
 

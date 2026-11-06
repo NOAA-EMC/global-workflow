@@ -1472,16 +1472,8 @@ class GFSTasks(Tasks):
         return task
 
     def wavepostpnt(self):
-        # Trigger from the last wave log in COM (copied by the ww3 manager component).
-        # When this file appears, all wave output for the segment is in COM.
-        wave_grid = self._configs['base']['waveGRD']
-        history_path = self._template_to_rocoto_cycstring(self._base['COM_WAVE_HISTORY_TMPL'])
-        fhrs = self._get_forecast_hours(self.run, self._configs['wavepostpnt'], 'wave')
-        last_fhr = fhrs[-1]
-        history_file = f'{self.run}.t@Hz.{wave_grid}.f{last_fhr:03d}.log'
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
-        #dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
