@@ -33,7 +33,7 @@ copy_opt:
     - ["{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2",
        "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
 
-    {% if DO_JEDIATMVAR == True %}
+    {% if DO_JEDIATMVAR or DO_JEDICOUPLEDVAR %}
     - ["{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz",
        "{{ ARCDIR }}/atmstat.{{ RUN }}.{{ cycle_YMDH }}"]
     {% else %}
@@ -51,7 +51,7 @@ copy_opt:
        "{{ ARCDIR }}/aerostat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]
     {% endif %}
 
-    {% if DO_JEDIOCNVAR %}
+    {% if DO_JEDIOCNVAR or DO_JEDICOUPLEDVAR %}
     - ["{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}marine_analysis.ioda_hofx.tar.gz",
        "{{ ARCDIR }}/marinestat.{{ RUN }}.{{ cycle_YMDH }}.tgz"]
     {% endif %}

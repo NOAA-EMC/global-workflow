@@ -1,0 +1,25 @@
+experiment:
+  net: gfs
+  mode: cycled
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 384
+  resdetocean: 0.25
+  nens: 0
+  interval: 0
+  start: warm
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  idate: 2026042200
+  edate: 2026042418
+  # NOTE: this directory is read-only
+  icsdir:
+  yaml: {{ HOMEglobal }}/dev/ci/cases/gfsv17/coupled3dvar.yaml
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2

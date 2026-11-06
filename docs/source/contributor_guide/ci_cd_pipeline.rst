@@ -242,6 +242,7 @@ and reported back to the GitHub PR with error log gists.
 - ``C48_S2SWA_gefs`` — GEFS ensemble coupled run
 - ``C48mx500_3DVarAOWCDA`` — 3DVar coupled data assimilation
 - ``C48mx500_hybAOWCDA`` — Hybrid EnVar coupled data assimilation
+- ``C48mx500_coupledDA`` — Strongly coupled 3DVar data assimilation (one JEDI analysis of atmosphere and ocean)
 - ``C96C48_hybatmDA`` — Hybrid atmosphere-only data assimilation
 - ``C96C48_hybatmsnowDA`` — Hybrid atmosphere + snow data assimilation
 - ``C96C48_hybatmsoilDA`` — Hybrid atmosphere + soil data assimilation

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 import dateutil.parser as dparser
 import os
 from netCDF4 import Dataset
@@ -7,12 +8,15 @@ import yaml
 
 from wxflow import (FileHandler,
                     logit,
+                    parse_j2tmpl,
                     WorkflowException,
                     AttrDict,
                     parse_j2yaml,
                     Executable,
                     save_as_yaml,
                     jinja)
+
+from pygfs.jedi import Jedi
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -94,7 +98,7 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
     logger.info(f"*** history file date: {hist_date} expected date: {ref_date}")
 
     if hist_date != ref_date:
-        raise ValueError(f"FATAL ERROR: Inconsistent bkg date'")
+        raise ValueError(f"FATAL ERROR: Inconsistent bkg date, Expected {ref_date}, {histfile} contains {hist_date}")
 
 
 @logit(logger)
@@ -199,3 +203,107 @@ def get_mom6_levels(ocnres: str) -> int:
         raise KeyError("FATAL ERROR: Invalid ocnres value. Aborting.")
 
     return nlev
+
+
+@logit(logger)
+def prep_var_input_nml(task_config: AttrDict) -> None:
+    """Write the MOM6 namelists a marine JEDI variational analysis runs against
+
+    One for the deterministic background geometry and one for the analysis geometry.
+    prep_input_nml above is the B matrix jobs' equivalent, from a different template.
+
+    Parameters
+    ----------
+    task_config: AttrDict
+        Attribute-dictionary of task configuration
+
+    Returns
+    ----------
+    None
+    """
+
+    logger.info(f"Preparing deterministic MOM6 input namelist")
+    parse_j2tmpl(os.path.join(task_config.PARMmarine, 'mom_input.nml.j2'),
+                 task_config,
+                 output_file="mom_input.nml")
+
+    logger.info(f"Preparing analysis geometry input namelist")
+    parse_j2tmpl(os.path.join(task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
+                 task_config,
+                 output_file="./anl_geom/mom_input.nml")
+
+
+@logit(logger)
+def initialize_obs_stats(jedi_var: Jedi, jedi_obs_stats: Jedi, task_config: AttrDict,
+                         component: Optional[str] = None) -> None:
+    """Initialize the SOCA observation statistics application
+
+    The observation spaces it reports on are whichever ones survived in the variational
+    application's input configuration, so this has to run after that has been initialized.
+
+    Parameters
+    ----------
+    jedi_var: Jedi
+        the initialized variational Jedi object to take the observation spaces from
+    jedi_obs_stats: Jedi
+        the observation statistics Jedi object to initialize
+    task_config: AttrDict
+        Attribute-dictionary of task configuration; the observation names and variables
+        are added to it
+    component (optional): str
+        keep only the observations this component owns. Needed when the variational
+        application spans more than one component, as the coupled one does, since the
+        statistics application is marine only
+
+    Returns
+    ----------
+    None
+    """
+
+    observers = jedi_var.jedi_config.input_config['cost function']['observations']['observers']
+    if component is not None:
+        owned = jedi_var.get_observations_by_component().get(component, [])
+        observers = [obs_space for obs_space in observers if obs_space['obs space']['name'] in owned]
+
+    cleaned_observations = []
+    obs_variables = {}
+    for obs_space in observers:
+        name = obs_space['obs space']['name']
+        variable = obs_space['obs space']['simulated variables'][0]
+
+        cleaned_observations.append(name)
+        obs_variables[name] = variable
+
+    # Update the task_config with the observation variables
+    task_config['cleaned_observations'] = cleaned_observations
+    task_config['obs_variables'] = obs_variables
+
+    # Initialize the observation statistics
+    logger.info(f"Initializing JEDI SOCA observation statistics application")
+    jedi_obs_stats.initialize(task_config)
+
+
+@logit(logger)
+def save_obs_stats(jedi_obs_stats: Jedi, data: str, comout: str) -> None:
+    """Copy the (legacy) SOCA observation statistics to COM
+
+    Parameters
+    ----------
+    jedi_obs_stats: Jedi
+        the observation statistics Jedi object
+    data: str
+        path to the run directory, for logging
+    comout: str
+        path to the COM output directory, for logging
+
+    Returns
+    ----------
+    None
+    """
+
+    logger.info(f"Copy (legacy) observation statistics from {data} to {comout}")
+    try:
+        diags_list = jedi_obs_stats.render_jcb_template(algorithm_in='soca_diags_finalize')
+    except Exception as e:
+        logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
+    FileHandler(diags_list).sync()
