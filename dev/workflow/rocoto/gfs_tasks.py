@@ -1480,7 +1480,8 @@ class GFSTasks(Tasks):
         last_fhr = fhrs[-1]
         history_file = f'{self.run}.t@Hz.{wave_grid}.f{last_fhr:03d}.log'
         deps = []
-        dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}', 'age': 60}
+        dep_dict = {'type': 'metatask', 'name': f'{self.run}_fcst_manager'}
+        #dep_dict = {'type': 'data', 'data': f'{history_path}/{history_file}', 'age': 60}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 

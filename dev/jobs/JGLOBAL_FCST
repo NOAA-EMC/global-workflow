@@ -113,6 +113,7 @@ if [[ ${err} -ne 0 ]]; then
     # "aborted rc=<rc>" and propagates the failure via its FCST_FINALIZED_SENTINEL
     # propagate-failure block, rather than only via the slow batch-walltime path.
     echo "aborted rc=${err} at $(date --utc +%Y%m%d%H%M%S)" > "${DATAjob}/fcst_finalized_seg${FCST_SEGMENT:-0}"
+    mv "${DATAjob}/fcst_table_ready_seg${FCST_SEGMENT:-0}" "${DATAjob}/failed_fcst_table_ready_seg${FCST_SEGMENT:-0}"
     err_exit "Failed to run the ${RUN} forecast for ${PDY}${cyc}"
 fi
 
