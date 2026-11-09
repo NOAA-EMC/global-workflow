@@ -5641,245 +5641,324 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
           task jenkfgdas_fcst_mem002
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '002'
             edit MEMDIR 'mem002'
           task jenkfgdas_fcst_mem003
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '003'
             edit MEMDIR 'mem003'
           task jenkfgdas_fcst_mem004
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '004'
             edit MEMDIR 'mem004'
           task jenkfgdas_fcst_mem005
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '005'
             edit MEMDIR 'mem005'
           task jenkfgdas_fcst_mem006
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '006'
             edit MEMDIR 'mem006'
           task jenkfgdas_fcst_mem007
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '007'
             edit MEMDIR 'mem007'
           task jenkfgdas_fcst_mem008
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '008'
             edit MEMDIR 'mem008'
           task jenkfgdas_fcst_mem009
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '009'
             edit MEMDIR 'mem009'
           task jenkfgdas_fcst_mem010
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '010'
             edit MEMDIR 'mem010'
           task jenkfgdas_fcst_mem011
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '011'
             edit MEMDIR 'mem011'
           task jenkfgdas_fcst_mem012
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '012'
             edit MEMDIR 'mem012'
           task jenkfgdas_fcst_mem013
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '013'
             edit MEMDIR 'mem013'
           task jenkfgdas_fcst_mem014
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '014'
             edit MEMDIR 'mem014'
           task jenkfgdas_fcst_mem015
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '015'
             edit MEMDIR 'mem015'
           task jenkfgdas_fcst_mem016
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '016'
             edit MEMDIR 'mem016'
           task jenkfgdas_fcst_mem017
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '017'
             edit MEMDIR 'mem017'
           task jenkfgdas_fcst_mem018
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '018'
             edit MEMDIR 'mem018'
           task jenkfgdas_fcst_mem019
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '019'
             edit MEMDIR 'mem019'
           task jenkfgdas_fcst_mem020
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '020'
             edit MEMDIR 'mem020'
           task jenkfgdas_fcst_mem021
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '021'
             edit MEMDIR 'mem021'
           task jenkfgdas_fcst_mem022
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '022'
             edit MEMDIR 'mem022'
           task jenkfgdas_fcst_mem023
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '023'
             edit MEMDIR 'mem023'
           task jenkfgdas_fcst_mem024
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '024'
             edit MEMDIR 'mem024'
           task jenkfgdas_fcst_mem025
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '025'
             edit MEMDIR 'mem025'
           task jenkfgdas_fcst_mem026
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '026'
             edit MEMDIR 'mem026'
           task jenkfgdas_fcst_mem027
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '027'
             edit MEMDIR 'mem027'
           task jenkfgdas_fcst_mem028
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '028'
             edit MEMDIR 'mem028'
           task jenkfgdas_fcst_mem029
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '029'
             edit MEMDIR 'mem029'
           task jenkfgdas_fcst_mem030
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '030'
             edit MEMDIR 'mem030'
           task jenkfgdas_fcst_mem031
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '031'
             edit MEMDIR 'mem031'
           task jenkfgdas_fcst_mem032
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '032'
             edit MEMDIR 'mem032'
           task jenkfgdas_fcst_mem033
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '033'
             edit MEMDIR 'mem033'
           task jenkfgdas_fcst_mem034
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '034'
             edit MEMDIR 'mem034'
           task jenkfgdas_fcst_mem035
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '035'
             edit MEMDIR 'mem035'
           task jenkfgdas_fcst_mem036
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '036'
             edit MEMDIR 'mem036'
           task jenkfgdas_fcst_mem037
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '037'
             edit MEMDIR 'mem037'
           task jenkfgdas_fcst_mem038
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '038'
             edit MEMDIR 'mem038'
           task jenkfgdas_fcst_mem039
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '039'
             edit MEMDIR 'mem039'
           task jenkfgdas_fcst_mem040
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '040'
             edit MEMDIR 'mem040'
           task jenkfgdas_fcst_mem041
+            trigger jenkfgdas_fcst_manager_mem001==complete
             edit ENSMEM '041'
             edit MEMDIR 'mem041'
           task jenkfgdas_fcst_mem042
+            trigger jenkfgdas_fcst_manager_mem002==complete
             edit ENSMEM '042'
             edit MEMDIR 'mem042'
           task jenkfgdas_fcst_mem043
+            trigger jenkfgdas_fcst_manager_mem003==complete
             edit ENSMEM '043'
             edit MEMDIR 'mem043'
           task jenkfgdas_fcst_mem044
+            trigger jenkfgdas_fcst_manager_mem004==complete
             edit ENSMEM '044'
             edit MEMDIR 'mem044'
           task jenkfgdas_fcst_mem045
+            trigger jenkfgdas_fcst_manager_mem005==complete
             edit ENSMEM '045'
             edit MEMDIR 'mem045'
           task jenkfgdas_fcst_mem046
+            trigger jenkfgdas_fcst_manager_mem006==complete
             edit ENSMEM '046'
             edit MEMDIR 'mem046'
           task jenkfgdas_fcst_mem047
+            trigger jenkfgdas_fcst_manager_mem007==complete
             edit ENSMEM '047'
             edit MEMDIR 'mem047'
           task jenkfgdas_fcst_mem048
+            trigger jenkfgdas_fcst_manager_mem008==complete
             edit ENSMEM '048'
             edit MEMDIR 'mem048'
           task jenkfgdas_fcst_mem049
+            trigger jenkfgdas_fcst_manager_mem009==complete
             edit ENSMEM '049'
             edit MEMDIR 'mem049'
           task jenkfgdas_fcst_mem050
+            trigger jenkfgdas_fcst_manager_mem010==complete
             edit ENSMEM '050'
             edit MEMDIR 'mem050'
           task jenkfgdas_fcst_mem051
+            trigger jenkfgdas_fcst_manager_mem011==complete
             edit ENSMEM '051'
             edit MEMDIR 'mem051'
           task jenkfgdas_fcst_mem052
+            trigger jenkfgdas_fcst_manager_mem012==complete
             edit ENSMEM '052'
             edit MEMDIR 'mem052'
           task jenkfgdas_fcst_mem053
+            trigger jenkfgdas_fcst_manager_mem013==complete
             edit ENSMEM '053'
             edit MEMDIR 'mem053'
           task jenkfgdas_fcst_mem054
+            trigger jenkfgdas_fcst_manager_mem014==complete
             edit ENSMEM '054'
             edit MEMDIR 'mem054'
           task jenkfgdas_fcst_mem055
+            trigger jenkfgdas_fcst_manager_mem015==complete
             edit ENSMEM '055'
             edit MEMDIR 'mem055'
           task jenkfgdas_fcst_mem056
+            trigger jenkfgdas_fcst_manager_mem016==complete
             edit ENSMEM '056'
             edit MEMDIR 'mem056'
           task jenkfgdas_fcst_mem057
+            trigger jenkfgdas_fcst_manager_mem017==complete
             edit ENSMEM '057'
             edit MEMDIR 'mem057'
           task jenkfgdas_fcst_mem058
+            trigger jenkfgdas_fcst_manager_mem018==complete
             edit ENSMEM '058'
             edit MEMDIR 'mem058'
           task jenkfgdas_fcst_mem059
+            trigger jenkfgdas_fcst_manager_mem019==complete
             edit ENSMEM '059'
             edit MEMDIR 'mem059'
           task jenkfgdas_fcst_mem060
+            trigger jenkfgdas_fcst_manager_mem020==complete
             edit ENSMEM '060'
             edit MEMDIR 'mem060'
           task jenkfgdas_fcst_mem061
+            trigger jenkfgdas_fcst_manager_mem021==complete
             edit ENSMEM '061'
             edit MEMDIR 'mem061'
           task jenkfgdas_fcst_mem062
+            trigger jenkfgdas_fcst_manager_mem022==complete
             edit ENSMEM '062'
             edit MEMDIR 'mem062'
           task jenkfgdas_fcst_mem063
+            trigger jenkfgdas_fcst_manager_mem023==complete
             edit ENSMEM '063'
             edit MEMDIR 'mem063'
           task jenkfgdas_fcst_mem064
+            trigger jenkfgdas_fcst_manager_mem024==complete
             edit ENSMEM '064'
             edit MEMDIR 'mem064'
           task jenkfgdas_fcst_mem065
+            trigger jenkfgdas_fcst_manager_mem025==complete
             edit ENSMEM '065'
             edit MEMDIR 'mem065'
           task jenkfgdas_fcst_mem066
+            trigger jenkfgdas_fcst_manager_mem026==complete
             edit ENSMEM '066'
             edit MEMDIR 'mem066'
           task jenkfgdas_fcst_mem067
+            trigger jenkfgdas_fcst_manager_mem027==complete
             edit ENSMEM '067'
             edit MEMDIR 'mem067'
           task jenkfgdas_fcst_mem068
+            trigger jenkfgdas_fcst_manager_mem028==complete
             edit ENSMEM '068'
             edit MEMDIR 'mem068'
           task jenkfgdas_fcst_mem069
+            trigger jenkfgdas_fcst_manager_mem029==complete
             edit ENSMEM '069'
             edit MEMDIR 'mem069'
           task jenkfgdas_fcst_mem070
+            trigger jenkfgdas_fcst_manager_mem030==complete
             edit ENSMEM '070'
             edit MEMDIR 'mem070'
           task jenkfgdas_fcst_mem071
+            trigger jenkfgdas_fcst_manager_mem031==complete
             edit ENSMEM '071'
             edit MEMDIR 'mem071'
           task jenkfgdas_fcst_mem072
+            trigger jenkfgdas_fcst_manager_mem032==complete
             edit ENSMEM '072'
             edit MEMDIR 'mem072'
           task jenkfgdas_fcst_mem073
+            trigger jenkfgdas_fcst_manager_mem033==complete
             edit ENSMEM '073'
             edit MEMDIR 'mem073'
           task jenkfgdas_fcst_mem074
+            trigger jenkfgdas_fcst_manager_mem034==complete
             edit ENSMEM '074'
             edit MEMDIR 'mem074'
           task jenkfgdas_fcst_mem075
+            trigger jenkfgdas_fcst_manager_mem035==complete
             edit ENSMEM '075'
             edit MEMDIR 'mem075'
           task jenkfgdas_fcst_mem076
+            trigger jenkfgdas_fcst_manager_mem036==complete
             edit ENSMEM '076'
             edit MEMDIR 'mem076'
           task jenkfgdas_fcst_mem077
+            trigger jenkfgdas_fcst_manager_mem037==complete
             edit ENSMEM '077'
             edit MEMDIR 'mem077'
           task jenkfgdas_fcst_mem078
+            trigger jenkfgdas_fcst_manager_mem038==complete
             edit ENSMEM '078'
             edit MEMDIR 'mem078'
           task jenkfgdas_fcst_mem079
+            trigger jenkfgdas_fcst_manager_mem039==complete
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
           task jenkfgdas_fcst_mem080
+            trigger jenkfgdas_fcst_manager_mem040==complete
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
           task jenkfgdas_fcst_manager_mem001
@@ -11863,245 +11942,324 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
           task jenkfgdas_fcst_mem002
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '002'
             edit MEMDIR 'mem002'
           task jenkfgdas_fcst_mem003
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '003'
             edit MEMDIR 'mem003'
           task jenkfgdas_fcst_mem004
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '004'
             edit MEMDIR 'mem004'
           task jenkfgdas_fcst_mem005
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '005'
             edit MEMDIR 'mem005'
           task jenkfgdas_fcst_mem006
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '006'
             edit MEMDIR 'mem006'
           task jenkfgdas_fcst_mem007
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '007'
             edit MEMDIR 'mem007'
           task jenkfgdas_fcst_mem008
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '008'
             edit MEMDIR 'mem008'
           task jenkfgdas_fcst_mem009
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '009'
             edit MEMDIR 'mem009'
           task jenkfgdas_fcst_mem010
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '010'
             edit MEMDIR 'mem010'
           task jenkfgdas_fcst_mem011
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '011'
             edit MEMDIR 'mem011'
           task jenkfgdas_fcst_mem012
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '012'
             edit MEMDIR 'mem012'
           task jenkfgdas_fcst_mem013
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '013'
             edit MEMDIR 'mem013'
           task jenkfgdas_fcst_mem014
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '014'
             edit MEMDIR 'mem014'
           task jenkfgdas_fcst_mem015
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '015'
             edit MEMDIR 'mem015'
           task jenkfgdas_fcst_mem016
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '016'
             edit MEMDIR 'mem016'
           task jenkfgdas_fcst_mem017
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '017'
             edit MEMDIR 'mem017'
           task jenkfgdas_fcst_mem018
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '018'
             edit MEMDIR 'mem018'
           task jenkfgdas_fcst_mem019
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '019'
             edit MEMDIR 'mem019'
           task jenkfgdas_fcst_mem020
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '020'
             edit MEMDIR 'mem020'
           task jenkfgdas_fcst_mem021
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '021'
             edit MEMDIR 'mem021'
           task jenkfgdas_fcst_mem022
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '022'
             edit MEMDIR 'mem022'
           task jenkfgdas_fcst_mem023
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '023'
             edit MEMDIR 'mem023'
           task jenkfgdas_fcst_mem024
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '024'
             edit MEMDIR 'mem024'
           task jenkfgdas_fcst_mem025
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '025'
             edit MEMDIR 'mem025'
           task jenkfgdas_fcst_mem026
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '026'
             edit MEMDIR 'mem026'
           task jenkfgdas_fcst_mem027
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '027'
             edit MEMDIR 'mem027'
           task jenkfgdas_fcst_mem028
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '028'
             edit MEMDIR 'mem028'
           task jenkfgdas_fcst_mem029
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '029'
             edit MEMDIR 'mem029'
           task jenkfgdas_fcst_mem030
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '030'
             edit MEMDIR 'mem030'
           task jenkfgdas_fcst_mem031
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '031'
             edit MEMDIR 'mem031'
           task jenkfgdas_fcst_mem032
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '032'
             edit MEMDIR 'mem032'
           task jenkfgdas_fcst_mem033
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '033'
             edit MEMDIR 'mem033'
           task jenkfgdas_fcst_mem034
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '034'
             edit MEMDIR 'mem034'
           task jenkfgdas_fcst_mem035
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '035'
             edit MEMDIR 'mem035'
           task jenkfgdas_fcst_mem036
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '036'
             edit MEMDIR 'mem036'
           task jenkfgdas_fcst_mem037
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '037'
             edit MEMDIR 'mem037'
           task jenkfgdas_fcst_mem038
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '038'
             edit MEMDIR 'mem038'
           task jenkfgdas_fcst_mem039
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '039'
             edit MEMDIR 'mem039'
           task jenkfgdas_fcst_mem040
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '040'
             edit MEMDIR 'mem040'
           task jenkfgdas_fcst_mem041
+            trigger jenkfgdas_fcst_manager_mem001==complete
             edit ENSMEM '041'
             edit MEMDIR 'mem041'
           task jenkfgdas_fcst_mem042
+            trigger jenkfgdas_fcst_manager_mem002==complete
             edit ENSMEM '042'
             edit MEMDIR 'mem042'
           task jenkfgdas_fcst_mem043
+            trigger jenkfgdas_fcst_manager_mem003==complete
             edit ENSMEM '043'
             edit MEMDIR 'mem043'
           task jenkfgdas_fcst_mem044
+            trigger jenkfgdas_fcst_manager_mem004==complete
             edit ENSMEM '044'
             edit MEMDIR 'mem044'
           task jenkfgdas_fcst_mem045
+            trigger jenkfgdas_fcst_manager_mem005==complete
             edit ENSMEM '045'
             edit MEMDIR 'mem045'
           task jenkfgdas_fcst_mem046
+            trigger jenkfgdas_fcst_manager_mem006==complete
             edit ENSMEM '046'
             edit MEMDIR 'mem046'
           task jenkfgdas_fcst_mem047
+            trigger jenkfgdas_fcst_manager_mem007==complete
             edit ENSMEM '047'
             edit MEMDIR 'mem047'
           task jenkfgdas_fcst_mem048
+            trigger jenkfgdas_fcst_manager_mem008==complete
             edit ENSMEM '048'
             edit MEMDIR 'mem048'
           task jenkfgdas_fcst_mem049
+            trigger jenkfgdas_fcst_manager_mem009==complete
             edit ENSMEM '049'
             edit MEMDIR 'mem049'
           task jenkfgdas_fcst_mem050
+            trigger jenkfgdas_fcst_manager_mem010==complete
             edit ENSMEM '050'
             edit MEMDIR 'mem050'
           task jenkfgdas_fcst_mem051
+            trigger jenkfgdas_fcst_manager_mem011==complete
             edit ENSMEM '051'
             edit MEMDIR 'mem051'
           task jenkfgdas_fcst_mem052
+            trigger jenkfgdas_fcst_manager_mem012==complete
             edit ENSMEM '052'
             edit MEMDIR 'mem052'
           task jenkfgdas_fcst_mem053
+            trigger jenkfgdas_fcst_manager_mem013==complete
             edit ENSMEM '053'
             edit MEMDIR 'mem053'
           task jenkfgdas_fcst_mem054
+            trigger jenkfgdas_fcst_manager_mem014==complete
             edit ENSMEM '054'
             edit MEMDIR 'mem054'
           task jenkfgdas_fcst_mem055
+            trigger jenkfgdas_fcst_manager_mem015==complete
             edit ENSMEM '055'
             edit MEMDIR 'mem055'
           task jenkfgdas_fcst_mem056
+            trigger jenkfgdas_fcst_manager_mem016==complete
             edit ENSMEM '056'
             edit MEMDIR 'mem056'
           task jenkfgdas_fcst_mem057
+            trigger jenkfgdas_fcst_manager_mem017==complete
             edit ENSMEM '057'
             edit MEMDIR 'mem057'
           task jenkfgdas_fcst_mem058
+            trigger jenkfgdas_fcst_manager_mem018==complete
             edit ENSMEM '058'
             edit MEMDIR 'mem058'
           task jenkfgdas_fcst_mem059
+            trigger jenkfgdas_fcst_manager_mem019==complete
             edit ENSMEM '059'
             edit MEMDIR 'mem059'
           task jenkfgdas_fcst_mem060
+            trigger jenkfgdas_fcst_manager_mem020==complete
             edit ENSMEM '060'
             edit MEMDIR 'mem060'
           task jenkfgdas_fcst_mem061
+            trigger jenkfgdas_fcst_manager_mem021==complete
             edit ENSMEM '061'
             edit MEMDIR 'mem061'
           task jenkfgdas_fcst_mem062
+            trigger jenkfgdas_fcst_manager_mem022==complete
             edit ENSMEM '062'
             edit MEMDIR 'mem062'
           task jenkfgdas_fcst_mem063
+            trigger jenkfgdas_fcst_manager_mem023==complete
             edit ENSMEM '063'
             edit MEMDIR 'mem063'
           task jenkfgdas_fcst_mem064
+            trigger jenkfgdas_fcst_manager_mem024==complete
             edit ENSMEM '064'
             edit MEMDIR 'mem064'
           task jenkfgdas_fcst_mem065
+            trigger jenkfgdas_fcst_manager_mem025==complete
             edit ENSMEM '065'
             edit MEMDIR 'mem065'
           task jenkfgdas_fcst_mem066
+            trigger jenkfgdas_fcst_manager_mem026==complete
             edit ENSMEM '066'
             edit MEMDIR 'mem066'
           task jenkfgdas_fcst_mem067
+            trigger jenkfgdas_fcst_manager_mem027==complete
             edit ENSMEM '067'
             edit MEMDIR 'mem067'
           task jenkfgdas_fcst_mem068
+            trigger jenkfgdas_fcst_manager_mem028==complete
             edit ENSMEM '068'
             edit MEMDIR 'mem068'
           task jenkfgdas_fcst_mem069
+            trigger jenkfgdas_fcst_manager_mem029==complete
             edit ENSMEM '069'
             edit MEMDIR 'mem069'
           task jenkfgdas_fcst_mem070
+            trigger jenkfgdas_fcst_manager_mem030==complete
             edit ENSMEM '070'
             edit MEMDIR 'mem070'
           task jenkfgdas_fcst_mem071
+            trigger jenkfgdas_fcst_manager_mem031==complete
             edit ENSMEM '071'
             edit MEMDIR 'mem071'
           task jenkfgdas_fcst_mem072
+            trigger jenkfgdas_fcst_manager_mem032==complete
             edit ENSMEM '072'
             edit MEMDIR 'mem072'
           task jenkfgdas_fcst_mem073
+            trigger jenkfgdas_fcst_manager_mem033==complete
             edit ENSMEM '073'
             edit MEMDIR 'mem073'
           task jenkfgdas_fcst_mem074
+            trigger jenkfgdas_fcst_manager_mem034==complete
             edit ENSMEM '074'
             edit MEMDIR 'mem074'
           task jenkfgdas_fcst_mem075
+            trigger jenkfgdas_fcst_manager_mem035==complete
             edit ENSMEM '075'
             edit MEMDIR 'mem075'
           task jenkfgdas_fcst_mem076
+            trigger jenkfgdas_fcst_manager_mem036==complete
             edit ENSMEM '076'
             edit MEMDIR 'mem076'
           task jenkfgdas_fcst_mem077
+            trigger jenkfgdas_fcst_manager_mem037==complete
             edit ENSMEM '077'
             edit MEMDIR 'mem077'
           task jenkfgdas_fcst_mem078
+            trigger jenkfgdas_fcst_manager_mem038==complete
             edit ENSMEM '078'
             edit MEMDIR 'mem078'
           task jenkfgdas_fcst_mem079
+            trigger jenkfgdas_fcst_manager_mem039==complete
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
           task jenkfgdas_fcst_mem080
+            trigger jenkfgdas_fcst_manager_mem040==complete
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
           task jenkfgdas_fcst_manager_mem001
@@ -18085,245 +18243,324 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
           task jenkfgdas_fcst_mem002
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '002'
             edit MEMDIR 'mem002'
           task jenkfgdas_fcst_mem003
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '003'
             edit MEMDIR 'mem003'
           task jenkfgdas_fcst_mem004
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '004'
             edit MEMDIR 'mem004'
           task jenkfgdas_fcst_mem005
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '005'
             edit MEMDIR 'mem005'
           task jenkfgdas_fcst_mem006
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '006'
             edit MEMDIR 'mem006'
           task jenkfgdas_fcst_mem007
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '007'
             edit MEMDIR 'mem007'
           task jenkfgdas_fcst_mem008
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '008'
             edit MEMDIR 'mem008'
           task jenkfgdas_fcst_mem009
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '009'
             edit MEMDIR 'mem009'
           task jenkfgdas_fcst_mem010
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '010'
             edit MEMDIR 'mem010'
           task jenkfgdas_fcst_mem011
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '011'
             edit MEMDIR 'mem011'
           task jenkfgdas_fcst_mem012
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '012'
             edit MEMDIR 'mem012'
           task jenkfgdas_fcst_mem013
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '013'
             edit MEMDIR 'mem013'
           task jenkfgdas_fcst_mem014
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '014'
             edit MEMDIR 'mem014'
           task jenkfgdas_fcst_mem015
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '015'
             edit MEMDIR 'mem015'
           task jenkfgdas_fcst_mem016
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '016'
             edit MEMDIR 'mem016'
           task jenkfgdas_fcst_mem017
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '017'
             edit MEMDIR 'mem017'
           task jenkfgdas_fcst_mem018
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '018'
             edit MEMDIR 'mem018'
           task jenkfgdas_fcst_mem019
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '019'
             edit MEMDIR 'mem019'
           task jenkfgdas_fcst_mem020
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '020'
             edit MEMDIR 'mem020'
           task jenkfgdas_fcst_mem021
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '021'
             edit MEMDIR 'mem021'
           task jenkfgdas_fcst_mem022
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '022'
             edit MEMDIR 'mem022'
           task jenkfgdas_fcst_mem023
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '023'
             edit MEMDIR 'mem023'
           task jenkfgdas_fcst_mem024
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '024'
             edit MEMDIR 'mem024'
           task jenkfgdas_fcst_mem025
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '025'
             edit MEMDIR 'mem025'
           task jenkfgdas_fcst_mem026
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '026'
             edit MEMDIR 'mem026'
           task jenkfgdas_fcst_mem027
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '027'
             edit MEMDIR 'mem027'
           task jenkfgdas_fcst_mem028
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '028'
             edit MEMDIR 'mem028'
           task jenkfgdas_fcst_mem029
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '029'
             edit MEMDIR 'mem029'
           task jenkfgdas_fcst_mem030
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '030'
             edit MEMDIR 'mem030'
           task jenkfgdas_fcst_mem031
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '031'
             edit MEMDIR 'mem031'
           task jenkfgdas_fcst_mem032
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '032'
             edit MEMDIR 'mem032'
           task jenkfgdas_fcst_mem033
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '033'
             edit MEMDIR 'mem033'
           task jenkfgdas_fcst_mem034
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '034'
             edit MEMDIR 'mem034'
           task jenkfgdas_fcst_mem035
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '035'
             edit MEMDIR 'mem035'
           task jenkfgdas_fcst_mem036
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '036'
             edit MEMDIR 'mem036'
           task jenkfgdas_fcst_mem037
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '037'
             edit MEMDIR 'mem037'
           task jenkfgdas_fcst_mem038
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '038'
             edit MEMDIR 'mem038'
           task jenkfgdas_fcst_mem039
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '039'
             edit MEMDIR 'mem039'
           task jenkfgdas_fcst_mem040
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '040'
             edit MEMDIR 'mem040'
           task jenkfgdas_fcst_mem041
+            trigger jenkfgdas_fcst_manager_mem001==complete
             edit ENSMEM '041'
             edit MEMDIR 'mem041'
           task jenkfgdas_fcst_mem042
+            trigger jenkfgdas_fcst_manager_mem002==complete
             edit ENSMEM '042'
             edit MEMDIR 'mem042'
           task jenkfgdas_fcst_mem043
+            trigger jenkfgdas_fcst_manager_mem003==complete
             edit ENSMEM '043'
             edit MEMDIR 'mem043'
           task jenkfgdas_fcst_mem044
+            trigger jenkfgdas_fcst_manager_mem004==complete
             edit ENSMEM '044'
             edit MEMDIR 'mem044'
           task jenkfgdas_fcst_mem045
+            trigger jenkfgdas_fcst_manager_mem005==complete
             edit ENSMEM '045'
             edit MEMDIR 'mem045'
           task jenkfgdas_fcst_mem046
+            trigger jenkfgdas_fcst_manager_mem006==complete
             edit ENSMEM '046'
             edit MEMDIR 'mem046'
           task jenkfgdas_fcst_mem047
+            trigger jenkfgdas_fcst_manager_mem007==complete
             edit ENSMEM '047'
             edit MEMDIR 'mem047'
           task jenkfgdas_fcst_mem048
+            trigger jenkfgdas_fcst_manager_mem008==complete
             edit ENSMEM '048'
             edit MEMDIR 'mem048'
           task jenkfgdas_fcst_mem049
+            trigger jenkfgdas_fcst_manager_mem009==complete
             edit ENSMEM '049'
             edit MEMDIR 'mem049'
           task jenkfgdas_fcst_mem050
+            trigger jenkfgdas_fcst_manager_mem010==complete
             edit ENSMEM '050'
             edit MEMDIR 'mem050'
           task jenkfgdas_fcst_mem051
+            trigger jenkfgdas_fcst_manager_mem011==complete
             edit ENSMEM '051'
             edit MEMDIR 'mem051'
           task jenkfgdas_fcst_mem052
+            trigger jenkfgdas_fcst_manager_mem012==complete
             edit ENSMEM '052'
             edit MEMDIR 'mem052'
           task jenkfgdas_fcst_mem053
+            trigger jenkfgdas_fcst_manager_mem013==complete
             edit ENSMEM '053'
             edit MEMDIR 'mem053'
           task jenkfgdas_fcst_mem054
+            trigger jenkfgdas_fcst_manager_mem014==complete
             edit ENSMEM '054'
             edit MEMDIR 'mem054'
           task jenkfgdas_fcst_mem055
+            trigger jenkfgdas_fcst_manager_mem015==complete
             edit ENSMEM '055'
             edit MEMDIR 'mem055'
           task jenkfgdas_fcst_mem056
+            trigger jenkfgdas_fcst_manager_mem016==complete
             edit ENSMEM '056'
             edit MEMDIR 'mem056'
           task jenkfgdas_fcst_mem057
+            trigger jenkfgdas_fcst_manager_mem017==complete
             edit ENSMEM '057'
             edit MEMDIR 'mem057'
           task jenkfgdas_fcst_mem058
+            trigger jenkfgdas_fcst_manager_mem018==complete
             edit ENSMEM '058'
             edit MEMDIR 'mem058'
           task jenkfgdas_fcst_mem059
+            trigger jenkfgdas_fcst_manager_mem019==complete
             edit ENSMEM '059'
             edit MEMDIR 'mem059'
           task jenkfgdas_fcst_mem060
+            trigger jenkfgdas_fcst_manager_mem020==complete
             edit ENSMEM '060'
             edit MEMDIR 'mem060'
           task jenkfgdas_fcst_mem061
+            trigger jenkfgdas_fcst_manager_mem021==complete
             edit ENSMEM '061'
             edit MEMDIR 'mem061'
           task jenkfgdas_fcst_mem062
+            trigger jenkfgdas_fcst_manager_mem022==complete
             edit ENSMEM '062'
             edit MEMDIR 'mem062'
           task jenkfgdas_fcst_mem063
+            trigger jenkfgdas_fcst_manager_mem023==complete
             edit ENSMEM '063'
             edit MEMDIR 'mem063'
           task jenkfgdas_fcst_mem064
+            trigger jenkfgdas_fcst_manager_mem024==complete
             edit ENSMEM '064'
             edit MEMDIR 'mem064'
           task jenkfgdas_fcst_mem065
+            trigger jenkfgdas_fcst_manager_mem025==complete
             edit ENSMEM '065'
             edit MEMDIR 'mem065'
           task jenkfgdas_fcst_mem066
+            trigger jenkfgdas_fcst_manager_mem026==complete
             edit ENSMEM '066'
             edit MEMDIR 'mem066'
           task jenkfgdas_fcst_mem067
+            trigger jenkfgdas_fcst_manager_mem027==complete
             edit ENSMEM '067'
             edit MEMDIR 'mem067'
           task jenkfgdas_fcst_mem068
+            trigger jenkfgdas_fcst_manager_mem028==complete
             edit ENSMEM '068'
             edit MEMDIR 'mem068'
           task jenkfgdas_fcst_mem069
+            trigger jenkfgdas_fcst_manager_mem029==complete
             edit ENSMEM '069'
             edit MEMDIR 'mem069'
           task jenkfgdas_fcst_mem070
+            trigger jenkfgdas_fcst_manager_mem030==complete
             edit ENSMEM '070'
             edit MEMDIR 'mem070'
           task jenkfgdas_fcst_mem071
+            trigger jenkfgdas_fcst_manager_mem031==complete
             edit ENSMEM '071'
             edit MEMDIR 'mem071'
           task jenkfgdas_fcst_mem072
+            trigger jenkfgdas_fcst_manager_mem032==complete
             edit ENSMEM '072'
             edit MEMDIR 'mem072'
           task jenkfgdas_fcst_mem073
+            trigger jenkfgdas_fcst_manager_mem033==complete
             edit ENSMEM '073'
             edit MEMDIR 'mem073'
           task jenkfgdas_fcst_mem074
+            trigger jenkfgdas_fcst_manager_mem034==complete
             edit ENSMEM '074'
             edit MEMDIR 'mem074'
           task jenkfgdas_fcst_mem075
+            trigger jenkfgdas_fcst_manager_mem035==complete
             edit ENSMEM '075'
             edit MEMDIR 'mem075'
           task jenkfgdas_fcst_mem076
+            trigger jenkfgdas_fcst_manager_mem036==complete
             edit ENSMEM '076'
             edit MEMDIR 'mem076'
           task jenkfgdas_fcst_mem077
+            trigger jenkfgdas_fcst_manager_mem037==complete
             edit ENSMEM '077'
             edit MEMDIR 'mem077'
           task jenkfgdas_fcst_mem078
+            trigger jenkfgdas_fcst_manager_mem038==complete
             edit ENSMEM '078'
             edit MEMDIR 'mem078'
           task jenkfgdas_fcst_mem079
+            trigger jenkfgdas_fcst_manager_mem039==complete
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
           task jenkfgdas_fcst_mem080
+            trigger jenkfgdas_fcst_manager_mem040==complete
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
           task jenkfgdas_fcst_manager_mem001
@@ -24308,245 +24545,324 @@ suite gfs_v17_nco
           endfamily		//recenter
         endfamily		//analysis
         family forecast
-          trigger analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and analysis/recenter/jenkfgdas_marine_ens_recenter==complete and analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
           task jenkfgdas_fcst_mem001
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '001'
             edit MEMDIR 'mem001'
           task jenkfgdas_fcst_mem002
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '002'
             edit MEMDIR 'mem002'
           task jenkfgdas_fcst_mem003
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '003'
             edit MEMDIR 'mem003'
           task jenkfgdas_fcst_mem004
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '004'
             edit MEMDIR 'mem004'
           task jenkfgdas_fcst_mem005
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '005'
             edit MEMDIR 'mem005'
           task jenkfgdas_fcst_mem006
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '006'
             edit MEMDIR 'mem006'
           task jenkfgdas_fcst_mem007
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '007'
             edit MEMDIR 'mem007'
           task jenkfgdas_fcst_mem008
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '008'
             edit MEMDIR 'mem008'
           task jenkfgdas_fcst_mem009
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '009'
             edit MEMDIR 'mem009'
           task jenkfgdas_fcst_mem010
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '010'
             edit MEMDIR 'mem010'
           task jenkfgdas_fcst_mem011
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '011'
             edit MEMDIR 'mem011'
           task jenkfgdas_fcst_mem012
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '012'
             edit MEMDIR 'mem012'
           task jenkfgdas_fcst_mem013
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '013'
             edit MEMDIR 'mem013'
           task jenkfgdas_fcst_mem014
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '014'
             edit MEMDIR 'mem014'
           task jenkfgdas_fcst_mem015
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '015'
             edit MEMDIR 'mem015'
           task jenkfgdas_fcst_mem016
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '016'
             edit MEMDIR 'mem016'
           task jenkfgdas_fcst_mem017
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '017'
             edit MEMDIR 'mem017'
           task jenkfgdas_fcst_mem018
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '018'
             edit MEMDIR 'mem018'
           task jenkfgdas_fcst_mem019
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '019'
             edit MEMDIR 'mem019'
           task jenkfgdas_fcst_mem020
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '020'
             edit MEMDIR 'mem020'
           task jenkfgdas_fcst_mem021
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '021'
             edit MEMDIR 'mem021'
           task jenkfgdas_fcst_mem022
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '022'
             edit MEMDIR 'mem022'
           task jenkfgdas_fcst_mem023
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '023'
             edit MEMDIR 'mem023'
           task jenkfgdas_fcst_mem024
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '024'
             edit MEMDIR 'mem024'
           task jenkfgdas_fcst_mem025
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '025'
             edit MEMDIR 'mem025'
           task jenkfgdas_fcst_mem026
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '026'
             edit MEMDIR 'mem026'
           task jenkfgdas_fcst_mem027
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '027'
             edit MEMDIR 'mem027'
           task jenkfgdas_fcst_mem028
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '028'
             edit MEMDIR 'mem028'
           task jenkfgdas_fcst_mem029
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '029'
             edit MEMDIR 'mem029'
           task jenkfgdas_fcst_mem030
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '030'
             edit MEMDIR 'mem030'
           task jenkfgdas_fcst_mem031
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '031'
             edit MEMDIR 'mem031'
           task jenkfgdas_fcst_mem032
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '032'
             edit MEMDIR 'mem032'
           task jenkfgdas_fcst_mem033
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '033'
             edit MEMDIR 'mem033'
           task jenkfgdas_fcst_mem034
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '034'
             edit MEMDIR 'mem034'
           task jenkfgdas_fcst_mem035
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '035'
             edit MEMDIR 'mem035'
           task jenkfgdas_fcst_mem036
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '036'
             edit MEMDIR 'mem036'
           task jenkfgdas_fcst_mem037
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '037'
             edit MEMDIR 'mem037'
           task jenkfgdas_fcst_mem038
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '038'
             edit MEMDIR 'mem038'
           task jenkfgdas_fcst_mem039
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '039'
             edit MEMDIR 'mem039'
           task jenkfgdas_fcst_mem040
+            trigger ../analysis/recenter/jenkfgdas_atmos_ens_recenter000==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter001==complete and ../analysis/recenter/jenkfgdas_atmos_ens_recenter002==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_gcycle==complete and ../analysis/recenter/jenkfgdas_marine_ens_recenter==complete and ../analysis/create/jenkfgdas_atmos_ens_anal_sfc_regrid==complete
             edit ENSMEM '040'
             edit MEMDIR 'mem040'
           task jenkfgdas_fcst_mem041
+            trigger jenkfgdas_fcst_manager_mem001==complete
             edit ENSMEM '041'
             edit MEMDIR 'mem041'
           task jenkfgdas_fcst_mem042
+            trigger jenkfgdas_fcst_manager_mem002==complete
             edit ENSMEM '042'
             edit MEMDIR 'mem042'
           task jenkfgdas_fcst_mem043
+            trigger jenkfgdas_fcst_manager_mem003==complete
             edit ENSMEM '043'
             edit MEMDIR 'mem043'
           task jenkfgdas_fcst_mem044
+            trigger jenkfgdas_fcst_manager_mem004==complete
             edit ENSMEM '044'
             edit MEMDIR 'mem044'
           task jenkfgdas_fcst_mem045
+            trigger jenkfgdas_fcst_manager_mem005==complete
             edit ENSMEM '045'
             edit MEMDIR 'mem045'
           task jenkfgdas_fcst_mem046
+            trigger jenkfgdas_fcst_manager_mem006==complete
             edit ENSMEM '046'
             edit MEMDIR 'mem046'
           task jenkfgdas_fcst_mem047
+            trigger jenkfgdas_fcst_manager_mem007==complete
             edit ENSMEM '047'
             edit MEMDIR 'mem047'
           task jenkfgdas_fcst_mem048
+            trigger jenkfgdas_fcst_manager_mem008==complete
             edit ENSMEM '048'
             edit MEMDIR 'mem048'
           task jenkfgdas_fcst_mem049
+            trigger jenkfgdas_fcst_manager_mem009==complete
             edit ENSMEM '049'
             edit MEMDIR 'mem049'
           task jenkfgdas_fcst_mem050
+            trigger jenkfgdas_fcst_manager_mem010==complete
             edit ENSMEM '050'
             edit MEMDIR 'mem050'
           task jenkfgdas_fcst_mem051
+            trigger jenkfgdas_fcst_manager_mem011==complete
             edit ENSMEM '051'
             edit MEMDIR 'mem051'
           task jenkfgdas_fcst_mem052
+            trigger jenkfgdas_fcst_manager_mem012==complete
             edit ENSMEM '052'
             edit MEMDIR 'mem052'
           task jenkfgdas_fcst_mem053
+            trigger jenkfgdas_fcst_manager_mem013==complete
             edit ENSMEM '053'
             edit MEMDIR 'mem053'
           task jenkfgdas_fcst_mem054
+            trigger jenkfgdas_fcst_manager_mem014==complete
             edit ENSMEM '054'
             edit MEMDIR 'mem054'
           task jenkfgdas_fcst_mem055
+            trigger jenkfgdas_fcst_manager_mem015==complete
             edit ENSMEM '055'
             edit MEMDIR 'mem055'
           task jenkfgdas_fcst_mem056
+            trigger jenkfgdas_fcst_manager_mem016==complete
             edit ENSMEM '056'
             edit MEMDIR 'mem056'
           task jenkfgdas_fcst_mem057
+            trigger jenkfgdas_fcst_manager_mem017==complete
             edit ENSMEM '057'
             edit MEMDIR 'mem057'
           task jenkfgdas_fcst_mem058
+            trigger jenkfgdas_fcst_manager_mem018==complete
             edit ENSMEM '058'
             edit MEMDIR 'mem058'
           task jenkfgdas_fcst_mem059
+            trigger jenkfgdas_fcst_manager_mem019==complete
             edit ENSMEM '059'
             edit MEMDIR 'mem059'
           task jenkfgdas_fcst_mem060
+            trigger jenkfgdas_fcst_manager_mem020==complete
             edit ENSMEM '060'
             edit MEMDIR 'mem060'
           task jenkfgdas_fcst_mem061
+            trigger jenkfgdas_fcst_manager_mem021==complete
             edit ENSMEM '061'
             edit MEMDIR 'mem061'
           task jenkfgdas_fcst_mem062
+            trigger jenkfgdas_fcst_manager_mem022==complete
             edit ENSMEM '062'
             edit MEMDIR 'mem062'
           task jenkfgdas_fcst_mem063
+            trigger jenkfgdas_fcst_manager_mem023==complete
             edit ENSMEM '063'
             edit MEMDIR 'mem063'
           task jenkfgdas_fcst_mem064
+            trigger jenkfgdas_fcst_manager_mem024==complete
             edit ENSMEM '064'
             edit MEMDIR 'mem064'
           task jenkfgdas_fcst_mem065
+            trigger jenkfgdas_fcst_manager_mem025==complete
             edit ENSMEM '065'
             edit MEMDIR 'mem065'
           task jenkfgdas_fcst_mem066
+            trigger jenkfgdas_fcst_manager_mem026==complete
             edit ENSMEM '066'
             edit MEMDIR 'mem066'
           task jenkfgdas_fcst_mem067
+            trigger jenkfgdas_fcst_manager_mem027==complete
             edit ENSMEM '067'
             edit MEMDIR 'mem067'
           task jenkfgdas_fcst_mem068
+            trigger jenkfgdas_fcst_manager_mem028==complete
             edit ENSMEM '068'
             edit MEMDIR 'mem068'
           task jenkfgdas_fcst_mem069
+            trigger jenkfgdas_fcst_manager_mem029==complete
             edit ENSMEM '069'
             edit MEMDIR 'mem069'
           task jenkfgdas_fcst_mem070
+            trigger jenkfgdas_fcst_manager_mem030==complete
             edit ENSMEM '070'
             edit MEMDIR 'mem070'
           task jenkfgdas_fcst_mem071
+            trigger jenkfgdas_fcst_manager_mem031==complete
             edit ENSMEM '071'
             edit MEMDIR 'mem071'
           task jenkfgdas_fcst_mem072
+            trigger jenkfgdas_fcst_manager_mem032==complete
             edit ENSMEM '072'
             edit MEMDIR 'mem072'
           task jenkfgdas_fcst_mem073
+            trigger jenkfgdas_fcst_manager_mem033==complete
             edit ENSMEM '073'
             edit MEMDIR 'mem073'
           task jenkfgdas_fcst_mem074
+            trigger jenkfgdas_fcst_manager_mem034==complete
             edit ENSMEM '074'
             edit MEMDIR 'mem074'
           task jenkfgdas_fcst_mem075
+            trigger jenkfgdas_fcst_manager_mem035==complete
             edit ENSMEM '075'
             edit MEMDIR 'mem075'
           task jenkfgdas_fcst_mem076
+            trigger jenkfgdas_fcst_manager_mem036==complete
             edit ENSMEM '076'
             edit MEMDIR 'mem076'
           task jenkfgdas_fcst_mem077
+            trigger jenkfgdas_fcst_manager_mem037==complete
             edit ENSMEM '077'
             edit MEMDIR 'mem077'
           task jenkfgdas_fcst_mem078
+            trigger jenkfgdas_fcst_manager_mem038==complete
             edit ENSMEM '078'
             edit MEMDIR 'mem078'
           task jenkfgdas_fcst_mem079
+            trigger jenkfgdas_fcst_manager_mem039==complete
             edit ENSMEM '079'
             edit MEMDIR 'mem079'
           task jenkfgdas_fcst_mem080
+            trigger jenkfgdas_fcst_manager_mem040==complete
             edit ENSMEM '080'
             edit MEMDIR 'mem080'
           task jenkfgdas_fcst_manager_mem001
