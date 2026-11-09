@@ -1,9 +1,9 @@
-GFS V16.3.34 RELEASE NOTES
+GFS V16.3.35 RELEASE NOTES
 
 -------
 PRELUDE
 -------
-Updates obsproc versioning to match operational implementation of obsproc.v1.3.1
+Downstream update due to RRFSv1.0 implementation/retirement of NAMv4.2. This update removes gempak products that are dependent on the NAM and are no longer needed. 
 
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
@@ -13,9 +13,9 @@ The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub are used t
 ```bash
 cd $PACKAGEROOT
 
-mkdir gfs.v16.3.34
-cd gfs.v16.3.34
-git clone -b OMD-gfs.v16.3.34 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.35
+cd gfs.v16.3.35
+git clone -b OMD-gfs.v16.3.35 https://github.com/NOAA-EMC/global-workflow.git .
 
 cd sorc
 ./checkout.sh -o
@@ -52,48 +52,49 @@ cd ../ecf
 VERSION FILE CHANGES
 --------------------
 
-* in `versions/run.ver` change `version=v16.3.34` and `gfs_ver=v16.3.34`
-* in `versions/run.ver` change `obsproc_ver=v1.3`
+* in `versions/run.ver` change `version=v16.3.35` and `gfs_ver=v16.3.35`
+* in `versions/run.ver` remove `nam_ver=v4.2`
 
 SORC CHANGES
 ------------
 
-* No source code changes from GFS v16.3.33
+* No changes from GFS v16.3.34 
 
 JOBS CHANGES
 ------------
 
-* No changes from GFS v16.3.33
+* Remove COMINnam from jobs/JGFS_ATMOS_GEMPAK_META
 
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 SCRIPT CHANGES
 --------------
 
-* No changes from GFS v16.3.33
+* Removes ush/gfs_meta_comp.sh and ush/gfs_meta_mar_comp.sh scripts.
 
 FIX CHANGES
 -----------
 
-* No changes from GFSv16.3.33
+* Updates gempak/fix/gfs_meta file to account for script removal. 
 
 MODULE CHANGES
 --------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 CHANGES TO FILE AND FILE SIZES
 ------------------------------
 
-* No changes from GFS v16.3.33
+* Removes files written to /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_comp.
+* Removes files written to /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_mar_comp
 
 ENVIRONMENT AND RESOURCE CHANGES
 --------------------------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
@@ -106,23 +107,27 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 -------------------------
 
-* No changes from GFS v16.3.33
+* Removes DBN alerts for availability of /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_comp 
+* Removes DBN alerts for availability of /lfs/h1/ops/prod/com/gfs/v16.3/gfs.$PDY/$cyc/atmos/gempak/meta/gfs_$PDY_$cyc_us_mar_comp 
 
 HPSS ARCHIVE
 ------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 DOCUMENTATION
 -------------
 
-* No changes from GFS v16.3.33
+* No changes from GFS v16.3.34
 
 PREPARED BY
 -----------
 Travis.J.Elless@noaa.gov
+Benjamin.Blake@noaa.gov
+David.Huber@noaa.gov
+Wen.Meng@noaa.gov
