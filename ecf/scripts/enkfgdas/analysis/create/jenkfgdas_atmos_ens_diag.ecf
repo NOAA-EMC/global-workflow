@@ -50,7 +50,7 @@ ensemble mean.
 
 TROUBLESHOOTING
 
-Depends on EnKF observer completion. Creates gunzipped tarballs
+Depends on EnKF observer completion. Creates gzipped tarballs
 of observation diagnostic files to be used by next update step.
 
 Works on ensemble mean only. Lightweight job. Check previous cycles 
