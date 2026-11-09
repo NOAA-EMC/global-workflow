@@ -70,6 +70,10 @@ The GW configs contain switches that change how the system runs. Many defaults a
 |                  |                                  |               |             | supported on Hercules.  Defaults are machine      |
 |                  |                                  |               |             | specific.                                         |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
+| ARCH_GFS_1P00    | Archive 1.0 degree GFS GRIB2     | NO            | NO          | If YES, 1.0 degree GFS pressure GRIB2 products    |
+|                  | products to the ARCDIR           |               |             | are created and copied to the ARCDIR instead of   |
+|                  |                                  |               |             | the 0.25 degree products. Saves disk space.       |
++------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | ARCH_EXPDIR      | Archive the EXPDIR               | NO            | NO          | Whether to create a tarball of the EXPDIR.        |
 |                  |                                  |               |             | ARCH_HASHES and ARCH_DIFFS generate text files    |
 |                  |                                  |               |             | of git output that are archived with the EXPDIR.  |
