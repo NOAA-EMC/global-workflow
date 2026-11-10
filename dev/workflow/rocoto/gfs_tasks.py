@@ -749,6 +749,29 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
+    def soilanlvar(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.run}_prep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('soilanlvar')
+        task_name = f'{self.run}_soilanlvar'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/soilanlvar.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+        return task
+
     def prepoceanobs(self):
 
         ocean_hist_path = self._template_to_rocoto_cycstring(self._base["COM_OCEAN_HISTORY_TMPL"], {'RUN': 'gdas'})
@@ -816,6 +839,9 @@ class GFSTasks(Tasks):
         deps = []
         data = f'{ocean_hist_path}/gdas.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        # The f009 file exists as soon as MOM6 opens it; wait for the forecast to finish writing it
+        dep_dict = {'type': 'metatask', 'name': 'gdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
@@ -1105,6 +1131,10 @@ class GFSTasks(Tasks):
 
         if self.options['do_jedisnowda']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        if self.options['do_jedisoildavar']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_soilanlvar'}
             deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -2518,6 +2548,10 @@ class GFSTasks(Tasks):
                 else:
                     dep_dict = {'type': 'metatask', 'name': f'{self.run}_earc_tars'}
                 deps_full.append(rocoto.add_dependency(dep_dict))
+            elif self.options['do_enkfonly_atm']:
+                # No earc_vrfy or archive tasks run, so wait on the ensemble post-processing instead
+                dep_dict = {'type': 'metatask', 'name': f'{self.run}_epmn'}
+                deps_full.append(rocoto.add_dependency(dep_dict))
 
             if self.run == 'enkfgdas':
                 # Date dependency for the first half cycle (only GDAS ensemble runs on the first half cycle)
@@ -3056,6 +3090,31 @@ class GFSTasks(Tasks):
 
         return task
 
+    def soilanlens(self):
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prep"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('soilanlens')
+        task_name = f'{self.run}_soilanlens'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/soilanlens.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+        return task
+
     def esfc_gcycle(self):
 
         deps = []
@@ -3141,6 +3200,9 @@ class GFSTasks(Tasks):
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_hybvar_ocn']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlecen'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.options['do_jedisoildaens']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_soilanlens'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}

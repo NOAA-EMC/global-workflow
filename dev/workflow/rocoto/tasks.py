@@ -25,6 +25,7 @@ class Tasks:
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
                    'snowanl', 'esnowanl',
+                   'soilanlvar', 'soilanlens',
                    'offlineanl',
                    'fcst',
                    'atmos_post', 'ocn_post', 'ice_post',
