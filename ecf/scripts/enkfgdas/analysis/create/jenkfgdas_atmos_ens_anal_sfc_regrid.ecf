@@ -42,4 +42,19 @@ fi
 %include <tail.h>
 %manual
 
+TASK enkfgdas_atmos_ens_anal_sfc_regrid
+
+PURPOSE: EnKF ensemble surface analysis -- regrids the surface 
+increments for each ensemble member from the Gaussian grid to 
+the FV3 tiles 
+
+TROUBLESHOOTING
+
+There is a large amount of I/O in this job, check for I/O
+performance issues. Each member is computed independently.
+If input data for a single member is corrupted, rerun
+enkfgdas_atmos_ens_update.  If rerun cannot be done, copy
+full data from uncorrupted member into the corrupted member 
+slot.
+
 %end

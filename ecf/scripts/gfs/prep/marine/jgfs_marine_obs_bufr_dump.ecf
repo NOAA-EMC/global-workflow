@@ -45,4 +45,14 @@ fi
 %include <tail.h>
 %manual
 
+TASK gfs_marine_obs_bufr_dump
+
+PURPOSE: Ocean observation preparation -- converts observations in BUFR 
+produced by obsproc to IODA format for the GFS marine analysis.
+
+TROUBLESHOOTING
+
+Ensure obsproc produced BUFR files and are on disk before this 
+job has begun.
+
 %end

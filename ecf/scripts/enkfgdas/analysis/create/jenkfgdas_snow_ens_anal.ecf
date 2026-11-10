@@ -52,9 +52,8 @@ state across all members.
 
 TROUBLESHOOTING
 
-Depends on deterministic snow analysis (snowanl) completing. If snow
-analysis failed, ensemble snow update cannot proceed. Check that snow
-analysis output exists. Per-member update -- individual failures
-possible but non-critical.
+Similar to deterministic snow analysis (jgdas_snow_anal). Per-member update.
+Check individual member input for corrupted files. Rerun ensemble 
+forecast for corrupted member. 
 
 %end

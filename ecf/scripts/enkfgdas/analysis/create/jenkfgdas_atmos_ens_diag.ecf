@@ -44,12 +44,17 @@ fi
 
 TASK enkfgdas_atmos_ens_diag
 
-PURPOSE: EnKF ensemble diagnostics -- creates diagnostic files for ensemble
-analysis members.
+PURPOSE: EnKF ensemble diagnostics -- creates diagnostic files for 
+ensemble mean.
+
 
 TROUBLESHOOTING
 
-Depends on EnKF update (eupd) completion. If update failed, no
-diagnostics to produce. Lightweight job. Non-blocking for forecast path.
+Depends on EnKF observer completion. Creates gzipped tarballs
+of observation diagnostic files to be used by next update step.
+
+Works on ensemble mean only. Lightweight job. Check previous cycles 
+ensemble mean forecast history files in ensstat directory, rerun 
+ens_post from previous cycle if any ensmean fcst files are corrupted.
 
 %end

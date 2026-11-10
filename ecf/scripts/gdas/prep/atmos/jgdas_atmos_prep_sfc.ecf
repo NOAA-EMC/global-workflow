@@ -50,4 +50,17 @@ fi
 %include <tail.h>
 %manual
 
+TASK gdas_atmos_prep_sfc
+
+PURPOSE: Computes global blended ice and snow analyses.
+
+TROUBLESHOOTING
+
+Reads data from IMS and AFWA. Calls a utility script for each of 
+the ice and snow analyses. If external data is missing or if
+another error in the utility script occurs, a non-zero exit code 
+is produced and the job will copy the previous cycles output.
+This is non-fatal and cycling can continue, but errors should
+be investigated by developers. 
+
 %end
