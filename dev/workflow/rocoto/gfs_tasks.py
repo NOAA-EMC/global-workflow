@@ -2528,38 +2528,32 @@ class GFSTasks(Tasks):
 
             dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
 
-        # Cycle throttle is 3 by default, so don't check if interval_gfs is more than 2 cycles long.
-        elif interval_gfs > assim_freq and interval_gfs <= assim_freq * 2:
+        elif interval_gfs > assim_freq:
             # If the GFS interval is greater than the assimilation frequency, then we need to
-            # check that the next forecast segment is complete before cleaning up.
-            # However, the timedelta offset is variable as gdas/enkfgdas runs every
-            # assim_freq hours, but the next forecast segment is only available every
-            # interval_gfs hours.
-            # We need to do some math to determine the next forecast segment time based
-            # on the current cycle time. rocoto only support streq, so we need a full
-            # list of all the possible next forecast segment times to check against.
-            # We then need to check if the current cycle time plus the interval_gfs is
-            # equal to any of the next forecast segment times.
-            # Start by building the list of valid gfs YYYYMMDDHH00 times.
+            # check if the next forecast cycle is a gfs_cycle. If so, then we need the
+            # gfs_fcst_seg0 task to be completed before we can clean up the current cycle
             sdate_gfs = self._base.get('SDATE_GFS')
             edate = self._base.get('EDATE')
-            gfs_times = []
             n_intervals = int((edate - sdate_gfs) // to_timedelta(f'{interval_gfs}H'))
-            # Do not include the last interval, as there is no next forecast segment.
-            for i in range(n_intervals):
-                gfs_time = (sdate_gfs + to_timedelta(f'{i * interval_gfs}H')).strftime("%Y%m%d%H")
-                gfs_times.append(gfs_time)
+            cleanup_cycles_needing_gfs_fcst = []
+            # Build a list of cycles that need to wait for the next gfs_fcst_seg0 task
+            # to complete before cleanup. These cycles will be one assim_freq less than
+            # the gfs_cycles.
+            for i in range(n_intervals + 1):
+                gfs_cycle = sdate_gfs + to_timedelta(f'{i * interval_gfs}H')
+                cleanup_cycle = gfs_cycle - to_timedelta(f'{assim_freq}H')
+                cleanup_cycles_needing_gfs_fcst.append(cleanup_cycle.strftime("%Y%m%d%H"))
 
-            # Now check if the current cycle time plus interval_gfs is equal to any of
-            # the gfs_times
+            # Now check if the current cycle is equal to any of the cleanup cycles.
             deps = []
-            for gfs_time in gfs_times:
+            for check_cycle in cleanup_cycles_needing_gfs_fcst:
                 dep_dict = {'type': 'streq', 'condition': 'not',
-                            'left': '@Y@m@d@H', 'right': gfs_time}
+                            'left': '@Y@m@d@H', 'right': check_cycle}
                 deps.append(rocoto.add_dependency(dep_dict))
+
             dep_wait_on_fcst = rocoto.create_dependency(dep_condition='and', dep=deps)
             dep_dict = {'type': 'task',
-                        'offset': f"{timedelta_to_HMS(to_timedelta(f'{interval_gfs}H'))}",
+                        'offset': f"{timedelta_to_HMS(to_timedelta(f'{assim_freq}H'))}",
                         'name': 'gfs_fcst_seg0'}
             dep_next_fcst = rocoto.add_dependency(dep_dict)
             deps = [dep_wait_on_fcst, dep_next_fcst]
