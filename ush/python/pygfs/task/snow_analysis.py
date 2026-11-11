@@ -304,6 +304,7 @@ class SnowAnalysis(Analysis):
         exe.add_default_arg(["-o", f"{os.path.join(self.task_config.DATA, output_file)}"])
         exe.add_default_arg(["-f", f"{os.path.join(self.task_config.DATA, station_file)}"])
         exe.add_default_arg(["-d", f"{to_YMDH(self.task_config.current_cycle)}"])
+        exe.add_default_arg(["--warn_on_missing_stn"])
         try:
             logger.debug(f"Executing {exe}")
             exe()
