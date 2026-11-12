@@ -116,6 +116,16 @@ Short descriptions of every job available in the workflow are listed below, alon
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | marineanlfinal      | Complete marine analysis by copying results back to COM (JEDI-based)                               |   X   |       |       |       |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
+| coupledanlinit      | Initialize coupled atmosphere and marine data assimilation (JEDI-based)                            |   X   |       |       |       |
++---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
+| coupledanlvar       | Run coupled atmosphere and marine variational assimilation (JEDI-based)                            |   X   |       |       |       |
++---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
+| coupledanlfv3inc    | Calculate the atmosphere increment of the coupled analysis (JEDI-based)                            |   X   |       |       |       |
++---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
+| coupledanlchkpt     | Insert sea ice analysis into restart and create MOM6 IAU increment (coupled)                       |   X   |       |       |       |
++---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
+| coupledanlfinal     | Complete coupled analysis by copying results back to COM (JEDI-based)                              |   X   |       |       |       |
++---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | offlineanl          | Interpolate existing analysis to produce analysis increments                                       |       |       |       |   X   |
 +---------------------+----------------------------------------------------------------------------------------------------+-------+-------+-------+-------+
 | waveinit            | Create wave model definition files                                                                 |   X   |   X   |   X   |       |

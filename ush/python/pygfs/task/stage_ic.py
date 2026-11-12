@@ -42,7 +42,7 @@ class Stage(Task):
             'assim_freq', 'current_cycle', 'previous_cycle',
             'ROTDIR', 'ICSDIR', 'STAGE_IC_YAML_TMPL', 'DO_JEDIATMVAR', 'DO_JEDIATMENS',
             'OCNRES', 'waveGRD', 'ntiles', 'DOIAU', 'ATMINC_GRID', 'DOENKFONLY_ATM',
-            'DO_JEDIOCNVAR', 'DO_STARTMEM_FROM_JEDIICE',
+            'DO_JEDIOCNVAR', 'DO_JEDICOUPLEDVAR', 'DO_STARTMEM_FROM_JEDIICE',
             'DO_WAVE', 'DO_OCN', 'DO_ICE', 'DO_NEST', 'DO_CA', 'DO_AERO_ANL', 'MOM6_INTERP_ICS',
             'USE_ATM_ENS_PERTURB_FILES', 'USE_OCN_ENS_PERTURB_FILES', 'DOIAU_COLDSTART',
             'DO_GSISOILDA', 'DO_LAND_IAU'
@@ -76,7 +76,9 @@ class Stage(Task):
         # START_ICE_FROM_ANA logic
         if self.task_config.get("DO_ICE", False):
             config_vars['START_ICE_FROM_ANA'] = False
-            if self.task_config.get("DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
+            marine_da = (self.task_config.get("DO_JEDIOCNVAR", False) or
+                         self.task_config.get("DO_JEDICOUPLEDVAR", False))
+            if marine_da and self.task_config.RUN == "gdas":
                 config_vars['START_ICE_FROM_ANA'] = True
             if self.task_config.get("DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
                 config_vars['START_ICE_FROM_ANA'] = True

@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.coupledanlfinal ##########
+# Coupled Analysis Finalize specific
+
+echo "BEGIN: config.coupledanlfinal"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" coupledanlfinal
+
+echo "END: config.coupledanlfinal"

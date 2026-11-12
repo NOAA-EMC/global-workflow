@@ -24,7 +24,12 @@ gfsocean_analysis:
         - '{{ COMIN_CONF }}/{{ head }}gridgen.yaml'
         - '{{ COMIN_CONF }}/{{ head }}soca_vtscales.yaml'
         - '{{ COMIN_CONF }}/{{ head }}bmat_fields_metadata.yaml'
+        {# the generated JEDI variational config, named for whichever chain produced it #}
+        {% if DO_JEDICOUPLEDVAR %}
+        - '{{ COMIN_CONF }}/{{ head }}anlvar.coupled.yaml'
+        {% else %}
         - '{{ COMIN_CONF }}/var.yaml'
+        {% endif %}
         # soca_parameters_diffusion_vt, and soca_parameters_diffusion_hz when present
         - '{{ COMIN_CONF }}/{{ head }}soca_parameters_diffusion_??.yaml'
         - '{{ COMIN_CONF }}/soca_incpostproc.yaml'
