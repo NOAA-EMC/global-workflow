@@ -128,7 +128,7 @@ class ArchiveVrfyVars:
                        'ARCDIR', 'MODE', 'DO_JEDIATMENS', 'DO_FIT2OBS', 'DO_JEDIATMVAR',
                        'DO_JEDISNOWDA', 'DO_AERO_ANL', 'DO_PREP_OBS_AERO', 'NET',
                        'FHOUT_GFS', 'FHMAX_HF_GFS', 'FHMAX_FITS', 'FHMAX', 'FHOUT',
-                       'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU']
+                       'FHMAX_GFS', 'DO_GSISOILDA', 'DO_LAND_IAU', 'ARCH_GFS_1P00']
 
         # Add FHMIN_GFS only if RUN does not contain 'enkf'
         if 'enkf' not in config_dict.get('RUN', ''):
