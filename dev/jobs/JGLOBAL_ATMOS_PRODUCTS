@@ -36,6 +36,9 @@ declare -rx COMIN_ATMOS_MASTER="${COMIN}/model/atmos/master"
 
 if [[ "${RUN}" == "gfs" ]]; then
     grids='0p25'
+    if [[ "${ARCH_GFS_1P00:-NO}" == "YES" ]]; then
+        grids="${grids} 1p00"
+    fi
 else
     grids='0p25 0p50 1p00'
 fi

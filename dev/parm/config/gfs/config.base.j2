@@ -532,6 +532,9 @@ export DO_FETCH_HPSS="NO"    # Copy from HPSS (on HPSS-accessible machines) onto
 export DO_FETCH_LOCAL="NO"   # Copy from local disk onto COM
 
 # Archiving options
+# Set to YES to create 1.0 degree GFS pressure GRIB2 products and send them to the ARCDIR
+# instead of the 0.25 degree products.  This option can save disk space.
+export ARCH_GFS_1P00="NO"
 export DO_ARCHCOM="{{ DO_ARCHCOM }}"    # Tar and archive the COM directories
 export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, and local
 
