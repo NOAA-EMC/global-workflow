@@ -894,7 +894,7 @@ CICE_postdet() {
             restart_date="${model_start_date_current_cycle}"
         fi
         cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+        if [[ "${DOIAU_COLDSTART:-NO}" == "YES" || "${ICE_FROM_ANA:-NO}" == "YES" ]]; then
             cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
         fi
         if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
