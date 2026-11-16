@@ -1,0 +1,42 @@
+#! /usr/bin/env bash
+
+########## config.soilanlvar ##########
+# JEDI Soil variational analysis
+
+echo "BEGIN: config.soilanlvar"
+
+# Get task specific resources
+source "${EXPDIR}/config.resources" soilanlvar
+
+if [[ "${DO_JEDISOILDAVAR}" == "YES" ]]; then
+    if [[ ${DO_LAND_IAU} = ".true." ]]; then
+        export ADD_SOIL_INC=".false."
+    else
+        export ADD_SOIL_INC=".true."
+    fi
+fi
+export SOILANALSH="${SCRglobal}/exglobal_soil_analysis.py"
+export SOIL_STATICB_TYPE="csg"  
+export TASK_CONFIG_YAML="${PARMglobal}/gdas/soil/soil_det_config.yaml.j2"
+export OBS_LIST_YAML="${PARMglobal}/gdas/soil/soil_obs_list.yaml.j2"
+export SOIL_FILE_TYPE="csg"
+
+export BCOV_DIR="${HOMEglobal}/fix/gdas/soil/" 
+export BCOV_FNAME="soill1_bump_nicas_1000km.nc"    
+
+# for non-landiau soil increments
+export APPLY_INCR_EXE="${EXECglobal}/apply_soil_incr.x"
+export APPLY_INCR_NML_TMPL="${PARMglobal}/gdas/soil/apply_incr_nml.j2"
+export print_debug=".false."
+export truncate_incr=".true."
+export upd_stc=.false.   # only slc for SMAP
+export upd_slc=.true.
+export LSOIL_INCR=1
+export csg_increment=.true.
+export SOIL_INC_PREFIX="soilinc."
+export SOIL_GINC_PREFIX="sfcinc"
+export ens_size=1
+export layout_x_soil=1
+export layout_y_soil=1
+
+echo "END: config.soilanlvar"

@@ -118,21 +118,14 @@ suites:
                 jgfs_atmos_gempak:
                   triggers:
                   - task: jgfs_atmos_analysis
-                jgfs_atmos_gempak_meta:
-                  triggers:
-                  - task: jgfs_atmos_analysis
-                jgfs_atmos_gempak_ncdc_upapgif:
-                  triggers:
-                  - task: jgfs_atmos_gempak
-                  - task: jgfs_atmos_gempak
-                jgfs_atmos_npoess_pgrb2_0p5deg:
+                jgfs_atmos_npoess_pgrb2_0p25deg:
                   triggers:
                   - task: jgfs_atmos_post_anl
                     state: active
                   - task: jgfs_atmos_post_anl
                 jgfs_atmos_pgrb2_spec_gempak:
                   triggers:
-                  - task: jgfs_atmos_npoess_pgrb2_0p5deg
+                  - task: jgfs_atmos_npoess_pgrb2_0p25deg
             verf:
               tasks:
                 jgfs_atmos_vminmon:

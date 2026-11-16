@@ -28,6 +28,7 @@ systems:
   gefs:
     - "nexus"
     - "gefs_model"
+    - "nexus"
     - "gefs_ww3_prepost"
   sfs:
     - "sfs_model"

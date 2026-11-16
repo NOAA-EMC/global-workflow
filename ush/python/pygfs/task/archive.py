@@ -179,7 +179,7 @@ class Archive(Task):
 
         elif (
             ("enkf" in arch_dict.RUN and ensgrp == 0) or
-            arch_dict.RUN in ["gfs", "gefs", "gdas", "gcdas", "gcafs"]
+            arch_dict.RUN in ["gfs", "gefs", "sfs", "gdas", "gcdas", "gcafs"]
         ):
             # Single-pass rendering for EnKF mean/spread and deterministic runs
             parsed_sets = parse_j2yaml(master_yaml_path, arch_dict, allow_missing=False)

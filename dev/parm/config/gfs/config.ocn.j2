@@ -7,6 +7,14 @@ export MESH_OCN="mesh.mx${OCNRES}.nc"
 export DO_OCN_SPPT="NO"  # In MOM_input, this variable is determines OCN_SPPT (OCN_SPPT = True|False)
 export DO_OCN_PERT_EPBL="NO"  # In MOM_input, this variable determines PERT_EPBL (PERT_EPBL = True|False)
 
+# Locations of the MOM6 input templates.  The defaults are set in the ocn section
+# of yaml/defaults.yaml and point at the copies link_workflow.sh stages under
+# ${PARMglobal}/ufs.  See docs/source/user_guide/configure.rst for how to
+# override them from an experiment yaml and for what a custom template must
+# preserve.
+export MOM6_INPUT_TEMPLATE="{{ MOM6_INPUT_TEMPLATE }}"
+export MOM6_DATA_TABLE_TEMPLATE="{{ MOM6_DATA_TABLE_TEMPLATE }}"
+
 # Templated variables in MOM_input_template
 export MOM6_USE_LI2016="True" # set to False for restart reproducibility
 export MOM6_THERMO_SPAN="False"

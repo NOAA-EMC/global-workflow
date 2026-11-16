@@ -240,6 +240,7 @@ for ((i = 0; i < nm; i += chunk_size)); do
         source "${USHglobal}/unset_strict.sh"
         # shellcheck disable=SC2086
         ${launcher:-} ${mpmd_opt:-} -n "${n_mpmd_tasks}" "${chunk_file}"
+        err=$?
         source "${USHglobal}/set_strict.sh"
     elif [[ "${_mpmd_launcher}" == "mpiexec" ]]; then
         # The MPMD implemtation is different between WCOSS and Derecho, but both
@@ -247,12 +248,13 @@ for ((i = 0; i < nm; i += chunk_size)); do
         if [[ "${machine}" == "DERECHO" ]]; then
             # shellcheck disable=SC2086
             ${launcher:-} ${mpmd_opt:-} "${chunk_file}"
+            err=$?
         else
             # shellcheck disable=SC2086
             ${launcher:-} -np "${n_mpmd_tasks}" ${mpmd_opt:-} "${chunk_file}"
+            err=$?
         fi
     fi
-    err=$?
     if [[ ${err} -ne 0 ]]; then
         echo "ERROR: MPMD job failed for ${chunk_file}"
         break

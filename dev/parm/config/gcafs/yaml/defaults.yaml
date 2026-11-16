@@ -36,6 +36,7 @@ base:
   assim_freq: 6
   FHMAX: 9
   FHOUT_AERO: 3
+  FIXglobal: "${HOMEglobal}/fix"
 
 atmanl:
   STATICB_TYPE: "gsibec"

@@ -33,6 +33,7 @@ export FHOUT_HF=${FHOUT_HF_GFS}
 export FHOUT_OCN=${FHOUT_OCN_GFS}
 export FHOUT_ICE=${FHOUT_ICE_GFS}
 export FHZERO="{{ FHZERO }}"
+export OUTPUT_HISTORY=".false."
 
 #use 6 year mean MERRA2 aerosol sync with time
 export MERRA2_6ym=".true."
@@ -108,8 +109,10 @@ if [[ ${gwd_opt} -eq 2 ]]; then
     export do_gsl_drag_ls_bl=".true."
     export do_gsl_drag_ss=".false."
     export do_gsl_drag_tofd=".true."
-    export do_gwd_opt_psl=".true."
+    export do_gwd_opt_psl=".false."
     export do_ugwp_v1_orog_only=".false."
+    export alpha_fd=35.0
+    export do_ngw_ec=".true."
     launch_level=$(echo "${LEVS}/2.35" |bc)
     export launch_level
 fi
@@ -124,11 +127,13 @@ export n_sponge=42
 export hybedmf=".false."
 export satmedmf=".true."
 export isatmedmf=1
+export tte_edmf=".true."
 tbf=""
 if [[ "${satmedmf}" == ".true." ]]; then tbf="_satmedmf" ; fi
 
 #Convection schemes
 export progsigma=".true."
+export cscale=0.2
 tbp=""
 if [[ "${progsigma}" == ".true." ]]; then tbp="_progsigma" ; fi
 
@@ -246,13 +251,18 @@ export psm_bc="1"
 export min_lakeice="0.15"
 export min_seaice=${min_seaice:-"0.15"}
 export use_cice_alb=${use_cice_alb:-".false."}
+export use_oceanuv=".false."
 
 export FSICL="0"
 export FSICS="0"
 
 #---------------------------------------------------------------------
 # Write more variables to output
-export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table"
+if [[ "${RUN}" == "sfs" ]]; then
+  export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table_sfs"
+else
+  export DIAG_TABLE="${PARMglobal}/ufs/fv3/diag_table"
+fi
 
 # Write gfs restart files to rerun fcst from any break point
 export restart_interval=${restart_interval_gfs:-12}

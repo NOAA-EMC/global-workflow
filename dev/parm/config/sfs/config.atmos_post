@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+########## config.atmos_post ##########
+# Generate daily and monthly mean atmosphere grib2 products specific for sfs
+
+echo "BEGIN: config.atmos_post"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmos_post
+
+# Maximum number of rocoto tasks per member
+export MAX_TASKS=25
+
+echo "END: config.atmos_post"
