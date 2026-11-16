@@ -270,6 +270,45 @@
 
 </metatask>
 
+
+<task name="gfs_cleanup" cycledefs="gfs" maxtries="&MAXTRIES;">
+                
+        <command>&HOME_repo;/dev/job_cards/rocoto/cleanup.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_gfs_cleanup_@H</cyclestr></jobname>
+        <account>GFS-DEV</account>
+        <queue>dev</queue>   
+        <walltime>00:15:00</walltime>
+        <nodes>1:ppn=1:tpp=1</nodes>
+        <memory>4096M</memory>
+        <native>-l place=vscatter:shared</native>
+
+        <join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gfs_cleanup.log</cyclestr></join>
+
+        <envar><name>RUN_ENVIR</name><value>emc</value></envar>
+        <envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
+        <envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
+        <envar><name>NET</name><value>gfs</value></envar>
+        <envar><name>RUN</name><value>gfs</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>COMROOT</name><value>&COM_aux;</value></envar>
+        <envar><name>DATAROOT</name><value>&DATAROOT_aux;/gfs.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+        <dependency>
+                <and>
+                        <or>
+                                <not><taskvalid task="gfs_metpg2g1"/></not>
+                                <metataskdep metatask="gfs_metp"/>
+                        </or>
+                        <taskdep task="gfs_arch_vrfy"/>
+                        <taskdep task="gfs_arch_logs"/>
+                        <metataskdep metatask="gfs_arch_tars"/>
+                </and>
+        </dependency>
+
+</task>
+
 <task name="gdas_fit2obs" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/fit2obs.sh</command>
@@ -424,6 +463,43 @@
 
 </metatask>
 
+<task name="gdas_cleanup" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&HOME_repo;/dev/job_cards/rocoto/cleanup.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_gdas_cleanup_@H</cyclestr></jobname>
+        <account>GFS-DEV</account>
+        <queue>dev</queue>
+        <walltime>00:15:00</walltime>
+        <nodes>1:ppn=1:tpp=1</nodes>
+        <memory>4096M</memory>
+        <native>-l place=vscatter:shared</native>
+
+        <join><cyclestr>&COM_aux;/logs/@Y@m@d@H/gdas_cleanup.log</cyclestr></join>
+
+        <envar><name>RUN_ENVIR</name><value>emc</value></envar>
+        <envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
+        <envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
+        <envar><name>NET</name><value>gfs</value></envar>
+        <envar><name>RUN</name><value>gdas</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>COMROOT</name><value>&COM_aux;</value></envar>
+        <envar><name>DATAROOT</name><value>&DATAROOT_aux;/gdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+        <dependency>
+                <and>
+                        <or>
+                                <taskdep task="gfs_fcst_seg0" cycle_offset="06:00:00"/>
+                                <not><cycleexistdep cycle_offset="06:00:00"/></not>
+                        </or>
+                        <taskdep task="gdas_arch_logs"/>
+                        <metataskdep metatask="gdas_arch_tars"/>
+                </and>
+        </dependency>
+
+</task>
+
 <task name="enkfgdas_earc_vrfy" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&HOME_repo;/dev/job_cards/rocoto/earc_vrfy.sh</command>
@@ -539,5 +615,43 @@
 	</task>
 
 </metatask>
+
+<task name="enkfgdas_cleanup" cycledefs="gdas" maxtries="&MAXTRIES;">
+        
+        <command>&HOME_repo;/dev/job_cards/rocoto/cleanup.sh</command>
+        
+        <jobname><cyclestr>&PSLOT;_enkfgdas_cleanup_@H</cyclestr></jobname>
+        <account>GFS-DEV</account>
+        <queue>dev</queue>
+        <walltime>00:15:00</walltime>
+        <nodes>1:ppn=1:tpp=1</nodes>
+        <memory>4096M</memory>
+        <native>-l place=vscatter:shared</native>
+                                
+        <join><cyclestr>&COM_aux;/logs/@Y@m@d@H/enkfgdas_cleanup.log</cyclestr></join>
+                        
+        <envar><name>RUN_ENVIR</name><value>emc</value></envar>
+        <envar><name>HOMEglobal</name><value>&HOME_repo;</value></envar>
+        <envar><name>EXPDIR</name><value>&EXP_aux;</value></envar>
+        <envar><name>NET</name><value>gfs</value></envar>
+        <envar><name>RUN</name><value>enkfgdas</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>COMROOT</name><value>&COM_aux;</value></envar>
+        <envar><name>DATAROOT</name><value>&DATAROOT_aux;/enkfgdas.<cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+        <dependency>
+                <and>
+                        <taskdep task="enkfgdas_earc_vrfy"/>
+                        <taskdep task="enkfgdas_arch_logs"/>
+                        <metataskdep metatask="enkfgdas_earc_tars"/>
+                        <or>
+                                <taskdep task="gfs_fcst_seg0" cycle_offset="06:00:00"/>
+                                <not><cycleexistdep cycle_offset="06:00:00"/></not>
+                        </or>
+                </and>
+        </dependency>
+        
+</task>
 
 </workflow>
