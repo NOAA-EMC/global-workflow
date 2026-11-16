@@ -81,6 +81,7 @@ if [[ "${RUN}" == sfs ]]; then
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs"*"monthly_avg"*".nc"
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs."*".t00z.${grid}.daily.nc"
     rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs.SSH.t00z.0p25.daily.nc"
+    rm -f "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs.SST.t00z.0p25.daily.nc"
     echo "Finish Cleaning All Generated Files From the Previous Failed Post Job!"
     # -----------------------------------------------------------------------------
     # Task A: Generated 6hrly 5m potential temperature from 6hrly temperature files
@@ -136,8 +137,8 @@ if [[ "${RUN}" == sfs ]]; then
 
     # 3. Final Consolidation (Merge each variable into one long time-series file, Post-MPMD)
     if [[ ${diag_status} -eq 0 ]]; then
+        # Merge and Compress 1p00 files
         newvarslist=("dt20c" "TCHP" "ocnheat" "SST" "SSU" "SSV" "MLD_003" "MLD_0125" "ePBL" "latent" "sensible" "SW" "LW" "taux" "tauy" "temp" "uo" "vo" "so")
-
         for var in "${newvarslist[@]}"; do
             # Merge and compress 1p00 files
             cdo mergetime "${DATA}/sfs.${var}.t00z.${grid}.f*.nc" "${DATA}/sfs.${var}.t00z.${grid}.daily.merge.nc"
@@ -148,11 +149,14 @@ if [[ "${RUN}" == sfs ]]; then
             rm -f "${DATA}/sfs.${var}.t00z.${grid}.f"*".nc"
             rm -f "${DATA}/sfs.${var}.t00z.${grid}.daily.nc" "${DATA}/sfs.${var}.t00z.${grid}.daily.merge.nc"
         done
-        # Merge and Compress 0p25 SSH files
-        cdo mergetime "${DATA}/sfs.SSH.t00z.0p25.f*.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc"
-        nccopy -k 4 -d 5 "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.nc"
-        cpfs "${DATA}/sfs.SSH.t00z.0p25.daily.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.SSH.t00z.0p25.daily.nc"
-        rm -f "${DATA}/sfs.SSH.t00z.0p25.daily.merge.nc" "${DATA}/sfs.SSH.t00z.0p25.daily.nc"
+        # Merge and Compress 0p25 SSH and SST files
+        ssh_sst_list=("SSH" "SST")
+        for var in "${ssh_sst_list[@]}"; do
+            cdo mergetime "${DATA}/sfs.${var}.t00z.0p25.f*.nc" "${DATA}/sfs.${var}.t00z.0p25.daily.merge.nc"
+            nccopy -k 4 -d 5 "${DATA}/sfs.${var}.t00z.0p25.daily.merge.nc" "${DATA}/sfs.${var}.t00z.0p25.daily.nc"
+            cpfs "${DATA}/sfs.${var}.t00z.0p25.daily.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.0p25.daily.nc"
+            rm -f "${DATA}/sfs.${var}.t00z.0p25.daily.merge.nc" "${DATA}/sfs.${var}.t00z.0p25.daily.nc"
+        done
     else
         err_exit "FATAL ERROR: MPMD diagnostics failed. Keeping input files for debugging."
     fi
@@ -175,10 +179,13 @@ if [[ "${RUN}" == sfs ]]; then
         vdate_mid_str="${vdate_mid:0:4}_${vdate_mid:4:2}_${vdate_mid:6:2}_${vdate_mid:8:2}"
         new_file="ocn_${vdate_mid_str}.nc"
         new_ssh_file="ssh_${vdate_mid_str}.nc"
+        new_sst_file="sst_${vdate_mid_str}.nc"
         ori_file="${RUN}.t${cyc}z.${grid}.f${fhr3}.nc"
         ori_ssh_file="${RUN}.SSH.t${cyc}z.0p25.f${fhr3}.nc"
+        ori_sst_file="${RUN}.SST.t${cyc}z.0p25.f${fhr3}.nc"
         ${NLN} "${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/${ori_file}" "${DATAoutput}/MOM6_OUTPUT/${new_file}"
         ${NLN} "${DATA}/${ori_ssh_file}" "${DATAoutput}/MOM6_OUTPUT/${new_ssh_file}"
+        ${NLN} "${DATA}/${ori_sst_file}" "${DATAoutput}/MOM6_OUTPUT/${new_sst_file}"
         last_fhr=${fhr}
     done
     # 1. Check the final month is full or partial

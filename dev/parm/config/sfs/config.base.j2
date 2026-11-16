@@ -291,7 +291,7 @@ export DO_CA="YES"
 
 export DOIAU="NO"  # While we are not doing IAU, we may want to warm start w/ IAU in the future
 export DOIAU_COLDSTART="{{ DOIAU_COLDSTART }}" #SFS from GFS ICs cold starts with IAU
-export ICE_FROM_ANA="{{ ICE_FROM_ANA }}" #SFS from GFS DA ICs ice starts from analysis
+export ICE_FROM_ANA="{{ ICE_FROM_ANA }}" #SFS from GFS_3DVAR ICs ice starts from analysis
 
 # Check if cycle is warm starting with IAU
 if [[ "${EXP_WARM_START}" = ".true." ]]; then

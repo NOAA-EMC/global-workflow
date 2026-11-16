@@ -23,15 +23,19 @@ if [[ "${RUN}" == sfs ]]; then
     rm -f "${DATAoutput}/MOM6_OUTPUT/ocn_${YR}_${MN}_merge.nc"
     rm -f "${DATAoutput}/MOM6_OUTPUT/ssh_${YR}_${MN}_merge.nc"
     rm -f "${temp3d_file}" "${temp3d_300m}"
-    # 1.1 Do monthly averaging for all variables except SSH
+    # 1.1 Do monthly averaging for all variables except SSH and SST (0p25)
     cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ocn_${YR}_${MN}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ocn_${YR}_${MN}_merge.nc"
     cdo monavg "${DATAoutput}/MOM6_OUTPUT/ocn_${YR}_${MN}_merge.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.ocean.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
-    # 1.2 Do monthly averaging for SSH
+    # 1.2 Do monthly averaging for SSH and SST
     cdo mergetime "${DATAoutput}/MOM6_OUTPUT/ssh_${YR}_${MN}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/ssh_${YR}_${MN}_merge.nc"
     cdo monavg "${DATAoutput}/MOM6_OUTPUT/ssh_${YR}_${MN}_merge.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc"
 
+    cdo mergetime "${DATAoutput}/MOM6_OUTPUT/sst_${YR}_${MN}_??_12.nc" "${DATAoutput}/MOM6_OUTPUT/sst_${YR}_${MN}_merge.nc"
+    cdo monavg "${DATAoutput}/MOM6_OUTPUT/sst_${YR}_${MN}_merge.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.SST.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc"
+
     rm -f "${DATAoutput}/MOM6_OUTPUT/ocn_${YR}_${MN}_merge.nc"
     rm -f "${DATAoutput}/MOM6_OUTPUT/ssh_${YR}_${MN}_merge.nc"
+    rm -f "${DATAoutput}/MOM6_OUTPUT/sst_${YR}_${MN}_merge.nc"
 
     # 2. Extract Temp and interpolate to 300m depth exactly for 0-300m OHC calculation
     levels="1,3,5,7,9,15,25,35,45,55,65,75,85,95,105,115,125,135,145,155,165,175,185,195,205,215,225.8694,241.0626,266.5239,300"
@@ -44,10 +48,12 @@ if [[ "${RUN}" == sfs ]]; then
     python3 "${CALC_OHC}" "${temp3d_300m}" "${DATAoutput}/MOM6_OUTPUT/${RUN}.ocnheat.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc"
 
     # 4. Compression and save the final ocean monthly mean products
-    # For SSH
-    nccopy -k 4 -d 5 "${DATAoutput}/MOM6_OUTPUT/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.tmp.nc"
-    cpfs "${DATAoutput}/MOM6_OUTPUT/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.tmp.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc"
-    rm -f "${DATAoutput}/MOM6_OUTPUT/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.SSH.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.tmp.nc"
+    # For SSH and SST (0p25)
+    for var in "SSH" "SST"; do
+        nccopy -k 4 -d 5 "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.tmp.nc"
+        cpfs "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.tmp.nc" "${COMOUT_OCEAN_NETCDF}/${grid}/${RUN}.${var}.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc"
+        rm -f "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.0p25.monthly_avg.${YR}-${MN}.tmp.nc"
+    done
     # For other fields
     for var in "ocean" "dt20c" "TCHP" "ocnheat"; do
         nccopy -k 4 -d 5 "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.nc" "${DATAoutput}/MOM6_OUTPUT/${RUN}.${var}.t${current_cycle}.${grid}.monthly_avg.${YR}-${MN}.tmp.nc"

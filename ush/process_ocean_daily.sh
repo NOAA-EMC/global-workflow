@@ -8,7 +8,7 @@ CALC_D20="${USHglobal}/calc_d20.py"
 CALC_TCHP="${USHglobal}/calc_tchp.py"
 CALC_OHC="${USHglobal}/calc_ohc.py"
 
-#path to SSH output resolution (0p25: r1440x721)
+#path to SSH and SST output resolution (0p25: r1440x721)
 r1440x721="${PARMglobal}/diag/r1440x721"
 
 # Arguments:
@@ -27,15 +27,17 @@ for ((j = 0; j < fhr_inc; j++)); do
     input_file="${OCEAN_PRODUCT_OUTPUT}/netcdf/${grid}/sfs.t00z.${grid}.f${fhr3}.nc"
     in_hist_file="${OCEAN_HISTORY_OUTPUT}/sfs.t00z.24hr_avg.f${fhr3}.nc"
     in_ssh_file="${OCEAN_HISTORY_OUTPUT}/sfs.SSH.t00z.24hr_avg.f${fhr3}.nc"
+    in_sst_file="${OCEAN_HISTORY_OUTPUT}/sfs.SST.t00z.24hr_avg.f${fhr3}.nc"
     [[ ! -f "${input_file}" ]] && continue
     [[ ! -f "${in_hist_file}" ]] && continue
 
-    # Outputs on DATA and DATAoutput
-    output_ssh="${DATA}/sfs.SSH.t00z.0p25.f${fhr3}.nc"
-    output_dt20c="${DATA}/sfs.dt20c.t00z.${grid}.f${fhr3}.nc"
-    output_tchp="${DATA}/sfs.TCHP.t00z.${grid}.f${fhr3}.nc"
-    output_ocnheat="${DATA}/sfs.ocnheat.t00z.${grid}.f${fhr3}.nc"
-    temp3d_file="${DATAoutput}/MOM6_OUTPUT/sfs.temp3d.f${fhr3}.nc"
+    # Outputs in regular lon-lat grids (1p00 and 0p25) on DATA and DATAoutput
+    output_ssh="${DATA}/sfs.SSH.t00z.0p25.f${fhr3}.nc"                     # 0p25 SSH
+    output_sst="${DATA}/sfs.SST.t00z.0p25.f${fhr3}.nc"                     # 0p25 SST
+    output_dt20c="${DATA}/sfs.dt20c.t00z.${grid}.f${fhr3}.nc"              # 1p00 dt20c
+    output_tchp="${DATA}/sfs.TCHP.t00z.${grid}.f${fhr3}.nc"                # 1p00 TCHP
+    output_ocnheat="${DATA}/sfs.ocnheat.t00z.${grid}.f${fhr3}.nc"          # 1p00 ocnheat 
+    temp3d_file="${DATAoutput}/MOM6_OUTPUT/sfs.temp3d.f${fhr3}.nc" 
     temp3d_300m="${DATAoutput}/MOM6_OUTPUT/sfs.temp3d.300m.f${fhr3}.nc"
 
     # 1. Calc OHC/D20/TCHP
@@ -48,14 +50,18 @@ for ((j = 0; j < fhr_inc; j++)); do
 
     rm -f "${temp3d_file}" "${temp3d_300m}"
 
-    #2. Extract SSH from ocean history files and then conduct CDO remapping to get 0p25 SSH files
+    #2. Extract SSH and SST from mx025 ocean history files and then conduct CDO remapping to get 0p25 SSH and SST files
     ncks -O -v geolon,geolat,SSH "${in_hist_file}" "${in_ssh_file}"                       # extract SSH, geolon, geolat variables into one new file
     ncatted -a coordinates,SSH,c,c,"geolon geolat" "${in_ssh_file}"                       # reedit SSH cooridinates information "geolon geolat"
     cdo remapbil,"${r1440x721}" -setgridtype,curvilinear "${in_ssh_file}" "${output_ssh}" # remap from mx025 to 0p25
 
-    rm -f "${in_ssh_file}"
+    ncks -O -v geolon,geolat,SST "${in_hist_file}" "${in_sst_file}"                       # extract SST, geolon, geolat variables into one new file
+    ncatted -a coordinates,SST,c,c,"geolon geolat" "${in_sst_file}"                       # reedit SST cooridinates information "geolon geolat"
+    cdo remapbil,"${r1440x721}" -setgridtype,curvilinear "${in_sst_file}" "${output_sst}" # remap from mx025 to 0p25
 
-    # 3. Extract specific variables into individual files on DATA directory for later merging
+    rm -f "${in_ssh_file}" "${in_sst_file}"
+
+    # 3. Extract specific variables in 1p00 into individual files on DATA directory for later merging
     for var in "${varslist[@]}"; do
         #output_var="${COMOUT_OCEAN_NETCDF}/${grid}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"
         output_var="${DATA}/sfs.${var}.t00z.${grid}.f${fhr3}.nc"

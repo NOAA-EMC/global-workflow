@@ -223,24 +223,33 @@ fi
 cmdfile_s2="${DATA}/mpmd_s2_daily.txt"
 true > "${cmdfile_s2}"
 
+# 0. Extract initialization day (base-10 to avoid octal errors on 08/09)
+dd_init=$((10#${current_cycle:6:2}))
+init_ym="${current_cycle:0:4}-${current_cycle:4:2}-01"
+
 # 1. Calculate total months across year boundaries
 exp_months=$(((yy_final - yy_init) * 12 + (mm_final - mm_init) + 1))
 
-# 2. Generate the MPMD command file
+# 2. Track which months are partial (used in Stage 3) and Generate the MPMD command file
+declare -A is_partial_month
 total_fcst_days=$((lastfhr / 24))
 current_daysf=0
 for ((i = 0; i < exp_months; i++)); do
 
     # Calculate the Valid Year and Month for this forecast segment
-    v_date=$(date -d "${current_cycle:0:8} +${i} months" +%Y%m%d)
+    v_date=$(date -d "${init_ym} +${i} months" +%Y%m%d)
     v_year=${v_date:0:4}
     v_month=${v_date:4:2}
-
-    # Get exact days in THIS specific month (Handles Leap Years in Year 2+)
-    cal_m_days=$(date -d "${v_year}-${v_month}-01 +1 month -1 day" +%d)
-    # Start day of this month
-    m_start_day=${current_daysf}
+    # Total calendar days in this specific month (handles leap years)
+    full_month_days=$((10#$(date -d "${v_year}-${v_month}-01 +1 month -1 day" +%d)))
+    # For the first month (i=0), subtract days prior to initialization
+    if [[ ${i} -eq 0 ]]; then
+        cal_m_days=$((full_month_days - dd_init + 1))
+    else
+        cal_m_days=${full_month_days}
+    fi
     # Calculate how many days of this month actually exist in the forecast
+    m_start_day=${current_daysf}
     days_left=$((total_fcst_days - m_start_day))
 
     if [[ "${days_left}" -le 0 ]]; then break; fi # No more data
@@ -249,6 +258,15 @@ for ((i = 0; i < exp_months; i++)); do
     else
         actual_m_days=${cal_m_days}
     fi
+
+    # Record whether this YYYYMM is a partial month (either at start or end of forecast)
+    if [[ "${actual_m_days}" -lt "${full_month_days}" ]]; then
+        is_partial_month["${v_year}${v_month}"]=1
+        echo "INFO: ${v_year}-${v_month} is a partial month (${actual_m_days}/${full_month_days} days)."
+    else
+        is_partial_month["${v_year}${v_month}"]=0
+    fi
+
     # Update cumulative days for the NEXT month's offset
     current_daysf=$((current_daysf + actual_m_days))
 
@@ -289,25 +307,45 @@ cmdfile_s3="${DATA}/mpmd_s3_monthly.txt"
 true > "${cmdfile_s3}"
 
 # Read the files created in Stage 2
+shopt -s nullglob
 accfilelist=("${OUTDIR}/acc.daily.${MEMDIR}"/acc.daily.*)
 insfilelist=("${OUTDIR}/inst.daily.${MEMDIR}"/inst.daily.*)
+shopt -u nullglob
 
-# PARTIAL MONTH LOGIC: If dd_final != 01, the very last file in the list is
-# the partial month. We remove it from the processing array.
-if ((dd_final != 1)); then
-    echo "INFO: Final month is partial (Day ${dd_final}). Skipping monthly average for this month."
-    [[ ${#accfilelist[@]} -gt 0 ]] && unset 'accfilelist[${#accfilelist[@]}-1]'
-    [[ ${#insfilelist[@]} -gt 0 ]] && unset 'insfilelist[${#insfilelist[@]}-1]'
-fi
+# Filter out ANY partial month (first month, last month, or both)
+full_accfiles=()
+for file in "${accfilelist[@]}"; do
+    # Extract YYYYMM from filename (assumes format: acc.daily.MEM.CYCLE.YYYYMM.grib.t00z.grb2)
+    fname="${file##*/}"
+    f_ym=$(echo "${fname}" | cut -d '.' -f 5)
+
+    if [[ "${is_partial_month[${f_ym}]:-1}" -eq 0 ]]; then
+        full_accfiles+=("${file}")
+    else
+        echo "INFO: Skipping partial month file for monthly average: ${fname}"
+    fi
+done
+
+full_insfiles=()
+for file in "${insfilelist[@]}"; do
+    # Extract YYYYMM from filename (assumes format: inst.daily.MEM.CYCLE.YYYYMM.grib.t00z.grb2)
+    fname="${file##*/}"
+    f_ym=$(echo "${fname}" | cut -d '.' -f 5)
+
+    if [[ "${is_partial_month[${f_ym}]:-1}" -eq 0 ]]; then
+        full_insfiles+=("${file}")
+    else
+        echo "INFO: Skipping partial month file for monthly average: ${fname}"
+    fi
+done
 
 # Generate tasks for remaining full months
-
-for file in "${accfilelist[@]}"; do
+for file in "${full_accfiles[@]}"; do
     filesuffix=$(echo "${file##*/}" | cut -d '.' -f 4-10)
     echo "${WGRIB2} ${file} -match '${monthlyaccvars}' -fcst_ave 24hr ${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}" >> "${cmdfile_s3}"
 done
 
-for file in "${insfilelist[@]}"; do
+for file in "${full_insfiles[@]}"; do
     filesuffix=$(echo "${file##*/}" | cut -d '.' -f 4-10)
     echo "${WGRIB2} ${file} -match '${monthlyinstvars}' -fcst_ave 24hr ${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}" >> "${cmdfile_s3}"
 done
@@ -322,12 +360,12 @@ else
 fi
 
 # RUN_MPMD POST JOB: COPY INTERMIEDIATE DATA TO COM DIRECTORY
-for file in "${accfilelist[@]}"; do
+for file in "${full_accfiles[@]}"; do
     filesuffix=$(echo "${file##*/}" | cut -d '.' -f 4-10)
     cpfs "${OUTDIR}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}" "${OUTDIR_FINAL}/acc.monthly.${MEMDIR}/acc.monthly.${filesuffix}"
 done
 
-for file in "${insfilelist[@]}"; do
+for file in "${full_insfiles[@]}"; do
     filesuffix=$(echo "${file##*/}" | cut -d '.' -f 4-10)
     cpfs "${OUTDIR}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}" "${OUTDIR_FINAL}/inst.monthly.${MEMDIR}/inst.monthly.${filesuffix}"
 done

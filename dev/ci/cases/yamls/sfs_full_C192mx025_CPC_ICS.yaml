@@ -1,7 +1,7 @@
 defaults:
   !INC {{ HOMEglobal }}/dev/parm/config/sfs/yaml/defaults.yaml
 base:
-  FHMAX_GFS: 8784
+  FHMAX_GFS: 8904
   FCST_BREAKPOINTS: "2400, 4800, 7200"
   MOM6_INTERP_ICS: "YES"
 nsst:
