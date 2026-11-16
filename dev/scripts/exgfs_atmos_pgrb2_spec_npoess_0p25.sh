@@ -154,7 +154,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
 
     ###############################
     # Start Looping for the
-    # existence of the restart files
+    # existence of the master-goes files
     ###############################
     export pgm="postcheck"
     grib_file="${COMIN_ATMOS_MASTER}/${RUN}.t${cyc}z.master-goes.f${fhr3}.grib2"
@@ -163,8 +163,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
         err_exit "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
     fi
     ###############################
-    # Put restart files into /nwges
-    # for backup to start Model Fcst
+    # Copy master-goes grib to masterfile 
     ###############################
     cpreq "${grib_file}" masterfile
     export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
