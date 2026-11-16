@@ -163,7 +163,7 @@ for ((fhr = SHOUR; fhr <= FHOUR; fhr = fhr + FHINC)); do
         err_exit "FATAL ERROR: GOES master grib file ${grib_file} not available after max sleep time"
     fi
     ###############################
-    # Copy master-goes grib to masterfile 
+    # Copy master-goes grib to masterfile
     ###############################
     cpreq "${grib_file}" masterfile
     export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
