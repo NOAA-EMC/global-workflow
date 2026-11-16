@@ -79,9 +79,14 @@ set -x
 #######################
 
 # include all subroutines. Executions later.
-source "${USHglobal}/forecast_predet.sh"       # include functions for variable definition
-source "${USHglobal}/forecast_det.sh"          # include functions for run type determination
-source "${USHglobal}/forecast_postdet.sh"      # include functions for variables after run type determination
+source "${USHglobal}/forecast_common.sh" # include shared functions and run type determination
+source "${USHglobal}/forecast_fv3.sh"    # include functions for FV3 (atmosphere)
+source "${USHglobal}/forecast_cmeps.sh"  # include functions for CMEPS (mediator)
+source "${USHglobal}/forecast_mom6.sh"   # include functions for MOM6 (ocean)
+source "${USHglobal}/forecast_cice6.sh"  # include functions for CICE6 (sea ice)
+source "${USHglobal}/forecast_ww3.sh"    # include functions for WW3 (waves)
+source "${USHglobal}/forecast_gocart.sh" # include functions for GOCART (aerosols)
+# NOTE: forecast_catchem.sh (CATChem chemistry) is intentionally not sourced; CATChem is not yet supported
 source "${USHglobal}/parsing_ufs_configure.sh" # include functions for ufs_configure processing
 
 source "${USHglobal}/atparse.bash" # include function atparse for parsing @[XYZ] templated files

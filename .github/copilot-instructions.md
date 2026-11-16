@@ -78,9 +78,9 @@ env/                        # HPC platform environment configurations
 ```bash
 # Example execution chain:
 JGLOBAL_FCST              # Job sets environment, calls script
-└── exglobal_forecast.py      # Script implements forecast logic
-    └── forecast_det.sh       # Utility handles deterministic forecast
-        └── ush/python/       # Python modules for specific tasks
+└── exglobal_fcst.sh          # Script implements forecast logic
+    └── forecast_common.sh    # Shared utilities and run type determination
+        forecast_<comp>.sh    # Component functions (fv3, mom6, cice6, ww3, gocart, cmeps)
 ```
 
 ## Workflow Orchestration System
