@@ -913,7 +913,7 @@ CICE_postdet() {
 
     # Link iceh_ic file to COM.  This is the initial condition file from CICE (f000)
     # TODO: Is this file needed in COM? Is this going to be used for generating any products?
-    local vdate seconds vdatestr fhr fhr3 interval last_fhr
+    local vdate seconds vdatestr fhr fhr3 interval
     seconds=$(to_seconds "${model_start_date_current_cycle:8:2}0000") # convert HHMMSS to seconds
     vdatestr="${model_start_date_current_cycle:0:4}-${model_start_date_current_cycle:4:2}-${model_start_date_current_cycle:6:2}-${seconds}"
     ${NLN} "${COMOUT_ICE_HISTORY}/${RUN}.t${cyc}z.ic.nc" "${DATAoutput}/CICE_OUTPUT/iceh_ic.${vdatestr}.nc"
@@ -922,13 +922,13 @@ CICE_postdet() {
     local source_file dest_file
     for fhr in "${CICE_OUTPUT_FH[@]}"; do
 
-        if [[ -z ${last_fhr:-} ]]; then
-            last_fhr=${fhr}
+        # skip the first hour, except for enkfgdas (f003 is the marine ensemble DA ice background)
+        if [[ ${fhr} -eq ${CICE_OUTPUT_FH[0]} && "${RUN}" != "enkfgdas" ]]; then
             continue
         fi
 
         fhr3=$(printf %03i "${fhr}")
-        ((interval = fhr - last_fhr))
+        interval=${FHOUT_ICE}
 
         vdate=$(date --utc -d "${current_cycle:0:8} ${current_cycle:8:2} + ${fhr} hours" +%Y%m%d%H)
         seconds=$(to_seconds "${vdate:8:2}0000") # convert HHMMSS to seconds
@@ -966,8 +966,6 @@ CICE_postdet() {
                 exit 10
                 ;;
         esac
-
-        last_fhr=${fhr}
     done
 
 }
