@@ -33,7 +33,6 @@ export DO_GEMPAK="YES"           # GEMPAK products
 
 # Experiment mode (cycled or forecast-only)
 export MODE="cycled" # cycled/forecast-only
-export DO_TEST_MODE="NO" # option to change configuration for automated testing
 
 # Build paths relative to $HOMEglobal
 export FIXgsi="${HOMEglobal}/fix/gsi"
