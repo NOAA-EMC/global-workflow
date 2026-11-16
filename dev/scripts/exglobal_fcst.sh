@@ -88,19 +88,19 @@ cplice=${cplice:-.false.} # ICE model
 # include all subroutines. Executions later.
 source "${USHglobal}/forecast_common.sh" # include shared functions and run type determination
 if [[ ${DO_ATM:-NO} == "YES" ]]; then
-    source "${USHglobal}/forecast_fv3.sh"    # include functions for FV3 (atmosphere)
+    source "${USHglobal}/forecast_fv3.sh" # include functions for FV3 (atmosphere)
 fi
 if [[ ${cplflx:-.false.} == ".true." ]]; then
-    source "${USHglobal}/forecast_cmeps.sh"  # include functions for CMEPS (coupler)
+    source "${USHglobal}/forecast_cmeps.sh" # include functions for CMEPS (coupler)
 fi
 if [[ ${DO_OCN:-NO} == "YES" ]]; then
-    source "${USHglobal}/forecast_mom6.sh"   # include functions for MOM6 (ocean)
+    source "${USHglobal}/forecast_mom6.sh" # include functions for MOM6 (ocean)
 fi
 if [[ ${DO_ICE:-NO} == "YES" ]]; then
-    source "${USHglobal}/forecast_cice6.sh"  # include functions for CICE6 (sea ice)
+    source "${USHglobal}/forecast_cice6.sh" # include functions for CICE6 (sea ice)
 fi
 if [[ ${DO_WAV:-NO} == "YES" ]]; then
-    source "${USHglobal}/forecast_ww3.sh"    # include functions for WW3 (waves)
+    source "${USHglobal}/forecast_ww3.sh" # include functions for WW3 (waves)
 fi
 if [[ ${DO_AERO_FCST:-NO} == "YES" ]]; then
     source "${USHglobal}/forecast_gocart.sh" # include functions for GOCART (aerosols)
