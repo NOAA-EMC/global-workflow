@@ -112,14 +112,14 @@ class SnowLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['snowletkfanl', 'scf_to_ioda', 'esnowanlensmean']  #, 'snowensanlobs', 'snowensanlsol']
+        expected_keys = ['snowletkfanl', 'scf_to_ioda', 'esnowanlensmean']  # , 'snowensanlobs', 'snowensanlsol']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
         # Boolean to decide if SNOCVR_SNOMAD processing is done
         _snocvr_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snocvr.tm00.bufr_d')
         _snomad_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}snomad.tm00.bufr_d')
         self.task_config.DO_SNOCVR_SNOMAD = (
-            "snocvr_snomad" in self.jedi_dict.snowletkfanl.jcb_config.observations and  
+            "snocvr_snomad" in self.jedi_dict.snowletkfanl.jcb_config.observations and
             (os.path.exists(_snocvr_file) or os.path.exists(_snomad_file))
         )
 
@@ -193,7 +193,7 @@ class SnowLetkfAnalysis(Analysis):
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['snowletkfanl'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS,
-                      f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.snow_analysis.ioda_hofx.ensmean")
+                                                       f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.snow_analysis.ioda_hofx.ensmean")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
