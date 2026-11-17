@@ -73,7 +73,7 @@ class SnowLetkfAnalysis(Analysis):
                 else:
                     logger.warning(f"IMS obs file missing: {_ims_file}")
         else:
-            logger.info("Not 00z cycle — Skipping IMS preprocessing.")
+            logger.info("Not 00z cycle - Skipping IMS preprocessing.")
 
         # if 00z, do GHCN preprocessing
         _ghcn_file = os.path.join(self.task_config.COMIN_OBS, f'{self.task_config.OPREFIX}ghcn_snow.csv')
@@ -90,7 +90,7 @@ class SnowLetkfAnalysis(Analysis):
                 else:
                     logger.warning(f"GHCN obs file missing: {_ghcn_file}")
         else:
-            logger.info("Not 00z cycle — Skipping GHCN preprocessing.")
+            logger.info("Not 00z cycle - Skipping GHCN preprocessing.")
 
         # Extend task_config with variables repeatedly used across this class
         self.task_config.update(AttrDict(
@@ -112,7 +112,7 @@ class SnowLetkfAnalysis(Analysis):
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
         # Create JEDI object dictionary
-        expected_keys = ['snowletkfanl', 'scf_to_ioda', 'esnowanlensmean'] #, 'snowensanlobs', 'snowensanlsol']
+        expected_keys = ['snowletkfanl', 'scf_to_ioda', 'esnowanlensmean']  #, 'snowensanlobs', 'snowensanlsol']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
         # Boolean to decide if SNOCVR_SNOMAD processing is done
@@ -154,8 +154,8 @@ class SnowLetkfAnalysis(Analysis):
         logger.info(f"Initializing JEDI applications")
         self.jedi_dict['snowletkfanl'].initialize(clean_empty_obsspaces=False)
         self.jedi_dict['esnowanlensmean'].initialize()
-        #self.jedi_dict['snowensanlobs'].initialize() #clean_empty_obsspaces=False)
-        #self.jedi_dict['snowensanlsol'].initialize() #clean_empty_obsspaces=False)
+        # self.jedi_dict['snowensanlobs'].initialize() #clean_empty_obsspaces=False)
+        # self.jedi_dict['snowensanlsol'].initialize() #clean_empty_obsspaces=False)
         if self.task_config.DO_IMS_SCF:
             self.jedi_dict['scf_to_ioda'].initialize()
 
@@ -193,7 +193,7 @@ class SnowLetkfAnalysis(Analysis):
         # Archive, compress, and save diag files in COM directory
         logger.info(f"Saving observation diag files to COM")
         self.jedi_dict['snowletkfanl'].save_obsdataout(self.task_config.COMOUT_SNOW_ANALYSIS,
-                                                     f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.snow_analysis.ioda_hofx.ensmean")
+                      f"{self.task_config.RUN}.{to_YMDH(self.task_config.current_cycle)}.snow_analysis.ioda_hofx.ensmean")
 
         # Save files to COM
         logger.info(f"Saving files to COM")
@@ -342,14 +342,14 @@ class SnowLetkfAnalysis(Analysis):
             template_in = f'snowinc.{to_fv3time(self.task_config.current_cycle)}.sfc_data.tile{{tilenum}}.nc'
             template_out = f'snowinc.{to_fv3time(self.task_config.WINDOW_BEGIN)}.sfc_data.tile{{tilenum}}.nc'
             for mem in range(1, self.task_config.NMEM_ENS + 1):
-                inclist = []  #TODO: would taking this out of loop speed things up?
+                inclist = []  # TODO: would taking this out of loop speed things up?
                 for itile in range(1, self.task_config.ntiles + 1):
                     filename_in = template_in.format(tilenum=itile)
                     filename_out = template_out.format(tilenum=itile)
                     src = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_in)
                     dest = os.path.join(self.task_config.DATA, f'anl/mem{mem:03d}', filename_out)
                     inclist.append([src, dest])
-                FileHandler({'copy': inclist}).sync() #would taking this out of loop speed things up?
+                FileHandler({'copy': inclist}).sync()  # would taking this out of loop speed things up?
 
         bkgtimes = []
         if self.task_config.DOIAU:
