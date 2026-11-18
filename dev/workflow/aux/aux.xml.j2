@@ -489,10 +489,6 @@
 
         <dependency>
                 <and>
-                        <or>
-                                <taskdep task="gfs_fcst_seg0" cycle_offset="06:00:00"/>
-                                <not><cycleexistdep cycle_offset="06:00:00"/></not>
-                        </or>
                         <taskdep task="gdas_arch_logs"/>
                         <metataskdep metatask="gdas_arch_tars"/>
                 </and>
@@ -541,6 +537,7 @@
 
 	<jobname><cyclestr>&PSLOT;_enkfgdas_arch_logs_@H</cyclestr></jobname>
 	<account>GFS-DEV</account>
+	<queue>dev_transfer</queue>
 	<queue>dev_transfer</queue>
 	<walltime>00:30:00</walltime>
 	<nodes>1:ppn=1:tpp=1</nodes>
@@ -627,7 +624,6 @@
         <nodes>1:ppn=1:tpp=1</nodes>
         <memory>4096M</memory>
         <native>-l place=vscatter:shared</native>
-                                
         <join><cyclestr>&COM_aux;/logs/@Y@m@d@H/enkfgdas_cleanup.log</cyclestr></join>
                         
         <envar><name>RUN_ENVIR</name><value>emc</value></envar>
@@ -645,10 +641,6 @@
                         <taskdep task="enkfgdas_earc_vrfy"/>
                         <taskdep task="enkfgdas_arch_logs"/>
                         <metataskdep metatask="enkfgdas_earc_tars"/>
-                        <or>
-                                <taskdep task="gfs_fcst_seg0" cycle_offset="06:00:00"/>
-                                <not><cycleexistdep cycle_offset="06:00:00"/></not>
-                        </or>
                 </and>
         </dependency>
         
