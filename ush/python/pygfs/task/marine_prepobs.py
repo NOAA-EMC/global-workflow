@@ -47,7 +47,6 @@ class MarineObsPrep(Task):
         self.smos = ProviderConfig.from_task_config("smos", self.task_config)
 
         # Initialize the list of processed ioda files
-        # TODO: Does not work. This should be a list of gathered ioda files that are created
         #       across all processes
         self.ioda_files = []
 
@@ -132,7 +131,6 @@ class MarineObsPrep(Task):
                 return None
             platform = obs_space.split("_")[2]
             instrument = None
-            # TODO(G): Get the window size from the config
             window_begin = self.task_config.window_begin - timedelta(hours=72)
             window_end = self.task_config.window_begin + timedelta(hours=72)
             kwargs = {
@@ -155,7 +153,6 @@ class MarineObsPrep(Task):
             platform = "GW1"
             instrument = "AMSR2"
             satellite = "GW1"
-            # TODO(G,M): Get the window size from the config
             window_begin = self.task_config.window_begin - timedelta(hours=30)
             window_end = self.task_config.window_begin + timedelta(hours=6)
             kwargs = {
@@ -179,7 +176,6 @@ class MarineObsPrep(Task):
             platform = "ggw"
             instrument = "AMSR3"
             satellite = "ggw"
-            # TODO(G,M): Get the window size from the config
             window_begin = self.task_config.window_begin - timedelta(hours=30)
             window_end = self.task_config.window_begin + timedelta(hours=6)
             kwargs = {
@@ -300,4 +296,3 @@ class MarineObsPrep(Task):
 
         FileHandler({'copy': src_dst_obs_list}).sync()
 
-        # TODO add call to monitoring script for SDM monitoring
