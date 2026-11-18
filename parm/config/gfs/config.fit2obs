@@ -11,8 +11,6 @@ echo "BEGIN: config.fit2obs"
 export PRVT=${FIXglobal}/gsi/prepobs_errtable.global
 export HYBLEVS=${FIXglobal}/am/global_hyblev.l${LEVS}.txt
 
-export COM_VRFYARCH="${ROTDIR}/vrfyarch"
-
 export VBACKUP_FITS=24
 export OUTPUT_FILETYPE="netcdf"
 export CONVNETC="YES"
