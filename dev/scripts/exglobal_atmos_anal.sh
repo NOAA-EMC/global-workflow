@@ -413,14 +413,14 @@ else
     echo "not using correlated obs error"
 fi
 
-# If GENDIAG is selected, verify that pCOMOUT_ATMOS_ANALYSIS is set
+# If GENDIAG is selected, verify that DATA_ATMOS_ANALYSIS is set
 if [[ "${GENDIAG}" == "YES" ]]; then
-    if [[ -z "${pCOMOUT_ATMOS_ANALYSIS}" ]]; then
+    if [[ -z "${DATA_ATMOS_ANALYSIS}" ]]; then
         export err=1
-        err_exit "pCOMOUT_ATMOS_ANALYSIS must be set when GENDIAG=YES"
+        err_exit "DATA_ATMOS_ANALYSIS must be set when GENDIAG=YES"
     fi
     # Make the gsidiags directory to house the GSI diagnostic data
-    GSIDIAGDIR=${GSIDIAGDIR:-"${pCOMOUT_ATMOS_ANALYSIS}/gsidiags"}
+    GSIDIAGDIR=${GSIDIAGDIR:-"${DATA_ATMOS_ANALYSIS}/gsidiags"}
     rm -rf "${GSIDIAGDIR}"
     mkdir -p "${GSIDIAGDIR}"
 fi
