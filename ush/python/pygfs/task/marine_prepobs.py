@@ -295,4 +295,3 @@ class MarineObsPrep(Task):
                 src_dst_obs_list.append([src_file, dst_file])
 
         FileHandler({'copy': src_dst_obs_list}).sync()
-

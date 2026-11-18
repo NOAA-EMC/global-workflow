@@ -37,7 +37,7 @@ _get_cycle_vars(config_dict):
 
 Logging
 -------
-All public operational functions are decorated with @logit 
+All public operational functions are decorated with @logit
 """
 import os
 from logging import getLogger
