@@ -22,7 +22,8 @@
 [submodule "sorc/gsi_enkf.fd"]
   path = sorc/gsi_enkf.fd
   url = https://github.com/NOAA-EMC/GSI.git
-  branch = release/gfsda.v17 
+  #branch = release/gfsda.v17
+  branch = feature/nimbus 
 [submodule "sorc/gdas.cd"]
   path = sorc/gdas.cd
   url = https://github.com/NOAA-EMC/GDASApp.git
@@ -31,8 +32,10 @@
 [submodule "sorc/gsi_utils.fd"]
   path = sorc/gsi_utils.fd
   url = https://github.com/NOAA-EMC/GSI-Utils.git
-  branch = production/GFS.v17.0.0
+  #branch = production/GFS.v17.0.0
+  branch = feature/nimbus
 [submodule "sorc/gsi_monitor.fd"]
   path = sorc/gsi_monitor.fd
   url = https://github.com/NOAA-EMC/GSI-Monitor.git
-  branch = release/gfs.v17
+  #branch = release/gfs.v17
+  branch = feature/nimbus
