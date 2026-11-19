@@ -63,9 +63,9 @@ elif [[ ${MACHINE_ID} = wcoss2 ]]; then
         module reset
     fi
 
-elif [[ ${MACHINE_ID} = nimbus ]] ; then
+elif [[ ${MACHINE_ID} = nimbus ]]; then
     # We are on WCOSS3
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
+    if (! eval module help > /dev/null 2>&1); then
         source /usr/share/lmod/lmod/init/bash
     fi
     module --force purge
