@@ -18,6 +18,9 @@ ECF_OUT_gfs: "/lfs/h2/emc/gfstemp/emc.global/ecflow/output/today"
 # Full path to the auxiliary COM directory
 COM_aux: "/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/aux"
 
+# Full path to the GFS COM directory
+COM_gfs: "/lfs/h2/emc/gfstemp/emc.global/ecflow/comroot/ops/para/com/gfs/v17.0"
+
 # Full path to the staged git repositories
 BASE_GIT: "/lfs/h2/emc/global/noscrub/emc.global/git"
 
