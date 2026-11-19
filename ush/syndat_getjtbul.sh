@@ -133,7 +133,6 @@ if [[ "${errget}" -gt '0' ]]; then
                 export ecf_family
                 echo "${msg}" > "${COMOUT}/${NET}_${RUN}.t${cyc}z.emailbody"
                 echo "export subject='No JTWC bulletins available for ${run_date} ${RUN} run'" > "${COMOUT}/${NET}_${RUN}.t${cyc}z.emailvar"
-                # JY echo "export maillist='sdm@noaa.gov'" >> $COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
                 echo "export maillist=${maillist}" >> "${COMOUT}/${NET}_${RUN}.t${cyc}z.emailvar"
                 if [[ "${SENDECF}" == "YES" ]]; then
                     ecflow_client --run "${ecf_family}/j${RUN}_jtwc_bull_email"
