@@ -47,7 +47,6 @@ class MarineObsPrep(Task):
         self.smos = ProviderConfig.from_task_config("smos", self.task_config)
 
         # Initialize the list of processed ioda files
-        #       across all processes
         self.ioda_files = []
 
     @logit(logger)
