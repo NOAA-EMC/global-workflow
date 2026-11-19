@@ -88,7 +88,7 @@ fi
 #------------------------------
 case "${machine}" in
     "wcoss2") FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-    "nimbus") FIX_DIR="/home/russ_treadon_hpc_noaa_gov/glopara/fix" ;; 
+    "nimbus") FIX_DIR="/home/russ_treadon_hpc_noaa_gov/glopara/fix" ;;
     "hera" | "ursa") FIX_DIR="/scratch3/NCEPDEV/global/role.glopara/fix" ;;
     "orion") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
     "hercules") FIX_DIR="/work2/noaa/global/role-global/fix" ;;
