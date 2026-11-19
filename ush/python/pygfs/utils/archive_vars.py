@@ -37,7 +37,7 @@ _get_cycle_vars(config_dict):
 
 Logging
 -------
-All public operational functions are decorated with @logit (TODO) to log entry, exit, and return values.
+All public operational functions are decorated with @logit
 """
 import os
 from logging import getLogger
@@ -62,7 +62,6 @@ class ArchiveVrfyVars:
     generation logic. This class only provides the variables they need.
     """
 
-    # TODO: Convert these to instance methods so we aren't passing config_dict around.
     #       Add an __init__ method to accept and store config_dict.
     #       Then add logit decorators to the instance methods and remove debug prints of
     #       return dicts (since the logit decorator will log the return values).

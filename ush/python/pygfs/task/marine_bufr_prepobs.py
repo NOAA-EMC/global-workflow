@@ -167,7 +167,6 @@ class MarineBufrObsPrep(Task):
         for provider in providers:
             provider_name = provider['name']
             logger.info(f"Processing provider: {provider_name}")
-            # TODO(AFE) set this in providers
             bufrconverter = f"{self.task_config.USHglobal}/bufr2ioda/bufr2ioda_{provider_name}.py"
 
             obs_cycle_configs = provider['obs_cycles_to_convert']
