@@ -19,6 +19,7 @@
 	<!ENTITY EXP_aux "{{ EXP_aux }}">
 	<!ENTITY ECF_OUT_gfs "{{ ECF_OUT_gfs }}">
 	<!ENTITY COM_aux "{{ COM_aux }}">
+	<!ENTITY COM_gfs "{{ COM_gfs }}">
 	<!ENTITY DATAROOT_aux "{{ DATAROOT_aux }}">
 	<!ENTITY BASE_GIT "{{ BASE_GIT }}">
 	<!ENTITY ARCDIR "{{ ARCDIR }}">
@@ -489,6 +490,7 @@
 
         <dependency>
                 <and>
+                        <datadep><cyclestr offset="06:00:00">&COM_gfs;/gfs.@Y@m@d/@H/model/atmos/history/gfs.t@Hz.log.fcst_finalized.txt</cyclestr></datadep>
                         <taskdep task="gdas_arch_logs"/>
                         <metataskdep metatask="gdas_arch_tars"/>
                 </and>
@@ -637,6 +639,7 @@
 
         <dependency>
                 <and>
+                        <datadep><cyclestr offset="06:00:00">&COM_gfs;/gfs.@Y@m@d/@H/model/atmos/history/gfs.t@Hz.log.fcst_finalized.txt</cyclestr></datadep>
                         <taskdep task="enkfgdas_earc_vrfy"/>
                         <taskdep task="enkfgdas_arch_logs"/>
                         <metataskdep metatask="enkfgdas_earc_tars"/>
