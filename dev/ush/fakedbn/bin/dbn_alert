@@ -16,11 +16,11 @@ fi
 
 if [ ! -s "$4" ]; then
    if [ -f "$4" ]; then
-      >&2 echo "WARNING: "$4" is empty (it has a size of zero bytes)"
+      >&2 echo "WARNING: $4 is empty (it has a size of zero bytes)"
    else
       # shellcheck disable=SC3014,3059
       if [ "${NODBNFCHK^^}" == "YES" ]; then
-         >&2 echo "WARNING: "$4" is not exist"
+         >&2 echo "WARNING: $4 is not exist"
       else
          err_exit "Fake dbn_alert could not find $4"
       fi
