@@ -298,7 +298,7 @@ platforms without modifying the host matrix:
 
 .. code-block:: yaml
 
-   # Example: dev/ci/cases/pr/C48_ATM_ecflow.yaml
+   # Example: dev/ci/cases/pr/C48_S2SW_extended.yaml
    skip_ci_on_hosts:
      - wcoss2
      - hera
