@@ -53,12 +53,12 @@ cd "${DATA}" || (
 )
 
 #-------------------------------------------------------------------------------
-# Copy cnvstat file from COMIN to DATA, untar and gunzip input files for wdqms.py
+# Copy cnvstat file from COMINwdqms to DATA, untar and gunzip input files for wdqms.py
 # These should always be available
-cp "${COMIN}/${CNVSTAT}" .
+cp "${COMINwdqms}/${CNVSTAT}" .
 export err=$?
 ((err != 0)) && (
-    msg="FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMIN}', ABORT!"
+    msg="FATAL ERROR: Unable to copy '${CNVSTAT}' from '${COMINwdqms}', ABORT!"
     err_exit "${msg}"
 )
 for diagfile in "${INPUT_LIST[@]}"; do
@@ -78,7 +78,7 @@ done
 
 #-------------------------------------------------------------------------------
 # Loop over observation types, produce CSV files
-# Copy CSV files to COMOUT
+# Copy CSV files to COMOUTwdqms
 # Issue DBN alerts
 # Issue warnings if wdqms.py fails for any reason
 # These do not need to be a FATAL ERROR, but developers should be notified
@@ -97,7 +97,7 @@ for otype in "${OTYPES[@]}"; do
     fi
 
     #=============================================================================
-    # Copy to COMOUT if wdqms.py created the output file
+    # Copy to COMOUTwdqms if wdqms.py created the output file
     csvfile="NCEP_${otype}_${PDY}_${cyc}.csv"
     csvfileout="${RUN}.t${cyc}z.${otype,,}.csv"
     if [[ -f "${csvfile}" ]]; then
@@ -107,9 +107,9 @@ for otype in "${OTYPES[@]}"; do
                      /^#/{print; next}
                      { id=$1; gsub(/^[ \t]+|[ \t]+$/,"",id); if (!(id in drop)) print }' \
                 "${REJECTLIST}" "${csvfile}" > "${csvfileout}"
-            cp "./${csvfileout}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+            cp "./${csvfileout}" "${COMOUTwdqms}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUTwdqms}/${csvfileout}'")
         else
-            cp "./${csvfile}" "${COMOUT}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUT}/${csvfileout}'")
+            cp "./${csvfile}" "${COMOUTwdqms}/${csvfileout}" || (echo "WARNING: Unable to copy '${csvfile}' to '${COMOUTwdqms}/${csvfileout}'")
         fi
     else
         echo "WARNING: wdqms.py failed to create csvfile '${csvfile}'"
@@ -120,8 +120,8 @@ for otype in "${OTYPES[@]}"; do
     #=============================================================================
     # Send DBN alerts
     if [[ "${SENDDBN:-}" == "YES" ]]; then
-        if [[ -f "${COMOUT}/${csvfileout}" ]]; then
-            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WDQMS" "${job}" "${COMOUT}/${csvfileout}"
+        if [[ -f "${COMOUTwdqms}/${csvfileout}" ]]; then
+            "${DBNROOT}/bin/dbn_alert" MODEL "${RUN^^}_WDQMS" "${job}" "${COMOUTwdqms}/${csvfileout}"
         fi
     fi
     #=============================================================================

@@ -23,11 +23,12 @@ export COMPONENT="atmos"
 ##############################################
 # Define COM directories
 ##############################################
-
-declare -rx COMIN_ATMOS_GRIB_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
-declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
-if [[ ! -d "${COMOUT}" ]]; then
-    mkdir -m 775 -p "${COMOUT}"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx COMIN_ATMOS_GRIB_0p25="${COMIN}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
+declare -rx COMOUTfbwind="${COMOUT}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+if [[ ! -d "${COMOUTfbwind}" ]]; then
+    mkdir -m 775 -p "${COMOUTfbwind}"
 fi
 
 ########################################################

@@ -34,16 +34,18 @@ export GDUMP=${GDUMP:-"gdas"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 # Generate COM variables from templates
-declare -rx COMIN_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 
-declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
-declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
-declare -rx COMIN_ICE_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/restart"
+declare -rx COMIN_OBS="${COMIN}/${RUN}.${PDY}/${cyc}/obs"
 
-declare -rx COMIN_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
-declare -rx COMIN_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
+declare -rx COMIN_OCEAN_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN_ICE_RESTART_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ice/restart"
+
+declare -rx COMIN_OCEAN_BMATRIX="${COMIN}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
+declare -rx COMIN_ICE_BMATRIX="${COMIN}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
 
 ###############################################################
 # Run relevant script

@@ -25,7 +25,7 @@ cd "${DATA}" || exit 2
 # Set up Here Files.
 ######################
 
-outfile_name="${COMOUT}/${RUN}.atmos.t${cyc}z.fbwind.pacific.ascii"
+outfile_name="${COMOUTfbwind}/${RUN}.atmos.t${cyc}z.fbwind.pacific.ascii"
 
 cat << EOF
 

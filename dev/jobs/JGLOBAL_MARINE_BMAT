@@ -52,17 +52,19 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 # Generate COM variables from templates
-declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
-declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+
+declare -rx COMIN_OCEAN_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
 # COMIN_OCEAN_HISTORY_ENS_PREV and COMIN_ICE_HISTORY_ENS_PREV are declared in a loop within
 # parm/gdas/marine/marine_ens_stage_bkg.yaml.j2 for each ensemble member at render time.
 
-declare -rx COMOUT_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
-declare -rx COMOUT_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
-declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMOUT_OCEAN_BMATRIX="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
+declare -rx COMOUT_ICE_BMATRIX="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
+declare -rx COMOUT_CONF="${COMOUT}/${RUN}.${PDY}/${cyc}/conf"
 
 mkdir -m 775 -p "${COMOUT_OCEAN_BMATRIX}"
 mkdir -m 775 -p "${COMOUT_ICE_BMATRIX}"

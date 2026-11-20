@@ -35,8 +35,10 @@ export LD_LIBRARY_PATH
 
 _obsproc_base=$(compath.py "${envir}/obsproc/${obsproc_ver}" 2> /dev/null) || _obsproc_base="${DMPDIR}"
 export COMIN_OBSPROC="${_obsproc_base}/${RUN}.${PDY}/${cyc}"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 
-declare -rx COMOUT_OBS="${ROTDIR}/${RUN}.${PDY}/${cyc}/obs"
+declare -rx COMOUT_OBS="${COMOUT}/${RUN}.${PDY}/${cyc}/obs"
 
 ##############################################
 # Begin JOB SPECIFIC work

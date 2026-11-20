@@ -21,12 +21,13 @@ source "${USHglobal}/set_strict.sh"
 ##############################
 # Define COM Directories
 ##############################
-
-declare -rx COMIN_ATMOS_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/atmos/history"
-declare -rx COMIN_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
-declare -rx COMOUT_ATMOS_BUFR="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
-declare -rx COMOUT_ATMOS_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
-declare -rx COMOUT_ATMOS_GEMPAK="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx COMIN_ATMOS_HISTORY="${COMIN}/${RUN}.${PDY}/${cyc}/model/atmos/history"
+declare -rx COMIN_ATMOS_BUFR="${COMIN}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
+declare -rx COMOUT_ATMOS_BUFR="${COMOUT}/${RUN}.${PDY}/${cyc}/products/atmos/bufr"
+declare -rx COMOUT_ATMOS_WMO="${COMOUT}/${RUN}.${PDY}/${cyc}/products/atmos/wmo"
+declare -rx COMOUT_ATMOS_GEMPAK="${COMOUT}/${RUN}.${PDY}/${cyc}/products/atmos/gempak"
 
 if [[ ! -d "${COMOUT_ATMOS_BUFR}" ]]; then
     mkdir -p "${COMOUT_ATMOS_BUFR}"

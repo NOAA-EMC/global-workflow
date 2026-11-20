@@ -27,11 +27,13 @@ export DO_HD_PGRB=${DO_HD_PGRB:-YES}
 ##############################################
 # Define COM directories
 ##############################################
-declare -rx "COMIN_ATMOS_GRIB_0p25"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx "COMIN_ATMOS_GRIB_0p25"="${COMIN}/${RUN}.${PDY}/${cyc}/products/atmos/grib2/0p25"
 
 for grid in 0p25 40km 35km_atl 35km_pac; do
     prod_dir="COMOUT_ATMOS_GEMPAK_${grid}"
-    declare -rx "COMOUT_ATMOS_GEMPAK_${grid}"="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/${grid}"
+    declare -rx "COMOUT_ATMOS_GEMPAK_${grid}"="${COMOUT}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/${grid}"
 
     if [[ ! -d "${!prod_dir}" ]]; then
         mkdir -m 775 -p "${!prod_dir}"

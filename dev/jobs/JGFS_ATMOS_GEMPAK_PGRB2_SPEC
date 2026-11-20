@@ -20,10 +20,12 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 # shellcheck disable=SC2153
-declare -rx COMIN_ATMOS_GOES="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
+declare -rx COMIN_ATMOS_GOES="${COMIN}/${RUN}.${PDY}/${cyc}/products/atmos/goes_sim"
 # shellcheck disable=SC2153
-declare -rx COMOUT_ATMOS_GEMPAK_0p25="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/0p25"
+declare -rx COMOUT_ATMOS_GEMPAK_0p25="${COMOUT}/${RUN}.${PDY}/${cyc}/products/atmos/gempak/0p25"
 if [[ ! -d "${COMOUT_ATMOS_GEMPAK_0p25}" ]]; then
     mkdir -m 775 -p "${COMOUT_ATMOS_GEMPAK_0p25}"
 fi

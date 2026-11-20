@@ -19,20 +19,22 @@ source "${USHglobal}/set_strict.sh"
 ##############################################
 
 # Construct COM variables
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
-    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
-    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}/${memdir}"
 else
-    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
-    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}"
+    export COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}"
 fi
 
 # Construct COM variables from templates
-declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
-declare -rx COMIN_ATMOS_HISTORY="${COMIN}/model/atmos/history"
-declare -rx COMIN_ATMOS_MASTER="${COMIN}/model/atmos/master"
+declare -rx COMIN_ATMOS_ANALYSIS="${COMINdir}/analysis/atmos"
+declare -rx COMIN_ATMOS_HISTORY="${COMINdir}/model/atmos/history"
+declare -rx COMIN_ATMOS_MASTER="${COMINdir}/model/atmos/master"
 
 if [[ "${RUN}" == "gfs" ]]; then
     grids='0p25'
@@ -41,7 +43,7 @@ else
 fi
 for grid in ${grids}; do
     prod_dir="COMOUT_ATMOS_GRIB_${grid}"
-    declare -rx "COMOUT_ATMOS_GRIB_${grid}"="${COMOUT}/products/atmos/grib2/${grid}"
+    declare -rx "COMOUT_ATMOS_GRIB_${grid}"="${COMOUTdir}/products/atmos/grib2/${grid}"
     mkdir -m 775 -p "${!prod_dir}"
 done
 

@@ -17,9 +17,12 @@ source "${USHglobal}/set_strict.sh"
 export MP_PULSE=0
 
 # Set COM Paths
-declare -rx COMIN_WAVE_INIT="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/init"
-declare -rx COMIN_WAVE_HISTORY="${ROTDIR}/${RUN}.${PDY}/${cyc}/model/wave/history"
-declare -rx COMOUT_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+
+declare -rx COMIN_WAVE_INIT="${COMIN}/${RUN}.${PDY}/${cyc}/model/wave/init"
+declare -rx COMIN_WAVE_HISTORY="${COMIN}/${RUN}.${PDY}/${cyc}/model/wave/history"
+declare -rx COMOUT_WAVE_STATION="${COMOUT}/${RUN}.${PDY}/${cyc}/products/wave/station"
 
 mkdir -p "${COMOUT_WAVE_STATION}"
 

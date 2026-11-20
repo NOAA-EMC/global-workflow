@@ -43,13 +43,16 @@ GDUMP="gdas"
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+
 COMIN_OBS=${COMIN_OBS:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${RUN}.${PDY}/${cyc}/atmos"}
 declare -rx COMIN_OBS
 
-declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/snow"
-declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMOUT_SNOW_ANALYSIS="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/snow"
+declare -rx COMOUT_CONF="${COMOUT}/${RUN}.${PDY}/${cyc}/conf"
 
-declare -rx COMIN_ATMOS_RESTART_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
+declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/atmos/restart"
 
 mkdir -m 775 -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 

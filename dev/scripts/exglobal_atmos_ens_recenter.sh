@@ -111,9 +111,9 @@ for FHR in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         gmemchar="mem"$(printf %03i "${smem}")
         memchar="mem"$(printf %03i "${imem}")
 
-        declare -x COMOUT_ATMOS_ANALYSIS_MEM=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
+        declare -x COMOUT_ATMOS_ANALYSIS_MEM=${COMOUT}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/atmos
 
-        declare -x COMIN_ATMOS_HISTORY_MEM_PREV=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/history
+        declare -x COMIN_ATMOS_HISTORY_MEM_PREV=${COMIN}/${GDUMP_ENS}.${gPDY}/${gcyc}/${gmemchar}/model/atmos/history
 
         ${NLN} "${COMIN_ATMOS_HISTORY_MEM_PREV}/${GPREFIX_ENS}atm.f00${FHR}${ENKF_SUFFIX}.nc" "./atmges_${memchar}"
         if [[ "${DO_CALC_INCREMENT}" == "YES" ]]; then

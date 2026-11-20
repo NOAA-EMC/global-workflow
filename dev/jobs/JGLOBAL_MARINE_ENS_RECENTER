@@ -34,15 +34,18 @@ export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 
-declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
-declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 
-declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/ocean/history"
-declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${RUN}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN_OCEAN_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-declare -rx COMOUT_OCEAN_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ocean"
-declare -rx COMIN_ICE_RESTART="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
-declare -rx COMOUT_ICE_ANALYSIS="${ROTDIR}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
+declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${COMIN}/${RUN}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_ENS_PREV="${COMIN}/${RUN}.${gPDY}/${gcyc}/model/ice/history"
+
+declare -rx COMOUT_OCEAN_ANALYSIS="${COMOUT}/${GDUMP}.${PDY}/${cyc}/analysis/ocean"
+declare -rx COMIN_ICE_RESTART="${COMOUT}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
+declare -rx COMOUT_ICE_ANALYSIS="${COMOUT}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
 
 # Additional COM variables are set in ${HOMEglobal}/parm/gdas/marine/marine_ecen_config.yaml.j2
 # to stage per-member and ensemble-statistics analysis files:

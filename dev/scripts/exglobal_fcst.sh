@@ -239,7 +239,7 @@ fi
 if [[ "${esmf_profile:-}" == ".true." ]]; then
     CPL_out
 fi
-echo "MAIN: Output copied to ROTDIR"
+echo "MAIN: Output copied to COMOUT"
 
 # The fcst_finalized_seg${FCST_SEGMENT} sentinel is written by JGLOBAL_FORECAST as its
 # final action (after its own DATA / DATArestart cleanup), so the manager cannot

@@ -51,16 +51,18 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 # Generate COM variables from templates
-declare -rx COMIN_OCEAN_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
-declare -rx COMIN_ICE_HISTORY_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 
-declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ocean/history"
-declare -rx COMIN_ICE_HISTORY_ENS_PREV="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ice/history"
+declare -rx COMIN_OCEAN_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ice/history"
 
-declare -rx COMOUT_OCEAN_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
-declare -rx COMOUT_ICE_BMATRIX="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
+declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${COMIN}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ocean/history"
+declare -rx COMIN_ICE_HISTORY_ENS_PREV="${COMIN}/${GDUMP_ENS}.${gPDY}/${gcyc}/model/ice/history"
+
+declare -rx COMOUT_OCEAN_BMATRIX="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/ocean/bmatrix"
+declare -rx COMOUT_ICE_BMATRIX="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/ice/bmatrix"
 
 mkdir -p "${COMOUT_OCEAN_BMATRIX}"
 mkdir -p "${COMOUT_ICE_BMATRIX}"

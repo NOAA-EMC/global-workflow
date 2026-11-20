@@ -40,11 +40,13 @@ export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-declare -rx COMIN_OBS="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/obs"
-declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx COMIN_OBS="${COMIN}/${RUN/enkf/}.${PDY}/${cyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS_DET="${COMIN}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
 
-declare -rx COMIN_OBS_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
+declare -rx COMIN_OBS_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/obs"
+declare -rx COMIN_ATMOS_ANALYSIS_DET_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/analysis/atmos"
 
 # Additional variables are set in scripts/exglobal_enkf_sfc_gcycle.sh in order to loop over ensemble members:
 #  COMOUT_ATMOS_RESTART_MEM
