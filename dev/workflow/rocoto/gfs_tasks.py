@@ -2508,7 +2508,7 @@ class GFSTasks(Tasks):
         # Build a dependency for the next forecast cycle
         # This only applies for the last GFS cycle
         dep_next_fcst_seg = None
-        if interval_gfs >= assim_freq:
+        if interval_gfs == assim_freq:
             deps = []
             dep_dict = {'type': 'task', 'name': 'gfs_fcst_seg0', 'offset':
                         f"{timedelta_to_HMS(self._base['interval_gfs'])}"}
@@ -2529,6 +2529,37 @@ class GFSTasks(Tasks):
                     dep_dict = {'type': 'streq', 'left': '@Y@m@d@H', 'right': skip_date}
                     deps.append(rocoto.add_dependency(dep_dict))
 
+            dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+        elif interval_gfs > assim_freq:
+            # If the GFS interval is greater than the assimilation frequency, then we need to
+            # check if the next forecast cycle is a gfs_cycle. If so, then we need the
+            # gfs_fcst_seg0 task to be completed before we can clean up the current cycle
+            sdate_gfs = self._base.get('SDATE_GFS')
+            edate = self._base.get('EDATE')
+            n_intervals = int((edate - sdate_gfs) // to_timedelta(f'{interval_gfs}H'))
+            cleanup_cycles_needing_gfs_fcst = []
+            # Build a list of cycles that need to wait for the next gfs_fcst_seg0 task
+            # to complete before cleanup. These cycles will be one assim_freq less than
+            # the gfs_cycles.
+            for i in range(n_intervals + 1):
+                gfs_cycle = sdate_gfs + to_timedelta(f'{i * interval_gfs}H')
+                cleanup_cycle = gfs_cycle - to_timedelta(f'{assim_freq}H')
+                cleanup_cycles_needing_gfs_fcst.append(cleanup_cycle.strftime("%Y%m%d%H"))
+
+            # Now check if the current cycle is equal to any of the cleanup cycles.
+            deps = []
+            for check_cycle in cleanup_cycles_needing_gfs_fcst:
+                dep_dict = {'type': 'streq', 'condition': 'not',
+                            'left': '@Y@m@d@H', 'right': check_cycle}
+                deps.append(rocoto.add_dependency(dep_dict))
+
+            dep_wait_on_fcst = rocoto.create_dependency(dep_condition='and', dep=deps)
+            dep_dict = {'type': 'task',
+                        'offset': f"{timedelta_to_HMS(to_timedelta(f'{assim_freq}H'))}",
+                        'name': 'gfs_fcst_seg0'}
+            dep_next_fcst = rocoto.add_dependency(dep_dict)
+            deps = [dep_wait_on_fcst, dep_next_fcst]
             dep_next_fcst_seg = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         # Now start building RUN-specific dependencies
