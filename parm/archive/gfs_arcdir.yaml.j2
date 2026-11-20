@@ -30,7 +30,14 @@ copy_opt:
 
 {% if MODE == "cycled" %}
     # Deterministic analysis files (cycled mode only)
-    - ["{{ COMIN_ATMOS_GRIB_0p25 }}/{{ head }}pres_a.0p25.analysis.grib2",
+    {% if ARCH_1P00 == True %}
+        {% set arch_grid = "1p00" %}
+        {% set COMIN_ATMOS_GRIB_ARCH = COMIN_ATMOS_GRIB_1p00 %}
+    {% else %}
+        {% set arch_grid = "0p25" %}
+        {% set COMIN_ATMOS_GRIB_ARCH = COMIN_ATMOS_GRIB_0p25 %}
+    {% endif %}
+    - ["{{ COMIN_ATMOS_GRIB_ARCH }}/{{ head }}pres_a.{{ arch_grid }}.analysis.grib2",
        "{{ ARCDIR }}/pgbanl.{{ RUN }}.{{ cycle_YMDH }}.grib2"]
 
     {% if DO_JEDIATMVAR == True %}
