@@ -11,7 +11,7 @@ if [ "${DBNLOG^^}" == "YES" ]; then
    outputdir="${DBNLOGDIR}"
    mkdir -p "${outputdir?"\$outputdir not set. compath.py failed."}"
    log_file=${outputdir}/${job:?}.${PDY}${cyc}.dbnlog
-   echo "["$(date +%T)"]" "$*" >> "${log_file}"
+   echo "["$(date +%T)"]" $* >> "${log_file}"
 fi
 
 if [ ! -s "$4" ]; then
