@@ -24,9 +24,9 @@ set -x
 #############################################################################
 
 if ((10#${ENSMEM:--1} >= 0)); then
-    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}_${gfs_ver_2d:-${gfs_ver%.*}}.${PDY:-}${cyc}"
 else
-    export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+    export DATAjob="${DATAROOT}/${RUN}_${gfs_ver_2d:-${gfs_ver%.*}}_forecast.${PDY:-}${cyc}"
 fi
 export DATA="${DATAjob}/manager.${jobid}"
 if ((10#${ENSMEM:--1} >= 0)); then
