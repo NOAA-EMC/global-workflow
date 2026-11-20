@@ -3,11 +3,11 @@ set -x
 export EXPDIR="${EXPDIR:-${HOMEglobal}/parm/config/${NET}}"
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
-    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
+    export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}_${gfs_ver_2d:-${gfs_ver%.*}}.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
     source "${HOMEglobal}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 else
-    export DATAjob="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+    export DATAjob="${DATAROOT}/${RUN}_${gfs_ver_2d:-${gfs_ver%.*}}_forecast.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
     source "${HOMEglobal}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 fi
