@@ -37,7 +37,7 @@ grid_string="0p25"
 # unless 1p00 products were requested for the ARCDIR
 if [[ "${RUN}" == "gfs" ]]; then
     PGBS="NO"
-    if [[ "${ARCH_GFS_1P00:-NO}" == "YES" ]]; then
+    if [[ "${ARCH_1P00:-NO}" == "YES" ]]; then
         grid_string="${grid_string}:1p00"
     fi
 fi
