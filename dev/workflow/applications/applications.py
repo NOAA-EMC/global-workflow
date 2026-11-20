@@ -293,6 +293,8 @@ class AppConfig(ABC, metaclass=AppConfigInit):
                 files += ['config.fcst', 'config.efcs']
             elif config in ['atmanlinit', 'atmanlvar', 'atmanlfv3inc']:
                 files += ['config.atmanl', f'config.{config}']
+            elif config in ['coupledanlinit', 'coupledanlvar', 'coupledanlfv3inc']:
+                files += ['config.coupledanl', f'config.{config}']
             elif config in ['atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc']:
                 files += ['config.atmensanl', f'config.{config}']
             elif 'wave' in config:

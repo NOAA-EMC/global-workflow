@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.coupledanlinit ##########
+# Coupled Analysis Initialize specific
+
+echo "BEGIN: config.coupledanlinit"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" coupledanlinit
+
+echo "END: config.coupledanlinit"

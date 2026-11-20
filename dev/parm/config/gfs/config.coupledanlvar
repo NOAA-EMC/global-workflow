@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.coupledanlvar ##########
+# Coupled Var Analysis specific
+
+echo "BEGIN: config.coupledanlvar"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" coupledanlvar
+
+echo "END: config.coupledanlvar"

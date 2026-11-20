@@ -5,6 +5,7 @@ base:
   DO_JEDIATMENS: "NO"
   DO_JEDIATMENS_SPLIT_OBSSOL: "YES"
   DO_JEDIOCNVAR: "NO"
+  DO_JEDICOUPLEDVAR: "NO"
   DO_JEDISNOWDA: "NO"
   DO_MERGENSST: "NO"
   DO_STARTMEM_FROM_JEDIICE: "NO"
@@ -45,6 +46,18 @@ atmanl:
   OBS_LIST_YAML: "${PARMglobal}/gdas/atm/atm_obs_list.yaml.j2"
   VAR_JEDI_TEST_YAML: ""
   FV3INC_JEDI_TEST_YAML: ""
+
+coupledanl:
+  STATICB_TYPE: "gsibec"
+  LAYOUT_X_COUPLEDANL: 8
+  LAYOUT_Y_COUPLEDANL: 8
+  IO_LAYOUT_X: 1
+  IO_LAYOUT_Y: 1
+  COUPLED_OBS_LIST: "${PARMglobal}/gdas/coupled/coupled_obs_list.yaml.j2"
+  SOCA_INPUT_FIX_DIR: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
+  SOCA_NINNER: 100
+  COUPLED_NINNER_LOOP1: 100
 
 atmensanl:
   LAYOUT_X_ATMENSANL: 8

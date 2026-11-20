@@ -113,6 +113,11 @@ class Jedi:
         else:
             raise WorkflowKeyError(f"Required key 'app_path_model' or 'app_path_observations'  not found in JCB config")
 
+        # Set the components that own observations. A coupled application spans more than one,
+        # and its own component ('coupled') owns no observations and has no obs*_path keys, so
+        # the observation search paths rather than self.component decide this.
+        self.obs_components = self._get_obs_components()
+
         # Initialize JEDI application configuration dictionary to None
         self.exe_config = None
 
@@ -289,6 +294,124 @@ class Jedi:
             if observers == []:
                 logger.warning(f"No observers found in JEDI input config")
 
+    def _get_obs_paths(self) -> List[str]:
+        """List the observation search paths, the primary one first
+
+        Returns
+        ----------
+        list of paths, one per component that owns observations
+        """
+
+        paths = []
+        if 'app_path_observations' in self.jcb_config:
+            paths.append(self.jcb_config['app_path_observations'])
+        paths += self.jcb_config.get('app_paths_observations_extra', [])
+
+        return paths
+
+    def _get_obs_components(self) -> List[str]:
+        """List the components that own observations, in observation search path order
+
+        Returns
+        ----------
+        list of component names, one per observation search path
+        """
+
+        components = [os.path.basename(path.rstrip('/')) for path in self._get_obs_paths()]
+
+        # An application with no observation search path still needs a component to key off
+        return components if components else [self.component]
+
+    def get_observations_by_component(self) -> Dict[str, List[str]]:
+        """Group the observations in the JCB configuration by the component that owns them
+
+        An observation belongs to the component whose observation directory holds its
+        template, which is the same rule the JCB renderer resolves the template by. Only
+        components that own at least one observation are returned.
+
+        Returns
+        ----------
+        Dict mapping component name to the list of observations it owns, in the order the
+        observations appear in the JCB configuration
+        """
+
+        observations = self.jcb_config['observations']
+
+        # Single component: everything is its own, no need to look at the filesystem
+        if len(self.obs_components) == 1:
+            return {self.obs_components[0]: list(observations)}
+
+        paths = self._get_obs_paths()
+
+        obs_by_component = {}
+        for observation_from_jcb in observations:
+            for component, path in zip(self.obs_components, paths):
+                if os.path.exists(os.path.join(path, f'{observation_from_jcb}.yaml.j2')):
+                    obs_by_component.setdefault(component, []).append(observation_from_jcb)
+                    break
+            else:
+                raise WorkflowException(f"Observation {observation_from_jcb} was not found in any of "
+                                        f"the observation search paths {paths}")
+
+        return obs_by_component
+
+    @staticmethod
+    def _get_for_component(value, component: str):
+        """Select a per-component value, accepting a plain value shared by every component
+
+        Parameters
+        ----------
+        value
+            either a Dict keyed by component name, or a value used for every component
+        component: str
+            name of the component the value is wanted for
+
+        Returns
+        ----------
+        The value for this component
+        """
+
+        if isinstance(value, dict):
+            if component not in value:
+                raise WorkflowKeyError(f"No entry for component '{component}' in {value}")
+            return value[component]
+
+        return value
+
+    def _get_bias_components(self, stems: List[str]) -> Dict[str, List[str]]:
+        """Group observations by component, keeping only the components that do bias correction
+
+        A component takes part only if it defines every key in stems. Not every component of a
+        coupled application does; the marine one has no bias correction files.
+
+        Parameters
+        ----------
+        stems: list
+            the bias correction key names a component must define, without its prefix
+
+        Returns
+        ----------
+        Dict mapping component name to the observations it owns, for qualifying components
+
+        Raises
+        ----------
+        WorkflowKeyError if no component qualifies, listing what each one is missing
+        """
+
+        observations_by_component = self.get_observations_by_component()
+        missing = {component: [f'{component}_{stem}' for stem in stems if f'{component}_{stem}' not in self.jcb_config]
+                   for component in observations_by_component}
+        components = {component: observations
+                      for component, observations in observations_by_component.items()
+                      if not missing[component]}
+
+        if not components:
+            raise WorkflowKeyError("No component does bias correction. Missing keys: " +
+                                   '; '.join(f'{component}: {", ".join(keys)}'
+                                             for component, keys in missing.items()))
+
+        return components
+
     @logit(logger)
     def stage_obsdatain(self, comin) -> None:
         """Stage observation input files specified in JCB configuration dictionary
@@ -298,37 +421,40 @@ class Jedi:
 
         Parameters
         ----------
-        comin: str
-            path to COM input directory
+        comin: str or Dict[str, str]
+            path to COM input directory, or one path per component when the components
+            keep their observations in different COM directories
 
         Returns
         ----------
         None
         """
 
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsdatain_path', 'obsdataout_path', 'obsdatain_prefix', 'obsdatain_suffix']:
-            key = f'{self.component}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
-
         # Initialize FileHandler input dictionary
         fh_dict = {'mkdir': [], 'copy_opt': []}
 
-        # Make directories
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsdatain_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsdataout_path'])
+        for component, observations in self.get_observations_by_component().items():
+            # Check that other required keys are present in jcb_config
+            for stem in ['obsdatain_path', 'obsdataout_path', 'obsdatain_prefix', 'obsdatain_suffix']:
+                key = f'{component}_{stem}'
+                if key not in self.jcb_config:
+                    raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
-        # Copy files
-        ob_dest = self.jcb_config[f'{self.component}_obsdatain_path']
-        for observation_from_jcb in self.jcb_config['observations']:
-            # Observations
-            ob_src = os.path.join(comin,
-                                  self.jcb_config[f'{self.component}_obsdatain_prefix'] +
-                                  observation_from_jcb +
-                                  self.jcb_config[f'{self.component}_obsdatain_suffix'])
+            # Make directories
+            fh_dict['mkdir'].append(self.jcb_config[f'{component}_obsdatain_path'])
+            fh_dict['mkdir'].append(self.jcb_config[f'{component}_obsdataout_path'])
 
-            fh_dict['copy_opt'].append([ob_src, ob_dest])
+            # Copy files
+            ob_dest = self.jcb_config[f'{component}_obsdatain_path']
+            comin_component = self._get_for_component(comin, component)
+            for observation_from_jcb in observations:
+                # Observations
+                ob_src = os.path.join(comin_component,
+                                      self.jcb_config[f'{component}_obsdatain_prefix'] +
+                                      observation_from_jcb +
+                                      self.jcb_config[f'{component}_obsdatain_suffix'])
+
+                fh_dict['copy_opt'].append([ob_src, ob_dest])
 
         # Execute FileHandler sync
         FileHandler(fh_dict).sync()
@@ -339,41 +465,44 @@ class Jedi:
 
         Parameters
         ----------
-        comout: str
-            path to COM output directory
-        archive_name: str
-            name of output tar file
+        comout: str or Dict[str, str]
+            path to COM output directory, or one path per component
+        archive_name: str or Dict[str, str]
+            name of output tar file, or one name per component. One tarball is written per
+            component that owns observations.
 
         Returns
         ----------
         None
         """
 
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsdataout_path', 'obsdataout_prefix', 'obsdataout_suffix']:
-            key = f'{self.component}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+        for component, observations in self.get_observations_by_component().items():
+            # Check that other required keys are present in jcb_config
+            for stem in ['obsdataout_path', 'obsdataout_prefix', 'obsdataout_suffix']:
+                key = f'{component}_{stem}'
+                if key not in self.jcb_config:
+                    raise WorkflowKeyError(f"Required key {key} not found in JCB config")
 
-        # Set paths of output tar files
-        tarball = os.path.join(self.jcb_config[f"{self.component}_obsdataout_path"], f"{archive_name}.tar.gz")
+            # Set paths of output tar files
+            tarball = os.path.join(self.jcb_config[f"{component}_obsdataout_path"],
+                                   f"{self._get_for_component(archive_name, component)}.tar.gz")
 
-        # Create compressed tarball of obs output files in COM
-        logger.info(f"Archiving observation output files to {tarball}")
-        with tarfile.open(tarball, "w:gz") as archive:
-            for observation_from_jcb in self.jcb_config['observations']:
-                obsdataout_file = os.path.join(self.jcb_config[f"{self.component}_obsdataout_path"],
-                                               self.jcb_config[f"{self.component}_obsdataout_prefix"] +
-                                               observation_from_jcb +
-                                               self.jcb_config[f"{self.component}_obsdataout_suffix"])
-                if os.path.exists(obsdataout_file):
-                    logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")
-                    archive.add(obsdataout_file, arcname=os.path.basename(obsdataout_file))
-                else:
-                    logger.warning(f"Observation output file {obsdataout_file} does not exist and will be skipped")
+            # Create compressed tarball of obs output files in COM
+            logger.info(f"Archiving observation output files to {tarball}")
+            with tarfile.open(tarball, "w:gz") as archive:
+                for observation_from_jcb in observations:
+                    obsdataout_file = os.path.join(self.jcb_config[f"{component}_obsdataout_path"],
+                                                   self.jcb_config[f"{component}_obsdataout_prefix"] +
+                                                   observation_from_jcb +
+                                                   self.jcb_config[f"{component}_obsdataout_suffix"])
+                    if os.path.exists(obsdataout_file):
+                        logger.info(f"Adding observation output file {obsdataout_file} to {tarball}")
+                        archive.add(obsdataout_file, arcname=os.path.basename(obsdataout_file))
+                    else:
+                        logger.warning(f"Observation output file {obsdataout_file} does not exist and will be skipped")
 
-        # Copy files to COM
-        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
+            # Copy files to COM
+            FileHandler({'copy_opt': [[tarball, self._get_for_component(comout, component)]]}).sync()
 
     @logit(logger)
     def stage_obsbiasin(self, comin) -> None:
@@ -385,53 +514,56 @@ class Jedi:
 
         Parameters
         ----------
-        comin: str
-            path to COMIN directory
+        comin: str or Dict[str, str]
+            path to COMIN directory, or one path per component
 
         Returns
         ----------
         None
         """
 
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix']:
-            key = f'{self.component}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+        stems = ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix']
+
+        components = self._get_bias_components(stems)
 
         # Initialize FileHandler input dictionary
         fh_dict = {'mkdir': [], 'copy_opt': []}
 
-        # Make directories
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsbiasin_path'])
-        fh_dict['mkdir'].append(self.jcb_config[f'{self.component}_obsbiasout_path'])
+        for component, observations in components.items():
+            # Make directories
+            fh_dict['mkdir'].append(self.jcb_config[f'{component}_obsbiasin_path'])
+            fh_dict['mkdir'].append(self.jcb_config[f'{component}_obsbiasout_path'])
 
-        # Copy files
-        files_already_copied = []
-        bias_dest = self.jcb_config[f'{self.component}_obsbiasin_path']
-        for observation_from_jcb in self.jcb_config['observations']:
-            if observation_from_jcb in self.jcb_config.bias_files_dict and observation_from_jcb not in files_already_copied:
-                bias_src = os.path.join(comin, self.jcb_config[f'{self.component}_obsbiasin_prefix'] + self.jcb_config.bias_files_dict[observation_from_jcb])
+            # Copy files
+            files_already_copied = []
+            bias_dest = self.jcb_config[f'{component}_obsbiasin_path']
+            comin_component = self._get_for_component(comin, component)
+            for observation_from_jcb in observations:
+                if observation_from_jcb in self.jcb_config.bias_files_dict and observation_from_jcb not in files_already_copied:
+                    bias_src = os.path.join(comin_component,
+                                            self.jcb_config[f'{component}_obsbiasin_prefix'] +
+                                            self.jcb_config.bias_files_dict[observation_from_jcb])
 
-                fh_dict['copy_opt'].append([bias_src, bias_dest])
+                    fh_dict['copy_opt'].append([bias_src, bias_dest])
 
-                # Don't copy same file multiple times
-                files_already_copied.append(observation_from_jcb)
+                    # Don't copy same file multiple times
+                    files_already_copied.append(observation_from_jcb)
 
         # Execute FileHandler sync
         FileHandler(fh_dict).sync()
 
         # Untar bias corrections
-        bias_file_list = []
-        for ob in self.jcb_config['observations']:
-            if ob in self.jcb_config.bias_files_dict and not self.jcb_config.bias_files_dict[ob] in bias_file_list:
-                bias_file_list.append(self.jcb_config.bias_files_dict[ob])
-                bias_file_path = os.path.join(self.jcb_config[f"{self.component}_obsbiasin_path"],
-                                              self.jcb_config[f"{self.component}_obsbiasin_prefix"] + self.jcb_config.bias_files_dict[ob])
-                if os.path.exists(bias_file_path):
-                    Jedi.extract_tar(bias_file_path)
-                else:
-                    logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
+        for component, observations in components.items():
+            bias_file_list = []
+            for ob in observations:
+                if ob in self.jcb_config.bias_files_dict and not self.jcb_config.bias_files_dict[ob] in bias_file_list:
+                    bias_file_list.append(self.jcb_config.bias_files_dict[ob])
+                    bias_file_path = os.path.join(self.jcb_config[f"{component}_obsbiasin_path"],
+                                                  self.jcb_config[f"{component}_obsbiasin_prefix"] + self.jcb_config.bias_files_dict[ob])
+                    if os.path.exists(bias_file_path):
+                        Jedi.extract_tar(bias_file_path)
+                    else:
+                        logger.warning(f"Bias correction file {bias_file_path} does not exist and will be skipped")
 
     @logit(logger)
     def save_obsbiasout(self, comout: str, archive_name: str) -> None:
@@ -439,73 +571,72 @@ class Jedi:
 
         Parameters
         ----------
-        comout: str
-            path to COM output directory
-        archive_name: str
-            name of output tar file
+        comout: str or Dict[str, str]
+            path to COM output directory, or one path per component
+        archive_name: str or Dict[str, str]
+            name of output tar file, or one name per component
 
         Returns
         ----------
         None
         """
 
-        # Check that other required keys are present in jcb_config
-        for stem in ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
-                     'obsbiasout_prefix', 'obsbiasout_suffix', 'obsbiascovout_suffix',
-                     'obstlapsein_suffix']:
-            key = f'{self.component}_{stem}'
-            if key not in self.jcb_config:
-                raise WorkflowKeyError(f"Required key {key} not found in JCB config")
+        stems = ['obsbiasin_path', 'obsbiasout_path', 'obsbiasin_prefix',
+                 'obsbiasout_prefix', 'obsbiasout_suffix', 'obsbiascovout_suffix',
+                 'obstlapsein_suffix']
 
-        # Set paths of output tar files
-        tarball = f"{archive_name}.tar"
+        components = self._get_bias_components(stems)
 
-        # Get lists of files to put in tarballs
-        satlist = []
-        satcovlist = []
-        tlaplist = []
-        obsbiasin_path = self.jcb_config[f"{self.component}_obsbiasin_path"]
-        obsbiasout_path = self.jcb_config[f"{self.component}_obsbiasout_path"]
-        for ob in self.jcb_config['observations']:
-            # Sat bias and sat bias cov files
-            for obsbiasout_suffix in [self.jcb_config[f"{self.component}_obsbiasout_suffix"],
-                                      self.jcb_config[f"{self.component}_obsbiascovout_suffix"]]:
-                satfile_name = os.path.join(self.jcb_config[f"{self.component}_obsbiasout_prefix"] + ob + obsbiasout_suffix)
-                obsbiasin_file = os.path.join(obsbiasin_path, satfile_name)
-                obsbiasout_file = os.path.join(obsbiasout_path, satfile_name)
-                if os.path.exists(obsbiasout_file):
-                    satlist.append(obsbiasout_file)
-                elif os.path.exists(obsbiasin_file):
-                    logger.warning(f"{satfile_name} does not exist in {obsbiasout_path} and will be taken from {obsbiasin_path}")
-                    satlist.append(obsbiasin_file)
+        for component, observations in components.items():
+            # Set paths of output tar files
+            tarball = f"{self._get_for_component(archive_name, component)}.tar"
+
+            # Get lists of files to put in tarballs
+            satlist = []
+            tlaplist = []
+            obsbiasin_path = self.jcb_config[f"{component}_obsbiasin_path"]
+            obsbiasout_path = self.jcb_config[f"{component}_obsbiasout_path"]
+            for ob in observations:
+                # Sat bias and sat bias cov files
+                for obsbiasout_suffix in [self.jcb_config[f"{component}_obsbiasout_suffix"],
+                                          self.jcb_config[f"{component}_obsbiascovout_suffix"]]:
+                    satfile_name = os.path.join(self.jcb_config[f"{component}_obsbiasout_prefix"] + ob + obsbiasout_suffix)
+                    obsbiasin_file = os.path.join(obsbiasin_path, satfile_name)
+                    obsbiasout_file = os.path.join(obsbiasout_path, satfile_name)
+                    if os.path.exists(obsbiasout_file):
+                        satlist.append(obsbiasout_file)
+                    elif os.path.exists(obsbiasin_file):
+                        logger.warning(f"{satfile_name} does not exist in {obsbiasout_path} and will be taken from {obsbiasin_path}")
+                        satlist.append(obsbiasin_file)
+                    else:
+                        logger.warning(f"{satfile_name} does not exist in {obsbiasout_path} or {obsbiasin_path}!")
+
+                # Temperature lapse rate file
+                tlapfile = os.path.join(obsbiasin_path,
+                                        self.jcb_config[f"{component}_obsbiasin_prefix"] + ob + self.jcb_config[f"{component}_obstlapsein_suffix"])
+                if os.path.exists(tlapfile):
+                    tlaplist.append(tlapfile)
                 else:
-                    logger.warning(f"{satfile_name} does not exist in {obsbiasout_path} or {obsbiasin_path}!")
+                    logger.warning(f"{tlapfile} does not exist in {obsbiasin_path}!")
 
-            # Temperature lapse rate file
-            tlapfile = os.path.join(obsbiasin_path,
-                                    self.jcb_config[f"{self.component}_obsbiasin_prefix"] + ob + self.jcb_config[f"{self.component}_obstlapsein_suffix"])
-            if os.path.exists(tlapfile):
-                tlaplist.append(tlapfile)
-            else:
-                logger.warning(f"{tlapfile} does not exist in {obsbiasin_path}!")
+            # Create tarball of bias correction files
+            logger.info(f"Creating bias correction tarball {tarball}")
+            with tarfile.open(tarball, 'w') as bcor:
+                logger.info(f"Adding {bcor.getnames()}")
+                for satfile in satlist:
+                    logger.info(f"Adding satellite bias correction file {satfile} to {tarball}")
+                    bcor.add(satfile, arcname=os.path.basename(satfile))
+                for tlapfile in tlaplist:
+                    # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
+                    tlapfile_rename = tlapfile.replace(self.jcb_config[f"{component}_obsbiasin_prefix"],
+                                                       self.jcb_config[f"{component}_obsbiasout_prefix"])
+                    logger.info(f"Adding temperature lapse rate file {tlapfile_rename} to {tarball}")
+                    bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
 
-        # Create tarball of bias correction files
-        logger.info(f"Creating bias correction tarball {tarball}")
-        with tarfile.open(tarball, 'w') as bcor:
-            logger.info(f"Adding {bcor.getnames()}")
-            for satfile in satlist:
-                logger.info(f"Adding satellite bias correction file {satfile} to {tarball}")
-                bcor.add(satfile, arcname=os.path.basename(satfile))
-            for tlapfile in tlaplist:
-                # Change GPREFIX to APREFIX in tlapse file name when adding to tarball
-                tlapfile_rename = tlapfile.replace(self.jcb_config[f"{self.component}_obsbiasin_prefix"],
-                                                   self.jcb_config[f"{self.component}_obsbiasout_prefix"])
-                logger.info(f"Adding temperature lapse rate file {tlapfile_rename} to {tarball}")
-                bcor.add(tlapfile, arcname=os.path.basename(tlapfile_rename))
-
-        # Always copy the tarball to COM; it is always created above and required by the archive step
-        FileHandler({'mkdir': [comout]}).sync()
-        FileHandler({'copy_opt': [[tarball, comout]]}).sync()
+            # Always copy the tarball to COM; it is always created above and required by the archive step
+            comout_component = self._get_for_component(comout, component)
+            FileHandler({'mkdir': [comout_component]}).sync()
+            FileHandler({'copy_opt': [[tarball, comout_component]]}).sync()
 
     @staticmethod
     @logit(logger)

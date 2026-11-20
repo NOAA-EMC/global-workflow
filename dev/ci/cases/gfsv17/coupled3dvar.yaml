@@ -1,0 +1,30 @@
+defaults:
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
+
+base:
+  DO_JEDICOUPLEDVAR: "YES"
+  CASE_ANL: "C192"
+  # The atmospheric observations come from the ObsForge dumps in IODADIR, which must
+  # hold the gdas cycles of the experiment
+  USE_IODADIR: "YES"
+
+prep:
+  # Keep the radiance bias coefficients of the initial conditions (GSI format) and
+  # convert them for JEDI every cycle
+  COPY_BIASCOR_SOURCE: "NO"
+  COPY_BIASCOR_STATIC: "YES"
+  CONVERT_BIASCOR: "YES"
+
+prepoceanobs:
+  use_exp_obs: "YES"
+  # ursa
+  dmpdir_exp: /scratch3/NCEPDEV/da/common_obsForge
+
+marinebmat:
+  SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
+
+coupledanl:
+  SOCA_INPUT_FIX_DIR: {{ HOMEglobal }}/fix/gdas/soca/1440x1080x75/soca
+  SOCA_ANL_GEOM: {{ HOMEglobal }}/fix/gdas/soca/720x540x75/soca
+  COUPLED_OBS_LIST: {{ HOMEglobal }}/parm/gdas/coupled/coupled_obs_list_gfsv17.yaml.j2

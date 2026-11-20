@@ -335,7 +335,7 @@ EOF
             ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
             ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
             ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.log.f${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-            if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
+            if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${DO_JEDICOUPLEDVAR:-}" == "YES" || "${DO_HISTORY_FILE_ON_NATIVE_GRID:-"NO"}" == "YES" ]]; then
                 ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_atm.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
                 ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.csg_sfc.f${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
             fi
@@ -690,7 +690,7 @@ MOM6_postdet() {
 
     # Copy increment (only when RERUN=NO)
     if [[ "${RERUN}" == "NO" ]]; then
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" || "${DO_JEDICOUPLEDVAR:-NO}" == "YES" ]] || [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
             cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.mom6_increment.i006.nc" "${DATA}/INPUT/mom6_increment.nc"
         fi
     fi # if [[ "${RERUN}" == "NO" ]]; then
@@ -870,7 +870,14 @@ MOM6_out() {
             mkdir -p "${COMOUT_OCEAN_RESTART}"
         fi
 
-        "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
+        # The MOM6 restart files are several GB each. With srun, a copy task otherwise gets only
+        # its per-CPU share of the node memory, which writing such a file to Lustre can exceed
+        # (OOM kill); let each copy task use all of its node's memory.
+        local mom6_mpmd_opt="${mpmd_opt:-}"
+        if [[ "${launcher:-}" =~ ^srun ]]; then
+            mom6_mpmd_opt+=" --mem=0"
+        fi
+        mpmd_opt="${mom6_mpmd_opt}" "${USHglobal}/run_mpmd.sh" "${cmdfile}" && true
         export err=$?
         if [[ ${err} -ne 0 ]]; then
             err_exit "run_mpmd.sh failed to copy MOM6 restart files!"
@@ -897,7 +904,7 @@ CICE_postdet() {
         if [[ "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
         fi
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" || "${DO_JEDICOUPLEDVAR:-NO}" == "YES" || "${DOIAU_COLDSTART:-NO}" == "YES" ]]; then
             if [[ "${MEMBER}" -eq 0 ]]; then
                 # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
                 cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"

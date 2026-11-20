@@ -388,6 +388,7 @@ export DO_JEDIATMVAR="{{ DO_JEDIATMVAR }}"
 export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
 export DO_JEDIATMENS_SPLIT_OBSSOL="{{ DO_JEDIATMENS_SPLIT_OBSSOL }}" #Only used if DO_JEDIATMENS is "YES"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
+export DO_JEDICOUPLEDVAR="{{ DO_JEDICOUPLEDVAR }}"  # One JEDI application for atmosphere and ocean together
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
 
@@ -538,8 +539,8 @@ export ARCHCOM_TO="{{ ARCHCOM_TO }}"    # Valid options are hpss, globus_hpss, a
 # Globus UUID for this machine
 export CLIENT_GLOBUS_UUID="{{ CLIENT_GLOBUS_UUID }}"
 
-# The monitor jobs are not yet supported for JEDIATMVAR.
-if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
+# The monitor jobs are not yet supported for JEDIATMVAR or JEDICOUPLEDVAR.
+if [[ "${DO_JEDIATMVAR}" = "YES" || "${DO_JEDICOUPLEDVAR}" = "YES" ]]; then
    export DO_FIT2OBS="NO"     # Run fit to observations package
    export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
    export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
@@ -578,6 +579,9 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
     else
 	    export ATMINC_GRID="gaussian"
     fi
+elif [[ "${DO_JEDICOUPLEDVAR}" == "YES" ]]; then
+    # Deterministic only, so there is no ensemble to match the increment grid to
+    export ATMINC_GRID="gaussian"
 fi
 
 echo "END: config.base"

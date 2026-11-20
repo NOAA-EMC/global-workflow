@@ -1,0 +1,13 @@
+defaults:
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_JEDICOUPLEDVAR: "YES"
+  DO_METP: "NO"
+  # There is no atmospheric IODA dump for this case's cycles on the CI hosts yet, so the
+  # coupled analysis assimilates the marine observations only
+  USE_IODADIR: "NO"
+
+coupledanl:
+  LAYOUT_X_COUPLEDANL: 1
+  LAYOUT_Y_COUPLEDANL: 1
+  COUPLED_NINNER_LOOP1: 1

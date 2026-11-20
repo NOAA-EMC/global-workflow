@@ -1,0 +1,28 @@
+experiment:
+  net: gfs
+  mode: cycled
+  pslot: {{ 'pslot' | getenv }}
+  app: S2S
+  resdetatmos: 48
+  resdetocean: 5.0
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ BASE_IC }}/C48mx500/20250808
+  idate: 2021032418
+  edate: 2021032500
+  nens: 0
+  interval: 6
+  start: warm
+  yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/coupled_gfs_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - orion
+  - awsepicglobalworkflow
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2

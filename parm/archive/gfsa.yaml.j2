@@ -32,7 +32,11 @@ gfsa:
         {% endif %}
 
         # State data
-        {% if DO_JEDIATMVAR %}
+        {% if DO_JEDICOUPLEDVAR %}
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.coupled.yaml"
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.fv3.atm.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
+        {% elif DO_JEDIATMVAR %}
         - "{{ COMIN_CONF }}/{{ head }}anlvar.atm.yaml"
         - "{{ COMIN_CONF }}/{{ head }}anlvar.fv3.atm.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
@@ -42,7 +46,7 @@ gfsa:
         {% if DO_AERO_ANL %}
         - "{{ COMIN_CHEM_ANALYSIS }}/{{ head }}aero_analysis.ioda_hofx.tar.gz"
         {% endif %}
-        {% if DO_JEDIOCNVAR %}
+        {% if DO_JEDIOCNVAR or DO_JEDICOUPLEDVAR %}
         - "{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
         {% endif %}
         {% if DO_PREP_OBS_AERO %}

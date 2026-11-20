@@ -21,7 +21,7 @@ export MOM6_THERMO_SPAN="False"
 export MOM6_WRITE_GEOM=0
 export MOM6_GUST_CONST=0
 
-if [[ "${DO_JEDIOCNVAR}" == "YES" ]]; then
+if [[ "${DO_JEDIOCNVAR}" == "YES" || "${DO_JEDICOUPLEDVAR}" == "YES" ]]; then
   export ODA_INCUPD="True"
 else
   export ODA_INCUPD="False"

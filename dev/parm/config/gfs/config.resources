@@ -14,6 +14,7 @@ if (( $# != 1 )); then
     echo "stage_ic aerosol_init fetch"
     echo "prep prep_sfc prepatmanlbias"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
+    echo "coupledanlinit coupledanlvar coupledanlfv3inc coupledanlchkpt coupledanlfinal"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
@@ -281,6 +282,96 @@ case ${step} in
     ;;
 
   "atmanlfinal")
+    walltime="00:30:00"
+    ntasks=${max_tasks_per_node}
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    is_exclusive=True
+    ;;
+
+  "coupledanlinit")
+    export layout_x=${layout_x_coupledanl}
+    export layout_y=${layout_y_coupledanl}
+
+    # Every rank runs FV3JEDI, so GSIBEC decomposes over all of them and
+    # layout_gsib_x * layout_gsib_y has to equal coupledanlvar's task count,
+    # 6 * layout_x * layout_y. These are only needed here because coupledanlinit is what
+    # renders coupledanlvar.yaml.
+    export layout_gsib_x=$(( layout_x * 3 ))
+    export layout_gsib_y=$(( layout_y * 2 ))
+
+    walltime="00:10:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    memory="24GB"
+    ;;
+
+  "coupledanlvar")
+    # Every rank constructs both geometries, so one task count has to satisfy both models.
+    # FV3 fixes it at 6 * layout_x * layout_y;
+    # MOM6 decomposes over whatever it is given. Memory is keyed on OCNRES because every
+    # rank holds the ocean geometry as well as the atmospheric one.
+    export layout_x=${layout_x_coupledanl}
+    export layout_y=${layout_y_coupledanl}
+
+    walltime="00:45:00"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    case ${OCNRES} in
+      "025")
+        memory="${mem_node_max}"
+        ;;
+      "050" | "100" | "500")
+        memory="96GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
+        exit 4
+        ;;
+    esac
+    threads_per_task=1
+    # Each rank holds both geometries, so per-rank memory is the sum of the two
+    # single-component analyses'. marineanlvar already halves the packing for SOCA alone;
+    # do the same here rather than use the denser atmospheric packing.
+    tasks_per_node=$(( max_tasks_per_node / 2 ))
+    is_exclusive=True
+    ;;
+
+  "coupledanlfv3inc")
+    export layout_x=${layout_x_coupledanl}
+    export layout_y=${layout_y_coupledanl}
+
+    walltime="00:30:00"
+    memory="96GB"
+    ntasks=$(( layout_x * layout_y * 6 ))
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
+    is_exclusive=True
+    ;;
+
+  "coupledanlchkpt")
+    walltime="00:10:00"
+    ntasks=16
+    threads_per_task=1
+    tasks_per_node=${max_tasks_per_node}
+    case ${OCNRES} in
+      "025")
+        memory="128GB"
+        ;;
+      "050")
+        memory="32GB"
+        ;;
+      "100" | "500")
+        memory="24GB"
+        ;;
+      *)
+        echo "FATAL ERROR: Resources not defined for job ${step} at resolution ${OCNRES}"
+        exit 4
+        ;;
+    esac
+    ;;
+
+  "coupledanlfinal")
     walltime="00:30:00"
     ntasks=${max_tasks_per_node}
     threads_per_task=1

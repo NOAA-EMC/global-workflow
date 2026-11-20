@@ -45,7 +45,8 @@ The GW configs contain switches that change how the system runs. Many defaults a
 | DO_ANLSTAT       | Run analysis statistics job      | NO            | YES         | Whether to run the analysis statistics job.       |
 |                  |                                  |               |             | Automatically set to YES for JEDI-based           |
 |                  |                                  |               |             | experiments (DO_JEDIATMVAR, DO_AERO,              |
-|                  |                                  |               |             | DO_JEDIOCNVAR, or DO_JEDISNOWDA).                 |
+|                  |                                  |               |             | DO_JEDIOCNVAR, DO_JEDICOUPLEDVAR, or              |
+|                  |                                  |               |             | DO_JEDISNOWDA).                                   |
 +------------------+----------------------------------+---------------+-------------+---------------------------------------------------+
 | DO_GSI_ANLSTAT   | Run GSI analysis statistics job  | NO            | NO          | Whether to include GSI-based atmospheric analysis |
 |                  |                                  |               |             | statistics when running the anlstat job. Only     |
