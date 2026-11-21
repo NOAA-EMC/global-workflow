@@ -169,7 +169,7 @@ class ArchiveTarVars:
         - Hybrid/DA: DOHYBVAR, DOIAU, DO_CA, DO_CALC_INCREMENT, assim_freq
         - Archive timing: ARCH_CYC, ARCH_WARMICFREQ, ARCH_FCSTICFREQ
         - Ocean/Ice: DOHYBVAR_OCN, DOLETKF_OCN, DOLETKF_OCN_INC, DO_OCN
-        - Other: DO_JEDISNOWDA, NET, DO_GSISOILDA, DO_LAND_IAU
+        - Other: DO_JEDISNOWDA, DO_JEDISNOWLETKFDA, NET, DO_GSISOILDA, DO_LAND_IAU
 
         COM variable prefixes collected:
         - COM_, COMIN_, COMOUT_
@@ -195,7 +195,7 @@ class ArchiveTarVars:
             'DO_ARCHCOM', 'ARCHCOM_TO', 'ARCDIR',
             # Data assimilation
             'DOHYBVAR', 'DOIAU', 'DO_CA', 'assim_freq', 'IAUFHRS',
-            'DO_JEDISNOWDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
+            'DO_JEDISNOWDA', 'DO_JEDISNOWLETKFDA', 'DO_GSISOILDA', 'DO_LAND_IAU',
             # Ocean/Ice DA
             'DOHYBVAR_OCN', 'DOLETKF_OCN', 'DOLETKF_OCN_INC', 'NMEM_ENS', 'ARCH_MARINE_ENS', 'DO_OCN',
             # Archive timing and control
