@@ -160,9 +160,14 @@ ush/calcanl_gfs.py @CoryMartin-NOAA
 ush/calcinc_gfs.py @CoryMartin-NOAA
 ush/create_gs_info.sh @jswhit2 @DavidHuber-NOAA
 ush/extractvars_tools.sh @EricSinsky-NOAA
-ush/forecast_det.sh @DavidHuber-NOAA
-ush/forecast_postdet.sh @DavidHuber-NOAA
-ush/forecast_predet.sh @DavidHuber-NOAA
+ush/forecast_catchem.sh @DavidHuber-NOAA @bbakernoaa
+ush/forecast_cice6.sh @DavidHuber-NOAA @dpsarmie
+ush/forecast_cmeps.sh @DavidHuber-NOAA @dpsarmie
+ush/forecast_common.sh @DavidHuber-NOAA @traviselless
+ush/forecast_fv3.sh @DavidHuber-NOAA @dpsarmie
+ush/forecast_gocart.sh @DavidHuber-NOAA @bbakernoaa
+ush/forecast_mom6.sh @DavidHuber-NOAA @JessicaMeixner-NOAA
+ush/forecast_ww3.sh @DavidHuber-NOAA @JessicaMeixner-NOAA
 ush/gaussian_sfcanl.sh @BrianCurtis-NOAA
 ush/getdump.sh @DavidHuber-NOAA @TravisElless-NOAA
 ush/getges.sh @DavidHuber-NOAA @TravisElless-NOAA
