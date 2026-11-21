@@ -19,6 +19,10 @@ case ${step} in
   ;;
   "anal")
     case ${CASE} in
+      "C384")
+        export threads_per_task=8
+        export ntasks=240
+        ;;
       "C768")
         export threads_per_task=8
         ;;
@@ -58,7 +62,7 @@ case ${step} in
     ;;
 
   "atmanlvar" | "atmensanlsol")
-    export tasks_per_node=48
+    export tasks_per_node=24
     ;;
 
   "atmensanlobs")
