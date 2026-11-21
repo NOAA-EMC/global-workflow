@@ -367,6 +367,7 @@ class SnowEnsAnalysis(Analysis):
                     'CASE': self.task_config.CASE,
                     'DATA': self.task_config.DATA,
                     'HOMEglobal': self.task_config.HOMEglobal,
+                    'FIXorog': self.task_config.FIXorog,
                     'OCNRES': self.task_config.OCNRES,
                     'MYMEM': f"{mem:03d}",
                     'CASE_ENS': self.task_config.CASE_ENS,

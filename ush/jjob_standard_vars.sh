@@ -44,7 +44,7 @@ declare -x PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LIN
 # Standard global directory paths
 ##############################################
 export USHglobal="${HOMEglobal}/ush"
-export FIXglobal="${HOMEglobal}/fix"
+export FIXglobal="${FIXglobal:-${HOMEglobal}/fix}"
 export PARMglobal="${HOMEglobal}/parm"
 export SCRIPTSglobal="${HOMEglobal}/scripts"
 
