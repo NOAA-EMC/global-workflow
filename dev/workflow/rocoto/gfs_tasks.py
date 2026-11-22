@@ -351,14 +351,14 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
+        if self.options['do_jedisnow2dvar'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
@@ -1154,7 +1154,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -2001,7 +2001,7 @@ class GFSTasks(Tasks):
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_aero_anl']:
@@ -3093,7 +3093,7 @@ class GFSTasks(Tasks):
         if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f"{self.run}_aeroanlfinal"}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f"{self.run}_snowanl"}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -3155,16 +3155,16 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_anal'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowletkfda']:
+        if self.options['do_jedisnowletkf']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowletkfanl'}
             deps.append(rocoto.add_dependency(dep_dict))
-        elif self.options['do_jedisnowda']:
+        elif self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['enkfgdas'] or self.options['do_jedisnowda'] or self.options['do_jedisnowletkfda'] or \
+        if self.run in ['enkfgdas'] or self.options['do_jedisnow2dvar'] or self.options['do_jedisnowletkf'] or \
                 (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:

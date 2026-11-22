@@ -188,8 +188,8 @@ class Archive(Task):
                     return value
                 return str(value).strip().upper() in ("YES", "TRUE", "1")
 
-            arch_dict["DO_JEDISNOWDA"] = as_bool(arch_dict.get("DO_JEDISNOWDA", False))
-            arch_dict["DO_JEDISNOWLETKFDA"] = as_bool(arch_dict.get("DO_JEDISNOWLETKFDA", False))
+            arch_dict["DO_JEDISNOW2DVAR"] = as_bool(arch_dict.get("DO_JEDISNOW2DVAR", False))
+            arch_dict["DO_JEDISNOWLETKF"] = as_bool(arch_dict.get("DO_JEDISNOWLETKF", False))
             parsed_sets = parse_j2yaml(master_yaml_path, arch_dict, allow_missing=False)
             atardir_sets = self._process_additional_datasets(arch_dict, parsed_sets)
         else:

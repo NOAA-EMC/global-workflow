@@ -1,0 +1,8 @@
+defaults:
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_JEDISNOWDA: "YES"
+  DO_JEDISNOW2DVAR: "NO"
+  DO_JEDISNOWLETKF: "YES"
+  DOENKFONLY_ATM: "YES"
+  DO_TEST_MODE: "NO"
