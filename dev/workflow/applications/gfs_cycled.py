@@ -82,7 +82,6 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
             run_options[run]['do_jediatmens_split_obssol'] = base.get('DO_JEDIATMENS_SPLIT_OBSSOL', True)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
-            run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_jedisnow2dvar'] = base.get('DO_JEDISNOW2DVAR', False)
             run_options[run]['do_jedisnowletkf'] = base.get('DO_JEDISNOWLETKF', False)
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
@@ -210,14 +209,13 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
 
-        if options['do_jedisnowda']:
-            if options['do_jedisnow2dvar']:
-                configs += ['snowanl']
-            if options['do_hybvar']:
-                if options['do_jedisnowletkf']:
-                    configs += ['snowletkfanl']
-                elif options['do_jedisnow2dvar']:
-                    configs += ['esnowanl']
+        if options['do_jedisnow2dvar']:
+            configs += ['snowanl']
+        if options['do_hybvar']:
+            if options['do_jedisnowletkf']:
+                configs += ['snowletkfanl']
+            elif options['do_jedisnow2dvar']:
+                configs += ['esnowanl']
 
         if options['do_gsisoilda']:
             configs += ['sfcanl_regrid']
