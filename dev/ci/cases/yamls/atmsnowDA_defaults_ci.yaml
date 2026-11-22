@@ -2,5 +2,4 @@ defaults:
   !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
   DO_JEDISNOW2DVAR: "YES"
-  DO_JEDISNOWLETKF: "YES"
   DO_TEST_MODE: "NO"
