@@ -113,11 +113,6 @@ class Jedi:
         else:
             raise WorkflowKeyError(f"Required key 'app_path_model' or 'app_path_observations'  not found in JCB config")
 
-        # Set the components that own observations. A coupled application spans more than one,
-        # and its own component ('coupled') owns no observations and has no obs*_path keys, so
-        # the observation search paths rather than self.component decide this.
-        self.obs_components = self._get_obs_components()
-
         # Initialize JEDI application configuration dictionary to None
         self.exe_config = None
 
@@ -294,34 +289,6 @@ class Jedi:
             if observers == []:
                 logger.warning(f"No observers found in JEDI input config")
 
-    def _get_obs_paths(self) -> List[str]:
-        """List the observation search paths, the primary one first
-
-        Returns
-        ----------
-        list of paths, one per component that owns observations
-        """
-
-        paths = []
-        if 'app_path_observations' in self.jcb_config:
-            paths.append(self.jcb_config['app_path_observations'])
-        paths += self.jcb_config.get('app_paths_observations_extra', [])
-
-        return paths
-
-    def _get_obs_components(self) -> List[str]:
-        """List the components that own observations, in observation search path order
-
-        Returns
-        ----------
-        list of component names, one per observation search path
-        """
-
-        components = [os.path.basename(path.rstrip('/')) for path in self._get_obs_paths()]
-
-        # An application with no observation search path still needs a component to key off
-        return components if components else [self.component]
-
     def get_observations_by_component(self) -> Dict[str, List[str]]:
         """Group the observations in the JCB configuration by the component that owns them
 
@@ -337,15 +304,24 @@ class Jedi:
 
         observations = self.jcb_config['observations']
 
-        # Single component: everything is its own, no need to look at the filesystem
-        if len(self.obs_components) == 1:
-            return {self.obs_components[0]: list(observations)}
+        # The observation search paths, the primary one first, and the component that owns
+        # each (the last element of its path). A coupled application spans more than one, and
+        # its own component ('coupled') owns no observations, so the paths rather than
+        # self.component decide this.
+        paths = []
+        if 'app_path_observations' in self.jcb_config:
+            paths.append(self.jcb_config['app_path_observations'])
+        paths += self.jcb_config.get('app_paths_observations_extra', [])
+        components = [os.path.basename(path.rstrip('/')) for path in paths]
 
-        paths = self._get_obs_paths()
+        # Single component: everything is its own, no need to look at the filesystem. An
+        # application with no observation search path gives them to its own component.
+        if len(components) <= 1:
+            return {components[0] if components else self.component: list(observations)}
 
         obs_by_component = {}
         for observation_from_jcb in observations:
-            for component, path in zip(self.obs_components, paths):
+            for component, path in zip(components, paths):
                 if os.path.exists(os.path.join(path, f'{observation_from_jcb}.yaml.j2')):
                     obs_by_component.setdefault(component, []).append(observation_from_jcb)
                     break

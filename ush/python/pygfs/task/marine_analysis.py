@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 from datetime import datetime, timedelta
+import dateutil.parser as dparser
+from netCDF4 import Dataset
 from logging import getLogger
 import os
 from pygfs.jedi import Jedi
 from pygfs.task.analysis import Analysis
-from pygfs.utils.marine_da_utils import (test_hist_date, prep_var_input_nml,
-                                         initialize_obs_stats, save_obs_stats)
 from wxflow import (AttrDict, FileHandler,
                     to_timedelta, to_fv3time, to_isotime,
-                    parse_j2yaml,
+                    parse_j2yaml, parse_j2tmpl,
                     logit)
 
 logger = getLogger(__name__.split('.')[-1])
@@ -80,8 +80,17 @@ class MarineAnalysis(Analysis):
         logger.info(f"Staging observations")
         self.jedi_dict['var'].stage_obsdatain(self.task_config.COMIN_OBS)
 
-        # prepare the MOM6 namelists
-        prep_var_input_nml(self.task_config)
+        # prepare the deterministic MOM6 input.nml
+        logger.info(f"Preparing deterministic MOM6 input namelist")
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input.nml.j2'),
+                     self.task_config,
+                     output_file="mom_input.nml")
+
+        # prepare the input.nml for the analysis geometry
+        logger.info(f"Preparing analysis geometry input namelist")
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
+                     self.task_config,
+                     output_file="./anl_geom/mom_input.nml")
 
         # assert that dates of the history files are correct
         test_hist_date('./INPUT/MOM.res.nc', self.task_config.WINDOW_BEGIN)
@@ -146,9 +155,12 @@ class MarineAnalysis(Analysis):
                                               f"{self.task_config.APREFIX}marine_analysis.ioda_hofx")
 
         # Save obs diag statistics to COM (this is for legacy obs monitoring)
-        save_obs_stats(self.jedi_dict['soca_diag_stats'],
-                       self.task_config.DATA,
-                       self.task_config.COMOUT_OCEAN_ANALYSIS)
+        logger.info(f"Copy (legacy) observation statistics from {self.task_config.DATA} to {self.task_config.COMOUT_OCEAN_ANALYSIS}")
+        try:
+            diags_list = self.jedi_dict['soca_diag_stats'].render_jcb_template(algorithm_in='soca_diags_finalize')
+        except Exception as e:
+            logger.warning(f"Failed to render JCB template, 'soca_diags_finalize': {e}")
+        FileHandler(diags_list).sync()
 
     @logit(logger)
     def initialize_obs_stats(self) -> None:
@@ -167,9 +179,39 @@ class MarineAnalysis(Analysis):
         None
         """
 
-        initialize_obs_stats(self.jedi_dict['var'],
-                             self.jedi_dict['soca_diag_stats'],
-                             self.task_config)
+        #
+        cleaned_observations = []
+        obs_variables = {}
+        for obs_space in self.jedi_dict['var'].jedi_config.input_config['cost function']['observations']['observers']:
+            name = obs_space['obs space']['name']
+            variable = obs_space['obs space']['simulated variables'][0]
+
+            cleaned_observations.append(name)
+            obs_variables[name] = variable
+
+        # Update the task_config with the observation variables
+        self.task_config['cleaned_observations'] = cleaned_observations
+        self.task_config['obs_variables'] = obs_variables
+
+        # Initialize the observation statistics
+        logger.info(f"Initializing JEDI SOCA observation statistics application")
+        self.jedi_dict['soca_diag_stats'].initialize(self.task_config)
+
+
+@logit(logger)
+def test_hist_date(histfile: str, ref_date: datetime) -> None:
+    """
+    Check that the date in the MOM6 history file is the expected one for the cycle.
+    TODO: Implement the same for seaice
+    """
+
+    ncf = Dataset(histfile, 'r')
+    hist_date = dparser.parse(ncf.variables['time'].units, fuzzy=True) + timedelta(hours=int(ncf.variables['time'][0]))
+    ncf.close()
+    logger.info(f"*** history file date: {hist_date} expected date: {ref_date}")
+
+    if hist_date != ref_date:
+        raise ValueError(f"FATAL ERROR: Inconsistent bkg date, Expected {ref_date}, {histfile} contains {hist_date}")
 
 
 @logit(logger)
