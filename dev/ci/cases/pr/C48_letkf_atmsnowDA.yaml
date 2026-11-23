@@ -16,6 +16,10 @@ experiment:
   yaml: {{ HOMEglobal }}/dev/ci/cases/yamls/letkf_atmsnowDA_defaults.ci.yaml
 
 skip_ci_on_hosts:
+  - derecho
+  - gaeac6
+  - hera
+  - ursa
   - orion
   - hercules
   - awsepicglobalworkflow
