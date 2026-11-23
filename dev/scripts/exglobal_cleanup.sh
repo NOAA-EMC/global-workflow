@@ -131,7 +131,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
                 remove_current="YES"
             fi
         fi
-    fi	    
+    fi
 
     if [[ "${remove_current}" == "YES" ]]; then
         declare -x COMOUT_TOP=${ROTDIR}/${RUN}.${current_PDY}/${current_cyc}
