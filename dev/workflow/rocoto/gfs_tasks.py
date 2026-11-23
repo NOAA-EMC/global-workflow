@@ -1140,13 +1140,27 @@ class GFSTasks(Tasks):
 
         return task
 
+    def _get_gfs_ver_2d(self) -> str:
+        import os
+        import re
+        for ver_rel in ("versions/run.wcoss2.ver", "versions/spack.ver"):
+            ver_file = os.path.join(self.HOMEglobal, ver_rel)
+            if os.path.isfile(ver_file):
+                with open(ver_file, encoding="utf-8") as fh:
+                    for line in fh:
+                        m = re.match(r'^\s*(?:export\s+)?gfs_ver_2d\s*=\s*["\']?([^"\'#\s]+)', line)
+                        if m:
+                            return m.group(1)
+        return os.environ.get("gfs_ver_2d", "v17.0")
+
     def fcst_manager(self):
         # Product tables are written to DATAjob (shared between fcst and fcst_manager jobs).
-        # DATAjob = ${DATAROOT}/${RUN}_forecast.${PDY}${cyc}  (see JGLOBAL_FORECAST)
+        # DATAjob = ${DATAROOT}/${RUN}_${gfs_ver_2d}_forecast.${PDY}${cyc}  (see JGLOBAL_FORECAST)
         # Use bare @Y@m@d@H so _add_data_tag wraps the whole path in one <cyclestr>.
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
-        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}_forecast.@Y@m@d@H"
+        gfs_ver_2d = self._get_gfs_ver_2d()
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}_{gfs_ver_2d}_forecast.@Y@m@d@H"
         # Require both the product table (written at postdet) AND the started sentinel
         # (written just before model launch). The sentinel prevents stale product tables
         # from triggering manager segments immediately after a rewind.
@@ -3141,10 +3155,11 @@ class GFSTasks(Tasks):
 
     def efcs_manager(self):
         # Member forecast manager: runs alongside each ensemble member forecast (enkfgdas).
-        # DATAjob = ${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY}${cyc}  (see JGLOBAL_FORECAST/ENSMEM path)
+        # DATAjob = ${DATAROOT}/${RUN}efcs${ENSMEM}_${gfs_ver_2d}.${PDY}${cyc}  (see JGLOBAL_FORECAST/ENSMEM path)
         stmp = self._base.get('STMP')
         pslot = self._base.get('PSLOT')
-        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}efcs#member#.@Y@m@d@H"
+        gfs_ver_2d = self._get_gfs_ver_2d()
+        datajob = f"{stmp}/RUNDIRS/{pslot}/{self.run}.@Y@m@d@H/{self.run}efcs#member#_{gfs_ver_2d}.@Y@m@d@H"
 
         deps = []
         dep_dict = {'type': 'data', 'data': f'{datajob}/atm_atmf_products_seg0_inst0.txt', 'age': 60}
