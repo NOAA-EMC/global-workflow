@@ -118,7 +118,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
         # Running auxiliary workflow alongside ecFlow
         gdas_file="${ECF_OUT_gfs}/${current_date}/gdas_atmos_gempak_meta_ncdc*"
         enkf_file="${ECF_OUT_gfs}/${current_date}/enkfgdas_ens_post006*"
-        if compgen -G "${gdas_file}" > /dev/null && compgen -G "${enkf_file}" > /dev/null ; then
+        if compgen -G "${gdas_file}" > /dev/null && compgen -G "${enkf_file}" > /dev/null; then
             remove_current="YES"
         fi
     else
