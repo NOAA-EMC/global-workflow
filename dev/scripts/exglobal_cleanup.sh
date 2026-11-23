@@ -145,7 +145,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
             rm -rf "${rtofs_dir}"
         fi
     else
-        echo "remove_current=NO for current cycle. Skipping COM deletion of ${current_date}"	    
+        echo "remove_current=NO for current cycle. Skipping COM deletion of ${current_date}"
     fi
 done
 
