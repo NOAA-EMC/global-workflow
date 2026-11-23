@@ -65,7 +65,9 @@ esac
 CLEAN_BEFORE=YES
 CLEAN_AFTER=NO
 
-if [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
+if [[ "${MACHINE_ID}" == "nimbus" ]]; then
+    BUILD_JOBS=${BUILD_JOBS:-8} "${HOMEglobal_}/sorc/ufs_model.fd/tests/compile.sh" "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_ID}" "oneapi" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
+elif [[ "${MACHINE_ID}" == "wcoss2" && "${PARALLEL_RESTART}" == "NO" ]]; then
     set +x
     module use "${HOMEglobal_}/sorc/ufs_model.fd/modulefiles"
     module load "ufs_wcoss2.intel"
