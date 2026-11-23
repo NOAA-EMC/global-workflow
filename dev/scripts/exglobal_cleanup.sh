@@ -121,7 +121,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
         if [[ -f ${gdas_file} && -f ${enkf_file} ]]; then
             remove_current="YES"
         fi
-    else  
+    else
         # Running rocoto workflow
         # Check if the cycle completed successfully by looking at the rocoto log
         if [[ -f "${rocotolog}" ]]; then
