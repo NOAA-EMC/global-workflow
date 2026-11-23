@@ -99,7 +99,7 @@ fi
 if [[ ${DO_ICE:-NO} == "YES" ]]; then
     source "${USHglobal}/forecast_cice6.sh" # include functions for CICE6 (sea ice)
 fi
-if [[ ${DO_WAV:-NO} == "YES" ]]; then
+if [[ ${DO_WAVE:-NO} == "YES" ]]; then
     source "${USHglobal}/forecast_ww3.sh" # include functions for WW3 (waves)
 fi
 if [[ ${DO_AERO_FCST:-NO} == "YES" ]]; then
