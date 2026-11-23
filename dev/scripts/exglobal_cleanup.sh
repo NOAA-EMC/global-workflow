@@ -115,21 +115,21 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
 
     remove_current="NO"
     if [[ -n $COM_aux ]]; then 
-	# Running auxiliary workflow alongside ecFlow
-	gdas_file="${ROTDIR}/gdas.${current_PDY}/${current_cyc}/products/atmos/gempak/gif/gdas_250_hgt_iso_sh_anl_${current_cyc}.gif"
-	enkf_file="${ROTDIR}/enkfgdas.${current_PDY}/${current_cyc}/ensstat/model/atmos/history/enkfgdas.t${current_cyc}z.ensspread.atm.f009.nc"
-	if [[ -f ${gdas_file} && -f ${enkf_file} ]]; then
-	    remove_current="YES"
-	fi
+        # Running auxiliary workflow alongside ecFlow
+        gdas_file="${ROTDIR}/gdas.${current_PDY}/${current_cyc}/products/atmos/gempak/gif/gdas_250_hgt_iso_sh_anl_${current_cyc}.gif"
+        enkf_file="${ROTDIR}/enkfgdas.${current_PDY}/${current_cyc}/ensstat/model/atmos/history/enkfgdas.t${current_cyc}z.ensspread.atm.f009.nc"
+        if [[ -f ${gdas_file} && -f ${enkf_file} ]]; then
+            remove_current="YES"
+        fi
     else  
-	# Running rocoto workflow
+        # Running rocoto workflow
         # Check if the cycle completed successfully by looking at the rocoto log
         if [[ -f "${rocotolog}" ]]; then
             tail_log=$(tail -n 1 "${rocotolog}") || true
             # Test if the last line of rocotolog indicates success
             if [[ ${tail_log} =~ "This cycle is complete: Success" ]]; then
-	        remove_current="YES"
-    	    fi
+                remove_current="YES"
+            fi
         fi
     fi	    
 
