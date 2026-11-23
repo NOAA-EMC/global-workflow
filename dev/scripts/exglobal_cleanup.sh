@@ -114,7 +114,7 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
     fi
 
     remove_current="NO"
-    if [[ -n ${COM_aux} ]]; then 
+    if [[ -n ${COM_aux} ]]; then
         # Running auxiliary workflow alongside ecFlow
         gdas_file="${ROTDIR}/gdas.${current_PDY}/${current_cyc}/products/atmos/gempak/gif/gdas_250_hgt_iso_sh_anl_${current_cyc}.gif"
         enkf_file="${ROTDIR}/enkfgdas.${current_PDY}/${current_cyc}/ensstat/model/atmos/history/enkfgdas.t${current_cyc}z.ensspread.atm.f009.nc"
