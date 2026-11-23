@@ -32,32 +32,8 @@ class AtmAnalysis(Analysis):
         """
         super().__init__(config)
 
-        _res = int(self.task_config.CASE[1:])
-        _res_anl = int(self.task_config.CASE_ANL[1:])
-        _res_his = int(self.task_config.CASE_HIST[1:])
-
-        if self.task_config.DOHYBVAR:
-            _BERROR_YAML = f"atmosphere_background_error_hybrid_{self.task_config.STATICB_TYPE}_{self.task_config.LOCALIZATION_TYPE}"
-        else:
-            _BERROR_YAML = f"atmosphere_background_error_static_{self.task_config.STATICB_TYPE}"
-
         # Create a local dictionary that is repeatedly used across this class
-        self.task_config.update(AttrDict(
-            {
-                'npx_ges': _res + 1,
-                'npy_ges': _res + 1,
-                'npz_ges': self.task_config.LEVS - 1,
-                'npx_anl': _res_anl + 1,
-                'npy_anl': _res_anl + 1,
-                'npz_anl': self.task_config.LEVS - 1,
-                'npx_his': _res_his + 1,
-                'npy_his': _res_his + 1,
-                'npz_his': self.task_config.LEVS - 1,
-                'npz': self.task_config.LEVS - 1,
-                'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
-                'BERROR_YAML': _BERROR_YAML,
-            }
-        ))
+        self.task_config.update(atm_task_config(self.task_config))
 
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
@@ -151,3 +127,48 @@ class AtmAnalysis(Analysis):
         # Save files from COM
         logger.info(f"Saving files to COM")
         FileHandler(self.task_config.data_out).sync()
+
+
+@logit(logger)
+def atm_task_config(task_config: AttrDict) -> AttrDict:
+    """Compute the atmosphere-specific entries of a JEDI analysis task configuration
+
+    These are the FV3 geometry dimensions and the background error selection that any
+    task assimilating the atmosphere needs. Kept separate from AtmAnalysis so that a
+    coupled analysis can pick them up alongside another component's entries.
+
+    Parameters
+    ----------
+    task_config: AttrDict
+        Attribute-dictionary of task configuration, as prepared by Analysis
+
+    Returns
+    ----------
+    AttrDict of atmosphere-specific task configuration entries
+    """
+
+    _res = int(task_config.CASE[1:])
+    _res_anl = int(task_config.CASE_ANL[1:])
+    _res_his = int(task_config.CASE_HIST[1:])
+
+    if task_config.DOHYBVAR:
+        _BERROR_YAML = f"atmosphere_background_error_hybrid_{task_config.STATICB_TYPE}_{task_config.LOCALIZATION_TYPE}"
+    else:
+        _BERROR_YAML = f"atmosphere_background_error_static_{task_config.STATICB_TYPE}"
+
+    return AttrDict(
+        {
+            'npx_ges': _res + 1,
+            'npy_ges': _res + 1,
+            'npz_ges': task_config.LEVS - 1,
+            'npx_anl': _res_anl + 1,
+            'npy_anl': _res_anl + 1,
+            'npz_anl': task_config.LEVS - 1,
+            'npx_his': _res_his + 1,
+            'npy_his': _res_his + 1,
+            'npz_his': task_config.LEVS - 1,
+            'npz': task_config.LEVS - 1,
+            'BKG_TSTEP': "PT1H",  # Placeholder for 4D applications
+            'BERROR_YAML': _BERROR_YAML,
+        }
+    )

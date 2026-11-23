@@ -355,7 +355,8 @@ if __name__ == '__main__':
     NEMSGet = os.getenv('NEMSIOGET', 'nemsio_get')
     IAUHrs = cast_as_dtype(os.getenv('IAUFHRS', '6,'))
     Run = os.getenv('RUN', 'gdas')
-    JEDI = gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES'))
+    JEDI = (gsi_utils.isTrue(os.getenv('DO_JEDIATMVAR', 'YES')) or
+            gsi_utils.isTrue(os.getenv('DO_JEDICOUPLEDVAR', 'NO')))
 
     print(locals())
     calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix,

@@ -12,6 +12,7 @@ Modules
 - task.aero_analysis: Aerosol analysis task
 - task.aero_bmatrix: Aerosol background matrix task
 - task.atm_analysis: Atmospheric analysis task
+- task.coupled_analysis: Coupled atmosphere-ocean analysis task
 - task.atmens_analysis: Atmospheric ensemble analysis task
 - task.ensemble_recenter: Ensemble recentering task
 - task.fv3_analysis_calc: FV3 analysis calculation task
@@ -43,6 +44,7 @@ from .task.nexus_emission import NEXUSEmissions
 from .task.aero_analysis import AerosolAnalysis
 from .task.aero_bmatrix import AerosolBMatrix
 from .task.atm_analysis import AtmAnalysis
+from .task.coupled_analysis import CoupledAnalysis
 from .task.atmens_analysis import AtmEnsAnalysis
 from .task.ensemble_recenter import EnsembleRecenter
 from .task.fv3_analysis_calc import FV3AnalysisCalc

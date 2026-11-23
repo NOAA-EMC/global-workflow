@@ -40,50 +40,8 @@ class MarineAnalysis(Analysis):
 
         super().__init__(config)
 
-        # compute the relative path from self.task_config.DATA to self.task_config.DATAens
-        if self.task_config.NMEM_ENS > 0:
-            _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
-        else:
-            _enspert_relpath = None
-
-        # Determine background error model
-        if self.task_config.NMEM_ENS >= 2:
-            _berror_model = 'marine_background_error_hybrid_diffusion_diffusion'
-        else:
-            _berror_model = 'marine_background_error_static_diffusion'
-
-        # Get restart date
-        if self.task_config.DOIAU:
-            _rst_date = to_fv3time(self.task_config.WINDOW_BEGIN)
-            _cice_rst_date = to_fv3time(self.task_config.WINDOW_BEGIN)
-        else:
-            _rst_date = to_fv3time(self.task_config.current_cycle)
-            _cice_rst_date = to_fv3time(self.task_config.current_cycle)
-
-        # Generate list of pseudo model states
-        dt_pseudo = 3
-        fcst_hour_list = list(range(6, 10, dt_pseudo))
-        _marine_pseudo_model_states = []
-        bkg_date = self.task_config.WINDOW_BEGIN
-        for fcst_hour in fcst_hour_list:
-            bkg_date = bkg_date + timedelta(hours=dt_pseudo)
-            _marine_pseudo_model_states.append({'date': to_isotime(bkg_date),
-                                                'basename': './bkg/',
-                                                'ocn_filename': f"ocean.bkg.f{str(fcst_hour).zfill(3)}.nc",
-                                                'ice_filename': f"ice.bkg.f{str(fcst_hour).zfill(3)}.nc",
-                                                'read_from_file': 1})
-
         # Create a local dictionary that is repeatedly used across this class
-        self.task_config.update(AttrDict(
-            {
-                'PARMmarine': os.path.join(self.task_config.PARMglobal, 'gdas', 'marine'),
-                'ENSPERT_RELPATH': _enspert_relpath,
-                'berror_model': _berror_model,
-                'rst_date': _rst_date,
-                'cice_rst_date': _cice_rst_date,
-                'marine_pseudo_model_states': _marine_pseudo_model_states
-            }
-        ))
+        self.task_config.update(marine_task_config(self.task_config))
 
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
@@ -254,3 +212,70 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
 
     if hist_date != ref_date:
         raise ValueError(f"FATAL ERROR: Inconsistent bkg date, Expected {ref_date}, {histfile} contains {hist_date}")
+
+
+@logit(logger)
+def marine_task_config(task_config: AttrDict) -> AttrDict:
+    """Compute the marine-specific entries of a JEDI analysis task configuration
+
+    These are the SOCA background error selection, restart dates and pseudo model states
+    that any task assimilating the ocean and sea ice needs. Kept separate from
+    MarineAnalysis so that a coupled analysis can pick them up alongside another
+    component's entries.
+
+    Parameters
+    ----------
+    task_config: AttrDict
+        Attribute-dictionary of task configuration, as prepared by Analysis
+
+    Returns
+    ----------
+    AttrDict of marine-specific task configuration entries
+    """
+
+    # compute the relative path from task_config.DATA to task_config.DATAens
+    if task_config.NMEM_ENS > 0:
+        _enspert_relpath = os.path.relpath(task_config.DATAens, task_config.DATA)
+    else:
+        _enspert_relpath = None
+
+    # Determine background error model
+    if task_config.NMEM_ENS >= 2:
+        _berror_model = 'marine_background_error_hybrid_diffusion_diffusion'
+    else:
+        _berror_model = 'marine_background_error_static_diffusion'
+
+    # Get restart date
+    if task_config.DOIAU:
+        _rst_date = to_fv3time(task_config.WINDOW_BEGIN)
+        _cice_rst_date = to_fv3time(task_config.WINDOW_BEGIN)
+    else:
+        _rst_date = to_fv3time(task_config.current_cycle)
+        _cice_rst_date = to_fv3time(task_config.current_cycle)
+
+    # Generate list of pseudo model states
+    dt_pseudo = 3
+    fcst_hour_list = list(range(6, 10, dt_pseudo))
+    _marine_pseudo_model_states = []
+    bkg_date = task_config.WINDOW_BEGIN
+    for fcst_hour in fcst_hour_list:
+        bkg_date = bkg_date + timedelta(hours=dt_pseudo)
+        _marine_pseudo_model_states.append({'date': to_isotime(bkg_date),
+                                            'basename': './bkg/',
+                                            'ocn_filename': f"ocean.bkg.f{str(fcst_hour).zfill(3)}.nc",
+                                            'ice_filename': f"ice.bkg.f{str(fcst_hour).zfill(3)}.nc",
+                                            'read_from_file': 1})
+
+    return AttrDict(
+        {
+            'PARMmarine': os.path.join(task_config.PARMglobal, 'gdas', 'marine'),
+            'ENSPERT_RELPATH': _enspert_relpath,
+            # experiment tag in the JEDI analysis and increment filenames, shared by the JEDI
+            # configuration and the copies to COM so the two cannot disagree
+            'marine_var_exp': '3dvarfgat_pseudo',
+            'berror_model': _berror_model,
+            'rst_date': _rst_date,
+            'cice_rst_date': _cice_rst_date,
+            'marine_pseudo_model_states': _marine_pseudo_model_states
+        }
+    )

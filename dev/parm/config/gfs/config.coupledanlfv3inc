@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.coupledanlfv3inc ##########
+# Coupled Analysis FV3 Increment specific
+
+echo "BEGIN: config.coupledanlfv3inc"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" coupledanlfv3inc
+
+echo "END: config.coupledanlfv3inc"

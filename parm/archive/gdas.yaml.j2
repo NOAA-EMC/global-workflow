@@ -7,7 +7,13 @@ gdas:
         # Cycled logs
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_prep.log"
-            {% if DO_JEDIATMVAR %}
+            {% if DO_JEDICOUPLEDVAR %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_coupledanlinit.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_coupledanlvar.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_coupledanlfv3inc.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_coupledanlchkpt.log"
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_coupledanlfinal.log"
+            {% elif DO_JEDIATMVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlprod.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlfinal.log"
@@ -18,11 +24,13 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_analdiag.log"
             {% endif %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_atmanlupp.log"
-            {% if DO_JEDIOCNVAR %}
+            {% if DO_JEDIOCNVAR or DO_JEDICOUPLEDVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_prepoceanobs.log"
-        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marinebmatinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marinebmat.log"
+            {% endif %}
+            {% if DO_JEDIOCNVAR %}
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlinit.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlvar.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlfinal.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_marineanlchkpt.log"
@@ -56,7 +64,7 @@ gdas:
         - "{{ COMIN_ATMOS_GRIB_1p00 }}/{{ head }}pres_b.1p00.analysis.grib2.idx"
 
         # Analysis netCDF (raw) data
-            {% if DO_JEDIATMVAR %}
+            {% if DO_JEDIATMVAR or DO_JEDICOUPLEDVAR %}
                {% if ATMINC_GRID == 'gaussian' %}
         - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.atm.a006.nc"
         - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}analysis.sfc.a006.nc"
@@ -83,7 +91,12 @@ gdas:
             {% endif %}
 
         # Analysis state
-            {% if DO_JEDIATMVAR %}
+            {% if DO_JEDICOUPLEDVAR %}
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.coupled.yaml"
+        - "{{ COMIN_CONF }}/{{ head }}anlvar.fv3.atm.yaml"
+        - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
+        - "{{ COMIN_ATMOS_ANLMON }}/{{ head }}atmos_analysis.ioda_hofx_stats.tar.gz"
+            {% elif DO_JEDIATMVAR %}
         - "{{ COMIN_CONF }}/{{ head }}anlvar.atm.yaml"
         - "{{ COMIN_CONF }}/{{ head }}anlvar.fv3.atm.yaml"
         - "{{ COMIN_ATMOS_ANALYSIS }}/{{ head }}atmos_analysis.ioda_hofx.tar.gz"
@@ -108,7 +121,7 @@ gdas:
         - "{{ COMIN_OBS }}/{{ head }}aeroobs"
         - "{{ COMIN_OBS }}/{{ head }}aerorawobs"
             {% endif %}
-            {% if DO_JEDIOCNVAR %}
+            {% if DO_JEDIOCNVAR or DO_JEDICOUPLEDVAR %}
         - "{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}marine_analysis.ioda_hofx.tar.gz"
             {% endif %}
 

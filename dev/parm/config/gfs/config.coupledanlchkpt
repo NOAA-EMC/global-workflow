@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.coupledanlchkpt ##########
+# Coupled Analysis Checkpoint specific
+
+echo "BEGIN: config.coupledanlchkpt"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" coupledanlchkpt
+
+echo "END: config.coupledanlchkpt"
