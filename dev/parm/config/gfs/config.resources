@@ -42,6 +42,12 @@ case ${machine} in
               # WCOSS2 nodes have 512GB of RAM, but only 500GB are reservable
               mem_node_max="500GB"
     ;;
+
+  "NIMBUS")
+              max_tasks_per_node=192
+              mem_node_max="760GB"
+    ;;
+
   "HERA")
               max_tasks_per_node=40
               mem_node_max="96GB"
