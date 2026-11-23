@@ -2,7 +2,7 @@
 set -x
 
 # shellcheck disable=SC2309
-if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+if [[ "${ENSMEM:--1}" =~ ^[0-9]+$ ]]; then
     export DATAjob="${DATAROOT}/${RUN}efcs${ENSMEM}.${PDY:-}${cyc}"
     export DATA="${DATAjob}/${jobid}"
     source "${HOMEglobal}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
@@ -56,9 +56,9 @@ declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables
 # shellcheck disable=SC2309
-if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
-    # Turn ensmem into 3-digit format with leading zeros
-    memdir=$(printf "mem%03i" $((10#${ENSMEM})))
+if [[ "${ENSMEM:--1}" =~ ^[0-9]+$ ]]; then
+    # Turn ENSMEM into 3-digit format with leading zeros
+    memdir=$(printf "mem%03i" ${ENSMEM})
     declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
