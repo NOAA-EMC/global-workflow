@@ -39,7 +39,7 @@ mkdir -p "${COMIN_CONF}"
 # Calls an external bash command; do not fail on unassigned/error
 source "${USHglobal}/unset_strict.sh"
 export -n SHELLOPTS
-"${SCRglobal}/exglobal_enkf_earc_tars.py"
+"${HOMEglobal}/dev/scripts/exglobal_enkf_earc_tars.py"
 export err=$?
 source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then

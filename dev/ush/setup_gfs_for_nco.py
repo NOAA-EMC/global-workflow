@@ -131,12 +131,6 @@ base_script_list = [
     "exglobal_atmos_ens_anal_sfc_gcycle.sh",
     "exglobal_atmos_ens_anal_sfc_regrid.sh",
     "exglobal_atmos_ens_update.sh",
-    # These scripts are needed for development aux workflow and not production
-    "exglobal_enkf_earc_tars.py",
-    "exglobal_enkf_earc_vrfy.py",
-    "exglobal_archive_tars.py",
-    "exglobal_archive_vrfy.py",
-    "exglobal_cleanup.sh",
 ]
 
 # If needed, add scripts and jobs that need to be renamed when copied.

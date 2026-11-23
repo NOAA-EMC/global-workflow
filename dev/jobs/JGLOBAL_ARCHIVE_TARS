@@ -112,7 +112,7 @@ fi
 source "${USHglobal}/unset_strict.sh"
 # Do not export shell opts to the bash scripts in the htar/hsi wrappers
 export -n SHELLOPTS
-${GLOBALARCHIVESH:-${SCRglobal}/exglobal_archive_tars.py}
+${GLOBALARCHIVESH:-${HOMEglobal}/dev/scripts/exglobal_archive_tars.py}
 export err=$?
 source "${USHglobal}/set_strict.sh"
 if [[ ${err} -ne 0 ]]; then
