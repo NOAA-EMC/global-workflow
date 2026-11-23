@@ -113,23 +113,39 @@ current_date = $(date --utc +%Y%m%d%H -d "${current_date:0:8} ${current_date:8:2
         exclude_string+="${gempak_exclude_string}"
     fi
 
-    # Check if the cycle completed successfully by looking at the rocoto log
-    if [[ -f "${rocotolog}" ]]; then
-        # TODO: This needs to be revamped to not look at the rocoto log.
-        tail_log=$(tail -n 1 "${rocotolog}") || true
-        # Test if the last line of rocotolog indicates success
-        if [[ ${tail_log} =~ "This cycle is complete: Success" ]]; then
-            declare -x COMOUT_TOP=${ROTDIR}/${RUN}.${current_PDY}/${current_cyc}
-            if [[ -d "${COMOUT_TOP}" ]]; then
-                IFS=", " read -r -a exclude_list <<< "${exclude_string}"
-                remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"
-            fi
-            # Remove all rtofs directories in each RUN older than last_rtofs_date
-            rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
-            if [[ -d "${rtofs_dir}" && ${current_date} -lt ${rtofs_cutoff_date} ]]; then
-                rm -rf "${rtofs_dir}"
-            fi
+    remove_current="NO"
+    if [[ -n $COM_aux ]]; then 
+	# Running auxiliary workflow alongside ecFlow
+	gdas_file="${ROTDIR}/gdas.${current_PDY}/${current_cycle}/products/atmos/gempak/gif/gdas_250_hgt_iso_sh_anl_${current_cycle}.gif"
+	enkf_file="${ROTDIR}/enkfgdas.${current_PDY}/$current_cycle}/ensstat/model/atmos/history/enkfgdas.t${current_cycle}z.ensspread.atm.f009.nc"
+	if [[ -f ${gdas_file} && -f ${enkf_file} ]]; then
+	    remove_current="YES"
+	fi
+    else  
+	# Running rocoto workflow
+        # Check if the cycle completed successfully by looking at the rocoto log
+        if [[ -f "${rocotolog}" ]]; then
+            tail_log=$(tail -n 1 "${rocotolog}") || true
+            # Test if the last line of rocotolog indicates success
+            if [[ ${tail_log} =~ "This cycle is complete: Success" ]]; then
+	        remove_current="YES"
+    	    fi
+	fi
+    fi	    
+
+    if [[ "${remove_current}" == "YES" ]]; then
+        declare -x COMOUT_TOP=${ROTDIR}/${RUN}.${current_PDY}/${current_cyc}
+        if [[ -d "${COMOUT_TOP}" ]]; then
+            IFS=", " read -r -a exclude_list <<< "${exclude_string}"
+            remove_files "${COMOUT_TOP}" "${exclude_list[@]:-}"
         fi
+        # Remove all rtofs directories in each RUN older than last_rtofs_date
+        rtofs_dir="${ROTDIR}/rtofs.${current_PDY}"
+        if [[ -d "${rtofs_dir}" && ${current_date} -lt ${rtofs_cutoff_date} ]]; then
+            rm -rf "${rtofs_dir}"
+        fi
+    else
+        echo "remove_current=NO for current cycle. Skipping COM deletion of ${current_date}"	    
     fi
 done
 
