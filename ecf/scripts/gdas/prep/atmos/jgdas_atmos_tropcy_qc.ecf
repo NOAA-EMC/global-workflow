@@ -1,3 +1,4 @@
+#!/bin/bash
 #PBS -S /bin/bash
 #PBS -N %RUN%_atmos_tropcy_qc_%CYC%
 #PBS -j oe

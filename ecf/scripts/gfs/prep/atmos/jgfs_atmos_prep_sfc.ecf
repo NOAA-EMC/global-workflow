@@ -1,3 +1,4 @@
+#!/bin/bash
 #PBS -S /bin/bash
 #PBS -N %RUN%_atmos_prep_sfc_%CYC%
 #PBS -j oe
