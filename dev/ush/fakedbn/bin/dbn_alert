@@ -1,0 +1,30 @@
+#!/bin/sh
+
+if [ $# -ne 4 ]; then
+   >&2 echo "WARNING: dbn_alert was not given four arguments! Only $# were provided."
+fi
+echo FAKE dbn_alert "$*"
+# shellcheck disable=SC3014,3059
+if [ "${DBNLOG^^}" == "YES" ]; then
+   eval "ver=\${${NET}_ver}"
+   #outputdir=$(compath.py -o ${NET?"NET must be defined"}/${ver?"Version must be set as variable <NET>_ver"}/${RUN?"RUN must be defined"}.${PDY?"PDY must be defined"}/dbnlogs/)
+   outputdir="${DBNLOGDIR}"
+   mkdir -p "${outputdir?"\$outputdir not set. compath.py failed."}"
+   log_file=${outputdir}/${job:?}.${PDY}${cyc}.dbnlog
+# shellcheck disable=SC2027,2046,2048,2086
+   echo "["$(date +%T)"]" $* >> "${log_file}"
+fi
+
+if [ ! -s "$4" ]; then
+   if [ -f "$4" ]; then
+      >&2 echo "WARNING: $4 is empty (it has a size of zero bytes)"
+   else
+      # shellcheck disable=SC3014,3059
+      if [ "${NODBNFCHK^^}" == "YES" ]; then
+         >&2 echo "WARNING: $4 is not exist"
+      else
+         err_exit "Fake dbn_alert could not find $4"
+      fi
+   fi
+fi
+
