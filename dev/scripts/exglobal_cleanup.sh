@@ -10,7 +10,7 @@ echo "Begin Cleanup ${DATAROOT}!"
 if [[ "${KEEPDATA:-NO}" == "YES" ]]; then
     echo "INFO: KEEPDATA=YES; preserving forecast and efcs DATA directories under ${DATAROOT}"
 else
-    DATAfcst="${DATAROOT}/${RUN}_forecast.${PDY:-}${cyc}"
+    DATAfcst="${DATAROOT}/${RUN}_${gfs_ver_2d:-${gfs_ver%.*}}_forecast.${PDY:-}${cyc}"
     if [[ -d "${DATAfcst}" ]]; then
         rm -rf "${DATAfcst}"
     fi
