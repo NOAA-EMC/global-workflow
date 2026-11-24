@@ -49,8 +49,7 @@ class UFS:
         if matches:
             logger.warn(f"{input_template} was rendered incompletely")
             logger.warn(f"The following variables were not substituted")
-            print(matches)  # TODO: improve the formatting of this message
-        # TODO: Should we abort here? or continue to write output_file?
+            print(matches)
 
         with open(output_file, 'w') as fho:
             fho.write(file_out)
