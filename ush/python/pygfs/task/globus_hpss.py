@@ -43,7 +43,6 @@ class GlobusHpss(Task):
         except CommandNotFoundError:
             raise CommandNotFoundError("FATAL ERROR Could not find the forsven executable!")
 
-        # TODO Move the globus interface to wxflow
         try:
             self.globus = which("globus", required=True)
         except CommandNotFoundError:

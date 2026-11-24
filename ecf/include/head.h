@@ -91,7 +91,7 @@ export KEEPDATA=NO
 export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export DBNLOG=${DBNLOG:-%DBNLOG:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
-
+if [ -n "%DBNLOGDIR:%" ]; then export DBNLOGDIR="%DBNLOGDIR:%"; fi
 if [ -n "%DATAROOT:%" ]; then export DATAROOT="%DATAROOT:%"; fi
 if [ -n "%EXPDIR:%" ]; then export EXPDIR="%EXPDIR:%"; fi
 

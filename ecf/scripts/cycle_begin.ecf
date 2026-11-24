@@ -26,7 +26,7 @@ suite_name=$(ecflow_client --query variable ${ECF_NAME}:SUITE)
 
 if [ "%MACHINE_SITE:%" == "development" ]; then
   outputdir_ecf=%OUTPUTDIR%
-
+  if [ -n "%DBNLOGDIR:%" ]; then dbnlogdir_ecf=%DBNLOGDIR%; fi
   # Set the ECF PDY variable if it isn't already.
   # This should only happen on the first cycle.
   if [ "${ecf_pdy_set}" == "NO" ]; then
@@ -51,6 +51,13 @@ if [ "%MACHINE_SITE:%" == "development" ]; then
   ecflow_client --alter add variable OUTPUTDIR $outputdir_ecf_today /${suite_name}/primary/${cyc}/gdas
   ecflow_client --alter add variable OUTPUTDIR $outputdir_ecf_today /${suite_name}/primary/${cyc}/enkfgdas
 
+  if [ -n "%DBNLOGDIR:%" ]; then
+    dbnlogdir_ecf_today=${dbnlogdir_ecf}/${PDY}${cyc}
+    mkdir -p $dbnlogdir_ecf_today
+    ecflow_client --alter add variable DBNLOGDIR $dbnlogdir_ecf_today /${suite_name}/primary/${cyc}/gfs
+    ecflow_client --alter add variable DBNLOGDIR $dbnlogdir_ecf_today /${suite_name}/primary/${cyc}/gdas
+    ecflow_client --alter add variable DBNLOGDIR $dbnlogdir_ecf_today /${suite_name}/primary/${cyc}/enkfgdas
+  fi
   # Requeue all jobs for the current cycle (except cycle_begin of course)
   ecflow_client --requeue=force /${suite_name}/primary/${cyc}/gfs
   ecflow_client --requeue=force /${suite_name}/primary/${cyc}/gdas
