@@ -18,7 +18,7 @@ source "${USHglobal}/set_strict.sh"
 # cycles being cleaned up:
 #  COMOUT_TOP
 
-"${SCRglobal}/exglobal_cleanup.sh" && true
+"${HOMEglobal}/dev/scripts/exglobal_cleanup.sh" && true
 export err=$?
 if [[ ${err} -ne 0 ]]; then
     err_exit "Failed to complete cleanup"
