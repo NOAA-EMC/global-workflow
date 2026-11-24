@@ -18,7 +18,7 @@ export MP_PULSE=0
 
 # Set COM Paths
 # shellcheck disable=SC2309
-if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
+if [[ "${ENSMEM:--1}" =~ ^[0-9]+$ ]]; then
     # Turn ensmem into 3-digit format with leading zeros
     memdir=$(printf "mem%03i" $((10#${ENSMEM})))
     declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"

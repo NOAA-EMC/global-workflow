@@ -7,7 +7,7 @@ source "${USHglobal}/jjob_shell_setup.sh"
 
 # Construct COM variables
 # shellcheck disable=SC2309
-if [[ "${ENSMEM}" =~ ^[0-9]+$ ]]; then
+if [[ "${ENSMEM:--1}" =~ ^[0-9]+$ ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
     export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
     export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"

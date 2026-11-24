@@ -19,7 +19,7 @@ UFS_configure() {
     # Determine "cmeps_run_type" based on the availability of the mediator restart file
     # If it is a warm_start, we already copied the mediator restart to DATA, if it was present
     # If the mediator restart was not present, despite being a "warm_start", we put out a WARNING
-    # in forecast_postdet.sh function CMEPS_postdet
+    # in forecast_cmeps.sh function CMEPS_postdet
     if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
         local cmeps_run_type='continue'
     else
