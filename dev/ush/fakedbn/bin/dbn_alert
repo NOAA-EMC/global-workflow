@@ -11,6 +11,7 @@ if [ "${DBNLOG^^}" == "YES" ]; then
    outputdir="${DBNLOGDIR}"
    mkdir -p "${outputdir?"\$outputdir not set. compath.py failed."}"
    log_file=${outputdir}/${job:?}.${PDY}${cyc}.dbnlog
+# shellcheck disable=SC2027,2046,2048,2086
    echo "["$(date +%T)"]" $* >> "${log_file}"
 fi
 
