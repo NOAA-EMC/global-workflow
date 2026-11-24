@@ -66,7 +66,6 @@ class Archive(Task):
         if arch_dict.RUN in ["gdas", "gfs"]:
 
             # Copy the cyclone track files and rename the experiments
-            # TODO This really doesn't belong in archiving and should be moved elsewhere
             Archive._rename_cyclone_expt(arch_dict)
 
         archive_parm = os.path.join(arch_dict.PARMglobal, "archive")
@@ -113,7 +112,6 @@ class Archive(Task):
 
         # Test if TARBALL_TYPE is defined.  If not, set to None.
         # This variable is only used for gdas and gfs RUNs.
-        # TODO: Expand this to other RUNs.
         if 'TARBALL_TYPE' not in arch_dict:
             arch_dict['TARBALL_TYPE'] = None
 
@@ -121,7 +119,6 @@ class Archive(Task):
         if arch_dict.TARBALL_TYPE and arch_dict.TARBALL_TYPE in ["gfsa", "gdas"]:
 
             # Copy the cyclone track files and rename the experiments
-            # TODO: This really doesn't belong in archiving and should be moved elsewhere
             Archive._rename_cyclone_expt(arch_dict)
 
         # If this is a restart tarball, determine if we need to archive it this cycle
@@ -138,7 +135,6 @@ class Archive(Task):
         archive_parm = os.path.join(arch_dict.PARMglobal, "archive")
 
         # Add the glob.glob function for capturing log filenames
-        # TODO remove this kludge once log filenames are explicit
         arch_dict['glob'] = glob.glob
 
         # Add the os.path.exists function to the dict for yaml parsing
@@ -267,10 +263,6 @@ class Archive(Task):
         Globs are expanded and if required files are missing, an error is
         raised.
 
-        TODO: expand all globs in the jinja yaml files instead of expanding
-              them here and issue errors here if globbing patterns (*, ?, [])
-              are found.
-
         Parameters
         ----------
         atardir_set: Dict
@@ -369,7 +361,6 @@ class Archive(Task):
             List of files to add to an archive
         """
 
-        # TODO create a set of tar helper functions in wxflow
         # Attempt to create the parent directory if it does not exist
         mkdir_p(os.path.dirname(os.path.realpath(target)))
 
@@ -411,9 +402,6 @@ class Archive(Task):
     def _construct_arcdir_set(arcdir_j2yaml, arch_dict) -> Dict:
         """Construct the list of files to send to the ARCDIR and Fit2Obs
            directories from a template.
-
-           TODO Copying Fit2Obs data doesn't belong in archiving should be
-                moved elsewhere.
 
         Parameters
         ----------
@@ -712,7 +700,6 @@ class Archive(Task):
 
         # Restart archiving for gdas RUN
         if run == "gdas":
-            # TODO: Always archive gdas ocean restarts (for GEFSv13 when project restarts)
             if (tar_type == "gdasocean_restart") and arch_warm_ics:
                 return True
 
