@@ -26,8 +26,13 @@ shift $((OPTIND - 1))
 
 source "${HOMEglobal_}/ush/detect_machine.sh"
 
+if [[ "${MACHINE_ID}" == "nimbus" ]]; then
+    _opts+="-c oneapi "
+fi
+
 cd "${HOMEglobal_}/sorc/ufs_model.fd/UFSATM/upp/tests"
 # shellcheck disable=SC2086
+
 BUILD_JOBS=${BUILD_JOBS:-8} bash -x "${HOMEglobal_}/sorc/ufs_model.fd/UFSATM/upp/tests/compile_upp.sh" ${_opts}
 
 exit 0
