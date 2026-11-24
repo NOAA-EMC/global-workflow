@@ -27,7 +27,7 @@ shift $((OPTIND - 1))
 source "${HOMEglobal_}/ush/detect_machine.sh"
 
 if [[ "${MACHINE_ID}" == "nimbus" ]]; then
-  _opts+="-c oneapi "
+    _opts+="-c oneapi "
 fi
 
 cd "${HOMEglobal_}/sorc/ufs_model.fd/UFSATM/upp/tests"
