@@ -56,7 +56,7 @@ common_predet() {
 
     ENSMEM=${ENSMEM:-000}
     local _ensmem="10#${ENSMEM}"
-    MEMBER=$(( ${ENSMEM/10#-/-10#} )) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
+    MEMBER=$((${ENSMEM/10#-/-10#})) # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
     # Define significant cycles
     half_window=$((assim_freq / 2))
