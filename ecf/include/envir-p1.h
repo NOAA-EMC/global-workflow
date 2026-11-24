@@ -20,6 +20,6 @@ else
     export SIPHONROOT=${UTILROOT}/fakedbn
 fi
 export SIPHONROOT=${UTILROOT}/fakedbn
-export DBNROOT=$SIPHONROOT
+export DBNROOT=%PACKAGEHOME:%/dev/ush/fakedbn
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
