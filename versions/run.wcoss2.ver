@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 export version=v17.0.0
 export gfs_ver=v17.0.0
+export gfs_ver_2d=v17.0
 export obsproc_ver=v1.3
 export imagemagick_ver=7.0.8-7
 export cdo_ver=1.9.8

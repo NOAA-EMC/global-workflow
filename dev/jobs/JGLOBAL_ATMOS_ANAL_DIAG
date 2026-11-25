@@ -23,9 +23,7 @@ declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos
 mkdir -m 775 -p "${COMOUT_ATMOS_ANALYSIS}"
 
 # Create a DATAROOT directory variable where the gsidiags live
-# shellcheck disable=SC2153,SC2311
-pCOMIN_ATMOS_ANALYSIS="$(dataroot_com_path "${COMIN_ATMOS_ANALYSIS}")"
-export pCOMIN_ATMOS_ANALYSIS
+export DATA_ATMOS_ANALYSIS="${DATAROOT}/${RUN}_${gfs_ver_2d:-${gfs_ver%.*}}_gsidiag/${RUN}.${PDY}/${cyc}/analysis/atmos"
 
 ###############################################################
 # Run relevant script

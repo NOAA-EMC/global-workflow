@@ -65,9 +65,7 @@ export GENDIAG="${GENDIAG:-YES}"
 
 # Create a DATAROOT directory variable for the gsidiags if GENDIAG is YES
 if [[ "${GENDIAG}" == "YES" ]]; then
-    # shellcheck disable=SC2311
-    pCOMOUT_ATMOS_ANALYSIS="$(dataroot_com_path "${COMOUT_ATMOS_ANALYSIS}")"
-    export pCOMOUT_ATMOS_ANALYSIS
+    export DATA_ATMOS_ANALYSIS="${DATAROOT}/${RUN}_${gfs_ver_2d:-${gfs_ver%.*}}_gsidiag/${RUN}.${PDY}/${cyc}/analysis/atmos"
 fi
 
 # Get LEVS
