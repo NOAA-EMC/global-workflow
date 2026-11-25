@@ -56,7 +56,7 @@ while [[ $# -ge 1 ]]; do
     shift
 done
 
-#   set -ax
+set -ax
 
 echo " radstat_file = ${radstat_file}"
 echo " satype_file  = ${satype_file}"
@@ -73,7 +73,7 @@ radstat_contents=$(tar -tf "${radstat_file}" | grep -Po '(?<=diag_).*(?=_ges.*)'
 #---------------------------------------------
 #  load contents of satype_file into an array
 #
-readarray -t satype_contents < "${satype_file}"
+satype_contents=($(tr -d '\r' < "${satype_file}"))
 
 #-------------------------------------------------
 #  compare $satype_contents and $radstat_contents
