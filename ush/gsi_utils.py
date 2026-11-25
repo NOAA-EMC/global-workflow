@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # gsi_utils.py
 # a collection of functions, classes, etc.
 # used for the GSI global analysis
