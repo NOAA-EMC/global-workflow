@@ -56,7 +56,7 @@ while [[ $# -ge 1 ]]; do
     shift
 done
 
-set -ax
+#  set -ax
 
 echo " radstat_file = ${radstat_file}"
 echo " satype_file  = ${satype_file}"
