@@ -64,7 +64,7 @@ if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     declare -rx COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}/${memdir}"
     declare -rx COMIN_RESTART="${COMIN}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
-    declare -rx COMIN_RESTART_PREV="${COMOUT}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
+    declare -rx COMIN_RESTART_PREV="${COMIN}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
 else
     declare -rx COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}"
     declare -rx COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}"
@@ -74,7 +74,7 @@ fi
 
 declare -rx COMIN_ATMOS_INPUT="${COMINdir}/model/atmos/input"
 declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart" # Used for most restarts
-declare -rx COMIN_ATMOS_RESTART="${COMINdir}/model/atmos/restart"                   # Used for warm start surface analysis
+declare -rx COMIN_ATMOS_RESTART="${COMINdir}/model/atmos/restart"                # Used for warm start surface analysis
 declare -rx COMOUT_CONF="${COMOUTdir}/conf"
 declare -rx COMOUT_ATMOS_RESTART="${COMOUTdir}/model/atmos/restart"
 declare -rx COMOUT_ATMOS_HISTORY="${COMOUTdir}/model/atmos/history"

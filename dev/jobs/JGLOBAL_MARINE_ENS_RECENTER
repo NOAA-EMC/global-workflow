@@ -44,7 +44,7 @@ declare -rx COMIN_OCEAN_HISTORY_ENS_PREV="${COMIN}/${RUN}.${gPDY}/${gcyc}/model/
 declare -rx COMIN_ICE_HISTORY_ENS_PREV="${COMIN}/${RUN}.${gPDY}/${gcyc}/model/ice/history"
 
 declare -rx COMOUT_OCEAN_ANALYSIS="${COMOUT}/${GDUMP}.${PDY}/${cyc}/analysis/ocean"
-declare -rx COMIN_ICE_RESTART="${COMOUT}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
+declare -rx COMIN_ICE_RESTART="${COMIN}/${GDUMP}.${PDY}/${cyc}/model/ice/restart"
 declare -rx COMOUT_ICE_ANALYSIS="${COMOUT}/${GDUMP}.${PDY}/${cyc}/analysis/ice"
 
 # Additional COM variables are set in ${HOMEglobal}/parm/gdas/marine/marine_ecen_config.yaml.j2

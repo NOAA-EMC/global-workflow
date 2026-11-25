@@ -45,7 +45,6 @@ else
     export mem_offset=0
 fi
 
-
 declare -rx COMIN=${COMIN:-${ROTDIR}}
 declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 declare -rx COMIN_OCEAN_HISTORY_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/model/ocean/history"

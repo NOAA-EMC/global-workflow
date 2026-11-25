@@ -21,7 +21,7 @@ declare -rx COMIN=${COMIN:-${ROTDIR}}
 declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 declare -rx COMINwdqms="${COMIN}/${RUN}.${PDY}/${cyc}/analysis/atmos"
 declare -rx COMOUTwdqms="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/atmos/wdqms"
-mkdir -m 775 -p "${COMOUT}"
+mkdir -m 775 -p "${COMOUTwdqms}"
 
 ###############################################################
 # Run relevant script
