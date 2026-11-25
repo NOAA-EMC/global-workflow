@@ -25,9 +25,10 @@ source "${USHglobal}/set_strict.sh"
 export CASE=${CASE_ENS}
 
 export APREFIX="${RUN}.t${cyc}z."
-
-declare -rx COMIN_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
-declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS="${COMOUT}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
 # Create a DATAROOT directory variable where the gsidiags live
 # shellcheck disable=SC2153,SC2311

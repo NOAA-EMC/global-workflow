@@ -601,7 +601,7 @@ if [[ "${DOHYBVAR}" == "YES" ]]; then
 
     for imem in $(seq 1 "${NMEM_ENS}"); do
         memchar="mem$(printf %03i "${imem}")"
-        declare -x COMIN_ATMOS_HISTORY=${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}/${memchar}/model/atmos/history
+        declare -x COMIN_ATMOS_HISTORY=${COMIN}/${GDUMP_ENS}.${gPDY}/${gcyc}/${memchar}/model/atmos/history
 
         for fhr in ${fhrs}; do
             ${NLN} "${COMIN_ATMOS_HISTORY}/${GPREFIX_ENS}${ENKF_SUFFIX}atm.f0${fhr}.nc" "./ensemble_data/sigf${fhr}_ens_${memchar}"

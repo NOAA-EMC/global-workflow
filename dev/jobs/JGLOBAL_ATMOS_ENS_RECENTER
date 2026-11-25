@@ -36,11 +36,13 @@ export APREFIX_ENS="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
-declare -rx COMIN_ATMOS_ANALYSIS_DET="${ROTDIR}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx COMIN_ATMOS_ANALYSIS_DET="${COMIN}/${RUN/enkf/}.${PDY}/${cyc}/analysis/atmos"
 
-declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
+declare -rx COMOUT_ATMOS_ANALYSIS_STAT="${COMOUT}/${RUN}.${PDY}/${cyc}/ensstat/analysis/atmos"
 
-declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
+declare -rx COMIN_ATMOS_HISTORY_STAT_PREV="${COMIN}/${GDUMP}.${gPDY}/${gcyc}/ensstat/model/atmos/history"
 
 # Additional variables are set in scripts/exglobal_atmos_ens_recenter.sh in order to loop over ensemble members:
 #  COMOUT_ATMOS_ANALYSIS_MEM

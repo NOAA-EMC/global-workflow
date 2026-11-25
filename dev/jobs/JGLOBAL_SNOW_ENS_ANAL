@@ -50,22 +50,25 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 # Generate COM variables from templates
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+
 COMIN_OBS=${COMIN_OBS:-$(compath.py "${envir}/obsproc/${obsproc_ver}")/"${CDUMP}.${PDY}/${cyc}/atmos"}
 declare -rx COMIN_OBS
 
-declare -rx COMOUT_ATMOS_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/analysis/atmos"
-declare -rx COMOUT_CONF="${ROTDIR}/${RUN}.${PDY}/${cyc}/conf"
+declare -rx COMOUT_ATMOS_ANALYSIS="${COMOUT}/${RUN}.${PDY}/${cyc}/analysis/atmos"
+declare -rx COMOUT_CONF="${COMOUT}/${RUN}.${PDY}/${cyc}/conf"
 
 for imem in $(seq 1 "${NMEM_ENS}"); do
     # Make the member COM directories. These will be declared in the script as we cycle through members.
     memchar="mem$(printf %03i "${imem}")"
-    product_dir="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/snow"
+    product_dir="${COMOUT}/${RUN}.${PDY}/${cyc}/${memchar}/analysis/snow"
     mkdir -p "${product_dir}"
 done
 
 unset product_dir
 
-declare -rx COMOUT_SNOW_ANALYSIS="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/analysis/snow"
+declare -rx COMOUT_SNOW_ANALYSIS="${COMOUT}/${RUN}.${PDY}/${cyc}/ensstat/analysis/snow"
 
 mkdir -p "${COMOUT_SNOW_ANALYSIS}" "${COMOUT_CONF}"
 

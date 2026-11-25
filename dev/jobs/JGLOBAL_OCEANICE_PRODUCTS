@@ -21,25 +21,27 @@ export PYTHONPATH
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 # Construct COM variables
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     memdir=$(printf "mem%03d" $((10#${ENSMEM})))
-    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
-    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}/${memdir}"
+    export COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}/${memdir}"
 else
-    export COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
-    export COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
+    export COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}"
+    export COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}"
 fi
 
 if [[ -z "${COMPONENT:-}" ]]; then
     export err=1
     err_exit "COMPONENT variable is not set."
 elif [[ "${COMPONENT}" == "ice" || "${COMPONENT}" == "ocean" ]]; then
-    declare -rx "COMIN_${COMPONENT^^}_HISTORY"="${COMIN}/model/${COMPONENT}/history"
-    declare -rx "COMOUT_${COMPONENT^^}_GRIB"="${COMOUT}/products/${COMPONENT}/grib2"
-    declare -rx "COMOUT_${COMPONENT^^}_NETCDF"="${COMOUT}/products/${COMPONENT}/netcdf"
+    declare -rx "COMIN_${COMPONENT^^}_HISTORY"="${COMINdir}/model/${COMPONENT}/history"
+    declare -rx "COMOUT_${COMPONENT^^}_GRIB"="${COMOUTdir}/products/${COMPONENT}/grib2"
+    declare -rx "COMOUT_${COMPONENT^^}_NETCDF"="${COMOUTdir}/products/${COMPONENT}/netcdf"
 else
     export err=1
     err_exit "COMPONENT variable '${COMPONENT}' is invalid. Must be 'ice' or 'ocean'."

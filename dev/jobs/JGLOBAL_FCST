@@ -55,51 +55,53 @@ declare -rx gPDY="${GDATE:0:8}"
 declare -rx gcyc="${GDATE:8:2}"
 
 # Construct COM variables
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
 # shellcheck disable=SC2309
 if [[ 10#${ENSMEM:--1} -ge 0 ]]; then
     # Turn ensmem into 3-digit format with leading zeros
     memdir=$(printf "mem%03i" $((10#${ENSMEM})))
-    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
-    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}/${memdir}"
-    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
-    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
+    declare -rx COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART="${COMIN}/${rCDUMP}.${PDY}/${cyc}/${memdir}"
+    declare -rx COMIN_RESTART_PREV="${COMIN}/${rCDUMP}.${gPDY}/${gcyc}/${memdir}"
 else
-    declare -rx COMIN="${ROTDIR}/${RUN}.${PDY}/${cyc}"
-    declare -rx COMOUT="${ROTDIR}/${RUN}.${PDY}/${cyc}"
-    declare -rx COMIN_RESTART="${ROTDIR}/${rCDUMP}.${PDY}/${cyc}"
-    declare -rx COMIN_RESTART_PREV="${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}"
+    declare -rx COMINdir="${COMIN}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMOUTdir="${COMOUT}/${RUN}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART="${COMIN}/${rCDUMP}.${PDY}/${cyc}"
+    declare -rx COMIN_RESTART_PREV="${COMIN}/${rCDUMP}.${gPDY}/${gcyc}"
 fi
 
-declare -rx COMIN_ATMOS_INPUT="${COMIN}/model/atmos/input"
+declare -rx COMIN_ATMOS_INPUT="${COMINdir}/model/atmos/input"
 declare -rx COMIN_ATMOS_RESTART_PREV="${COMIN_RESTART_PREV}/model/atmos/restart" # Used for most restarts
-declare -rx COMIN_ATMOS_RESTART="${COMIN}/model/atmos/restart"                   # Used for warm start surface analysis
-declare -rx COMOUT_CONF="${COMOUT}/conf"
-declare -rx COMOUT_ATMOS_RESTART="${COMOUT}/model/atmos/restart"
-declare -rx COMOUT_ATMOS_HISTORY="${COMOUT}/model/atmos/history"
-declare -rx COMOUT_ATMOS_MASTER="${COMOUT}/model/atmos/master"
+declare -rx COMIN_ATMOS_RESTART="${COMINdir}/model/atmos/restart"                # Used for warm start surface analysis
+declare -rx COMOUT_CONF="${COMOUTdir}/conf"
+declare -rx COMOUT_ATMOS_RESTART="${COMOUTdir}/model/atmos/restart"
+declare -rx COMOUT_ATMOS_HISTORY="${COMOUTdir}/model/atmos/history"
+declare -rx COMOUT_ATMOS_MASTER="${COMOUTdir}/model/atmos/master"
 
-declare -rx COMIN_ATMOS_ANALYSIS="${COMIN}/analysis/atmos"
+declare -rx COMIN_ATMOS_ANALYSIS="${COMINdir}/analysis/atmos"
 
 if [[ "${DO_WAVE}" == "YES" ]]; then
-    declare -rx COMIN_WAVE_INIT="${COMIN}/model/wave/init"
-    declare -rx COMOUT_WAVE_RESTART="${COMOUT}/model/wave/restart"
-    declare -rx COMOUT_WAVE_HISTORY="${COMOUT}/model/wave/history"
+    declare -rx COMIN_WAVE_INIT="${COMINdir}/model/wave/init"
+    declare -rx COMOUT_WAVE_RESTART="${COMOUTdir}/model/wave/restart"
+    declare -rx COMOUT_WAVE_HISTORY="${COMOUTdir}/model/wave/history"
     declare -rx COMIN_WAVE_RESTART_PREV="${COMIN_RESTART_PREV}/model/wave/restart"
 fi
 
 if [[ "${DO_OCN}" == "YES" ]]; then
-    declare -rx COMIN_OCEAN_ANALYSIS="${COMIN}/analysis/ocean"
-    declare -rx COMOUT_MED_RESTART="${COMOUT}/model/med/restart"
-    declare -rx COMOUT_OCEAN_RESTART="${COMOUT}/model/ocean/restart"
-    declare -rx COMOUT_OCEAN_HISTORY="${COMOUT}/model/ocean/history"
+    declare -rx COMIN_OCEAN_ANALYSIS="${COMINdir}/analysis/ocean"
+    declare -rx COMOUT_MED_RESTART="${COMOUTdir}/model/med/restart"
+    declare -rx COMOUT_OCEAN_RESTART="${COMOUTdir}/model/ocean/restart"
+    declare -rx COMOUT_OCEAN_HISTORY="${COMOUTdir}/model/ocean/history"
     declare -rx COMIN_OCEAN_RESTART_PREV="${COMIN_RESTART_PREV}/model/ocean/restart"
     declare -rx COMIN_MED_RESTART_PREV="${COMIN_RESTART_PREV}/model/med/restart"
 fi
 
 if [[ "${DO_ICE}" == "YES" ]]; then
-    declare -rx COMIN_ICE_ANALYSIS="${COMIN}/analysis/ice"
-    declare -rx COMOUT_ICE_RESTART="${COMOUT}/model/ice/restart"
-    declare -rx COMOUT_ICE_HISTORY="${COMOUT}/model/ice/history"
+    declare -rx COMIN_ICE_ANALYSIS="${COMINdir}/analysis/ice"
+    declare -rx COMOUT_ICE_RESTART="${COMOUTdir}/model/ice/restart"
+    declare -rx COMOUT_ICE_HISTORY="${COMOUTdir}/model/ice/history"
     declare -rx COMIN_ICE_RESTART_PREV="${COMIN_RESTART_PREV}/model/ice/restart"
 fi
 

@@ -17,9 +17,10 @@ source "${USHglobal}/set_strict.sh"
 ###################################
 # Set COM Paths
 ###################################
-
-declare -rx COMIN_WAVE_STATION="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/station"
-declare -rx COMOUT_WAVE_WMO="${ROTDIR}/${RUN}.${PDY}/${cyc}/products/wave/wmo"
+declare -rx COMIN=${COMIN:-${ROTDIR}}
+declare -rx COMOUT=${COMOUT:-${ROTDIR}}
+declare -rx COMIN_WAVE_STATION="${COMIN}/${RUN}.${PDY}/${cyc}/products/wave/station"
+declare -rx COMOUT_WAVE_WMO="${COMOUT}/${RUN}.${PDY}/${cyc}/products/wave/wmo"
 
 mkdir -p "${COMOUT_WAVE_WMO}"
 

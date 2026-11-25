@@ -68,7 +68,7 @@ export OMP_NUM_THREADS=${NTHREADS_EPOS}
 # Forecast ensemble member files
 for imem in $(seq 1 "${NMEM_ENS}"); do
     memchar="mem"$(printf %03i "${imem}")
-    declare -x COMIN_ATMOS_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/history
+    declare -x COMIN_ATMOS_HISTORY=${COMIN}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/history
 
     for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
         fhrchar=$(printf %03i "${fhr}")
@@ -78,7 +78,7 @@ for imem in $(seq 1 "${NMEM_ENS}"); do
 done
 
 # Forecast ensemble mean and smoothed files
-declare -rx COMOUT_ATMOS_HISTORY_STAT="${ROTDIR}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history"
+declare -rx COMOUT_ATMOS_HISTORY_STAT="${COMOUT}/${RUN}.${PDY}/${cyc}/ensstat/model/atmos/history"
 if [[ ! -d "${COMOUT_ATMOS_HISTORY_STAT}" ]]; then
     mkdir -p "${COMOUT_ATMOS_HISTORY_STAT}"
 fi
@@ -90,7 +90,7 @@ for fhr in $(seq "${FHMIN}" "${FHOUT}" "${FHMAX}"); do
     if [[ "${SMOOTH_ENKF}" == "YES" ]]; then
         for imem in $(seq 1 "${NMEM_ENS}"); do
             memchar="mem"$(printf %03i "${imem}")
-            declare -x COMIN_ATMOS_HISTORY=${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/history
+            declare -x COMIN_ATMOS_HISTORY=${COMIN}/${RUN}.${PDY}/${cyc}/${memchar}/model/atmos/history
             ${NLN} "${COMIN_ATMOS_HISTORY}/${PREFIX}atm.f${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
         done
     fi
