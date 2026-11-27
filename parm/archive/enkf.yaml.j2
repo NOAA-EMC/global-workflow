@@ -116,7 +116,7 @@ enkf:
         - "{{ COMIN_CONF }}/{{ head }}{{ file }}"
         {% endfor %}
 
-        {% if DO_JEDISNOW2DVAR %}
+        {% if DO_JEDISNOW2DVAR and not DO_JEDISNOWLETKF %}
         - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar.gz"
             {% for itile in range(1,7) %}
         # Snow analysis is 3dvar
