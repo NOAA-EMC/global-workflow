@@ -166,7 +166,6 @@ sorc/radmon_angle.fd
 sorc/radmon_bcoef.fd
 sorc/radmon_bcor.fd
 sorc/radmon_time.fd
-sorc/rdbfmsua.fd
 sorc/recentersigp.fd
 sorc/regridStates.fd
 sorc/supvit.fd
