@@ -424,7 +424,7 @@ mkdir -p "${HOMEglobal}/exec" || exit 1
 cd "${HOMEglobal}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x supvit.x syndat_getjtbul.x \
-    syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x rdbfmsua.x \
+    syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x overgridid.x \
     mkgfsawps.x enkf_chgres_recenter_nc.x tave.x vint.x ocnicepost.x webtitle.x \
     ensadd.x ensppf.x ensstat.x wave_stat.x tref_calc.x; do
     if [[ -s "${utilexe}" ]]; then
@@ -648,7 +648,6 @@ for prog in enkf_chgres_recenter_nc.fd \
     mkgfsawps.fd \
     ocnicepost.fd \
     overgridid.fd \
-    rdbfmsua.fd \
     supvit.fd \
     syndat_getjtbul.fd \
     syndat_maksynrc.fd \
