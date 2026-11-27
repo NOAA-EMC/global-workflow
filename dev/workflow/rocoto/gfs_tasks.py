@@ -351,14 +351,14 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run}_anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_sfcanl_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_jedisnowda'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
+        if self.options['do_jedisnow2dvar'] or (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dependencies = rocoto.create_dependency(dep=deps)
@@ -749,6 +749,31 @@ class GFSTasks(Tasks):
         task = rocoto.create_task(task_dict)
         return task
 
+    def snowletkfanl(self):
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'enkfgdas_epmn', 'offset': f"-{timedelta_to_HMS(self._base['interval_gdas'])}"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f"{self.run.replace('enkf', '')}_prep"}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('snowletkfanl')
+        task_name = f'{self.run}_snowletkfanl'
+        task_dict = {'task_name': task_name,
+                     'resources': resources,
+                     'dependency': dependencies,
+                     'envars': self.envars,
+                     'cycledef': self.run.replace('enkf', ''),
+                     'command': f'{self.HOMEglobal}/dev/job_cards/rocoto/snowletkfanl.sh',
+                     'job_name': f'{self.pslot}_{task_name}_@H',
+                     'log': f'{self.rotdir}/logs/@Y@m@d@H/{task_name}.log',
+                     'maxtries': '&MAXTRIES;'
+                     }
+
+        task = rocoto.create_task(task_dict)
+        return task
+
     def soilanlvar(self):
 
         deps = []
@@ -1129,7 +1154,7 @@ class GFSTasks(Tasks):
             dep_dict = {'type': 'task', 'name': f'{self.run}_aeroanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -1976,7 +2001,7 @@ class GFSTasks(Tasks):
         if self.options['do_jediocnvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_marineanlfinal'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_snowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_aero_anl']:
@@ -3099,7 +3124,7 @@ class GFSTasks(Tasks):
         if self.options['do_aero_anl']:
             dep_dict = {'type': 'task', 'name': f"{self.run}_aeroanlfinal"}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f"{self.run}_snowanl"}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -3161,13 +3186,16 @@ class GFSTasks(Tasks):
         else:
             dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf","")}_anal'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.options['do_jedisnowda']:
+        if self.options['do_jedisnowletkf']:
+            dep_dict = {'type': 'task', 'name': f'{self.run}_snowletkfanl'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        elif self.options['do_jedisnow2dvar']:
             dep_dict = {'type': 'task', 'name': f'{self.run}_esnowanl'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']:
             dep_dict = {'type': 'task', 'name': f'gdas_esfc_regrid'}
             deps.append(rocoto.add_dependency(dep_dict))
-        if self.run in ['enkfgdas'] or self.options['do_jedisnowda'] or \
+        if self.run in ['enkfgdas'] or self.options['do_jedisnow2dvar'] or self.options['do_jedisnowletkf'] or \
                 (self.options['do_gsisoilda'] and self.run in ['gdas'] and not self.options['do_gsiliau']):
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:

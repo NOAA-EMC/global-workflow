@@ -388,7 +388,9 @@ export DO_JEDIATMVAR="{{ DO_JEDIATMVAR }}"
 export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
 export DO_JEDIATMENS_SPLIT_OBSSOL="{{ DO_JEDIATMENS_SPLIT_OBSSOL }}" #Only used if DO_JEDIATMENS is "YES"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
-export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
+export DO_JEDISNOW2DVAR="{{ DO_JEDISNOW2DVAR | default('NO') }}"
+export DO_JEDISNOWLETKF="{{ DO_JEDISNOWLETKF | default('NO') }}"
+export DO_JEDISNOWDA="{{ 'YES' if (DO_JEDISNOW2DVAR | default('NO')) == 'YES' or (DO_JEDISNOWLETKF | default('NO')) == 'YES' else 'NO' }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
 
 if [[ "${EXP_WARM_START}" = ".true." ]]; then

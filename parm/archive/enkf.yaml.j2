@@ -116,10 +116,13 @@ enkf:
         - "{{ COMIN_CONF }}/{{ head }}{{ file }}"
         {% endfor %}
 
-        {% if DO_JEDISNOWDA %}
+        # Snow analysis: LETKF takes precedence over 2DVar for ensemble snow DA
+        {% if DO_JEDISNOWLETKF %}
+        - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT }}/enkfgdas.{{ cycle_YMD }}{{ cycle_HH }}.snow_analysis.ioda_hofx.ensmean.tar.gz"
+
+        {% elif DO_JEDISNOW2DVAR %}
         - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT }}/{{ head }}snow_analysis.ioda_hofx.ensmean.tar.gz"
             {% for itile in range(1,7) %}
-        # Snow analysis is 3dvar
         - "{{ COMIN_SNOW_ANALYSIS_ENSSTAT }}/{{ cycle_YMD }}.{{ cycle_HH }}0000.snow_increment.sfc_data.tile{{ itile }}.nc"
             {% endfor %}
         {% endif %}

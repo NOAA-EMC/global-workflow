@@ -24,7 +24,7 @@ class Tasks:
                    'earc_vrfy', 'earc_tars', 'ecen', 'echgres', 'ediag', 'efcs',
                    'atmensanlinit', 'atmensanlobs', 'atmensanlsol', 'atmensanlletkf', 'atmensanlfv3inc', 'atmensanlfinal', 'atmos_ensstat',
                    'aeroanlinit', 'aeroanlvar', 'aeroanlfinal', 'aeroanlgenb',
-                   'snowanl', 'esnowanl',
+                   'snowanl', 'esnowanl', 'snowletkfanl',
                    'soilanlvar', 'soilanlens',
                    'offlineanl',
                    'fcst',

@@ -82,7 +82,8 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
             run_options[run]['do_jediatmens_split_obssol'] = base.get('DO_JEDIATMENS_SPLIT_OBSSOL', True)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
-            run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
+            run_options[run]['do_jedisnow2dvar'] = base.get('DO_JEDISNOW2DVAR', False)
+            run_options[run]['do_jedisnowletkf'] = base.get('DO_JEDISNOWLETKF', False)
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_jedisoildavar'] = base.get('DO_JEDISOILDAVAR', False)
             run_options[run]['do_jedisoildaens'] = base.get('DO_JEDISOILDAENS', False)
@@ -208,9 +209,12 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_aero_anl']:
             configs += ['aeroanlgenb', 'aeroanlinit', 'aeroanlvar', 'aeroanlfinal']
 
-        if options['do_jedisnowda']:
+        if options['do_jedisnow2dvar']:
             configs += ['snowanl']
-            if options['do_hybvar']:
+        if options['do_hybvar']:
+            if options['do_jedisnowletkf']:
+                configs += ['snowletkfanl']
+            elif options['do_jedisnow2dvar']:
                 configs += ['esnowanl']
 
         if options['do_gsisoilda']:
@@ -287,7 +291,7 @@ class GFSCycledAppConfig(AppConfig):
 
                 task_names[run] += ['sfcanl_gcycle']
 
-                if options['do_jedisnowda']:
+                if options['do_jedisnow2dvar']:
                     task_names[run] += ['snowanl']
 
                 if options['do_jedisoildavar']:
@@ -440,7 +444,10 @@ class GFSCycledAppConfig(AppConfig):
                     if options['do_hybvar']:
                         task_names[run] += ['marineanlecen']
 
-                task_names[run].append('esnowanl') if options['do_jedisnowda'] else 0
+                if options['do_jedisnowletkf']:
+                    task_names[run].append('snowletkfanl')
+                elif options['do_jedisnow2dvar']:
+                    task_names[run].append('esnowanl')
                 task_names[run].append('efcs') if 'gdas' in run else 0
                 task_names[run].append('epos') if 'gdas' in run else 0
 
@@ -472,6 +479,8 @@ class GFSCycledAppConfig(AppConfig):
                             task_names[run] += ['atmensanlletkf']
                     else:
                         task_names[run] += ['eobs', 'eupd', 'ecen', 'ediag']
+                    if options['do_jedisnowletkf']:
+                        task_names[run].append('snowletkfanl')
                     task_names[run] += ['efcs', 'epos', 'esfc_gcycle']
                     if options['do_archcom']:
                         task_names[run] += ['earc_tars']

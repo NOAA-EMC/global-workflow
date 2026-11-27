@@ -33,7 +33,7 @@ gdas:
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlvar.log"
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_aeroanlfinal.log"
             {% endif %}
-            {% if DO_JEDISNOWDA %}
+            {% if DO_JEDISNOW2DVAR %}
         - "logs/{{ cycle_YMDH }}/{{ RUN }}_snowanl.log"
             {% endif %}
             {% if DO_GSISOILDA %}
@@ -113,7 +113,7 @@ gdas:
             {% endif %}
 
         # Snow analysis data
-            {% if DO_JEDISNOWDA %}
+            {% if DO_JEDISNOW2DVAR %}
                 {% for itile in range(1,7) %}
         - "{{ COMIN_SNOW_ANALYSIS }}/{{ cycle_fv3time }}.snow_increment.sfc_data.tile{{ itile }}.nc"
                 {% endfor %}

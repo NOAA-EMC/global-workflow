@@ -51,7 +51,7 @@ gfsa:
         {% endif %}
 
         # Snow analysis data
-        {% if DO_JEDISNOWDA %}
+        {% if DO_JEDISNOW2DVAR %}
             {% for itile in range(1,7) %}
         - "{{ COMIN_SNOW_ANALYSIS }}/{{ cycle_fv3time }}.snow_increment.sfc_data.tile{{ itile }}.nc"
             {% endfor %}
